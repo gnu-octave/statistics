@@ -332,7 +332,8 @@ classdef KDTreeSearcher
       obj.BucketSize = BucketSize;
 
       ## Build KDTree
-      obj.KDTree = KDTreeSearcher.buildkdtree (X, BucketSize);
+      obj.KDTree = KDTreeSearcher.__build_kdtree__(1:size(X,1), 0, X, ...
+																									 BucketSize);
     endfunction
 
     ## -*- texinfo -*-
@@ -421,43 +422,38 @@ classdef KDTreeSearcher
         varargin (1:2) = [];
       endwhile
 
-      ## Perform search
-      if (! IncludeTies)
-        idx = zeros (rows (Y), K);
-        D = zeros (rows (Y), K);
-        for i = 1:rows (Y)
-          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, ...
-                                           obj.Distance, obj.DistParameter);
-          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
-                           obj.DistParameter);
-          [sorted_D, sort_idx] = sort (D_temp);
-          NN_sorted = NN(sort_idx);
-          if (SortIndices)
-            idx(i,:) = NN_sorted(1:K);
-            D(i,:) = sorted_D(1:K);
-          else
-            idx(i,:) = NN(1:K);
-            D(i,:) = D_temp(1:K);
-          endif
-        endfor
-      else
+      if (IncludeTies)
         idx = cell (rows (Y), 1);
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
-          NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), K, ...
-                                           obj.Distance, obj.DistParameter);
-          D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
-                           obj.DistParameter);
-          [sorted_D, sort_idx] = sort (D_temp);
-          if (K <= length (sorted_D))
-            kth_dist = sorted_D(K);
-          else
-            kth_dist = sorted_D(end);
+          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__( ...
+							obj.KDTree, Y(i,:), K, obj.X, obj.Distance, obj.DistParameter, ...
+						  false);
+          r = temp_D(end) + 1e-10; % Add small epsilon to capture ties
+          [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__( ...
+							obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
+						  obj.DistParameter, true, r);
+          if (SortIndices)
+            [sorted_D, sort_idx] = sort (D{i});
+            D{i} = sorted_D;
+            idx{i} = idx{i}(sort_idx);
           endif
-          [idx_temp, D_temp] = rangesearch (obj, Y(i,:), kth_dist, ...
-                                            "SortIndices", SortIndices);
-          idx{i} = idx_temp{1};
-          D{i} = D_temp{1};
+        endfor
+      else
+        idx = zeros (rows (Y), K);
+        D = zeros (rows (Y), K);
+        for i = 1:rows (Y)
+          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__( ...
+							obj.KDTree, Y(i,:), K, obj.X, obj.Distance, obj.DistParameter, ...
+						  false);
+          if (SortIndices)
+            [sorted_D, sort_idx] = sort (temp_D);
+            idx(i,:) = temp_idx(sort_idx);
+            D(i,:) = sorted_D;
+          else
+            idx(i,:) = temp_idx;
+            D(i,:) = temp_D;
+          endif
         endfor
       endif
     endfunction
@@ -537,23 +533,16 @@ classdef KDTreeSearcher
         varargin (1:2) = [];
       endwhile
 
-      ## Perform search
-      k = rows (obj.X);  # Get all points
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        NN = KDTreeSearcher.findkdtree (obj.KDTree, Y(i,:), k, ...
-                                         obj.Distance, obj.DistParameter);
-        D_temp = pdist2 (obj.X(NN,:), Y(i,:), obj.Distance, ...
-                         obj.DistParameter);
-        within_r = find (D_temp <= r);
+        [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__( ...
+						obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, obj.DistParameter, ...
+					  true, r);
         if (SortIndices)
-          [sorted_D, sort_idx] = sort (D_temp(within_r));
-          idx{i} = NN(within_r(sort_idx));
+          [sorted_D, sort_idx] = sort (D{i});
           D{i} = sorted_D;
-        else
-          idx{i} = NN(within_r);
-          D{i} = D_temp(within_r);
+          idx{i} = idx{i}(sort_idx);
         endif
       endfor
     endfunction
@@ -562,126 +551,90 @@ classdef KDTreeSearcher
 
   methods (Static, Access = private)
 
-    function ret = buildkdtree (X, BS)
-      [val, r] = sort (X(:,1));
-      ret = struct ("data", X, "root", ...
-                     KDTreeSearcher.buildkdtree_recur (X, r, 1, BS));
-    endfunction
-
-    function ret = buildkdtree_recur (X, r, d, BS)
-      count = length (r);
-      dimen = size (X, 2);
-      if (count == 1)
-        ret = struct ("point", r(1), "dimen", d);
+    function node = __build_kdtree__ (indices, depth, X, bucket_size)
+      if (length (indices) <= bucket_size)
+        node = struct ('indices', indices);
       else
-        mid = ceil (count / 2);
-        ret = struct ("point", r(mid), "dimen", d);
-        d = mod (d, dimen) + 1;
-        ## Build left sub tree
-        if (mid > 1)
-          left = r(1:mid-1);
-          left_points = X(left,d);
-          [val, left_idx] = sort (left_points);
-          leftr = left(left_idx);
-          ret.left = KDTreeSearcher.buildkdtree_recur (X, leftr, d, BS);
-        endif
-        ## Build right sub tree
-        if (count > mid)
-          right = r(mid+1:count);
-          right_points = X(right,d);
-          [val, right_idx] = sort (right_points);
-          rightr = right(right_idx);
-          ret.right = KDTreeSearcher.buildkdtree_recur (X, rightr, d, BS);
-        endif
+        k = size (X, 2);
+        axis = mod (depth, k) + 1;
+        values = X(indices, axis);
+        [sorted_values, sort_idx] = sort (values);
+        sorted_indices = indices(sort_idx);
+        median_idx = floor ((length (indices) + 1) / 2);
+        split_value = sorted_values(median_idx);
+        left_indices = indices(values <= split_value);
+        right_indices = indices(values > split_value);
+        left_node = KDTreeSearcher.__build_kdtree__ (left_indices, ...
+																										 depth + 1, X, bucket_size);
+        right_node = KDTreeSearcher.__build_kdtree__ (right_indices, ...
+																										  depth + 1, ...
+																										  X, bucket_size);
+        node = struct ('axis', axis, 'split_value', split_value, ...
+											 'left', left_node, 'right', right_node);
       endif
     endfunction
 
-    function nn = findkdtree (tree, p, k, dist, distparam)
-      X = tree.data;
-      root = tree.root;
-      nn = KDTreeSearcher.findkdtree_recur (X, root, p, [], k, ...
-                                            dist, distparam);
-    endfunction
-
-    function nn = findkdtree_recur (X, node, p, nn, k, dist, distparam)
-      point = node.point;
-      d = node.dimen;
-      if (X(point,d) > p(d))
-        ## Search in left sub tree
-        if (isfield (node, "left"))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, ...
-                                                 dist, distparam);
-        endif
-        ## Add current point if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, ...
-                                                         dist, distparam);
-        if (length (nn) < k || ...
-            pdist2 (X(point,:), p, dist, distparam) <= ...
-            pdist2 (X(farthest,:), p, dist, distparam))
-          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, ...
-                                                   distparam);
-        endif
-        ## Search in right sub tree if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
-                                                         distparam);
-        radius = pdist2 (X(farthest,:), p, dist, distparam);
-        if (isfield (node, "right") && ...
-            (length (nn) < k || p(d) + radius > X(point,d)))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, ...
-                                                 dist, distparam);
-        endif
-      else
-        ## Search in right sub tree
-        if (isfield (node, "right"))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.right, p, nn, k, ...
-                                                 dist, distparam);
-        endif
-        ## Add current point if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
-                                                         distparam);
-        if (length (nn) < k || ...
-            pdist2 (X(point,:), p, dist, distparam) <= ...
-            pdist2 (X(farthest,:), p, dist, distparam))
-          nn = KDTreeSearcher.kdtree_cand_insert (X, p, nn, k, point, dist, ...
-                                                   distparam);
-        endif
-        ## Search in left sub tree if necessary
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, nn, dist, ...
-                                                         distparam);
-        radius = pdist2 (X(farthest,:), p, dist, distparam);
-        if (isfield (node, "left") && ...
-            (length (nn) < k || p(d) - radius <= X(point,d)))
-          nn = KDTreeSearcher.findkdtree_recur (X, node.left, p, nn, k, ...
-                                                 dist, distparam);
-        endif
+    function [indices, distances] = __search_kdtree__ (node, query, k, X, ...
+																											 dist, distparam, ...
+																											 is_range, r)
+      if (nargin < 8)
+        r = Inf;
       endif
-    endfunction
+      indices = zeros(1, 0);
+      distances = zeros(1, 0);
+      search (node, 0);
 
-    function farthest = kdtree_cand_farthest (X, p, cand, dist, distparam)
-      if (isempty (cand))
-        farthest = [];
-      else
-        D = pdist2 (X(cand,:), p, dist, distparam);
-        [~, index] = max (D);
-        farthest = cand(index);
-      endif
-    endfunction
+      function search (node, depth)
+        if (isempty (node))
+          return;
+        endif
 
-    function inserted = kdtree_cand_insert (X, p, cand, k, point, dist, ...
-                                             distparam)
-      if (length (cand) < k)
-        inserted = [cand; point];
-      else
-        farthest = KDTreeSearcher.kdtree_cand_farthest (X, p, cand, dist, ...
-                                                         distparam);
-        if (pdist2 (X(point,:), p, dist, distparam) < ...
-            pdist2 (X(farthest,:), p, dist, distparam))
-          cand(find (cand == farthest)) = point;
-          inserted = cand;
+        if (isfield (node, 'indices'))
+          leaf_indices = node.indices;
+          dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
+          if (is_range)
+            mask = dists <= r;
+            indices = horzcat (indices, leaf_indices(mask));
+            distances = horzcat (distances, dists(mask)');
+          else
+            indices = horzcat (indices, leaf_indices);
+            distances = horzcat (distances, dists');
+            if (length (distances) > k)
+              [distances, sort_idx] = sort (distances);
+              indices = indices(sort_idx);
+              distances = distances(1:k);
+              indices = indices(1:k);
+            endif
+          endif
         else
-          inserted = cand;
+          axis = node.axis;
+          split_value = node.split_value;
+          if (query(axis) <= split_value)
+            nearer = node.left;
+            further = node.right;
+          else
+            nearer = node.right;
+            further = node.left;
+          endif
+
+          search (nearer, depth + 1);
+
+          plane_dist = abs (query(axis) - split_value);
+          max_dist = r;
+          if (!strcmpi(dist, 'euclidean'))
+            max_dist = r * size(X, 2);
+          endif
+          if (is_range)
+            if (plane_dist <= max_dist)
+              search (further, depth + 1);
+            endif
+          else
+            if (length (distances) < k || plane_dist < distances(end))
+              search (further, depth + 1);
+            endif
+          endif
         endif
-      endif
+      endfunction
     endfunction
 
   endmethods
@@ -843,7 +796,7 @@ endclassdef
 %! D_true = pdist2 (X, Y, "euclidean");
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+%! assert (D{1}', sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with duplicates
@@ -852,7 +805,7 @@ endclassdef
 %! Y = [0, 0];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (sort (idx{1}(:))', [1, 2]);
-%! assert (D{1}', [0, 0], 1e-10);
+%! assert (D{1}, [0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with 3D data
@@ -862,7 +815,7 @@ endclassdef
 %! r = 1;
 %! [idx, D] = rangesearch (obj, Y, r);
 %! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}', [0, 1, 1], 1e-10);
+%! assert (D{1}, [0, 1, 1], 1e-10);
 
 %!test
 %! ## knnsearch with P = 2 (Euclidean equivalent)
@@ -870,7 +823,7 @@ endclassdef
 %! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 2);
 %! Y = [0, 1];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! assert (idx, 2);
+%! assert (idx, 1);
 %! assert (D, 1, 1e-10);
 
 %!test
@@ -883,7 +836,7 @@ endclassdef
 %! D_true = pdist2 (X, Y, "minkowski", 3);
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+%! assert (D{1}', sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with P = 4, random data
@@ -903,7 +856,7 @@ endclassdef
 %! Y = [1, 1];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}', [0, 0, 0], 1e-10);
+%! assert (D{1}, [0, 0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with grid
@@ -915,7 +868,7 @@ endclassdef
 %! D_true = pdist2 (X, Y, "chebychev");
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, D_true(expected_idx), 1e-10);
+%! assert (D{1}', D_true(expected_idx), 1e-10);
 
 %!test
 %! ## Changing Distance and verifying search
