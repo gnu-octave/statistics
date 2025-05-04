@@ -638,11 +638,8 @@ classdef KDTreeSearcher
           search (nearer, depth + 1);
 
           plane_dist = abs (query(axis) - split_value);
-          max_dist = r;
-          if (!strcmpi(dist, 'euclidean'))
-            max_dist = r * size(X, 2);
-          endif
           if (is_range)
+            max_dist = r;
             if (plane_dist <= max_dist)
               search (further, depth + 1);
             endif
