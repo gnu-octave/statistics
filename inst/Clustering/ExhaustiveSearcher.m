@@ -15,6 +15,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+classdef ExhaustiveSearcher
 ## -*- texinfo -*-
 ## @deftp {Class} ExhaustiveSearcher
 ##
@@ -33,8 +34,6 @@
 ##
 ## @seealso{createns, KDTreeSearcher, hnswSearcher}
 ## @end deftp
-
-classdef ExhaustiveSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
