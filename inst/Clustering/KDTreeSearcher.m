@@ -110,7 +110,7 @@ classdef KDTreeSearcher
     function disp (this)
       if (isscalar (this))
         fprintf ("\n  KDTreeSearcher\n\n");
-        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
+        fprintf ("%+25s: %d\n", 'BucketSize', this.BucketSize);
         fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
           if (isscalar (this.DistParameter))
@@ -125,11 +125,7 @@ classdef KDTreeSearcher
         else
           fprintf ("%+25s: []\n", 'DistParameter');
         endif
-        fprintf ("%+25s: %d\n", 'BucketSize', this.BucketSize);
-        fprintf ("%+25s: [KD-tree structure]\n", 'KDTree');
-      else
-        sz = size (this);
-        fprintf ("\n  %s KDTreeSearcher array\n\n", mat2str (sz));
+        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
       endif
     endfunction
 
@@ -332,8 +328,8 @@ classdef KDTreeSearcher
       obj.BucketSize = BucketSize;
 
       ## Build KDTree
-      obj.KDTree = KDTreeSearcher.__build_kdtree__(1:size(X,1), 0, X, ...
-																									 BucketSize);
+      obj.KDTree = KDTreeSearcher.__build_kdtree__ (1:size(X,1), 0, X, ...
+																									  BucketSize);
     endfunction
 
     ## -*- texinfo -*-
@@ -426,13 +422,13 @@ classdef KDTreeSearcher
         idx = cell (rows (Y), 1);
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__( ...
-							obj.KDTree, Y(i,:), K, obj.X, obj.Distance, obj.DistParameter, ...
-						  false);
-          r = temp_D(end) + 1e-10; % Add small epsilon to capture ties
-          [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__( ...
-							obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
-						  obj.DistParameter, true, r);
+          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__ ( ...
+                               obj.KDTree, Y(i,:), K, obj.X, obj.Distance, ...
+                               obj.DistParameter, false);
+          r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
+          [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__ ( ...
+                           obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
+                           obj.DistParameter, true, r);
           if (SortIndices)
             [sorted_D, sort_idx] = sort (D{i});
             D{i} = sorted_D;
@@ -443,9 +439,9 @@ classdef KDTreeSearcher
         idx = zeros (rows (Y), K);
         D = zeros (rows (Y), K);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__( ...
-							obj.KDTree, Y(i,:), K, obj.X, obj.Distance, obj.DistParameter, ...
-						  false);
+          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__ ( ...
+                               obj.KDTree, Y(i,:), K, obj.X, obj.Distance, ...
+                               obj.DistParameter, false);
           if (SortIndices)
             [sorted_D, sort_idx] = sort (temp_D);
             idx(i,:) = temp_idx(sort_idx);
@@ -536,9 +532,9 @@ classdef KDTreeSearcher
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__( ...
-						obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, obj.DistParameter, ...
-					  true, r);
+        [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__ ( ...
+						             obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
+                         obj.DistParameter, true, r);
         if (SortIndices)
           [sorted_D, sort_idx] = sort (D{i});
           D{i} = sorted_D;
@@ -664,12 +660,16 @@ endclassdef
 %! ## Find the nearest neighbor to [2, 3]
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! disp ("Nearest neighbor index:"); disp (idx);
-%! disp ("Distance:"); disp (D);
+%! disp ("Nearest neighbor index:");
+%! disp (idx);
+%! disp ("Distance:");
+%! disp (D);
 %! ## Find all points within radius 2
 %! [idx, D] = rangesearch (obj, Y, 2);
-%! disp ("Indices within radius:"); disp (idx);
-%! disp ("Distances:"); disp (D);
+%! disp ("Indices within radius:");
+%! disp (idx);
+%! disp ("Distances:");
+%! disp (D);
 
 %!demo
 %! ## Create a KDTreeSearcher with Minkowski distance (P=3)
@@ -678,81 +678,83 @@ endclassdef
 %! ## Find the nearest neighbor to [1, 0]
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 1);
-%! disp ("Nearest neighbor index:"); disp (idx);
-%! disp ("Distance:"); disp (D);
+%! disp ("Nearest neighbor index:");
+%! disp (idx);
+%! disp ("Distance:");
+%! disp (D);
 
 %!demo
 %! rng(42);
 %! disp('Demonstrating KDTreeSearcher');
-%! 
+%!
 %! n = 100;
 %! mu1 = [0.3, 0.3];
 %! mu2 = [0.7, 0.7];
 %! sigma = 0.1;
-%! X1 = mu1 + sigma * randn(n/2, 2);
-%! X2 = mu2 + sigma * randn(n/2, 2);
+%! X1 = mu1 + sigma * randn (n / 2, 2);
+%! X2 = mu2 + sigma * randn (n / 2, 2);
 %! X = [X1; X2];
-%! 
+%!
 %! obj = KDTreeSearcher(X);
-%! 
+%!
 %! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
-%! 
+%!
 %! K = 5;
-%! [idx, D] = knnsearch(obj, Y, K);
-%! 
-%! disp('For the first query point:');
-%! disp(['Query point: ', num2str(Y(1,:))]);
-%! disp('Indices of nearest neighbors:');
-%! disp(idx(1,:));
-%! disp('Distances:');
-%! disp(D(1,:));
-%! 
+%! [idx, D] = knnsearch (obj, Y, K);
+%!
+%! disp ('For the first query point:');
+%! disp (['Query point: ', num2str(Y(1,:))]);
+%! disp ('Indices of nearest neighbors:');
+%! disp (idx(1,:));
+%! disp ('Distances:');
+%! disp (D(1,:));
+%!
 %! figure;
-%! scatter(X(:,1), X(:,2), 36, 'b', 'filled'); % Training points
+%! scatter (X(:,1), X(:,2), 36, 'b', 'filled'); # Training points
 %! hold on;
-%! scatter(Y(:,1), Y(:,2), 36, 'r', 'filled'); % Query points
-%! for i = 1:size(Y,1)
+%! scatter (Y(:,1), Y(:,2), 36, 'r', 'filled'); # Query points
+%! for i = 1:size (Y, 1)
 %!     query = Y(i,:);
 %!     neighbors = X(idx(i,:), :);
 %!     for j = 1:K
-%!         plot([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
-%!     end
-%! end
+%!         plot ([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
+%!     endfor
+%! endfor
 %! hold off;
-%! title('K Nearest Neighbors with KDTreeSearcher');
-%! xlabel('X1');
-%! ylabel('X2');
-%! 
+%! title ('K Nearest Neighbors with KDTreeSearcher');
+%! xlabel ('X1');
+%! ylabel ('X2');
+%!
 %! r = 0.15;
-%! [idx, D] = rangesearch(obj, Y, r);
-%! 
-%! disp('For the first query point in rangesearch:');
-%! disp(['Query point: ', num2str(Y(1,:))]);
-%! disp('Indices of points within radius:');
-%! disp(idx{1});
-%! disp('Distances:');
-%! disp(D{1});
-%! 
+%! [idx, D] = rangesearch (obj, Y, r);
+%!
+%! disp ('For the first query point in rangesearch:');
+%! disp (['Query point: ', num2str(Y(1,:))]);
+%! disp ('Indices of points within radius:');
+%! disp (idx{1});
+%! disp ('Distances:');
+%! disp (D{1});
+%!
 %! figure;
-%! scatter(X(:,1), X(:,2), 36, 'b', 'filled');
+%! scatter (X(:,1), X(:,2), 36, 'b', 'filled');
 %! hold on;
-%! scatter(Y(:,1), Y(:,2), 36, 'r', 'filled');
-%! theta = linspace(0, 2*pi, 100);
-%! for i = 1:size(Y,1)
+%! scatter (Y(:,1), Y(:,2), 36, 'r', 'filled');
+%! theta = linspace (0, 2 * pi, 100);
+%! for i = 1:size (Y, 1)
 %!     center = Y(i,:);
-%!     x_circle = center(1) + r * cos(theta);
-%!     y_circle = center(2) + r * sin(theta);
-%!     plot(x_circle, y_circle, 'g-');
-%!     % Highlight points within radius
-%!     if ~isempty(idx{i})
-%!         in_radius = X(idx{i}, :);
-%!         scatter(in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
-%!     end
-%! end
-%! hold off;
-%! title('Points within Radius with KDTreeSearcher');
-%! xlabel('X1');
-%! ylabel('X2');
+%!     x_circle = center(1) + r * cos (theta);
+%!     y_circle = center(2) + r * sin (theta);
+%!     plot (x_circle, y_circle, 'g-');
+%!     ## Highlight points within radius
+%!     if (! isempty (idx{i}))
+%!       in_radius = X(idx{i}, :);
+%!       scatter (in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
+%!     endif
+%! endfor
+%! hold off
+%! title ('Points within Radius with KDTreeSearcher');
+%! xlabel ('X1');
+%! ylabel ('X2');
 
 ## Test Cases
 
