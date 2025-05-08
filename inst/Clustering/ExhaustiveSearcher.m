@@ -93,7 +93,7 @@ classdef ExhaustiveSearcher
     ## Custom display
     function disp (this)
       if (isscalar (this))
-        fprintf ("\n  ExhaustiveSearcher\n\n");
+        fprintf ("\n  ExhaustiveSearcher with properties:\n\n");
         fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
         fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
@@ -109,9 +109,6 @@ classdef ExhaustiveSearcher
         else
           fprintf ("%+25s: []\n", 'DistParameter');
         endif
-      else
-        sz = size (this);
-        fprintf ("\n  %s ExhaustiveSearcher array\n\n", mat2str (sz));
       endif
     endfunction
 
@@ -657,17 +654,17 @@ endclassdef
 %! title('K Nearest Neighbors with ExhaustiveSearcher');
 %! xlabel('X1');
 %! ylabel('X2');
-%! 
+%!
 %! r = 0.15;
 %! [idx, D] = rangesearch(obj, Y, r);
-%! 
+%!
 %! disp('For the first query point in rangesearch:');
 %! disp(['Query point: ', num2str(Y(1,:))]);
 %! disp('Indices of points within radius:');
 %! disp(idx{1});
 %! disp('Distances:');
 %! disp(D{1});
-%! 
+%!
 %! figure;
 %! scatter(X(:,1), X(:,2), 36, 'b', 'filled');
 %! hold on;

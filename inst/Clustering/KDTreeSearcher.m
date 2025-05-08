@@ -109,7 +109,7 @@ classdef KDTreeSearcher
     ## Custom display
     function disp (this)
       if (isscalar (this))
-        fprintf ("\n  KDTreeSearcher\n\n");
+        fprintf ("\n  KDTreeSearcher with properties:\n\n");
         fprintf ("%+25s: %d\n", 'BucketSize', this.BucketSize);
         fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
