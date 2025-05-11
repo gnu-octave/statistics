@@ -654,6 +654,19 @@ endclassdef
 ## Demo Examples
 
 %!demo
+%! ## Demo to verify matlab compatibility
+%! load fisheriris
+%! n = size (meas, 1);
+%! qIdx = [1, 23, 46, 63, 109];
+%! tIdx = ~ismember (1:n, qIdx);
+%! Q = meas(qIdx, :);
+%! X = meas(tIdx, :);
+%! r = 0.3;
+%! Mdl = KDTreeSearcher (X, 'Distance', 'euclidean')
+%! IdxNN = knnsearch (Mdl, Q, 2)
+%! IdxR = rangesearch (Mdl, Q, r)
+
+%!demo
 %! ## Create a KDTreeSearcher with Euclidean distance
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = KDTreeSearcher (X);
