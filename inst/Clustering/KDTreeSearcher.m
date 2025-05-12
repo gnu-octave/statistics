@@ -654,17 +654,17 @@ endclassdef
 ## Demo Examples
 
 %!demo
-%! ## Demo to verify matlab compatibility
+%! ## Demo to verify implementation using fisheriris dataset
 %! load fisheriris
-%! n = size (meas, 1);
-%! qIdx = [1, 23, 46, 63, 109];
-%! tIdx = ~ismember (1:n, qIdx);
-%! Q = meas(qIdx, :);
-%! X = meas(tIdx, :);
-%! r = 0.3;
-%! Mdl = KDTreeSearcher (X, 'Distance', 'euclidean')
-%! IdxNN = knnsearch (Mdl, Q, 2)
-%! IdxR = rangesearch (Mdl, Q, r)
+%! numSamples = size (meas, 1);
+%! queryIndices = [1, 23, 46, 63, 109];
+%! dataIndices = ~ismember (1:numSamples, queryIndices);
+%! queryPoints = meas(queryIndices, :);
+%! dataPoints = meas(dataIndices, :);
+%! searchRadius = 0.3;
+%! kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')
+%! nearestNeighbors = knnsearch (kdTree, queryPoints, 2)
+%! neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)
 
 %!demo
 %! ## Create a KDTreeSearcher with Euclidean distance

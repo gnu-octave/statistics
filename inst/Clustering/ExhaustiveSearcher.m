@@ -590,6 +590,20 @@ endclassdef
 ## Demo Examples
 
 %!demo
+%! ## Demo to verify implementation using fisheriris dataset
+%! load fisheriris
+%! rng('default');
+%! numSamples = size (meas, 1);
+%! queryIndices = [20, 95, 123, 136, 138];
+%! dataPoints = meas(~ismember (1:numSamples, queryIndices), :);
+%! queryPoints = meas(queryIndices, :);
+%! searchModel = ExhaustiveSearcher (dataPoints, 'Distance', 'mahalanobis')
+%! mahalanobisParam = searchModel.DistParameter
+%! searchRadius = 3;
+%! nearestNeighbors = knnsearch (searchModel, queryPoints, 2)
+%! neighborsInRange = rangesearch (searchModel, queryPoints, searchRadius)
+
+%!demo
 %! ## Create an ExhaustiveSearcher with Euclidean distance
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
