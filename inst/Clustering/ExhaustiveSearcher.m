@@ -94,7 +94,6 @@ classdef ExhaustiveSearcher
     function disp (this)
       if (isscalar (this))
         fprintf ("\n  ExhaustiveSearcher with properties:\n\n");
-        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
         fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
           if (isscalar (this.DistParameter))
@@ -109,6 +108,7 @@ classdef ExhaustiveSearcher
         else
           fprintf ("%+25s: []\n", 'DistParameter');
         endif
+        fprintf ("%+25s: [%dx%d %s]\n", 'X', size (this.X), class (this.X));
       endif
     endfunction
 
