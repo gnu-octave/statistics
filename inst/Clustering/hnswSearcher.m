@@ -34,3 +34,24 @@ classdef hnswSearcher
 ## @seealso{createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch,
 ## rangesearch, pdist2}
 ## @end deftp
+
+	properties (SetAccess = private)
+    ## -*- texinfo -*-
+    ## @deftp {Property} X
+    ##
+    ## Training data, specified as an @math{NxP} numeric matrix where each row
+    ## is an observation and each column is a feature.  This property is private
+    ## and cannot be modified after object creation.
+    ##
+    ## @end deftp
+    X = []
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} HNSWGraph
+    ##
+    ## The HNSW graph structure built from the training data.  This property is
+    ## private and cannot be modified after object creation.
+    ##
+    ## @end deftp
+    HNSWGraph
+  endproperties
