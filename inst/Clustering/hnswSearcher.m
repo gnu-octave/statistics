@@ -55,3 +55,14 @@ classdef hnswSearcher
     ## @end deftp
     HNSWGraph
   endproperties
+
+  properties
+    ## -*- texinfo -*-
+    ## @deftp {Property} Distance
+    ##
+    ## Distance metric used for searches, specified as a character vector (e.g.,
+    ## @qcode{"euclidean"}, @qcode{"minkowski"}). Default is
+    ## @qcode{"euclidean"}. Supported metrics align with those in @code{pdist2}.
+    ##
+    ## @end deftp
+    Distance = 'euclidean'
