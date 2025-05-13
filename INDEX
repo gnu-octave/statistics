@@ -39,6 +39,7 @@ Clustering Classes
  DaviesBouldinEvaluation
  ExhaustiveSearcher
  GapEvaluation
+ hnswSearcher
  KDTreeSearcher
  SilhouetteEvaluation
 CVpartition
