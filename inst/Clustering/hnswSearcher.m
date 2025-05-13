@@ -14,3 +14,23 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
+
+classdef hnswSearcher
+## -*- texinfo -*-
+## @deftp {Class} hnswSearcher
+##
+## Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
+##
+## The @code{hnswSearcher} class implements the HNSW algorithm for efficient
+## nearest neighbor queries.  It stores training data and supports various
+## distance metrics for performing searches.  The HNSW algorithm builds a
+## multilayer graph structure that enables fast approximate nearest neighbor
+## searches by navigating through the graph.  It facilitates a nearest neighbor
+## search using @code{knnsearch} or a radius search using @code{rangesearch}.
+##
+## You can either use the @code{hnswSearcher} class constructor or the
+## @code{createns} function to create an @qcode{hnswSearcher} object.
+##
+## @seealso{createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch,
+## rangesearch, pdist2}
+## @end deftp
