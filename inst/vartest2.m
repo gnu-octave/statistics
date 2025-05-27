@@ -159,7 +159,9 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
                      F ./ finv (alpha / 2, df1, df2));
     endif
   elseif (strcmpi (tail, "right"))
-    pval = 1 - fcdf (F, df1, df2);
+    Ftmp = F;
+    Ftmp(Ftmp < 0) = 0;
+    pval = fcdf (1 ./ Ftmp, df2, df1);
     if (nargout > 2)
       ci = cat (dim, F .* finv (alpha, df2, df1), Inf (size (F)));
     endif
@@ -239,6 +241,26 @@ endfunction
 %! assert (h, 0);
 %! assert (pval, 0.6288022362718455, 1e-13);
 %! assert (ci, [0.4139; 1.7193], 1e-4);
+%! assert (stat.fstat, 0.8384, 1e-4);
+%! assert (stat.df1, 30);
+%! assert (stat.df2, 33);
+%!test
+%! load carsmall
+%! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
+%!                                 "tail", "left");
+%! assert (h, 0);
+%! assert (pval, 0.314401118135922, 1e-13);
+%! assert (ci, [0; 1.5287], 1e-4);
+%! assert (stat.fstat, 0.8384, 1e-4);
+%! assert (stat.df1, 30);
+%! assert (stat.df2, 33);
+%!test
+%! load carsmall
+%! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
+%!                                 "tail", "right");
+%! assert (h, 0);
+%! assert (pval, 0.685598881864077, 1e-13);
+%! assert (ci, [0.4643; Inf], 1e-4);
 %! assert (stat.fstat, 0.8384, 1e-4);
 %! assert (stat.df1, 30);
 %! assert (stat.df2, 33);
