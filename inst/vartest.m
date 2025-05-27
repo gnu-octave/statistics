@@ -164,7 +164,7 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
                      sumsq ./ chi2inv (alpha / 2, df));
     endif
   elseif (strcmpi (tail, "right"))
-    pval = chi2cdf (chisqstat, df);
+    pval = gammainc (chisqstat / 2, df / 2, "upper");
     if (nargout > 2)
       ci = cat (dim, sumsq ./ chi2inv (1 - alpha, df), Inf (size (pval)));
     endif
@@ -212,3 +212,15 @@ endfunction
 %! assert (h, 1);
 %! assert (pval, 0.04335086742174443, 1e-14);
 %! assert (ci, [49.397; 88.039], 1e-3);
+%!test
+%! load carsmall
+%! [h, pval, ci] = vartest (MPG, 7^2, "tail", "left");
+%! assert (h, 0);
+%! assert (pval, 0.978324566289128, 1e-14);
+%! assert (ci, [0; 83.685], 1e-3);
+%!test
+%! load carsmall
+%! [h, pval, ci] = vartest (MPG, 7^2, "tail", "right");
+%! assert (h, 1);
+%! assert (pval, 0.021675433710872, 1e-14);
+%! assert (ci, [51.543; Inf], 1e-3);
