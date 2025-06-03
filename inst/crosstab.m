@@ -1,7 +1,7 @@
 ## Copyright (C) 1995-2017 Kurt Hornik
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2021 Stefano Guidoni
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -43,26 +43,35 @@ function [t, chisq, p, labels] = crosstab (varargin)
     print_usage ();
   endif
 
-  v_length = size (varargin{1}, 1);
-
   ## main - begin
-  v_reshape = [];                    # vector of the dimensions of t
-  X = [];                            # matrix of the indexed input values
-  labels = {};                       # cell array of labels
+  v_length = [];                    # vector of lengths of input vectors
+  v_reshape = [];                   # vector of the dimensions of t
+  X = [];                           # matrix of the indexed input values
+  labels = {};                      # cell array of labels
 
-  for i = 1 : nargin
+  for i = 1:nargin
+    vector = varargin{i};
     ## If char array, convert to numerical vector
-    try
-      [vector, gnames] = grp2idx (varargin{i});
-    catch
-      error ("crosstab: x1, x2 ... xn must be vectors.");
-    end_try_catch
-    if ((! isvector (vector)) || (v_length != length (vector)))
+    if (ischar (vector) || iscellstr (vector))
+      try
+        [vector, gnames] = grp2idx (vector);
+      catch
+        error ("crosstab: x1, x2 ... xn must be vectors.");
+      end_try_catch
+    else
+      if (! isvector (vector))
+        error ("crosstab: x1, x2 ... xn must be vectors.");
+      endif
+      vector = vector(:);
+      gnames = cellstr (num2str (vector));
+    endif
+    v_length(i) = length (vector);
+    if (length (unique (v_length)) != 1)
       error ("crosstab: x1, x2 ... xn must be vectors of the same length.");
     endif
     X = [X, vector];
-    for h = 1 : length (gnames)
-      labels{h, i} = gnames{h, 1};
+    for h = 1:length (gnames)
+      labels{h, i} = gnames{h};
     endfor
     v_reshape(i) = length (unique (vector));
   endfor
@@ -73,16 +82,18 @@ function [t, chisq, p, labels] = crosstab (varargin)
   ## core logic, this employs a recursive function "crosstab_recursive"
   ## given (x1, x2, x3, ... xn) as inputs
   ## t(i,j,k,...) = sum (x1(:) == v1(i) & x2(:) == v2(j) & ...)
-  for i = 1 : length (v)
+  for i = 1:length (v)
     t = [t, (crosstab_recursive (nargin - 1,...
       (X(:, nargin) == v(i) | isnan (v(i)) * isnan (X(:, nargin)))))];
   endfor
 
-  t = reshape(t, v_reshape);         # build the nargin-dimensional matrix
+  t = reshape(t, v_reshape);        # build the nargin-dimensional matrix
 
   ## additional statistics
-  if (length (v_reshape) > 1)
-    [p, chisq] = chi2test (t);
+  if (nargout > 1)
+    if (length (v_reshape) > 1)
+      [p, chisq] = chi2test (t);
+    endif
   endif
   ## main - end
 
@@ -97,17 +108,17 @@ function [t, chisq, p, labels] = crosstab (varargin)
     if (x_idx == 1)
       ## we have reached the last vector,
       ## let the computation begin
-      for j = 1 : length (w)
-        t_partial = [t_partial, ...
-          sum(t_parent & (y == w(j) | isnan (w(j)) * isnan (y)));];
+      for j = 1:length (w)
+        t_last = sum (t_parent & (y == w(j) | isnan (w(j)) * isnan (y)));
+        t_partial = [t_partial, t_last];
       endfor
     else
       ## if there are more vectors,
       ## just add data and pass it through to the next iteration
-      for j = 1 : length (w)
-        t_partial = [t_partial, ...
-          (crosstab_recursive (x_idx - 1, ...
-            (t_parent & (y == w(j) | isnan (w(j)) * isnan (y)))))];
+      for j = 1:length (w)
+        t_next = crosstab_recursive (x_idx - 1, ...
+                 (t_parent & (y == w(j) | isnan (w(j)) * isnan (y))));
+        t_partial = [t_partial, t_next];
       endfor
     endif
   endfunction
@@ -131,4 +142,14 @@ endfunction
 %! [table, chisq, p, labels] = crosstab (cyl4, when, org);
 %! assert (table(2,3,2), 17);
 %! assert (labels{1,3}, "USA");
+%!test
+%! x = [1, 1, 2, 3, 1];
+%! y = [1, 2, 5, 3, 1];
+%! t = crosstab (x, y);
+%! assert (t, [2, 1, 0, 0; 0, 0, 0, 1; 0, 0, 1, 0]);
+%!test
+%! x = [1, 1, 2, 3, 1];
+%! y = [1, 2, 3, 5, 1];
+%! t = crosstab (x, y);
+%! assert (t, [2, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1]);
 
