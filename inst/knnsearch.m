@@ -263,8 +263,9 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       dist = zeros (rows (Y), K);
       idx = zeros (rows (Y), K);
       for i = 1:rows (Y)
-        [temp_idx, temp_D] = __search_kdtree__ ( ...
-                             kdtree, Y(i,:), K, X, Distance, DistParameter, false);
+        [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, X, ...
+																								Distance, DistParameter, ...
+																								false);
         if (SI)
           [sorted_D, sort_idx] = sort (temp_D);
           idx(i,:) = temp_idx(sort_idx);
@@ -279,11 +280,13 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       dist = cell (rows (Y), 1);
       idx = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        [temp_idx, temp_D] = __search_kdtree__ ( ...
-                             kdtree, Y(i,:), K, X, Distance, DistParameter, false);
+        [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, ...
+																								X, Distance, DistParameter, ...
+																								false);
         r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
-        [idx{i}, dist{i}] = __search_kdtree__ ( ...
-                            kdtree, Y(i,:), Inf, X, Distance, DistParameter, true, r);
+        [idx{i}, dist{i}] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
+																							 Distance, DistParameter, ...
+																							 true, r);
         if (SI)
           [sorted_D, sort_idx] = sort (dist{i});
           dist{i} = sorted_D;
@@ -345,7 +348,8 @@ function node = __build_kdtree__ (indices, depth, X, bucket_size)
 endfunction
 
 ## Search KD-tree
-function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, distparam, is_range, r)
+function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
+																									 distparam, is_range, r)
   if (nargin < 8)
     r = Inf;
   endif
