@@ -66,3 +66,43 @@ classdef hnswSearcher
     ##
     ## @end deftp
     Distance = 'euclidean'
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} DistParameter
+    ##
+    ## Parameter for the distance metric, with type and value depending on
+    ## @qcode{Distance}:
+    ##
+    ## @itemize
+    ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
+    ## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors
+    ## matching the number of columns in @qcode{X} (default is standard
+    ## deviation of @qcode{X}).
+    ## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix
+    ## matching the dimensions of @qcode{X} (default is @code{cov (@var{X})}).
+    ## @item Empty for other metrics.
+    ## @end itemize
+    ##
+    ## @end deftp
+    DistParameter = []
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} MaxConnections
+    ##
+    ## Maximum number of connections per node per layer in the HNSW graph,
+    ## specified as a positive integer. Default is 16.
+    ##
+    ## @end deftp
+    MaxConnections = 16
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} ConstructionEF
+    ##
+    ## Size of the dynamic candidate list during graph construction, specified
+    ## as a positive integer. Default is 100.
+    ##
+    ## @end deftp
+    ConstructionEF = 100
+  endproperties
+
+endclassdef
