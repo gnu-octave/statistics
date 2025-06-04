@@ -220,8 +220,8 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   ## Check NSMethod and set kdtree as default if the conditions match
   if (isempty (NSMethod))
     ## Set default method 'kdtree' if conditions are satisfied;
-    if (! issparse (X) && (columns (X) <= 10) && ...
-       (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock") ...
+    if (! issparse (X) && (columns (X) <= 10) &&
+       (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
      || strcmpi (Distance, "minkowski") || strcmpi (Distance, "chebychev")))
       NSMethod = "kdtree";
     else
@@ -229,8 +229,8 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
     endif
   else
     ## Check if kdtree can be used
-    if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean") ...
-     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski") ...
+    if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
+     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))
       error (strcat (["rangesearch: 'kdtree' cannot be used with"], ...
                      [" the given distance metric."]));
@@ -304,7 +304,7 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
     r = Inf;
   endif
   if (strcmpi (dist, "minkowski"))
-    if (! (isscalar (distparam) && isnumeric (distparam) ...
+    if (! (isscalar (distparam) && isnumeric (distparam)
                                 && distparam > 0 && isfinite (distparam)))
       error (strcat("rangesearch.__search_kdtree__:", ...
                     " distparam must be a positive finite", ...
