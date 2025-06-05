@@ -1,5 +1,6 @@
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -232,17 +233,18 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 
   ## Check NSMethod and set kdtree as default if the conditions match
   if (isempty (NSMethod))
-    ## Set default method 'kdtree' if conditions are satistfied;
-    if (! issparse (X) && (columns (X) <= 10) && ...
+    ## Set default method 'kdtree' if conditions are satisfied;
+    if (! issparse (X) && (columns (X) <= 10) &&
        (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
-     || strcmpi (Distance, "minkowski") || strcmpi (Distance, "chebychev")))
+     || strcmpi (Distance, "manhattan") || strcmpi (Distance, "minkowski")
+     || strcmpi (Distance, "chebychev")))
       NSMethod = "kdtree";
     else
       NSMethod = "exhaustive";
     endif
   else
     ## Check if kdtree can be used
-    if (strcmpi (NSMethod,"kdtree") && ! ( strcmpi (Distance, "euclidean")
+    if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))
       error (strcat (["knnsearch: 'kdtree' cannot be used with"], ...
@@ -253,41 +255,43 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   ## Check for NSMethod
   if (strcmpi (NSMethod, "kdtree"))
     ## Build kdtree and search the query point
-    ret = buildkdtree (X, BS);
+    kdtree = __build_kdtree__ (1:size(X,1), 0, X, BS);
 
     ## Check for ties and sortindices
     if (! InclTies)
       ## Only return k neighbors
-      ## No need for returning cell
-      dist = [];
-      idx  = [];
+      dist = zeros (rows (Y), K);
+      idx = zeros (rows (Y), K);
       for i = 1:rows (Y)
-        NN = findkdtree (ret, Y(i, :), K, Distance, DistParameter);
-        D = pdist2 (X(NN,:), Y(i,:), Distance, DistParameter);
-        sorted_D = sortrows ([NN, D], [2, 1]);
-        dist = [dist; sorted_D(1:K, 2)'];
-        idx  = [idx;  sorted_D(1:K, 1)'];
+        [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, X, ...
+																								Distance, DistParameter, ...
+																								false);
+        if (SI)
+          [sorted_D, sort_idx] = sort (temp_D);
+          idx(i,:) = temp_idx(sort_idx);
+          dist(i,:) = sorted_D;
+        else
+          idx(i,:) = temp_idx;
+          dist(i,:) = temp_D;
+        endif
       endfor
-      if (SI)
-        ## Rows are already sorted by distance
-        dist = (dist);
-        idx  = (idx);
-      else
-        dist = (dist);
-        idx  = (idx);
-      endif
     else
       ## Return all neighbors as cell
       dist = cell (rows (Y), 1);
-      idx  = cell (rows (Y), 1);
+      idx = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        NN = findkdtree (ret, Y(i, :), K, Distance, DistParameter);
-        D = pdist2 (X(NN,:), Y(i,:), Distance, DistParameter);
-        sorted_D = sortrows ([NN, D], [2, 1]);
-        kth_dist = sorted_D (K, 2);
-        tied_idx = (sorted_D (:, 2) <= kth_dist);
-        dist {i} = sorted_D (tied_idx, 2)';
-        idx  {i} = sorted_D (tied_idx, 1)';
+        [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, ...
+																								X, Distance, DistParameter, ...
+																								false);
+        r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
+        [idx{i}, dist{i}] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
+																							 Distance, DistParameter, ...
+																							 true, r);
+        if (SI)
+          [sorted_D, sort_idx] = sort (dist{i});
+          dist{i} = sorted_D;
+          idx{i} = idx{i}(sort_idx);
+        endif
       endfor
     endif
   else
@@ -300,14 +304,14 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     else            # always sort indices in this case
       if (InclTies)
         dist = cell (rows (Y), 1);
-        idx  = cell (rows (Y), 1);
+        idx = cell (rows (Y), 1);
         for i = 1:rows (Y)
           D = pdist2 (X, Y(i,:), Distance, DistParameter);
           [dt, id] = sort (D);
           kth_dist = dt (K);
           tied_idx = (dt <= kth_dist);
           dist {i} = dt(tied_idx, :)';
-          idx  {i} = id(tied_idx, :)';
+          idx {i} = id(tied_idx, :)';
         endfor
       else
         ## No ties included
@@ -315,7 +319,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         D = reshape (D', size (Y, 1), size (X, 1));
         [dist, idx] = sort (D, 2);
         dist = dist(:,1:K);
-        idx  = idx(:,1:K);
+        idx = idx(:,1:K);
       endif
     endif
   endif
@@ -323,112 +327,101 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 endfunction
 
 ## buildkdtree
-function ret = buildkdtree_recur (X, r, d, BS)
-  count = length (r);
-  dimen = size (X, 2);
-  if (count == 1)
-    ret = struct ("point", r(1), "dimen", d);
+function node = __build_kdtree__ (indices, depth, X, bucket_size)
+  if (length (indices) <= bucket_size)
+    node = struct ('indices', indices);
   else
-    mid = ceil (count / 2);
-    ret = struct ("point", r(mid), "dimen", d);
-    d = mod (d, dimen) + 1;
-    ## Build left sub tree
-    if (mid > 1)
-      left = r(1:mid-1);
-      left_points = X(left,d);
-      [val, left_idx] = sort (left_points);
-      leftr = left(left_idx);
-      ret.left = buildkdtree_recur (X, leftr, d);
-    endif
-    ## Build right sub tree
-    if (count > mid)
-      right = r(mid+1:count);
-      right_points = X(right,d);
-      [val, right_idx] = sort (right_points);
-      rightr = right(right_idx);
-      ret.right = buildkdtree_recur (X, rightr, d);
-    endif
+    k = size (X, 2);
+    axis = mod (depth, k) + 1;
+    values = X(indices, axis);
+    [sorted_values, sort_idx] = sort (values);
+    sorted_indices = indices(sort_idx);
+    median_idx = floor ((length (indices) + 1) / 2);
+    split_value = sorted_values(median_idx);
+    left_indices = indices(values <= split_value);
+    right_indices = indices(values > split_value);
+    left_node = __build_kdtree__ (left_indices, depth + 1, X, bucket_size);
+    right_node = __build_kdtree__ (right_indices, depth + 1, X, bucket_size);
+    node = struct ('axis', axis, 'split_value', split_value, ...
+                   'left', left_node, 'right', right_node);
   endif
 endfunction
 
-## wrapper function for buildkdtree_recur
-function ret = buildkdtree (X, BS)
-  [val, r] = sort (X(:,1));
-  ret = struct ("data", X, "root", buildkdtree_recur (X, r, 1, BS));
-endfunction
-
-function farthest = kdtree_cand_farthest (X, p, cand, dist, distparam)
-  D = pdist2 (X, p, dist, distparam);
-  [val, index] = max (D'(cand));
-  farthest = cand (index);
-endfunction
-
-## function to insert into NN list
-function inserted = kdtree_cand_insert (X, p, cand, k, point, dist, distparam)
-  if (length (cand) < k)
-    inserted = [cand; point];
+## Search KD-tree
+function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
+																									 distparam, is_range, r)
+  if (nargin < 8)
+    r = Inf;
+  endif
+  if (strcmpi (dist, "minkowski"))
+    if (! (isscalar (distparam) && isnumeric (distparam) ...
+                                && distparam > 0 && isfinite (distparam)))
+      error (strcat("knnsearch.__search_kdtree__:", ...
+                    " distparam must be a positive finite", ...
+                    " scalar for minkowski."));
+    endif
   else
-    farthest = kdtree_cand_farthest (X, p, cand, dist, distparam);
-    if (pdist2 (cand(find(cand == farthest),:), point, dist, distparam))
-      inserted = [cand; point];
+    if (! isempty (distparam))
+      error (strcat("knnsearch.__search_kdtree__:", ...
+                    " distparam must be empty for non-minkowski metrics."));
+    endif
+  endif
+  indices = zeros(1, 0);
+  distances = zeros(1, 0);
+  search (node, 0);
+
+  function search (node, depth)
+    if (isempty (node))
+      return;
+    endif
+
+    if (isfield (node, 'indices'))
+      leaf_indices = node.indices;
+      if (strcmpi (dist, "minkowski"))
+        dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
+      else
+        dists = pdist2 (X(leaf_indices,:), query, dist);
+      endif
+      if (is_range)
+        mask = dists <= r;
+        indices = horzcat (indices, leaf_indices(mask));
+        distances = horzcat (distances, dists(mask)');
+      else
+        indices = horzcat (indices, leaf_indices);
+        distances = horzcat (distances, dists');
+        if (length (distances) > k)
+          [distances, sort_idx] = sort (distances);
+          indices = indices(sort_idx);
+          distances = distances(1:k);
+          indices = indices(1:k);
+        endif
+      endif
     else
-      farthest = kdtree_cand_farthest (X, p, cand, dist, distparam);
-      cand (find (cand == farthest)) = point;
-      inserted = cand;
-    endif
-  endif
-endfunction
+      axis = node.axis;
+      split_value = node.split_value;
+      if (query(axis) <= split_value)
+        nearer = node.left;
+        further = node.right;
+      else
+        nearer = node.right;
+        further = node.left;
+      endif
 
-## function to search in a kd tree
-function nn = findkdtree_recur (X, node, p, nn, ...
-                                        k, dist, distparam)
-  point = node.point;
-  d = node.dimen;
-  if (X(point,d) > p(d))
-    ## Search in left sub tree
-    if (isfield (node, "left"))
-      nn = findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
-    endif
-    ## Add current point if neccessary
-    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
-    if (length(nn) < k || pdist2 (X(point,:), p, dist, distparam)
-        <= pdist2 (X(farthest,:), p, dist, distparam))
-      nn = kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
-    endif
-    ## Search in right sub tree if neccessary
-    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
-    radius = pdist2 (X(farthest,:), p, dist, distparam);
-    if (isfield (node, "right") &&
-        (length(nn) < k || p(d) + radius > X(point,d)))
-      nn = findkdtree_recur (X, node.right, p, nn, ...
-                                     k, dist, distparam);
-    endif
-  else
-    ## Search in right sub tree
-    if (isfield (node, "right"))
-      nn = findkdtree_recur (X, node.right, p, nn, k, dist, distparam);
-    endif
-    ## Add current point if neccessary
-    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
-    if (length (nn) < k || pdist2 (X(point,:), p, dist, distparam)
-        <= pdist2 (X(farthest,:), p, dist, distparam))
-      nn = kdtree_cand_insert (X, p, nn, k, point, dist, distparam);
-    endif
-    ## Search in left sub tree if neccessary
-    farthest = kdtree_cand_farthest (X, p, nn, dist, distparam);
-    radius = pdist2 (X(farthest,:), p, dist, distparam);
-    if (isfield (node, "left") &&
-        (length (nn) < k || p(d) - radius <= X(point,d)))
-      nn = findkdtree_recur (X, node.left, p, nn, k, dist, distparam);
-    endif
-  endif
-endfunction
+      search (nearer, depth + 1);
 
-## wrapper function for findkdtree_recur
-function nn = findkdtree (tree, p, k, dist, distparam)
-    X = tree.data;
-    root = tree.root;
-    nn = findkdtree_recur (X, root, p, [], k, dist, distparam);
+      plane_dist = abs (query(axis) - split_value);
+      if (is_range)
+        max_dist = r;
+        if (plane_dist <= max_dist)
+          search (further, depth + 1);
+        endif
+      else
+        if (length (distances) < k || plane_dist < distances(end))
+          search (further, depth + 1);
+        endif
+      endif
+    endif
+  endfunction
 endfunction
 
 %!demo
@@ -457,7 +450,7 @@ endfunction
 %! line (point(1), point(2), "marker", "X", "color", "k", ...
 %!       "linewidth", 2, "displayname", "query point")
 %! line (X(id,1), X(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-%!       "linestyle", "none", "markersize", 10, "displayname", "eulcidean")
+%!       "linestyle", "none", "markersize", 10, "displayname", "euclidean")
 %! line (X(idm,1), X(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
 %!       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
 %! line (X(idc,1), X(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
@@ -587,7 +580,7 @@ endfunction
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true)
 %! assert (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000],1e-4);
+%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
@@ -595,7 +588,7 @@ endfunction
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true)
 %! assert (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000],1e-4);
+%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
@@ -603,7 +596,7 @@ endfunction
 %! assert (iscell (idx), false);
 %! assert (iscell (D), false)
 %! assert (idx, [4, 2, 3, 6, 1]);
-%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000],1e-4);
+%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
@@ -611,38 +604,38 @@ endfunction
 %! assert (iscell (idx), false);
 %! assert (iscell (D), false)
 %! assert (idx, [4, 2, 3, 6, 1]);
-%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000],1e-4);
+%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = min(meas);
 %! [idx, D] = knnsearch (a, b, "K", 5, "NSMethod", "kdtree");
 %! assert (idx, [42, 9, 14, 39, 13]);
-%! assert (D, [0.5099, 0.9950, 1.0050, 1.0536, 1.1874],1e-4);
+%! assert (D, [0.5099, 0.9950, 1.0050, 1.0536, 1.1874], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = mean(meas);
 %! [idx, D] = knnsearch (a, b, "K", 5, "NSMethod", "kdtree");
 %! assert (idx, [65, 83, 89, 72, 100]);
-%! assert (D, [0.3451, 0.3869, 0.4354, 0.4481, 0.4625],1e-4);
+%! assert (D, [0.3451, 0.3869, 0.4354, 0.4481, 0.4625], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = max(meas);
 %! [idx, D] = knnsearch (a, b, "K", 5, "NSMethod", "kdtree");
 %! assert (idx, [118, 132, 110, 106, 136]);
-%! assert (D, [0.7280, 0.9274, 1.3304, 1.5166, 1.6371],1e-4);
+%! assert (D, [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
 %!
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = max(meas);
 %! [idx, D] = knnsearch (a, b, "K", 5, "includeties", true);
-%! assert ( iscell (idx), true);
-%! assert ( iscell (D), true);
+%! assert (iscell (idx), true);
+%! assert (iscell (D), true);
 %! assert (cell2mat (idx), [118, 132, 110, 106, 136]);
-%! assert (cell2mat (D), [0.7280, 0.9274, 1.3304, 1.5166, 1.6371],1e-4);
+%! assert (cell2mat (D), [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
 
 ## Test input validation
 %!error<knnsearch: too few input arguments.> knnsearch (1)
@@ -655,7 +648,7 @@ endfunction
 %!error<knnsearch: invalid value of K.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), "K", 0)
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
-%! knnsearch (ones (4, 5), ones (1, 5), "P",-2)
+%! knnsearch (ones (4, 5), ones (1, 5), "P", -2)
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), "scale", ones(4,5), "distance", "euclidean")
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
