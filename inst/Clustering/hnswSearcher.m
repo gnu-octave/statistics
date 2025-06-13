@@ -94,3 +94,22 @@ classdef hnswSearcher
     ##
     ## @end deftp
     M = 16
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} efConstruction
+    ##
+    ## Size of the dynamic candidate list during graph construction. Higher
+    ## values improve accuracy at the cost of construction time. Default is 100.
+    ##
+    ## @end deftp
+    efConstruction = 100
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} efSearch
+    ##
+    ## Size of the dynamic candidate list during search. Higher values improve
+    ## accuracy at the cost of search time. Default is 50.
+    ##
+    ## @end deftp
+    efSearch = 50
+  endproperties
