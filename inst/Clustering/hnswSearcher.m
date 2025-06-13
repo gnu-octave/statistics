@@ -461,3 +461,216 @@ classdef hnswSearcher
                                                   obj.DistParameter, M, ...
                                                   efConstruction);
     endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K})
+    ## @deftypefnx {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})
+    ##
+    ## Find the @math{K} nearest neighbors in the training data to query points.
+    ##
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K})}
+    ## returns the indices @var{idx} and distances @var{D} of the @math{K}
+    ## nearest neighbors in @var{obj.X} to each point in @var{Y}, using the
+    ## distance metric specified in @var{obj.Distance}.
+    ##
+    ## @itemize
+    ## @item @var{obj} is an @qcode{hnswSearcher} object.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
+    ## @item @var{K} is a positive integer specifying the number of nearest
+    ## neighbors to find.
+    ## @end itemize
+    ##
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})}
+    ## allows additional options via name-value pairs:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"IncludeTies"} @tab @tab Logical flag indicating whether to
+    ## include all neighbors tied with the @math{K}th smallest distance. Default
+    ## is @qcode{false}. If @qcode{true}, @var{idx} and @var{D} are cell arrays.
+    ##
+    ## @item @qcode{"SortIndices"} @tab @tab Logical flag indicating whether to
+    ## sort the indices by distance. Default is @qcode{true}.
+    ## @end multitable
+    ##
+    ## @var{idx} contains the indices of the nearest neighbors in @var{obj.X}.
+    ## @var{D} contains the corresponding distances.
+    ##
+    ## @seealso{hnswSearcher, rangesearch, pdist2}
+    ## @end deftypefn
+    function [idx, D] = knnsearch (obj, Y, K, varargin)
+      if (nargin < 3)
+        error ("hnswSearcher.knnsearch: too few input arguments.");
+      endif
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("hnswSearcher.knnsearch:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
+        error ("hnswSearcher.knnsearch: Y must be a finite numeric matrix.");
+      endif
+
+      if (size (obj.X, 2) != size (Y, 2))
+        error (strcat ("hnswSearcher.knnsearch:", ...
+                       " number of columns in X and Y must match."));
+      endif
+
+      if (! (isscalar (K) && isnumeric (K) && K >= 1
+                                           && K == fix (K)
+                                           && isfinite (K)))
+        error ("hnswSearcher.knnsearch: K must be a positive integer.");
+      endif
+
+      ## Parse options
+      IncludeTies = false;
+      SortIndices = true;
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
+          case "includeties"
+            IncludeTies = varargin{2};
+            if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
+              error (strcat ("hnswSearcher.knnsearch:", ...
+                             " IncludeTies must be a logical scalar."));
+            endif
+          case "sortindices"
+            SortIndices = varargin{2};
+            if (! (islogical (SortIndices) && isscalar (SortIndices)))
+              error (strcat ("hnswSearcher.knnsearch:", ...
+                             " SortIndices must be a logical scalar."));
+            endif
+          otherwise
+            error (strcat ("hnswSearcher.knnsearch: invalid", ...
+                           " parameter name: '%s'."), varargin{1});
+        endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      idx = cell (rows (Y), 1);
+      D = cell (rows (Y), 1);
+      for i = 1:rows (Y)
+        [temp_idx, temp_D] = hnswSearcher.__search_hnsw__ (obj.HNSWGraph, ...
+                                                           Y(i,:), K, ...
+                                                           obj.X, ...
+                                                           obj.Distance, ...
+                                                           obj.DistParameter, ...
+                                                           obj.efSearch, ...
+                                                           IncludeTies);
+        if (SortIndices)
+          [sorted_D, sort_idx] = sort (temp_D);
+          idx{i} = temp_idx(sort_idx);
+          D{i} = sorted_D;
+        else
+          idx{i} = temp_idx;
+          D{i} = temp_D;
+        endif
+      endfor
+
+      if (! IncludeTies)
+        idx_mat = zeros (rows (Y), K);
+        D_mat = zeros (rows (Y), K);
+        for i = 1:rows (Y)
+          idx_mat(i,:) = idx{i}(1:min(K, length(idx{i})));
+          D_mat(i,:) = D{i}(1:min(K, length(D{i})));
+        endfor
+        idx = idx_mat;
+        D = D_mat;
+      endif
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {hnswSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r})
+    ## @deftypefnx {hnswSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})
+    ##
+    ## Find all neighbors within a specified radius of query points.
+    ##
+    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r})}
+    ## returns the indices @var{idx} and distances @var{D} of all points in
+    ## @var{obj.X} within radius @var{r} of each point in @var{Y}, using the
+    ## distance metric specified in @var{obj.Distance}.
+    ##
+    ## @itemize
+    ## @item @var{obj} is an @qcode{hnswSearcher} object.
+    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @math{P} must match the number of columns in @var{obj.X}.
+    ## @item @var{r} is a nonnegative scalar specifying the search radius.
+    ## @end itemize
+    ##
+    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})}
+    ## allows additional options via name-value pairs:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"SortIndices"} @tab @tab Logical flag indicating whether to
+    ## sort the indices by distance. Default is @qcode{true}.
+    ## @end multitable
+    ##
+    ## @var{idx} and @var{D} are cell arrays where each cell contains the
+    ## indices and distances for one query point in @var{Y}.
+    ##
+    ## @seealso{hnswSearcher, knnsearch, pdist2}
+    ## @end deftypefn
+    function [idx, D] = rangesearch (obj, Y, r, varargin)
+      if (nargin < 3)
+        error ("hnswSearcher.rangesearch: too few input arguments.");
+      endif
+
+      if (mod (numel (varargin), 2) != 0)
+        error (strcat ("hnswSearcher.rangesearch:", ...
+                       " Name-Value arguments must be in pairs."));
+      endif
+
+      if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
+        error (strcat ("hnswSearcher.rangesearch:", ...
+                       " Y must be a finite numeric matrix."));
+      endif
+
+      if (size (obj.X, 2) != size (Y, 2))
+        error (strcat ("hnswSearcher.rangesearch:", ...
+                       " number of columns in X and Y must match."));
+      endif
+
+      if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
+        error (strcat ("hnswSearcher.rangesearch:", ...
+                       " R must be a nonnegative finite scalar."));
+      endif
+
+      ## Parse options
+      SortIndices = true;
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
+          case "sortindices"
+            SortIndices = varargin{2};
+            if (! (islogical (SortIndices) && isscalar (SortIndices)))
+              error (strcat ("hnswSearcher.rangesearch:", ...
+                             " SortIndices must be a logical scalar."));
+            endif
+          otherwise
+            error (strcat ("hnswSearcher.rangesearch:", ...
+                           " invalid parameter name: '%s'."), varargin{1});
+        endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      idx = cell (rows (Y), 1);
+      D = cell (rows (Y), 1);
+      for i = 1:rows (Y)
+        [idx{i}, D{i}] = hnswSearcher.__search_hnsw_range__ (obj.HNSWGraph, ...
+                                                             Y(i,:), r, ...
+                                                             obj.X, ...
+                                                             obj.Distance, ...
+                                                             obj.DistParameter, ...
+                                                             obj.efSearch);
+        if (SortIndices)
+          [sorted_D, sort_idx] = sort (D{i});
+          D{i} = sorted_D;
+          idx{i} = idx{i}(sort_idx);
+        endif
+      endfor
+    endfunction
+
+  endmethods
