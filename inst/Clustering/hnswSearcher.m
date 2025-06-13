@@ -674,3 +674,191 @@ classdef hnswSearcher
     endfunction
 
   endmethods
+
+  methods (Static, Access = private)
+
+    ## Build HNSW graph
+    function graph = __build_hnsw__ (X, dist, distparam, M, efConstruction)
+      n = size (X, 1);
+      max_layers = floor (log2 (n)) + 1;
+      graph.layers = cell (max_layers, 1);
+      graph.entry_point = 1;
+      mL = 1 / log (M);
+
+      ## Initialize graph with empty adjacency lists
+      for l = 1:max_layers
+        graph.layers{l} = cell (n, 1);
+      endfor
+
+      ## Add points to graph
+      for i = 1:n
+        layer = min (max_layers - 1, floor (-log (rand ()) * mL));
+        for l = 0:layer
+          if (i == 1)
+            graph.layers{l+1}{i} = [];
+            continue;
+          endif
+          ## Find nearest neighbors in current layer
+          [neighbors, dists] = hnswSearcher.__search_hnsw_layer__ (graph, ...
+                                                                   X(i,:), ...
+                                                                   M, X, ...
+                                                                   dist, ...
+                                                                   distparam, ...
+                                                                   efConstruction, ...
+                                                                   l);
+          graph.layers{l+1}{i} = neighbors;
+          ## Update neighbors' connections
+          for j = neighbors
+            if (length (graph.layers{l+1}{j}) < M)
+              graph.layers{l+1}{j} = [graph.layers{l+1}{j}, i];
+            else
+              ## Select M closest neighbors
+              all_neighbors = [graph.layers{l+1}{j}, i];
+              dists_j = pdist2 (X(all_neighbors,:), X(j,:), dist, distparam);
+              [~, sort_idx] = sort (dists_j);
+              graph.layers{l+1}{j} = all_neighbors(sort_idx(1:M));
+            endif
+          endfor
+          if (l == layer && i > 1)
+            graph.entry_point = i;
+          endif
+        endfor
+      endfor
+    endfunction
+
+    ## Search HNSW graph for k nearest neighbors
+    function [indices, distances] = __search_hnsw__ (graph, query, k, X, ...
+                                                     dist, distparam, ...
+                                                     efSearch, include_ties)
+      max_layers = length (graph.layers);
+      current_point = graph.entry_point;
+      candidates = current_point;
+      distances = pdist2 (X(current_point,:), query, dist, distparam);
+
+      ## Navigate to the lowest layer
+      for l = max_layers:-1:2
+        [new_candidates, new_dists] = hnswSearcher.__search_hnsw_layer__ (graph, ...
+                                                                          query, ...
+                                                                          1, X, ...
+                                                                          dist, ...
+                                                                          distparam, ...
+                                                                          efSearch, ...
+                                                                          l-1);
+        candidates = new_candidates;
+        distances = new_dists;
+        current_point = candidates(1);
+      endfor
+
+      ## Search in the base layer
+      [indices, distances] = hnswSearcher.__search_hnsw_layer__ (graph, ...
+                                                                 query, k, X,...
+                                                                  dist, ...
+                                                                 distparam, ...
+                                                                 efSearch, 0);
+
+      if (include_ties)
+        r = distances(end) + 1e-10;
+        [indices, distances] = hnswSearcher.__search_hnsw_layer__ ( ...
+                               graph, query, Inf, X, dist, distparam, ...
+                               efSearch, 0, r);
+      endif
+    endfunction
+
+    ## Search HNSW graph for points within radius r
+    function [indices, distances] = __search_hnsw_range__ (graph, query, r, ...
+                                                           X, dist, ...
+                                                           distparam, efSearch)
+      max_layers = length (graph.layers);
+      current_point = graph.entry_point;
+      candidates = current_point;
+      distances = pdist2 (X(current_point,:), query, dist, distparam);
+
+      ## Navigate to the lowest layer
+      for l = max_layers:-1:2
+        [new_candidates, new_dists] = hnswSearcher.__search_hnsw_layer__ (graph, ...
+                                                                          query, ...
+                                                                          1, X, ...
+                                                                          dist, ...
+                                                                          distparam, ...
+                                                                          efSearch, ...
+                                                                          l-1);
+        candidates = new_candidates;
+        distances = new_dists;
+        current_point = candidates(1);
+      endfor
+
+      ## Search in the base layer with radius
+      [indices, distances] = hnswSearcher.__search_hnsw_layer__ (graph, ...
+                                                                 query, ...
+                                                                 Inf, X, ...
+                                                                 dist, ...
+                                                                 distparam, ...
+                                                                 efSearch, ...
+                                                                 0, r);
+    endfunction
+
+    ## Search a single HNSW layer
+    function [indices, distances] = __search_hnsw_layer__ (graph, query, k, ...
+                                                           X, dist, ...
+                                                           distparam, ...
+                                                           efSearch, layer, r)
+      if (nargin < 9)
+        r = Inf;
+      endif
+      visited = false (size (X, 1), 1);
+      candidates = [graph.entry_point];
+      dists = pdist2 (X(graph.entry_point,:), query, dist, distparam);
+      visited(graph.entry_point) = true;
+      best_candidates = candidates;
+      best_dists = dists;
+
+      while (! isempty (candidates))
+        [~, idx] = min (dists);
+        closest = candidates(idx);
+        candidates(idx) = [];
+        dists(idx) = [];
+
+        if (length (best_dists) > 0 && best_dists(end) < dists)
+          break;
+        endif
+
+        neighbors = graph.layers{layer+1}{closest};
+        for n = neighbors
+          if (! visited(n))
+            visited(n) = true;
+            d = pdist2 (X(n,:), query, dist, distparam);
+            if (d <= r)
+              candidates = [candidates, n];
+              dists = [dists, d];
+              best_candidates = [best_candidates, n];
+              best_dists = [best_dists, d];
+              if (length (best_dists) > efSearch && k != Inf)
+                [best_dists, sort_idx] = sort (best_dists);
+                best_candidates = best_candidates(sort_idx);
+                best_dists = best_dists(1:efSearch);
+                best_candidates = best_candidates(1:efSearch);
+              endif
+            endif
+          endif
+        endfor
+      endwhile
+
+      if (k == Inf)
+        indices = best_candidates(best_dists <= r);
+        distances = best_dists(best_dists <= r);
+      else
+        if (length (best_dists) > k)
+          [best_dists, sort_idx] = sort (best_dists);
+          best_candidates = best_candidates(sort_idx);
+          indices = best_candidates(1:k);
+          distances = best_dists(1:k);
+        else
+          indices = best_candidates;
+          distances = best_dists;
+        endif
+      endif
+    endfunction
+
+  endmethods
+
+endclassdef
