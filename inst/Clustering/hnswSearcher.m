@@ -862,3 +862,345 @@ classdef hnswSearcher
   endmethods
 
 endclassdef
+
+%!demo
+%! ## Create an hnswSearcher with Euclidean distance
+%! X = [1, 2; 3, 4; 5, 6];
+%! obj = hnswSearcher (X);
+%! ## Find the nearest neighbor to [2, 3]
+%! Y = [2, 3];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! disp ("Nearest neighbor index:");
+%! disp (idx);
+%! disp ("Distance:");
+%! disp (D);
+%! ## Find all points within radius 2
+%! [idx, D] = rangesearch (obj, Y, 2);
+%! disp ("Indices within radius:");
+%! disp (idx);
+%! disp ("Distances:");
+%! disp (D);
+
+%!demo
+%! ## Create an hnswSearcher with Minkowski distance (P=3)
+%! X = [0, 0; 1, 0; 2, 0];
+%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! ## Find the nearest neighbor to [1, 0]
+%! Y = [1, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! disp ("Nearest neighbor index:");
+%! disp (idx);
+%! disp ("Distance:");
+%! disp (D);
+
+%!demo
+%! rng(42);
+%! disp('Demonstrating hnswSearcher');
+%!
+%! n = 100;
+%! mu1 = [0.3, 0.3];
+%! mu2 = [0.7, 0.7];
+%! sigma = 0.1;
+%! X1 = mu1 + sigma * randn (n / 2, 2);
+%! X2 = mu2 + sigma * randn (n / 2, 2);
+%! X = [X1; X2];
+%!
+%! obj = hnswSearcher(X, 'M', 10, 'efConstruction', 50, 'efSearch', 20);
+%!
+%! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
+%!
+%! K = 5;
+%! [idx, D] = knnsearch (obj, Y, K);
+%!
+%! disp ('For the first query point:');
+%! disp (['Query point: ', num2str(Y(1,:))]);
+%! disp ('Indices of nearest neighbors:');
+%! disp (idx(1,:));
+%! disp ('Distances:');
+%! disp (D(1,:));
+%!
+%! figure;
+%! scatter (X(:,1), X(:,2), 36, 'b', 'filled'); # Training points
+%! hold on;
+%! scatter (Y(:,1), Y(:,2), 36, 'r', 'filled'); # Query points
+%! for i = 1:size (Y, 1)
+%!     query = Y(i,:);
+%!     neighbors = X(idx(i,:), :);
+%!     for j = 1:K
+%!         plot ([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
+%!     endfor
+%! endfor
+%! hold off;
+%! title ('K Nearest Neighbors with hnswSearcher');
+%! xlabel ('X1');
+%! ylabel ('X2');
+%!
+%! r = 0.15;
+%! [idx, D] = rangesearch (obj, Y, r);
+%!
+%! disp ('For the first query point in rangesearch:');
+%! disp (['Query point: ', num2str(Y(1,:))]);
+%! disp ('Indices of points within radius:');
+%! disp (idx{1});
+%! disp ('Distances:');
+%! disp (D{1});
+%!
+%! figure;
+%! scatter (X(:,1), X(:,2), 36, 'b', 'filled');
+%! hold on;
+%! scatter (Y(:,1), Y(:,2), 36, 'r', 'filled');
+%! theta = linspace (0, 2 * pi, 100);
+%! for i = 1:size (Y, 1)
+%!     center = Y(i,:);
+%!     x_circle = center(1) + r * cos (theta);
+%!     y_circle = center(2) + r * sin (theta);
+%!     plot (x_circle, y_circle, 'g-');
+%!     ## Highlight points within radius
+%!     if (! isempty (idx{i}))
+%!       in_radius = X(idx{i}, :);
+%!       scatter (in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
+%!     endif
+%! endfor
+%! hold off;
+%! title ('Points within Radius with hnswSearcher');
+%! xlabel ('X1');
+%! ylabel ('X2');
+
+## Test Cases
+
+%!test
+%! ## Basic constructor with default Euclidean
+%! X = [1, 2; 3, 4; 5, 6];
+%! obj = hnswSearcher (X);
+%! assert (obj.X, X);
+%! assert (obj.Distance, "euclidean");
+%! assert (isempty (obj.DistParameter));
+%! assert (obj.M, 16);
+%! assert (obj.efConstruction, 100);
+%! assert (obj.efSearch, 50);
+
+%!test
+%! ## Minkowski distance with custom P
+%! X = [0, 0; 1, 1; 2, 2];
+%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! assert (obj.Distance, "minkowski");
+%! assert (obj.DistParameter, 3);
+
+%!test
+%! ## Seuclidean distance with custom Scale
+%! X = [1, 2; 3, 4; 5, 6];
+%! S = [1, 2];
+%! obj = hnswSearcher (X, "Distance", "seuclidean", "Scale", S);
+%! assert (obj.Distance, "seuclidean");
+%! assert (obj.DistParameter, S);
+
+%!test
+%! ## Mahalanobis distance with custom Cov
+%! X = [1, 2; 3, 4; 5, 6];
+%! C = [1, 0; 0, 1];
+%! obj = hnswSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! assert (obj.Distance, "mahalanobis");
+%! assert (obj.DistParameter, C);
+
+%!test
+%! ## knnsearch with Euclidean distance
+%! X = [1, 2; 3, 4; 5, 6];
+%! obj = hnswSearcher (X);
+%! Y = [2, 3];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [2]));
+%! assert (abs (D - sqrt(2)) < 1e-2);
+
+%!test
+%! ## knnsearch with Cityblock distance
+%! X = [0, 0; 1, 1; 2, 2];
+%! obj = hnswSearcher (X, "Distance", "cityblock");
+%! Y = [1, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [1, 2]));
+%! assert (abs (D - 1) < 1e-2);
+
+%!test
+%! ## knnsearch with Chebychev distance
+%! X = [1, 1; 2, 3; 4, 2];
+%! obj = hnswSearcher (X, "Distance", "chebychev");
+%! Y = [2, 2];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [1, 2]));
+%! assert (abs (D - 1) < 1e-2);
+
+%!test
+%! ## knnsearch with Minkowski P=3
+%! X = [0, 0; 1, 0; 2, 0];
+%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! Y = [1, 0];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [2]));
+%! assert (abs (D - 0) < 1e-2);
+
+%!test
+%! ## knnsearch with IncludeTies
+%! X = [0, 0; 1, 0; 0, 1];
+%! obj = hnswSearcher (X);
+%! Y = [0.5, 0];
+%! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
+%! assert (iscell (idx));
+%! assert (all (ismember (idx{1}, [1, 2])));
+%! assert (all (abs (D{1} - 0.5) < 1e-2));
+
+%!test
+%! ## rangesearch with Euclidean
+%! X = [1, 1; 2, 2; 3, 3];
+%! obj = hnswSearcher (X);
+%! Y = [0, 0];
+%! [idx, D] = rangesearch (obj, Y, 2);
+%! assert (all (ismember (idx{1}, [1])));
+%! assert (all (abs (D{1} - sqrt(2)) < 1e-2));
+
+%!test
+%! ## rangesearch with Cityblock
+%! X = [0, 0; 1, 1; 2, 2];
+%! obj = hnswSearcher (X, "Distance", "cityblock");
+%! Y = [0, 0];
+%! [idx, D] = rangesearch (obj, Y, 1);
+%! assert (all (ismember (idx{1}, [1])));
+%! assert (all (abs (D{1} - 0) < 1e-2));
+
+%!test
+%! ## rangesearch with Chebychev
+%! X = [1, 1; 2, 3; 4, 2];
+%! obj = hnswSearcher (X, "Distance", "chebychev");
+%! Y = [2, 2];
+%! [idx, D] = rangesearch (obj, Y, 1);
+%! assert (all (ismember (idx{1}, [1, 2])));
+%! assert (all (abs (D{1} - 1) < 1e-2));
+
+%!test
+%! ## rangesearch with Minkowski P=3
+%! X = [0, 0; 1, 0; 2, 0];
+%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! Y = [1, 0];
+%! [idx, D] = rangesearch (obj, Y, 1);
+%! assert (all (ismember (idx{1}, [1, 2, 3])));
+%! assert (all (abs (D{1} - [0, 1, 1]) < 1e-2));
+
+%!test
+%! ## Diverse dataset with Euclidean
+%! X = [0, 10; 5, 5; 10, 0];
+%! obj = hnswSearcher (X);
+%! Y = [5, 5];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [2]));
+%! assert (abs (D - 0) < 1e-2);
+
+%!test
+%! ## High-dimensional data with Cityblock
+%! X = [1, 2, 3; 4, 5, 6; 7, 8, 9];
+%! obj = hnswSearcher (X, "Distance", "cityblock");
+%! Y = [4, 5, 6];
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (ismember (idx, [2]));
+%! assert (abs (D - 0) < 1e-2);
+
+## Test Input Validation
+
+%!error<hnswSearcher: too few input arguments.> ...
+%! hnswSearcher ()
+%!error<hnswSearcher: Name-Value arguments must be in pairs.> ...
+%! hnswSearcher (ones(3,2), "Distance")
+%!error<hnswSearcher: X must be a finite numeric matrix.> ...
+%! hnswSearcher ("abc")
+%!error<hnswSearcher: X must be a finite numeric matrix.> ...
+%! hnswSearcher ([1; Inf; 3])
+%!error<hnswSearcher: invalid parameter name: 'foo'.> ...
+%! hnswSearcher (ones(3,2), "foo", "bar")
+%!error<hnswSearcher: unsupported distance metric 'invalid'.> ...
+%! hnswSearcher (ones(3,2), "Distance", "invalid")
+%!error<hnswSearcher: Distance must be a string.> ...
+%! hnswSearcher (ones(3,2), "Distance", 1)
+%!error<hnswSearcher: P must be a positive finite scalar.> ...
+%! hnswSearcher (ones(3,2), "Distance", "minkowski", "P", -1)
+%!error<hnswSearcher: Scale must be a nonnegative vector matching X columns.> ...
+%! hnswSearcher (ones(3,2), "Distance", "seuclidean", "Scale", [-1, 1])
+%!error<hnswSearcher: Cov must be a square matrix matching X columns.> ...
+%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
+%!error<hnswSearcher: Cov must be positive definite.> ...
+%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
+%!error<hnswSearcher: M must be a positive integer.> ...
+%! hnswSearcher (ones(3,2), "M", 0)
+%!error<hnswSearcher: efConstruction must be a positive integer.> ...
+%! hnswSearcher (ones(3,2), "efConstruction", -1)
+%!error<hnswSearcher: efSearch must be a positive integer.> ...
+%! hnswSearcher (ones(3,2), "efSearch", 1.5)
+
+%!error<hnswSearcher.knnsearch: too few input arguments.> ...
+%! knnsearch (hnswSearcher (ones(3,2)))
+%!error<hnswSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies")
+%!error<hnswSearcher.knnsearch: Y must be a finite numeric matrix.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), "abc", 1)
+%!error<hnswSearcher.knnsearch: number of columns in X and Y must match.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,3), 1)
+%!error<hnswSearcher.knnsearch: K must be a positive integer.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 0)
+%!error<hnswSearcher.knnsearch: invalid parameter name: 'foo'.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
+%!error<hnswSearcher.knnsearch: IncludeTies must be a logical scalar.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies", 1)
+%!error<hnswSearcher.knnsearch: SortIndices must be a logical scalar.> ...
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
+
+%!error<hnswSearcher.rangesearch: too few input arguments.> ...
+%! rangesearch (hnswSearcher (ones(3,2)))
+%!error<hnswSearcher.rangesearch: Name-Value arguments must be in pairs.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "SortIndices")
+%!error<hnswSearcher.rangesearch: Y must be a finite numeric matrix.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), "abc", 1)
+%!error<hnswSearcher.rangesearch: number of columns in X and Y must match.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), ones(3,3), 1)
+%!error<hnswSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), ones(3,2), -1)
+%!error<hnswSearcher.rangesearch: invalid parameter name: 'foo'.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
+%!error<hnswSearcher.rangesearch: SortIndices must be a logical scalar.> ...
+%! rangesearch (hnswSearcher (ones(3,2)), ones(3,2), 1, "SortIndices", 1)
+
+%!error<hnswSearcher.subsref: \(\) indexing not supported.> ...
+%! obj = hnswSearcher (ones(3,2)); obj(1)
+%!error<hnswSearcher.subsref: {} indexing not supported.> ...
+%! obj = hnswSearcher (ones(3,2)); obj{1}
+%!error<hnswSearcher.subsref: unrecognized property: 'invalid'.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.invalid
+
+%!error<hnswSearcher.subsasgn: \(\) indexing not supported.> ...
+%! obj = hnswSearcher (ones(3,2)); obj(1) = 1
+%!error<hnswSearcher.subsasgn: {} indexing not supported.> ...
+%! obj = hnswSearcher (ones(3,2)); obj{1} = 1
+%!error<hnswSearcher.subsasgn: chained subscripts not allowed.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.X.Y = 1
+%!error<hnswSearcher.subsasgn: X is read-only and cannot be modified.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.X = 1
+%!error<hnswSearcher.subsasgn: HNSWGraph is read-only and cannot be modified.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.HNSWGraph = 1
+%!error<hnswSearcher.subsasgn: unsupported distance metric 'invalid'.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.Distance = "invalid"
+%!error<hnswSearcher.subsasgn: Distance must be a string.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.Distance = 1
+%!error<hnswSearcher.subsasgn: DistParameter must be a positive finite scalar for minkowski.> ...
+%! obj = hnswSearcher (ones(3,2), "Distance", "minkowski"); obj.DistParameter = -1
+%!error<hnswSearcher.subsasgn: DistParameter must be a nonnegative vector matching X columns.> ...
+%! obj = hnswSearcher (ones(3,2), "Distance", "seuclidean"); obj.DistParameter = [-1, 1]
+%!error<pdist2: covariance matrix for mahalanobis distance must be symmetric and positive definite.> ...
+%! obj = hnswSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = ones(3,3)
+%!error<pdist2: covariance matrix for mahalanobis distance must be symmetric and positive definite.> ...
+%! obj = hnswSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = -eye(2)
+%!error<hnswSearcher.subsasgn: DistParameter must be empty for this distance metric.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.DistParameter = 1
+%!error<hnswSearcher.subsasgn: M must be a positive integer.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.M = 0
+%!error<hnswSearcher.subsasgn: efConstruction must be a positive integer.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.efConstruction = -1
+%!error<hnswSearcher.subsasgn: efSearch must be a positive integer.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.efSearch = 1.5
+%!error<hnswSearcher.subsasgn: unrecognized property: 'invalid'.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.invalid = 1
