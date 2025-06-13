@@ -87,22 +87,10 @@ classdef hnswSearcher
     DistParameter = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} MaxConnections
+    ## @deftp {Property} M
     ##
-    ## Maximum number of connections per node per layer in the HNSW graph,
-    ## specified as a positive integer. Default is 16.
-    ##
-    ## @end deftp
-    MaxConnections = 16
-
-    ## -*- texinfo -*-
-    ## @deftp {Property} ConstructionEF
-    ##
-    ## Size of the dynamic candidate list during graph construction, specified
-    ## as a positive integer. Default is 100.
+    ## Maximum number of neighbors per node in the HNSW graph. Affects graph
+    ## connectivity and search accuracy. Default is 16.
     ##
     ## @end deftp
-    ConstructionEF = 100
-  endproperties
-
-endclassdef
+    M = 16
