@@ -282,3 +282,182 @@ classdef hnswSearcher
     endfunction
 
   endmethods
+
+  methods
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {hnswSearcher} {@var{obj} =} hnswSearcher (@var{X})
+    ## @deftypefnx {hnswSearcher} {@var{obj} =} hnswSearcher (@var{X}, @var{name}, @var{value})
+    ##
+    ## Create an @qcode{hnswSearcher} object for approximate nearest neighbor
+    ## searches.
+    ##
+    ## @code{@var{obj} = hnswSearcher (@var{X})} constructs an
+    ## @qcode{hnswSearcher} object with training data @var{X} using the
+    ## default @qcode{"euclidean"} distance metric. @var{X} must be an
+    ## @math{NxP} numeric matrix, where rows represent observations and columns
+    ## represent features.
+    ##
+    ## @code{@var{obj} = hnswSearcher (@var{X}, @var{name}, @var{value})}
+    ## allows customization through name-value pairs:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
+    ## character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}).
+    ## Default is @qcode{"euclidean"}. See @code{pdist2} for supported metrics.
+    ##
+    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive
+    ## scalar. Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
+    ## Default is 2.
+    ##
+    ## @item @qcode{"Scale"} @tab @tab Nonnegative vector of scaling factors
+    ## matching the number of columns in @var{X}. Valid only when
+    ## @qcode{"Distance"} is @qcode{"seuclidean"}. Default is @code{std (X)}.
+    ##
+    ## @item @qcode{"Cov"} @tab @tab Positive definite covariance matrix
+    ## matching the number of columns in @var{X}. Valid only when
+    ## @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is @code{cov (X)}.
+    ##
+    ## @item @qcode{"M"} @tab @tab Maximum number of neighbors per node in the
+    ## HNSW graph, a positive integer. Default is 16.
+    ##
+    ## @item @qcode{"efConstruction"} @tab @tab Size of the dynamic candidate
+    ## list during graph construction, a positive integer. Default is 100.
+    ##
+    ## @item @qcode{"efSearch"} @tab @tab Size of the dynamic candidate list
+    ## during search, a positive integer. Default is 50.
+    ## @end multitable
+    ##
+    ## @seealso{hnswSearcher, knnsearch, rangesearch, createns, pdist2}
+    ## @end deftypefn
+    function obj = hnswSearcher (X, varargin)
+      if (nargin < 1)
+        error ("hnswSearcher: too few input arguments.");
+      endif
+
+      if (mod (numel (varargin), 2) != 0)
+        error ("hnswSearcher: Name-Value arguments must be in pairs.");
+      endif
+
+      if (! (isnumeric (X) && ismatrix (X) && all (isfinite (X)(:))))
+        error ("hnswSearcher: X must be a finite numeric matrix.");
+      endif
+
+      obj.X = X;
+
+      ## Default values
+      Distance = "euclidean";
+      P = [];
+      S = [];
+      C = [];
+      M = 16;
+      efConstruction = 100;
+      efSearch = 50;
+
+      ## Parse optional parameters
+      while (numel (varargin) > 0)
+        switch (lower (varargin{1}))
+          case "distance"
+            Distance = varargin{2};
+          case "p"
+            P = varargin{2};
+          case "scale"
+            S = varargin{2};
+          case "cov"
+            C = varargin{2};
+          case "m"
+            M = varargin{2};
+          case "efconstruction"
+            efConstruction = varargin{2};
+          case "efsearch"
+            efSearch = varargin{2};
+          otherwise
+            error (strcat ("hnswSearcher: invalid parameter", ...
+                           " name: '%s'."), varargin{1});
+        endswitch
+        varargin (1:2) = [];
+      endwhile
+
+      ## Validate Distance
+      valid_metrics = {'euclidean', 'minkowski', 'seuclidean', ...
+                       'mahalanobis', 'cityblock', 'manhattan', ...
+                       'chebychev', 'cosine', 'correlation', ...
+                       'spearman', 'hamming', 'jaccard'};
+      if (ischar (Distance))
+        if (! any (strcmpi (valid_metrics, Distance)))
+          error ("hnswSearcher: unsupported distance metric '%s'.", Distance);
+        endif
+        obj.Distance = Distance;
+      else
+        error ("hnswSearcher: Distance must be a string.");
+      endif
+
+      ## Set DistParameter
+      if (strcmpi (obj.Distance, "minkowski"))
+        if (isempty (P))
+          obj.DistParameter = 2;
+        else
+          if (! (isscalar (P) && isnumeric (P) && P > 0 && isfinite (P)))
+            error ("hnswSearcher: P must be a positive finite scalar.");
+          endif
+          obj.DistParameter = P;
+        endif
+      elseif (strcmpi (obj.Distance, "seuclidean"))
+        if (isempty (S))
+          obj.DistParameter = std (X, [], 1);
+        else
+          if (! (isvector (S) && isnumeric (S) && all (S >= 0)
+                                               && all (isfinite (S))
+                                               && length (S) == columns (X)))
+            error (strcat ("hnswSearcher: Scale must be a", ...
+                           " nonnegative vector matching X columns."));
+          endif
+          obj.DistParameter = S;
+        endif
+      elseif (strcmpi (obj.Distance, "mahalanobis"))
+        if (isempty (C))
+          obj.DistParameter = cov (X);
+        else
+          if (! (ismatrix (C) && isnumeric (C) && all (isfinite (C)(:))
+                                               && rows (C) == columns (C)
+                                               && rows (C) == columns (X)))
+            error (strcat ("hnswSearcher: Cov must be a square", ...
+                           " matrix matching X columns."));
+          endif
+          [~, p] = chol (C);
+          if (p != 0)
+            error ("hnswSearcher: Cov must be positive definite.");
+          endif
+          obj.DistParameter = C;
+        endif
+      else
+        obj.DistParameter = [];
+      endif
+
+      ## Validate and set HNSW parameters
+      if (! (isscalar (M) && isnumeric (M) && M > 0 && M == fix (M)))
+        error ("hnswSearcher: M must be a positive integer.");
+      endif
+      obj.M = M;
+
+      if (! (isscalar (efConstruction) && isnumeric (efConstruction)
+             && efConstruction > 0
+             && (efConstruction == fix (efConstruction))))
+        error ("hnswSearcher: efConstruction must be a positive integer.");
+      endif
+      obj.efConstruction = efConstruction;
+
+      if (! (isscalar (efSearch) && isnumeric (efSearch)
+                                 && efSearch > 0
+                                 && efSearch == fix (efSearch)))
+        error ("hnswSearcher: efSearch must be a positive integer.");
+      endif
+      obj.efSearch = efSearch;
+
+      ## Build HNSW graph
+      obj.HNSWGraph = hnswSearcher.__build_hnsw__ (X, obj.Distance, ...
+                                                  obj.DistParameter, M, ...
+                                                  efConstruction);
+    endfunction
