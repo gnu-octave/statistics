@@ -442,9 +442,10 @@ classdef hnswSearcher
       endif
       obj.M = M;
 
-      if (! (isscalar (efConstruction) && isnumeric (efConstruction)
-             && efConstruction > 0
-             && (efConstruction == fix (efConstruction))))
+      if (! (isscalar (efConstruction) &&
+            isnumeric (efConstruction) &&
+            efConstruction > 0 && 
+            efConstruction == fix (efConstruction)))
         error ("hnswSearcher: efConstruction must be a positive integer.");
       endif
       obj.efConstruction = efConstruction;
