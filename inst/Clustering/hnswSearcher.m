@@ -819,7 +819,8 @@ classdef hnswSearcher
         candidates(idx) = [];
         dists(idx) = [];
 
-        if (length (best_dists) > 0 && best_dists(end) < dists)
+        if (length (best_dists) > 0 && !isempty(dists)
+                                    && best_dists(end) < min(dists))
           break;
         endif
 
