@@ -61,8 +61,9 @@ classdef hnswSearcher
     ## @deftp {Property} Distance
     ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
-    ## @qcode{"euclidean"}, @qcode{"minkowski"}). Default is
-    ## @qcode{"euclidean"}. Supported metrics align with those in @code{pdist2}.
+    ## @qcode{"euclidean"}, @qcode{"minkowski"}, @qcode{"cityblock"}). Default
+    ## is @qcode{"euclidean"}. Supported metrics align with those in
+    ## @code{pdist2}.
     ##
     ## @end deftp
     Distance = 'euclidean'
@@ -180,9 +181,6 @@ classdef hnswSearcher
 
     ## Class specific subscripted assignment
     function this = subsasgn (this, s, val)
-      if (numel (s) > 1)
-        error ("hnswSearcher.subsasgn: chained subscripts not allowed.");
-      endif
       switch s.type
         case '()'
           error ("hnswSearcher.subsasgn: () indexing not supported.");
@@ -238,6 +236,11 @@ classdef hnswSearcher
                   error (strcat ("hnswSearcher.subsasgn:", ...
                                  " DistParameter must be a square", ...
                                  " matrix matching X columns."));
+                endif
+                if (! issymmetric (val))
+                  error (strcat ("hnswSearcher.subsasgn:", ...
+                                 " DistParameter must be symmetric", ...
+                                 " for mahalanobis."));
                 endif
                 [~, p] = chol (val);
                 if (p != 0)
@@ -305,8 +308,9 @@ classdef hnswSearcher
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
-    ## character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"}).
-    ## Default is @qcode{"euclidean"}. See @code{pdist2} for supported metrics.
+    ## character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"},
+    ## @qcode{"cityblock"}). Default is @qcode{"euclidean"}. See @code{pdist2}
+    ## for supported metrics.
     ##
     ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive
     ## scalar. Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
@@ -426,9 +430,14 @@ classdef hnswSearcher
             error (strcat ("hnswSearcher: Cov must be a square", ...
                            " matrix matching X columns."));
           endif
+          if (! issymmetric (C))
+            error (strcat ("hnswSearcher: Cov must be symmetric", ...
+                           " for mahalanobis."));
+          endif
           [~, p] = chol (C);
           if (p != 0)
-            error ("hnswSearcher: Cov must be positive definite.");
+            error (strcat ("hnswSearcher: Cov must be positive", ...
+                           " definite for mahalanobis."));
           endif
           obj.DistParameter = C;
         endif
@@ -526,6 +535,17 @@ classdef hnswSearcher
         error ("hnswSearcher.knnsearch: K must be a positive integer.");
       endif
 
+      ## Validate DistParameter for the distance metric
+      if (! strcmpi (obj.Distance, "minkowski") &&
+          ! strcmpi (obj.Distance, "seuclidean") &&
+          ! strcmpi (obj.Distance, "mahalanobis"))
+        if (! isempty (obj.DistParameter))
+          error (strcat ("hnswSearcher.knnsearch: DistParameter", ...
+                         " must be empty for distance metric '%s'."), ...
+                         obj.Distance);
+        endif
+      endif
+
       ## Parse options
       IncludeTies = false;
       SortIndices = true;
@@ -571,11 +591,12 @@ classdef hnswSearcher
       endfor
 
       if (! IncludeTies)
-        idx_mat = zeros (rows (Y), K);
-        D_mat = zeros (rows (Y), K);
+        idx_mat = NaN (rows (Y), K);
+        D_mat = NaN (rows (Y), K);
         for i = 1:rows (Y)
-          idx_mat(i,:) = idx{i}(1:min(K, length(idx{i})));
-          D_mat(i,:) = D{i}(1:min(K, length(D{i})));
+          len = min (K, length (idx{i}));
+          idx_mat(i, 1:len) = idx{i}(1:len);
+          D_mat(i, 1:len) = D{i}(1:len);
         endfor
         idx = idx_mat;
         D = D_mat;
@@ -640,6 +661,17 @@ classdef hnswSearcher
                        " R must be a nonnegative finite scalar."));
       endif
 
+      ## Validate DistParameter for the distance metric
+      if (! strcmpi (obj.Distance, "minkowski") && 
+          ! strcmpi (obj.Distance, "seuclidean") &&
+          ! strcmpi (obj.Distance, "mahalanobis"))
+        if (! isempty (obj.DistParameter))
+          error (strcat ("hnswSearcher.rangesearch: DistParameter", ...
+                         " must be empty for distance metric '%s'."), ...
+                         obj.Distance);
+        endif
+      endif
+
       ## Parse options
       SortIndices = true;
       while (numel (varargin) > 0)
@@ -681,7 +713,10 @@ classdef hnswSearcher
     ## Build HNSW graph
     function graph = __build_hnsw__ (X, dist, distparam, M, efConstruction)
       n = size (X, 1);
-      max_layers = floor (log2 (n)) + 1;
+      if (n < 1)
+        error ("hnswSearcher.__build_hnsw__: X must have at least one point.");
+      endif
+      max_layers = floor (log2 (max (n, 2))) + 1;
       graph.layers = cell (max_layers, 1);
       graph.entry_point = 1;
       mL = 1 / log (M);
@@ -690,6 +725,12 @@ classdef hnswSearcher
       for l = 1:max_layers
         graph.layers{l} = cell (n, 1);
       endfor
+
+      ## Handle single-point case
+      if (n == 1)
+        graph.layers{1}{1} = [];
+        return;
+      endif
 
       ## Add points to graph
       for i = 1:n
@@ -813,14 +854,14 @@ classdef hnswSearcher
       best_candidates = candidates;
       best_dists = dists;
 
-      while (! isempty (candidates))
+      while (! isempty (candidates) && ! isempty (dists))
         [~, idx] = min (dists);
         closest = candidates(idx);
         candidates(idx) = [];
         dists(idx) = [];
 
-        if (length (best_dists) > 0 && !isempty(dists)
-                                    && best_dists(end) < min(dists))
+        if (length (best_dists) > 0 && ! isempty (dists)
+                                    && best_dists(end) < min (dists))
           break;
         endif
 
@@ -1127,6 +1168,8 @@ endclassdef
 %!error<hnswSearcher: Cov must be a square matrix matching X columns.> ...
 %! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
 %!error<hnswSearcher: Cov must be positive definite.> ...
+%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", [1, 2; 3, 4])
+%!error<hnswSearcher: Cov must be positive definite.> ...
 %! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
 %!error<hnswSearcher: M must be a positive integer.> ...
 %! hnswSearcher (ones(3,2), "M", 0)
@@ -1178,8 +1221,6 @@ endclassdef
 %! obj = hnswSearcher (ones(3,2)); obj(1) = 1
 %!error<hnswSearcher.subsasgn: {} indexing not supported.> ...
 %! obj = hnswSearcher (ones(3,2)); obj{1} = 1
-%!error<hnswSearcher.subsasgn: chained subscripts not allowed.> ...
-%! obj = hnswSearcher (ones(3,2)); obj.X.Y = 1
 %!error<hnswSearcher.subsasgn: X is read-only and cannot be modified.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.X = 1
 %!error<hnswSearcher.subsasgn: HNSWGraph is read-only and cannot be modified.> ...
