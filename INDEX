@@ -5,6 +5,7 @@ Clustering
  cmdscale
  confusionmat
  cophenet
+ createns
  crossval
  editDistance
  evalclusters
