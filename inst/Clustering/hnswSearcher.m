@@ -1125,7 +1125,7 @@ endclassdef
 %! Y = [1, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
 %! assert (all (ismember (idx{1}, [1, 2, 3])));
-%! assert (all (abs (D{1} - [0, 1, 1]) < 1e-2));
+%! assert (D, {[0, 1, 1]})
 
 %!test
 %! ## Diverse dataset with Euclidean
