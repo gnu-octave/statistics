@@ -328,8 +328,7 @@ classdef KDTreeSearcher
       obj.BucketSize = BucketSize;
 
       ## Build KDTree
-      obj.KDTree = KDTreeSearcher.__build_kdtree__ (1:size(X,1), 0, X, ...
-																									  BucketSize);
+      obj.KDTree = build_kdtree (1:size(X,1), 0, X, BucketSize);
     endfunction
 
     ## -*- texinfo -*-
@@ -422,13 +421,13 @@ classdef KDTreeSearcher
         idx = cell (rows (Y), 1);
         D = cell (rows (Y), 1);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__ ( ...
-                               obj.KDTree, Y(i,:), K, obj.X, obj.Distance, ...
-                               obj.DistParameter, false);
+          [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
+                                              obj.Distance, obj.DistParameter, ...
+                                              false);
           r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
-          [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__ ( ...
-                           obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
-                           obj.DistParameter, true, r);
+          [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
+                                          obj.Distance, obj.DistParameter, ...
+                                          true, r);
           if (SortIndices)
             [sorted_D, sort_idx] = sort (D{i});
             D{i} = sorted_D;
@@ -439,9 +438,9 @@ classdef KDTreeSearcher
         idx = zeros (rows (Y), K);
         D = zeros (rows (Y), K);
         for i = 1:rows (Y)
-          [temp_idx, temp_D] = KDTreeSearcher.__search_kdtree__ ( ...
-                               obj.KDTree, Y(i,:), K, obj.X, obj.Distance, ...
-                               obj.DistParameter, false);
+          [temp_idx, temp_D] = search_kdtree (obj.KDTree, Y(i,:), K, obj.X, ...
+                                              obj.Distance, obj.DistParameter, ...
+                                              false);
           if (SortIndices)
             [sorted_D, sort_idx] = sort (temp_D);
             idx(i,:) = temp_idx(sort_idx);
@@ -532,9 +531,9 @@ classdef KDTreeSearcher
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        [idx{i}, D{i}] = KDTreeSearcher.__search_kdtree__ ( ...
-						             obj.KDTree, Y(i,:), Inf, obj.X, obj.Distance, ...
-                         obj.DistParameter, true, r);
+        [idx{i}, D{i}] = search_kdtree (obj.KDTree, Y(i,:), Inf, obj.X, ...
+                                        obj.Distance, obj.DistParameter, ...
+                                        true, r);
         if (SortIndices)
           [sorted_D, sort_idx] = sort (D{i});
           D{i} = sorted_D;
@@ -545,111 +544,106 @@ classdef KDTreeSearcher
 
   endmethods
 
-  methods (Static, Access = private)
-
-    function node = __build_kdtree__ (indices, depth, X, bucket_size)
-      if (length (indices) <= bucket_size)
-        node = struct ('indices', indices);
-      else
-        k = size (X, 2);
-        axis = mod (depth, k) + 1;
-        values = X(indices, axis);
-        [sorted_values, sort_idx] = sort (values);
-        sorted_indices = indices(sort_idx);
-        median_idx = floor ((length (indices) + 1) / 2);
-        split_value = sorted_values(median_idx);
-        left_indices = indices(values <= split_value);
-        right_indices = indices(values > split_value);
-        left_node = KDTreeSearcher.__build_kdtree__ (left_indices, ...
-																										 depth + 1, X, bucket_size);
-        right_node = KDTreeSearcher.__build_kdtree__ (right_indices, ...
-																										  depth + 1, ...
-																										  X, bucket_size);
-        node = struct ('axis', axis, 'split_value', split_value, ...
-											 'left', left_node, 'right', right_node);
-      endif
-    endfunction
-
-    function [indices, distances] = __search_kdtree__ (node, query, k, X, ...
-																											 dist, distparam, ...
-																											 is_range, r)
-      if (nargin < 8)
-        r = Inf;
-      endif
-      if (strcmpi (dist, "minkowski"))
-        if (! (isscalar (distparam) && isnumeric (distparam) ...
-                                    && distparam > 0 && isfinite (distparam)))
-          error (strcat("KDTreeSearcher.__search_kdtree__:", ...
-                        " distparam must be a positive finite", ...
-                        " scalar for minkowski."));
-        endif
-      else
-        if (! isempty (distparam))
-          error (strcat("KDTreeSearcher.__search_kdtree__:", ...
-                        " distparam must be empty for non-minkowski metrics."));
-        endif
-      endif
-      indices = zeros(1, 0);
-      distances = zeros(1, 0);
-      search (node, 0);
-
-      function search (node, depth)
-        if (isempty (node))
-          return;
-        endif
-
-        if (isfield (node, 'indices'))
-          leaf_indices = node.indices;
-          if (strcmpi (dist, "minkowski"))
-            dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
-          else
-            dists = pdist2 (X(leaf_indices,:), query, dist);
-          endif
-          if (is_range)
-            mask = dists <= r;
-            indices = horzcat (indices, leaf_indices(mask));
-            distances = horzcat (distances, dists(mask)');
-          else
-            indices = horzcat (indices, leaf_indices);
-            distances = horzcat (distances, dists');
-            if (length (distances) > k)
-              [distances, sort_idx] = sort (distances);
-              indices = indices(sort_idx);
-              distances = distances(1:k);
-              indices = indices(1:k);
-            endif
-          endif
-        else
-          axis = node.axis;
-          split_value = node.split_value;
-          if (query(axis) <= split_value)
-            nearer = node.left;
-            further = node.right;
-          else
-            nearer = node.right;
-            further = node.left;
-          endif
-
-          search (nearer, depth + 1);
-
-          plane_dist = abs (query(axis) - split_value);
-          if (is_range)
-            max_dist = r;
-            if (plane_dist <= max_dist)
-              search (further, depth + 1);
-            endif
-          else
-            if (length (distances) < k || plane_dist < distances(end))
-              search (further, depth + 1);
-            endif
-          endif
-        endif
-      endfunction
-    endfunction
-
-  endmethods
-
 endclassdef
+
+## Private functions:
+
+## Function to Build KD-tree
+function node = build_kdtree (indices, depth, X, bucket_size)
+  if (length (indices) <= bucket_size)
+    node = struct ('indices', indices);
+  else
+    k = size (X, 2);
+    axis = mod (depth, k) + 1;
+    values = X(indices, axis);
+    [sorted_values, sort_idx] = sort (values);
+    sorted_indices = indices(sort_idx);
+    median_idx = floor ((length (indices) + 1) / 2);
+    split_value = sorted_values(median_idx);
+    left_indices = indices(values <= split_value);
+    right_indices = indices(values > split_value);
+    left_node = build_kdtree (left_indices, depth + 1, X, bucket_size);
+    right_node = build_kdtree (right_indices, depth + 1, X, bucket_size);
+    node = struct ('axis', axis, 'split_value', split_value, ...
+                   'left', left_node, 'right', right_node);
+  endif
+endfunction
+
+## Function Search KD-tree
+function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
+                                               distparam, is_range, r)
+  if (nargin < 8)
+    r = Inf;
+  endif
+  if (strcmpi (dist, "minkowski"))
+    if (! (isscalar (distparam) && isnumeric (distparam) ...
+                                && distparam > 0 && isfinite (distparam)))
+      error (strcat("search_kdtree: distparam must be a positive finite", ...
+                    " scalar for minkowski."));
+    endif
+  else
+    if (! isempty (distparam))
+      error (strcat("search_kdtree: distparam must be empty for", ...
+                    " non-minkowski metrics."));
+    endif
+  endif
+  indices = zeros(1, 0);
+  distances = zeros(1, 0);
+  search (node, 0);
+
+  function search (node, depth)
+    if (isempty (node))
+      return;
+    endif
+
+    if (isfield (node, 'indices'))
+      leaf_indices = node.indices;
+      if (strcmpi (dist, "minkowski"))
+        dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
+      else
+        dists = pdist2 (X(leaf_indices,:), query, dist);
+      endif
+      if (is_range)
+        mask = dists <= r;
+        indices = horzcat (indices, leaf_indices(mask));
+        distances = horzcat (distances, dists(mask)');
+      else
+        indices = horzcat (indices, leaf_indices);
+        distances = horzcat (distances, dists');
+        if (length (distances) > k)
+          [distances, sort_idx] = sort (distances);
+          indices = indices(sort_idx);
+          distances = distances(1:k);
+          indices = indices(1:k);
+        endif
+      endif
+    else
+      axis = node.axis;
+      split_value = node.split_value;
+      if (query(axis) <= split_value)
+        nearer = node.left;
+        further = node.right;
+      else
+        nearer = node.right;
+        further = node.left;
+      endif
+
+      search (nearer, depth + 1);
+
+      plane_dist = abs (query(axis) - split_value);
+      if (is_range)
+        max_dist = r;
+        if (plane_dist <= max_dist)
+          search (further, depth + 1);
+        endif
+      else
+        if (length (distances) < k || plane_dist < distances(end))
+          search (further, depth + 1);
+        endif
+      endif
+    endif
+  endfunction
+endfunction
 
 ## Demo Examples
 
