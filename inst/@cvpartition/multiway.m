@@ -169,9 +169,41 @@ function new_nodes = combine_partitions (node1, node2, start_id)
 endfunction
 
 function bound = calculate_lower_bound (nodes, num_parts)
-  all_sums = cellfun (@(x) x.sums, nodes, 'UniformOutput', false);
+  all_sums = cellfun (@(x) x.sums, nodes, "UniformOutput", false);
   all_sums = [all_sums{:}];
   total = sum (all_sums);
   max_val = max (all_sums);
   bound = max_val - (total - max_val) / (num_parts - 1);
 endfunction
+
+%!test
+tic;
+numbers = [4, 5, 6, 7, 8];
+num_parts = 2;
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+assert (isequal (sort (cellfun (@sum, partition)), sort ([15, 15])))
+toc
+
+%! test
+tic;
+numbers = [1, 2, 3, 4, 5, 6];
+num_parts = 3;
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+assert (isequal (sort (cellfun (@sum, partition)), sort ([7, 7, 7])))
+toc
+
+%! test
+tic;
+numbers = [24, 21, 18, 17, 12, 11, 8, 2];
+num_parts = 3;
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+assert (isequal (sort (cellfun (@sum, partition)), sort ([38, 38, 37])))
+toc
+
+%! test
+tic;
+numbers = [127, 125, 122, 105, 87, 75, 68, 64, 30, 22];
+num_parts = 4;
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+assert (isequal (sort (cellfun (@sum, partition)), sort ([211, 202, 209, 203])))
+toc
