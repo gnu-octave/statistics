@@ -308,18 +308,18 @@ endfunction
 %!error<multiway: NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
 %!error<multiway: NUMBERS must be numeric and cannot contain NaN values.> ...
 %! multiway ([1, 2, NaN], 2)
-%!error<NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
-%!error<NUM_PARTS must be a real numeric value.> multiway ([1,2,3], "2")
-%!error<NUM_PARTS must be a positive integer.> multiway ([1,2,3], 0)
-%!error<NUM_PARTS must be a positive integer.> multiway ([1,2,3], 1.5)
-%!error<NUM_PARTS must be a positive integer.> multiway ([1,2,3], -1)
-%!error<NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
+%!error<multiway: NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
+%!error<multiway: NUM_PARTS must be a real numeric value.> multiway ([1,2,3], "2")
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], 0)
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], 1.5)
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], -1)
+%!error<multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
 %! multiway ([1,2], 3)
-%!error <optional arguments must come in name-value pairs.> ...
+%!error <multiway: optional arguments must come in name-value pairs.> ...
 %! multiway ([1,2,3], 2, "method")
-%!error<parameter names must be strings.> multiway ([1,2,3], 2, 1, "completeKK")
-%!error<METHOD value must be a string.> multiway ([1,2,3], 2, "method", 1)
-%!error<unknown parameter 'algorithm'.> ...
+%!error<multiway: parameter names must be strings.> multiway ([1,2,3], 2, 1, "completeKK")
+%!error<multiway: METHOD value must be a string.> multiway ([1,2,3], 2, "method", 1)
+%!error<multiway: unknown parameter 'algorithm'.> ...
 %! multiway ([1,2,3], 2, "algorithm", "completeKK")
-%!error <unsupported method 'greedy'.> ...
+%!error <multiway: unsupported method 'greedy'.> ...
 %! multiway ([1,2,3], 2, "method", "greedy")
