@@ -1,9 +1,35 @@
-function partitions = complete_karmarkar_karp (numbers, num_parts, return_indices)
+function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts, varargin)
   if nargin < 2
     num_parts = 2;
   endif
-  if nargin < 3
-    return_indices = false;
+
+  method = "completeKK";
+  if nargin > 2
+    if mod (length (varargin), 2) ~= 0
+      error (strcat ("Invalid number of arguments. Additional arguments", ...
+                     " must be name-value pairs."));
+    endif
+    for i = 1:2:length (varargin)
+      if strcmpi (varargin{i}, "method")
+        method = varargin{i+1};
+      else
+        error ("Unknown parameter: %s", varargin{i});
+      endif
+    endfor
+  endif
+
+  if ~strcmpi (method, "completeKK")
+    error ("Only completeKK method is currently supported");
+  endif
+
+  if isempty (numbers)
+    partition = cell (1, num_parts);
+    for i = 1:num_parts
+      partition{i} = [];
+    endfor
+    groupindex = zeros (size (numbers));
+    groupsizes = zeros (1, num_parts);
+    return;
   endif
 
   initial_nodes = cell (1, numel (numbers));
