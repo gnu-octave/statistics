@@ -43,7 +43,6 @@ CVpartition
  @cvpartition/cvpartition
  @cvpartition/display
  @cvpartition/get
- @cvpartition/multiway
  @cvpartition/repartition
  @cvpartition/set
  @cvpartition/test
