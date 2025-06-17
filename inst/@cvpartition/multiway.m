@@ -180,7 +180,7 @@ endfunction
 tic;
 numbers = [4, 5, 6, 7, 8];
 num_parts = 2;
-[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, "method", "completeKK");
 assert (isequal (sort (cellfun (@sum, partition)), sort ([15, 15])))
 toc
 
@@ -188,7 +188,7 @@ toc
 tic;
 numbers = [1, 2, 3, 4, 5, 6];
 num_parts = 3;
-[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, "method", "completeKK");
 assert (isequal (sort (cellfun (@sum, partition)), sort ([7, 7, 7])))
 toc
 
@@ -196,7 +196,7 @@ toc
 tic;
 numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 num_parts = 3;
-[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, "method", "completeKK");
 assert (isequal (sort (cellfun (@sum, partition)), sort ([38, 38, 37])))
 toc
 
@@ -204,6 +204,6 @@ toc
 tic;
 numbers = [127, 125, 122, 105, 87, 75, 68, 64, 30, 22];
 num_parts = 4;
-[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, 'method', 'completeKK');
+[groupindex, partition, groupsizes] = complete_karmarkar_karp(numbers, num_parts, "method", "completeKK");
 assert (isequal (sort (cellfun (@sum, partition)), sort ([211, 202, 209, 203])))
 toc
