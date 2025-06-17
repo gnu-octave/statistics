@@ -90,6 +90,17 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
     [~, order] = sort (candidate_bounds, 'ascend');
     processing_stack = [processing_stack, candidate_sets(order)];
   endwhile
+
+  partition = best_node.parts;
+  groupsizes = best_node.sums;
+
+  if nargout >= 1
+    idx_cell = convert_to_indices (partition, numbers);
+    groupindex = zeros (size (numbers));
+    for j = 1:num_parts
+      groupindex(idx_cell{j}) = j;
+    endfor
+  endif
 endfunction
 
 function part_struct = format_partition (node, original_numbers, return_indices)
