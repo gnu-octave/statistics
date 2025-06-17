@@ -300,7 +300,7 @@ endfunction
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test input validation
-%!error <too few input arguments.> multiway ()
+%!error <multiway: too few input arguments.> multiway ()
 %!error <NUMBERS must be a non-empty vector.> multiway ([], 2)
 %!error <NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
 %!error <NUMBERS must be numeric> multiway ({1, 2, 3}, 2)
