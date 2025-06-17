@@ -303,9 +303,11 @@ endfunction
 %!error <multiway: too few input arguments.> multiway ()
 %!error <multiway: NUMBERS must be a non-empty vector.> multiway ([], 2)
 %!error <multiway: NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
-%!error <NUMBERS must be numeric> multiway ({1, 2, 3}, 2)
-%!error <NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
-%!error <NUMBERS cannot contain NaN values.> multiway ([1, 2, NaN], 2)
+%!error <multiway: NUMBERS must be numeric and cannot contain NaN values.> ...
+%! multiway ({1, 2, 3}, 2)
+%!error <multiway: NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
+%!error <multiway: NUMBERS must be numeric and cannot contain NaN values.> ...
+%! multiway ([1, 2, NaN], 2)
 %!error <NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
 %!error <NUM_PARTS must be a real numeric value.> multiway ([1,2,3], "2")
 %!error <NUM_PARTS must be a positive integer.> multiway ([1,2,3], 0)
