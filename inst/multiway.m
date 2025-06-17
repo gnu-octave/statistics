@@ -64,15 +64,29 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
   endif
 
   ## Validate numbers vector
-  if (! isvector (numbers) || isempty (numbers) || ...
-      ! isnumeric (numbers) || any (numbers < 0) || any (isnan (numbers)))
-    error ("multiway: NUMBERS must be a vector of positive real numbers.");
+  if (! isvector (numbers) || isempty (numbers))
+    error ("multiway: NUMBERS must be a non-empty vector.");
+  endif
+  if (! isnumeric (numbers) || any (isnan (numbers)))
+    error ("multiway: NUMBERS must be numeric and cannot contain NaN values.");
+  endif
+  if (any (numbers < 0))
+    error ("multiway: NUMBERS must be non-negative.");
   endif
   numbers = numbers(:)';
 
-  if (! isscalar (num_parts) || ! isnumeric (num_parts) || ...
-      num_parts < 1 || fix (num_parts) != num_parts)
-    error ("multiway: NUM_PARTS must be a positive integer scalar.");
+  ## Validate number of partitions
+  if (! isscalar (num_parts))
+    error ("multiway: NUM_PARTS must be a scalar.");
+  endif
+  if (! isnumeric (num_parts) || ! isreal (num_parts))
+    error ("multiway: NUM_PARTS must be a real numeric value.");
+  endif
+  if (num_parts < 1 || fix (num_parts) != num_parts)
+    error ("multiway: NUM_PARTS must be a positive integer.");
+  endif
+  if (num_parts > numel (numbers))
+    error ("multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.");
   endif
 
   method = "completeKK";
@@ -80,11 +94,9 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
   ## Parse optional name-value pairs
   if (numel (varargin) > 0)
     if (mod (numel (varargin), 2) != 0)
-      error (strcat ("multiway: optional arguments must be specified", ...
-                     " as name-value pairs."));
+      error ("multiway: optional arguments must come in name-value pairs.");
     endif
     
-    valid_params = {"method"};
     for i = 1:2:numel (varargin)
       param = varargin{i};
       if (! ischar (param))
@@ -95,7 +107,7 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
       switch (tolower (param))
         case "method"
           if (! ischar (value))
-            error ("multiway: value for 'method' must be a string.");
+            error ("multiway: METHOD value must be a string.");
           endif
           method = value;
         otherwise
@@ -289,20 +301,22 @@ endfunction
 
 ## Test input validation
 %!error <too few input arguments.> multiway ()
-%!error <NUMBERS must be a vector of positive real numbers.> ...
-%! multiway ([1, 2, -3], 2)
-%!error <NUMBERS must be a vector of positive real numbers.> ...
-%! multiway ([1, 2, NaN], 2)
-%!error <NUMBERS must be a vector of positive real numbers.> ...
-%! multiway (ones(2,2), 2)
-%!error <NUM_PARTS must be a positive integer scalar.> ...
-%! multiway ([1,2,3], 1.5)
-%!error <NUM_PARTS must be a positive integer scalar.> ...
-%! multiway ([1,2,3], 0)
-%!error <NUM_PARTS must be a positive integer scalar.> ...
-%! multiway ([1,2,3], -1)
-%!error <optional arguments must be specified as name-value pairs.> ...
+%!error <NUMBERS must be a non-empty vector.> multiway ([], 2)
+%!error <NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
+%!error <NUMBERS must be numeric> multiway ({1, 2, 3}, 2)
+%!error <NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
+%!error <NUMBERS cannot contain NaN values.> multiway ([1, 2, NaN], 2)
+%!error <NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
+%!error <NUM_PARTS must be a real numeric value.> multiway ([1,2,3], "2")
+%!error <NUM_PARTS must be a positive integer.> multiway ([1,2,3], 0)
+%!error <NUM_PARTS must be a positive integer.> multiway ([1,2,3], 1.5)
+%!error <NUM_PARTS must be a positive integer.> multiway ([1,2,3], -1)
+%!error <NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
+%! multiway ([1,2], 3)
+%!error <optional arguments must come in name-value pairs.> ...
 %! multiway ([1,2,3], 2, "method")
+%!error <parameter names must be strings.> multiway ([1,2,3], 2, 1, "completeKK")
+%!error <METHOD value must be a string.> multiway ([1,2,3], 2, "method", 1)
 %!error <unknown parameter 'algorithm'.> ...
 %! multiway ([1,2,3], 2, "algorithm", "completeKK")
 %!error <unsupported method 'greedy'.> ...
