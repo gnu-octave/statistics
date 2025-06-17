@@ -95,11 +95,14 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
       continue;
     endif
 
-    [~, order] = sort (cellfun (@(x) x.diff, current_nodes));
-    current_nodes = current_nodes(order);
-    node1 = current_nodes{1};
-    node2 = current_nodes{2};
-    remaining_nodes = current_nodes(3:end);
+    diff_vals = cellfun (@(x) x.diff, current_nodes);
+    [~, idx1] = min (diff_vals);
+    diff_vals(idx1) = Inf;
+    [~, idx2] = min (diff_vals);
+    node1 = current_nodes{idx1};
+    node2 = current_nodes{idx2};
+    remaining_nodes = current_nodes;
+    remaining_nodes([idx1, idx2]) = [];
 
     new_nodes = combine_partitions (node1, node2, id_counter);
     id_counter = id_counter + numel (new_nodes);
@@ -141,7 +144,7 @@ function indices = convert_to_indices (parts, original_numbers)
       idxs = [idxs, pos];
       numbers_copy(pos) = NaN;
     endfor
-    indices{i} = sort (idxs);
+    indices{i} = idxs;
   endfor
 endfunction
 
