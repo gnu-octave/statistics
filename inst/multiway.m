@@ -301,8 +301,8 @@ endfunction
 
 ## Test input validation
 %!error <multiway: too few input arguments.> multiway ()
-%!error <NUMBERS must be a non-empty vector.> multiway ([], 2)
-%!error <NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
+%!error <multiway: NUMBERS must be a non-empty vector.> multiway ([], 2)
+%!error <multiway: NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
 %!error <NUMBERS must be numeric> multiway ({1, 2, 3}, 2)
 %!error <NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
 %!error <NUMBERS cannot contain NaN values.> multiway ([1, 2, NaN], 2)
