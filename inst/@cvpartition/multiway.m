@@ -64,9 +64,9 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
       current_diff = current_nodes{1}.diff;
       if current_diff < best_diff
         best_diff = current_diff;
-        partitions{end + 1} = format_partition (current_nodes{1}, numbers, return_indices);
+        best_node = current_nodes{1};
         if current_diff == 0
-          return;
+          break;
         endif
       endif
       continue;
