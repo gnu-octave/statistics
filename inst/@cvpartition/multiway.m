@@ -48,7 +48,7 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
 
   processing_stack = {initial_nodes};
   best_diff = Inf;
-  partitions = {};
+  best_node = [];
   id_counter = numel (numbers);
 
   while ~isempty (processing_stack)
