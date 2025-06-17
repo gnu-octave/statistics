@@ -86,7 +86,8 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
       candidate_sets{i} = [remaining_nodes, new_nodes{i}];
     endfor
 
-    candidate_bounds = cellfun (@(x) calculate_lower_bound (x, num_parts), candidate_sets);
+    candidate_bounds = cellfun (@(x) calculate_lower_bound (x, num_parts), ...
+                                candidate_sets);
     [~, order] = sort (candidate_bounds, 'ascend');
     processing_stack = [processing_stack, candidate_sets(order)];
   endwhile
