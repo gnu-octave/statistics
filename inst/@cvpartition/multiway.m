@@ -141,17 +141,18 @@ function new_nodes = combine_partitions (node1, node2, start_id)
   parts1 = node1.parts;
   parts2 = node2.parts;
   num_parts = numel (parts1);
-  new_nodes = {};
 
   all_perm = perms (1:num_parts);
-  unique_perm = unique (all_perm, 'rows');
+  num_perm = size (all_perm, 1);
+  new_nodes = cell (1, num_perm);
 
-  for p = unique_perm'
+  for idx = 1:num_perm
+    p_row = all_perm(idx, :);
     combined_parts = cell (1, num_parts);
     combined_sums = zeros (1, num_parts);
 
     for i = 1:num_parts
-      combined_parts{i} = sort ([parts1{p(i)}, parts2{i}]);
+      combined_parts{i} = [parts1{p_row(i)}, parts2{i}];
       combined_sums(i) = sum (combined_parts{i});
     endfor
 
@@ -161,11 +162,10 @@ function new_nodes = combine_partitions (node1, node2, start_id)
       'parts', {combined_parts}, ...
       'sums', combined_sums, ...
       'diff', part_diff, ...
-      'id', start_id ...
+      'id', start_id + idx - 1 ...
     );
 
-    new_nodes{end + 1} = new_node;
-    start_id = start_id + 1;
+    new_nodes{idx} = new_node;
   endfor
 endfunction
 
