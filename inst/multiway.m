@@ -15,6 +15,48 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
+## -*- texinfo -*-
+## @deftypefn  {statistics} {[@var{groupindex}, @var{partition}, @var{groupsizes}] =} multiway (@var{numbers}, @var{num_parts})
+## @deftypefnx {statistics} {[@dots{}] =} multiway (@dots{}, @qcode{"method"}, @var{method})
+##
+## Solve the multiway number partitioning problem.
+##
+## @code{multiway} partitions a set of numbers into a specified number of
+## subsets such that the sums of the subsets are as equal as possible.
+##
+## @var{numbers} is a vector of positive real numbers to be partitioned.
+##
+## @var{num_parts} is a positive integer scalar specifying the number of
+## partitions (subsets) to create.  The default is 2 if not specified.
+##
+## The optional parameter @qcode{"method"} specifies the algorithm used for
+## partitioning.  Currently, only @qcode{"completeKK"} (Complete Karmarkar-Karp)
+## is supported.
+##
+## The output arguments are:
+## @itemize
+## @item
+## @var{groupindex}: A vector of the same length as @var{numbers} containing
+## the group index (from 1 to @var{num_parts}) for each number.
+## @item
+## @var{partition}: A cell array of length @var{num_parts} with each cell
+## containing the numbers assigned to that partition.
+## @item
+## @var{groupsizes}: A vector of the sums of the numbers in each partition.
+## @end itemize
+##
+## Example:
+## @example
+## @group
+## numbers = [4, 5, 6, 7, 8];
+## num_parts = 2;
+## [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+## @end group
+## @end example
+##
+## @seealso{}
+## @end deftypefn
+
 function [groupindex, partition, groupsizes] = multiway (numbers, num_parts, varargin)
   if nargin < 2
     num_parts = 2;
