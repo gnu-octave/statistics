@@ -1,4 +1,4 @@
-function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts, varargin)
+function [groupindex, partition, groupsizes] = multiway (numbers, num_parts, varargin)
   if nargin < 2
     num_parts = 2;
   endif
@@ -18,10 +18,15 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
     endfor
   endif
 
-  if ~strcmpi (method, "completeKK")
-    error ("Only completeKK method is currently supported");
-  endif
+  switch lower(method)
+    case "completekk"
+      [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts);
+    otherwise
+      error ("multiway: unsupported method '%s'", method);
+  endswitch
+endfunction
 
+function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts)
   if isempty (numbers)
     partition = cell (1, num_parts);
     for i = 1:num_parts
@@ -102,21 +107,6 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
       groupindex(idx_cell{j}) = j;
     endfor
   endif
-endfunction
-
-function part_struct = format_partition (node, original_numbers, return_indices)
-  parts = node.parts;
-  sums = node.sums;
-
-  if return_indices
-    parts = convert_to_indices (parts, original_numbers);
-  endif
-
-  part_struct = struct ( ...
-    'partition', {parts}, ...
-    'sums', sums, ...
-    'difference', max (sums) - min (sums) ...
-  );
 endfunction
 
 function indices = convert_to_indices (parts, original_numbers)
