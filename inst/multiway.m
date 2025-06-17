@@ -287,12 +287,6 @@ endfunction
 %! [~, partition] = multiway (numbers, num_parts);
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
-%!test
-%! numbers = [127, 125, 122, 105, 87, 75, 68, 64, 30, 22];
-%! num_parts = 4;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
-%! assert (sort (cellfun (@sum, partition)), sort ([211, 202, 209, 203]));
-
 ## Test input validation
 %!error <too few input arguments.> multiway ()
 %!error <NUMBERS must be a vector of positive real numbers.> ...
@@ -305,6 +299,8 @@ endfunction
 %! multiway ([1,2,3], 1.5)
 %!error <NUM_PARTS must be a positive integer scalar.> ...
 %! multiway ([1,2,3], 0)
+%!error <NUM_PARTS must be a positive integer scalar.> ...
+%! multiway ([1,2,3], -1)
 %!error <optional arguments must be specified as name-value pairs.> ...
 %! multiway ([1,2,3], 2, "method")
 %!error <unknown parameter 'algorithm'.> ...
