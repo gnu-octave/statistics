@@ -57,32 +57,59 @@
 ## @seealso{}
 ## @end deftypefn
 
-function [groupindex, partition, groupsizes] = multiway (numbers, num_parts, varargin)
-  if nargin < 2
-    num_parts = 2;
+function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2, varargin)
+  
+  if (nargin < 1)
+    error ("multiway: too few input arguments.");
+  endif
+
+  ## Validate numbers vector
+  if (! isvector (numbers) || isempty (numbers) || ...
+      ! isnumeric (numbers) || any (numbers < 0) || any (isnan (numbers)))
+    error ("multiway: NUMBERS must be a vector of positive real numbers.");
+  endif
+  numbers = numbers(:)';
+
+  if (! isscalar (num_parts) || ! isnumeric (num_parts) || ...
+      num_parts < 1 || fix (num_parts) != num_parts)
+    error ("multiway: NUM_PARTS must be a positive integer scalar.");
   endif
 
   method = "completeKK";
-  if nargin > 2
-    if mod (length (varargin), 2) ~= 0
-      error (strcat ("Invalid number of arguments. Additional arguments", ...
-                     " must be name-value pairs."));
+
+  ## Parse optional name-value pairs
+  if (numel (varargin) > 0)
+    if (mod (numel (varargin), 2) != 0)
+      error (strcat ("multiway: optional arguments must be specified", ...
+                     " as name-value pairs."));
     endif
-    for i = 1:2:length (varargin)
-      if strcmpi (varargin{i}, "method")
-        method = varargin{i+1};
-      else
-        error ("Unknown parameter: %s", varargin{i});
+    
+    valid_params = {"method"};
+    for i = 1:2:numel (varargin)
+      param = varargin{i};
+      if (! ischar (param))
+        error ("multiway: parameter names must be strings.");
       endif
+      value = varargin{i+1};
+      
+      switch (tolower (param))
+        case "method"
+          if (! ischar (value))
+            error ("multiway: value for 'method' must be a string.");
+          endif
+          method = value;
+        otherwise
+          error ("multiway: unknown parameter '%s'.", param);
+      endswitch
     endfor
   endif
 
-  switch lower(method)
+  switch (lower (method))
     case "completekk"
       [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
                                                                      num_parts);
     otherwise
-      error ("multiway: unsupported method '%s'", method);
+      error ("multiway: unsupported method '%s'.", method);
   endswitch
 endfunction
 
@@ -231,33 +258,56 @@ function bound = calculate_lower_bound (nodes, num_parts)
 endfunction
 
 %!test
-tic;
-numbers = [4, 5, 6, 7, 8];
-num_parts = 2;
-[groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "completeKK");
-assert (isequal (sort (cellfun (@sum, partition)), sort ([15, 15])))
-toc
+%! numbers = [4, 5, 6, 7, 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
 
-%! test
-tic;
-numbers = [1, 2, 3, 4, 5, 6];
-num_parts = 3;
-[groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "completeKK");
-assert (isequal (sort (cellfun (@sum, partition)), sort ([7, 7, 7])))
-toc
+%!test
+%! numbers = [1, 2, 3, 4, 5, 6];
+%! num_parts = 3;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
 
-%! test
-tic;
-numbers = [24, 21, 18, 17, 12, 11, 8, 2];
-num_parts = 3;
-[groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "completeKK");
-assert (isequal (sort (cellfun (@sum, partition)), sort ([38, 38, 37])))
-toc
+%!test
+%! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
+%! num_parts = 3;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
 
-%! test
-tic;
-numbers = [127, 125, 122, 105, 87, 75, 68, 64, 30, 22];
-num_parts = 4;
-[groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "completeKK");
-assert (isequal (sort (cellfun (@sum, partition)), sort ([211, 202, 209, 203])))
-toc
+%!test
+%! numbers = [10, 10, 10];
+%! num_parts = 3;
+%! [~, partition] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
+
+%!test
+%! numbers = 1:10;
+%! num_parts = 2;
+%! [~, partition] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), [27, 28]);
+
+%!test
+%! numbers = [127, 125, 122, 105, 87, 75, 68, 64, 30, 22];
+%! num_parts = 4;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), sort ([211, 202, 209, 203]));
+
+## Test input validation
+%!error <too few input arguments.> multiway ()
+%!error <NUMBERS must be a vector of positive real numbers.> ...
+%! multiway ([1, 2, -3], 2)
+%!error <NUMBERS must be a vector of positive real numbers.> ...
+%! multiway ([1, 2, NaN], 2)
+%!error <NUMBERS must be a vector of positive real numbers.> ...
+%! multiway (ones(2,2), 2)
+%!error <NUM_PARTS must be a positive integer scalar.> ...
+%! multiway ([1,2,3], 1.5)
+%!error <NUM_PARTS must be a positive integer scalar.> ...
+%! multiway ([1,2,3], 0)
+%!error <optional arguments must be specified as name-value pairs.> ...
+%! multiway ([1,2,3], 2, "method")
+%!error <unknown parameter 'algorithm'.> ...
+%! multiway ([1,2,3], 2, "algorithm", "completeKK")
+%!error <unsupported method 'greedy'.> ...
+%! multiway ([1,2,3], 2, "method", "greedy")
