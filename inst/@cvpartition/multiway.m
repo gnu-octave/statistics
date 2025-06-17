@@ -20,7 +20,8 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts, var
 
   switch lower(method)
     case "completekk"
-      [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts);
+      [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
+                                                                     num_parts);
     otherwise
       error ("multiway: unsupported method '%s'", method);
   endswitch
