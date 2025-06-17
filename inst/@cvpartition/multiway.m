@@ -127,7 +127,7 @@ function indices = convert_to_indices (parts, original_numbers)
     for val = parts{i}
       pos = find (numbers_copy == val, 1);
       if isempty (pos)
-        error ('Value %d not found during index conversion', val);
+        error ("Value %d not found during index conversion", val);
       endif
       idxs = [idxs, pos];
       numbers_copy(pos) = NaN;
