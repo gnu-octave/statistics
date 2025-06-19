@@ -5,6 +5,7 @@ Clustering
  cmdscale
  confusionmat
  cophenet
+ createns
  crossval
  editDistance
  evalclusters
@@ -37,7 +38,10 @@ Clustering Classes
  CalinskiHarabaszEvaluation
  ClusterCriterion
  DaviesBouldinEvaluation
+ ExhaustiveSearcher
  GapEvaluation
+ hnswSearcher
+ KDTreeSearcher
  SilhouetteEvaluation
 CVpartition
  @cvpartition/cvpartition
