@@ -453,7 +453,7 @@ classdef hnswSearcher
 
       if (! (isscalar (efConstruction) &&
             isnumeric (efConstruction) &&
-            efConstruction > 0 && 
+            efConstruction > 0 &&
             efConstruction == fix (efConstruction)))
         error ("hnswSearcher: efConstruction must be a positive integer.");
       endif
@@ -490,8 +490,8 @@ classdef hnswSearcher
     ## neighbors to find.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})}
-    ## allows additional options via name-value pairs:
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K},
+    ## @var{name}, @var{value})} allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
@@ -616,8 +616,8 @@ classdef hnswSearcher
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})}
-    ## allows additional options via name-value pairs:
+    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r},
+    ## @var{name}, @var{value})} allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
@@ -657,7 +657,7 @@ classdef hnswSearcher
       endif
 
       ## Validate DistParameter for the distance metric
-      if (! strcmpi (obj.Distance, "minkowski") && 
+      if (! strcmpi (obj.Distance, "minkowski") &&
           ! strcmpi (obj.Distance, "seuclidean") &&
           ! strcmpi (obj.Distance, "mahalanobis"))
         if (! isempty (obj.DistParameter))
@@ -735,13 +735,8 @@ function graph = build_hnsw (X, dist, distparam, M, efConstruction)
         continue;
       endif
       ## Find nearest neighbors in current layer
-      [neighbors, dists] = search_hnsw_layer (graph, ...
-                                              X(i,:), ...
-                                              M, X, ...
-                                              dist, ...
-                                              distparam, ...
-                                              efConstruction, ...
-                                              l);
+      [neighbors, dists] = search_hnsw_layer (graph, X(i,:), M, X, dist, ...
+                                              distparam, efConstruction, l);
       graph.layers{l+1}{i} = neighbors;
       ## Update neighbors' connections
       for j = neighbors
@@ -763,9 +758,8 @@ function graph = build_hnsw (X, dist, distparam, M, efConstruction)
 endfunction
 
 ## Function to Search HNSW graph for k nearest neighbors
-function [indices, distances] = search_hnsw (graph, query, k, X, ...
-                                            dist, distparam, ...
-                                            efSearch, include_ties)
+function [indices, distances] = search_hnsw (graph, query, k, X, dist, ...
+                                             distparam, efSearch, include_ties)
   max_layers = length (graph.layers);
   current_point = graph.entry_point;
   candidates = current_point;
@@ -786,24 +780,19 @@ function [indices, distances] = search_hnsw (graph, query, k, X, ...
   endfor
 
   ## Search in the base layer
-  [indices, distances] = search_hnsw_layer (graph, ...
-                                            query, k, X,...
-                                            dist, ...
-                                            distparam, ...
-                                            efSearch, 0);
+  [indices, distances] = search_hnsw_layer (graph, query, k, X, dist, ...
+                                            distparam, efSearch, 0);
 
   if (include_ties)
     r = distances(end) + 1e-10;
-    [indices, distances] = search_hnsw_layer ( ...
-                           graph, query, Inf, X, dist, distparam, ...
-                           efSearch, 0, r);
+    [indices, distances] = search_hnsw_layer (graph, query, Inf, X, dist, ...
+                                              distparam, efSearch, 0, r);
   endif
 endfunction
 
 ## Function Search HNSW graph for points within radius r
-function [indices, distances] = search_hnsw_range (graph, query, r, ...
-                                                  X, dist, ...
-                                                  distparam, efSearch)
+function [indices, distances] = search_hnsw_range (graph, query, r, X, ...
+                                                   dist, distparam, efSearch)
   max_layers = length (graph.layers);
   current_point = graph.entry_point;
   candidates = current_point;
@@ -811,31 +800,21 @@ function [indices, distances] = search_hnsw_range (graph, query, r, ...
 
   ## Navigate to the lowest layer
   for l = max_layers:-1:2
-    [new_candidates, new_dists] = search_hnsw_layer (graph, ...
-                                                     query, ...
-                                                     1, X, ...
-                                                     dist, ...
-                                                     distparam, ...
-                                                     efSearch, ...
-                                                     l-1);
+    [new_candidates, new_dists] = search_hnsw_layer (graph, query, 1, X, ...
+                                                     dist, distparam, ...
+                                                     efSearch, l - 1);
     candidates = new_candidates;
     distances = new_dists;
     current_point = candidates(1);
   endfor
 
   ## Search in the base layer with radius
-  [indices, distances] = search_hnsw_layer (graph, ...
-                                            query, ...
-                                            Inf, X, ...
-                                            dist, ...
-                                            distparam, ...
-                                            efSearch, ...
-                                            0, r);
+  [indices, distances] = search_hnsw_layer (graph, query, Inf, X, dist, ...
+                                            distparam, efSearch, 0, r);
 endfunction
 
 ## Function Search a single HNSW layer
-function [indices, distances] = search_hnsw_layer (graph, query, k, ...
-                                                  X, dist, ...
+function [indices, distances] = search_hnsw_layer (graph, query, k, X, dist, ...
                                                   distparam, efSearch, layer, r)
   if (nargin < 9)
     r = Inf;
