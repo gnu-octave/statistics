@@ -32,7 +32,7 @@ classdef ExhaustiveSearcher
 ## You can either use the @code{ExhaustiveSearcher} class constructor or the
 ## @code{createns} function to create an @qcode{ExhaustiveSearcher} object.
 ##
-## @seealso{createns, KDTreeSearcher, hnswSearcher}
+## @seealso{createns, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch}
 ## @end deftp
 
   properties (SetAccess = private)

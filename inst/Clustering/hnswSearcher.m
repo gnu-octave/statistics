@@ -32,7 +32,7 @@ classdef hnswSearcher
 ## @code{createns} function to create an @qcode{hnswSearcher} object.
 ##
 ## @seealso{createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch,
-## rangesearch, pdist2}
+## rangesearch}
 ## @end deftp
 
   properties (SetAccess = private)

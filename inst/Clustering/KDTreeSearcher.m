@@ -33,7 +33,7 @@ classdef KDTreeSearcher
 ## You can either use the @code{KDTreeSearcher} class constructor or the
 ## @code{createns} function to create an @qcode{KDTreeSearcher} object.
 ##
-## @seealso{createns, ExhaustiveSearcher, knnsearch, rangesearch, pdist2}
+## @seealso{createns, ExhaustiveSearcher, hnswSearcher, knnsearch, rangesearch}
 ## @end deftp
 
   properties (SetAccess = private)
