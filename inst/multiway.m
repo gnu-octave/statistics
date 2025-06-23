@@ -346,7 +346,6 @@ endfunction
 %! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
 
 %!test
-
 %! numbers = [10, 10, 10];
 %! num_parts = 3;
 %! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
