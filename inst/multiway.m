@@ -30,8 +30,11 @@
 ## partitions (subsets) to create.  The default is 2 if not specified.
 ##
 ## The optional parameter @qcode{"method"} specifies the algorithm used for
-## partitioning.  Currently, only @qcode{"completeKK"} (Complete Karmarkar-Karp)
-## is supported.
+## partitioning.  Supported methods are:
+## @itemize
+## @item @qcode{"completeKK"} (Complete Karmarkar-Karp)
+## @item @qcode{"greedy"} (Greedy algorithm)
+## @end itemize
 ##
 ## The output arguments are:
 ## @itemize
@@ -120,9 +123,32 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
     case "completekk"
       [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
                                                                      num_parts);
+    case "greedy"
+      [groupindex, partition, groupsizes] = greedy_partition (numbers, num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
   endswitch
+endfunction
+
+function [groupindex, partition, groupsizes] = greedy_partition (numbers, num_parts)
+  [sorted_numbers, sorted_indices] = sort (numbers, 'descend');
+  n = numel (sorted_numbers);
+  
+  partition = cell (1, num_parts);
+  sums = zeros (1, num_parts);
+  
+  group_assignment = zeros (1, n);
+  for i = 1:n
+    [min_sum, min_idx] = min (sums);
+    partition{min_idx}(end+1) = sorted_numbers(i);
+    sums(min_idx) = min_sum + sorted_numbers(i);
+    group_assignment(i) = min_idx;
+  endfor
+  
+  groupindex = zeros (size (numbers));
+  groupindex(sorted_indices) = group_assignment;
+  
+  groupsizes = sums;
 endfunction
 
 function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts)
@@ -297,6 +323,39 @@ endfunction
 %! numbers = 1:10;
 %! num_parts = 2;
 %! [~, partition] = multiway (numbers, num_parts);
+%! assert (sort (cellfun (@sum, partition)), [27, 28]);
+
+## Test greedy method
+
+%!test
+%! numbers = [4, 5, 6, 7, 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
+
+%!test
+%! numbers = [1, 2, 3, 4, 5, 6];
+%! num_parts = 3;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
+
+%!test
+%! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
+%! num_parts = 3;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
+
+%!test
+
+%! numbers = [10, 10, 10];
+%! num_parts = 3;
+%! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
+
+%!test
+%! numbers = 1:10;
+%! num_parts = 2;
+%! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test input validation
