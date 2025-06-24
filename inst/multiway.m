@@ -331,7 +331,7 @@ endfunction
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
 %! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
-%! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
+%! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
 
 %!test
 %! numbers = [1, 2, 3, 4, 5, 6];
@@ -343,7 +343,7 @@ endfunction
 %! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 %! num_parts = 3;
 %! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
-%! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
+%! assert (sort (cellfun (@sum, partition)), sort ([35, 37, 41]));
 
 %!test
 %! numbers = [10, 10, 10];
