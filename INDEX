@@ -329,3 +329,5 @@ Regression
 Transforms
  logit
  probit
+Temporary
+ multiway
