@@ -41,7 +41,7 @@
 ## @end deftypefn
 
 function [r, tieadj] = tiedrank (x, tieflag, bidir)
-  ## Check input arguments and add defauls
+  ## Check input arguments and add defaults
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
