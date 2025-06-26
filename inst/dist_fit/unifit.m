@@ -53,7 +53,7 @@ function [paramhat, paramci] = unifit (x, alpha, freq)
     error ("unifit: function called with too few input arguments.");
   endif
 
-  ## Check data inX
+  ## Check data in X
   if (any (x < 0))
     error ("unifit: X cannot have negative values.");
   endif

@@ -56,7 +56,7 @@ function [pshat, psci] = geofit (x, alpha, freq)
     error ("geofit: function called with too few input arguments.");
   endif
 
-  ## Check data inX
+  ## Check data in X
   if (any (x < 0))
     error ("geofit: X cannot have negative values.");
   endif

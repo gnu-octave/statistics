@@ -53,7 +53,7 @@ function [Nhat, Nci] = unidfit (x, alpha, freq)
     error ("unidfit: function called with too few input arguments.");
   endif
 
-  ## Check data inX
+  ## Check data in X
   if (any (x < 0))
     error ("unidfit: X cannot have negative values.");
   endif
