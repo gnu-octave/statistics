@@ -609,7 +609,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   endif
 
 
-  ## Actaully fill the missing data.
+  ## Actually fill the missing data.
 
   ## Process central missing values (all gaps bound by two valid datapoints).
   ## For each method, calcualte fill_vals, which will be used in assignment
