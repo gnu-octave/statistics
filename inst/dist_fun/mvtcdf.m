@@ -412,7 +412,7 @@ endfunction
 %! X = [X1(:), X2(:)];
 %! p = mvtcdf (X, rho, df);
 %! surf (X1, X2, reshape (p, 25, 25));
-%! title ("Bivariate Student's t cummulative distribution function");
+%! title ("Bivariate Student's t cumulative distribution function");
 
 ## Test output against MATLAB R2018
 %!test
