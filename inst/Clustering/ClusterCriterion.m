@@ -29,7 +29,7 @@ classdef ClusterCriterion < handle
   ## @table @code
   ## @item @qcode{ClusteringFunction}
   ## a valid clustering function name or function handle.  It can be empty if
-  ## the clustering solutions are passed as an input matric.
+  ## the clustering solutions are passed as an input matrix.
   ##
   ## @item @qcode{CriterionName}
   ## a valid criterion name to evaluate the clustering solutions.

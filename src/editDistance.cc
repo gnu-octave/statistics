@@ -113,7 +113,7 @@ int LevensDistDoc (const Cell& d1, const Cell& d2)
 	return curr[cols];
 }
 
-// Transform a distance triu matric to a boolean triu matrix
+// Transform a distance triu matrix to a boolean triu matrix
 boolMatrix double2bool (const Matrix& D, const int& minDist)
 {
   const size_t sz = D.rows();
@@ -139,7 +139,7 @@ boolMatrix double2bool (const Matrix& D, const int& minDist)
   return Bmat;
 }
 
-// Transform a distance triu matric to a distance vector
+// Transform a distance triu matrix to a distance vector
 Matrix triu2Dvec (const Matrix& D)
 {
   const size_t szA = D.rows();
