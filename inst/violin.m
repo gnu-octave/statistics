@@ -47,7 +47,7 @@
 ## See @command{help hist} for more details.
 ##
 ## @item SmoothFactor
-## (4) The fuction performs simple kernel density estimation and automatically
+## (4) The function performs simple kernel density estimation and automatically
 ## finds the bandwith of the kernel function that best approximates the
 ## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
