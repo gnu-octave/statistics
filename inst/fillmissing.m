@@ -1068,7 +1068,7 @@ function [A, idx_out] = fillmissing (A, varargin)
               ## missinglocations, compatible behavior is undefined as
               ## Matlab 2022a has an apparent bug producing a error message
               ## saying missinglocations with int/logical needs a method that
-              ## incldues function handle. Expect behavior should match other
+              ## includes function handle. Expect behavior should match other
               ## methods, where any processed missing value should be marked
               ## as filled no matter the fill value.
               if ((isnumeric(A) && !isinteger(A)) ||
