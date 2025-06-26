@@ -29,7 +29,7 @@
 ## @code{@var{v} = nanmax (@var{x})} returns the maximum of @var{x}, after
 ## removing @qcode{NaN} values.  If @var{x} is a vector, a scalar maximum value
 ## is returned.  If @var{x} is a matrix, a row vector of column maxima is
-## returned.  If @var{x} is a multidimentional array, the @code{nanmax} operates
+## returned.  If @var{x} is a multidimensional array, the @code{nanmax} operates
 ## along the first nonsigleton dimension.  If all values in a column are
 ## @qcode{NaN}, the maximum is returned as @qcode{NaN} rather than @qcode{[]}.
 ##
