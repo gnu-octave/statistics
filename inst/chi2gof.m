@@ -183,7 +183,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   ## Make X a column vector
   x = x(:);
-  ## Parse or create a frequeny vector
+  ## Parse or create a frequency vector
   if (isempty (frequency))
      frequency = ones (size (x));
   else
