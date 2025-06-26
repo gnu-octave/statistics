@@ -44,7 +44,7 @@
 ## a cell array of character vectors (a.k.a. string cells).
 ##
 ## @var{v} can be a scalar or an array containing values for replacing the
-## missing values in @var{A} with a compatible data type for isertion into
+## missing values in @var{A} with a compatible data type for insertion into
 ## @var{A}. The shape of @var{v} must be a scalar or an array with number
 ## of elements in @var{v} equal to the number of elements orthoganal to the
 ## operating dimension. E.g., if @code{size(@var{A})} = [3 5 4], operating
