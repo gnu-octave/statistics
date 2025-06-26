@@ -217,7 +217,7 @@ function [paramhat, paramci] = betafit (x, alpha, varargin)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different Beta distibutions
+%! ## Sample 2 populations from different Beta distributions
 %! randg ("seed", 1);   # for reproducibility
 %! r1 = betarnd (2, 5, 500, 1);
 %! randg ("seed", 2);   # for reproducibility

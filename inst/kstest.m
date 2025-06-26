@@ -171,7 +171,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
 
   ## If CDF is character vector
   elseif (isa (CDF, "char") && isvector (CDF))
-    ## Check for supported distibutions
+    ## Check for supported distributions
     PDO = makedist ();
     if (! any (strcmpi (PDO, CDF)))
       error ("kstest: '%s' is not a supported distribution.", CDF);
