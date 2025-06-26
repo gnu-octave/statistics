@@ -26,7 +26,7 @@
 ##
 ## This function calculates the level of confidence at which the samples
 ## represent the true distribution given that there is a predefined tolerance
-## (confidence interval). This is the upside down case of the typical excercises
+## (confidence interval). This is the upside down case of the typical exercises
 ## at which we want to get the confidence interval given the confidence level
 ## (and the estimated parameters of the underlying distribution).
 ## But once we accept (lets say at elections) that we have a standard predefined
