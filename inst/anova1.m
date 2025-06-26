@@ -200,7 +200,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
         ## Assume equal variances (Fisher's One-way ANOVA)
         F = (SSM / dfm) / MSE;
       case "unequal"
-        ## Accomodate for unequal variances (Welch's One-way ANOVA)
+        ## Accommodate for unequal variances (Welch's One-way ANOVA)
         ## Calculate the sampling variance for each group (i.e. the square of the SEM)
         sv = xv ./ xs;
         ## Calculate weights as the reciprocal of the sampling variance

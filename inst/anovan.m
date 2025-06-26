@@ -302,7 +302,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      [" parameter must be numeric"]));
     endif
 
-    ## Accomodate for different formats for GROUP
+    ## Accommodate for different formats for GROUP
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
     ## of strings or numeric idenitiers
     N = size (GROUP, 2); # number of anova "ways"
