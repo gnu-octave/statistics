@@ -359,7 +359,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           case "endvalues"
             ## For numeric A, val must be numeric scalar, a numeric
             ## array with numel equal to the elements orthogonal to
-            ## the dim or certain string methads. For non-numeric A,
+            ## the dim or certain string methods. For non-numeric A,
             ## "constant" method is not valid.
             if (ischar (propval))
               switch (lower (propval))
