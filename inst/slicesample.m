@@ -162,7 +162,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
   maxit = 100;
   neval = 0;
 
-  fgraterthan = @(x, fxc) logpdf (x) >= fxc;
+  fgreaterthan = @(x, fxc) logpdf (x) >= fxc;
 
   ti = burnin + nsamples * thin;
 
@@ -181,7 +181,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
     if (dim == 1)
       for k=1:maxit
         neval++;
-        if (! fgraterthan (lb, sliceheight))
+        if (! fgreaterthan (lb, sliceheight))
           break
         endif
         lb -= width;
@@ -191,7 +191,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
       endif
       for k = 1:maxit
         neval++;
-        if (! fgraterthan (ub, sliceheight))
+        if (! fgreaterthan (ub, sliceheight))
           break
         endif
         ub += width;
@@ -203,7 +203,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
     xp = (ub - lb) .* prand(i, :) + lb;
     for k=1:maxit
       neval++;
-      isgt = fgraterthan (xp,sliceheight);
+      isgt = fgreaterthan (xp,sliceheight);
       if (all (isgt))
         break
       endif
