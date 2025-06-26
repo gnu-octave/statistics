@@ -20,7 +20,7 @@
 ## @deftypefn  {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y}, @var{name}, @var{value})
 ##
-## Fit a Generalised Additive Model (GAM) for regression.
+## Fit a Generalized Additive Model (GAM) for regression.
 ##
 ## @code{@var{obj} = fitrgam (@var{X}, @var{Y})} returns an object of
 ## class RegressionGAM, with matrix @var{X} containing the predictor data and

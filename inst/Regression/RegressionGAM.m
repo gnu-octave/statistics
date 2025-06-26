@@ -21,7 +21,7 @@ classdef RegressionGAM
 ## @deftypefn  {statistics} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})
 ##
-## Create a @qcode{RegressionGAM} class object containing a Generalised Additive
+## Create a @qcode{RegressionGAM} class object containing a Generalized Additive
 ## Model (GAM) for regression.
 ##
 ## A @qcode{RegressionGAM} class object can store the predictors and response
