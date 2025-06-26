@@ -158,7 +158,7 @@ classdef RegressionGAM
       nsample = rows (X);
       ndims_X = columns (X);
 
-      ## Check correspodence between predictors and response
+      ## Check correspondence between predictors and response
       if (nsample != rows (Y))
         error ("RegressionGAM: number of rows in X and Y must be equal.");
       endif
@@ -302,7 +302,7 @@ classdef RegressionGAM
         error ("RegressionGAM: invalid values in Y.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the RegressionGAM object
       this.NumObservations = rows (X);

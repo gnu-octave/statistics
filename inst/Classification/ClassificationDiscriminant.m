@@ -435,7 +435,7 @@ classdef ClassificationDiscriminant
         error ("ClassificationDiscriminant: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationNeuralNetwork object
       this.NumObservations = sum (RowsUsed);

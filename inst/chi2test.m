@@ -48,7 +48,7 @@
 ## @item @tab @var{pval} @tab the p-value of the relevant test.
 ## @item @tab @var{chisq} @tab the chi^2 statistic of the relevant test.
 ## @item @tab @var{dF} @tab the degrees of freedom of the relevant test.
-## @item @tab @var{E} @tab the EXPECTED values of the original contigency table.
+## @item @tab @var{E} @tab the EXPECTED values of the original contingency table.
 ## @end multitable
 ##
 ## Unlike MATLAB, in GNU Octave @code{chi2test} also supports 3-way tables,
@@ -105,7 +105,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   if (any (isnan (x(:))))
     error ("chi2test: X must not have missing values (NaN).");
   endif
-  ## Get size and dimensions of contigency table
+  ## Get size and dimensions of contingency table
   sz = size (x);
   dim = length (sz);
   ## Check optional arguments
@@ -128,13 +128,13 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   endif
   ## Calculate total sample size
   n = sum (x(:));
-  ## For 2-way contigency table
+  ## For 2-way contingency table
   if (length (sz) == 2)
     ## Calculate degrees of freedom
     df = prod (sz - 1);
     ## Calculate expected values
     E = sum (x')' * sum (x) / n;
-  ## For 3-way contigency table
+  ## For 3-way contingency table
   elseif (length (sz) == 3)
     ## Check optional arguments
     if (nargin == 1 || strcmpi (varargin{1}, "mutual"))
@@ -294,7 +294,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
     else
       error ("chi2test: invalid model name for testing a 3-way table.");
     endif
-  ## For k-way contigency table, where k > 3
+  ## For k-way contingency table, where k > 3
   else
     ## Calculate degrees of freedom
     df = prod (sz) - sum (sz) + 2;

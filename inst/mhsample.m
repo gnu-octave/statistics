@@ -237,12 +237,12 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
   smpl = zeros (nsamples, sizestart(2), nchain);
 
   if (all (sizestart([1 3]) == [1 nchain]))
-    ## Could remove, not Matlab compatable but allows continuing chains
+    ## Could remove, not Matlab compatible but allows continuing chains
     smpl(1, :, :) = start;
   elseif (all (sizestart([1 3]) == [nchain 0]))
     smpl(1, :, :) = permute (start, [3, 2, 1]);
   elseif (all (sizestart([1 3]) == [1 0]))
-    ## Could remove, not Matlab compatable but allows all chains to start
+    ## Could remove, not Matlab compatible but allows all chains to start
     ## at the same location
     smpl(1, :, :) = repmat (start,[1, 1, nchain]);
   else

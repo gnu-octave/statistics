@@ -122,7 +122,7 @@ function [h, p, stats] = fishertest (x, varargin)
     endfor
   endif
 
-  ## For 2x2 contigency table apply Fisher's exact test
+  ## For 2x2 contingency table apply Fisher's exact test
   ## For larger tables apply the Fisher-Freeman-Halton variance
 
   if (all (size (x) == 2))

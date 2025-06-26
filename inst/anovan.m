@@ -1193,7 +1193,7 @@ endfunction
 %!demo
 %!
 %! # One-way repeated measures ANOVA on the data from a study on the number of
-%! # words recalled by 10 subjects for three time condtions, in Loftus & Masson
+%! # words recalled by 10 subjects for three time conditions, in Loftus & Masson
 %! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Note that the interaction
 %! # between seconds x subject was dropped from the full model by assigning
 %! # subject as a random factor (').

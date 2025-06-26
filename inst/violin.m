@@ -25,7 +25,7 @@
 ##
 ## Produce a Violin plot of the data @var{x}.
 ##
-## The input data @var{x} can be a N-by-m array containg N observations of m
+## The input data @var{x} can be a N-by-m array containing N observations of m
 ## variables.  It can also be a cell with m elements, for the case in which the
 ## variables are not uniformly sampled.
 ##

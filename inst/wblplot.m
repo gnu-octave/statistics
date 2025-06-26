@@ -242,7 +242,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   set (h, 'markersize', 8);
   h2 = line (xbf, ybf, 'LineStyle', '-', 'Marker', 'none', ...
             'Color', [0.25 0.25 1], 'LineWidth', 1);
-  ## If requested plot beta binomial confidens bounds
+  ## If requested plot beta binomial confidence bounds
   if (! isempty (confint))
     cb_high = [];
     cb_low = [];

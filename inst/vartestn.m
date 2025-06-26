@@ -152,7 +152,7 @@ function [p, stats] = vartestn (x, group, varargin)
     group = group';
   endif
   ## If x is a matrix, convert it to column vector and create a
-  ## corresponging column vector for groups
+  ## corresponding column vector for groups
   if (length (x) < prod (size (x)))
     [n, m] = size (x);
     x = x(:);

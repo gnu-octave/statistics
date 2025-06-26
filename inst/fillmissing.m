@@ -88,7 +88,7 @@
 ## same units as @code{SamplePoints}.  For scalar values, the window is
 ## centered on the missing element and includes all data points within a
 ## distance of half of @var{window_size} on either side of the window center
-## point.  Note that for compatability, when using a scalar value, the backward
+## point.  Note that for compatibility, when using a scalar value, the backward
 ## window limit is inclusive and the forward limit is exclusive.  If a
 ## two-element @var{window_size} vector is specified, the window includes all
 ## points within a distance of @var{nb} backward and @var{na} forward from the
@@ -889,7 +889,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           endswitch
           if (idx_flag)
-            ## Matlab compatiblity - NaNs filled back in by movmean and
+            ## Matlab compatibility - NaNs filled back in by movmean and
             ## movmedian should _not_ show as filled.
             idx_out(fillable_gaps) = true;
             still_nan = missing_locs;
