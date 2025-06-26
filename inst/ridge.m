@@ -85,7 +85,7 @@ function b = ridge (y, X, k, scaled)
   ## Force y to a column vector
   y = y(:);
 
-  ## Rremove any missing values
+  ## Remove any missing values
   notnans = ! logical (sum (isnan ([y, X]), 2));
   y = y(notnans);
   X = X(notnans,:);
