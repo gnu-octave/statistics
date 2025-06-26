@@ -482,7 +482,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
         error ("anovan: WEIGHTS must be a vector of positive finite values");
       endif
-      # Create diaganal matrix of normalized weights
+      # Create diagonal matrix of normalized weights
       W = diag (WEIGHTS / mean (WEIGHTS));
     else
       # Create identity matrix
