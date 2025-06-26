@@ -66,7 +66,7 @@
 ## @math{[0,1]}.  If only one color is specified, then it applies to all bars.
 ## If the number of colors equals the number of groups, then each color is
 ## applied to each group.  If the number of colors equals the number of elements
-## in @var{z}, then each inidividual bar is assigned the particular color.  You
+## in @var{z}, then each individual bar is assigned the particular color.  You
 ## can also define @var{color} using the paired @var{name}/@var{value} syntax
 ## shown below.
 ##
