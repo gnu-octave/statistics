@@ -60,7 +60,7 @@
 ##
 ## @code{@var{p} = mvncdf (@dots{}, @var{options})} specifies the structure,
 ## which controls specific parameters for the numerical integration used to
-## compute @var{p}. The required fieds are:
+## compute @var{p}. The required fields are:
 ##
 ## @multitable @columnfractions 0.2 0.05 0.75
 ## @item @qcode{"TolFun"} @tab @tab Maximum absolute error tolerance.  Default
