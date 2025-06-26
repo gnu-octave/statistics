@@ -109,12 +109,12 @@
 
 function [h, p, stats] = chi2gof (x, varargin)
 
-  ## Check imput arguments
+  ## Check input arguments
   if (nargin < 1)
-    error ("chi2gof: At least one imput argument is required.");
+    error ("chi2gof: At least one input argument is required.");
   endif
   if (! isvector(x) || ! isreal(x))
-    error ("chi2gof: X must ba a vector of real numbers.");
+    error ("chi2gof: X must be a vector of real numbers.");
   endif
   ## Add initial parameters
   nbins = [];
@@ -183,7 +183,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   ## Make X a column vector
   x = x(:);
-  ## Parse or create a frequeny vector
+  ## Parse or create a frequency vector
   if (isempty (frequency))
      frequency = ones (size (x));
   else
@@ -296,7 +296,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     else
       cdfname = func2str (cdffunc);
     endif
-    ## Calculate only inner bins, since tail probabilitiyis included in the
+    ## Calculate only inner bins, since tail probabilities included in the
     ## calculation of expected counts for the first and last bins
     interioredges = binedges(2:end-1);
     ## Compute the cumulative probabilities
