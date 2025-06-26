@@ -118,7 +118,7 @@ function T = cluster (Z, opt, varargin)
         case "distance"
           vThresholds = Z(:, 3);
         otherwise
-          error ("cluster: unkown criterion %s", criterion);
+          error ("cluster: unknown criterion %s", criterion);
       endswitch
     case "maxclust"
       ## the MaxClust case can be regarded as a Cutoff case with distance

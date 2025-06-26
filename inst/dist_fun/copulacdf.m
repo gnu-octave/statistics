@@ -97,7 +97,7 @@ function p = copulacdf (family, x, theta, df)
   endif
 
   if (! ischar (family))
-    error (strcar (["copulacdf: family must be one of 'Gaussian',"], ...
+    error (strcat (["copulacdf: family must be one of 'Gaussian',"], ...
                    [" 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."]));
   endif
 
@@ -125,7 +125,7 @@ function p = copulacdf (family, x, theta, df)
       if (nargin == 4)
         ## Student's t family
         if (! isscalar (df) && (! isvector (df) || length (df) != n))
-          error (strcar (["copulacdf: DF must be a vector with the same"], ...
+          error (strcat (["copulacdf: DF must be a vector with the same"], ...
                          [" number of rows as X or be scalar."]));
         endif
         df = df(:);

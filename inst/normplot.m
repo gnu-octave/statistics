@@ -58,7 +58,7 @@ function h = normplot (varargin)
   endif
   ## Check that x is a vector or a 2-D matrix
   if (isscalar (x) || ndims (x) > 2)
-    error ("normplot: x must be a vecctor or a 2-D matrix handle.");
+    error ("normplot: x must be a vector or a 2-D matrix handle.");
   endif
   ## If x is a vector, make it a column vector
   if (rows (x) == 1)

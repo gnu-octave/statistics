@@ -124,7 +124,7 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   else
     sz = size (x, dim);
   endif
-  ## Calculate mean, strandard error and z-value for each group
+  ## Calculate mean, standard error and z-value for each group
   x_mean = sum (x(! is_nan), dim) ./ max (1, sz);
   stderr = sigma ./ sqrt (sz);
   zvalue = (x_mean - m) ./ stderr;

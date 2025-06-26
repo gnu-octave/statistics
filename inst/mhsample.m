@@ -226,7 +226,7 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
   if (! isempty (proppdf) && isempty (logproppdf))
     logproppdf = @(x, y) rloge (proppdf (x, y));
   elseif (isempty (proppdf) && isempty (logproppdf) && ! sym)
-    error ("mhsample: proppdf or logproppdf must be input unless 'symetrical' is true.");
+    error ("mhsample: proppdf or logproppdf must be input unless 'symmetrical' is true.");
   endif
   if (! isa (proprnd, "function_handle"))
     error ("mhsample: proprnd must be a function handle.");

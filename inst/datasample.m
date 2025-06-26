@@ -40,7 +40,7 @@
 ## a logical value that can be @code{true} (default) or @code{false}: when set
 ## to @code{true}, @code{datasample} returns data sampled with replacement.
 ##
-## @item @qcode{Weigths}
+## @item @qcode{Weights}
 ## a vector of positive numbers that sets the probability of each element.  It
 ## must have the same size as @var{data} along dimension @var{dim}.
 ##

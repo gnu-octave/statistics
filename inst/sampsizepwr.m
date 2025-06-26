@@ -683,7 +683,7 @@ endfunction
 
 ## Sample size calculation via binary search
 function N = searchbinaryN (F, lohi, p0, p1, desiredpower, alpha, tail)
-  ## Find uper and lower bounds
+  ## Find upper and lower bounds
   nlo = repmat(lohi(1),size(alpha));
   nhi = repmat(lohi(2),size(alpha));
   obspower = F(p0,p1,alpha,tail,nhi);

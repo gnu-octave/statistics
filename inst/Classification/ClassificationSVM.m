@@ -521,7 +521,7 @@ classdef ClassificationSVM
         this.Cost = Cost;
       endif
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:ndims_X
           PredictorNames {i} = strcat ("x", num2str (i));

@@ -382,7 +382,7 @@ endfunction
 %! stem (residuals, "color", "r", "markersize", 4, "markeredgecolor", "r")
 %! xlabel ("Observations");
 %! ylabel ("Residuals");
-%! title ("Residuals in octane's fitted responce");
+%! title ("Residuals in octane's fitted response");
 
 %!demo
 %! ## Calculate Variable Importance in Projection (VIP) for PLS Regression
@@ -417,7 +417,7 @@ endfunction
 %! axis ("tight");
 %! xlabel ("Predictor Variables");
 %! ylabel ("VIP scores");
-%! title ("VIP scores for each predictror variable with 10 components");
+%! title ("VIP scores for each predictor variable with 10 components");
 
 ## Test output
 %!test

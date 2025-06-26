@@ -87,7 +87,7 @@ function y = binopdf (x, n, ps)
   k(catch_special) = false;
   y(catch_special) = NaN;
 
-  ## x = 0 and x = n cases where ps != 0 or 1, respectivly
+  ## x = 0 and x = n cases where ps != 0 or 1, respectively
   ## remove them from k, use alternate calculation to avoid /0
   catch_special = (x == 0)& (! catch_special);
   k(catch_special) = false;

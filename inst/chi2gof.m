@@ -296,7 +296,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     else
       cdfname = func2str (cdffunc);
     endif
-    ## Calculate only inner bins, since tail probabilitiyis included in the
+    ## Calculate only inner bins, since tail probabilities included in the
     ## calculation of expected counts for the first and last bins
     interioredges = binedges(2:end-1);
     ## Compute the cumulative probabilities

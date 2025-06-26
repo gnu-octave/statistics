@@ -166,8 +166,8 @@ classdef CompactClassificationNeuralNetwork
           try
             out = this.(s.subs);
           catch
-            error (strcat ("CompactClassificationNeuralNetwork.subref:", ...
-                           " unrecongized property: '%s'"), s.subs);
+            error (strcat ("CompactClassificationNeuralNetwork.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -201,7 +201,7 @@ classdef CompactClassificationNeuralNetwork
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("CompactClassificationNeuralNetwork.subsasgn:", ...
-                             " unrecongized or read-only property: '%s'"), ...
+                             " unrecognized or read-only property: '%s'"), ...
                              s.subs);
           endswitch
       endswitch

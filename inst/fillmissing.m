@@ -138,7 +138,7 @@
 ## Apply a separate handling method for missing values at the front or back of
 ## the array. @var{PropertyValue} can be:
 ## @itemize
-## @item A constant scalar or array with the same shape requirments as @var{v}.
+## @item A constant scalar or array with the same shape requirements as @var{v}.
 ## @item @code{none} - Do not fill end gap values.
 ## @item @code{extrap} - Use the same procedure as @var{method} to fill the
 ## end gap values.
