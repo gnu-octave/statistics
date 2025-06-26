@@ -27,7 +27,7 @@
 ## Replace missing entries of array @var{A} either with values in @var{v} or
 ## as determined by other specified methods.  'missing' values are determined
 ## by the data type of @var{A} as identified by the function @ref{ismissing},
-## curently defined as:
+## currently defined as:
 ##
 ## @itemize
 ## @item
