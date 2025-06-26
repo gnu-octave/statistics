@@ -162,7 +162,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   v = R \ vv;
   ## Sort in descending order
   [e,ei] = sort (diag (ed));
-  ## Check for valid eigevalues
+  ## Check for valid eigenvalues
   if (min(e) <= -1)
      error ("manova1: wrong value in eigenvector: singular sum of squares.");
   endif
