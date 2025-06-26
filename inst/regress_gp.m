@@ -37,7 +37,7 @@
 ## @math{NxP} matrix with @math{N} observations in @math{P} dimensional space
 ## and @var{Y} is an @math{Nx1} column vector as the dependent variable.  The
 ## information about errors of the predictions (interpolation/extrapolation) is
-## given by the covarianve matrix @var{K}.
+## given by the covariance matrix @var{K}.
 ## By default, the linear model defines the prior covariance of @var{m} as
 ## @code{@var{Sp} = 100 * eye (size (@var{X}, 2) + 1)}.  A custom prior
 ## covariance matrix can be passed as @var{Sp}, which must be a @math{P+1xP+1}
