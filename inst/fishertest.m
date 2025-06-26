@@ -32,7 +32,7 @@
 ## hypothesis (of no association) cannot be rejected at the 5% significance
 ## level.  @var{h} = 1 indicates that the null hypothesis can be rejected at the
 ## 5% level.  @var{x} must contain only non-negative integers.  Use the
-## @code{crostab} function to generate the contingency table from samples of two
+## @code{crosstab} function to generate the contingency table from samples of two
 ## categorical variables.  Fisher's exact test is not suitable when all integers
 ## in @var{x} are very large.  Use can use the Chi-square test in this case.
 ##
