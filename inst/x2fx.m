@@ -164,7 +164,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     endfor
   endif
 
-  ## Get size of model martix
+  ## Get size of model matrix
   [r, c] = size (model);
   ## Check for equal number of columns between x and model
   if (c != n)
