@@ -142,7 +142,7 @@
 ## @item 'Colors' @tab character string or Nx3 numerical matrix @tab If just
 ## one character or 1x3 vector of RGB values, specify the fill color of all
 ## boxes when BoxStyle = 'filled'.  If a character string or Nx3 matrix is
-## entered, box #1's fill color corrresponds to the first character or first
+## entered, box #1's fill color corresponds to the first character or first
 ## matrix row, and the next boxes' fill colors corresponds to the next
 ## characters or rows.  If the char string or Nx3 array is exhausted the color
 ## selection wraps around.
