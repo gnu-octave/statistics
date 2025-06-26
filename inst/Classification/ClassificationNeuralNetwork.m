@@ -821,7 +821,7 @@ classdef ClassificationNeuralNetwork
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationNeuralNetwork (this);
     endfunction
 

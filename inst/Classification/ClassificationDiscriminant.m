@@ -1182,7 +1182,7 @@ classdef ClassificationDiscriminant
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationDiscriminant (this);
     endfunction
 

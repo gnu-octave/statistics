@@ -1392,7 +1392,7 @@ classdef ClassificationSVM
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationSVM (this);
     endfunction
 
