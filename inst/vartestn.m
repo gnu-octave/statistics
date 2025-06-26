@@ -180,7 +180,7 @@ function [p, stats] = vartestn (x, group, varargin)
   ## Compute group summary statistics
   [group_mean, group_ster, group_size] = grpstats (x, group_id, ...
                                                    {"mean", "sem", "numel"});
-  ## Compute group degreed of freedom and variances
+  ## Compute group degrees of freedom and variances
   group_DF = group_size - 1;
   groupVAR = group_size .* group_ster .^ 2;
   sum_DF = sum (group_DF);
