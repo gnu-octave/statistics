@@ -184,7 +184,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
     ## now parse the parameter
     switch (lower (varargin{pair_index}))
       case "klist"
-        ## klist must be an array of positive interger numbers;
+        ## klist must be an array of positive integer numbers;
         ## there is a special case when it can be empty, but that is not the
         ## suggested way to use it (it is better to omit it instead)
         if (isempty (varargin{pair_index + 1}))
