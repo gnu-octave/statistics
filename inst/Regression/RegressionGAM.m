@@ -175,7 +175,7 @@ classdef RegressionGAM
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
-      ## Number of parameters for Formula, Ineractions (maximum 1 allowed)
+      ## Number of parameters for Formula, Interactions (maximum 1 allowed)
       F_I = 0;
 
       ## Parse extra parameters
