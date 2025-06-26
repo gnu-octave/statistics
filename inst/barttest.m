@@ -65,7 +65,7 @@ function [ndim, pval, chisq] = barttest (x, alpha);
   endif
   ## Compute the eigenvalues of X in a more efficient way
   latent = sort ((svd (x - repmat (mean (x, 1), row, 1)) .^ 2) / (row - 1));
-  ## The degrees of ffredom should be N-1, where N is the sample size
+  ## The degrees of freedom should be N-1, where N is the sample size
   row -= 1;
   k = (0:col - 2)';
   pk = col - k;
