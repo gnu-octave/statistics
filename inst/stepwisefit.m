@@ -78,7 +78,7 @@ X_use = [];
 v = 0; #number of predictor variables in regression model
 
 iter = 0;
-max_iters = 100; #maximum number of interations to do
+max_iters = 100; #maximum number of iterations to do
 
 r = y;
 while 1
