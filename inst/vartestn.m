@@ -184,7 +184,7 @@ function [p, stats] = vartestn (x, group, varargin)
   group_DF = group_size - 1;
   groupVAR = group_size .* group_ster .^ 2;
   sum_DF = sum (group_DF);
-  ## Caculate pooled variance
+  ## Calculate pooled variance
   if (sum_DF > 0)
      pooledVAR = sum (group_DF .* groupVAR) / sum_DF;
   else

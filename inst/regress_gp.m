@@ -225,7 +225,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     Dx = pdist2 (Xfit, X) .^ 2;
     Sx = exp (-Dx / theta);
 
-    ## Caculate predictive covariance
+    ## Calculate predictive covariance
     K = inv (S);
 
     ## Calculate response output

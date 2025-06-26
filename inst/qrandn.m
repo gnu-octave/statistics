@@ -54,7 +54,7 @@ function z = qrandn (q, R, C=[])
   S = [R, C];
   endif
 
-  ## Calaulate the q to be used on the q-log
+  ## Calculate the q to be used on the q-log
   qGen = (1 + q) / (3 - q);
 
   ## Initialize the output vector
