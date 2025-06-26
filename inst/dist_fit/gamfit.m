@@ -344,7 +344,7 @@ v = -bracket - log (a) + psi (a);
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different Gamma distibutions
+%! ## Sample 3 populations from different Gamma distributions
 %! randg ("seed", 5);    # for reproducibility
 %! r1 = gamrnd (1, 2, 2000, 1);
 %! randg ("seed", 2);    # for reproducibility
@@ -386,7 +386,7 @@ endfunction
 %!                  a_bB(1), a_bB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_bC(1), a_bC(2))})
-%! title ("Three population samples from different Gamma distibutions")
+%! title ("Three population samples from different Gamma distributions")
 %! hold off
 
 ## Test output

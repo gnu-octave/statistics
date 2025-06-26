@@ -162,7 +162,7 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different Birnbaum-Saunders distibutions
+%! ## Sample 3 populations from different Birnbaum-Saunders distributions
 %! rand ("seed", 5);    # for reproducibility
 %! r1 = bisarnd (1, 0.5, 2000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -204,7 +204,7 @@ endfunction
 %!                  beta_gammaB(1), beta_gammaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated β=%0.2f and γ=%0.2f", ...
 %!                  beta_gammaC(1), beta_gammaC(2))})
-%! title ("Three population samples from different Birnbaum-Saunders distibutions")
+%! title ("Three population samples from different Birnbaum-Saunders distributions")
 %! hold off
 
 ## Test output

@@ -97,7 +97,7 @@ function [lambdahat, lambdaci] = poissfit (x, alpha, freq)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different Poisson distibutions
+%! ## Sample 3 populations from 3 different Poisson distributions
 %! randp ("seed", 2);    # for reproducibility
 %! r1 = poissrnd (1, 1000, 1);
 %! randp ("seed", 2);    # for reproducibility
@@ -136,7 +136,7 @@ endfunction
 %!                  lambdahat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated λ=%0.2f", ...
 %!                  lambdahat(3))})
-%! title ("Three population samples from different Poisson distibutions")
+%! title ("Three population samples from different Poisson distributions")
 %! hold off
 
 ## Test output

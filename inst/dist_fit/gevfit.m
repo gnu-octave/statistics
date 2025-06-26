@@ -243,7 +243,7 @@ function out = nll (parms, x)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from 2 different exponential distibutions
+%! ## Sample 2 populations from 2 different exponential distributions
 %! rand ("seed", 1);   # for reproducibility
 %! r1 = gevrnd (-0.5, 1, 2, 5000, 1);
 %! rand ("seed", 2);   # for reproducibility
@@ -275,7 +275,7 @@ endfunction
 %!                 k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3)), ...
 %!     sprintf("PDF for sample 3 with estimated k=%0.2f, σ=%0.2f, μ=%0.2f", ...
 %!                 k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3))})
-%! title ("Two population samples from different exponential distibutions")
+%! title ("Two population samples from different exponential distributions")
 %! hold off
 
 ## Test output

@@ -107,7 +107,7 @@ function [pshat, psci] = binofit (x, n, alpha)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different binomial distibutions
+%! ## Sample 2 populations from different binomial distributions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = binornd (50, 0.15, 1000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -139,7 +139,7 @@ endfunction
 %!                  mean (pshatA)), ...
 %!          sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
 %!                  mean (pshatB))})
-%! title ("Two population samples from different binomial distibutions")
+%! title ("Two population samples from different binomial distributions")
 %! hold off
 
 ## Test output

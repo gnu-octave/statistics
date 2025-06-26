@@ -100,7 +100,7 @@ function [paramhat, paramci] = unifit (x, alpha, freq)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different continuous uniform distibutions
+%! ## Sample 2 populations from different continuous uniform distributions
 %! rand ("seed", 5);    # for reproducibility
 %! r1 = unifrnd (2, 5, 2000, 1);
 %! rand ("seed", 6);    # for reproducibility
@@ -132,7 +132,7 @@ endfunction
 %!                  a_bA(1), a_bA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated a=%0.2f and b=%0.2f", ...
 %!                  a_bB(1), a_bB(2))})
-%! title ("Two population samples from different continuous uniform distibutions")
+%! title ("Two population samples from different continuous uniform distributions")
 %! hold off
 
 ## Test output

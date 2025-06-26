@@ -153,7 +153,7 @@ function [paramhat, paramci] = nakafit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different Nakagami distibutions
+%! ## Sample 3 populations from different Nakagami distributions
 %! randg ("seed", 5)  # for reproducibility
 %! r1 = nakarnd (0.5, 1, 2000, 1);
 %! randg ("seed", 2)   # for reproducibility
@@ -194,7 +194,7 @@ endfunction
 %!                  mu_omegaB(1), mu_omegaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and ω=%0.2f", ...
 %!                  mu_omegaC(1), mu_omegaC(2))})
-%! title ("Three population samples from different Nakagami distibutions")
+%! title ("Three population samples from different Nakagami distributions")
 %! hold off
 
 ## Test output

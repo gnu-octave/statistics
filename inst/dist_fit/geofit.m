@@ -101,7 +101,7 @@ function [pshat, psci] = geofit (x, alpha, freq)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different geometric distibutions
+%! ## Sample 2 populations from different geometric distributions
 %! rande ("seed", 1);    # for reproducibility
 %! r1 = geornd (0.15, 1000, 1);
 %! rande ("seed", 2);    # for reproducibility
@@ -133,7 +133,7 @@ endfunction
 %!                  mean (pshatA)), ...
 %!          sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
 %!                  mean (pshatB))})
-%! title ("Two population samples from different geometric distibutions")
+%! title ("Two population samples from different geometric distributions")
 %! hold off
 
 ## Test output

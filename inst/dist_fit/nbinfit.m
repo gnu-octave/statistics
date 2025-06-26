@@ -213,7 +213,7 @@ function nll = nbinfit_search (r, x, nx, sx, tol)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different negative binomial distibutions
+%! ## Sample 2 populations from different negative binomial distributions
 %! randp ("seed", 5); randg ("seed", 5);    # for reproducibility
 %! r1 = nbinrnd (2, 0.15, 5000, 1);
 %! randp ("seed", 8); randg ("seed", 8);    # for reproducibility
@@ -246,7 +246,7 @@ endfunction
 %!                  r_psA(1), r_psA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated r=%0.2f and ps=%0.2f", ...
 %!                  r_psB(1), r_psB(2))})
-%! title ("Two population samples from negative different binomial distibutions")
+%! title ("Two population samples from negative different binomial distributions")
 %! hold off
 
 ## Test output

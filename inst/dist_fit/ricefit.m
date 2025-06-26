@@ -194,7 +194,7 @@ function [paramhat, paramci] = ricefit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different Gamma distibutions
+%! ## Sample 3 populations from different Gamma distributions
 %! randg ("seed", 5);    # for reproducibility
 %! randp ("seed", 6);
 %! r1 = ricernd (1, 2, 3000, 1);
@@ -239,7 +239,7 @@ endfunction
 %!                  s_sigmaB(1), s_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated s=%0.2f and σ=%0.2f", ...
 %!                  s_sigmaC(1), s_sigmaC(2))})
-%! title ("Three population samples from different Rician distibutions")
+%! title ("Three population samples from different Rician distributions")
 %! hold off
 
 ## Test output

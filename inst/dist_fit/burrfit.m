@@ -304,7 +304,7 @@ endfunction
 
 
 %!demo
-%! ## Sample 3 populations from different Burr type XII distibutions
+%! ## Sample 3 populations from different Burr type XII distributions
 %! rand ("seed", 4);    # for reproducibility
 %! r1 = burrrnd (3.5, 2, 2.5, 10000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -346,7 +346,7 @@ endfunction
 %!          lambda_c_kB(1), lambda_c_kB(2), lambda_c_kB(3)), ...
 %!  sprintf("PDF for sample 3 with estimated λ=%0.2f, c=%0.2f, and k=%0.2f", ...
 %!          lambda_c_kC(1), lambda_c_kC(2), lambda_c_kC(3))})
-%! title ("Three population samples from different Burr type XII distibutions")
+%! title ("Three population samples from different Burr type XII distributions")
 %! hold off
 
 ## Test output

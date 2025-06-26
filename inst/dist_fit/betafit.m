@@ -248,7 +248,7 @@ endfunction
 %!                  a_b_A(1), a_b_A(2)), ...
 %!          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_b_B(1), a_b_B(2))})
-%! title ("Two population samples from different Beta distibutions")
+%! title ("Two population samples from different Beta distributions")
 %! hold off
 
 ## Test output

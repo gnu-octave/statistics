@@ -385,7 +385,7 @@ function ci = norm_ci (paramhat, cv, alpha, x, censor, freq)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different normal distibutions
+%! ## Sample 3 populations from 3 different normal distributions
 %! randn ("seed", 1);    # for reproducibility
 %! r1 = normrnd (2, 5, 5000, 1);
 %! randn ("seed", 2);    # for reproducibility
@@ -425,7 +425,7 @@ endfunction
 %!                  muhat(2), sigmahat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  muhat(3), sigmahat(3))}, "location", "northwest")
-%! title ("Three population samples from different normal distibutions")
+%! title ("Three population samples from different normal distributions")
 %! hold off
 
 ## Test output

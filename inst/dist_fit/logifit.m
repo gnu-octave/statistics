@@ -166,7 +166,7 @@ function [paramhat, paramci] = logifit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different logistic distibutions
+%! ## Sample 3 populations from different logistic distributions
 %! rand ("seed", 5)  # for reproducibility
 %! r1 = logirnd (2, 1, 2000, 1);
 %! rand ("seed", 2)   # for reproducibility
@@ -208,7 +208,7 @@ endfunction
 %!                  mu_sB(1), mu_sB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and s=%0.2f", ...
 %!                  mu_sC(1), mu_sC(2))})
-%! title ("Three population samples from different logistic distibutions")
+%! title ("Three population samples from different logistic distributions")
 %! hold off
 
 ## Test output

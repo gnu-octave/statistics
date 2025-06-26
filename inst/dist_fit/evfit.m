@@ -296,7 +296,7 @@ function v = evscale_lkeq (sigma, x, freq, x_weighted_uncensored)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different extreme value distibutions
+%! ## Sample 3 populations from different extreme value distributions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = evrnd (2, 5, 400, 1);
 %! rand ("seed", 12);    # for reproducibility
@@ -337,7 +337,7 @@ endfunction
 %!                  mu_sigmaB(1), mu_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaC(1), mu_sigmaC(2))})
-%! title ("Three population samples from different extreme value distibutions")
+%! title ("Three population samples from different extreme value distributions")
 %! hold off
 
 ## Test output

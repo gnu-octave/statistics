@@ -159,7 +159,7 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different Gumbel distibutions
+%! ## Sample 3 populations from different Gumbel distributions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = gumbelrnd (2, 5, 400, 1);
 %! rand ("seed", 11);    # for reproducibility
@@ -200,7 +200,7 @@ endfunction
 %!                  mu_betaB(1), mu_betaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and β=%0.2f", ...
 %!                  mu_betaC(1), mu_betaC(2))})
-%! title ("Three population samples from different Gumbel distibutions")
+%! title ("Three population samples from different Gumbel distributions")
 %! hold off
 
 ## Test output
