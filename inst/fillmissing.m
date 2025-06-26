@@ -46,7 +46,7 @@
 ## @var{v} can be a scalar or an array containing values for replacing the
 ## missing values in @var{A} with a compatible data type for insertion into
 ## @var{A}. The shape of @var{v} must be a scalar or an array with number
-## of elements in @var{v} equal to the number of elements orthoganal to the
+## of elements in @var{v} equal to the number of elements orthogonal to the
 ## operating dimension. E.g., if @code{size(@var{A})} = [3 5 4], operating
 ## along @code{dim} = 2 requires @var{v} to contain either 1 or 3x4=12
 ## elements.
