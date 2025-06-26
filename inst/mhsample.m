@@ -69,7 +69,7 @@
 ## @end itemize
 ##
 ## The following input property/pair values may be needed depending on the
-## desired outut:
+## desired output:
 ##
 ## @itemize
 ## @item
