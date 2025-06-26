@@ -146,7 +146,7 @@ function [y, idcs] = datasample (data, k, varargin)
 
       ## we have subdivided the space between 0 and 1 accordingly to the
       ## weights vector: we have just to map back the random numbers to the
-      ## indices of the orginal dataset
+      ## indices of the original dataset
       for iter = 1 : k
         idcs(iter) = find (weights_n >= samples(iter), 1);
       endfor
