@@ -219,9 +219,9 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
       yCDF(rd) = [];
     endif
 
-  ## Invalid value parsed as CDF optinonal argument
+  ## Invalid value parsed as CDF optional argument
   else
-    error ("kstest: invalid value parsed as CDF optinonal argument.");
+    error ("kstest: invalid value parsed as CDF optional argument.");
   endif
 
   ## Check if CDF is specified at the observations in X and assign 2nd column
@@ -406,7 +406,7 @@ endfunction
 %! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 1, 4; 3, 2])
 %!error<kstest: wrong duplicates in numerical CDF.> ...
 %! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 2, 4; 3, 5])
-%!error<kstest: invalid value parsed as CDF optinonal argument.> ...
+%!error<kstest: invalid value parsed as CDF optional argument.> ...
 %! kstest ([2, 3, 4, 5, 6], "CDF", {1, 2, 3, 4, 5})
 
 ## Test results
