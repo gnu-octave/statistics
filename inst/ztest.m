@@ -42,7 +42,7 @@
 ##
 ## @code{[@var{h}, @var{pval}] = ztest (@dots{})} returns the p-value.  That
 ## is the probability of observing the given result, or one more extreme, by
-## chance if the null hypothesisis true.
+## chance if the null hypothesis true.
 ##
 ## @code{[@var{h}, @var{pval}, @var{ci}] = ztest (@dots{})} returns a
 ## 100 * (1 - @var{alpha})% confidence interval for the true mean.

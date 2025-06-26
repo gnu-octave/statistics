@@ -28,7 +28,7 @@
 ## @math{2x2} contingency table given in matrix @var{x}. This is a test of the
 ## hypothesis that there are no non-random associations between the two 2-level
 ## categorical variables in @var{x}.  @code{fishertest} returns the result of
-## the tested hypothsis in @var{h}.  @var{h} = 0 indicates that the null
+## the tested hypothesis in @var{h}.  @var{h} = 0 indicates that the null
 ## hypothesis (of no association) cannot be rejected at the 5% significance
 ## level.  @var{h} = 1 indicates that the null hypothesis can be rejected at the
 ## 5% level.  @var{x} must contain only non-negative integers.  Use the
