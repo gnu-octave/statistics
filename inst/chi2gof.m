@@ -109,9 +109,9 @@
 
 function [h, p, stats] = chi2gof (x, varargin)
 
-  ## Check imput arguments
+  ## Check input arguments
   if (nargin < 1)
-    error ("chi2gof: At least one imput argument is required.");
+    error ("chi2gof: At least one input argument is required.");
   endif
   if (! isvector(x) || ! isreal(x))
     error ("chi2gof: X must ba a vector of real numbers.");
