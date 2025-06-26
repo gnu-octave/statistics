@@ -142,7 +142,7 @@
 ##
 ## @item @qcode{"Nu"} @tab @tab A positive scalar, in the range @math{(0,1]}
 ## that specifies the parameter @math{ν} (nu) for training @qcode{"nu_SVC"} and
-## @qcode{"one_class_SVM"} type of models.  Unless overriden by setting the
+## @qcode{"one_class_SVM"} type of models.  Unless overridden by setting the
 ## @qcode{"SVMtype"} parameter, setting the @qcode{"Nu"} parameter always forces
 ## the training model type to @qcode{"one_class_SVM"}, in which case, the number
 ## of classes in @var{Y} is ignored.  The default value for @qcode{"Nu"} is 1.
