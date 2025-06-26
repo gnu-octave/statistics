@@ -304,7 +304,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Accommodate for different formats for GROUP
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
-    ## of strings or numeric idenitiers
+    ## of strings or numeric identifiers
     N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);       # total number of observations
     if (prod (size (Y)) != n)
