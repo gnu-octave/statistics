@@ -31,7 +31,7 @@
 ## removing @qcode{NaN} values.  If @var{x} is a vector, a scalar minimum value
 ## is returned.  If @var{x} is a matrix, a row vector of column maxima is
 ## returned.  If @var{x} is a multidimentional array, the @code{nanmin} operates
-## along the fisrt nonsigleton dimension.  If all values in a column are
+## along the first nonsigleton dimension.  If all values in a column are
 ## @qcode{NaN}, the minimum is returned as @qcode{NaN} rather than @qcode{[]}.
 ##
 ## @code{@var{v} = nanmin (@var{x}, [], @var{dim})} operates along the dimension

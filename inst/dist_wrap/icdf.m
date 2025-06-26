@@ -41,7 +41,7 @@
 ## evaluated at the values in @var{p}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
-## desired quantile distribution function as listed in the followng table.
+## desired quantile distribution function as listed in the following table.
 ## The last column shows the number of required parameters that should be parsed
 ## after @var{x} to the desired iCDF.
 ##

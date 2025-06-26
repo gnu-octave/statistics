@@ -48,7 +48,7 @@
 ## previous syntaxes.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
-## desired cumulative distribution function as listed in the followng table.
+## desired cumulative distribution function as listed in the following table.
 ## The last column shows the number of required parameters that should be parsed
 ## after @var{x} to the desired CDF.  The optional input argument
 ## @qcode{"upper"} does not count in the required number of parameters.
