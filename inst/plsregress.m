@@ -70,7 +70,7 @@
 ## coefficients, containing the intercepts in the first row.
 ## @item @var{pctVar} is a @math{2xNCOMP} matrix containing the percentage of
 ## the variance explained by the model with the first row containing the
-## percentage of exlpained varianced in @var{X} by each PLS component and the
+## percentage of explained varianced in @var{X} by each PLS component and the
 ## second row containing the percentage of explained variance in @var{Y}.
 ## @item @var{mse} is a @math{2x(NCOMP+1)} matrix containing the estimated mean
 ## squared errors for PLS models with @qcode{0:@var{NCOMP}} components with the
