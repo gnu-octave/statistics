@@ -178,7 +178,7 @@ function [h, p, stats] = fishertest (x, varargin)
     endif
 
   else
-    error ("fishertest: the Fisher-Freeman-Halton test is not imlemented yet.");
+    error ("fishertest: the Fisher-Freeman-Halton test is not implemented yet.");
   endif
 
 endfunction
