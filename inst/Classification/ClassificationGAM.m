@@ -602,12 +602,12 @@ classdef ClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("ClassificatioGAM.predict:", ...
+              error (strcat ("ClassificationGAM.predict:", ...
                              " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (strcat ("ClassificatioGAM.predict: trained model", ...
+              error (strcat ("ClassificationGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
             incInt = tmpInt;
