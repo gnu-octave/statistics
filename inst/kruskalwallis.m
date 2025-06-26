@@ -39,7 +39,7 @@
 ## @var{group} can either be a cell array of strings of a character array, with
 ## one row per column of @var{x}.  If you want to omit this argument, enter an
 ## empty array ([]).  If @var{x} is a vector, then @var{group} must be a vector
-## of the same lenth, or a string array or cell array of strings with one row
+## of the same length, or a string array or cell array of strings with one row
 ## for each element of @var{x}.  @var{x} values corresponding to the same value
 ## of @var{group} are placed in the same group.
 ## @item
