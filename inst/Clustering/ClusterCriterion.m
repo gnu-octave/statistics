@@ -28,7 +28,7 @@ classdef ClusterCriterion < handle
   ## List of public properties:
   ## @table @code
   ## @item @qcode{ClusteringFunction}
-  ## a valid clustering funtion name or function handle.  It can be empty if
+  ## a valid clustering function name or function handle.  It can be empty if
   ## the clustering solutions are passed as an input matric.
   ##
   ## @item @qcode{CriterionName}
