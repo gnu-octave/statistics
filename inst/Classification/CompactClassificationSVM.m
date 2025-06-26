@@ -137,7 +137,7 @@ classdef CompactClassificationSVM
     ## @end itemize
     ##
     ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
-    ## returns @var{scores}, which contains the desicion values for each each
+    ## returns @var{scores}, which contains the decision values for each each
     ## prediction.   Alternatively, @var{scores} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
     ## @code{fitPosterior} method.
