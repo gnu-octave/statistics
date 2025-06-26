@@ -57,7 +57,7 @@
 ##
 ## @item Bandwidth
 ## (NA) If this property is given a value other than NA, it sets the bandwith of
-## the kernel function. No optimization is peformed and the property
+## the kernel function. No optimization is performed and the property
 ## @asis{SmoothFactor} is ignored.
 ##
 ## @item Width

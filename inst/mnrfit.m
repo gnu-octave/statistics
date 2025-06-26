@@ -45,7 +45,7 @@
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y}, @var{name}, @var{value})} returns a
 ## matrix, @var{B}, of coefficient estimates for a multinomial model fit with
-## additional parameterss specified @qcode{Name-Value} pair arguments.
+## additional parameters specified @qcode{Name-Value} pair arguments.
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
