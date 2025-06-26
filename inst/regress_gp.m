@@ -83,7 +83,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     error ("regress_gp: X and XI must have the same number of columns.");
   endif
 
-  ## Add defauts
+  ## Add defaults
   kernel = "linear";
   Sp = 100 * eye (size (X, 2) + 1);
   theta = 5;
