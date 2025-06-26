@@ -27,7 +27,7 @@
 ## ignored.
 ##
 ## @code{@var{h} = normplot (@var{ax}, @var{x})} takes a handle @var{ax} in
-## addition to the data in @var{x} and it uses that axes for ploting.  You may
+## addition to the data in @var{x} and it uses that axes for plotting.  You may
 ## get this handle of an existing plot with @code{gca}.
 ##
 ## The line joing the 1st and 3rd quantile is drawn solid whereas its extensions

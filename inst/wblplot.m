@@ -36,7 +36,7 @@
 ## occurences for corresponding data.
 ## Pass [] when no frequency data are available.
 ##
-## @var{confint}: optional confidence limits for ploting upper and lower
+## @var{confint}: optional confidence limits for plotting upper and lower
 ## confidence bands using beta binomial confidence bounds.  If a single
 ## value is given this will be used such as LOW = a and HIGH = 1 - a.
 ## Pass [] if confidence bounds is not requested.

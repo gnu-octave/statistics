@@ -409,13 +409,13 @@ function [varargout] = bar3 (varargin)
 endfunction
 
 %!demo
-%! ## Ploting 5 bars in the same series.
+%! ## Plotting 5 bars in the same series.
 %!
 %! z = [50; 40; 30; 20; 10];
 %! bar3 (z);
 
 %!demo
-%! ## Ploting 5 bars in different groups.
+%! ## Plotting 5 bars in different groups.
 %!
 %! z = [50, 40, 30, 20, 10];
 %! bar3 (z);

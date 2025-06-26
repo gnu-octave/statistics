@@ -157,7 +157,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   group_id = group_id(:);
   named = 1;
 
-  ## Center data to improve accuracy and keep uncentered data for ploting
+  ## Center data to improve accuracy and keep uncentered data for plotting
   xorig = x;
   mu = mean(x);
   x = x - mu;
