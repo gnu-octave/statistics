@@ -58,7 +58,7 @@
 ## is 0.
 ##
 ## @item
-## "thin" @var{thin} omitts @var{m}-1 of every @var{m} points in the generated
+## "thin" @var{thin} omits @var{m}-1 of every @var{m} points in the generated
 ## Markov chain. The default is 1.
 ##
 ## @item
