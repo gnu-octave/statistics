@@ -24,7 +24,7 @@
 ## @deftypefnx {statistics} {[@dots{}] =} ricefit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} ricefit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate parameters and confidence intervals for the Gamma distribution.
+## Estimate parameters and confidence intervals for the Rician distribution.
 ##
 ## @code{@var{paramhat} = ricefit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Rician distribution given the data in

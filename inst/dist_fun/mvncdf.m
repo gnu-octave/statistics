@@ -250,7 +250,7 @@ function [p, err] = mvncdf (varargin)
                          [" positive semi-definite."]));
         endif
       else
-        if (any (sigma) <= 0)
+        if (any (sigma <= 0))
           error ("mvncdf: invalid SIGMA diagonal vector.");
         endif
       endif

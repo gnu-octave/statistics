@@ -922,6 +922,9 @@ function numCode = activationCode (strCode)
       numCode = 6;
     case "gelu"
       numCode = 7;
+    otherwise
+      error (strcat ("ClassificationNeuralNetwork: misspelling or unsupported", ...
+                     " 'Activation' function: '%s'."), strCode);
   endswitch
 endfunction
 

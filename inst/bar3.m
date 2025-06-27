@@ -57,7 +57,7 @@
 ## @var{style} can be @qcode{'detached'}, @qcode{'grouped'}, or
 ## @qcode{'stacked'}. The default style is @qcode {'detached'}.
 ##
-## @code{bar3 (@dots{}, @var{color}} displays all bars using the color specified
+## @code{bar3 (@dots{}, @var{color})} displays all bars using the color specified
 ## by color.  For example, use @qcode{'red'} or @qcode{'red'} to specify all red
 ## bars.  When you want to specify colors for several groups, @var{color} can be
 ## a cellstr vector with each element specifying the color of each group.
@@ -317,7 +317,7 @@ function [varargout] = bar3 (varargin)
   ## origin, with height = 1, and width along x-axis and depth along y-axis
   hw = width / 2;
   hd = depth / 2;
-  ## Scale the bar's base when groupping together
+  ## Scale the bar's base when grouping together
   if (strcmpi (style, "grouped"))
     sc = nx + 1;
     hw = hw / sc;
