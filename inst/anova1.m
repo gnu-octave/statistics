@@ -131,11 +131,11 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   if (length (x) < prod (size (x)))
     [n, m] = size (x);
     x = x(:);
-    group_idx = reshape (repmat ((1:m), n, 1), n*m, 1);
+    gi = reshape (repmat ((1:m), n, 1), n*m, 1);
     if (length (group) == 0)          ## no group names are provided
-      group = group_idx;
+      group = gi;
     elseif (size (group, 1) == m)     ## group names exist and match columns
-      group = group(group_idx,:);
+      group = group(gi,:);
     else
       error ("anova1: columns in X and GROUP length do not match.");
     endif

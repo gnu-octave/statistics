@@ -42,11 +42,7 @@
 ##
 ## @code{[@var{h}, @var{pval}] = ztest2 (@dots{})} returns the p-value.  That
 ## is the probability of observing the given result, or one more extreme, by
-<<<<<<< Updated upstream
 ## chance if the null hypothesisis true.
-=======
-## chance if the null hypothesis is true.
->>>>>>> Stashed changes
 ##
 ## @code{[@var{h}, @var{pval}, @var{zvalue}] = ztest2 (@dots{})} returns the
 ## value of the test statistic.

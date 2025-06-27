@@ -47,13 +47,8 @@
 ## See @command{help hist} for more details.
 ##
 ## @item SmoothFactor
-<<<<<<< Updated upstream
 ## (4) The fuction performs simple kernel density estimation and automatically
 ## finds the bandwith of the kernel function that best approximates the
-=======
-## (4) The function performs simple kernel density estimation and automatically
-## finds the bandwidth of the kernel function that best approximates the
->>>>>>> Stashed changes
 ## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
 ## multiplied by the value of this property. The higher the value the smoother
@@ -61,13 +56,8 @@
 ## distribution.
 ##
 ## @item Bandwidth
-<<<<<<< Updated upstream
 ## (NA) If this property is given a value other than NA, it sets the bandwith of
 ## the kernel function. No optimization is peformed and the property
-=======
-## (NA) If this property is given a value other than NA, it sets the bandwidth of
-## the kernel function. No optimization is performed and the property
->>>>>>> Stashed changes
 ## @asis{SmoothFactor} is ignored.
 ##
 ## @item Width
