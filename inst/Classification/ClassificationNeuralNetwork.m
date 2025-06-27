@@ -865,7 +865,7 @@ classdef ClassificationNeuralNetwork
       IterationLimit          = this.IterationLimit;
       ModelParameters         = this.ModelParameters;
       ConvergenceInfo         = this.ConvergenceInfo;
-      DislayInfo              = this.DislayInfo;
+      DisplayInfo              = this.DisplayInfo;
       Solver                  = this.Solver;
 
       ## Save classdef name and all model properties as individual variables
@@ -874,7 +874,7 @@ classdef ClassificationNeuralNetwork
             "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
             "LayerSizes", "Activations", "OutputLayerActivation", ...
             "LearningRate", "IterationLimit", "Solver", "ModelParameters", ...
-            "ConvergenceInfo", "DislayInfo");
+            "ConvergenceInfo", "DisplayInfo");
     endfunction
 
   endmethods
