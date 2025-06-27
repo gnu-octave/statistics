@@ -32,7 +32,7 @@
 ## same distribution.
 ##
 ## Both tests are computationally identical and will produce the same result.
-## Nevertheless, they anwser to different questions.  Consider two variables,
+## Nevertheless, they answer to different questions.  Consider two variables,
 ## one for gender and another for smoking.  To test independence (whether gender
 ## and smoking is associated), we would randomly sample from the general
 ## population and break them down into categories in the table.  To test

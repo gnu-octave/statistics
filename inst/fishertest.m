@@ -34,7 +34,7 @@
 ## 5% level.  @var{x} must contain only non-negative integers.  Use the
 ## @code{crostab} function to generate the contingency table from samples of two
 ## categorical variables.  Fisher's exact test is not suitable when all integers
-## in @var{x} are very large.  Use can use the Chi-square test in this case.
+## in @var{x} are very large.  User can use the Chi-square test in this case.
 ##
 ## @code{[@var{h}, @var{pval}] = fishertest (@var{x})} returns the p-value in
 ## @var{pval}.  That is the probability of observing the given result, or one

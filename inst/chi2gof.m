@@ -48,7 +48,7 @@
 ## with mean and variance estimated from @var{x}.  The result is @var{h} = 0 if
 ## the null hypothesis (that @var{x} is a random sample from a normal
 ## distribution) cannot be rejected at the 5% significance level, or @var{h} = 1
-## if the nullhypothesis can be rejected at the 5% level.  @code{chi2gof} uses
+## if the null hypothesis can be rejected at the 5% level.  @code{chi2gof} uses
 ## by default 10 bins (@qcode{"nbins"}), and compares the test statistic to a
 ## chi-square distribution with @qcode{@var{nbins} - 3} degrees of freedom, to
 ## take into account that two parameters were estimated.
@@ -114,7 +114,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     error ("chi2gof: At least one imput argument is required.");
   endif
   if (! isvector(x) || ! isreal(x))
-    error ("chi2gof: X must ba a vector of real numbers.");
+    error ("chi2gof: X must be a vector of real numbers.");
   endif
   ## Add initial parameters
   nbins = [];

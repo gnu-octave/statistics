@@ -89,11 +89,11 @@ classdef gmdistribution
                                             obj.NumComponents;
         else
           if any (p < 0)
-            error ("gmmdistribution: component weights must be non-negative");
+            error ("gmdistribution: component weights must be non-negative");
           endif
           s = sum(p);
           if (s == 0)
-            error ("gmmdistribution: component weights must not be all zero");
+            error ("gmdistribution: component weights must not be all zero");
           elseif (s != 1)
             p = p / s;
           endif

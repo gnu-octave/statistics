@@ -42,7 +42,7 @@
 ## @var{name} must be a char string of the name or the abbreviation of the
 ## desired probability distribution function as listed in the followng table.
 ## The last column shows the required number of parameters that must be passed
-## passed to the desired @qcode{*rnd} distribution function.
+## to the desired @qcode{*rnd} distribution function.
 ##
 ## @multitable @columnfractions 0.4 0.05 0.2 0.05 0.3
 ## @headitem Distribution Name @tab @tab Abbreviation @tab @tab Input Parameters

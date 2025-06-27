@@ -145,7 +145,7 @@ function p = cdf (name, x, varargin)
 
   ## Check NAME being a char string
   if (! ischar (name))
-    error ("cdf: distribution NAME must a char string.");
+    error ("cdf: distribution NAME must be a char string.");
   endif
 
   ## Check X being numeric and real

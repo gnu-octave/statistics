@@ -173,7 +173,7 @@ function p_val = forward_scan (nodes, arcs, rsstat)
       thisL = arclen(k);
       thisP = pastP * arcprob(k);
       len = pastL + thisL;
-      ## No paths from node J are signicant
+      ## No paths from node J are significant
       if (len + LP(tonode) < rsstat - seps)
         p_val(1) = p_val(1) + thisP * TP(tonode);
       ## All paths from node J are significant

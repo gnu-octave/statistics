@@ -21,7 +21,7 @@
 ##
 ## Returns random deviates drawn from a q-Gaussian distribution.
 ##
-## Parameter @var{q} charcterizes the q-Gaussian distribution.
+## Parameter @var{q} characterizes the q-Gaussian distribution.
 ## The result has the size indicated by @var{s}.
 ##
 ## Reference:

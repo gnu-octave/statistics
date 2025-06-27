@@ -266,7 +266,7 @@ function [p, err] = mvtcdf (varargin)
     endfor
 
   else
-    error ("mvncdf: too many dimensions in data (limit = 25 columns).");
+    error ("mvtcdf: too many dimensions in data (limit = 25 columns).");
   endif
 
   ## Bound p in range [0, 1]
