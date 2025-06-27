@@ -194,7 +194,11 @@ function [paramhat, paramci] = ricefit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
+<<<<<<< Updated upstream
 %! ## Sample 3 populations from different Gamma distibutions
+=======
+%! ## Sample 3 populations from different Rician distributions
+>>>>>>> Stashed changes
 %! randg ("seed", 5);    # for reproducibility
 %! randp ("seed", 6);
 %! r1 = ricernd (1, 2, 3000, 1);
