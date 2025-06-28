@@ -46,13 +46,13 @@ function f = parseScoreTransform (ScoreTransform, classname)
     f = ScoreTransform;
   else
     if (strcmpi ("doublelogit", ScoreTransform))
-      f = @(x) 1 ./ (1 + exp .^ (-2 * x));
+      f = @(x) 1 ./ (1 + exp (-2 * x));
     elseif (strcmpi ("invlogit", ScoreTransform))
       f = @(x) log (x ./ (1 - x));
     elseif (strcmpi ("ismax", ScoreTransform))
       f = eval (sprintf ("@(x) ismax (x)"));
     elseif (strcmpi ("logit", ScoreTransform))
-      f = @(x) 1 ./ (1 + exp .^ (-x));
+      f = @(x) 1 ./ (1 + exp (-x));
     elseif (any (strcmpi ({"identity", "none"}, ScoreTransform)))
       f = 'none';
     elseif (strcmpi ("sign", ScoreTransform))
@@ -62,7 +62,7 @@ function f = parseScoreTransform (ScoreTransform, classname)
     elseif (strcmpi ("symmetricismax", ScoreTransform))
       f = eval (sprintf ("@(x) symmetricismax (x)"));
     elseif (strcmpi ("symmetriclogit", ScoreTransform))
-      f = @(x) 2 ./ (1 + exp .^ (-x)) - 1;
+      f = @(x) 2 ./ (1 + exp (-x)) - 1;
     endif
   endif
 
