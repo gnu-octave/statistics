@@ -318,7 +318,7 @@ classdef hnswSearcher
         endif
         obj.Distance = Distance;
       else
-        error ("hnswSearcher: Distance must be a string.");
+        error ("hnswSearcher: 'Distance' must be a string.");
       endif
 
       ## Set DistParameter
@@ -327,7 +327,7 @@ classdef hnswSearcher
           obj.DistParameter = 2;
         else
           if (! (isscalar (P) && isnumeric (P) && P > 0 && isfinite (P)))
-            error ("hnswSearcher: P must be a positive finite scalar.");
+            error ("hnswSearcher: 'P' must be a positive finite scalar.");
           endif
           obj.DistParameter = P;
         endif
@@ -338,7 +338,7 @@ classdef hnswSearcher
           if (! (isvector (S) && isnumeric (S) && all (S >= 0)
                                                && all (isfinite (S))
                                                && length (S) == columns (X)))
-            error (strcat ("hnswSearcher: Scale must be a", ...
+            error (strcat ("hnswSearcher: 'Scale' must be a", ...
                            " nonnegative vector matching X columns."));
           endif
           obj.DistParameter = S;
@@ -350,16 +350,16 @@ classdef hnswSearcher
           if (! (ismatrix (C) && isnumeric (C) && all (isfinite (C)(:))
                                                && rows (C) == columns (C)
                                                && rows (C) == columns (X)))
-            error (strcat ("hnswSearcher: Cov must be a square", ...
+            error (strcat ("hnswSearcher: 'Cov' must be a square", ...
                            " matrix matching X columns."));
           endif
           if (! issymmetric (C))
-            error (strcat ("hnswSearcher: Cov must be symmetric", ...
+            error (strcat ("hnswSearcher: 'Cov' must be symmetric", ...
                            " for mahalanobis."));
           endif
           [~, p] = chol (C);
           if (p != 0)
-            error (strcat ("hnswSearcher: Cov must be positive", ...
+            error (strcat ("hnswSearcher: 'Cov' must be positive", ...
                            " definite for mahalanobis."));
           endif
           obj.DistParameter = C;
@@ -474,7 +474,7 @@ classdef hnswSearcher
             K = varargin{2};
             if (! (isscalar (K) && isnumeric (K) &&
                    K >= 1 && K == fix (K) && isfinite (K)))
-              error ("hnswSearcher.knnsearch: K must be a positive integer.");
+              error ("hnswSearcher.knnsearch: 'K' must be a positive integer.");
             endif
           case "searchsetsize"
             SearchSetSize = varargin{2};
@@ -483,7 +483,7 @@ classdef hnswSearcher
                    SearchSetSize >= 1 &&
                    SearchSetSize == fix (SearchSetSize) &&
                    isfinite (SearchSetSize)))
-              error ("hnswSearcher.knnsearch: K must be a positive integer.");
+              error ("hnswSearcher.knnsearch: 'K' must be a positive integer.");
             endif
             if (SearchSetSize < C || SearchSetSize > N)
               error (strcat ("hnswSearcher.knnsearch: 'SearchSetSize' must", ...
