@@ -262,8 +262,8 @@ endfunction
 %!assert (icdf ("wbl", p, 5, 2), wblinv (p, 5, 2))
 
 ## Test input validation
-%!error<icdf: distribution NAME must a char string.> icdf (1)
-%!error<icdf: distribution NAME must a char string.> icdf ({"beta"})
+%!error<icdf: distribution NAME must be a char string.> icdf (1)
+%!error<icdf: distribution NAME must be a char string.> icdf ({"beta"})
 %!error<icdf: P must be numeric.> icdf ("beta", {[1 2 3 4 5]})
 %!error<icdf: P must be numeric.> icdf ("beta", "text")
 %!error<icdf: values in P must be real.> icdf ("beta", 1+i)

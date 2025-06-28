@@ -284,8 +284,8 @@ endfunction
 %!assert (cdf ("wbl", x, 5, 2, "upper"), wblcdf (x, 5, 2, "upper"))
 
 ## Test input validation
-%!error<cdf: distribution NAME must a char string.> cdf (1)
-%!error<cdf: distribution NAME must a char string.> cdf ({"beta"})
+%!error<cdf: distribution NAME must be a char string.> cdf (1)
+%!error<cdf: distribution NAME must be a char string.> cdf ({"beta"})
 %!error<cdf: X must be numeric.> cdf ("beta", {[1 2 3 4 5]})
 %!error<cdf: X must be numeric.> cdf ("beta", "text")
 %!error<cdf: values in X must be real.> cdf ("beta", 1+i)
