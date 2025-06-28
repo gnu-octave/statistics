@@ -16,7 +16,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {[@var{groupindex}, @var{partition}, @var{groupsizes}] =} multiway (@var{numbers}, @var{num_parts})
+## @deftypefn  {statistics} {@var{groupindex} =} multiway (@var{numbers}, @var{num_parts})
+## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}] =} multiway (@var{numbers}, @var{num_parts})
+## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}, @var{groupsizes}] =} multiway (@var{numbers}, @var{num_parts})
 ## @deftypefnx {statistics} {[@dots{}] =} multiway (@dots{}, @qcode{"method"}, @var{method})
 ##
 ## Solve the multiway number partitioning problem.
@@ -27,7 +29,7 @@
 ## @var{numbers} is a vector of positive real numbers to be partitioned.
 ##
 ## @var{num_parts} is a positive integer scalar specifying the number of
-## partitions (subsets) to create.  The default is 2 if not specified.
+## partitions (subsets) to create.
 ##
 ## The optional parameter @qcode{"method"} specifies the algorithm used for
 ## partitioning.  Supported methods are:
@@ -60,11 +62,9 @@
 ## @seealso{}
 ## @end deftypefn
 
-function [groupindex, partition, groupsizes] = multiway (numbers, ...
-                                                         num_parts = 2, ...
-                                                         varargin)
-  
-  if (nargin < 1)
+function [gindex, partition, gsize] = multiway (numbers, num_parts, varargin)
+
+  if (nargin < 2)
     error ("multiway: too few input arguments.");
   endif
 
@@ -91,8 +91,8 @@ function [groupindex, partition, groupsizes] = multiway (numbers, ...
     error ("multiway: NUM_PARTS must be a positive integer.");
   endif
   if (num_parts > numel (numbers))
-    error (strcat ("multiway: NUM_PARTS cannot be greater than number of", ...
-                   " elements in NUMBERS."));
+    error (strcat ("multiway: NUM_PARTS cannot be greater than", ...
+                   " number of elements in NUMBERS."));
   endif
 
   method = "completeKK";
@@ -100,16 +100,16 @@ function [groupindex, partition, groupsizes] = multiway (numbers, ...
   ## Parse optional name-value pairs
   if (numel (varargin) > 0)
     if (mod (numel (varargin), 2) != 0)
-      error ("multiway: optional arguments must come in name-value pairs.");
+      error ("multiway: optional arguments must be in name-value pairs.");
     endif
-    
+
     for i = 1:2:numel (varargin)
       param = varargin{i};
       if (! ischar (param))
         error ("multiway: parameter names must be strings.");
       endif
       value = varargin{i+1};
-      
+
       switch (tolower (param))
         case "method"
           if (! ischar (value))
@@ -124,11 +124,9 @@ function [groupindex, partition, groupsizes] = multiway (numbers, ...
 
   switch (lower (method))
     case "completekk"
-      [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
-                                                                     num_parts);
+      [gindex, partition, gsize] = complete_karmarkar_karp (numbers, num_parts);
     case "greedy"
-      [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
-                                                              num_parts);
+      [gindex, partition, gsize] = greedy_partition (numbers, num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
   endswitch
@@ -138,10 +136,10 @@ function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
                                                                  num_parts)
   [sorted_numbers, sorted_indices] = sort (numbers, 'descend');
   n = numel (sorted_numbers);
-  
+
   partition = cell (1, num_parts);
   sums = zeros (1, num_parts);
-  
+
   group_assignment = zeros (1, n);
   for i = 1:n
     [min_sum, min_idx] = min (sums);
@@ -149,10 +147,10 @@ function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
     sums(min_idx) = min_sum + sorted_numbers(i);
     group_assignment(i) = min_idx;
   endfor
-  
+
   groupindex = zeros (size (numbers));
   groupindex(sorted_indices) = group_assignment;
-  
+
   groupsizes = sums;
 endfunction
 
@@ -371,8 +369,9 @@ endfunction
 
 ## Test input validation
 %!error<multiway: too few input arguments.> multiway ()
+%!error<multiway: too few input arguments.> multiway ([1, 2])
 %!error<multiway: NUMBERS must be a non-empty vector.> multiway ([], 2)
-%!error<multiway: NUMBERS must be a non-empty vector.> multiway (ones(2,2), 2)
+%!error<multiway: NUMBERS must be a non-empty vector.> multiway (ones (2,2), 2)
 %!error<multiway: NUMBERS must be numeric and cannot contain NaN values.> ...
 %! multiway ({1, 2, 3}, 2)
 %!error<multiway: NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
@@ -386,7 +385,7 @@ endfunction
 %!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], -1)
 %!error<multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
 %! multiway ([1,2], 3)
-%!error <multiway: optional arguments must come in name-value pairs.> ...
+%!error <multiway: optional arguments must be in name-value pairs.> ...
 %! multiway ([1,2,3], 2, "method")
 %!error<multiway: parameter names must be strings.> ...
 %! multiway ([1,2,3], 2, 1, "completeKK")
