@@ -19,10 +19,11 @@ classdef CompactClassificationNeuralNetwork
 ## -*- texinfo -*-
 ## @deftypefn {statistics} CompactClassificationNeuralNetwork
 ##
-## A @qcode{CompactClassificationNeuralNetwork} object is a compact version of a
-## discriminant analysis model, @qcode{CompactClassificationNeuralNetwork}.
+## A @qcode{CompactClassificationNeuralNetwork} object is a compact version of
+## the Neural Network classification model,
+## @qcode{CompactClassificationNeuralNetwork}.
 ##
-## The @qcode{CompactClassificationDiscriminant} does not include the training
+## The @qcode{CompactClassificationNeuralNetwork} does not include the training
 ## data resulting to a smaller classifier size, which can be used for making
 ## predictions from new data, but not for tasks such as cross validation.  It
 ## can only be created from a @qcode{ClassificationNeuralNetwork} model by using
@@ -37,7 +38,7 @@ classdef CompactClassificationNeuralNetwork
 ## @code{savemodel}
 ## @end itemize
 ##
-## @seealso{fitcdiscr, ClassificationDiscriminant}
+## @seealso{fitcnet, ClassificationNeuralNetwork}
 ## @end deftypefn
 
   properties (Access = public)
