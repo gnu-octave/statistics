@@ -60,7 +60,9 @@
 ## @seealso{}
 ## @end deftypefn
 
-function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2, varargin)
+function [groupindex, partition, groupsizes] = multiway (numbers, ...
+                                                         num_parts = 2, ...
+                                                         varargin)
   
   if (nargin < 1)
     error ("multiway: too few input arguments.");
@@ -89,7 +91,8 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
     error ("multiway: NUM_PARTS must be a positive integer.");
   endif
   if (num_parts > numel (numbers))
-    error ("multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.");
+    error (strcat ("multiway: NUM_PARTS cannot be greater than number of", ...
+                   " elements in NUMBERS."));
   endif
 
   method = "completeKK";
@@ -124,13 +127,15 @@ function [groupindex, partition, groupsizes] = multiway (numbers, num_parts = 2,
       [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
                                                                      num_parts);
     case "greedy"
-      [groupindex, partition, groupsizes] = greedy_partition (numbers, num_parts);
+      [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
+                                                              num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
   endswitch
 endfunction
 
-function [groupindex, partition, groupsizes] = greedy_partition (numbers, num_parts)
+function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
+                                                                 num_parts)
   [sorted_numbers, sorted_indices] = sort (numbers, 'descend');
   n = numel (sorted_numbers);
   
@@ -151,7 +156,8 @@ function [groupindex, partition, groupsizes] = greedy_partition (numbers, num_pa
   groupsizes = sums;
 endfunction
 
-function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, num_parts)
+function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
+                                                                        num_parts)
   if isempty (numbers)
     partition = cell (1, num_parts);
     for i = 1:num_parts
