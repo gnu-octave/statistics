@@ -47,7 +47,7 @@ endfunction
 
 ## Calculate structures describing nodes and arcs
 function [nodes, arcs] = build_nodes (ct, weights)
-  column = size (ct, 2);      ## number of columns in contigency table
+  column = size (ct, 2);      ## number of columns in contingency table
   rowsum = sum (ct, 2);       ## sum of rows
   colsum = sum (ct, 1);       ## sum of columns
   oldnodes = zeros(1,2);      ## nodes added during last pass

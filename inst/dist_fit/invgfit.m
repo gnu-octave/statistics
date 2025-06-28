@@ -167,7 +167,7 @@ function [paramhat, paramci] = invgfit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from different inverse Gaussian distibutions
+%! ## Sample 3 populations from different inverse Gaussian distributions
 %! rand ("seed", 5); randn ("seed", 5);   # for reproducibility
 %! r1 = invgrnd (1, 0.2, 2000, 1);
 %! rand ("seed", 2); randn ("seed", 2);   # for reproducibility
@@ -209,7 +209,7 @@ endfunction
 %!                  mu_lambdaB(1), mu_lambdaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and λ=%0.2f", ...
 %!                  mu_lambdaC(1), mu_lambdaC(2))})
-%! title ("Three population samples from different inverse Gaussian distibutions")
+%! title ("Three population samples from different inverse Gaussian distributions")
 %! hold off
 
 ## Test output

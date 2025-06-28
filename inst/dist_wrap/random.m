@@ -40,7 +40,7 @@
 ## be specified with a vector of dimensions @var{sz}.
 ##
 ## @var{name} must be a char string of the name or the abbreviation of the
-## desired probability distribution function as listed in the followng table.
+## desired probability distribution function as listed in the following table.
 ## The last column shows the required number of parameters that must be passed
 ## passed to the desired @qcode{*rnd} distribution function.
 ##

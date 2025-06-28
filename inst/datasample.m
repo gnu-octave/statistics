@@ -40,7 +40,7 @@
 ## a logical value that can be @code{true} (default) or @code{false}: when set
 ## to @code{true}, @code{datasample} returns data sampled with replacement.
 ##
-## @item @qcode{Weigths}
+## @item @qcode{Weights}
 ## a vector of positive numbers that sets the probability of each element.  It
 ## must have the same size as @var{data} along dimension @var{dim}.
 ##
@@ -146,7 +146,7 @@ function [y, idcs] = datasample (data, k, varargin)
 
       ## we have subdivided the space between 0 and 1 accordingly to the
       ## weights vector: we have just to map back the random numbers to the
-      ## indices of the orginal dataset
+      ## indices of the original dataset
       for iter = 1 : k
         idcs(iter) = find (weights_n >= samples(iter), 1);
       endfor

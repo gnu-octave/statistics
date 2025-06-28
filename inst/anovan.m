@@ -302,9 +302,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                      [" parameter must be numeric"]));
     endif
 
-    ## Accomodate for different formats for GROUP
+    ## Accommodate for different formats for GROUP
     ## GROUP can be a matrix of numeric identifiers of a cell arrays
-    ## of strings or numeric idenitiers
+    ## of strings or numeric identifiers
     N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);       # total number of observations
     if (prod (size (Y)) != n)
@@ -482,7 +482,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
         error ("anovan: WEIGHTS must be a vector of positive finite values");
       endif
-      # Create diaganal matrix of normalized weights
+      # Create diagonal matrix of normalized weights
       W = diag (WEIGHTS / mean (WEIGHTS));
     else
       # Create identity matrix
@@ -640,7 +640,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
     T(end-1,1:4) = {"Error", sse, dfe, mse};
     T(end,1:3) = {"Total", sst, dft};
-    formula = sprintf ("Y ~ 1");  # Initialise model formula
+    formula = sprintf ("Y ~ 1");  # Initialize model formula
     for i = 1:Nt
       str = sprintf ("%s*", VARNAMES{find (TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
@@ -1193,7 +1193,7 @@ endfunction
 %!demo
 %!
 %! # One-way repeated measures ANOVA on the data from a study on the number of
-%! # words recalled by 10 subjects for three time condtions, in Loftus & Masson
+%! # words recalled by 10 subjects for three time conditions, in Loftus & Masson
 %! # (1994) Psychon Bull Rev. 1(4):476-490, Table 2. Note that the interaction
 %! # between seconds x subject was dropped from the full model by assigning
 %! # subject as a random factor (').

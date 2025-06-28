@@ -164,7 +164,7 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different location-scale T distibutions
+%! ## Sample 3 populations from 3 different location-scale T distributions
 %! randn ("seed", 1);    # for reproducibility
 %! randg ("seed", 2);    # for reproducibility
 %! r1 = tlsrnd (-4, 3, 1, 2000, 1);
@@ -209,7 +209,7 @@ endfunction
 %!                  mu_sigma_nuB(1), mu_sigma_nuB(2), mu_sigma_nuB(3)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f, σ=%0.2f, and ν=%0.2f", ...
 %!                  mu_sigma_nuC(1), mu_sigma_nuC(2), mu_sigma_nuC(3))})
-%! title ("Three population samples from different location-scale T distibutions")
+%! title ("Three population samples from different location-scale T distributions")
 %! hold off
 
 ## Test output

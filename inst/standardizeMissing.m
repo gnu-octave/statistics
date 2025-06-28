@@ -166,7 +166,7 @@ endfunction
 %!assert (standardizeMissing (single (1), true), single (NaN))
 %!assert (standardizeMissing (double (1), int32(1)), double (NaN))
 
-## Passttrough tests
+## Passtrough tests
 %!assert (standardizeMissing (true, true), true)
 %!assert (standardizeMissing (true, 1), true)
 %!assert (standardizeMissing (int32 (1), int32 (1)), int32 (1))

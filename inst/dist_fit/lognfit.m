@@ -134,7 +134,7 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different log-normal distibutions
+%! ## Sample 3 populations from 3 different log-normal distributions
 %! randn ("seed", 1);    # for reproducibility
 %! r1 = lognrnd (0, 0.25, 1000, 1);
 %! randn ("seed", 2);    # for reproducibility
@@ -176,7 +176,7 @@ endfunction
 %!                  mu_sigmaB(1), mu_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
-%! title ("Three population samples from different log-normal distibutions")
+%! title ("Three population samples from different log-normal distributions")
 %! hold off
 
 ## Test output

@@ -121,13 +121,13 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
       endfor
       varargout{1} = group_mean;
     else
-      error ("grpstats: incosistent number of output arguments.");
+      error ("grpstats: inconsistent number of output arguments.");
     endif
   else
     func_num = length (func_names);
     ## Check consistent number of output arguments
     if (nargout != func_num)
-      error ("grpstats: incosistent number of output arguments.");
+      error ("grpstats: inconsistent number of output arguments.");
     endif
     for l = 1:func_num
       switch (func_names{l})

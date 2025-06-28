@@ -213,8 +213,8 @@ classdef ClassificationDiscriminant
           try
             out = this.(s.subs);
           catch
-            error (strcat ("ClassificationDiscriminant.subref:", ...
-                           " unrecongized property: '%s'"), s.subs);
+            error (strcat ("ClassificationDiscriminant.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -248,7 +248,7 @@ classdef ClassificationDiscriminant
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("ClassificationDiscriminant.subsasgn:", ...
-                             " unrecongized or read-only property: '%s'"), ...
+                             " unrecognized or read-only property: '%s'"), ...
                              s.subs);
           endswitch
       endswitch
@@ -394,7 +394,7 @@ classdef ClassificationDiscriminant
         varargin (1:2) = [];
       endwhile
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
       if (isempty (PredictorNames))
         for i = 1:NumPredictors
@@ -435,7 +435,7 @@ classdef ClassificationDiscriminant
         error ("ClassificationDiscriminant: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationNeuralNetwork object
       this.NumObservations = sum (RowsUsed);
@@ -1182,7 +1182,7 @@ classdef ClassificationDiscriminant
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationDiscriminant (this);
     endfunction
 

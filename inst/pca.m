@@ -310,7 +310,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         optVariableWeights = std (x);
       else
         ## unbiased variance estimation: the bias when using reliability weights
-        ## is 1 - var(weights) / std(weigths)^2
+        ## is 1 - var(weights) / std(weights)^2
         sqrtBias = sqrt (1 - (sumsq (optWeights) / sum (optWeights) ^ 2));
         optVariableWeights = mystd (x, optWeights) / sqrtBias;
       endif

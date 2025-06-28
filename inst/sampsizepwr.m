@@ -336,7 +336,7 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
       case "t2"
         ## Initialize second output argument
         N2 = zeros (size (alpha), outclass);
-        ## Caculate one-sided two-sample t-test iteratively
+        ## Calculate one-sided two-sample t-test iteratively
         [out(:), N2(:)] = t1testN (params(1), p1, params(2), power, ...
                                    alpha, tail, ratio);
       case "var"
@@ -683,7 +683,7 @@ endfunction
 
 ## Sample size calculation via binary search
 function N = searchbinaryN (F, lohi, p0, p1, desiredpower, alpha, tail)
-  ## Find uper and lower bounds
+  ## Find upper and lower bounds
   nlo = repmat(lohi(1),size(alpha));
   nhi = repmat(lohi(2),size(alpha));
   obspower = F(p0,p1,alpha,tail,nhi);

@@ -66,7 +66,7 @@
 ## range @math{[0,1]}.  If only one color is specified, then it applies to all
 ## bars.  If the number of colors equals the number of groups, then each color
 ## is applied to each group.  If the number of colors equals the number of
-## elements in @var{y}, then each inidividual bar is assigned the particular
+## elements in @var{y}, then each individual bar is assigned the particular
 ## color.  You can also define @var{color} using the paired
 ## @var{name}/@var{value} syntax shown below.
 ##
@@ -409,13 +409,13 @@ function [varargout] = bar3h (varargin)
 endfunction
 
 %!demo
-%! ## Ploting 5 bars in the same series.
+%! ## Plotting 5 bars in the same series.
 %!
 %! y = [50; 40; 30; 20; 10];
 %! bar3h (y);
 
 %!demo
-%! ## Ploting 5 bars in different groups.
+%! ## Plotting 5 bars in different groups.
 %!
 %! y = [50, 40, 30, 20, 10];
 %! bar3h (y);

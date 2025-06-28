@@ -103,7 +103,7 @@ endfunction
 %! ## Display the first seven entries of the Gender variable
 %! gender = Gender(1:7)
 %!
-%! ## Compute the equency table that shows the number and
+%! ## Compute the frequency table that shows the number and
 %! ## percentage of Male and Female patients
 %! tabulate (Gender)
 

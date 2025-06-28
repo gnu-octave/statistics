@@ -32,7 +32,7 @@
 ## F(x) = (Number of observations <= x) / (Total number of observations)
 ##
 ## for all values in the sample vector @var{x}.  NaNs are ignored.  @var{hCDF}
-## is the handle of the empirical CDF curve (a handle hraphics 'line' object).
+## is the handle of the empirical CDF curve (a handle graphics 'line' object).
 ##
 ## @code{[@var{hCDF}, @var{stats}] = cdfplot (@var{x})} also returns a structure
 ## with the following fields as a statistical summary.

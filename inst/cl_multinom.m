@@ -26,7 +26,7 @@
 ##
 ## This function calculates the level of confidence at which the samples
 ## represent the true distribution given that there is a predefined tolerance
-## (confidence interval). This is the upside down case of the typical excercises
+## (confidence interval). This is the upside down case of the typical exercises
 ## at which we want to get the confidence interval given the confidence level
 ## (and the estimated parameters of the underlying distribution).
 ## But once we accept (lets say at elections) that we have a standard predefined
@@ -42,7 +42,7 @@
 ## @item @var{N} @tab @tab int scalar @tab @tab Population size that was sampled
 ## by @var{X}.  If @qcode{N < sum (@var{X})}, infinite number assumed.
 ## @item @var{b} @tab @tab real vector @tab @tab confidence interval. If vector,
-## it should be the size of @var{X} containing confence interval for each cells.
+## it should be the size of @var{X} containing confidence interval for each cells.
 ## If scalar, each cell will have the same value of b unless it is zero or -1.
 ## If value is 0, @var{b} = 0.02 is assumed which is standard choice at
 ## elections otherwise it is calculated in a way that one sample in a cell

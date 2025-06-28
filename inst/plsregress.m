@@ -70,7 +70,7 @@
 ## coefficients, containing the intercepts in the first row.
 ## @item @var{pctVar} is a @math{2xNCOMP} matrix containing the percentage of
 ## the variance explained by the model with the first row containing the
-## percentage of exlpained varianced in @var{X} by each PLS component and the
+## percentage of explained varianced in @var{X} by each PLS component and the
 ## second row containing the percentage of explained variance in @var{Y}.
 ## @item @var{mse} is a @math{2x(NCOMP+1)} matrix containing the estimated mean
 ## squared errors for PLS models with @qcode{0:@var{NCOMP}} components with the
@@ -382,7 +382,7 @@ endfunction
 %! stem (residuals, "color", "r", "markersize", 4, "markeredgecolor", "r")
 %! xlabel ("Observations");
 %! ylabel ("Residuals");
-%! title ("Residuals in octane's fitted responce");
+%! title ("Residuals in octane's fitted response");
 
 %!demo
 %! ## Calculate Variable Importance in Projection (VIP) for PLS Regression
@@ -417,7 +417,7 @@ endfunction
 %! axis ("tight");
 %! xlabel ("Predictor Variables");
 %! ylabel ("VIP scores");
-%! title ("VIP scores for each predictror variable with 10 components");
+%! title ("VIP scores for each predictor variable with 10 components");
 
 ## Test output
 %!test

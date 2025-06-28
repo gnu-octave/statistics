@@ -152,7 +152,7 @@ function [p, stats] = vartestn (x, group, varargin)
     group = group';
   endif
   ## If x is a matrix, convert it to column vector and create a
-  ## corresponging column vector for groups
+  ## corresponding column vector for groups
   if (length (x) < prod (size (x)))
     [n, m] = size (x);
     x = x(:);
@@ -180,11 +180,11 @@ function [p, stats] = vartestn (x, group, varargin)
   ## Compute group summary statistics
   [group_mean, group_ster, group_size] = grpstats (x, group_id, ...
                                                    {"mean", "sem", "numel"});
-  ## Compute group degreed of freedom and variances
+  ## Compute group degrees of freedom and variances
   group_DF = group_size - 1;
   groupVAR = group_size .* group_ster .^ 2;
   sum_DF = sum (group_DF);
-  ## Caculate pooled variance
+  ## Calculate pooled variance
   if (sum_DF > 0)
      pooledVAR = sum (group_DF .* groupVAR) / sum_DF;
   else

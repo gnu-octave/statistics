@@ -129,7 +129,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
 
   ## Remove row info from ANOVA2 table
   table(3,:) = [];
-  ## Remove interaction chi-sq and p-value, if there are repetitive measuments
+  ## Remove interaction chi-sq and p-value, if there are repetitive measurements
   if (reps > 1)
     table{3,5} = [];
     table{3,6} = [];

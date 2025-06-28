@@ -35,7 +35,7 @@ function ci = __disp__ (pd, distname)
       for i = 1:numel (pd.x)
         fprintf ("F(%g) = %g\n", pd.x(i), pd.Fx(i));
       endfor
-      ## Print trunctation interval if applicable
+      ## Print truncation interval if applicable
       if (pd.IsTruncated)
         fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
       else
@@ -50,7 +50,7 @@ function ci = __disp__ (pd, distname)
       fprintf ("  Probabilities:\n");
       fprintf ("    %0.4f", pd.Probabilities);
       fprintf ("\n\n");
-      ## Print trunctation interval if applicable
+      ## Print truncation interval if applicable
       if (pd.IsTruncated)
         fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
       endif
@@ -90,7 +90,7 @@ function ci = __disp__ (pd, distname)
           fprintf (pat2, pd.ParameterNames{i}, pd.ParameterValues(i));
         endif
       endfor
-      ## Print trunctation interval if applicable
+      ## Print truncation interval if applicable
       if (pd.IsTruncated)
         fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
       else

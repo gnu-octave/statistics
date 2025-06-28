@@ -28,11 +28,11 @@
 ## @math{2x2} contingency table given in matrix @var{x}. This is a test of the
 ## hypothesis that there are no non-random associations between the two 2-level
 ## categorical variables in @var{x}.  @code{fishertest} returns the result of
-## the tested hypothsis in @var{h}.  @var{h} = 0 indicates that the null
+## the tested hypothesis in @var{h}.  @var{h} = 0 indicates that the null
 ## hypothesis (of no association) cannot be rejected at the 5% significance
 ## level.  @var{h} = 1 indicates that the null hypothesis can be rejected at the
 ## 5% level.  @var{x} must contain only non-negative integers.  Use the
-## @code{crostab} function to generate the contingency table from samples of two
+## @code{crosstab} function to generate the contingency table from samples of two
 ## categorical variables.  Fisher's exact test is not suitable when all integers
 ## in @var{x} are very large.  Use can use the Chi-square test in this case.
 ##
@@ -122,7 +122,7 @@ function [h, p, stats] = fishertest (x, varargin)
     endfor
   endif
 
-  ## For 2x2 contigency table apply Fisher's exact test
+  ## For 2x2 contingency table apply Fisher's exact test
   ## For larger tables apply the Fisher-Freeman-Halton variance
 
   if (all (size (x) == 2))
@@ -178,7 +178,7 @@ function [h, p, stats] = fishertest (x, varargin)
     endif
 
   else
-    error ("fishertest: the Fisher-Freeman-Halton test is not imlemented yet.");
+    error ("fishertest: the Fisher-Freeman-Halton test is not implemented yet.");
   endif
 
 endfunction

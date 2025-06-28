@@ -251,8 +251,8 @@ classdef ClassificationNeuralNetwork
           try
             out = this.(s.subs);
           catch
-            error (strcat ("ClassificationNeuralNetwork.subref:", ...
-                           " unrecongized property: '%s'"), s.subs);
+            error (strcat ("ClassificationNeuralNetwork.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -286,7 +286,7 @@ classdef ClassificationNeuralNetwork
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("ClassificationNeuralNetwork.subsasgn:", ...
-                             " unrecongized or read-only property: '%s'"), ...
+                             " unrecognized or read-only property: '%s'"), ...
                              s.subs);
           endswitch
       endswitch
@@ -461,7 +461,7 @@ classdef ClassificationNeuralNetwork
         varargin (1:2) = [];
       endwhile
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
       if (isempty (PredictorNames))
         for i = 1:NumPredictors
@@ -502,7 +502,7 @@ classdef ClassificationNeuralNetwork
         error ("ClassificationNeuralNetwork: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationNeuralNetwork object
       this.NumObservations = sum (RowsUsed);
@@ -821,7 +821,7 @@ classdef ClassificationNeuralNetwork
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationNeuralNetwork (this);
     endfunction
 
@@ -865,7 +865,7 @@ classdef ClassificationNeuralNetwork
       IterationLimit          = this.IterationLimit;
       ModelParameters         = this.ModelParameters;
       ConvergenceInfo         = this.ConvergenceInfo;
-      DislayInfo              = this.DislayInfo;
+      DisplayInfo              = this.DisplayInfo;
       Solver                  = this.Solver;
 
       ## Save classdef name and all model properties as individual variables
@@ -874,7 +874,7 @@ classdef ClassificationNeuralNetwork
             "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
             "LayerSizes", "Activations", "OutputLayerActivation", ...
             "LearningRate", "IterationLimit", "Solver", "ModelParameters", ...
-            "ConvergenceInfo", "DislayInfo");
+            "ConvergenceInfo", "DisplayInfo");
     endfunction
 
   endmethods

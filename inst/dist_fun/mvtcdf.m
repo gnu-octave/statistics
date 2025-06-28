@@ -59,7 +59,7 @@
 ##
 ## @code{@var{p} = mvtcdf (@dots{}, @var{options})} specifies the structure,
 ## which controls specific parameters for the numerical integration used to
-## compute @var{p}. The required fieds are:
+## compute @var{p}. The required fields are:
 ##
 ## @multitable @columnfractions 0.2 0.05 0.75
 ## @item @qcode{"TolFun"} @tab @tab Maximum absolute error tolerance.  Default
@@ -412,7 +412,7 @@ endfunction
 %! X = [X1(:), X2(:)];
 %! p = mvtcdf (X, rho, df);
 %! surf (X1, X2, reshape (p, 25, 25));
-%! title ("Bivariate Student's t cummulative distribution function");
+%! title ("Bivariate Student's t cumulative distribution function");
 
 ## Test output against MATLAB R2018
 %!test

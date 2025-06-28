@@ -20,7 +20,7 @@
 ## @deftypefn  {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} fitrgam (@var{X}, @var{Y}, @var{name}, @var{value})
 ##
-## Fit a Generalised Additive Model (GAM) for regression.
+## Fit a Generalized Additive Model (GAM) for regression.
 ##
 ## @code{@var{obj} = fitrgam (@var{X}, @var{Y})} returns an object of
 ## class RegressionGAM, with matrix @var{X} containing the predictor data and
@@ -102,7 +102,7 @@
 ## variable to be fitted with, although not recommended.
 ##
 ## @item @tab @qcode{"tol"} @tab a positive scalar to set the tolerance for
-## covergence during training. By defaul, it is set to @qcode{1e-3}.
+## convergence during training. By default, it is set to @qcode{1e-3}.
 ## @end multitable
 ##
 ## You can parse either a @qcode{"formula"} or an @qcode{"interactions"}

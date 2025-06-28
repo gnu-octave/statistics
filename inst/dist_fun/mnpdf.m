@@ -39,7 +39,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{y} is a vector of probabilites of the random samples @var{x} from the
+## @var{y} is a vector of probabilities of the random samples @var{x} from the
 ## multinomial distribution with corresponding parameter @var{pk}. The parameter
 ## @var{n} of the multinomial distribution is the sum of the elements of each
 ## row of @var{x}. The length of @var{y} is the number of columns of @var{x}.

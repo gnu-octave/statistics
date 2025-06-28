@@ -127,7 +127,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
 
   ## If x is a matrix, convert it to column vector and create a
-  ## corresponging column vector for groups
+  ## corresponding column vector for groups
   if (length (x) < prod (size (x)))
     [n, m] = size (x);
     x = x(:);
@@ -157,7 +157,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   group_id = group_id(:);
   named = 1;
 
-  ## Center data to improve accuracy and keep uncentered data for ploting
+  ## Center data to improve accuracy and keep uncentered data for plotting
   xorig = x;
   mu = mean(x);
   x = x - mu;
@@ -200,7 +200,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
         ## Assume equal variances (Fisher's One-way ANOVA)
         F = (SSM / dfm) / MSE;
       case "unequal"
-        ## Accomodate for unequal variances (Welch's One-way ANOVA)
+        ## Accommodate for unequal variances (Welch's One-way ANOVA)
         ## Calculate the sampling variance for each group (i.e. the square of the SEM)
         sv = xv ./ xs;
         ## Calculate weights as the reciprocal of the sampling variance

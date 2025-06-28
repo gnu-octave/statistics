@@ -150,8 +150,8 @@ classdef CompactClassificationDiscriminant
           try
             out = this.(s.subs);
           catch
-            error (strcat ("CompactClassificationDiscriminant.subref:", ...
-                           " unrecongized property: '%s'"), s.subs);
+            error (strcat ("CompactClassificationDiscriminant.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -185,7 +185,7 @@ classdef CompactClassificationDiscriminant
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("CompactClassificationDiscriminant.subsasgn:", ...
-                             " unrecongized or read-only property: '%s'"), ...
+                             " unrecognized or read-only property: '%s'"), ...
                              s.subs);
           endswitch
       endswitch

@@ -211,7 +211,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     # Start in state 1 but do not include it in the states vector
     cstate = 1;
     for i = 1:len
-      # Compare the randon number i of transdraw to the cumulated
+      # Compare the random number i of transdraw to the cumulated
       # probability of the state transition and set the transition
       # accordingly
       states(i) = sum (transdraw(i) <= transprob(cstate, :));

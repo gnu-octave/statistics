@@ -251,7 +251,7 @@ function nll = negloglike (paramhat, data)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different generalized Pareto distibutions
+%! ## Sample 2 populations from different generalized Pareto distributions
 %! ## Assume location parameter θ is known
 %! theta = 0;
 %! rand ("seed", 5);    # for reproducibility
@@ -286,7 +286,7 @@ endfunction
 %!                  k_sigmaA(1), k_sigmaA(2)), ...
 %!          sprintf("PDF for sample 3 with estimated k=%0.2f and σ=%0.2f", ...
 %!                  k_sigmaB(1), k_sigmaB(2))})
-%! title ("Three population samples from different generalized Pareto distibutions")
+%! title ("Three population samples from different generalized Pareto distributions")
 %! text (2, 0.7, "Known location parameter θ = 0")
 %! hold off
 

@@ -123,7 +123,7 @@ function [paramhat, paramci] = hnfit (x, mu, alpha, freq)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different half-normal distibutions
+%! ## Sample 2 populations from different half-normal distributions
 %! rand ("seed", 1);   # for reproducibility
 %! r1 = hnrnd (0, 5, 5000, 1);
 %! rand ("seed", 2);   # for reproducibility
@@ -155,7 +155,7 @@ endfunction
 %!                  mu_sigmaA(1), mu_sigmaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaB(1), mu_sigmaB(2))})
-%! title ("Two population samples from different half-normal distibutions")
+%! title ("Two population samples from different half-normal distributions")
 %! hold off
 
 ## Test output

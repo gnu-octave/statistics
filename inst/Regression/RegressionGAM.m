@@ -21,7 +21,7 @@ classdef RegressionGAM
 ## @deftypefn  {statistics} {@var{obj} =} RegressionGAM (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} RegressionGAM (@dots{}, @var{name}, @var{value})
 ##
-## Create a @qcode{RegressionGAM} class object containing a Generalised Additive
+## Create a @qcode{RegressionGAM} class object containing a Generalized Additive
 ## Model (GAM) for regression.
 ##
 ## A @qcode{RegressionGAM} class object can store the predictors and response
@@ -108,7 +108,7 @@ classdef RegressionGAM
 ## variable to be fitted with, although not recommended.
 ##
 ## @item @tab @qcode{"tol"} @tab a positive scalar to set the tolerance for
-## covergence during training. By defaul, it is set to @qcode{1e-3}.
+## convergence during training. By default, it is set to @qcode{1e-3}.
 ## @end multitable
 ##
 ## You can parse either a @qcode{"formula"} or an @qcode{"interactions"}
@@ -141,7 +141,7 @@ classdef RegressionGAM
     Order           = [];       # Order of spline fitting
     DoF             = [];       # Degrees of freedom for fitting spline
 
-    Tol             = [];       # Tolerence for convergence
+    Tol             = [];       # Tolerance for convergence
   endproperties
 
 
@@ -158,7 +158,7 @@ classdef RegressionGAM
       nsample = rows (X);
       ndims_X = columns (X);
 
-      ## Check correspodence between predictors and response
+      ## Check correspondence between predictors and response
       if (nsample != rows (Y))
         error ("RegressionGAM: number of rows in X and Y must be equal.");
       endif
@@ -171,11 +171,11 @@ classdef RegressionGAM
       DoF            = ones (1, ndims_X) * 8; # Degrees of freedom
       Order          = ones (1, ndims_X) * 3; # Order of spline
       Knots          = ones (1, ndims_X) * 5; # Knots
-      Tol            = 1e-3;                  # Tolerence for convergence
+      Tol            = 1e-3;                  # Tolerance for convergence
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
-      ## Number of parameters for Formula, Ineractions (maximum 1 allowed)
+      ## Number of parameters for Formula, Interactions (maximum 1 allowed)
       F_I = 0;
 
       ## Parse extra parameters
@@ -302,7 +302,7 @@ classdef RegressionGAM
         error ("RegressionGAM: invalid values in Y.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the RegressionGAM object
       this.NumObservations = rows (X);
@@ -311,7 +311,7 @@ classdef RegressionGAM
       ## Assign the number of original predictors to the RegressionGAM object
       this.NumPredictors = ndims_X;
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:ndims_X
           PredictorNames {i} = strcat ("x", num2str (i));
@@ -735,7 +735,7 @@ classdef RegressionGAM
           res = res - ppval (param(j), X(:,j));
         endfor
 
-        ## Check if RSS is less than the tolerence
+        ## Check if RSS is less than the tolerance
         if (all (abs (RSS - RSSk) <= Tol))
           converged = true;
         endif

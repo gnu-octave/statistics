@@ -256,8 +256,8 @@ classdef ClassificationKNN
           try
             out = this.(s.subs);
           catch
-            error (strcat ("ClassificationKNN.subref:", ...
-                           " unrecongized property: '%s'"), s.subs);
+            error (strcat ("ClassificationKNN.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -291,7 +291,7 @@ classdef ClassificationKNN
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("ClassificationKNN.subsasgn:", ...
-                             " unrecongized or read-only property: '%s'"), ...
+                             " unrecognized or read-only property: '%s'"), ...
                              s.subs);
           endswitch
       endswitch
@@ -565,7 +565,7 @@ classdef ClassificationKNN
         varargin (1:2) = [];
       endwhile
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       NumPredictors = columns (X);
       if (isempty (PredictorNames))
         for i = 1:NumPredictors
@@ -606,7 +606,7 @@ classdef ClassificationKNN
         error ("ClassificationKNN: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationKNN object
       this.NumObservations = sum (RowsUsed);

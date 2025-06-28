@@ -168,7 +168,7 @@ function [N, C] = hist3 (X, varargin)
     z = zeros ((size (counts) +1) *2);
     z(2:end-1,2:end-1) = kron (counts, ones (2, 2));
     ## Setting the values for the end of the histogram bin like this
-    ## seems straight wrong but that's hwo Matlab plots look.
+    ## seems straight wrong but that's how Matlab plots look.
     y = [kron(c_edges, ones (1, 2)) (c_edges(end)*2-c_edges(end-1))([1 1])];
     x = [kron(r_edges, ones (1, 2)) (r_edges(end)*2-r_edges(end-1))([1 1])];
     mesh (hax, x, y, z, "facecolor", [.75 .85 .95], varargin{next_argin:end});

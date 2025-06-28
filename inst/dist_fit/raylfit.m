@@ -115,7 +115,7 @@ function [sigmaA, sigmaci] = raylfit (x, alpha, censor, freq)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different Rayleigh distibutions
+%! ## Sample 3 populations from 3 different Rayleigh distributions
 %! rand ("seed", 2);    # for reproducibility
 %! r1 = raylrnd (1, 1000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -156,7 +156,7 @@ endfunction
 %!                  sigmaB), ...
 %!          sprintf("PDF for sample 3 with estimated σ=%0.2f", ...
 %!                  sigmaC)})
-%! title ("Three population samples from different Rayleigh distibutions")
+%! title ("Three population samples from different Rayleigh distributions")
 %! hold off
 
 ## Test output

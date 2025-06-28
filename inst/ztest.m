@@ -42,7 +42,7 @@
 ##
 ## @code{[@var{h}, @var{pval}] = ztest (@dots{})} returns the p-value.  That
 ## is the probability of observing the given result, or one more extreme, by
-## chance if the null hypothesisis true.
+## chance if the null hypothesis true.
 ##
 ## @code{[@var{h}, @var{pval}, @var{ci}] = ztest (@dots{})} returns a
 ## 100 * (1 - @var{alpha})% confidence interval for the true mean.
@@ -124,7 +124,7 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   else
     sz = size (x, dim);
   endif
-  ## Calculate mean, strandard error and z-value for each group
+  ## Calculate mean, standard error and z-value for each group
   x_mean = sum (x(! is_nan), dim) ./ max (1, sz);
   stderr = sigma ./ sqrt (sz);
   zvalue = (x_mean - m) ./ stderr;

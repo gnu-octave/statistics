@@ -53,7 +53,7 @@ function [Nhat, Nci] = unidfit (x, alpha, freq)
     error ("unidfit: function called with too few input arguments.");
   endif
 
-  ## Check data inX
+  ## Check data in X
   if (any (x < 0))
     error ("unidfit: X cannot have negative values.");
   endif
@@ -98,7 +98,7 @@ function [Nhat, Nci] = unidfit (x, alpha, freq)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different discrete uniform distibutions
+%! ## Sample 2 populations from different discrete uniform distributions
 %! rand ("seed", 1);    # for reproducibility
 %! r1 = unidrnd (5, 1000, 1);
 %! rand ("seed", 2);    # for reproducibility
@@ -128,7 +128,7 @@ endfunction
 %!          "Normalized HIST of sample 2 with N=9", ...
 %!          sprintf("PDF for sample 1 with estimated N=%0.2f", NhatA), ...
 %!          sprintf("PDF for sample 2 with estimated N=%0.2f", NhatB)})
-%! title ("Two population samples from different discrete uniform distibutions")
+%! title ("Two population samples from different discrete uniform distributions")
 %! hold off
 
 ## Test output

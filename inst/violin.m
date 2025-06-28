@@ -3,7 +3,7 @@
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
-## This progrm is free software; you can redistribute it and/or modify
+## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
@@ -25,7 +25,7 @@
 ##
 ## Produce a Violin plot of the data @var{x}.
 ##
-## The input data @var{x} can be a N-by-m array containg N observations of m
+## The input data @var{x} can be a N-by-m array containing N observations of m
 ## variables.  It can also be a cell with m elements, for the case in which the
 ## variables are not uniformly sampled.
 ##
@@ -47,7 +47,7 @@
 ## See @command{help hist} for more details.
 ##
 ## @item SmoothFactor
-## (4) The fuction performs simple kernel density estimation and automatically
+## (4) The function performs simple kernel density estimation and automatically
 ## finds the bandwith of the kernel function that best approximates the
 ## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
@@ -57,7 +57,7 @@
 ##
 ## @item Bandwidth
 ## (NA) If this property is given a value other than NA, it sets the bandwith of
-## the kernel function. No optimization is peformed and the property
+## the kernel function. No optimization is performed and the property
 ## @asis{SmoothFactor} is ignored.
 ##
 ## @item Width

@@ -140,7 +140,7 @@ function [varargout] = histfit (varargin)
   endif
   h = bar (ax, bincenter, binsize, 1, "facecolor", "b");
 
-  ## Fit distibution to data
+  ## Fit distribution to data
   pd = fitdist (x, distname);
 
   ## Compute density function

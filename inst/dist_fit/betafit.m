@@ -217,7 +217,7 @@ function [paramhat, paramci] = betafit (x, alpha, varargin)
 endfunction
 
 %!demo
-%! ## Sample 2 populations from different Beta distibutions
+%! ## Sample 2 populations from different Beta distributions
 %! randg ("seed", 1);   # for reproducibility
 %! r1 = betarnd (2, 5, 500, 1);
 %! randg ("seed", 2);   # for reproducibility
@@ -248,7 +248,7 @@ endfunction
 %!                  a_b_A(1), a_b_A(2)), ...
 %!          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_b_B(1), a_b_B(2))})
-%! title ("Two population samples from different Beta distibutions")
+%! title ("Two population samples from different Beta distributions")
 %! hold off
 
 ## Test output

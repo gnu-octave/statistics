@@ -476,7 +476,7 @@ classdef ClassificationSVM
         error ("ClassificationSVM: invalid values in X.");
       endif
 
-      ## Assign the number of observations and their correspoding indices
+      ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
       ## to the ClassificationSVM object
       this.NumObservations = rows (X);
@@ -521,7 +521,7 @@ classdef ClassificationSVM
         this.Cost = Cost;
       endif
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:ndims_X
           PredictorNames {i} = strcat ("x", num2str (i));
@@ -635,7 +635,7 @@ classdef ClassificationSVM
     ## @end itemize
     ##
     ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
-    ## returns @var{scores}, which contains the desicion values for each each
+    ## returns @var{scores}, which contains the decision values for each each
     ## prediction.   Alternatively, @var{scores} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
     ## @code{fitPosterior} method.
@@ -722,7 +722,7 @@ classdef ClassificationSVM
     ## @end itemize
     ##
     ## @code{[@var{labels}, @var{scores}] = resubPredict (@var{obj}} also
-    ## returns @var{scores}, which contains the desicion values for each each
+    ## returns @var{scores}, which contains the decision values for each each
     ## prediction.   Alternatively, @var{scores} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
     ## @code{fitPosterior} method.
@@ -1392,7 +1392,7 @@ classdef ClassificationSVM
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationSVM (this);
     endfunction
 

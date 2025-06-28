@@ -67,7 +67,7 @@ classdef ClassificationPartitionedModel
 ## used for the training, e.g., @qcode{"ClassificationKNN"}.
 ##
 ## @item @qcode{KFold} @tab @tab Number of cross-validated folds,
-## specified as a positive interger scalar. Represents how many folds the
+## specified as a positive integer scalar. Represents how many folds the
 ## data was divided into for cross-validation purposes.
 ##
 ## @item @qcode{ModelParameters} @tab @tab Model parameters used during

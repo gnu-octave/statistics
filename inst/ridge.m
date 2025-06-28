@@ -42,7 +42,7 @@
 ## @item
 ## @code{X} must be an @math{Nxp} numeric matrix with the predictor data.
 ## @item
-## @code{k} must be a numeric vectir with the ridge parameters.
+## @code{k} must be a numeric vector with the ridge parameters.
 ## @item
 ## @code{scaled} must be a numeric scalar indicating whether the coefficient
 ## estimates in @var{b} are restored to the scale of the original data.  By
@@ -85,7 +85,7 @@ function b = ridge (y, X, k, scaled)
   ## Force y to a column vector
   y = y(:);
 
-  ## Rremove any missing values
+  ## Remove any missing values
   notnans = ! logical (sum (isnan ([y, X]), 2));
   y = y(notnans);
   X = X(notnans,:);

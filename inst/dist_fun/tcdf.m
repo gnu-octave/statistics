@@ -99,7 +99,7 @@ function p = tcdf (x, df, uflag)
     endif
   endif
 
-  ## Proccess remaining values for DF (non-integers and > 1e4) except DF == Inf
+  ## Process remaining values for DF (non-integers and > 1e4) except DF == Inf
   k &= ! ks;
 
   ## Distinguish between small and big abs(x)

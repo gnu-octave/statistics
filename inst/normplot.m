@@ -27,10 +27,10 @@
 ## ignored.
 ##
 ## @code{@var{h} = normplot (@var{ax}, @var{x})} takes a handle @var{ax} in
-## addition to the data in @var{x} and it uses that axes for ploting.  You may
+## addition to the data in @var{x} and it uses that axes for plotting.  You may
 ## get this handle of an existing plot with @code{gca}.
 ##
-## The line joing the 1st and 3rd quantile is drawn solid whereas its extensions
+## The line joining the 1st and 3rd quantile is drawn solid whereas its extensions
 ## to both ends are dotted.  If the underlying distribution is normal, the
 ## points will cluster around the solid part of the line.  Other distribution
 ## types will introduce curvature in the plot.
@@ -58,7 +58,7 @@ function h = normplot (varargin)
   endif
   ## Check that x is a vector or a 2-D matrix
   if (isscalar (x) || ndims (x) > 2)
-    error ("normplot: x must be a vecctor or a 2-D matrix handle.");
+    error ("normplot: x must be a vector or a 2-D matrix handle.");
   endif
   ## If x is a vector, make it a column vector
   if (rows (x) == 1)

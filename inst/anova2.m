@@ -191,7 +191,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
     case {"interaction", "full"}
       ## TWO-WAY ANOVA WITH INTERACTION (full factorial model)
       ## Sums--of-squares are already partitioned into main effects and
-      ## interaction. Just calculate mean-squares and degrees of fredom
+      ## interaction. Just calculate mean-squares and degrees of freedom
       model = "interaction";
       MSE = SSE / df_SSE;           ## Mean Square for Error (Within)
       MSR = SSR / df_SSR;           ## Mean Square for Row Factor

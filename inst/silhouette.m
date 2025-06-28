@@ -82,7 +82,7 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
   endif
 
   ## Check for last argument being 'DoNotPlot' to prevent from opening a figure
-  ## Undocumented feature to avoid issues with faiing tests.  It is only used by
+  ## Undocumented feature to avoid issues with failing tests.  It is only used by
   ## SilhouetteEvaluation class.
   DisplayPlot = true;
   if (numel (varargin) > 0)

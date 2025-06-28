@@ -64,7 +64,7 @@ function [h, pval, chisq] = mcnemar_test (x, varargin)
     error ("mcnemar_test: too many input arguments.");
   endif
 
-  ## Check contigency table
+  ## Check contingency table
   if (! isequal (size (x), [2, 2]))
     error ("mcnemar_test: X must be a 2x2 matrix.");
   elseif (! (all ((x(:) >= 0)) && all (x(:) == fix (x(:)))))

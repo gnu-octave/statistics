@@ -27,7 +27,7 @@
 ## Replace missing entries of array @var{A} either with values in @var{v} or
 ## as determined by other specified methods.  'missing' values are determined
 ## by the data type of @var{A} as identified by the function @ref{ismissing},
-## curently defined as:
+## currently defined as:
 ##
 ## @itemize
 ## @item
@@ -44,9 +44,9 @@
 ## a cell array of character vectors (a.k.a. string cells).
 ##
 ## @var{v} can be a scalar or an array containing values for replacing the
-## missing values in @var{A} with a compatible data type for isertion into
+## missing values in @var{A} with a compatible data type for insertion into
 ## @var{A}. The shape of @var{v} must be a scalar or an array with number
-## of elements in @var{v} equal to the number of elements orthoganal to the
+## of elements in @var{v} equal to the number of elements orthogonal to the
 ## operating dimension. E.g., if @code{size(@var{A})} = [3 5 4], operating
 ## along @code{dim} = 2 requires @var{v} to contain either 1 or 3x4=12
 ## elements.
@@ -88,7 +88,7 @@
 ## same units as @code{SamplePoints}.  For scalar values, the window is
 ## centered on the missing element and includes all data points within a
 ## distance of half of @var{window_size} on either side of the window center
-## point.  Note that for compatability, when using a scalar value, the backward
+## point.  Note that for compatibility, when using a scalar value, the backward
 ## window limit is inclusive and the forward limit is exclusive.  If a
 ## two-element @var{window_size} vector is specified, the window includes all
 ## points within a distance of @var{nb} backward and @var{na} forward from the
@@ -138,7 +138,7 @@
 ## Apply a separate handling method for missing values at the front or back of
 ## the array. @var{PropertyValue} can be:
 ## @itemize
-## @item A constant scalar or array with the same shape requirments as @var{v}.
+## @item A constant scalar or array with the same shape requirements as @var{v}.
 ## @item @code{none} - Do not fill end gap values.
 ## @item @code{extrap} - Use the same procedure as @var{method} to fill the
 ## end gap values.
@@ -359,7 +359,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           case "endvalues"
             ## For numeric A, val must be numeric scalar, a numeric
             ## array with numel equal to the elements orthogonal to
-            ## the dim or certain string methads. For non-numeric A,
+            ## the dim or certain string methods. For non-numeric A,
             ## "constant" method is not valid.
             if (ischar (propval))
               switch (lower (propval))
@@ -609,7 +609,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   endif
 
 
-  ## Actaully fill the missing data.
+  ## Actually fill the missing data.
 
   ## Process central missing values (all gaps bound by two valid datapoints).
   ## For each method, calcualte fill_vals, which will be used in assignment
@@ -889,7 +889,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
           endswitch
           if (idx_flag)
-            ## Matlab compatiblity - NaNs filled back in by movmean and
+            ## Matlab compatibility - NaNs filled back in by movmean and
             ## movmedian should _not_ show as filled.
             idx_out(fillable_gaps) = true;
             still_nan = missing_locs;
@@ -1068,7 +1068,7 @@ function [A, idx_out] = fillmissing (A, varargin)
               ## missinglocations, compatible behavior is undefined as
               ## Matlab 2022a has an apparent bug producing a error message
               ## saying missinglocations with int/logical needs a method that
-              ## incldues function handle. Expect behavior should match other
+              ## includes function handle. Expect behavior should match other
               ## methods, where any processed missing value should be marked
               ## as filled no matter the fill value.
               if ((isnumeric(A) && !isinteger(A)) ||

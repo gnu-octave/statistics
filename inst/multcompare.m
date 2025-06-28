@@ -576,7 +576,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## order to proceed with the remainder of the function tasks
     ## - Ng: number of groups involved in comparisons
     ## - M: Ng-by-2 matrix of group means (col 1) and standard errors (col 2)
-    ## - Np: number of comparisons (pairs of groups being compaired)
+    ## - Np: number of comparisons (pairs of groups being compared)
     ## - pairs: Np-by-2 matrix of numeric group IDs - each row is a comparison
     ## - R: correlation matrix for the requested comparisons
     ## - sed: vector containing SE of the difference for each comparisons

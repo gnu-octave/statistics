@@ -36,7 +36,7 @@
 ## occurences for corresponding data.
 ## Pass [] when no frequency data are available.
 ##
-## @var{confint}: optional confidence limits for ploting upper and lower
+## @var{confint}: optional confidence limits for plotting upper and lower
 ## confidence bands using beta binomial confidence bounds.  If a single
 ## value is given this will be used such as LOW = a and HIGH = 1 - a.
 ## Pass [] if confidence bounds is not requested.
@@ -242,7 +242,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   set (h, 'markersize', 8);
   h2 = line (xbf, ybf, 'LineStyle', '-', 'Marker', 'none', ...
             'Color', [0.25 0.25 1], 'LineWidth', 1);
-  ## If requested plot beta binomial confidens bounds
+  ## If requested plot beta binomial confidence bounds
   if (! isempty (confint))
     cb_high = [];
     cb_low = [];

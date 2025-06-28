@@ -129,7 +129,7 @@ function [paramhat, paramci] = wblfit (x, alpha, censor, freq, options)
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different Weibull distibutions
+%! ## Sample 3 populations from 3 different Weibull distributions
 %! rande ("seed", 1);    # for reproducibility
 %! r1 = wblrnd(2, 4, 2000, 1);
 %! rande ("seed", 2);    # for reproducibility
@@ -171,7 +171,7 @@ endfunction
 %!                  lambda_kB(1), lambda_kB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated λ=%0.2f and k=%0.2f", ...
 %!                  lambda_kC(1), lambda_kC(2))})
-%! title ("Three population samples from different Weibull distibutions")
+%! title ("Three population samples from different Weibull distributions")
 %! hold off
 
 ## Test output

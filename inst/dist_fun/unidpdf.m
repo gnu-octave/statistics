@@ -87,7 +87,7 @@ endfunction
 %! xlim ([0, 10])
 %! ylim ([0, 0.25])
 %! legend ({"N = 5", "N = 9"}, "location", "northeast")
-%! title ("Descrete uniform PDF")
+%! title ("Discrete uniform PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
 

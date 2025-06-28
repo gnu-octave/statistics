@@ -282,7 +282,7 @@ classdef gmdistribution
     ########################################
     methods (Access = private)
       ## Probability density of (row of) X *and* component l
-      ## Second argument is an array of the Mahalonis distances
+      ## Second argument is an array of the Mahalanobis distances
       function [p_x_l, M] = componentProb (obj, X)
         M     = zeros (rows (X), obj.NumComponents);
         dets  = zeros (1, obj.NumComponents);   % sqrt(determinant)

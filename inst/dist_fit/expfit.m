@@ -206,7 +206,7 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 endfunction
 
 %!demo
-%! ## Sample 3 populations from 3 different exponential distibutions
+%! ## Sample 3 populations from 3 different exponential distributions
 %! rande ("seed", 1);   # for reproducibility
 %! r1 = exprnd (2, 4000, 1);
 %! rande ("seed", 2);   # for reproducibility
@@ -242,7 +242,7 @@ endfunction
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f", muhat(1)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f", muhat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f", muhat(3))})
-%! title ("Three population samples from different exponential distibutions")
+%! title ("Three population samples from different exponential distributions")
 %! hold off
 
 ## Tests for mean

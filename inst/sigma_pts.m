@@ -29,7 +29,7 @@
 ##
 ## If only the dimension @var{n} is given the resulting points have zero mean
 ## and identity covariance matrix.
-## If the mean @var{m} or the covaraince matrix @var{K} are given, then the resulting points
+## If the mean @var{m} or the covariance matrix @var{K} are given, then the resulting points
 ## will have those statistics.
 ## The factor @var{l} scaled the points away from the mean. It is useful to tune
 ## the accuracy of the unscented transfrom.
@@ -72,7 +72,7 @@ function pts = sigma_pts (n, m = [], K = [], l = 0)
 endfunction
 
 %!demo
-%! K      = [1 0.5; 0.5 1]; # covaraince matrix
+%! K      = [1 0.5; 0.5 1]; # covariance matrix
 %! # calculate and build associated ellipse
 %! [R,S,~] = svd (K);
 %! theta   = atan2 (R(2,1), R(1,1));

@@ -156,7 +156,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   rn = ! isnan (x) & ! isnan (cens) & freq > 0;
   x = x(rn);
   if (length (x) == 0)
-    error ("ecdf: not enought data.");
+    error ("ecdf: not enough data.");
   endif
   cens = cens(rn);
   freq = freq(rn);

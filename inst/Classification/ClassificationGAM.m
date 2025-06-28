@@ -245,7 +245,7 @@ classdef ClassificationGAM
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
-      ## Number of parameters for Formula, Ineractions (maximum 1 allowed)
+      ## Number of parameters for Formula, Interactions (maximum 1 allowed)
       F_I = 0;
 
       ## Parse extra parameters
@@ -401,7 +401,7 @@ classdef ClassificationGAM
         varargin (1:2) = [];
       endwhile
 
-      ## Generate default predictors and response variabe names (if necessary)
+      ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:columns (X)
           PredictorNames {i} = strcat ("x", num2str (i));
@@ -602,12 +602,12 @@ classdef ClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat ("ClassificatioGAM.predict:", ...
+              error (strcat ("ClassificationGAM.predict:", ...
                              " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (strcat ("ClassificatioGAM.predict: trained model", ...
+              error (strcat ("ClassificationGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
             incInt = tmpInt;
@@ -942,7 +942,7 @@ classdef ClassificationGAM
     ## @end deftypefn
 
     function CVMdl = compact (this)
-      ## Greate a compact model
+      ## Create a compact model
       CVMdl = CompactClassificationGAM (this);
     endfunction
 
