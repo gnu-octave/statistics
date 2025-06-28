@@ -61,6 +61,7 @@ Data Manipulation
  grp2idx
  ismissing
  isoutlier
+ multiway
  normalise_distribution
  rmmissing
  standardizeMissing
