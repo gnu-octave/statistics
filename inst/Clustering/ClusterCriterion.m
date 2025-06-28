@@ -105,15 +105,15 @@ classdef ClusterCriterion < handle
     ## constructor
     function this = ClusterCriterion (x, clust, KList)
       ## parsing input data
-      if ((! ismatrix (x)) || (! isnumeric (x)))
-        error ("ClusterCriterion: 'x' must be a numeric matrix");
+      if (! ismatrix (x) || ! isnumeric (x))
+        error ("ClusterCriterion: X must be a numeric matrix.");
       endif
       this.X = x;
       this.N = rows (this.X);
       this.P = columns (this.X);
       ## look for missing values
-      for iter = 1 : this.N
-        if (any (find (x(iter, :) == NaN)))
+      for iter = 1:this.N
+        if (any (isnan (x(iter, :))))
           this.Missing(iter) = true;
         else
           this.Missing(iter) = false;
@@ -127,7 +127,7 @@ classdef ClusterCriterion < handle
         if (any (strcmpi (clust, {"kmeans", "linkage", "gmdistribution"})))
           this.ClusteringFunction = lower (clust);
         else
-          error ("ClusterCriterion: unknown clustering algorithm '%s'", clust);
+          error ("ClusterCriterion: unknown clustering algorithm '%s'.", clust);
         endif
       elseif (isa (clust, "function_handle"))
         this.ClusteringFunction = clust;
@@ -137,10 +137,10 @@ classdef ClusterCriterion < handle
           this.ClusteringFunction = "";
           this.ClusteringSolutions = clust(find (this.Missing == false), :);
         else
-          error ("ClusterCriterion: invalid matrix of clustering solutions");
+          error ("ClusterCriterion: invalid matrix of clustering solutions.");
         endif
       else
-        error ("ClusterCriterion: invalid argument");
+        error ("ClusterCriterion: invalid argument.");
       endif
 
       ## parsing the list of cluster sizes to inspect
@@ -159,8 +159,9 @@ classdef ClusterCriterion < handle
       ## set of clustering solutions, hence we cannot redefine the number of
       ## solutions
       if (isempty (this.ClusteringFunction))
-        warning (["ClusterCriterion.addK: cannot redefine the list of cluster"...
-                  "numbers to evaluate when there is not a clustering function"]);
+        warning (strcat ("ClusterCriterion.addK: cannot redefine the list", ...
+                         " of cluster numbers to evaluate when there is", ...
+                         " not a clustering function"));
         return;
       endif
 
@@ -237,19 +238,19 @@ classdef ClusterCriterion < handle
           all (floor (KList) == KList))
         retList = unique (KList);
       else
-        error (["ClusterCriterion: the list of cluster sizes must be an " ...
-                "array of positive integer numbers"]);
+        error (strcat ("ClusterCriterion: the list of cluster sizes" ...
+                       " must be an array of positive integer numbers."));
       endif
     endfunction
   endmethods
 endclassdef
 
 ## Test input validation
-%!error <ClusterCriterion: 'x' must be a numeric matrix> ...
+%!error <ClusterCriterion: X must be a numeric matrix.> ...
 %! ClusterCriterion ("1", "kmeans", [1:6])
-%!error <ClusterCriterion: unknown clustering algorithm 'k'> ...
+%!error <ClusterCriterion: unknown clustering algorithm 'k'.> ...
 %! ClusterCriterion ([1, 2, 1, 3, 2, 4, 3], "k", [1:6])
-%!error <ClusterCriterion: invalid matrix of clustering solutions> ...
+%!error <ClusterCriterion: invalid matrix of clustering solutions.> ...
 %! ClusterCriterion ([1, 2, 1; 3, 2, 4], 1, [1:6])
-%!error <ClusterCriterion: invalid argument> ...
+%!error <ClusterCriterion: invalid argument.> ...
 %! ClusterCriterion ([1, 2, 1; 3, 2, 4], ones (2, 2, 2), [1:6])
