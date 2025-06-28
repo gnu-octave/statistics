@@ -100,7 +100,7 @@ function A = standardizeMissing (A, indicator)
         if iscellstr(A)
           missing_val = {""};
         else
-          error ("stardardizeMissing: only cells of strings are supported.");
+          error ("standardizeMissing: only cells of strings are supported.");
         endif
     otherwise
       error ("standardizeMissing: unsupported data type %s.", input_class);

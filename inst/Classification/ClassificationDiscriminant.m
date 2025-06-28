@@ -150,7 +150,7 @@ classdef ClassificationDiscriminant
     Delta           = [];     # Threshold for linear discriminant model
     DiscrimType     = [];     # Discriminant type
     Gamma           = [];     # Gamma regularization parameter
-    MinGamma        = [];     # Minmum value of Gamma
+    MinGamma        = [];     # Minimum value of Gamma
     LogDetSigma     = [];     # Log of det of within-class covariance matrix
     XCentered       = [];     # X data with class means subtracted
 

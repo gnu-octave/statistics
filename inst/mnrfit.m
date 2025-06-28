@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{B} =} mnrfit (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{B} =} mnrfit (@var{X}, @var{Y}, @var{name}, @var{value})
-## @deftypefnx {statistics} {[@var{B}, @var{dev}] =} mnrrfit (@dots{})
+## @deftypefnx {statistics} {[@var{B}, @var{dev}] =} mnrfit (@dots{})
 ## @deftypefnx {statistics} {[@var{B}, @var{dev}, @var{stats}] =} mnrfit (@dots{})
 ##
 ## Perform logistic regression for binomial responses or multiple ordinal

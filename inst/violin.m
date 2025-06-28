@@ -52,7 +52,7 @@
 ## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
 ## multiplied by the value of this property. The higher the value the smoother
-## the violings, but values too high might remove features from the data
+## the violins, but values too high might remove features from the data
 ## distribution.
 ##
 ## @item Bandwidth
@@ -63,7 +63,7 @@
 ## @item Width
 ## (0.5) Sets the maximum width of the violins. Violins are centered at integer
 ## axis values.  The distance between two violin middle axis is 1.  Setting a
-## value higher thna 1 in this property will cause the violins to overlap.
+## value higher than 1 in this property will cause the violins to overlap.
 ## @end table
 ##
 ## If the string @asis{"Horizontal"} is among the input arguments, the violin

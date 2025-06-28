@@ -53,7 +53,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
   properties (GetAccess = public, SetAccess = private)
     Distance = "";           # pdist parameter
     ClusterPriors = "";      # evaluation of silhouette values: equal or empirical
-    ClusterSilhouettes = {}; # results of the silhoutte function for each K
+    ClusterSilhouettes = {}; # results of the silhouette function for each K
   endproperties
 
   properties (Access = protected)

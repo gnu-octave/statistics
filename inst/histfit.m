@@ -44,7 +44,7 @@
 ## argument combinations specified in the previous syntaxes.
 ##
 ## @code{@var{h} = histfit (@dots{})} returns a vector of handles @var{h}, where
-## @qcode{@var{h}(1)} is the handle to the histogram and @qcode{@var{h}(1)} is
+## @qcode{@var{h}(1)} is the handle to the histogram and @qcode{@var{h}(2)} is
 ## the handle to the density curve.
 ##
 ## Note: calling @code{fitdist} without any input arguments will return a cell

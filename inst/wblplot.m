@@ -95,7 +95,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     else
       error ("wblplot: censor must be a vector of same length as data")
     endif
-    ## Make sure censored data is sorted corectly so that no censored samples
+    ## Make sure censored data is sorted correctly so that no censored samples
     ## are processed before failures if they have the same time.
     if (any (censor > 0))
        ind = find (censor > 0);

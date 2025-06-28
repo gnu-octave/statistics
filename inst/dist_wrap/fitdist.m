@@ -24,7 +24,7 @@
 ## Create probability distribution object.
 ##
 ## @code{@var{pd} = fitdist (@var{x}, @var{distname})} creates a probability
-## distribution distribution object by fitting the distribution specified by
+## distribution object by fitting the distribution specified by
 ## @var{distname} to the data in vector @var{x}.
 ##
 ## @code{@var{pd} = fitdist (@var{x}, @var{distname}, @var{Name}, @var{Value})}

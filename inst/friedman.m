@@ -109,7 +109,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
     jrows = reps * (j-1) + (1:reps);
     v = x(jrows,:);
     [R, tieadj] = tiedrank (v(:));
-    m(jrows,:) = reshape (R, reps, c);;
+    m(jrows,:) = reshape (R, reps, c);
     sum_R = sum_R + 2 * tieadj;
   endfor
 

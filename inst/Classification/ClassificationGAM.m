@@ -848,7 +848,7 @@ classdef ClassificationGAM
       if (isempty (predictorString))
         error ("ClassificationGAM: no predictor terms in 'Formula'.");
       endif
-      ## Spit additive terms (between + sign)
+      ## Split additive terms (between + sign)
       aterms = strtrim (strsplit (predictorString, '+'));
       ## Process all terms
       for i = 1:numel (aterms)

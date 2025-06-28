@@ -23,7 +23,7 @@
 ##
 ## Calculates 2*@var{n}+1 sigma points in @var{n} dimensions.
 ##
-## Sigma points are used in the unscented transfrom to estimate
+## Sigma points are used in the unscented transform to estimate
 ## the result of applying a given nonlinear transformation to a probability
 ## distribution that is characterized only in terms of a finite set of statistics.
 ##
@@ -31,8 +31,8 @@
 ## and identity covariance matrix.
 ## If the mean @var{m} or the covariance matrix @var{K} are given, then the resulting points
 ## will have those statistics.
-## The factor @var{l} scaled the points away from the mean. It is useful to tune
-## the accuracy of the unscented transfrom.
+## The factor @var{l} scales the points away from the mean. It is useful to tune
+## the accuracy of the unscented transform.
 ##
 ## There is no unique way of computing sigma points, this function implements the
 ## algorithm described in section 2.6 "The New Filter" pages 40-41 of

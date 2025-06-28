@@ -164,7 +164,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
 
   ## Check that x and group are the same size
   if (! all (numel (x) == numel (group)))
-    error (srtcat (["levene_test: GROUP must be a vector with the same"], ...
+    error (strcat (["levene_test: GROUP must be a vector with the same"], ...
                    [" number of rows as x."]));
   endif
 

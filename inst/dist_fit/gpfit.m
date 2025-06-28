@@ -37,7 +37,7 @@
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = gpfit (@var{x}, @var{theta})} returns
 ## the 95% confidence intervals for the estimated parameter @var{k} and
-## @var{sigma}. The third colummn of @var{paramci} includes the location
+## @var{sigma}. The third column of @var{paramci} includes the location
 ## parameter @var{theta} without any confidence bounds.
 ##
 ## @code{[@dots{}] = gpfit (@var{x}, @var{theta}, @var{alpha})} also returns the

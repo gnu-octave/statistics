@@ -136,7 +136,7 @@ function x = icdf (name, p, varargin)
     {"wbl"      , "Weibull"},                   @wblinv,       2};
 
   if (! ischar (name))
-    error ("icdf: distribution NAME must a char string.");
+    error ("icdf: distribution NAME must be a char string.");
   endif
 
   ## Check P being numeric and real

@@ -33,7 +33,7 @@
 ##
 ## @code{[@var{paramhat}, @var{paramci}] = hnfit (@var{x}, @var{mu})} returns
 ## the 95% confidence intervals for the estimated scale parameter @var{sigma}.
-## The first colummn of @var{paramci} includes the location parameter @var{mu}
+## The first column of @var{paramci} includes the location parameter @var{mu}
 ## without any confidence bounds.
 ##
 ## @code{[@dots{}] = hnfit (@var{x}, @var{alpha})} also returns the

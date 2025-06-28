@@ -55,7 +55,7 @@
 function [T, p] = cholcov (sigma, flag)
   ## Check number of input arguments
   narginchk (1,2)
-  ## Add default flag if not givens
+  ## Add default flag if not given
   if (nargin < 2)
     flag = 1;
   endif
@@ -66,7 +66,7 @@ function [T, p] = cholcov (sigma, flag)
   if (isa (sigma, "single"))
     is_type = "single";
   endif
-  ## Test for sigma being square and symmetric
+  ## Check if sigma is square and symmetric
   [col, row] = size (sigma);
   ## Add tolerance
   Tol = 10 * eps (max (abs (diag (sigma))));

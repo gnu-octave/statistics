@@ -319,7 +319,7 @@ endfunction
 %! mesh (x, y, reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
 
 %!demo
-%! ## Integrate truncated normal distribution to find normilization constant
+%! ## Integrate truncated normal distribution to find normalization constant
 %! pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
 %! nsamples = 1e3;
 %! rand ("seed", 5)  # for reproducibility

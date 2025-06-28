@@ -106,7 +106,8 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   if ! isa (tail, 'char')
     error ("kstest2: tail argument must be a string");
   elseif sum (strcmpi (tail, {"unequal", "larger", "smaller"})) < 1
-    error ("kstest2: tail value must be either 'both', right' or 'left'.");
+    error ("kstest2: tail value must be either 'unequal', ...
+           'larger' or 'smaller'.");
   endif
   ## Make x1 and x2 column vectors
   x1 = x1(:);

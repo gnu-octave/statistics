@@ -31,7 +31,7 @@
 ## bar corresponds to an element in @var{y}, which can be a scalar, vector, or
 ## 2D matrix.  By default, each column in @var{y} is considered as a series and
 ## it is handled as a distinct series of bars.  When @var{y} is a vector, unlike
-## MATLAB, which plots it as a single series of bars, Octave discriminates
+## MATLAB, which plots it as a single series of bars, Octave distinguishes
 ## between a row and column vector of @var{y}.  Hence, when @var{y} is column
 ## vector, it is plotted as a single series of bars (same color), whereas when
 ## @var{y} is row vector, each bar is plotted as a different group (different
@@ -57,7 +57,7 @@
 ## @var{style} can be @qcode{'detached'}, @qcode{'grouped'}, or
 ## @qcode{'stacked'}. The default style is @qcode {'detached'}.
 ##
-## @code{bar3h (@dots{}, @var{color}} displays all bars using the color
+## @code{bar3h (@dots{}, @var{color})} displays all bars using the color
 ## specified by color.  For example, use @qcode{'red'} or @qcode{'red'} to
 ## specify all red bars.  When you want to specify colors for several groups,
 ## @var{color} can be a cellstr vector with each element specifying the color of
@@ -138,7 +138,7 @@ function [varargout] = bar3h (varargin)
 
   ## Valid Colors for input validation
   vc = {'red', 'r', 'green', 'g', 'blue', 'b', 'cyan', 'c', ...
-        'magenta', 'm', 'yellow', 'z', 'black', 'k', 'white', 'w'};
+        'magenta', 'm', 'yellow', 'y', 'black', 'k', 'white', 'w'};
 
   ## Parse extra input arguments
   while (numel (varargin) > 0)
@@ -402,7 +402,7 @@ function [varargout] = bar3h (varargin)
   endif
 
   ## Return handle to patch object if requested
-  if nargout > 0
+  if (nargout > 0)
     varargout{1} = p;
   endif
 

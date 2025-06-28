@@ -673,7 +673,7 @@ classdef RegressionGAM
       if (isempty (predictorString))
         error ("RegressionGAM: no predictor terms in Formula.");
       endif
-      ## Spit additive terms (between + sign)
+      ## Split additive terms (between + sign)
       aterms = strtrim (strsplit (predictorString, '+'));
       ## Process all terms
       for i = 1:numel (aterms)

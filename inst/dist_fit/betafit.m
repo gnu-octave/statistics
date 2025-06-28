@@ -45,7 +45,7 @@
 ## in @var{x}.  By default, or if left empty,
 ## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @code{[@var{paramhat}, @var{paramci}] = nbinfit (@var{x}, @var{alpha},
+## @code{[@var{paramhat}, @var{paramci}] = betafit (@var{x}, @var{alpha},
 ## @var{options})} specifies control parameters for the iterative algorithm used
 ## to compute ML estimates with the @code{fminsearch} function.  @var{options}
 ## is a structure with the following fields and their default values:
