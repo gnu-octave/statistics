@@ -80,7 +80,7 @@ function T = cluster (Z, opt, varargin)
         C = [];
       endif
       if ((! (isscalar (N) || isvector (N))) || (N < 0))
-        error (strcat ("cluster: N must be a positive number"...
+        error (strcat ("cluster: N must be a positive number", ...
                        " or a vector of positive numbers."));
       endif
 
