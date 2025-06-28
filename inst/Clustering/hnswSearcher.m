@@ -1,4 +1,5 @@
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -35,17 +36,7 @@ classdef hnswSearcher
 ## rangesearch}
 ## @end deftp
 
-  properties (SetAccess = private)
-    ## -*- texinfo -*-
-    ## @deftp {Property} X
-    ##
-    ## Training data, specified as an @math{NxP} numeric matrix where each row
-    ## is an observation and each column is a feature.  This property is private
-    ## and cannot be modified after object creation.
-    ##
-    ## @end deftp
-    X = []
-
+  properties (SetAccess = private, Hidden)
     ## -*- texinfo -*-
     ## @deftp {Property} HNSWGraph
     ##
@@ -56,7 +47,7 @@ classdef hnswSearcher
     HNSWGraph
   endproperties
 
-  properties
+  properties (SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {Property} Distance
     ##
@@ -88,31 +79,32 @@ classdef hnswSearcher
     DistParameter = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} M
+    ## @deftp {Property} MaxNumLinksPerNode
     ##
     ## Maximum number of neighbors per node in the HNSW graph. Affects graph
     ## connectivity and search accuracy. Default is 16.
     ##
     ## @end deftp
-    M = 16
+    MaxNumLinksPerNode = 16
 
     ## -*- texinfo -*-
-    ## @deftp {Property} efConstruction
+    ## @deftp {Property} TrainSetSize
     ##
     ## Size of the dynamic candidate list during graph construction. Higher
-    ## values improve accuracy at the cost of construction time. Default is 100.
+    ## values improve accuracy at the cost of construction time. Default is 200.
     ##
     ## @end deftp
-    efConstruction = 100
+    TrainSetSize = 200
 
     ## -*- texinfo -*-
-    ## @deftp {Property} efSearch
+    ## @deftp {Property} X
     ##
-    ## Size of the dynamic candidate list during search. Higher values improve
-    ## accuracy at the cost of search time. Default is 50.
+    ## Training data, specified as an @math{NxP} numeric matrix where each row
+    ## is an observation and each column is a feature.  This property is private
+    ## and cannot be modified after object creation.
     ##
     ## @end deftp
-    efSearch = 50
+    X = []
   endproperties
 
   methods (Hidden)
@@ -130,9 +122,8 @@ classdef hnswSearcher
     function disp (this)
       if (isscalar (this))
         fprintf ("\n  hnswSearcher with properties:\n\n");
-        fprintf ("%+25s: %d\n", 'M', this.M);
-        fprintf ("%+25s: %d\n", 'efConstruction', this.efConstruction);
-        fprintf ("%+25s: %d\n", 'efSearch', this.efSearch);
+        fprintf ("%+25s: %d\n", 'MaxNumLinksPerNode', this.MaxNumLinksPerNode);
+        fprintf ("%+25s: %d\n", 'TrainSetSize', this.TrainSetSize);
         fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
         if (! isempty (this.DistParameter))
           if (isscalar (this.DistParameter))
@@ -193,90 +184,23 @@ classdef hnswSearcher
           endif
           switch (s.subs)
             case 'X'
-              error (strcat ("hnswSearcher.subsasgn: X is", ...
+              error (strcat ("hnswSearcher.subsasgn: 'X' is", ...
                              " read-only and cannot be modified."));
             case 'HNSWGraph'
-              error (strcat ("hnswSearcher.subsasgn: HNSWGraph is", ...
+              error (strcat ("hnswSearcher.subsasgn: 'HNSWGraph' is", ...
                              " read-only and cannot be modified."));
             case 'Distance'
-              vm = {'euclidean', 'minkowski', 'seuclidean', 'mahalanobis', ...
-                    'cityblock', 'manhattan', 'chebychev', 'cosine', ...
-                    'correlation', 'spearman', 'hamming', 'jaccard'};
-              if (ischar (val))
-                if (! any (strcmpi (vm, val)))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " unsupported distance metric '%s'."), val);
-                endif
-                this.Distance = val;
-              else
-                error (strcat ("hnswSearcher.subsasgn: Distance", ...
-                               " must be a string."));
-              endif
+              error (strcat ("hnswSearcher.subsasgn: 'Distance' is", ...
+                             " read-only and cannot be modified."));
             case 'DistParameter'
-              if (strcmpi (this.Distance, "minkowski"))
-                if (! (isscalar (val) && isnumeric (val)
-                                      && val > 0 && isfinite (val)))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be a positive", ...
-                                 " finite scalar for minkowski."));
-                endif
-              elseif (strcmpi (this.Distance, "seuclidean"))
-                if (! (isvector (val) && isnumeric (val) && all (val >= 0)
-                                      && all (isfinite (val))
-                                      && length (val) == columns (this.X)))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be a nonnegative", ...
-                                 " vector matching X columns."));
-                endif
-              elseif (strcmpi (this.Distance, "mahalanobis"))
-                if (! (ismatrix (val) && isnumeric (val)
-                                      && all (isfinite (val(:)))
-                                      && rows (val) == columns (val)
-                                      && rows (val) == columns (this.X)))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be a square", ...
-                                 " matrix matching X columns."));
-                endif
-                if (! issymmetric (val))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be symmetric", ...
-                                 " for mahalanobis."));
-                endif
-                [~, p] = chol (val);
-                if (p != 0)
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be positive", ...
-                                 " definite for mahalanobis."));
-                endif
-              else
-                if (! isempty (val))
-                  error (strcat ("hnswSearcher.subsasgn:", ...
-                                 " DistParameter must be empty for this", ...
-                                 " distance metric."));
-                endif
-              endif
-              this.DistParameter = val;
-            case 'M'
-              if (! (isscalar (val) && isnumeric (val)
-                                    && val > 0 && val == fix (val)))
-                error (strcat ("hnswSearcher.subsasgn: M", ...
-                               " must be a positive integer."));
-              endif
-              this.M = val;
-            case 'efConstruction'
-              if (! (isscalar (val) && isnumeric (val)
-                                    && val > 0 && val == fix (val)))
-                error (strcat ("hnswSearcher.subsasgn: efConstruction", ...
-                               " must be a positive integer."));
-              endif
-              this.efConstruction = val;
-            case 'efSearch'
-              if (! (isscalar (val) && isnumeric (val)
-                                    && val > 0 && val == fix (val)))
-                error (strcat ("hnswSearcher.subsasgn: efSearch", ...
-                               " must be a positive integer."));
-              endif
-              this.efSearch = val;
+              error (strcat ("hnswSearcher.subsasgn: 'DistParameter'", ...
+                             " is read-only and cannot be modified."));
+            case 'MaxNumLinksPerNode'
+              error (strcat ("hnswSearcher.subsasgn: 'MaxNumLinksPerNode'", ...
+                             " is read-only and cannot be modified."));
+            case 'TrainSetSize'
+              error (strcat ("hnswSearcher.subsasgn: 'TrainSetSize'", ...
+                             " is read-only and cannot be modified."));
             otherwise
               error (strcat ("hnswSearcher.subsasgn:", ...
                              " unrecognized property: '%s'."), s.subs);
@@ -324,41 +248,43 @@ classdef hnswSearcher
     ## matching the number of columns in @var{X}. Valid only when
     ## @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is @code{cov (X)}.
     ##
-    ## @item @qcode{"M"} @tab @tab Maximum number of neighbors per node in the
-    ## HNSW graph, a positive integer. Default is 16.
+    ## @item @qcode{"MaxNumLinksPerNode"} @tab @tab Maximum number of neighbors
+    ## per node in the HNSW graph, a positive integer. Default is 16.
     ##
-    ## @item @qcode{"efConstruction"} @tab @tab Size of the dynamic candidate
-    ## list during graph construction, a positive integer. Default is 100.
-    ##
-    ## @item @qcode{"efSearch"} @tab @tab Size of the dynamic candidate list
-    ## during search, a positive integer. Default is 50.
+    ## @item @qcode{"TrainSetSize"} @tab @tab Size of the dynamic candidate
+    ## list during graph construction, a positive integer. Default is 200.
     ## @end multitable
     ##
     ## @seealso{hnswSearcher, knnsearch, rangesearch, createns, pdist2}
     ## @end deftypefn
     function obj = hnswSearcher (X, varargin)
+      ## Initial input validation
       if (nargin < 1)
         error ("hnswSearcher: too few input arguments.");
       endif
-
       if (mod (numel (varargin), 2) != 0)
         error ("hnswSearcher: Name-Value arguments must be in pairs.");
       endif
 
-      if (! (isnumeric (X) && ismatrix (X) && all (isfinite (X)(:))))
+      ## Validate X
+      if (isempty (X))
+        error ("hnswSearcher: X cannot be empty.");
+      endif
+      if (! (isnumeric (X) && ismatrix (X) && all (isfinite (X(:)))))
         error ("hnswSearcher: X must be a finite numeric matrix.");
       endif
 
       obj.X = X;
+      N = size (X, 1);
 
       ## Default values
       Distance = "euclidean";
       P = [];
       S = [];
       C = [];
-      M = 16;
-      efConstruction = 100;
-      efSearch = 50;
+      MaxNumLinksPerNode = min (16, N);
+      TrainSetSize = min (200, N);
+      TrainSetSize = max (TrainSetSize, MaxNumLinksPerNode);
 
       ## Parse optional parameters
       while (numel (varargin) > 0)
@@ -371,15 +297,12 @@ classdef hnswSearcher
             S = varargin{2};
           case "cov"
             C = varargin{2};
-          case "m"
-            M = varargin{2};
-          case "efconstruction"
-            efConstruction = varargin{2};
-          case "efsearch"
-            efSearch = varargin{2};
+          case "maxnumlinkspernode"
+            MaxNumLinksPerNode = varargin{2};
+          case "trainsetsize"
+            TrainSetSize = varargin{2};
           otherwise
-            error (strcat ("hnswSearcher: invalid parameter", ...
-                           " name: '%s'."), varargin{1});
+            error ("hnswSearcher: invalid parameter name: '%s'.", varargin{1});
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -445,49 +368,54 @@ classdef hnswSearcher
         obj.DistParameter = [];
       endif
 
-      ## Validate and set HNSW parameters
-      if (! (isscalar (M) && isnumeric (M) && M > 0 && M == fix (M)))
-        error ("hnswSearcher: M must be a positive integer.");
+      ## Validate MaxNumLinksPerNode and TrainSetSize
+      if (! (isscalar (MaxNumLinksPerNode) &&
+             isnumeric (MaxNumLinksPerNode) &&
+             MaxNumLinksPerNode > 0 &&
+             MaxNumLinksPerNode == fix (MaxNumLinksPerNode)))
+        error (strcat ("hnswSearcher: 'MaxNumLinksPerNode'", ...
+                       " must be a positive integer."));
       endif
-      obj.M = M;
-
-      if (! (isscalar (efConstruction) &&
-            isnumeric (efConstruction) &&
-            efConstruction > 0 &&
-            efConstruction == fix (efConstruction)))
-        error ("hnswSearcher: efConstruction must be a positive integer.");
+      if (! (isscalar (TrainSetSize) &&
+             isnumeric (TrainSetSize) &&
+             TrainSetSize > 0 &&
+             TrainSetSize == fix (TrainSetSize)))
+        error ("hnswSearcher: 'TrainSetSize' must be a positive integer.");
       endif
-      obj.efConstruction = efConstruction;
-
-      if (! (isscalar (efSearch) && isnumeric (efSearch)
-                                 && efSearch > 0
-                                 && efSearch == fix (efSearch)))
-        error ("hnswSearcher: efSearch must be a positive integer.");
+      if (TrainSetSize > N)
+        error (strcat ("hnswSearcher: 'TrainSetSize' cannot", ...
+                       " exceed the number of rows in X."));
       endif
-      obj.efSearch = efSearch;
+      if (MaxNumLinksPerNode > TrainSetSize)
+        error (strcat ("hnswSearcher: 'MaxNumLinksPerNode'", ...
+                       " cannot exceed 'TrainSetSize'."));
+      endif
+      obj.MaxNumLinksPerNode = MaxNumLinksPerNode;
+      obj.TrainSetSize = TrainSetSize;
 
       ## Build HNSW graph
-      obj.HNSWGraph = build_hnsw (X, obj.Distance, obj.DistParameter, M, ...
-                                  efConstruction);
+      obj.HNSWGraph = build_hnsw (X, obj.Distance, obj.DistParameter, ...
+                                  MaxNumLinksPerNode, TrainSetSize);
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K})
-    ## @deftypefnx {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})
+    ## @deftypefn  {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y})
+    ## @deftypefnx {hnswSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})
     ##
-    ## Find the @math{K} nearest neighbors in the training data to query points.
+    ## Find the nearest neighbor in the training data to query points.
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K})}
-    ## returns the indices @var{idx} and distances @var{D} of the @math{K}
-    ## nearest neighbors in @var{obj.X} to each point in @var{Y}, using the
-    ## distance metric specified in @var{obj.Distance}.
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y})} returns the
+    ## indices @var{idx} and distances @var{D} of the nearest neighbor in
+    ## @var{obj.X} to each point in @var{Y}, using the distance metric specified
+    ## in @var{obj.Distance}.
     ##
     ## @itemize
     ## @item @var{obj} is an @qcode{hnswSearcher} object.
     ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
     ## @math{P} must match the number of columns in @var{obj.X}.
-    ## @item @var{K} is a positive integer specifying the number of nearest
-    ## neighbors to find.
+    ## @item @var{idx} contains the indices of the nearest neighbors in
+    ## @var{obj.X}.
+    ## @item @var{D} contains the corresponding distances.
     ## @end itemize
     ##
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K},
@@ -496,71 +424,71 @@ classdef hnswSearcher
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"IncludeTies"} @tab @tab Logical flag indicating whether to
-    ## include all neighbors tied with the @math{K}th smallest distance. Default
-    ## is @qcode{false}. If @qcode{true}, @var{idx} and @var{D} are cell arrays.
+    ## @item @qcode{"k"} @tab @tab a positive integer specifying the number of
+    ## nearest neighbors to find.
     ##
-    ## @item @qcode{"SortIndices"} @tab @tab Logical flag indicating whether to
-    ## sort the indices by distance. Default is @qcode{true}.
+    ## @item @qcode{"SearchSetSize"} @tab @tab a positive integer specifying the
+    ## size of the candidate list of nearest neighbors for a single query point
+    ## during the search process.  Default is @qcode{max (10, @var{C})}, where
+    ## @var{C} is the number of columns in @var{obj.X}.  @qcode{"SearchSetSize"}
+    ## must be at least @var{C} and no more than the number of rows in training
+    ## data @var{obj.X}.
     ## @end multitable
-    ##
-    ## @var{idx} contains the indices of the nearest neighbors in @var{obj.X}.
-    ## @var{D} contains the corresponding distances.
     ##
     ## @seealso{hnswSearcher, rangesearch, pdist2}
     ## @end deftypefn
-    function [idx, D] = knnsearch (obj, Y, K, varargin)
-      if (nargin < 3)
+    function [idx, D] = knnsearch (obj, Y, varargin)
+      ## Initial input validation
+      if (nargin < 2)
         error ("hnswSearcher.knnsearch: too few input arguments.");
       endif
-
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("hnswSearcher.knnsearch:", ...
                        " Name-Value arguments must be in pairs."));
       endif
 
+      ## Get training data size
+      [N, C] = size (obj.X);
+
+      ## Validate Y
+      if (isempty (Y))
+        error ("hnswSearcher.knnsearch: Y cannot be empty.");
+      endif
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error ("hnswSearcher.knnsearch: Y must be a finite numeric matrix.");
       endif
-
-      if (size (obj.X, 2) != size (Y, 2))
-        error (strcat ("hnswSearcher.knnsearch:", ...
-                       " number of columns in X and Y must match."));
+      if (C != size (Y, 2))
+        error (strcat ("hnswSearcher.knnsearch: Y must have the same", ...
+                       " number of columns as the training data in OBJ.X."));
       endif
 
-      if (! (isscalar (K) && isnumeric (K) && K >= 1
-                                           && K == fix (K)
-                                           && isfinite (K)))
-        error ("hnswSearcher.knnsearch: K must be a positive integer.");
-      endif
-
-      ## Validate DistParameter for the distance metric
-      if (! strcmpi (obj.Distance, "minkowski") &&
-          ! strcmpi (obj.Distance, "seuclidean") &&
-          ! strcmpi (obj.Distance, "mahalanobis"))
-        if (! isempty (obj.DistParameter))
-          error (strcat ("hnswSearcher.knnsearch: DistParameter", ...
-                         " must be empty for distance metric '%s'."), ...
-                         obj.Distance);
-        endif
-      endif
+      ## Default values
+      K = 1;
+      SearchSetSize = max (10, C);
+      SortIndices = true;
 
       ## Parse options
-      IncludeTies = false;
-      SortIndices = true;
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
-          case "includeties"
-            IncludeTies = varargin{2};
-            if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
-              error (strcat ("hnswSearcher.knnsearch:", ...
-                             " IncludeTies must be a logical scalar."));
+          case "k"
+            K = varargin{2};
+            if (! (isscalar (K) && isnumeric (K) &&
+                   K >= 1 && K == fix (K) && isfinite (K)))
+              error ("hnswSearcher.knnsearch: K must be a positive integer.");
             endif
-          case "sortindices"
-            SortIndices = varargin{2};
-            if (! (islogical (SortIndices) && isscalar (SortIndices)))
-              error (strcat ("hnswSearcher.knnsearch:", ...
-                             " SortIndices must be a logical scalar."));
+          case "searchsetsize"
+            SearchSetSize = varargin{2};
+            if (! (isscalar (SearchSetSize) &&
+                   isnumeric (SearchSetSize) &&
+                   SearchSetSize >= 1 &&
+                   SearchSetSize == fix (SearchSetSize) &&
+                   isfinite (SearchSetSize)))
+              error ("hnswSearcher.knnsearch: K must be a positive integer.");
+            endif
+            if (SearchSetSize < C || SearchSetSize > N)
+              error (strcat ("hnswSearcher.knnsearch: 'SearchSetSize' must", ...
+                             " be at least the number of features but no", ...
+                             " more than the sample size of the training data."));
             endif
           otherwise
             error (strcat ("hnswSearcher.knnsearch: invalid", ...
@@ -569,12 +497,13 @@ classdef hnswSearcher
         varargin (1:2) = [];
       endwhile
 
+      ## Search HNSW graph
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
       for i = 1:rows (Y)
-        [temp_idx, temp_D] = search_hnsw (obj.HNSWGraph, Y(i,:), K, obj.X, ...
+        [temp_idx, temp_D] = search_hnsw (obj.HNSWGraph, Y(i,:), obj.X, ...
                                           obj.Distance, obj.DistParameter, ...
-                                          obj.efSearch, IncludeTies);
+                                          K, SearchSetSize);
         if (SortIndices)
           [sorted_D, sort_idx] = sort (temp_D);
           idx{i} = temp_idx(sort_idx);
@@ -585,243 +514,103 @@ classdef hnswSearcher
         endif
       endfor
 
-      if (! IncludeTies)
-        idx_mat = NaN (rows (Y), K);
-        D_mat = NaN (rows (Y), K);
-        for i = 1:rows (Y)
-          len = min (K, length (idx{i}));
-          idx_mat(i, 1:len) = idx{i}(1:len);
-          D_mat(i, 1:len) = D{i}(1:len);
-        endfor
-        idx = idx_mat;
-        D = D_mat;
-      endif
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn  {hnswSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r})
-    ## @deftypefnx {hnswSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})
-    ##
-    ## Find all neighbors within a specified radius of query points.
-    ##
-    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r})}
-    ## returns the indices @var{idx} and distances @var{D} of all points in
-    ## @var{obj.X} within radius @var{r} of each point in @var{Y}, using the
-    ## distance metric specified in @var{obj.Distance}.
-    ##
-    ## @itemize
-    ## @item @var{obj} is an @qcode{hnswSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
-    ## @math{P} must match the number of columns in @var{obj.X}.
-    ## @item @var{r} is a nonnegative scalar specifying the search radius.
-    ## @end itemize
-    ##
-    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r},
-    ## @var{name}, @var{value})} allows additional options via name-value pairs:
-    ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
-    ##
-    ## @item @qcode{"SortIndices"} @tab @tab Logical flag indicating whether to
-    ## sort the indices by distance. Default is @qcode{true}.
-    ## @end multitable
-    ##
-    ## @var{idx} and @var{D} are cell arrays where each cell contains the
-    ## indices and distances for one query point in @var{Y}.
-    ##
-    ## @seealso{hnswSearcher, knnsearch, pdist2}
-    ## @end deftypefn
-    function [idx, D] = rangesearch (obj, Y, r, varargin)
-      if (nargin < 3)
-        error ("hnswSearcher.rangesearch: too few input arguments.");
-      endif
-
-      if (mod (numel (varargin), 2) != 0)
-        error (strcat ("hnswSearcher.rangesearch:", ...
-                       " Name-Value arguments must be in pairs."));
-      endif
-
-      if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
-        error (strcat ("hnswSearcher.rangesearch:", ...
-                       " Y must be a finite numeric matrix."));
-      endif
-
-      if (size (obj.X, 2) != size (Y, 2))
-        error (strcat ("hnswSearcher.rangesearch:", ...
-                       " number of columns in X and Y must match."));
-      endif
-
-      if (! (isscalar (r) && isnumeric (r) && r >= 0 && isfinite (r)))
-        error (strcat ("hnswSearcher.rangesearch:", ...
-                       " R must be a nonnegative finite scalar."));
-      endif
-
-      ## Validate DistParameter for the distance metric
-      if (! strcmpi (obj.Distance, "minkowski") &&
-          ! strcmpi (obj.Distance, "seuclidean") &&
-          ! strcmpi (obj.Distance, "mahalanobis"))
-        if (! isempty (obj.DistParameter))
-          error (strcat ("hnswSearcher.rangesearch: DistParameter", ...
-                         " must be empty for distance metric '%s'."), ...
-                         obj.Distance);
-        endif
-      endif
-
-      ## Parse options
-      SortIndices = true;
-      while (numel (varargin) > 0)
-        switch (lower (varargin{1}))
-          case "sortindices"
-            SortIndices = varargin{2};
-            if (! (islogical (SortIndices) && isscalar (SortIndices)))
-              error (strcat ("hnswSearcher.rangesearch:", ...
-                             " SortIndices must be a logical scalar."));
-            endif
-          otherwise
-            error (strcat ("hnswSearcher.rangesearch:", ...
-                           " invalid parameter name: '%s'."), varargin{1});
-        endswitch
-        varargin (1:2) = [];
-      endwhile
-
-      idx = cell (rows (Y), 1);
-      D = cell (rows (Y), 1);
+      idx_mat = NaN (rows (Y), K);
+      D_mat = NaN (rows (Y), K);
       for i = 1:rows (Y)
-        [idx{i}, D{i}] = search_hnsw_range (obj.HNSWGraph, Y(i,:), r, obj.X, ...
-                                            obj.Distance, obj.DistParameter, ...
-                                            obj.efSearch);
-        if (SortIndices)
-          [sorted_D, sort_idx] = sort (D{i});
-          D{i} = sorted_D;
-          idx{i} = idx{i}(sort_idx);
-        endif
+        len = min (K, length (idx{i}));
+        idx_mat(i, 1:len) = idx{i}(1:len);
+        D_mat(i, 1:len) = D{i}(1:len);
       endfor
+      idx = idx_mat;
+      D = D_mat;
     endfunction
 
   endmethods
 
 endclassdef
 
-## Private functions:
-
-## Function to Build HNSW graph
-function graph = build_hnsw (X, dist, distparam, M, efConstruction)
-  n = size (X, 1);
-  if (n < 1)
+## Private Function to Build HNSW graph
+function graph = build_hnsw (X, dist, param, MaxNumLinksPerNode, TrainSetSize)
+  N = size (X, 1);
+  if (N < 1)
     error ("build_hnsw: X must have at least one point.");
   endif
-  max_layers = floor (log2 (max (n, 2))) + 1;
+  max_layers = floor (log2 (max (N, 2))) + 1;
   graph.layers = cell (max_layers, 1);
   graph.entry_point = 1;
-  mL = 1 / log (M);
+  mL = 1 / log (MaxNumLinksPerNode);
 
   ## Initialize graph with empty adjacency lists
-  for l = 1:max_layers
-    graph.layers{l} = cell (n, 1);
+  for L = 1:max_layers
+    graph.layers{L} = cell (N, 1);
   endfor
 
   ## Handle single-point case
-  if (n == 1)
+  if (N == 1)
     graph.layers{1}{1} = [];
     return;
   endif
 
   ## Add points to graph
-  for i = 1:n
+  for i = 1:N
     layer = min (max_layers - 1, floor (-log (rand ()) * mL));
-    for l = 0:layer
+    for L = 0:layer
       if (i == 1)
-        graph.layers{l+1}{i} = [];
+        graph.layers{L+1}{i} = [];
         continue;
       endif
       ## Find nearest neighbors in current layer
-      [neighbors, dists] = search_hnsw_layer (graph, X(i,:), M, X, dist, ...
-                                              distparam, efConstruction, l);
-      graph.layers{l+1}{i} = neighbors;
+      [neighbors, dists] = search_hnsw_layer (graph, X(i,:), X, dist, param, ...
+                                              MaxNumLinksPerNode, TrainSetSize, L);
+      graph.layers{L+1}{i} = neighbors;
       ## Update neighbors' connections
       for j = neighbors
-        if (length (graph.layers{l+1}{j}) < M)
-          graph.layers{l+1}{j} = [graph.layers{l+1}{j}, i];
+        if (length (graph.layers{L+1}{j}) < MaxNumLinksPerNode)
+          graph.layers{L+1}{j} = [graph.layers{L+1}{j}, i];
         else
-          ## Select M closest neighbors
-          all_neighbors = [graph.layers{l+1}{j}, i];
-          dists_j = pdist2 (X(all_neighbors,:), X(j,:), dist, distparam);
+          ## Select MaxNumLinksPerNode closest neighbors
+          all_neighbors = [graph.layers{L+1}{j}, i];
+          dists_j = pdist2 (X(all_neighbors,:), X(j,:), dist, param);
           [~, sort_idx] = sort (dists_j);
-          graph.layers{l+1}{j} = all_neighbors(sort_idx(1:M));
+          graph.layers{L+1}{j} = all_neighbors(sort_idx(1:MaxNumLinksPerNode));
         endif
       endfor
-      if (l == layer && i > 1)
+      if (L == layer && i > 1)
         graph.entry_point = i;
       endif
     endfor
   endfor
 endfunction
 
-## Function to Search HNSW graph for k nearest neighbors
-function [indices, distances] = search_hnsw (graph, query, k, X, dist, ...
-                                             distparam, efSearch, include_ties)
+## Private Function to Search HNSW graph for k nearest neighbors
+function [indices, distances] = search_hnsw (graph, Y, X, dist, param, ...
+                                             K, SearchSetSize)
   max_layers = length (graph.layers);
   current_point = graph.entry_point;
   candidates = current_point;
-  distances = pdist2 (X(current_point,:), query, dist, distparam);
+  distances = pdist2 (X(current_point,:), Y, dist, param);
 
   ## Navigate to the lowest layer
-  for l = max_layers:-1:2
-    [new_candidates, new_dists] = search_hnsw_layer (graph, ...
-                                                     query, ...
-                                                     1, X, ...
-                                                     dist, ...
-                                                     distparam, ...
-                                                     efSearch, ...
-                                                     l-1);
+  for L = max_layers:-1:2
+    [new_candidates, new_dists] = search_hnsw_layer (graph, Y, X, ...
+                                                     dist, param, ...
+                                                     1, SearchSetSize, L-1);
     candidates = new_candidates;
     distances = new_dists;
     current_point = candidates(1);
   endfor
 
   ## Search in the base layer
-  [indices, distances] = search_hnsw_layer (graph, query, k, X, dist, ...
-                                            distparam, efSearch, 0);
-
-  if (include_ties)
-    r = distances(end) + 1e-10;
-    [indices, distances] = search_hnsw_layer (graph, query, Inf, X, dist, ...
-                                              distparam, efSearch, 0, r);
-  endif
+  [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
+                                            K, SearchSetSize, 0);
 endfunction
 
-## Function Search HNSW graph for points within radius r
-function [indices, distances] = search_hnsw_range (graph, query, r, X, ...
-                                                   dist, distparam, efSearch)
-  max_layers = length (graph.layers);
-  current_point = graph.entry_point;
-  candidates = current_point;
-  distances = pdist2 (X(current_point,:), query, dist, distparam);
-
-  ## Navigate to the lowest layer
-  for l = max_layers:-1:2
-    [new_candidates, new_dists] = search_hnsw_layer (graph, query, 1, X, ...
-                                                     dist, distparam, ...
-                                                     efSearch, l - 1);
-    candidates = new_candidates;
-    distances = new_dists;
-    current_point = candidates(1);
-  endfor
-
-  ## Search in the base layer with radius
-  [indices, distances] = search_hnsw_layer (graph, query, Inf, X, dist, ...
-                                            distparam, efSearch, 0, r);
-endfunction
-
-## Function Search a single HNSW layer
-function [indices, distances] = search_hnsw_layer (graph, query, k, X, dist, ...
-                                                  distparam, efSearch, layer, r)
-  if (nargin < 9)
-    r = Inf;
-  endif
+## Private Function Search a single HNSW layer
+function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
+                                                   Points, SetSize, L)
   visited = false (size (X, 1), 1);
   candidates = [graph.entry_point];
-  dists = pdist2 (X(graph.entry_point,:), query, dist, distparam);
+  dists = pdist2 (X(graph.entry_point,:), Y, dist, param);
   visited(graph.entry_point) = true;
   best_candidates = candidates;
   best_dists = dists;
@@ -837,40 +626,35 @@ function [indices, distances] = search_hnsw_layer (graph, query, k, X, dist, ...
       break;
     endif
 
-    neighbors = graph.layers{layer+1}{closest};
+    neighbors = graph.layers{L+1}{closest};
     for n = neighbors
       if (! visited(n))
         visited(n) = true;
-        d = pdist2 (X(n,:), query, dist, distparam);
-        if (d <= r)
-          candidates = [candidates, n];
-          dists = [dists, d];
-          best_candidates = [best_candidates, n];
-          best_dists = [best_dists, d];
-          if (length (best_dists) > efSearch && k != Inf)
-            [best_dists, sort_idx] = sort (best_dists);
-            best_candidates = best_candidates(sort_idx);
-            best_dists = best_dists(1:efSearch);
-            best_candidates = best_candidates(1:efSearch);
-          endif
+        d = pdist2 (X(n,:), Y, dist, param);
+
+        candidates = [candidates, n];
+        dists = [dists, d];
+        best_candidates = [best_candidates, n];
+        best_dists = [best_dists, d];
+        if (length (best_dists) > SetSize)
+          [best_dists, sort_idx] = sort (best_dists);
+          best_candidates = best_candidates(sort_idx);
+          best_dists = best_dists(1:SetSize);
+          best_candidates = best_candidates(1:SetSize);
         endif
+
       endif
     endfor
   endwhile
 
-  if (k == Inf)
-    indices = best_candidates(best_dists <= r);
-    distances = best_dists(best_dists <= r);
+  if (length (best_dists) > Points)
+    [best_dists, sort_idx] = sort (best_dists);
+    best_candidates = best_candidates(sort_idx);
+    indices = best_candidates(1:Points);
+    distances = best_dists(1:Points);
   else
-    if (length (best_dists) > k)
-      [best_dists, sort_idx] = sort (best_dists);
-      best_candidates = best_candidates(sort_idx);
-      indices = best_candidates(1:k);
-      distances = best_dists(1:k);
-    else
-      indices = best_candidates;
-      distances = best_dists;
-    endif
+    indices = best_candidates;
+    distances = best_dists;
   endif
 endfunction
 
@@ -884,12 +668,6 @@ endfunction
 %! disp ("Nearest neighbor index:");
 %! disp (idx);
 %! disp ("Distance:");
-%! disp (D);
-%! ## Find all points within radius 2
-%! [idx, D] = rangesearch (obj, Y, 2);
-%! disp ("Indices within radius:");
-%! disp (idx);
-%! disp ("Distances:");
 %! disp (D);
 
 %!demo
@@ -916,7 +694,7 @@ endfunction
 %! X2 = mu2 + sigma * randn (n / 2, 2);
 %! X = [X1; X2];
 %!
-%! obj = hnswSearcher(X, 'M', 10, 'efConstruction', 50, 'efSearch', 20);
+%! obj = hnswSearcher(X, 'MaxNumLinksPerNode', 10, 'TrainSetSize', 50, 'efSearch', 20);
 %!
 %! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
 %!
@@ -986,8 +764,8 @@ endfunction
 %! assert (obj.X, X);
 %! assert (obj.Distance, "euclidean");
 %! assert (isempty (obj.DistParameter));
-%! assert (obj.M, 16);
-%! assert (obj.efConstruction, 100);
+%! assert (obj.MaxNumLinksPerNode, 16);
+%! assert (obj.TrainSetSize, 100);
 %! assert (obj.efSearch, 50);
 
 %!test
@@ -1139,10 +917,10 @@ endfunction
 %! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", [1, 2; 3, 4])
 %!error<hnswSearcher: Cov must be positive definite for mahalanobis.> ...
 %! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
-%!error<hnswSearcher: M must be a positive integer.> ...
-%! hnswSearcher (ones(3,2), "M", 0)
-%!error<hnswSearcher: efConstruction must be a positive integer.> ...
-%! hnswSearcher (ones(3,2), "efConstruction", -1)
+%!error<hnswSearcher: MaxNumLinksPerNode must be a positive integer.> ...
+%! hnswSearcher (ones(3,2), "MaxNumLinksPerNode", 0)
+%!error<hnswSearcher: TrainSetSize must be a positive integer.> ...
+%! hnswSearcher (ones(3,2), "TrainSetSize", -1)
 %!error<hnswSearcher: efSearch must be a positive integer.> ...
 %! hnswSearcher (ones(3,2), "efSearch", 1.5)
 
@@ -1207,10 +985,10 @@ endfunction
 %! obj = hnswSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = -eye(2)
 %!error<hnswSearcher.subsasgn: DistParameter must be empty for this distance metric.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.DistParameter = 1
-%!error<hnswSearcher.subsasgn: M must be a positive integer.> ...
-%! obj = hnswSearcher (ones(3,2)); obj.M = 0
-%!error<hnswSearcher.subsasgn: efConstruction must be a positive integer.> ...
-%! obj = hnswSearcher (ones(3,2)); obj.efConstruction = -1
+%!error<hnswSearcher.subsasgn: MaxNumLinksPerNode must be a positive integer.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.MaxNumLinksPerNode = 0
+%!error<hnswSearcher.subsasgn: TrainSetSize must be a positive integer.> ...
+%! obj = hnswSearcher (ones(3,2)); obj.TrainSetSize = -1
 %!error<hnswSearcher.subsasgn: efSearch must be a positive integer.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.efSearch = 1.5
 %!error<hnswSearcher.subsasgn: unrecognized property: 'invalid'.> ...
