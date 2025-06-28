@@ -238,7 +238,7 @@ classdef ClusterCriterion < handle
           all (floor (KList) == KList))
         retList = unique (KList);
       else
-        error (strcat ("ClusterCriterion: the list of cluster sizes" ...
+        error (strcat ("ClusterCriterion: the list of cluster sizes", ...
                        " must be an array of positive integer numbers."));
       endif
     endfunction
