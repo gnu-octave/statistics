@@ -78,7 +78,6 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, varargin)
   if (any (numbers < 0))
     error ("multiway: NUMBERS must be non-negative.");
   endif
-  numbers = numbers(:)';
 
   ## Validate number of partitions
   if (! isscalar (num_parts))
@@ -152,6 +151,9 @@ function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
   groupindex(sorted_indices) = group_assignment;
 
   groupsizes = sums;
+  if (iscolumn (numbers))
+    groupsizes = groupsizes';
+  endif
 endfunction
 
 function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
@@ -163,6 +165,9 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
     endfor
     groupindex = zeros (size (numbers));
     groupsizes = zeros (1, num_parts);
+    if (iscolumn (numbers))
+      groupsizes = groupsizes';
+    endif
     return;
   endif
 
@@ -238,6 +243,10 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
     for j = 1:num_parts
       groupindex(idx_cell{j}) = j;
     endfor
+  endif
+
+  if (iscolumn (numbers))
+    groupsizes = groupsizes';
   endif
 endfunction
 
@@ -366,6 +375,41 @@ endfunction
 %! num_parts = 2;
 %! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
+
+## Test column vector input
+
+%!test
+%! numbers = [4; 5; 6; 7; 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (iscolumn (groupindex), true)
+%! assert (iscolumn (groupsizes), true);
+%! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
+
+%! numbers = [4; 5; 6; 7; 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (iscolumn (groupindex), true)
+%! assert (iscolumn (groupsizes), true);
+%! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
+
+## Test row vector input
+
+%!test
+%! numbers = [4, 5, 6, 7, 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! assert (isrow (groupindex), true)
+%! assert (isrow (groupsizes), true);
+%! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
+
+%!test
+%! numbers = [4, 5, 6, 7, 8];
+%! num_parts = 2;
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! assert (isrow (groupindex), true)
+%! assert (isrow (groupsizes), true);
+%! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
 
 ## Test input validation
 %!error<multiway: too few input arguments.> multiway ()
