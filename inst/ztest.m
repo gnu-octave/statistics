@@ -198,4 +198,11 @@ endfunction
 %! assert (ci, [22.909; 24.527], 1e-3);
 %!test
 %! x = normrnd (10, 2, 100, 1);
-%! [h, pval] = ztest(x, 10, 2, "tail", "right");
+%! [h, pval, ci] = ztest (x, 10, 2, "tail", "right");
+%! assert (isnan (pval), false);
+%! assert (pval >= 0 && pval <= 1, true);
+%!test
+%! x = normrnd (10, 2, 100, 1);
+%! [h, pval, ci] = ztest (x, 10, 2, "tail", "left");
+%! assert (isnan (pval), false);
+%! assert (pval >= 0 && pval <= 1, true);
