@@ -49,7 +49,7 @@
 ## Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
 ## @end enumerate
 ##
-## @seealso{bartlett, factoran, pcares, pca}
+## @seealso{barttest, factoran, pcares, pca}
 ## @end deftypefn
 
 function [coeff, latent, explained] = pcacov (K)
