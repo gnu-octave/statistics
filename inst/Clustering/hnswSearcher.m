@@ -468,13 +468,13 @@ classdef hnswSearcher
       ## Parse options
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
-          case "K"
+          case "k"
             K = varargin{2};
             if (! (isscalar (K) && isnumeric (K) &&
                    K >= 1 && K == fix (K) && isfinite (K)))
               error ("hnswSearcher.knnsearch: 'K' must be a positive integer.");
             endif
-          case "SearchSetSize"
+          case "searchsetsize"
             SearchSetSize = varargin{2};
             if (! (isscalar (SearchSetSize) &&
                    isnumeric (SearchSetSize) &&
