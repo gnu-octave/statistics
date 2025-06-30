@@ -55,7 +55,7 @@
 ## parameters like @qcode{"Distance"}, @qcode{"P"}, and @qcode{"BucketSize"}.
 ## @item For @qcode{"hnsw"}, see @code{hnswSearcher} documentation for parameters
 ## like @qcode{"Distance"}, @qcode{"P"}, @qcode{"Scale"}, @qcode{"Cov"},
-## @qcode{"M"}, @qcode{"efConstruction"}, and @qcode{"efSearch"}.
+## @qcode{"MaxNumLinksPerNode"}, and @qcode{"TrainSetSize"}.
 ## @end itemize
 ##
 ## @strong{Input Arguments:}
@@ -83,7 +83,7 @@
 ## obj = createns (X, "NSMethod", "kdtree", "Distance", "euclidean");
 ##
 ## ## Create an hnswSearcher with Minkowski distance and custom parameters
-## obj = createns (X, "NSMethod", "hnsw", "Distance", "minkowski", "P", 3, "M", 20);
+## obj = createns (X, "NSMethod", "hnsw", "Distance", "minkowski", "P", 3, "MaxNumLinksPerNode", 2);
 ## @end example
 ##
 ## @seealso{ExhaustiveSearcher, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch}
@@ -164,11 +164,11 @@ endfunction
 %!test
 %! ## hnswSearcher with custom parameters
 %! X = [1, 2; 3, 4; 5, 6];
-%! obj = createns (X, "NSMethod", "hnsw", "M", 20, "efSearch", 30);
+%! obj = createns (X, "NSMethod", "hnsw", "MaxNumLinksPerNode", 2, "TrainSetSize", 3);
 %! assert (isa (obj, "hnswSearcher"));
 %! assert (obj.X, X);
-%! assert (obj.M, 20);
-%! assert (obj.efSearch, 30);
+%! assert (obj.MaxNumLinksPerNode, 2);
+%! assert (obj.TrainSetSize, 3);
 
 %!test
 %! ## ExhaustiveSearcher with custom distance
