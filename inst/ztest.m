@@ -203,3 +203,21 @@ endfunction
 %! [h, pval, ci] = ztest (x, 10, 2, "tail", "left");
 %! assert (isnan (pval), false);
 %! assert (pval >= 0 && pval <= 1, true);
+%!test
+%! load fisheriris;
+%! x = meas(:,1);
+%! m = 5.8;
+%! sigma = 0.8;
+%! [h, pval, ci] = ztest (x, m, sigma, "tail", "right");
+%! assert (h, 0)
+%! assert (pval, 0.2535, 1e-4)
+%! assert (ci, [5.7359; Inf], 1e-5)
+%!test
+%! load fisheriris;
+%! x = meas(:,1);
+%! m = 5.8;
+%! sigma = 0.8;
+%! [h, pval, ci] = ztest (x, m, sigma, "tail", "left");
+%! assert (h, 0)
+%! assert (pval, 0.7465, 1e-4)
+%! assert (ci, [-Inf; 5.9508], 1e-4)    
