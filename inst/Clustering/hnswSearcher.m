@@ -555,7 +555,7 @@ function graph = build_hnsw (X, dist, param, MaxNumLinksPerNode, TrainSetSize)
       endif
       ## Find nearest neighbors in current layer
       [neighbors, dists] = search_hnsw_layer (graph, X(i,:), X, dist, param, ...
-                                              MaxNumLinksPerNode, TrainSetSize, L);
+                                              MaxNumLinksPerNode, TrainSetSize, L, graph.entry_point);
       graph.layers{L+1}{i} = neighbors;
       ## Update neighbors' connections
       for j = neighbors
@@ -580,32 +580,28 @@ endfunction
 function [indices, distances] = search_hnsw (graph, Y, X, dist, param, ...
                                              K, SearchSetSize)
   max_layers = length (graph.layers);
-  current_point = graph.entry_point;
-  candidates = current_point;
-  distances = pdist2 (X(current_point,:), Y, dist, param);
+  current_entry = graph.entry_point;
 
-  ## Navigate to the lowest layer
+  ## Navigate to the lowest layer (from the top layer down to layer 1)
   for L = max_layers:-1:2
     [new_candidates, new_dists] = search_hnsw_layer (graph, Y, X, ...
                                                      dist, param, ...
-                                                     1, SearchSetSize, L-1);
-    candidates = new_candidates;
-    distances = new_dists;
-    current_point = candidates(1);
+                                                     1, SearchSetSize, L-1, current_entry);
+    current_entry = new_candidates(1);
   endfor
 
   ## Search in the base layer
   [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
-                                            K, SearchSetSize, 0);
+                                            K, SearchSetSize, 0, current_entry);
 endfunction
 
 ## Private Function Search a single HNSW layer
 function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
-                                                   Points, SetSize, L)
+                                                   Points, SetSize, L, entry_points)
   visited = false (size (X, 1), 1);
-  candidates = [graph.entry_point];
-  dists = pdist2 (X(graph.entry_point,:), Y, dist, param);
-  visited(graph.entry_point) = true;
+  candidates = entry_points(:)';
+  dists = pdist2 (X(entry_points,:), Y, dist, param);
+  visited(entry_points) = true;
   best_candidates = candidates;
   best_dists = dists;
 
