@@ -136,15 +136,18 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
       ci = cat (dim, x_mean - crit, x_mean + crit);
     endif
   elseif (strcmpi (tail, "right"))
-    pval = normcdf (- zvalue,0,1);
+    pval = normcdf (- zvalue, 0, 1);
     if (nargout > 2)
       crit = norminv (1 - alpha, 0, 1) .* stderr;
+      ci = cat (dim, x_mean - crit, Inf (size (pval)));
       ci = cat (dim, x_mean - crit, Inf (size (pval)));
     endif
   elseif (strcmpi (tail, "left"))
     pval = normcdf (zvalue, 0, 1);
+    pval = normcdf (zvalue, 0, 1);
     if (nargout > 2)
       crit = norminv (1 - alpha, 0, 1) .* stderr;
+      ci = cat (dim, - Inf (size (pval)), x_mean + crit);
       ci = cat (dim, - Inf (size (pval)), x_mean + crit);
     endif
   endif
@@ -193,3 +196,6 @@ endfunction
 %! assert (h, 1);
 %! assert (pval, 3.184168011941316e-08, 1e-14);
 %! assert (ci, [22.909; 24.527], 1e-3);
+%!test
+%! x = normrnd (10, 2, 100, 1);
+%! [h, pval] = ztest(x, 10, 2, "tail", "right");
