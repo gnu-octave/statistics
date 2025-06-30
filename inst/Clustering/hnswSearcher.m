@@ -555,7 +555,9 @@ function graph = build_hnsw (X, dist, param, MaxNumLinksPerNode, TrainSetSize)
       endif
       ## Find nearest neighbors in current layer
       [neighbors, dists] = search_hnsw_layer (graph, X(i,:), X, dist, param, ...
-                                              MaxNumLinksPerNode, TrainSetSize, L, graph.entry_point);
+                                              MaxNumLinksPerNode, ...
+                                              TrainSetSize, L, ...
+                                              graph.entry_point);
       graph.layers{L+1}{i} = neighbors;
       ## Update neighbors' connections
       for j = neighbors
@@ -586,7 +588,8 @@ function [indices, distances] = search_hnsw (graph, Y, X, dist, param, ...
   for L = max_layers:-1:2
     [new_candidates, new_dists] = search_hnsw_layer (graph, Y, X, ...
                                                      dist, param, ...
-                                                     1, SearchSetSize, L-1, current_entry);
+                                                     1, SearchSetSize, L-1, ...
+                                                     current_entry);
     current_entry = new_candidates(1);
   endfor
 
@@ -597,7 +600,8 @@ endfunction
 
 ## Private Function Search a single HNSW layer
 function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
-                                                   Points, SetSize, L, entry_points)
+                                                   Points, SetSize, L, ...
+                                                   entry_points)
   visited = false (size (X, 1), 1);
   candidates = entry_points(:)';
   dists = pdist2 (X(entry_points,:), Y, dist, param);
