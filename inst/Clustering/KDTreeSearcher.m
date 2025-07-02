@@ -827,6 +827,18 @@ endfunction
 %!               [0 0.2646 0.2828]; [0 0.2000 0.3000]; [0 0.2449 0.3162]}, 5e-5)
 
 %!test
+%! load fisheriris
+%! X = meas;
+%! obj = KDTreeSearcher (X);
+%! Y = X(60:65,:);
+%! [idx, D] = rangesearch (obj, Y, 0.4);
+%! assert (idx, {[60 90]; [61 94]; [62 97 79 96 100 89 98 72]; [63];
+%!               [64 92 74 79]; [65]})
+%! assert (D, {[0 0.3873]; [0 0.3606];
+%!             [0 0.3000 0.3317 0.3606 0.3606 0.3742 0.3873 0.4000]; [0];
+%!             [0 0.1414 0.2236 0.2449]; [0]}, 5e-5)
+
+%!test
 %! ## Constructor with single-point dataset
 %! X = [0, 0];
 %! obj = KDTreeSearcher (X);
