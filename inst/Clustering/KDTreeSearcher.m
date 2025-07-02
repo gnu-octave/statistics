@@ -794,6 +794,18 @@ endfunction
 %! assert (D, [0; 0; 0; 0; 0; 0])
 
 %!test
+%! load fisheriris
+%! X = meas;
+%! obj = KDTreeSearcher (X, "Distance", "chebychev");
+%! Y = X(30:35,:);
+%! [idx, D] = knnsearch (obj, Y, 4);
+%! assert (idx, [[30, 31, 4, 12]; [31, 30, 10, 35]; [32, 21, 37, 28];
+%!               [33, 20, 34, 47]; [34, 16, 15, 33]; [35, 10, 2, 26]])
+%! assert (D, [[0, 0.1000, 0.1000, 0.2000]; [0, 0.1000, 0.1000, 0.1000];
+%!             [0, 0.2000, 0.2000, 0.2000]; [0, 0.3000, 0.3000, 0.3000];
+%!             [0, 0.2000, 0.3000, 0.3000]; [0, 0.1000, 0.1000, 0.1000]], 5e-15)
+
+%!test
 %! ## Constructor with single-point dataset
 %! X = [0, 0];
 %! obj = KDTreeSearcher (X);
