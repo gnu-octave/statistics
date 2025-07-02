@@ -785,6 +785,15 @@ endfunction
 %!             [0, 0.3503]], 5e-5)
 
 %!test
+%! load fisheriris
+%! X = meas;
+%! obj = KDTreeSearcher (X, "Distance", "cityblock");
+%! Y = X(20:25,:);
+%! [idx, D] = knnsearch (obj, Y, 1);
+%! assert (idx, [20; 21; 22; 23; 24; 25])
+%! assert (D, [0; 0; 0; 0; 0; 0])
+
+%!test
 %! ## Constructor with single-point dataset
 %! X = [0, 0];
 %! obj = KDTreeSearcher (X);
