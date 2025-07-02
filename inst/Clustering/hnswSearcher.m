@@ -691,6 +691,16 @@ endfunction
 %!            [0, 0.1414, 0.3000]], 1e-4)
 
 %!test
+%! load fisheriris
+%! X = meas;
+%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! Y = X(10:15,:);
+%! [idx, D] = knnsearch (obj, Y, "K", 2);
+%! assert (idx, [[10, 35]; [11, 49]; [12, 30]; [13, 2]; [14, 39]; [15, 34]])
+%! assert (D, [[0, 0.1000]; [0, 0.1000]; [0, 0.2080]; [0, 0.1260]; [0, 0.2154];
+%!             [0, 0.3503]], 5e-5)
+
+%!test
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = hnswSearcher (X);
