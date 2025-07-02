@@ -36,6 +36,18 @@ classdef KDTreeSearcher
 ## @seealso{createns, ExhaustiveSearcher, hnswSearcher, knnsearch, rangesearch}
 ## @end deftp
 
+  properties (SetAccess = private, Hidden)
+
+    ## -*- texinfo -*-
+    ## @deftp {Property} KDTree
+    ##
+    ## The KD-tree structure built from the training data.  This property is
+    ## private and cannot be modified after object creation.
+    ##
+    ## @end deftp
+    KDTree
+  endproperties
+
   properties (SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {Property} X
@@ -48,13 +60,13 @@ classdef KDTreeSearcher
     X = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} KDTree
+    ## @deftp {Property} BucketSize
     ##
-    ## The KD-tree structure built from the training data.  This property is
-    ## private and cannot be modified after object creation.
+    ## The maximum number of data points in the leaf node of the KD-tree.
+    ## Default is 50.
     ##
     ## @end deftp
-    KDTree
+    BucketSize = 50
   endproperties
 
   properties
@@ -84,15 +96,6 @@ classdef KDTreeSearcher
     ##
     ## @end deftp
     DistParameter = []
-
-    ## -*- texinfo -*-
-    ## @deftp {Property} BucketSize
-    ##
-    ## The maximum number of data points in the leaf node of the KD-tree.
-    ## Default is 50.
-    ##
-    ## @end deftp
-    BucketSize = 50
   endproperties
 
   methods (Hidden)
@@ -174,11 +177,14 @@ classdef KDTreeSearcher
           endif
           switch (s.subs)
             case 'X'
-              error (strcat ("KDTreeSearcher.subsasgn: X is", ...
+              error (strcat ("KDTreeSearcher.subsasgn: 'X' is", ...
                              " read-only and cannot be modified."));
             case 'KDTree'
-              error (strcat ("KDTreeSearcher.subsasgn: KDTree is", ...
+              error (strcat ("KDTreeSearcher.subsasgn: 'KDTree' is", ...
                              " read-only and cannot be modified."));
+            case 'BucketSize'
+              error (strcat ("KDTreeSearcher.subsasgn: 'BucketSize'", ...
+                             " is read-only and cannot be modified."));
             case 'Distance'
               allowed_distances = {'euclidean', 'cityblock', 'minkowski', ...
                                    'chebychev'};
@@ -189,35 +195,28 @@ classdef KDTreeSearcher
                 endif
                 this.Distance = val;
               else
-                error (strcat ("KDTreeSearcher.subsasgn: Distance", ...
+                error (strcat ("KDTreeSearcher.subsasgn: 'Distance'", ...
                                " must be a string."));
               endif
             case 'DistParameter'
               if (strcmpi (this.Distance, "minkowski"))
                 if (! (isscalar (val) && isnumeric (val)
                                       && val > 0 && isfinite (val)))
-                  error (strcat ("KDTreeSearcher.subsasgn:", ...
-                                 " DistParameter must be a positive", ...
-                                 " finite scalar for minkowski."));
+                  error (strcat ("KDTreeSearcher.subsasgn: 'DistParameter'", ...
+                                 " must be a positive finite scalar for", ...
+                                 " Minkowski distance."));
                 endif
                 this.DistParameter = val;
               else
                 if (! isempty (val))
-                  error (strcat ("KDTreeSearcher.subsasgn: DistParameter", ...
+                  error (strcat ("KDTreeSearcher.subsasgn: 'DistParameter'", ...
                                  " must be empty for this distance metric."));
                 endif
                 this.DistParameter = val;
               endif
-            case 'BucketSize'
-              if (! (isscalar (val) && isnumeric (val)
-                                    && val > 0 && val == fix (val)))
-                error (strcat ("KDTreeSearcher.subsasgn: BucketSize", ...
-                               " must be a positive integer."));
-              endif
-              this.BucketSize = val;
             otherwise
-              error (strcat ("KDTreeSearcher.subsasgn:", ...
-                             " unrecognized property: '%s'."), s.subs);
+              error ("KDTreeSearcher.subsasgn: unrecognized property: '%s'.",...
+                     s.subs);
           endswitch
       endswitch
     endfunction
