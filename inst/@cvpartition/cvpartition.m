@@ -168,8 +168,8 @@ function C = cvpartition (X, partition_type = "KFold", k = [])
       C.NumTestSets = 1;
       C.inds = inds;
     case "leaveout"
-      C.TrainSize = ones (n, 1);
-      C.TestSize = (n-1)  * ones (n, 1);
+      C.TrainSize = (n-1) * ones (n, 1);
+      C.TestSize = ones (n, 1);
       C.NumTestSets = n;
     case "resubstitution"
       C.TrainSize = C.TestSize = n;
@@ -230,8 +230,8 @@ endfunction
 %! C = cvpartition ([1 2 3 4 5 6 7 8 9 10], "LeaveOut", 5);
 %! assert (get (C, "NumObservations"), 10);
 %! assert (get (C, "NumTestSets"), 10);
-%! assert (get (C, "TrainSize"), ones (10, 1));
-%! assert (get (C, "TestSize"), ones (10, 1) * 9);
+%! assert (get (C, "TrainSize"), ones (10, 1) * 9);
+%! assert (get (C, "TestSize"), ones (10, 1));
 %! assert (get (C, "inds"), []);
 %! assert (get (C, "Type"), "leaveout");
 %!test
