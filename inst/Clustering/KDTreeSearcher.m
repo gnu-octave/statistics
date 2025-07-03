@@ -805,7 +805,7 @@ endfunction
 %!             [0, 0.2000, 0.2000, 0.2000]; [0, 0.3000, 0.3000, 0.3000];
 %!             [0, 0.2000, 0.3000, 0.3000]; [0, 0.1000, 0.1000, 0.1000]], 5e-15)
 
-%! %!test
+%!test
 %! load fisheriris
 %! X = meas;
 %! obj = KDTreeSearcher (X, "BucketSize", 20);
