@@ -191,6 +191,17 @@ function [varargout] = fitdist (varargin)
     varargin([1:2]) = [];
   endwhile
 
+  ## Handle missing values
+  is_nan = isnan (x) | isnan (censor) | isnan (freq);
+  if (any (is_nan))
+    x(is_nan) = [];
+    censor(is_nan) = [];
+    freq(is_nan) = [];
+    if (! isempty (groupvar))
+      groupvar(is_nan) = [];
+    endif
+  endif
+
   ## Handle group variable
   if (isempty (groupvar) && nargout > 1)
     error ("fitdist: must define GROUPVAR for more than one output arguments.");
