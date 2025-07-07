@@ -59,7 +59,7 @@
 ## normally distributed data with equal unknown standard deviations.
 ## @var{params} is a two-element vector [MU0 SIGMA0] of the mean and standard
 ## deviation of the first sample under the null and alternative hypotheses.  P1
-## is the the mean of the second sample under the alternative hypothesis.
+## is the mean of the second sample under the alternative hypothesis.
 ## @item @tab "var" @tab chi-square test of variance for normally distributed
 ## data.  @var{params} is the variance under the null hypothesis.  P1 is the
 ## variance under the alternative hypothesis.
@@ -84,7 +84,7 @@
 ## @code{[@var{n1}, @var{n2}] = sampsizepwr ("t2", @var{params}, @var{p1},
 ## @var{power})} returns the sample sizes @var{n1} and @var{n2} for the two
 ## samples.  These values are the same unless the "ratio" parameter,
-## @code{@var{ratio} = @var{n2} / @var{n2}}, is set to a value other than
+## @code{@var{ratio} = @var{n2} / @var{n1}}, is set to a value other than
 ## the default (See the name/value pair definition of ratio below).
 ##
 ## @code{@var{power} = sampsizepwr (@var{testtype}, @var{params}, @var{p1}, [],
@@ -119,7 +119,7 @@
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.15 0.8
-## @item @tab "ratio" @tab desired ratio @var{n2} / @var{n2} of the larger
+## @item @tab "ratio" @tab desired ratio @var{n2} / @var{n1} of the larger
 ## sample size @var{n2} to the smaller sample size @var{n1}.  Used only for the
 ## two-sample t-test.  The value of @code{@var{ratio}} is greater than or equal
 ## to 1 (default is 1).
