@@ -81,7 +81,7 @@
 
 function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   ## Get matrix size
-  [m,n]  = size(x);
+  [m, n]  = size (x);
   ## Get data class
   if (isa (x, "single"))
     data_class = 'single';
@@ -94,6 +94,10 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   endif
   if (nargin < 3)
     categ = [];
+  else
+    if (! all (ismember (categ, 1:n)))
+      error ("x2fx: category index exceeds number of columns in X.");
+    endif
   endif
   if (nargin < 4)
     catlevels = [];
@@ -104,7 +108,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     if (strcmpi (model, "linear") || strcmpi (model, "additive"))
       interactions = false;
       quadratic = false;
-    elseif (strcmpi (model, "interactions"))
+    elseif (strcmpi (model, "interaction"))
       interactions = true;
       quadratic = false;
     elseif (strcmpi (model, "quadratic"))
@@ -114,7 +118,11 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
       interactions = false;
       quadratic = true;
     else
-      D = feval (model, x);
+      try
+        D = feval (model, x);
+      catch
+        error ("x2fx: unrecognized function '%s'.", model);
+      end_try_catch
       termstart = [];
       termend = [];
       return
@@ -158,8 +166,8 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     for idx = 1:length (categ)
       categ_idx = categ(idx);
       if (any (! ismember (x(:,categ_idx), 1:catlevels(idx))))
-        error("x2fx: wrong value %f in category %d.", ...
-              catlevels(idx), categ_idx);
+        error ("x2fx: wrong value %f in category %d.", ...
+               catlevels(idx), categ_idx);
       endif
     endfor
   endif
@@ -168,11 +176,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   [r, c] = size (model);
   ## Check for equal number of columns between x and model
   if (c != n)
-    error("x2fx: wrong number of columns between x and model");
-  endif
-  ## Check model category column for values greater than 1
-  if (any (model(:,categ) > 1, 1))
-    error("x2fx: wrong values in model's category column");
+    error ("x2fx: wrong number of columns between X and MODEL.");
   endif
 
   ## Allocate space for the dummy variables for all terms
@@ -188,11 +192,11 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     C = 1;
     if (any (t))
       if (any (pwrs(! catmember)))
-        pwrs_cat = pwrs .* !catmember;
+        pwrs_cat = pwrs .* (! catmember);
         C = ones (size (x, 1), 1);
         collist = find (pwrs_cat > 0);
-        for idx = 1:length (collist)
-          categ_idx = collist(idx);
+        for j = 1:length (collist)
+          categ_idx = collist(j);
           C = C .* x(:,categ_idx) .^ pwrs_cat(categ_idx);
         endfor
       endif
@@ -203,10 +207,10 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
         keep = (xcol <= var_DF(collist(1)));
         colnum = xcol;
         cumdf = 1;
-        for idx=2:length(collist)
-          cumdf = cumdf * var_DF(collist(idx-1));
-          xcol = x(:,collist(idx));
-          keep = keep & (xcol <= var_DF(collist(idx)));
+        for j = 2:length (collist)
+          cumdf = cumdf * var_DF(collist(j-1));
+          xcol = x(:,collist(j));
+          keep = keep & (xcol <= var_DF(collist(j)));
           colnum = colnum + cumdf * (xcol - 1);
         endfor
         if (length (C) > 1)
@@ -223,17 +227,63 @@ endfunction
 %!test
 %! X = [1, 10; 2, 20; 3, 10; 4, 20; 5, 15; 6, 15];
 %! D = x2fx(X,'quadratic');
-%! assert (D(1,:) , [1, 1, 10, 10, 1, 100]);
-%! assert (D(2,:) , [1, 2, 20, 40, 4, 400]);
+%! assert (D(1,:), [1, 1, 10, 10, 1, 100]);
+%! assert (D(2,:), [1, 2, 20, 40, 4, 400]);
 
 %!test
 %! X = [1, 10; 2, 20; 3, 10; 4, 20; 5, 15; 6, 15];
 %! model = [0, 0; 1, 0; 0, 1; 1, 1; 2, 0];
 %! D = x2fx(X,model);
-%! assert (D(1,:) , [1, 1, 10, 10, 1]);
-%! assert (D(2,:) , [1, 2, 20, 40, 4]);
-%! assert (D(4,:) , [1, 4, 20, 80, 16]);
+%! assert (D(1,:), [1, 1, 10, 10, 1]);
+%! assert (D(2,:), [1, 2, 20, 40, 4]);
+%! assert (D(4,:), [1, 4, 20, 80, 16]);
 
-%!error x2fx ([1, 10; 2, 20; 3, 10], [0; 1]);
-%!error x2fx ([1, 10, 15; 2, 20, 40; 3, 10, 25], [0, 0; 1, 0; 0, 1; 1, 1; 2, 0]);
-%!error x2fx ([1, 10; 2, 20; 3, 10], "whatever");
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, 'linear');
+%! assert (D, [1, 1, 2, 3; 1, 2, 3, 4;, 1, 3, 4, 5]);
+%! D = x2fx (x, 'interaction');
+%! assert (D(1,:), [1, 1, 2, 3, 2, 3, 6]);
+%! assert (D(2,:), [1, 2, 3, 4, 6, 8, 12]);
+%! assert (D(3,:), [1, 3, 4, 5, 12, 15, 20]);
+%! D = x2fx (x, 'quadratic');
+%! assert (D(1,:), [1, 1, 2, 3, 2, 3, 6, 1, 4, 9]);
+%! assert (D(2,:), [1, 2, 3, 4, 6, 8, 12, 4, 9, 16]);
+%! assert (D(3,:), [1, 3, 4, 5, 12, 15, 20, 9, 16, 25]);
+%! D = x2fx (x, 'purequadratic');
+%! assert (D(1,:), [1, 1, 2, 3, 1, 4, 9]);
+%! assert (D(2,:), [1, 2, 3, 4, 4, 9, 16]);
+%! assert (D(3,:), [1, 3, 4, 5, 9, 16, 25]);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, [0, 0, 1; 1, 0, 2]);
+%! assert (D, [3, 9; 4, 32; 5, 75]);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, 'linear', [1, 3]);
+%! assert (D, [1, 1, 0, 2, 1, 0; 1, 0, 1, 3, 0, 1; 1, 0, 0, 4, 0, 0]);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, 'quadratic', [1, 3]);
+%! assert (D(1,:), [1, 1, 0, 2, 1, 0, 2, 0, 1, 0, 0, 0, 2, 0, 4]);
+%! assert (D(2,:), [1, 0, 1, 3, 0, 1, 0, 3, 0, 0, 0, 1, 0, 3, 9]);
+%! assert (D(3,:), [1, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16]);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, 'cos');
+%! assert (D(1,:), [0.5403, -0.4161, -0.9900], 1e-4);
+%! assert (D(2,:), [-0.4161, -0.9900, -0.6536], 1e-4);
+%! assert (D(3,:), [-0.9900, -0.6536, 0.2837], 1e-4);
+
+%!error <x2fx: category index exceeds number of columns in X.> ...
+%! x2fx ([1, 2, 3; 2, 3, 4], 'quadratic', [1, 4])
+%!error <x2fx: unrecognized function 'cosine'.> ...
+%! D = x2fx ([1, 2, 3; 2, 3, 4; 3, 4, 5], 'cosine')
+%!error <x2fx: wrong number of columns between X and MODEL.> ...
+%! x2fx ([1, 10; 2, 20; 3, 10], [0; 1]);
+%!error <x2fx: wrong number of columns between X and MODEL.> ...
+%! x2fx ([1, 10, 15; 2, 20, 40; 3, 10, 25], [0, 0; 1, 0; 0, 1; 1, 1; 2, 0]);
