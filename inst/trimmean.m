@@ -21,7 +21,7 @@
 ## @deftypefnx {statistics} {@var{m} =} trimmean (@var{x}, @var{p}, @var{flag})
 ## @deftypefnx {statistics} {@var{m} =} trimmean (@dots{}, @qcode{"all"})
 ## @deftypefnx {statistics} {@var{m} =} trimmean (@dots{}, @var{dim})
-## @deftypefnx {statistics} {@var{m} =} trimmean (@dots{}, @var{dim})
+## @deftypefnx {statistics} {@var{m} =} trimmean (@dots{}, @var{vecdim})
 ##
 ## Compute the trimmed mean.
 ##
