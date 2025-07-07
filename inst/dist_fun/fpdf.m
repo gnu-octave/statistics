@@ -61,10 +61,18 @@ function y = fpdf (x, df1, df2)
     y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(df1 > 0) | !(df1 < Inf) | !(df2 > 0) | !(df2 < Inf);
+  ## Handle both DFs being INF
+  kz = df1 == Inf & df2 == Inf;
+
+  ## Limit DFs to 5e10 to avoid numerical issues
+  df1(df1 > 1e11) = 5e10;
+  df2(df2 > 1e11) = 5e10;
+
+  k = isnan (x) | ! (df1 > 0) | ! (df2 > 0);
   y(k) = NaN;
 
-  k = (x > 0) & (x < Inf) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
+  #k = (x > 0) & (x < Inf) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
+  k = x > 0 & x < Inf & df1 > 0 & df2 > 0;
   if (isscalar (df1) && isscalar (df2))
     tmp = df1 / df2 * x(k);
     y(k) = (exp ((df1/2 - 1) * log (tmp) ...
@@ -76,6 +84,9 @@ function y = fpdf (x, df1, df2)
                    - ((df1(k) + df2(k)) / 2) .* log (1 + tmp)) ...
               .* (df1(k) ./ df2(k)) ./ beta (df1(k)/2, df2(k)/2));
   endif
+
+  ## Force instances with df1 = df2 = INF to 0 for valid x
+  y(kz & ! isnan (x)) = 0;
 
 endfunction
 
@@ -99,13 +110,13 @@ endfunction
 
 ## Test output
 %!shared x, y
-%! x = [-1 0 0.5 1 2];
-%! y = [0 0 4/9 1/4 1/9];
+%! x = [-1, 0, 0.5, 1, 2];
+%! y = [0, 0, 4/9, 1/4, 1/9];
 %!assert (fpdf (x, 2*ones (1,5), 2*ones (1,5)), y, eps)
 %!assert (fpdf (x, 2, 2*ones (1,5)), y, eps)
 %!assert (fpdf (x, 2*ones (1,5), 2), y, eps)
-%!assert (fpdf (x, [0 NaN Inf 2 2], 2), [NaN NaN NaN y(4:5)], eps)
-%!assert (fpdf (x, 2, [0 NaN Inf 2 2]), [NaN NaN NaN y(4:5)], eps)
+%!assert (fpdf (x, [0, NaN, Inf, 2, 2], 2), [NaN, NaN, 0.5413, y(4:5)], 1e-4)
+%!assert (fpdf (x, 2, [0, NaN, Inf, 2, 2]), [NaN, NaN, 0.6065, y(4:5)], 1e-4)
 %!assert (fpdf ([x, NaN], 2, 2), [y, NaN], eps)
 %!test #F (x, 1, df1) == T distribution (sqrt (x), df1) / sqrt (x)
 %! rand ("seed", 1234);    # for reproducibility
@@ -113,6 +124,24 @@ endfunction
 %! xr = xr(x > 0.1 & x < 0.9);
 %! yr = tpdf (sqrt (xr), 2) ./ sqrt (xr);
 %! assert (fpdf (xr, 1, 2), yr, 5*eps);
+%!test
+%! yy = fpdf (2, 4, Inf);
+%! assert (yy, 0.1465, 1e-4)
+%!test
+%! yy = fpdf (2, 4, 1000000000000000);
+%! assert (yy, 0.1465, 1e-4)
+%!test
+%! yy = fpdf (2, Inf, 4);
+%! assert (yy, 0.1839, 1e-4)
+%!test
+%! yy = fpdf (2, 10000000000000000, 4);
+%! assert (yy, 0.1839, 1e-4)
+%!test
+%! yy = fpdf (2, Inf, Inf);
+%! assert (yy, 0)
+%!test
+%! yy = fpdf (NaN, Inf, Inf);
+%! assert (yy, NaN)
 
 ## Test class of input preserved
 %!assert (fpdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ("single"))
