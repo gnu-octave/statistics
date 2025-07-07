@@ -61,12 +61,19 @@ function x = finv (p, df1, df2)
     x = NaN (size (p));
   endif
 
-  k = (p == 1) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
+  ## Handle both DFs being INF
+  kz = df1 == Inf & df2 == Inf;
+
+  ## Limit DFs to 1.5e6 to avoid numerical issues
+  df1(df1 > 1.5e6) = 1.5e6;
+  df2(df2 > 1.5e6) = 1.5e6;
+
+  k = p == 1 & df1 > 0 & df2 > 0;
   x(k) = Inf;
 
   ## Limit df2 to 1e6 unless it is Inf
-  k = (df2 > 1e6) & (df2 < Inf);
-  df2(k) = 1e6;
+  #k = (df2 > 1e6) & (df2 < Inf);
+  #df2(k) = 1e6;
 
   k = (p >= 0) & (p < 1) & (df1 > 0) & (df1 < Inf) & (df2 > 0) & (df2 < Inf);
   if (isscalar (df1) && isscalar (df2))
@@ -106,8 +113,8 @@ endfunction
 %!assert (finv (p, 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 Inf NaN])
 %!assert (finv (p, 2, 2*ones (1,5)), [NaN 0 1 Inf NaN])
 %!assert (finv (p, 2*ones (1,5), 2), [NaN 0 1 Inf NaN])
-%!assert (finv (p, [2 -Inf NaN Inf 2], 2), [NaN NaN NaN NaN NaN])
-%!assert (finv (p, 2, [2 -Inf NaN Inf 2]), [NaN NaN NaN NaN NaN])
+%!assert (finv (p, [2 -Inf NaN Inf 2], 2), [NaN NaN NaN Inf NaN])
+%!assert (finv (p, 2, [2 -Inf NaN Inf 2]), [NaN NaN NaN Inf NaN])
 %!assert (finv ([p(1:2) NaN p(4:5)], 2, 2), [NaN 0 NaN Inf NaN])
 
 ## Test for bug #66034 (savannah)
@@ -116,6 +123,26 @@ endfunction
 %!assert (finv (0.025, 10, 1e10), 0.3247, 1e-4)
 %!assert (finv (0.025, 10, 1e255), 0.3247, 1e-4)
 %!assert (finv (0.025, 10, Inf), 0.3247, 1e-4)
+
+## Test for issue #203 (Github)
+%!test
+%! x = finv (0.35, Inf, 4);
+%! assert (x, 0.9014, 1e-4)
+%!test
+%! x = finv (0, Inf, 4);
+%! assert (x, 0)
+%!test
+%! x = finv (1, Inf, 4);
+%! assert (x, Inf)
+%!test
+%! x = finv (0.35, 4, Inf);
+%! assert (x, 0.6175, 1e-4)
+%!test
+%! x = finv (0, 4, Inf);
+%! assert (x, 0)
+%!test
+%! x = finv (1, 4, Inf);
+%! assert (x, Inf)
 
 ## Test class of input preserved
 %!assert (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])

@@ -65,8 +65,8 @@ function y = fpdf (x, df1, df2)
   kz = df1 == Inf & df2 == Inf;
 
   ## Limit DFs to 5e10 to avoid numerical issues
-  df1(df1 > 1e11) = 5e10;
-  df2(df2 > 1e11) = 5e10;
+  df1(df1 > 5e10) = 5e10;
+  df2(df2 > 5e10) = 5e10;
 
   k = isnan (x) | ! (df1 > 0) | ! (df2 > 0);
   y(k) = NaN;
@@ -124,6 +124,8 @@ endfunction
 %! xr = xr(x > 0.1 & x < 0.9);
 %! yr = tpdf (sqrt (xr), 2) ./ sqrt (xr);
 %! assert (fpdf (xr, 1, 2), yr, 5*eps);
+
+## Test for issue #203 (Github)
 %!test
 %! yy = fpdf (2, 4, Inf);
 %! assert (yy, 0.1465, 1e-4)
