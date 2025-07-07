@@ -73,7 +73,7 @@ function y = gampdf (x, a, b)
   y(is_nan) = NaN;
 
   ## Handle all other valid cases
-  v = (x >= 0) & (a > 0) & (a <= 1) & (b > 0);
+  v = x >= 0 & a > 0 & a <= 1 & b > 0 & b < Inf;
   if (isscalar (a) && isscalar (b))
     y(v) = (x(v) .^ (a - 1)) ...
               .* exp (- x(v) / b) / gamma (a) / (b ^ a);
@@ -82,7 +82,7 @@ function y = gampdf (x, a, b)
               .* exp (- x(v) ./ b(v)) ./ gamma (a(v)) ./ (b(v) .^ a(v));
   endif
 
-  v = (x >= 0) & (a > 1) & (b > 0);
+  v = x >= 0 & a > 1 & a < Inf & b > 0 & b < Inf;
   if (isscalar (a) && isscalar (b))
     y(v) = exp (- a * log (b) + (a-1) * log (x(v))
                   - x(v) / b - gammaln (a));
@@ -121,9 +121,15 @@ endfunction
 %!assert (gampdf (x, ones (1,5), ones (1,5)), y)
 %!assert (gampdf (x, 1, ones (1,5)), y)
 %!assert (gampdf (x, ones (1,5), 1), y)
-%!assert (gampdf (x, [0 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN y(5)])
+%!assert (gampdf (x, [0 -Inf NaN Inf 1], 1), [NaN NaN NaN 0 y(5)])
+%!assert (gampdf (x, [0 Inf NaN Inf 1], 1), [NaN 0 NaN 0 y(5)])
 %!assert (gampdf (x, 1, [0 -Inf NaN Inf 1]), [NaN NaN NaN 0 y(5)])
 %!assert (gampdf ([x, NaN], 1, 1), [y, NaN])
+
+## Test for issue #203 (Github)
+%!assert (gampdf (2, Inf, 4), 0)
+%!assert (gampdf (2, 4, Inf), 0)
+%!assert (gampdf (2, Inf, Inf), 0)
 
 ## Test class of input preserved
 %!assert (gampdf (single ([x, NaN]), 1, 1), single ([y, NaN]))

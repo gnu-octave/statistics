@@ -87,6 +87,9 @@ endfunction
 %!assert (chi2pdf (x, 2*[1 0 NaN 1 1]), [y(1) NaN NaN y(4:5)])
 %!assert (chi2pdf ([x, NaN], 2), [y, NaN])
 
+## Test for issue #203 (Github)
+%!assert (chi2pdf (2, Inf), 0)
+
 ## Test class of input preserved
 %!assert (chi2pdf (single ([x, NaN]), 2), single ([y, NaN]))
 %!assert (chi2pdf ([x, NaN], single (2)), single ([y, NaN]))
