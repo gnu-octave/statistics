@@ -64,6 +64,7 @@ function x = finv (p, df1, df2)
   ## Handle both DFs being INF
   kz = df1 == Inf & df2 == Inf;
 
+
   ## Limit DFs to 1.5e6 to avoid numerical issues
   df1(df1 > 1.5e6) = 1.5e6;
   df2(df2 > 1.5e6) = 1.5e6;
@@ -84,8 +85,12 @@ function x = finv (p, df1, df2)
   endif
 
   ## Handle case when DF2 is infinite
-  k = (p >= 0) & (p < 1) & (df1 > 0) & (df1 < Inf) & (df2 == Inf);
+  k = p >= 0 & p < 1 & df1 > 0 & (df1 < Inf) & (df2 == Inf);
   x(k) = chi2inv (p(k), df1(k)) ./ df1(k);
+
+  ## Force instances with df1 = df2 = INF to 0 for p = 0 and to 1 for 0 < p <= 1
+  x(kz & p > 0 & p <= 1) = 1;
+  x(kz & p == 0) = 0;
 
 endfunction
 
@@ -143,6 +148,9 @@ endfunction
 %!test
 %! x = finv (1, 4, Inf);
 %! assert (x, Inf)
+%!test
+%! x = finv ([0, 0.000001, 0.35, 1, 1.2], Inf, Inf);
+%! assert (x, [0, 1, 1, 1, NaN]);
 
 ## Test class of input preserved
 %!assert (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])
