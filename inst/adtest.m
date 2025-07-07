@@ -42,14 +42,14 @@
 ## @headitem Name @tab Description
 ## @item "Distribution" @tab The distribution being tested for.  It tests
 ## whether @var{x} could have come from the specified distribution.  There are
-## two choise available for parsing distribution parameters:
+## two choices available for parsing distribution parameters:
 ## @end multitable
 ##
 ## @itemize
 ## @item
 ## One of the following char strings: "norm", "exp", "ev", "logn", "weibull",
 ## for defining either the 'normal', 'exponential', 'extreme value', lognormal,
-## or 'Weibull' distribution family, accordingly.  In this case, @var{x} is
+## or 'Weibull' distribution family, respectively.  In this case, @var{x} is
 ## tested against a composite hypothesis for the specified distribution family
 ## and the required distribution parameters are estimated from the data in
 ## @var{x}.  The default is "norm".

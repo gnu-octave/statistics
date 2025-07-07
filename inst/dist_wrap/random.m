@@ -135,7 +135,7 @@ function r = random (name, varargin)
     {"wbl"      , "Weibull"},                   @wblrnd,       2};
 
   if (! ischar (name))
-    error ("random: distribution NAME must a char string.");
+    error ("random: distribution NAME must be a char string.");
   endif
 
   ## Get number of arguments
@@ -260,8 +260,8 @@ endfunction
 %!assert (size (random ("wbl", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 
 ## Test input validation
-%!error<random: distribution NAME must a char string.> random (1)
-%!error<random: distribution NAME must a char string.> random ({"beta"})
+%!error<random: distribution NAME must be a char string.> random (1)
+%!error<random: distribution NAME must be a char string.> random ({"beta"})
 %!error<random: distribution parameters must be numeric.> ...
 %! random ("Beta", "a", 2)
 %!error<random: distribution parameters must be numeric.> ...

@@ -22,10 +22,10 @@ classdef CompactClassificationGAM
 ## A @qcode{CompactClassificationGAM} object is a compact version of a
 ## Generalized Additive Model, @qcode{ClassificationGAM}.
 ##
-## The @qcode{CompactClassificationDiscriminant} does not include the training
+## The @qcode{CompactClassificationGAM} does not include the training
 ## data resulting to a smaller classifier size, which can be used for making
 ## predictions from new data, but not for tasks such as cross validation.  It
-## can only be created from a @qcode{ClassificationDiscriminant} model by using
+## can only be created from a @qcode{ClassificationGAM} model by using
 ## the @code{compact} object method.
 ##
 ## The available methods for a @qcode{CompactClassificationGAM} object

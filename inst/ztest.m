@@ -36,7 +36,7 @@
 ## @var{x} may also be a matrix or an N-D array.  For matrices, @code{ztest}
 ## performs separate tests along each column of @var{x}, and returns a vector of
 ## results.  For N-D arrays, @code{ztest} works along the first non-singleton
-## dimension of @var{x}.  @var{m} and @var{sigma} must be a scalars.
+## dimension of @var{x}.  @var{m} and @var{sigma} must be scalars.
 ##
 ## @code{ztest} treats NaNs as missing values, and ignores them.
 ##

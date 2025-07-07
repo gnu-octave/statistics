@@ -48,7 +48,7 @@
 ##
 ## @item SmoothFactor
 ## (4) The function performs simple kernel density estimation and automatically
-## finds the bandwith of the kernel function that best approximates the
+## finds the bandwidth of the kernel function that best approximates the
 ## histogram using optimization (@command{sqp}).
 ## The result is in general very noisy. To smooth the result the bandwidth is
 ## multiplied by the value of this property. The higher the value the smoother
@@ -56,7 +56,7 @@
 ## distribution.
 ##
 ## @item Bandwidth
-## (NA) If this property is given a value other than NA, it sets the bandwith of
+## (NA) If this property is given a value other than NA, it sets the bandwidth of
 ## the kernel function. No optimization is performed and the property
 ## @asis{SmoothFactor} is ignored.
 ##
@@ -119,7 +119,7 @@ function h = violin (ax, varargin)
   endif
   nb       = res.Nbins;        # Number of bins in histogram
   sf       = res.SmoothFactor; # Smoothing factor for kernel estimation
-  r0       = res.Bandwidth;    # User value for KDE bandwith to prevent optimization
+  r0       = res.Bandwidth;    # User value for KDE bandwidth to prevent optimization
   is_horiz = res.Horizontal;   # Whether the plot must be rotated
   width    = res.Width;        # Width of the violins
   clear parser res
@@ -140,8 +140,8 @@ function h = violin (ax, varargin)
       n = str2num (err.message);
       txt = {"Nbins", "Color", "SmoothFactor", "Bandwidth", "Width"};
       error ("Octave:invalid-input-arg", ...
-            ["options should be scalars or call/array with as many values as" ...
-             " numbers of variables in the data (wrong size of %s)."], txt{n});
+            ["options should be scalars or cell/array with as many values as" ...
+             " number of variables in the data (wrong size of %s)."], txt{n});
     else
       rethrow (lasterror())
     endif
@@ -172,7 +172,7 @@ function h = violin (ax, varargin)
   tmp      = cellfun (@(z,y)plot(ax, z, y, 'ok'), Ncc, Mx);
   h.median = tmp;
 
-  ## Overlay 1nd and 3th quartiles
+  ## Overlay 1st and 3th quartiles
   LUBU = cellfun (@(x,y)abs(quantile(x,[0.25 0.75])-y), x, Mx, "unif", 0);
   tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
   ## Flatten errorbar output handles
