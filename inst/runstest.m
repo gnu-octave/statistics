@@ -105,7 +105,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
       endif
       x(rm) = [];
       N = numel(x) + 1;
-      UD = true
+      UD = true;
     else
       error ("runstest: V must be either a scalar number or 'ud' char string.");
     endif
@@ -271,7 +271,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
     pval = p_ex + p_hi;
   endif
 
-  ## Retyrn decision of test
+  ## Return decision of test
   h = double (pval <= alpha);
 
   if (nargout > 2)

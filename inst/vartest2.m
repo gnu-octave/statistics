@@ -40,17 +40,17 @@
 ## non-singleton dimension and @var{x} and @var{y} must have the same size along
 ## all the remaining dimensions.
 ##
-## @code{vartest} treats NaNs as missing values, and ignores them.
+## @code{vartest2} treats NaNs as missing values, and ignores them.
 ##
-## @code{[@var{h}, @var{pval}] = vartest (@dots{})} returns the p-value.  That
+## @code{[@var{h}, @var{pval}] = vartest2 (@dots{})} returns the p-value.  That
 ## is the probability of observing the given result, or one more extreme, by
 ## chance if the null hypothesis true.
 ##
-## @code{[@var{h}, @var{pval}, @var{ci}] = vartest (@dots{})} returns a
+## @code{[@var{h}, @var{pval}, @var{ci}] = vartest2 (@dots{})} returns a
 ## @math{100 * (1 - @var{alpha})%} confidence interval for the true ratio
 ## var(X)/var(Y).
 ##
-## @code{[@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest (@dots{})}
+## @code{[@var{h}, @var{pval}, @var{ci}, @var{stats}] = vartest2 (@dots{})}
 ## returns a structure with the following fields:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
@@ -59,7 +59,7 @@
 ## @item @tab @qcode{df2} @tab the denominator degrees of freedom of the test
 ## @end multitable
 ##
-## @code{[@dots{}] = vartest (@dots{}, @var{name}, @var{value}), @dots{}}
+## @code{[@dots{}] = vartest2 (@dots{}, @var{name}, @var{value}), @dots{}}
 ## specifies one or more of the following name/value pairs:
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
@@ -140,7 +140,7 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   x_size(dim) = 1;
   y_size(dim) = 1;
   if (! isequal (x_size, y_size))
-    error ("vartestt2: input size mismatch.");
+    error ("vartest2: input size mismatch.");
   endif
   ## Compute statistics for each sample
   [df1, x_var] = getstats(x,dim);

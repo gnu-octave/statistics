@@ -21,7 +21,7 @@ classdef CompactClassificationNeuralNetwork
 ##
 ## A @qcode{CompactClassificationNeuralNetwork} object is a compact version of
 ## the Neural Network classification model,
-## @qcode{CompactClassificationNeuralNetwork}.
+## @qcode{ClassificationNeuralNetwork}.
 ##
 ## The @qcode{CompactClassificationNeuralNetwork} does not include the training
 ## data resulting to a smaller classifier size, which can be used for making
@@ -233,7 +233,7 @@ classdef CompactClassificationNeuralNetwork
     ## network compact model in @var{obj}.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
+    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC})} also
     ## returns @var{scores}, which represent the probability of each label
     ## belonging to a specific class. For each observation in X, the predicted
     ## class label is the one with the highest score among all classes.

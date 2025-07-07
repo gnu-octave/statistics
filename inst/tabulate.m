@@ -56,7 +56,7 @@ function table = tabulate (x)
   endif
 
   ## Handle positive integers separately
-  if (isnumeric (x) && all (x == fix (x)) && all (x > 0));
+  if (isnumeric (x) && all (x == fix (x)) && all (x > 0))
     [count, value] = hist (x, (1:max (x)));
     posint = true;
   else

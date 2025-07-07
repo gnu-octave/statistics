@@ -33,7 +33,7 @@
 ## Pass [] when no censor data are available.
 ##
 ## @var{freq}: optional vector same size as @var{data} with the number of
-## occurences for corresponding data.
+## occurrences for corresponding data.
 ## Pass [] when no frequency data are available.
 ##
 ## @var{confint}: optional confidence limits for plotting upper and lower

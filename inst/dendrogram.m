@@ -71,7 +71,7 @@
 ##
 ## @item @qcode{"Labels"}
 ## Use a char, string or cellstr array of size @var{n} to set the label for each
-## leaf; the label is dispayed only for nodes with just one leaf.
+## leaf; the label is displayed only for nodes with just one leaf.
 ## @end itemize
 ##
 ## @seealso{cluster, clusterdata, cophenet, inconsistent, linkage, pdist}

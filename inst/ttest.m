@@ -67,7 +67,7 @@
 ## (@var{tstat}), the degrees of freedom (@var{df}) and the sample's standard
 ## deviation (@var{sd}).
 ##
-## @seealso{hotelling_ttest, ttest2, hotelling_ttest2}
+## @seealso{hotelling_t2test, ttest2, hotelling_t2test2}
 ## @end deftypefn
 
 function [h, p, ci, stats] = ttest (x, my, varargin)

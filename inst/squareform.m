@@ -23,8 +23,8 @@
 ##
 ## Interchange between distance matrix and distance vector formats.
 ##
-## Converts between an hollow (diagonal filled with zeros), square, and
-## symmetric matrix and a vector with of the lower triangular part.
+## Converts between a hollow (diagonal filled with zeros), square, and
+## symmetric matrix and a vector of the lower triangular part.
 ##
 ## Its target application is the conversion of the vector returned by
 ## @code{pdist} into a distance matrix.  It performs the opposite operation
@@ -40,7 +40,7 @@
 ## @var{x} is not symmetric.
 ##
 ## The second argument is used to specify the output type in case there
-## is a single element.  It will defaults to @qcode{"tomatrix"} otherwise.
+## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
 ##
 ## @seealso{pdist}
 ## @end deftypefn

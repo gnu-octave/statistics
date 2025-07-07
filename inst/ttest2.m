@@ -58,7 +58,7 @@
 ## the degrees of freedom (@var{df}) and the sample standard deviation
 ## (@var{sd}).
 ##
-## @seealso{hotelling_ttest2, anova1, hotelling_ttest, ttest}
+## @seealso{hotelling_t2test, anova1, hotelling_t2test2, ttest}
 ## @end deftypefn
 
 function [h, p, ci, stats] = ttest2 (x, y, varargin)

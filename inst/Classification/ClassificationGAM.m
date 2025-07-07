@@ -112,7 +112,7 @@ classdef ClassificationGAM
 ## 1 for incorrect classification.
 ##
 ## @item @qcode{Formula} @tab @tab A model specification given as a string
-## in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the reponse
+## in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the response
 ## variable and @qcode{terms} the predictor variables. The formula can be used
 ## to specify a subset of variables for training model. For example:
 ## @qcode{"Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3"} specifies four linear terms
