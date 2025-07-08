@@ -198,6 +198,9 @@ function [varargout] = fitdist (varargin)
     censor(is_nan) = [];
     freq(is_nan) = [];
   endif
+  if (isempty (x))
+    error ("fitdist: no data in X to fit a '%s' distribution.", distname);
+  endif
 
   ## Handle group variable
   if (isempty (groupvar) && nargout > 1)
@@ -208,9 +211,12 @@ function [varargout] = fitdist (varargin)
     groups = numel (gn);
     if (any (is_nan))
       groupvar(is_nan) = [];
-      [g, gn, gl] = grp2idx (groupvar);
+      g = grp2idx (groupvar);
     endif
   endif
+
+  ## Warning message for no group data
+  msg = "fitdist: no data in group '%s' to fit a '%s' distribution.";
 
   ## Switch to selected distribution
   switch (tolower (distname))
@@ -225,6 +231,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = BetaDistribution.fit (x_i, alpha, f_i, options);
           endif
@@ -247,6 +254,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = BinomialDistribution.fit (x_i, ntrials, alpha, f_i);
           endif
@@ -268,6 +276,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = BirnbaumSaundersDistribution.fit ...
                     (x_i, alpha, c_i, f_i, options);
@@ -289,6 +298,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = BurrDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -309,6 +319,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = ExponentialDistribution.fit (x_i, alpha, c_i, f_i);
           endif
@@ -330,6 +341,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = ExtremeValueDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -350,6 +362,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = GammaDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -370,6 +383,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = GeneralizedExtremeValueDistribution.fit ...
                     (x_i, alpha, f_i, options);
@@ -395,6 +409,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = GeneralizedParetoDistribution.fit ...
                     (x_i, theta, alpha, f_i, options);
@@ -418,6 +433,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = HalfNormalDistribution.fit (x_i, mu, alpha, f_i);
           endif
@@ -439,6 +455,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = InverseGaussianDistribution.fit ...
                     (x_i, alpha, c_i, f_i, options);
@@ -471,6 +488,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = LogisticDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -492,6 +510,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = LoglogisticDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -513,6 +532,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = LognormalDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -534,6 +554,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = NakagamiDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -554,6 +575,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = NegativeBinomialDistribution.fit (x_i, alpha, f_i, options);
           endif
@@ -574,6 +596,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = NormalDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -593,6 +616,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = PoissonDistribution.fit (x_i, alpha, f_i);
           endif
@@ -613,6 +637,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = RayleighDistribution.fit (x_i, alpha, c_i, f_i);
           endif
@@ -633,6 +658,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = RicianDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -664,6 +690,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = tLocationScaleDistribution.fit ...
                     (x_i, alpha, c_i, f_i, options);
@@ -685,6 +712,7 @@ function [varargout] = fitdist (varargin)
           f_i = freq(g == i);
           if (isempty (x_i))
             pd{i} = [];
+            warning (msg, gn{i}, distname);
           else
             pd{i} = WeibullDistribution.fit (x_i, alpha, c_i, f_i, options);
           endif
@@ -708,13 +736,16 @@ endfunction
 %!test
 %! x1 = betarnd (1, 1, 100, 1);
 %! x2 = betarnd (5, 2, 100, 1);
-%! pd = fitdist ([x1; x2], "Beta", "By", [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], "Beta", "By", [ones(100, 1); 2*ones(100, 1)]);
 %! [phat, pci] = betafit (x1);
 %! assert ([pd{1}.a, pd{1}.b], phat);
 %! assert (paramci (pd{1}), pci);
 %! [phat, pci] = betafit (x2);
 %! assert ([pd{2}.a, pd{2}.b], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'Beta' distribution.> ...
+%! fitdist ([betarnd(1, 1, 100, 1); nan(100, 1)], "Beta", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! N = 1;
 %! x = binornd (N, 0.5, 100, 1);
@@ -733,25 +764,31 @@ endfunction
 %! N = 1;
 %! x1 = binornd (N, 0.5, 100, 1);
 %! x2 = binornd (N, 0.7, 100, 1);
-%! pd = fitdist ([x1; x2], "binomial", "By", [ones(100,1); 2*ones(100,1)]);
+%! pd = fitdist ([x1; x2], "binomial", "By", [ones(100, 1); 2*ones(100, 1)]);
 %! [phat, pci] = binofit (sum (x1), numel (x1));
 %! assert ([pd{1}.N, pd{1}.p], [N, phat]);
 %! assert (paramci (pd{1}), pci);
 %! [phat, pci] = binofit (sum (x2), numel (x2));
 %! assert ([pd{2}.N, pd{2}.p], [N, phat]);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'binomial' distribution.> ...
+%! fitdist ([binornd(1, 0.5, 100, 1); nan(100, 1)], "binomial", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! N = 5;
 %! x1 = binornd (N, 0.5, 100, 1);
 %! x2 = binornd (N, 0.8, 100, 1);
 %! pd = fitdist ([x1; x2], "binomial", "ntrials", N, ...
-%!               "By", [ones(100,1); 2*ones(100,1)]);
+%!               "By", [ones(100, 1); 2*ones(100, 1)]);
 %! [phat, pci] = binofit (sum (x1), numel (x1) * N);
 %! assert ([pd{1}.N, pd{1}.p], [N, phat]);
 %! assert (paramci (pd{1}), pci);
 %! [phat, pci] = binofit (sum (x2), numel (x2) * N);
 %! assert ([pd{2}.N, pd{2}.p], [N, phat]);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'binomial' distribution.> ...
+%! fitdist ([binornd(5, 0.5, 100, 1); nan(100, 1)], "binomial", "ntrials", 5, ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = bisarnd (1, 1, 100, 1);
 %! pd = fitdist (x, "BirnbaumSaunders");
@@ -768,6 +805,9 @@ endfunction
 %! [phat, pci] = bisafit (x2);
 %! assert ([pd{2}.beta, pd{2}.gamma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'bisa' distribution.> ...
+%! fitdist ([bisarnd(1, 1, 100, 1); nan(100, 1)], "bisa", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = burrrnd (1, 2, 1, 100, 1);
 %! pd = fitdist (x, "Burr");
@@ -786,6 +826,9 @@ endfunction
 %! [phat, pci] = burrfit (x2);
 %! assert ([pd{2}.alpha, pd{2}.c, pd{2}.k], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'burr' distribution.> ...
+%! fitdist ([burrrnd(1, 2, 1, 100, 1); nan(100, 1)], "burr", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = exprnd (1, 100, 1);
 %! pd = fitdist (x, "exponential");
@@ -802,6 +845,9 @@ endfunction
 %! [muhat, muci] = expfit (x2);
 %! assert ([pd{2}.mu], muhat);
 %! assert (paramci (pd{2}), muci);
+%!warning <fitdist: no data in group '2' to fit a 'exponential' distribution.> ...
+%! fitdist ([exprnd(1, 100, 1); nan(100, 1)], "exponential", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = evrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "ev");
@@ -818,6 +864,9 @@ endfunction
 %! [phat, pci] = evfit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'extremevalue' distribution.> ...
+%! fitdist ([evrnd(1, 1, 100, 1); nan(100, 1)], "extremevalue", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = gamrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "Gamma");
@@ -834,6 +883,9 @@ endfunction
 %! [phat, pci] = gamfit (x2);
 %! assert ([pd{2}.a, pd{2}.b], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'Gamma' distribution.> ...
+%! fitdist ([gamrnd(1, 1, 100, 1); nan(100, 1)], "Gamma", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! rand ("seed", 4);   # for reproducibility
 %! x = gevrnd (-0.5, 1, 2, 1000, 1);
@@ -853,6 +905,9 @@ endfunction
 %! [phat, pci] = gevfit (x2);
 %! assert ([pd{2}.k, pd{2}.sigma, pd{2}.mu], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'gev' distribution.> ...
+%! fitdist ([gevrnd(-0.5, 1, 2, 1000, 1); nan(1000, 1)], "gev", ...
+%!          "By", [ones(1000, 1); 2*ones(1000, 1)]);
 %!test
 %! x = gprnd (1, 1, 1, 100, 1);
 %! pd = fitdist (x, "GeneralizedPareto");
@@ -875,6 +930,9 @@ endfunction
 %! [phat, pci] = gpfit (x2, 1);
 %! assert ([pd{2}.k, pd{2}.sigma, pd{2}.theta], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'gp' distribution.> ...
+%! fitdist ([gprnd(1, 1, 1, 100, 1); nan(100, 1)], "gp", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x1 = gprnd (3, 2, 2, 100, 1);
 %! x2 = gprnd (2, 3, 2, 100, 1);
@@ -886,6 +944,9 @@ endfunction
 %! [phat, pci] = gpfit (x2, 2);
 %! assert ([pd{2}.k, pd{2}.sigma, pd{2}.theta], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'gp' distribution.> ...
+%! fitdist ([gprnd(3, 2, 2, 100, 1); nan(100, 1)], "gp", "theta", 2, ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = hnrnd (0, 1, 100, 1);
 %! pd = fitdist (x, "HalfNormal");
@@ -908,6 +969,9 @@ endfunction
 %! [phat, pci] = hnfit (x2, 0);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'HalfNormal' distribution.> ...
+%! fitdist ([hnrnd(0, 1, 100, 1); nan(100, 1)], "HalfNormal", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x1 = hnrnd (2, 1, 100, 1);
 %! x2 = hnrnd (2, 2, 100, 1);
@@ -919,6 +983,9 @@ endfunction
 %! [phat, pci] = hnfit (x2, 2);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'HalfNormal' distribution.> ...
+%! fitdist ([hnrnd(2, 1, 100, 1); nan(100, 1)], "HalfNormal", "mu", 2, ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = invgrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "InverseGaussian");
@@ -935,6 +1002,9 @@ endfunction
 %! [phat, pci] = invgfit (x2);
 %! assert ([pd{2}.mu, pd{2}.lambda], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'InverseGaussian' distribution.> ...
+%! fitdist ([invgrnd(1, 1, 100, 1); nan(100, 1)], "InverseGaussian", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = logirnd (1, 1, 100, 1);
 %! pd = fitdist (x, "logistic");
@@ -951,6 +1021,9 @@ endfunction
 %! [phat, pci] = logifit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'logistic' distribution.> ...
+%! fitdist ([logirnd(1, 1, 100, 1); nan(100, 1)], "logistic", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = loglrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "loglogistic");
@@ -967,6 +1040,9 @@ endfunction
 %! [phat, pci] = loglfit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'loglogistic' distribution.> ...
+%! fitdist ([loglrnd(1, 1, 100, 1); nan(100, 1)], "loglogistic", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = lognrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "lognormal");
@@ -983,6 +1059,9 @@ endfunction
 %! [phat, pci] = lognfit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'lognormal' distribution.> ...
+%! fitdist ([lognrnd(1, 1, 100, 1); nan(100, 1)], "lognormal", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = nakarnd (2, 0.5, 100, 1);
 %! pd = fitdist (x, "Nakagami");
@@ -999,6 +1078,9 @@ endfunction
 %! [phat, pci] = nakafit (x2);
 %! assert ([pd{2}.mu, pd{2}.omega], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'Nakagami' distribution.> ...
+%! fitdist ([nakarnd(2, 0.5, 100, 1); nan(100, 1)], "Nakagami", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! randp ("seed", 123);
 %! randg ("seed", 321);
@@ -1021,6 +1103,9 @@ endfunction
 %! [phat, pci] = nbinfit (x2);
 %! assert ([pd{2}.R, pd{2}.P], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'nbin' distribution.> ...
+%! fitdist ([nbinrnd(2, 0.5, 100, 1); nan(100, 1)], "nbin", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = normrnd (1, 1, 100, 1);
 %! pd = fitdist (x, "normal");
@@ -1037,6 +1122,9 @@ endfunction
 %! [muhat, sigmahat, muci, sigmaci] = normfit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma], [muhat, sigmahat]);
 %! assert (paramci (pd{2}), [muci, sigmaci]);
+%!warning <fitdist: no data in group '2' to fit a 'normal' distribution.> ...
+%! fitdist ([normrnd(1, 1, 100, 1); nan(100, 1)], "normal", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = poissrnd (1, 100, 1);
 %! pd = fitdist (x, "poisson");
@@ -1053,6 +1141,9 @@ endfunction
 %! [phat, pci] = poissfit (x2);
 %! assert (pd{2}.lambda, phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'poisson' distribution.> ...
+%! fitdist ([poissrnd(1, 100, 1); nan(100, 1)], "poisson", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = raylrnd (1, 100, 1);
 %! pd = fitdist (x, "rayleigh");
@@ -1069,6 +1160,9 @@ endfunction
 %! [phat, pci] = raylfit (x2);
 %! assert (pd{2}.sigma, phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'rayleigh' distribution.> ...
+%! fitdist ([raylrnd(1, 100, 1); nan(100, 1)], "rayleigh", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = ricernd (1, 1, 100, 1);
 %! pd = fitdist (x, "rician");
@@ -1085,6 +1179,9 @@ endfunction
 %! [phat, pci] = ricefit (x2);
 %! assert ([pd{2}.s, pd{2}.sigma], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'rician' distribution.> ...
+%! fitdist ([ricernd(1, 1, 100, 1); nan(100, 1)], "rician", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!warning <fitdist: 'Stable' distribution not supported yet.> ...
 %! fitdist ([1 2 3 4 5], "Stable");
 %!test
@@ -1103,6 +1200,9 @@ endfunction
 %! [phat, pci] = tlsfit (x2);
 %! assert ([pd{2}.mu, pd{2}.sigma, pd{2}.nu], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'tlocationscale' distribution.> ...
+%! fitdist ([tlsrnd(0, 1, 1, 100, 1); nan(100, 1)], "tlocationscale", ...
+%!          "By", [ones(100, 1); 2*ones(100, 1)]);
 %!test
 %! x = [1 2 3 4 5];
 %! pd = fitdist (x, "weibull");
@@ -1118,6 +1218,8 @@ endfunction
 %! [phat, pci] = wblfit (x(6:10));
 %! assert ([pd{2}.lambda, pd{2}.k], phat);
 %! assert (paramci (pd{2}), pci);
+%!warning <fitdist: no data in group '2' to fit a 'weibull' distribution.> ...
+%! fitdist ([1 2 3 4 5 NaN NaN NaN NaN NaN], "weibull", "By", [1 1 1 1 1 2 2 2 2 2]);
 
 ## Test input validation
 %!error <fitdist: DISTNAME is required.> fitdist (1)
@@ -1160,6 +1262,8 @@ endfunction
 %!warning fitdist ([1, 2, 3], "kernel", "width", 1);
 %!error <fitdist: unknown parameter name.> ...
 %! fitdist ([1, 2, 3], "normal", "param", struct ("options", 1))
+%!error <fitdist: no data in X to fit a 'normal' distribution.> ...
+%! fitdist (nan (100,1), "normal");
 %!error <fitdist: must define GROUPVAR for more than one output arguments.> ...
 %! [pdca, gn, gl] = fitdist ([1, 2, 3], "normal");
 %!error <fitdist: invalid THETA value for generalized Pareto distribution.> ...
