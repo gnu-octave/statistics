@@ -55,7 +55,7 @@
 ##
 ## The returned @var{Y} is an @var{n} by @var{p} matrix showing possible
 ## coordinates of the points in @var{p} dimensional space
-## (@code{@var{p} < @var{n}}). The columns are correspond to the positive
+## (@code{@var{p} < @var{n}}). The columns correspond to the positive
 ## eigenvalues of @var{B} in descending order. A translation, rotation, or
 ## reflection of the coordinates given by @var{Y} will satisfy the same distance
 ## matrix up to the limits of machine precision.
