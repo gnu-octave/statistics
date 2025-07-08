@@ -93,7 +93,7 @@ function yy = monotone_smooth (x, y, h)
   elseif (numel (x) != numel (y))
     error ("monotone_smooth: X and Y must have the same number of elements.");
   elseif (nargin == 3 && (! isscalar (h) || ! isnumeric (h)))
-    error ("monotone_smooth: H (kernel bandwith) must a numeric scalar.");
+    error ("monotone_smooth: H (kernel bandwidth) must a numeric scalar.");
   endif
 
   n = numel (x);

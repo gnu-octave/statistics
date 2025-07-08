@@ -30,7 +30,7 @@ function h = __plot__ (pd, DistType, varargin)
   PlotType = "pdf";
   Discrete = DistType;
 
-  ## Parse optional agruments
+  ## Parse optional arguments
   if (mod (numel (varargin), 2) != 0)
     error ("plot: optional arguments must be in NAME-VALUE pairs.");
   endif
@@ -71,7 +71,7 @@ function h = __plot__ (pd, DistType, varargin)
     varargin([1:2]) = [];
   endwhile
 
-  ## Check for invalid cases of probability type bafore creating new axes
+  ## Check for invalid cases of probability type before creating new axes
   if (strcmpi (PlotType, "probability"))
     if (! isprop (pd, "InputData"))
       msg = "plot: 'probability' PlotType is not supported for '%s'.";
