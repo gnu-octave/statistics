@@ -42,7 +42,7 @@
 ## @var{Y} equal or approximate the distances given by @var{D}.
 ##
 ## * If @var{D} is a similarity matrix, the elements must all be less than or
-## equal to one, with ones along the the main diagonal. In this case the points
+## equal to one, with ones along the main diagonal. In this case the points
 ## @var{Y} equal or approximate the distances given by
 ## @code{@var{D} = sqrt(ones(@var{n},@var{n})-@var{D})}.
 ##
