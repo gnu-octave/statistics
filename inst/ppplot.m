@@ -103,4 +103,4 @@ endfunction
 %!error ppplot ()
 %!error <ppplot: X must be a numeric vector> ppplot (ones (2,2))
 %!error <ppplot: X must be a numeric vector> ppplot (1, 2)
-%!error <ppplot: DIST must be a strin> ppplot ([1 2 3 4], 2)
+%!error <ppplot: DIST must be a string> ppplot ([1 2 3 4], 2)
