@@ -20,7 +20,7 @@ classdef CompactClassificationSVM
 ## @deftypefn {statistics} CompactClassificationSVM
 ##
 ## A @qcode{CompactClassificationSVM} object is a compact version of a support
-## vectors machine model, @qcode{CompactClassificationSVM}.
+## vectors machine model, @qcode{ClassificationSVM}.
 ##
 ## The @qcode{CompactClassificationSVM} does not include the training data
 ## resulting to a smaller classifier size, which can be used for making

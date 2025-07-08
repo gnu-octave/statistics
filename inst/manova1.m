@@ -167,7 +167,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
      error ("manova1: wrong value in eigenvector: singular sum of squares.");
   endif
 
-  ## Compute Barlett's statistic for each dimension
+  ## Compute Bartlett's statistic for each dimension
   dims = 0:(min (nrgroups - 1, nvar) - 1);
   lambda = flipud (1 ./ cumprod (e + 1));
   lambda = lambda(1 + dims);

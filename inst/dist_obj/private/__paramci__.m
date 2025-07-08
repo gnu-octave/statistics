@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn {Private Function} [@var{nlogl}, @var{param}, @var{other}] = __paramci__ (@var{pd}, @var{varargin})
 ##
-## Compute the cofindence intervals for the selected parameters of a
+## Compute the confidence intervals for the selected parameters of a
 ## probability distribution object.
 ##
 ## @end deftypefn

@@ -317,7 +317,7 @@ function [varargout] = bar3h (varargin)
   ## origin, with height = 1, and width along x-axis and depth along z-axis
   hw = width / 2;
   hd = depth / 2;
-  ## Scale the bar's base when groupping together
+  ## Scale the bar's base when grouping together
   if (strcmpi (style, "grouped"))
     sc = nx + 1;
     hw = hw / sc;

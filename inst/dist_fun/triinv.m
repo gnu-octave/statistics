@@ -32,7 +32,7 @@
 ## statistics version 1.6.3 in order to be MATLAB compatible with the parameters
 ## used in the TriangularDistribution probability distribution object.  More
 ## specifically, the positions of the parameters @var{b} and @var{c} have been
-## swapped.  As a result, the naming conventions no longer coinside with those
+## swapped.  As a result, the naming conventions no longer coincide with those
 ## used in Wikipedia, in which @math{b} denotes the upper limit and @math{c}
 ## denotes the mode or peak parameter.
 ##
