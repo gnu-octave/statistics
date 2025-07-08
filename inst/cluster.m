@@ -37,7 +37,7 @@
 ## default value is 2.
 ##
 ## @code{cluster} uses "distance" as a criterion for defining new clusters when
-## it is used the 'MaxClust' method.
+## it is used with the 'MaxClust' method.
 ##
 ## @seealso{clusterdata, dendrogram, inconsistent, kmeans, linkage, pdist}
 ## @end deftypefn
@@ -69,7 +69,7 @@ function T = cluster (Z, opt, varargin)
       endif
       if ((! (isscalar (C) || isvector (C))) || (C < 0))
         error (strcat ("cluster: C must be a positive scalar", ...
-                       " or a vector of positivenumbers."));
+                       " or a vector of positive numbers."));
       endif
 
     case "maxclust"
