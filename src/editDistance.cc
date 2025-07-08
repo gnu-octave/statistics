@@ -357,7 +357,7 @@ to a column vector as in @code{doc = doc(:)}.\n\n\
 \
 @code{@var{C} = editDistance (@dots{}, @var{minDist})} specifies a minimum \
 distance, @var{minDist}, which is regarded as a similarity threshold between \
-each pair of strings or documents, defined in the previous syntaces.  In this \
+each pair of strings or documents, defined in the previous syntaxes.  In this \
 case, @code{editDistance} resembles the functionality of the @code{uniquetol} \
 function and returns the unique strings or documents that are similar up to \
 @var{minDist} distance.  @var{C} is either a cellstring array or a cell array \
@@ -398,7 +398,7 @@ column vectors.\n\n\
 \
 @code{@var{d} = editDistance (@var{doc1}, @var{doc2})} can also take two cell \
 array containing cell arrays of character vectors, in which case each element \
-of @var{doc1} and @var{dos2} is regarded as a document, and the character \
+of @var{doc1} and @var{doc2} is regarded as a document, and the character \
 vector in each element of the cell string array is regarded a token.  \
 @code{editDistance} computes the pairwise Levenshtein distance between the \
 of cell elements in @var{doc1} and @var{doc2} as the lowest number of token \

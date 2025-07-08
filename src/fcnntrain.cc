@@ -49,7 +49,7 @@ correspond to features (dimensions).  Type of @var{X} must be double. \
 \n\
 @item @var{Y} : An @math{Nx1} column vector containing the labels of the \
 training dataset.  The labels must be natural numbers (positive integers) \
-starting from 1 up to the number of classes, similarily as returned by the \
+starting from 1 up to the number of classes, similarly as returned by the \
 `grp2idx` function. Type of @var{Y} must be double. \
 \n\
 \n\
@@ -146,7 +146,7 @@ package:\n\n\
   int seed = 0;
   srand (seed);
 
-  // Do some input validation while loading trainind data and labels
+  // Do some input validation while loading training data and labels
   if (! args(0).isnumeric () || args(0).iscomplex ())
   {
     error ("fcnntrain: X must be a real numeric matrix.");
