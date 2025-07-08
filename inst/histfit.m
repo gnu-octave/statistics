@@ -47,7 +47,7 @@
 ## @qcode{@var{h}(1)} is the handle to the histogram and @qcode{@var{h}(2)} is
 ## the handle to the density curve.
 ##
-## Note: calling @code{fitdist} without any input arguments will return a cell
+## Note: calling @code{histfit} without any input arguments will return a cell
 ## array of character vectors listing all supported distributions.
 ##
 ## @seealso{bar, hist, normplot, fitdist}
