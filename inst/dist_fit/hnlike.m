@@ -30,7 +30,7 @@
 ## @code{[@var{nlogL}, @var{acov}] = hnlike (@var{params}, @var{x})} returns
 ## the inverse of Fisher's information matrix, @var{acov}.  If the input
 ## parameter values in @var{params} are the maximum likelihood estimates, the
-## diagonal elements of @var{params} are their asymptotic variances.
+## diagonal elements of @var{acov} are their asymptotic variances.
 ##
 ## @code{[@dots{}] = hnlike (@var{params}, @var{x}, @var{freq})} accepts a
 ## frequency vector, @var{freq}, of the same size as @var{x}.  @var{freq}

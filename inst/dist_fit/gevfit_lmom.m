@@ -32,7 +32,7 @@
 ##
 ## @itemize @bullet
 ## @item
-## @var{parmhat} is the 3-parameter maximum-likelihood parameter vector
+## @var{paramhat} is the 3-parameter maximum-likelihood parameter vector
 ## [@var{k}; @var{sigma}; @var{mu}], where @var{k} is the shape parameter of the
 ## GEV distribution, @var{sigma} is the scale parameter of the GEV distribution,
 ## and @var{mu} is the location parameter of the GEV distribution.
