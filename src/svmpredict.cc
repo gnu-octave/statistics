@@ -301,7 +301,7 @@ DEFUN_DLD (svmpredict, args, nargout,
  @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 \n\
 \n\
-This function predicts new labels from a testing instance matrtix based on an \
+This function predicts new labels from a testing instance matrix based on an \
 SVM @var{model} created with @code{svmtrain}. \
 \n\
 \n\

@@ -358,7 +358,7 @@ DEFUN_DLD (svmtrain, args, nargout,
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
-corresponding @var{data} which comprise an instance matrtix. \
+corresponding @var{data} which comprise an instance matrix. \
 \n\
 \n\
 @itemize \n\
@@ -464,7 +464,7 @@ can be used for future prediction and it contains the following fields: \
 @item @code{Label} : label of each class; empty for regression/one-class SVM \
 \n\
 \n\
-@item @code{sv_indices} : values in [1,...,num_traning_data] to indicate SVs \
+@item @code{sv_indices} : values in [1,...,num_training_data] to indicate SVs \
 in the training set \
 \n\
 \n\
