@@ -612,7 +612,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   ## Actually fill the missing data.
 
   ## Process central missing values (all gaps bound by two valid datapoints).
-  ## For each method, calcualte fill_vals, which will be used in assignment
+  ## For each method, calculate fill_vals, which will be used in assignment
   ## A(missing_locs) = fill_vals, and if idx_flag, populate idx_out.
   if (any (missing_locs(:)))
     switch (method)
@@ -1971,7 +1971,7 @@ endfunction
 ## Known noncompatible. For move_fcn method, ML2021b (1) ignores windowsize
 ## for full missing column and processes it anyway, (2) doesn't consider it
 ## part of endvalues unlike all other methods, (3) ignores samplepoint values
-## when calcuating move_fcn results. should review against future versions.
+## when calculating move_fcn results. should review against future versions.
 %!test
 %!function A = testfcn (x, y, z)
 %!  if (isempty (y))
