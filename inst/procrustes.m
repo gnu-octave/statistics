@@ -85,11 +85,11 @@
 function [d, Z, transform] = procrustes (X, Y, varargin)
 
   if (nargin < 1)
-    error ("fishertest: contingency table is missing.");
+    error ("procrustes: contingency table is missing.");
   endif
 
   if (nargin > 5)
-    error ("fishertest: too many input parameters.");
+    error ("procrustes: too many input parameters.");
   endif
 
   ## Check X and Y for appropriate input

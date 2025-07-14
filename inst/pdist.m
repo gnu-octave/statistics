@@ -230,7 +230,7 @@ function D = pdist (X, varargin)
         D = 1 - (xy ./ (xx .* yy));
 
   endswitch
-  ## Force output ot row vector
+  ## Force output to row vector
   D = D';
   endif
 

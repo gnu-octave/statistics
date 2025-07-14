@@ -58,7 +58,7 @@
 ## @qcode{'stacked'}. The default style is @qcode {'detached'}.
 ##
 ## @code{bar3h (@dots{}, @var{color})} displays all bars using the color
-## specified by color.  For example, use @qcode{'red'} or @qcode{'red'} to
+## specified by color.  For example, use @qcode{'red'} or @qcode{'r'} to
 ## specify all red bars.  When you want to specify colors for several groups,
 ## @var{color} can be a cellstr vector with each element specifying the color of
 ## each group.  @var{color} can also be specified as a numerical @math{Mx3}

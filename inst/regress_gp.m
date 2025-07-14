@@ -172,12 +172,12 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     ## (1/sy^2)*A^{-1}*X*Y
     ## Then one obtains
     ## inv(X*X' + sy^2 * inv(Vp))*X*Y
-    ## Looking at the formula bloew we see that Sp = (1/sy^2)*Vp
+    ## Looking at the formula below we see that Sp = (1/sy^2)*Vp
     ## making the regression depend on only one parameter, Sp, and not two.
 
     ## Xsq = sum (X' .^ 2);
     ## [n, d] = size (X);
-    ## ￼sigma = 1/sqrt(2);
+    ## sigma = 1/sqrt(2);
     ## Ks = exp (-(Xsq' * ones (1, n) -ones (n, 1) * Xsq + 2 * X * X') / (2 * sigma ^ 2));
 
     A  = X * X' + inv (Sp);

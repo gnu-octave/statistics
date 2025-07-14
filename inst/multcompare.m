@@ -222,10 +222,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## Evaluate ALPHA input argument
     if (! isa (ALPHA,"numeric") || numel (ALPHA) != 1)
-      error("anovan:alpha must be a numeric scalar value");
+      error("multcompare:alpha must be a numeric scalar value");
     endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
-      error("anovan: alpha must be a value between 0 and 1");
+      error("multcompare: alpha must be a value between 0 and 1");
     endif
 
     ## Evaluate CTYPE input argument

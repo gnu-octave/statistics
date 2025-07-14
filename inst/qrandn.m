@@ -38,7 +38,7 @@ function z = qrandn (q, R, C=[])
     print_usage;
   endif
   if (! isscalar (q))
-    error ("qrandn: the parameter q must be a scalar.")'
+    error ("qrandn: the parameter q must be a scalar.");
   endif
 
   ## Check that q < 3
