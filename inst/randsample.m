@@ -29,7 +29,7 @@
 ## If @var{v} is a scalar, samples from 1:@var{v}.
 ##
 ## If a weight vector @var{w} of the same size as @var{v} is specified, the
-## probablility of each element being sampled is proportional to @var{w}.
+## probability of each element being sampled is proportional to @var{w}.
 ## Unlike Matlab's function of the same name, this can be done for sampling with
 ## or without replacement.
 ##

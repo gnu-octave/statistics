@@ -227,9 +227,9 @@ function [phat, pci] = mle (x, varargin)
                        [" Geometric distribution."]));
       endif
       if (nargout < 2)
-        phat = gevfit (x, alpha, freq);
+        phat = geofit (x, alpha, freq);
       else
-        [phat, pci] = gevfit (x, alpha, freq);
+        [phat, pci] = geofit (x, alpha, freq);
       endif
 
     case {"gev", "generalized extreme value"}
