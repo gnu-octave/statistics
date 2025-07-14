@@ -23,8 +23,8 @@
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{stats}] =} correlation_test (@var{y}, @var{x})
 ## @deftypefnx {statistics} {[@dots{}] =} correlation_test (@var{y}, @var{x}, @var{Name}, @var{Value})
 ##
-## Perform a correlation coefficient test whether two samples @var{x} and
-## @var{y} come from uncorrelated populations.
+## Perform a correlation coefficient test to determine whether two samples
+## @var{x} and @var{y} come from uncorrelated populations.
 ##
 ## @code{@var{h} = correlation_test (@var{y}, @var{x})} tests the null
 ## hypothesis that the two samples @var{x} and @var{y} come from uncorrelated

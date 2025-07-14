@@ -147,7 +147,7 @@ function [nlogL, k_terms] = gevnll (x, k, sigma, mu)
 
 endfunction
 
-## Calculate the gradient of the negative log likelihood of x x with respect
+## Calculate the gradient of the negative log likelihood of x with respect
 ## to the parameters of the generalized extreme value distribution for gevlike
 function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
 

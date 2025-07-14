@@ -26,7 +26,7 @@
 ##
 ## For 2-way contingency tables, @code{chi2test} performs and a chi-squared test
 ## for independence or homogeneity, according to the sampling scheme and related
-## question.  Independence means that the the two variables forming the 2-way
+## question.  Independence means that the two variables forming the 2-way
 ## table are not associated, hence you cannot predict from one another.
 ## Homogeneity refers to the concept of similarity, hence they all come from the
 ## same distribution.

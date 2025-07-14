@@ -55,7 +55,7 @@ correspond to features (dimensions).  Type of @var{XC} must be double and the \
 number of features must correspond to those of the trained model. \n\
 @end itemize \n\
 @code{fcnnpredict} can also be called with a third input argument, in which \
-case, @var{NumThreads}, a positive scalar integer value, defines the number of \
+case, @var{NumThreads}, a positive scalar integer value, defines the number \
 of threads to be used when computing the activation layers.  For layers with \
 less than 1000 neurons, @var{NumThreads} always defaults to 1. \
 \n\
