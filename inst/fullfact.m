@@ -1,5 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## based on public domain work by Paul Kienzle <pkienzle@users.sf.net>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,72 +16,98 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{A} =} fullfact (@var{N})
+## @deftypefn  {statistics} {@var{A} =} fullfact (@var{levels})
 ##
 ## Full factorial design.
 ##
-## If @var{N} is a scalar, return the full factorial design with @var{N} binary
-## choices, 0 and 1.
+## @code{@var{A} =} fullfact (@var{levels}) returns a numeric matrix @var{A}
+## with the treatments of a full factorial design specified by @var{levels},
+## which must be a numeric vector of real positive integer values with each
+## value specifying the number of levels of each individual factor.
 ##
-## If @var{N} is a vector, return the full factorial design with ordinal choices
-## 1 through @var{n_i} for each factor @var{i}.
-##
-## Values in @var{N} must be positive integers.
+## Each row of @var{A} corresponds to a single treatment and each column to a
+## single factor.  For binary full factorial design, use @code{ff2n}.
 ##
 ## @seealso {ff2n}
 ## @end deftypefn
 
-function A = fullfact(n)
+function A = fullfact (levels)
   if (nargin != 1)
-    error ("fullfact: wrong number of input arguments.");
+    error ("fullfact: one input argument is required.");
   endif
-  if length(n) == 1
-    if (floor (n) != n || n < 1 || ! isfinite (n) || ! isreal (n))
-      error ("fullfact: @var{N} must be a positive integer.");
-    endif
-    ## Combinatorial design with n binary choices
-    A = fullfact(2*ones(1,n))-1;
-  else
-    if (any (floor (n) != n) || any (n < 1) || any (! isfinite (n)) ...
-                             || any (! isreal (n)))
-      error ("fullfact: values in @var{N} must be positive integers.");
-    endif
-    ## Combinatorial design with n(i) ordinal choices
-    A = [1:n(end)]';
-    for i=length(n)-1:-1:1
-      A = [kron([1:n(i)]',ones(rows(A),1)), repmat(A,n(i),1)];
-    end
-  end
+  if (! (isvector (levels) && isnumeric (levels) && isfinite (levels)))
+    error ("fullfact: input argument must be a finite real numeric vector.");
+  endif
+  if (any (fix (levels) != levels) || any (levels < 1) || ! all (isreal (levels)))
+    error ("fullfact: factor levels must be real positive integers.");
+  endif
+  rows = prod (levels);
+  cols = numel (levels);
+  A = zeros (rows, cols);
+  n_seqs = rows;
+  for i = 1:cols
+    factor = [1:levels(i)]';
+    n_reps = rows / n_seqs;
+    factor = repelem (factor, n_reps, 1);
+    n_seqs = n_seqs / levels(i);
+    factor = repmat (factor, n_seqs, 1);
+    A(:,i) = factor;
+  endfor
 endfunction
-
-%!demo
-%! ## Full factorial design with 3 binary variables
-%! fullfact (3)
 
 %!demo
 %! ## Full factorial design with 3 ordinal variables
 %! fullfact ([2, 3, 4])
 
-%!error fullfact ();
-%!error fullfact (2, 5);
-%!error fullfact (2.5);
-%!error fullfact (0);
-%!error fullfact (-3);
-%!error fullfact (3+2i);
-%!error fullfact (Inf);
-%!error fullfact (NaN);
-%!error fullfact ([1, 2, -3]);
-%!error fullfact ([0, 1, 2]);
-%!error fullfact ([1, 2, NaN]);
-%!error fullfact ([1, 2, Inf]);
+%!error<fullfact: one input argument is required.> fullfact ();
+%!error<fullfact: input argument must be a finite real numeric vector.> ...
+%! fullfact (Inf);
+%!error<fullfact: input argument must be a finite real numeric vector.> ...
+%! fullfact (NaN);
+%!error<fullfact: input argument must be a finite real numeric vector.> ...
+%! fullfact (ones (2));
+%!error<fullfact: input argument must be a finite real numeric vector.> ...
+%! fullfact ([1, 2, NaN]);
+%!error<fullfact: input argument must be a finite real numeric vector.> ...
+%! fullfact ([1, 2, Inf]);
+%!error<fullfact: factor levels must be real positive integers.> fullfact (2.5);
+%!error<fullfact: factor levels must be real positive integers.> fullfact (0);
+%!error<fullfact: factor levels must be real positive integers.> fullfact (-3);
+%!error<fullfact: factor levels must be real positive integers.> fullfact (3+2i);
+%!error<fullfact: factor levels must be real positive integers.> fullfact ([1, 2, -3]);
+%!error<fullfact: factor levels must be real positive integers.> fullfact ([0, 1, 2]);
+%!test
+%! A = fullfact (1);
+%! assert (A, 1);
 %!test
 %! A = fullfact (2);
-%! assert (A, [0, 0; 0, 1; 1, 0; 1, 1]);
+%! assert (A, [1; 2]);
 %!test
-%! A = fullfact ([1, 2]);
-%! assert (A, [1, 1; 1, 2]);
+%!test
+%! A = fullfact (3);
+%! assert (A, [1; 2; 3]);
 %!test
 %! A = fullfact ([1, 2, 4]);
-%! A_out = [1, 1, 1; 1, 1, 2; 1, 1, 3; 1, 1, 4; ...
-%!          1, 2, 1; 1, 2, 2; 1, 2, 3; 1, 2, 4];
+%! A_out = [1, 1, 1; 1, 2, 1; 1, 1, 2; 1, 2, 2; ...
+%!          1, 1, 3; 1, 2, 3; 1, 1, 4; 1, 2, 4];
 %! assert (A, A_out);
+%!test
+%! A = fullfact ([2, 2]);
+%! assert (A, [1, 1; 2, 1; 1, 2; 2, 2]);
+%!test
+%! A = fullfact ([2, 2, 4]);
+%! A_out = [1, 1, 1; 2, 1, 1; 1, 2, 1; 2, 2, 1; ...
+%!          1, 1, 2; 2, 1, 2; 1, 2, 2; 2, 2, 2; ...
+%!          1, 1, 3; 2, 1, 3; 1, 2, 3; 2, 2, 3; ...
+%!          1, 1, 4; 2, 1, 4; 1, 2, 4; 2, 2, 4];
+%! assert (A, A_out);
+%!test
+%! A = fullfact ([3, 2, 4]);
+%! A_out = [1, 1, 1; 2, 1, 1; 3, 1, 1; 1, 2, 1; 2, 2, 1; 3, 2, 1; ...
+%!          1, 1, 2; 2, 1, 2; 3, 1, 2; 1, 2, 2; 2, 2, 2; 3, 2, 2; ...
+%!          1, 1, 3; 2, 1, 3; 3, 1, 3; 1, 2, 3; 2, 2, 3; 3, 2, 3; ...
+%!          1, 1, 4; 2, 1, 4; 3, 1, 4; 1, 2, 4; 2, 2, 4; 3, 2, 4];
+%! assert (A, A_out);
+%!test
+%! A = fullfact ([4, 2]);
+%! assert (A, [1, 1; 2, 1; 3, 1; 4, 1; 1, 2; 2, 2; 3, 2; 4, 2]);
