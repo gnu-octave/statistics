@@ -947,7 +947,7 @@ endfunction
 %! D_true = pdist2 (X, Y, "euclidean");
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}', sort (D_true(expected_idx)), 1e-10);
+%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with duplicates
@@ -956,7 +956,7 @@ endfunction
 %! Y = [0, 0];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (sort (idx{1}(:))', [1, 2]);
-%! assert (D{1}, [0, 0], 1e-10);
+%! assert (D{1}', [0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with 3D data
@@ -966,7 +966,7 @@ endfunction
 %! r = 1;
 %! [idx, D] = rangesearch (obj, Y, r);
 %! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}, [0, 1, 1], 1e-10);
+%! assert (D{1}', [0, 1, 1], 1e-10);
 
 %!test
 %! ## knnsearch with P = 2 (Euclidean equivalent)
@@ -987,7 +987,7 @@ endfunction
 %! D_true = pdist2 (X, Y, "minkowski", 3);
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}', sort (D_true(expected_idx)), 1e-10);
+%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with P = 4, random data
@@ -1007,7 +1007,7 @@ endfunction
 %! Y = [1, 1];
 %! [idx, D] = knnsearch (obj, Y, 1, "IncludeTies", true);
 %! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}, [0, 0, 0], 1e-10);
+%! assert (D{1}', [0, 0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with grid
@@ -1019,7 +1019,7 @@ endfunction
 %! D_true = pdist2 (X, Y, "chebychev");
 %! expected_idx = find (D_true <= r);
 %! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}', D_true(expected_idx), 1e-10);
+%! assert (D{1}, D_true(expected_idx), 1e-10);
 
 %!test
 %! ## Changing Distance and verifying search
