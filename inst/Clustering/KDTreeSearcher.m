@@ -441,9 +441,9 @@ classdef KDTreeSearcher
                                               obj.Distance, obj.DistParameter, ...
                                               false);
           if (SortIndices)
-            [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
+            [sorted_D, sort_idx] = sortrows ([temp_D', temp_idx']);
             idx(i,:) = temp_idx(sort_idx);
-            D(i,:) = sorted_D;
+            D(i,:) = sorted_D(:,1)';
           else
             idx(i,:) = temp_idx;
             D(i,:) = temp_D;
