@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -20,6 +20,8 @@
 ## @deftypefnx {statistics} {@var{mean} =} grpstats (@var{x}, @var{group})
 ## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @var{whichstats})
 ## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @var{whichstats}, @var{alpha})
+## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @
+## @var{whichstats}, @qcode{"alpha"}, @var{a})
 ##
 ## Summary statistics by group.  @code{grpstats} computes groupwise summary
 ## statistics, for data in a matrix @var{x}.  @code{grpstats} treats NaNs as
@@ -56,7 +58,8 @@
 ##
 ## @code{[@dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats},
 ## @var{alpha})} specifies the confidence level as 100(1-ALPHA)% for the "meanci"
-## and "predci" options.  Default value for @var{alpha} is 0.05.
+## and "predci" options.  Default value for @var{alpha} is 0.05.  The
+## significance can also be specified using the Name-Value pair argument syntax.
 ##
 ## Examples:
 ##
@@ -72,12 +75,12 @@
 ## @seealso{grp2idx}
 ## @end deftypefn
 
-function [varargout] = grpstats (x ,group, whichstats, alpha)
+function [varargout] = grpstats (x, group, whichstats, varargin)
   ## Check input arguments
-  narginchk (1, 4)
+  narginchk (1, 5)
   ## Check X being a vector or 2d matrix of real values
   if (ndims (x) > 2 || ! isnumeric (x) || islogical (x))
-    error ("grpstats: X must be a vector or 2d matrix of real values.");
+    error ("grpstats: X must be a vector or 2d matrix.");
   endif
   ## If X is a vector, make it a column vector
   if (isvector (x))
@@ -86,6 +89,10 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   ## Check groups and if empty make a single group for all X
   [r, c] = size (x);
   if (nargin < 2 || isempty (group))
+    if (isempty (x))
+      [varargout] = repmat ({[]}, nargout, 1);
+      return
+    endif
     group = ones (r, 1);
   endif
   ## Get group names and indices
@@ -103,9 +110,24 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   endif
   ## Add default for alpha and check for 4th input argument
   if (nargin > 3)
+    if (ischar (varargin{1}))
+      if (strcmpi (varargin{1}, "alpha"))
+        if (nargin > 4)
+          alpha = varargin{2};
+        else
+          error ("grpstats: missing VALUE for optional 'alpha' parameter.");
+        endif
+      else
+        error ("grpstats: invalid NAME for optional 'alpha' parameter.");
+      endif
+    elseif (isnumeric (varargin{1}))
+      alpha = varargin{1};
+    else
+      error ("grpstats: invalid fourth input argument.");
+    endif
     if (! (isnumeric (alpha) && isscalar (alpha) ...
           && alpha > 0 && alpha < 1))
-      error ("grpstats: ALPHA must be a real scalar in the range (0,1).");
+      error ("grpstats: 'alpha' must be a real scalar in the range (0,1).");
     endif
   else
     alpha = 0.05;
@@ -114,7 +136,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   ## Calculate functions
   if (isempty (func_names))
     ## Check consistent number of output arguments
-    if (nargout == 1)
+    if (nargout == 1 || nargout == 0)
       for j = 1:ngroups
         group_x = x(find (group_idx == j), :);
         group_mean(j,:) = mean (group_x, 1, "omitnan") ;
@@ -126,7 +148,7 @@ function [varargout] = grpstats (x ,group, whichstats, alpha)
   else
     func_num = length (func_names);
     ## Check consistent number of output arguments
-    if (nargout != func_num)
+    if (! (nargout == 0 && func_num == 1) && nargout != func_num)
       error ("grpstats: inconsistent number of output arguments.");
     endif
     for l = 1:func_num
@@ -252,3 +274,26 @@ endfunction
 %!                     {"mean", "meanci", "gname"}, 0.05);
 %! assert (p(:,1), [11.17621760075134, 16.13845847655224, 16.16222663683362]', ...
 %!                 [1e-14, 2e-14, 1e-14]');
+%!test
+%! [mC, g] = grpstats ([], []);
+%! assert (isempty (mC), true);
+%! assert (isempty (g), true);
+
+%!error<grpstats: X must be a vector or 2d matrix.> ...
+%! grpstats (ones (3, 3, 3));
+%!error<grpstats: samples in X and GROUPS mismatch.> ...
+%! grpstats ([], {'A'; 'B'; 'A'; 'B'})
+%!error<grpstats: missing VALUE for optional 'alpha' parameter.> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha");
+%!error<grpstats: invalid NAME for optional 'alpha' parameter.> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "somename", -0.1);
+%!error<grpstats: invalid fourth input argument.> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", {2, 3}, -0.1);
+%!error<grpstats: 'alpha' must be a real scalar in the range \(0,1\).> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha", -0.1);
+%!error<grpstats: inconsistent number of output arguments.> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, {'mean', 'sum'});
+%!error<grpstats: inconsistent number of output arguments.> ...
+%! [q, w] = grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'});
+%!error<grpstats: wrong whichstats option.> ...
+%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "whatever");
