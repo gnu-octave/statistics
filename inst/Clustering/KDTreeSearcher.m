@@ -331,8 +331,8 @@ classdef KDTreeSearcher
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K})
-    ## @deftypefnx {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})
+    ## @deftypefn  {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y})
+    ## @deftypefnx {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})
     ##
     ## Find the @math{K} nearest neighbors in the training data to query points.
     ##
@@ -345,15 +345,19 @@ classdef KDTreeSearcher
     ## @item @var{obj} is a @qcode{KDTreeSearcher} object.
     ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
     ## @math{P} must match the number of columns in @var{obj.X}.
-    ## @item @var{K} is a positive integer specifying the number of nearest
-    ## neighbors to find.
+    ## @item @var{idx} contains the indices of the nearest neighbors in
+    ## @var{obj.X}.
+    ## @item @var{D} contains the corresponding distances.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})}
-    ## allows additional options via name-value pairs:
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
+    ## @var{value})} allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"K"} @tab @tab A positive integer specifying the number of
+    ## nearest neighbors to find. Default is 1.
     ##
     ## @item @qcode{"IncludeTies"} @tab @tab Logical flag indicating whether to
     ## include all neighbors tied with the @math{K}th smallest distance. Default
@@ -363,40 +367,48 @@ classdef KDTreeSearcher
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##
-    ## @var{idx} contains the indices of the nearest neighbors in @var{obj.X}.
-    ## @var{D} contains the corresponding distances.
-    ##
     ## @seealso{KDTreeSearcher, rangesearch}
     ## @end deftypefn
-    function [idx, D] = knnsearch (obj, Y, K, varargin)
-      if (nargin < 3)
+    function [idx, D] = knnsearch (obj, Y, varargin)
+      ## Initial input validation
+      if (nargin < 2)
         error ("KDTreeSearcher.knnsearch: too few input arguments.");
       endif
-
       if (mod (numel (varargin), 2) != 0)
         error (strcat ("KDTreeSearcher.knnsearch:", ...
                        " Name-Value arguments must be in pairs."));
       endif
 
+      ## Get training data size
+      [N, C] = size (obj.X);
+
+      ## Validate Y
+      if (isempty (Y))
+        error ("KDTreeSearcher.knnsearch: Y cannot be empty.");
+      endif
       if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
         error ("KDTreeSearcher.knnsearch: Y must be a finite numeric matrix.");
       endif
-
-      if (size (obj.X, 2) != size (Y, 2))
-        error (strcat ("KDTreeSearcher.knnsearch:", ...
-                       " number of columns in X and Y must match."));
+      if (C != size (Y, 2))
+        error (strcat ("KDTreeSearcher.knnsearch: Y must have the same", ...
+                       " number of columns as the training data in OBJ.X."));
       endif
 
-      if (! (isscalar (K) && isnumeric (K) && K >= 1
-                          && K == fix (K) && isfinite (K)))
-        error ("KDTreeSearcher.knnsearch: K must be a positive integer.");
-      endif
+      ## Default values
+      K = 1;
 
       ## Parse options
       IncludeTies = false;
       SortIndices = true;
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
+          case "k"
+            K = varargin{2};
+            if (! (isscalar (K) && isnumeric (K) &&
+                   K >= 1 && K == fix (K) && isfinite (K)))
+              error (strcat ("KDTreeSearcher.knnsearch: 'K' must", ...
+                             " be a positive integer."));
+            endif
           case "includeties"
             IncludeTies = varargin{2};
             if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
@@ -428,7 +440,7 @@ classdef KDTreeSearcher
                                           obj.Distance, obj.DistParameter, ...
                                           true, r);
           if (SortIndices)
-            [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
+            [sorted_D, sort_idx] = sortrows ([temp_D, temp_idx]);
             D{i} = sorted_D;
             idx{i} = idx{i}(sort_idx);
           endif
@@ -441,7 +453,7 @@ classdef KDTreeSearcher
                                               obj.Distance, obj.DistParameter, ...
                                               false);
           if (SortIndices)
-            [sorted_D, sort_idx] = sortrows ([temp_D', temp_idx']);
+            [sorted_D, sort_idx] = sortrows ([temp_D, temp_idx]);
             idx(i,:) = temp_idx(sort_idx);
             D(i,:) = sorted_D(:,1)';
           else
@@ -586,8 +598,8 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
                     " non-minkowski metrics."));
     endif
   endif
-  indices = zeros(1, 0);
-  distances = zeros(1, 0);
+  indices = [];
+  distances = [];
   search (node, 0);
 
   function search (node, depth)
@@ -604,11 +616,11 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
       endif
       if (is_range)
         mask = dists <= r;
-        indices = horzcat (indices, leaf_indices(mask));
-        distances = horzcat (distances, dists(mask)');
+        indices = [indices; leaf_indices(mask)'];
+        distances = [distances; dists(mask)];
       else
-        indices = horzcat (indices, leaf_indices);
-        distances = horzcat (distances, dists');
+        indices = [indices; leaf_indices'];
+        distances = [distances; dists];
         if (length (distances) > k)
           [distances, sort_idx] = sort (distances);
           indices = indices(sort_idx);
