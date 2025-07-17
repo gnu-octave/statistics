@@ -428,7 +428,7 @@ classdef KDTreeSearcher
                                           obj.Distance, obj.DistParameter, ...
                                           true, r);
           if (SortIndices)
-            [sorted_D, sort_idx] = sort (D{i});
+            [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
             D{i} = sorted_D;
             idx{i} = idx{i}(sort_idx);
           endif
@@ -441,7 +441,7 @@ classdef KDTreeSearcher
                                               obj.Distance, obj.DistParameter, ...
                                               false);
           if (SortIndices)
-            [sorted_D, sort_idx] = sort (temp_D);
+            [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
             idx(i,:) = temp_idx(sort_idx);
             D(i,:) = sorted_D;
           else
@@ -534,7 +534,7 @@ classdef KDTreeSearcher
                                         obj.Distance, obj.DistParameter, ...
                                         true, r);
         if (SortIndices)
-          [sorted_D, sort_idx] = sort (D{i});
+          [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
           D{i} = sorted_D;
           idx{i} = idx{i}(sort_idx);
         endif
