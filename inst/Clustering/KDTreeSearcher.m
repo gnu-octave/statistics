@@ -547,8 +547,8 @@ classdef KDTreeSearcher
                                         true, r);
         if (SortIndices)
           [sorted_D, sort_idx] = sortrows ([D{i}(:), idx{i}(:)]);
-          D{i} = sorted_D;
-          idx{i} = idx{i}(sort_idx);
+          D{i} = sorted_D(:, 1);
+          idx{i} = sorted_D(:, 2);
         endif
       endfor
     endfunction
@@ -833,10 +833,9 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = X(50:55,:);
 %! [idx, D] = knnsearch (obj, Y, "K", 3, "IncludeTies", true);
-%! assert (idx, {[50, 8, 40]; [51, 53, 87]; [52, 57, 76]; [53, 51, 87]; [54, ...
-%!                90, 81]; [55, 59, 76]})
-%! assert (D, {[0, 0.1414, 0.1732]; [0, 0.2646, 0.3317]; [0, 0.2646, 0.3162];
-%!             [0, 0.2646, 0.2828]; [0, 0.2000, 0.3000]; [0, 0.2449, 0.3162]}, 5e-5)
+%! assert (idx, {[50; 8; 40]; [51; 53; 87]; [52; 57; 76]; [53; 51; 87]; [54; 90; 81]; [55; 59; 76]})
+%! assert (D, {[0; 0.1414; 0.1732]; [0; 0.2646; 0.3317]; [0; 0.2646; 0.3162];
+%!             [0; 0.2646; 0.2828]; [0; 0.2000; 0.3000]; [0; 0.2449; 0.3162]}, 5e-5)
 
 %!test
 %! load fisheriris
