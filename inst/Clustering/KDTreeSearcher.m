@@ -781,7 +781,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X);
 %! Y = X(1:5,:);
-%! [idx, D] = knnsearch (obj, Y, 3);
+%! [idx, D] = knnsearch (obj, Y, "K", 3);
 %! assert (idx, [[1, 18, 5]; [2, 35, 46]; [3, 48, 4]; [4, 48, 30]; [5, 38, 1]])
 %! assert (D, [[0, 0.1000, 0.1414]; [0,  0.1414,  0.1414]; [0, 0.1414, 0.2449];
 %!             [0, 0.1414, 0.1732]; [0, 0.1414, 0.1414]], 5e-5)
@@ -791,7 +791,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
 %! Y = X(10:15,:);
-%! [idx, D] = knnsearch (obj, Y, 2);
+%! [idx, D] = knnsearch (obj, Y, "K", 2);
 %! assert (idx, [[10, 35]; [11, 49]; [12, 30]; [13, 2]; [14, 39]; [15, 34]])
 %! assert (D, [[0, 0.1000]; [0, 0.1000]; [0, 0.2080]; [0, 0.1260]; [0, 0.2154];
 %!             [0, 0.3503]], 5e-5)
@@ -801,7 +801,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X, "Distance", "cityblock");
 %! Y = X(20:25,:);
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y, "K", 1);
 %! assert (idx, [20; 21; 22; 23; 24; 25])
 %! assert (D, [0; 0; 0; 0; 0; 0])
 
@@ -810,7 +810,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X, "Distance", "chebychev");
 %! Y = X(30:35,:);
-%! [idx, D] = knnsearch (obj, Y, 4);
+%! [idx, D] = knnsearch (obj, Y, "K", 4);
 %! assert (idx, [[30, 31, 4, 12]; [31, 30, 10, 35]; [32, 21, 37, 28];
 %!               [33, 20, 34, 47]; [34, 16, 15, 33]; [35, 10, 2, 26]])
 %! assert (D, [[0, 0.1000, 0.1000, 0.2000]; [0, 0.1000, 0.1000, 0.1000];
@@ -822,7 +822,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X, "BucketSize", 20);
 %! Y = X(40:45,:);
-%! [idx, D] = knnsearch (obj, Y, 2);
+%! [idx, D] = knnsearch (obj, Y, "K", 2);
 %! assert (idx, [[40, 8]; [41, 18]; [42, 9]; [43, 39]; [44, 27]; [45, 47]])
 %! assert (D, [[0, 0.1000]; [0, 0.1414]; [0, 0.6245]; [0, 0.2000]; [0, 0.2236];
 %!             [0, 0.3606]], 4.7e-5)
@@ -832,7 +832,7 @@ endfunction
 %! X = meas;
 %! obj = KDTreeSearcher (X);
 %! Y = X(50:55,:);
-%! [idx, D] = knnsearch (obj, Y, 3, "IncludeTies", true);
+%! [idx, D] = knnsearch (obj, Y, "K", 3, "IncludeTies", true);
 %! assert (idx, {[50, 8, 40]; [51, 53, 87]; [52, 57, 76]; [53, 51, 87]; [54, ...
 %!                90, 81]; [55, 59, 76]})
 %! assert (D, {[0, 0.1414, 0.1732]; [0, 0.2646, 0.3317]; [0, 0.2646, 0.3162];
