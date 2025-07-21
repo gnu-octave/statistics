@@ -691,6 +691,22 @@ endfunction
 %!              0.3000]; [0 0.1000 0.1000 0.1000]], 5e-15)
 
 %!test
+%! load fisheriris
+%! X = meas;
+%! C = cov (X);
+%! obj = hnswSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! Y = X(120:125,:);
+%! [idx, D] = knnsearch (obj, Y, "K", 2);
+%! assert (idx(1, :), [120 82])
+%! assert (idx(4, :), [123 106])
+%! assert (idx(5, :), [124 127])
+%! assert (idx(6, :), [125 57])
+%! assert (D(1, :), [0 0.7734], 1e-4)
+%! assert (D(4, :), [0 0.8452], 1e-4)
+%! assert (D(5, :), [0 0.4152], 1e-4)
+%! assert (D(6, :), [0 0.7322], 1e-4)
+
+%!test
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = hnswSearcher (X);
