@@ -384,29 +384,30 @@ classdef ExhaustiveSearcher
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ExhaustiveSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K})
-    ## @deftypefnx {ExhaustiveSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{K}, @var{name}, @var{value})
+    ## @deftypefn  {ExhaustiveSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y})
+    ## @deftypefnx {ExhaustiveSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})
     ##
     ## Find the @math{K} nearest neighbors in the training data to query points.
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{K})}
-    ## returns the indices @var{idx} and distances @var{D} of the @math{K}
-    ## nearest neighbors in @var{obj.X} to each point in @var{Y}, using the
-    ## distance metric specified in @var{obj.Distance}.
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y})} returns the
+    ## indices @var{idx} and distances @var{D} of the nearest neighbor in
+    ## @var{obj.X} to each point in @var{Y}, using the distance metric specified
+    ## in @var{obj.Distance}.
     ##
     ## @itemize
     ## @item @var{obj} is an @qcode{ExhaustiveSearcher} object.
     ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
     ## @math{P} must match the number of columns in @var{obj.X}.
-    ## @item @var{K} is a positive integer specifying the number of nearest
-    ## neighbors to find.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@dots{}, @var{name}, @var{value})}
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})}
     ## allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"K"} @tab @tab A positive integer specifying the number of
+    ## nearest neighbors to find. Default is 1.
     ##
     ## @item @qcode{"IncludeTies"} @tab @tab Logical flag indicating whether to
     ## include all neighbors tied with the @math{K}th smallest distance. Default
@@ -418,8 +419,8 @@ classdef ExhaustiveSearcher
     ##
     ## @seealso{ExhaustiveSearcher, rangesearch, pdist2}
     ## @end deftypefn
-    function [idx, D] = knnsearch (obj, Y, K, varargin)
-      if (nargin < 3)
+    function [idx, D] = knnsearch (obj, Y, varargin)
+      if (nargin < 2)
         error ("ExhaustiveSearcher.knnsearch: too few input arguments.");
       endif
 
@@ -438,16 +439,19 @@ classdef ExhaustiveSearcher
                        " of columns in X and Y must match."));
       endif
 
-      if (! (isscalar (K) && isnumeric (K) && K >= 1
-                                           && K == fix (K) && isfinite (K)))
-        error (strcat ("ExhaustiveSearcher.knnsearch: K", ...
-                       " must be a positive integer."));
-      endif
+      K = 1;
+      IncludeTies = false;
 
       ## Parse options
-      IncludeTies = false;
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
+          case "k"
+            K = varargin{2};
+            if (! (isscalar (K) && isnumeric (K) && K >= 1
+                                && K == fix (K) && isfinite (K)))
+              error (strcat ("ExhaustiveSearcher.knnsearch: K", ...
+                             " must be a positive integer."));
+            endif
           case "includeties"
             IncludeTies = varargin{2};
             if (! (islogical (IncludeTies) && isscalar (IncludeTies)))
@@ -600,7 +604,7 @@ endclassdef
 %! searchModel = ExhaustiveSearcher (dataPoints, 'Distance', 'mahalanobis')
 %! mahalanobisParam = searchModel.DistParameter
 %! searchRadius = 3;
-%! nearestNeighbors = knnsearch (searchModel, queryPoints, 2)
+%! nearestNeighbors = knnsearch (searchModel, queryPoints, "K", 2)
 %! neighborsInRange = rangesearch (searchModel, queryPoints, searchRadius)
 
 %!demo
@@ -609,7 +613,7 @@ endclassdef
 %! obj = ExhaustiveSearcher (X);
 %! ## Find the nearest neighbor to [2, 3]
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! disp ("Nearest neighbor index:"); disp (idx);
 %! disp ("Distance:"); disp (D);
 %! ## Find all points within radius 2
@@ -623,7 +627,7 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 1);
 %! ## Find the 2 nearest neighbors to [0.5, 0.5]
 %! Y = [0.5, 0.5];
-%! [idx, D] = knnsearch (obj, Y, 2);
+%! [idx, D] = knnsearch (obj, Y, "K", 2);
 %! disp ("Nearest neighbor indices:"); disp (idx);
 %! disp ("Distances:"); disp (D);
 
@@ -644,7 +648,7 @@ endclassdef
 %! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
 %!
 %! K = 5;
-%! [idx, D] = knnsearch(obj, Y, K);
+%! [idx, D] = knnsearch(obj, Y, "K", K);
 %!
 %! disp('For the first query point:');
 %! disp(['Query point: ', num2str(Y(1,:))]);
@@ -756,7 +760,7 @@ endclassdef
 %! X = [1, 1; 2, 3; 4, 2];
 %! obj = ExhaustiveSearcher (X, "Distance", "chebychev");
 %! Y = [2, 2];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D, 1, 1e-10)
 
@@ -765,7 +769,7 @@ endclassdef
 %! X = [1, 0; 0, 1; 1, 1];
 %! obj = ExhaustiveSearcher (X, "Distance", "cosine");
 %! Y = [1, 0.5];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 3)
 %! assert (D < 0.1, true)
 
@@ -774,7 +778,7 @@ endclassdef
 %! X = [0, 0; 1, 0; 0, 1];
 %! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 1);
 %! Y = [0.5, 0.5];
-%! [idx, D] = knnsearch (obj, Y, 2, "IncludeTies", true);
+%! [idx, D] = knnsearch (obj, Y, "K", 2, "IncludeTies", true);
 %! assert (iscell (idx))
 %! assert (idx{1}, [1, 2, 3])
 %! assert (D{1}, [1, 1, 1], 1e-10)
@@ -814,7 +818,7 @@ endclassdef
 %! custom_dist = @(x, y) sum(abs(x - y));
 %! obj = ExhaustiveSearcher (X, "Distance", custom_dist);
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D, 2, 1e-10)
 
@@ -823,7 +827,7 @@ endclassdef
 %! X = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
 %! obj = ExhaustiveSearcher (X);
 %! Y = [5, 6, 7];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 2)
 %! assert (D, sqrt(3), 1e-10)
 
@@ -832,7 +836,7 @@ endclassdef
 %! X = [0, 1; 2, 3; 4, 5] * 10;
 %! obj = ExhaustiveSearcher (X, "Distance", "minkowski", "P", 3);
 %! Y = [20, 30];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 2)
 %! assert (D, 0, 1e-10)
 
@@ -842,7 +846,7 @@ endclassdef
 %! S = [1, 5];
 %! obj = ExhaustiveSearcher (X, "Distance", "seuclidean", "Scale", S);
 %! Y = [1.5, 15];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D, sqrt((0.5/1)^2 + (5/5)^2), 1e-10)
 
@@ -852,7 +856,7 @@ endclassdef
 %! C = [1, 0.5; 0.5, 1];
 %! obj = ExhaustiveSearcher (X, "Distance", "mahalanobis", "Cov", C);
 %! Y = [2, 1.5];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 2)
 %! assert (D, 0, 1e-10)
 
@@ -870,7 +874,7 @@ endclassdef
 %! X = [0, 100; 50, 50; 100, 0];
 %! obj = ExhaustiveSearcher (X, "Distance", "chebychev");
 %! Y = [60, 60];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 2)
 %! assert (D, 10, 1e-10)
 
@@ -879,7 +883,7 @@ endclassdef
 %! X = [1, 0; 0, 1; 1/sqrt(2), 1/sqrt(2)];
 %! obj = ExhaustiveSearcher (X, "Distance", "cosine");
 %! Y = [1, 1];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 3)
 %! assert (D < 0.1, true)
 
@@ -888,7 +892,7 @@ endclassdef
 %! X = [1, 2, 3; 2, 4, 6; 1, 1, 1];
 %! obj = ExhaustiveSearcher (X, "Distance", "correlation");
 %! Y = [1.5, 3, 4.5];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D < 0.1, true)
 
@@ -897,7 +901,7 @@ endclassdef
 %! X = [1, 2, 3; 3, 2, 1; 2, 1, 3];
 %! obj = ExhaustiveSearcher (X, "Distance", "spearman");
 %! Y = [1, 2, 3];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D, 0, 1e-10)
 
@@ -906,7 +910,7 @@ endclassdef
 %! X = [1, 0, 0; 0, 1, 0; 1, 1, 0];
 %! obj = ExhaustiveSearcher (X, "Distance", "jaccard");
 %! Y = [1, 0, 0];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y);
 %! assert (idx, 1)
 %! assert (D, 0, 1e-10)
 
@@ -966,17 +970,17 @@ endclassdef
 %!error<ExhaustiveSearcher.knnsearch: too few input arguments.> ...
 %! knnsearch (ExhaustiveSearcher (ones(3,2)))
 %!error<ExhaustiveSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies")
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), "IncludeTies")
 %!error<ExhaustiveSearcher.knnsearch: Y must be a finite numeric matrix.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), "abc", 1)
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), "abc")
 %!error<ExhaustiveSearcher.knnsearch: number of columns in X and Y must match.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,3), 1)
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,3))
 %!error<ExhaustiveSearcher.knnsearch: K must be a positive integer.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 0)
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), "K", 0)
 %!error<ExhaustiveSearcher.knnsearch: invalid parameter name: 'foo'.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "foo", "bar")
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), "foo", "bar")
 %!error<ExhaustiveSearcher.knnsearch: IncludeTies must be a logical scalar.> ...
-%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), 1, "IncludeTies", 1)
+%! knnsearch (ExhaustiveSearcher (ones(3,2)), ones(3,2), "IncludeTies", 1)
 
 %!error<ExhaustiveSearcher.rangesearch: too few input arguments.> ...
 %! rangesearch (ExhaustiveSearcher (ones(3,2)))
