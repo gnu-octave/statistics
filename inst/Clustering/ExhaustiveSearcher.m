@@ -742,7 +742,7 @@ endclassdef
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y, "K", 1);
 %! assert (idx, 1)
 %! assert (D, sqrt(2), 1e-10)
 
@@ -751,7 +751,7 @@ endclassdef
 %! X = [0, 0; 1, 1; 2, 2];
 %! obj = ExhaustiveSearcher (X, "Distance", "cityblock");
 %! Y = [1, 0];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y, "K", 1);
 %! assert (idx, 1)
 %! assert (D, 1, 1e-10)
 
