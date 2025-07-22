@@ -191,7 +191,7 @@
                  'K-fold' partitioning is now randomized, and 'repartition'
                  method works for both 'k-fold' and 'holdout' partition types.
 
- ** firdist: fix NaN handling as missing values (#20)
+ ** fitdist: fix NaN handling as missing values (#203)
 
  ** fpdf, finv: fix output when DoF tend to infinity (#203)
 
