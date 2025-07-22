@@ -37,20 +37,13 @@ Classification Classes
 Clustering Classes
  CalinskiHarabaszEvaluation
  ClusterCriterion
+ cvpartition
  DaviesBouldinEvaluation
  ExhaustiveSearcher
  GapEvaluation
  hnswSearcher
  KDTreeSearcher
  SilhouetteEvaluation
-CVpartition
- @cvpartition/cvpartition
- @cvpartition/display
- @cvpartition/get
- @cvpartition/repartition
- @cvpartition/set
- @cvpartition/test
- @cvpartition/training
 Regression Classes
  RegressionGAM
 Data Manipulation
