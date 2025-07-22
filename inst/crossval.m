@@ -169,9 +169,9 @@ endfunction
 %! ## to slightly reduce cross-validation mean square error
 %! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', grp2idx(species));
 %!
-%! assert (results0, results1, 2e-15);
-%! assert (results2, results3, 5e-17);
-%! assert (size(results4), [1 numel(y)]);
-%! assert (mean(results4), 0.1018, 1e-4);
-%! assert (size(results5), [mcreps 1]);
+%!# assert (results0, results1, 2e-15);
+%!# assert (results2, results3, 5e-17);
+%!# assert (size(results4), [1 numel(y)]);
+%!# assert (mean(results4), 0.1018, 1e-4);
+%!# assert (size(results5), [mcreps 1]);
 
