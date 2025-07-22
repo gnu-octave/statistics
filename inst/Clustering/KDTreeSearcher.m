@@ -677,13 +677,13 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! ## Find the nearest neighbor to [2, 3]
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y, "K", 1);
 %! disp ("Nearest neighbor index:");
 %! disp (idx);
 %! disp ("Distance:");
 %! disp (D);
 %! ## Find all points within radius 2
-%! [idx, D] = rangesearch (obj, Y, "K", 2);
+%! [idx, D] = rangesearch (obj, Y, 2);
 %! disp ("Indices within radius:");
 %! disp (idx);
 %! disp ("Distances:");
