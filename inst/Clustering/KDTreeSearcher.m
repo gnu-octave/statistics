@@ -668,7 +668,7 @@ endfunction
 %! dataPoints = meas(dataIndices, :);
 %! searchRadius = 0.3;
 %! kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')
-%! nearestNeighbors = knnsearch (kdTree, queryPoints, 2)
+%! nearestNeighbors = knnsearch (kdTree, queryPoints, "K", 2)
 %! neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)
 
 %!demo
@@ -683,7 +683,7 @@ endfunction
 %! disp ("Distance:");
 %! disp (D);
 %! ## Find all points within radius 2
-%! [idx, D] = rangesearch (obj, Y, 2);
+%! [idx, D] = rangesearch (obj, Y, "K", 2);
 %! disp ("Indices within radius:");
 %! disp (idx);
 %! disp ("Distances:");
@@ -695,7 +695,7 @@ endfunction
 %! obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
 %! ## Find the nearest neighbor to [1, 0]
 %! Y = [1, 0];
-%! [idx, D] = knnsearch (obj, Y, 1);
+%! [idx, D] = knnsearch (obj, Y, "K", 1);
 %! disp ("Nearest neighbor index:");
 %! disp (idx);
 %! disp ("Distance:");
@@ -718,7 +718,7 @@ endfunction
 %! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
 %!
 %! K = 5;
-%! [idx, D] = knnsearch (obj, Y, K);
+%! [idx, D] = knnsearch (obj, Y, "K", K);
 %!
 %! disp ('For the first query point:');
 %! disp (['Query point: ', num2str(Y(1,:))]);
