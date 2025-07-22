@@ -730,7 +730,11 @@ classdef ClassificationGAM
       endif
 
       ## Add default values
-      numFolds    = 10;
+      if (this.NumObservations <= 10)
+        numFolds  = this.NumObservations - 1;
+      else
+        numFolds  = 10;
+      endif
       Holdout     = [];
       Leaveout    = 'off';
       CVPartition = [];
@@ -783,7 +787,7 @@ classdef ClassificationGAM
       elseif (! isempty (Holdout))
         partition = cvpartition (this.Y, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
-        partition = cvpartition (this.Y, 'LeaveOut');
+        partition = cvpartition (this.NumObservations, 'LeaveOut');
       else
         partition = cvpartition (this.Y, 'KFold', numFolds);
       endif

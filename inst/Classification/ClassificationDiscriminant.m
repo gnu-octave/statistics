@@ -1142,7 +1142,7 @@ classdef ClassificationDiscriminant
 
           case 'cvpartition'
             CVPartition = varargin{2};
-            if (!(isa (CVPartition, 'cvpartition')))
+            if (! (isa (CVPartition, 'cvpartition')))
               error (strcat ("ClassificationDiscriminant.crossval:",...
                              " 'CVPartition' must be a 'cvpartition' object."));
             endif
@@ -1160,7 +1160,7 @@ classdef ClassificationDiscriminant
       elseif (! isempty (Holdout))
         partition = cvpartition (this.Y, 'Holdout', Holdout);
       elseif (strcmpi (Leaveout, 'on'))
-        partition = cvpartition (this.Y, 'LeaveOut');
+        partition = cvpartition (numel (this.Y), 'LeaveOut');
       else
         partition = cvpartition (this.Y, 'KFold', numFolds);
       endif

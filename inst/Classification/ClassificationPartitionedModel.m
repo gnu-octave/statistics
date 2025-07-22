@@ -152,7 +152,7 @@ classdef ClassificationPartitionedModel
       ## Set properties
       this.X = Mdl.X;
       this.Y = Mdl.Y;
-      this.KFold = get (Partition, "NumTestSets");
+      this.KFold = Partition.NumTestSets;
       this.Trained = cell (this.KFold, 1);
       this.ClassNames = Mdl.ClassNames;
       this.ResponseName = Mdl.ResponseName;

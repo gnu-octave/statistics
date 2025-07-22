@@ -483,8 +483,8 @@ classdef cvpartition
                              " an integer scalar in the range [1, n)."));
             endif
           else
-            if (X < 10)
-              k = X;
+            if (X <= 10)
+              k = X - 1;
             else
               k = 10;
             endif
@@ -680,8 +680,8 @@ classdef cvpartition
                              " an integer scalar in the range [1, n)."));
             endif
           else
-            if (X < 10)
-              k = X;
+            if (X <= 10)
+              k = X - 1;
             else
               k = 10;
             endif
