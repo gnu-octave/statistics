@@ -512,9 +512,9 @@ endfunction
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true)
 %! assert (idx {1}, [1]);
-%! assert (idx {2}, [1, 2]);
+%! assert (idx {2}', [1, 2]);
 %! assert (D{1}, ones (1, 1) * sqrt (2));
-%! assert (D{2}, ones (1, 2) * sqrt (2));
+%! assert (D{2}', ones (1, 2) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, "Distance", "euclidean", "k", 2);
 %! assert (idx, [1, 2; 1, 2]);
@@ -579,8 +579,8 @@ endfunction
 %! [idx, D] = knnsearch (a, b, "K", 5, "NSMethod", "kdtree", "includeties", true);
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true)
-%! assert (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
+%! assert (cell2mat (idx)', [4, 2, 3, 6, 1, 5, 7, 9]);
+%! assert (cell2mat (D)', [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
@@ -634,8 +634,8 @@ endfunction
 %! [idx, D] = knnsearch (a, b, "K", 5, "includeties", true);
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true);
-%! assert (cell2mat (idx), [118, 132, 110, 106, 136]);
-%! assert (cell2mat (D), [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
+%! assert (cell2mat (idx)', [118, 132, 110, 106, 136]);
+%! assert (cell2mat (D)', [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
 
 ## Test input validation
 %!error<knnsearch: too few input arguments.> knnsearch (1)
