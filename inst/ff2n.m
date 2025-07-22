@@ -38,7 +38,7 @@ function A = ff2n (n)
                      || ! isfinite (n) || ! isreal (n))
     error ("ff2n: @var{N} must be a positive integer scalar.");
   endif
-  A = fullfact (2 * ones (1, n)) - 1;
+  A = flip (fullfact (2 * ones (1, n)), 2) - 1;
 endfunction
 
 %!error ff2n ();
@@ -51,8 +51,9 @@ endfunction
 %!error ff2n (NaN);
 %!test
 %! A = ff2n (3);
-%! assert (A, fullfact (3));
+%! assert (A, [0, 0, 0; 0, 0, 1; 0, 1, 0; 0, 1, 1; ...
+%!             1, 0, 0; 1, 0, 1; 1, 1, 0; 1, 1, 1]);
 %!test
-%! A = ff2n (8);
-%! assert (A, fullfact (8));
+%! A = ff2n (2);
+%! assert (A, [0, 0; 0, 1; 1, 0; 1, 1]);
 
