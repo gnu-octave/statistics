@@ -153,3 +153,57 @@
 
  ** kmeans: fix empty figures in demos (github issue #179)
 
+
+ Summary of important user-visible changes for statistics 1.7.5:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ New functions:
+ ==============
+
+ ** createns
+
+ ** multiway
+
+ New classdefs:
+ ==============
+
+ ** cvpartition
+
+ ** ExhaustiveSearcher
+
+ ** hnswSearcher
+
+ ** KDTreeSearcher
+
+ Improvements:
+ =============
+
+ ** chi2pdf, gampdf: fix INF handling (#203)
+
+ ** crosstab: allow row vectors as input, fix numeric input ordering (#184)
+
+ ** cvpartition: old style class has been replaced by classdef implementation.
+                 'K-fold' partitioning is now randomized, and 'repartition'
+                 method works for both 'k-fold' and 'holdout' partition types.
+
+ ** firdist: fix NaN handling as missing values (#20)
+
+ ** fpdf, finv: fix output when DoF tend to infinity (#203)
+
+ ** fullfact: fix MATLAB compatibility (#212)
+
+ ** grpstats: fix MATLAB compatibility (#215)
+
+ ** knnsearch, rangesearch: fix slow kd-tree implementation (#151)
+
+ ** vartest, vartest2: fix computation of right tail p-value (#183)
+
+ ** x2fx: fix variable shadowing in nested loops (#204)
+
+ ** ztest: fix second output for one-tailed tests (#199, #200)
+
