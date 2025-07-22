@@ -1180,21 +1180,21 @@ endfunction
 
 ## Test crossval method
 %!shared x, y, obj
-%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = [0; 0; 1; 1];
+%! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6];
+%! y = [0; 0; 1; 1; 0];
 %! obj = fitcgam (x, y);
 %!test
 %! CVMdl = crossval (obj);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 10)
+%! assert (CVMdl.KFold == 4)
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
-%! CVMdl = crossval (obj, "KFold", 5);
+%! CVMdl = crossval (obj, "KFold", 2);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 5)
+%! assert (CVMdl.KFold == 2)
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test

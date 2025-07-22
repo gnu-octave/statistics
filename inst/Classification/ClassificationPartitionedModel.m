@@ -407,9 +407,8 @@ classdef ClassificationPartitionedModel
     ## numeric matrix. Each row of @var{Cost} corresponds to an observation,
     ## and each column corresponds to a class. The value in row @var{i}
     ## and column @var{j} is the classification cost for class @var{j} for
-    ## observation @var{i}. This output is
-    ## optional and only returned if requested.
-    ##
+    ## observation @var{i}. This output is optional and only returned if
+    ## requested.
     ## @end multitable
     ##
     ## @seealso{ClassificationKNN, ClassificationSVM,
@@ -479,7 +478,8 @@ classdef ClassificationPartitionedModel
       ## Handle single fold case (holdout)
       if (this.KFold == 1)
         testIdx = test (this.Partition, 1);
-        label(testIdx) = mode (this.Y);
+        y = grp2idx (this.Y);
+        label(testIdx) = this.Y(find (y = mode (y), 1));
         Score(testIdx, :) = NaN;
         Cost(testIdx, :) = NaN;
         return;
@@ -550,13 +550,13 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = fitcgam (x, y, "Interactions", "all");
-%! cvModel = crossval (a, "KFold", 5);
+%! cvModel = crossval (a, "KFold", 3);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 5);
+%! assert (numel (cvModel.Trained), 3);
 %! assert (class (cvModel.Trained{1}), "CompactClassificationGAM");
 %! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
-%! assert (cvModel.KFold, 5);
+%! assert (cvModel.KFold, 3);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -572,7 +572,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = fitcknn (x, y);
-%! partition = cvpartition (y, "KFold", 5);
+%! partition = cvpartition (y, "KFold", 3);
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (class (cvModel.Trained{1}), "ClassificationKNN");
@@ -600,7 +600,7 @@ endclassdef
 %! y = ["a"; "a"; "b"; "b"];
 %! k = 3;
 %! a = fitcknn (x, y, "NumNeighbors" ,k);
-%! partition = cvpartition (y, "LeaveOut");
+%! partition = cvpartition (numel (y), "LeaveOut");
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (class (cvModel.Trained{1}), "ClassificationKNN");
@@ -614,13 +614,13 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
 %! a = fitcnet (x, y, "IterationLimit", 50);
-%! cvModel = crossval (a, "KFold", 5);
+%! cvModel = crossval (a, "KFold", 3);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 5);
+%! assert (numel (cvModel.Trained), 3);
 %! assert (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
 %! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
-%! assert (cvModel.KFold, 5);
+%! assert (cvModel.KFold, 3);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
@@ -698,7 +698,7 @@ endclassdef
 %! y = {"a"; "a"; "b"; "b"};
 %! k = 3;
 %! a = fitcknn (x, y, "NumNeighbors", k);
-%! partition = cvpartition (y, "LeaveOut");
+%! partition = cvpartition (numel (y), "LeaveOut");
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! [label, score, cost] = kfoldPredict (cvModel);
 %! assert (class(cvModel), "ClassificationPartitionedModel");
