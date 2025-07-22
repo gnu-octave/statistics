@@ -1096,6 +1096,380 @@
           </div>
         </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Demo to verify implementation using fisheriris dataset
+ load fisheriris
+ numSamples = size (meas, 1);
+ queryIndices = [1, 23, 46, 63, 109];
+ dataIndices = ~ismember (1:numSamples, queryIndices);
+ queryPoints = meas(queryIndices, :);
+ dataPoints = meas(dataIndices, :);
+ searchRadius = 0.3;
+ kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')
+ nearestNeighbors = knnsearch (kdTree, queryPoints, "K", 2)
+ neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)
+
+kdTree =
+
+  KDTreeSearcher with properties:
+
+               BucketSize: 50
+                 Distance: 'minkowski'
+            DistParameter: 2
+                        X: [145x4 double]
+nearestNeighbors =
+
+    17     4
+     6     2
+     1    12
+    89    66
+   124   100
+
+neighborsInRange =
+{
+  [1,1] =
+
+     17
+      4
+     38
+     26
+     27
+     39
+      7
+     47
+     36
+
+  [2,1] = [](0x1)
+  [3,1] =
+
+      1
+     12
+     33
+     29
+      2
+      3
+      9
+
+  [4,1] = [](0x1)
+  [5,1] = [](0x1)
+}
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a KDTreeSearcher with Euclidean distance
+ X = [1, 2; 3, 4; 5, 6];
+ obj = KDTreeSearcher (X);
+ ## Find the nearest neighbor to [2, 3]
+ Y = [2, 3];
+ [idx, D] = knnsearch (obj, Y, "K", 1);
+ disp ("Nearest neighbor index:");
+ disp (idx);
+ disp ("Distance:");
+ disp (D);
+ ## Find all points within radius 2
+ [idx, D] = rangesearch (obj, Y, 2);
+ disp ("Indices within radius:");
+ disp (idx);
+ disp ("Distances:");
+ disp (D);
+
+Nearest neighbor index:
+1
+Distance:
+1.4142
+Indices within radius:
+{
+  [1,1] =
+
+     1
+     2
+
+}
+Distances:
+{
+  [1,1] =
+
+     1.4142
+     1.4142
+
+}
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a KDTreeSearcher with Minkowski distance (P=3)
+ X = [0, 0; 1, 0; 2, 0];
+ obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
+ ## Find the nearest neighbor to [1, 0]
+ Y = [1, 0];
+ [idx, D] = knnsearch (obj, Y, "K", 1);
+ disp ("Nearest neighbor index:");
+ disp (idx);
+ disp ("Distance:");
+ disp (D);
+
+Nearest neighbor index:
+2
+Distance:
+0
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ rng(42);
+ disp('Demonstrating KDTreeSearcher');
+
+ n = 100;
+ mu1 = [0.3, 0.3];
+ mu2 = [0.7, 0.7];
+ sigma = 0.1;
+ X1 = mu1 + sigma * randn (n / 2, 2);
+ X2 = mu2 + sigma * randn (n / 2, 2);
+ X = [X1; X2];
+
+ obj = KDTreeSearcher(X);
+
+ Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
+
+ K = 5;
+ [idx, D] = knnsearch (obj, Y, "K", K);
+
+ disp ('For the first query point:');
+ disp (['Query point: ', num2str(Y(1,:))]);
+ disp ('Indices of nearest neighbors:');
+ disp (idx(1,:));
+ disp ('Distances:');
+ disp (D(1,:));
+
+ figure;
+ scatter (X(:,1), X(:,2), 36, 'b', 'filled'); # Training points
+ hold on;
+ scatter (Y(:,1), Y(:,2), 36, 'r', 'filled'); # Query points
+ for i = 1:size (Y, 1)
+     query = Y(i,:);
+     neighbors = X(idx(i,:), :);
+     for j = 1:K
+         plot ([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
+     endfor
+ endfor
+ hold off;
+ title ('K Nearest Neighbors with KDTreeSearcher');
+ xlabel ('X1');
+ ylabel ('X2');
+
+ r = 0.15;
+ [idx, D] = rangesearch (obj, Y, r);
+
+ disp ('For the first query point in rangesearch:');
+ disp (['Query point: ', num2str(Y(1,:))]);
+ disp ('Indices of points within radius:');
+ disp (idx{1});
+ disp ('Distances:');
+ disp (D{1});
+
+ figure;
+ scatter (X(:,1), X(:,2), 36, 'b', 'filled');
+ hold on;
+ scatter (Y(:,1), Y(:,2), 36, 'r', 'filled');
+ theta = linspace (0, 2 * pi, 100);
+ for i = 1:size (Y, 1)
+     center = Y(i,:);
+     x_circle = center(1) + r * cos (theta);
+     y_circle = center(2) + r * sin (theta);
+     plot (x_circle, y_circle, 'g-');
+     ## Highlight points within radius
+     if (! isempty (idx{i}))
+       in_radius = X(idx{i}, :);
+       scatter (in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
+     endif
+ endfor
+ hold off
+ title ('Points within Radius with KDTreeSearcher');
+ xlabel ('X1');
+ ylabel ('X2');
+
+Demonstrating KDTreeSearcher
+For the first query point:
+Query point: 0.3         0.3
+Indices of nearest neighbors:
+   49   19   14   46   34
+Distances:
+   0.029932   0.040026   0.046845   0.051107   0.054789
+For the first query point in rangesearch:
+Query point: 0.3         0.3
+Indices of points within radius:
+   49
+   19
+   14
+   46
+   34
+   23
+   12
+   41
+    1
+    3
+   42
+   48
+   24
+    2
+   11
+   37
+   10
+   27
+   32
+   20
+   44
+   40
+   39
+   21
+    7
+   31
+   45
+   30
+    4
+   16
+   47
+    9
+   29
+    8
+Distances:
+   0.029932
+   0.040026
+   0.046845
+   0.051107
+   0.054789
+   0.063517
+   0.067855
+   0.071365
+   0.073769
+   0.075991
+   0.082686
+   0.084066
+   0.090008
+   0.095171
+   0.096337
+   0.096836
+   0.097593
+   0.098255
+   0.098948
+   0.101780
+   0.108652
+   0.108983
+   0.114272
+   0.116760
+   0.120198
+   0.121721
+   0.122560
+   0.127342
+   0.128062
+   0.128687
+   0.130208
+   0.136007
+   0.142870
+   0.143009
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/KDTreeSearcher_402.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+                  <div class="text-center">
+                    <img src="assets/KDTreeSearcher_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
