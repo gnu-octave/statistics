@@ -433,24 +433,24 @@ endfunction
 %! Y = [1, 2, 2, 3; 2, 3, 3, 4];
 %!test
 %! [idx, D] = rangesearch (x, y, 4);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert (idx, {[1; 4; 2]; [1; 4]});
+%! assert (D, {[1.7321; 3.3166; 3.4641]; [2; 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, "NSMethod", "exhaustive");
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree");
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert (idx, {[1; 4; 2]; [1; 4]});
+%! assert (D, {[1.7321; 3.3166; 3.4641]; [2; 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, "SortIndices", true);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert (idx, {[1; 4; 2]; [1; 4]});
+%! assert (D, {[1.7321; 3.3166; 3.4641]; [2; 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, "SortIndices", false);
-%! assert (idx, {[1, 2, 4]; [1, 4]});
-%! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
+%! assert (idx, {[1; 2; 4]; [1; 4]});
+%! assert (D, {[1.7321; 3.4641; 3.3166]; [2; 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, "NSMethod", "exhaustive", ...
 %!                         "SortIndices", false);
@@ -479,12 +479,12 @@ endfunction
 %! assert (D, {[0.6024, 1.2047, 1.0079]; [0.6963, 1.2047]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4);
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert (idx, {[1; 2]; [1; 2; 3]});
+%! assert (D, {[1.4142; 3.1623]; [1.4142; 1.4142; 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 2);
-%! assert (idx, {[1]; [1, 2]});
-%! assert (D, {[1.4142]; [1.4142, 1.4142]}, 1e-4);
+%! assert (idx, {[1]; [1; 2]});
+%! assert (D, {[1.4142]; [1.4142; 1.4142]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
 %! [idx, D] = rangesearch (X, Y, 4, "Distance", eucldist);
@@ -492,8 +492,8 @@ endfunction
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4, "SortIndices", false);
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert (idx, {[1; 2]; [1; 2; 3]});
+%! assert (D, {[1.4142; 3.1623]; [1.4142; 1.4142; 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4, "Distance", "seuclidean", ...
 %!                         "NSMethod", "exhaustive");
