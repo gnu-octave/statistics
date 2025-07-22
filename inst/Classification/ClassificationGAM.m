@@ -769,7 +769,7 @@ classdef ClassificationGAM
 
           case 'cvpartition'
             CVPartition = varargin{2};
-            if (!(isa (CVPartition, 'cvpartition')))
+            if (! (isa (CVPartition, 'cvpartition')))
               error (strcat ("ClassificationGAM.crossval: 'CVPartition'",...
                              " must be a 'cvpartition' object."));
             endif

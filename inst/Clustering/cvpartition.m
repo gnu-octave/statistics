@@ -432,7 +432,7 @@ classdef cvpartition
         ## "Leaveout"
         elseif (strcmpi (type, 'leaveout'))
           this.NumObservations = X;
-          this.NumTestSets = 1;
+          this.NumTestSets = X;
           this.TrainSize = (X - 1) * ones (1, X);
           this.TestSize = ones (1, X);
           this.Type = 'leaveout';
