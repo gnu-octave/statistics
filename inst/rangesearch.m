@@ -316,8 +316,8 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
                     " distparam must be empty for non-minkowski metrics."));
     endif
   endif
-  indices = zeros(1, 0);
-  distances = zeros(1, 0);
+  indices = [];
+  distances = [];
   search (node, 0);
 
   function search (node, depth)
@@ -334,11 +334,11 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
       endif
       if (is_range)
         mask = dists <= r;
-        indices = horzcat (indices, leaf_indices(mask));
-        distances = horzcat (distances, dists(mask)');
+        indices = [indices; leaf_indices(mask)'];
+        distances = [distances; dists(mask)];
       else
-        indices = horzcat (indices, leaf_indices);
-        distances = horzcat (distances, dists');
+        indices = [indices; leaf_indices'];
+        distances = [distances; dists];
         if (length (distances) > k)
           [distances, sort_idx] = sort (distances);
           indices = indices(sort_idx);
