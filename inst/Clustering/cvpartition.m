@@ -39,6 +39,7 @@ classdef cvpartition
     ## @end deftp
     NumObservations = [];     # Number of observations
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} NumTestSets
     ##
     ## A positive integer scalar specifying the number of folds for partition
@@ -49,6 +50,7 @@ classdef cvpartition
     ## @end deftp
     NumTestSets     = [];     # Number of test sets
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} TrainSize
     ##
     ## A positive integer scalar specifying the size of the train set for
@@ -60,6 +62,7 @@ classdef cvpartition
     ## @end deftp
     TrainSize       = [];     # Size of each train set
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} TestSize
     ##
     ## A positive integer scalar specifying the size of the test set for
@@ -71,6 +74,7 @@ classdef cvpartition
     ## @end deftp
     TestSize        = [];     # Size of each test set
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} Type
     ##
     ## A character vector specifying the type of the @qcode{cvpartition} object.
@@ -80,6 +84,7 @@ classdef cvpartition
     ## @end deftp
     Type            = '';     # Type of validation partition
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsCustom
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object
@@ -89,6 +94,7 @@ classdef cvpartition
     ## @end deftp
     IsCustom        = [];     # Indicator of custom partition
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsGrouped
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
@@ -98,6 +104,7 @@ classdef cvpartition
     ## @end deftp
     IsGrouped       = [];     # Indicator of grouped partition
 
+    ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsStratified
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
