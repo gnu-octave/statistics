@@ -19,10 +19,10 @@ As of 10.6.2022, the development of the **statistics** package was moved from [S
 - Deprecate old functions once their fully Matlab compatible equivalents are implemented.
 
 ## 2. Documentation
-All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of a particular method and new classdefs or the relative path for old style classes. For example:
+All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of methods of classdefs objects. For example:
 ```
 help ClassificationKNN.predict
-help @cvpartition/test
+help BetaDistribution.cdf
 ```
 You can also find the entire documentation of the **statistics** package along with its function index at [https://gnu-octave.github.io/statistics/](https://gnu-octave.github.io/statistics/). Alternatively, you can build the online documentation locally using the [`pkg-octave-doc`](https://github.com/gnu-octave/pkg-octave-doc) package. Assuming both packages are installed and loaded, browse to any directory of your choice with *write* permission and run:
 ```
