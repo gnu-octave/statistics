@@ -84,11 +84,11 @@
         <div class="card-header card-header-mod">
           <div class="row d-flex flex-wrap align-items-center">
             <div class="col-sm-3 col-md-2 mb-2 mb-sm-0">
-              <img src="assets/statistics.png" class="d-block m-auto" alt="statistics">
+              <img src="assets/statistics.png" class="img-fluid" alt="statistics" style="max-height: 180px;">
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.7.4&nbsp;2025-4-13</b>
+              <b>1.7.5&nbsp;2025-7-22</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -101,7 +101,6 @@
              <option value="#Clustering">Clustering</option>
              <option value="#Classification Classes">Classification Classes</option>
              <option value="#Clustering Classes">Clustering Classes</option>
-             <option value="#CVpartition">CVpartition</option>
              <option value="#Regression Classes">Regression Classes</option>
              <option value="#Data Manipulation">Data Manipulation</option>
              <option value="#Descriptive Statistics">Descriptive Statistics</option>
@@ -165,6 +164,14 @@
                    </code></b>
                  </td>
                  <td>Compute the cophenetic correlation coefficient.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="createns.html">createns</a>
+                   </code></b>
+                 </td>
+                 <td>Create a nearest neighbor searcher object.</td>
                </tr>
                <tr>
                  <td>
@@ -383,8 +390,8 @@ Additive Model, ClassificationGAM.</td>
                    <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
                    </code></b>
                  </td>
-                 <td>A CompactClassificationNeuralNetwork object is a compact version of a
-discriminant analysis model, CompactClassificationNeuralNetwork.</td>
+                 <td>A CompactClassificationNeuralNetwork object is a compact version of the
+Neural Network classification model, ClassificationNeuralNetwork.</td>
                </tr>
                <tr>
                  <td>
@@ -393,7 +400,7 @@ discriminant analysis model, CompactClassificationNeuralNetwork.</td>
                    </code></b>
                  </td>
                  <td>A CompactClassificationSVM object is a compact version of a support
-vectors machine model, CompactClassificationSVM.</td>
+vectors machine model, ClassificationSVM.</td>
                </tr>
                <tr>
                  <td>
@@ -429,10 +436,26 @@ vectors machine model, CompactClassificationSVM.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="cvpartition.html">cvpartition</a>
+                   </code></b>
+                 </td>
+                 <td>Partition data for cross-validation</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>
                    </code></b>
                  </td>
                  <td>A Davies-Bouldin object to evaluate clustering solutions.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="ExhaustiveSearcher.html">ExhaustiveSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>Exhaustive nearest neighbor searcher class.</td>
                </tr>
                <tr>
                  <td>
@@ -445,75 +468,27 @@ vectors machine model, CompactClassificationSVM.</td>
                <tr>
                  <td>
                    <b><code>
+                   <a href="hnswSearcher.html">hnswSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>Hierarchical Navigable Small World (HNSW) nearest neighbor searcher
+class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="KDTreeSearcher.html">KDTreeSearcher</a>
+                   </code></b>
+                 </td>
+                 <td>KD-tree nearest neighbor searcher class.</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
                    <a href="SilhouetteEvaluation.html">SilhouetteEvaluation</a>
                    </code></b>
                  </td>
                  <td>A silhouette object to evaluate clustering solutions.</td>
-               </tr>
-             </tbody>
-           </table>
-           <h3 class="category">
-             <a name="CVpartition">CVpartition</a>
-           </h3>
-           <table class="table table-striped">
-             <tbody>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_cvpartition.html">@cvpartition/cvpartition</a>
-                   </code></b>
-                 </td>
-                 <td>Create a partition object for cross validation.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_display.html">@cvpartition/display</a>
-                   </code></b>
-                 </td>
-                 <td>Display a 'cvpartition' object, C.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_get.html">@cvpartition/get</a>
-                   </code></b>
-                 </td>
-                 <td>Get a field, F, from a 'cvpartition' object, C.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_repartition.html">@cvpartition/repartition</a>
-                   </code></b>
-                 </td>
-                 <td>Return a new cvpartition object.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_set.html">@cvpartition/set</a>
-                   </code></b>
-                 </td>
-                 <td>Set FIELD, in a 'cvpartition' object, C.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_test.html">@cvpartition/test</a>
-                   </code></b>
-                 </td>
-                 <td>Return logical vector for testing-subset indices from a 'cvpartition'
-object, C.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="@cvpartition_training.html">@cvpartition/training</a>
-                   </code></b>
-                 </td>
-                 <td>Return logical vector for training-subset indices from a 'cvpartition'
-object, C.</td>
                </tr>
              </tbody>
            </table>
@@ -528,7 +503,7 @@ object, C.</td>
                    <a href="RegressionGAM.html">RegressionGAM</a>
                    </code></b>
                  </td>
-                 <td>Create a RegressionGAM class object containing a Generalised Additive
+                 <td>Create a RegressionGAM class object containing a Generalized Additive
 Model (GAM) for regression.</td>
                </tr>
              </tbody>
@@ -570,7 +545,7 @@ Model (GAM) for regression.</td>
                  </td>
                  <td>Replace missing entries of array A either with values in V or as
 determined by other specified methods.  'missing' values are determined
-by the data type of A as identified by the function ismissing, curently
+by the data type of A as identified by the function ismissing, currently
 defined as:</td>
                </tr>
                <tr>
@@ -596,6 +571,14 @@ defined as:</td>
                    </code></b>
                  </td>
                  <td>Find outliers in data</td>
+               </tr>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="multiway.html">multiway</a>
+                   </code></b>
+                 </td>
+                 <td>Solve the multiway number partitioning problem.</td>
                </tr>
                <tr>
                  <td>
@@ -1351,7 +1334,8 @@ distribution.</td>
                    <a href="ricefit.html">ricefit</a>
                    </code></b>
                  </td>
-                 <td>Estimate parameters and confidence intervals for the Gamma distribution.</td>
+                 <td>Estimate parameters and confidence intervals for the Rician
+distribution.</td>
                </tr>
                <tr>
                  <td>
@@ -3249,7 +3233,7 @@ parameters</td>
                    <a href="svmpredict.html">svmpredict</a>
                    </code></b>
                  </td>
-                 <td>This function predicts new labels from a testing instance matrtix based
+                 <td>This function predicts new labels from a testing instance matrix based
 on an SVM MODEL created with 'svmtrain'.</td>
                </tr>
                <tr>
@@ -3259,7 +3243,7 @@ on an SVM MODEL created with 'svmtrain'.</td>
                    </code></b>
                  </td>
                  <td>This function trains an SVM MODEL based on known LABELS and their
-corresponding DATA which comprise an instance matrtix.</td>
+corresponding DATA which comprise an instance matrix.</td>
                </tr>
              </tbody>
            </table>
@@ -3332,7 +3316,7 @@ minimizing the sum-of-squared residuals.</td>
                    <a href="fitrgam.html">fitrgam</a>
                    </code></b>
                  </td>
-                 <td>Fit a Generalised Additive Model (GAM) for regression.</td>
+                 <td>Fit a Generalized Additive Model (GAM) for regression.</td>
                </tr>
              </tbody>
            </table>
@@ -3425,8 +3409,8 @@ variable).</td>
                    <a href="correlation_test.html">correlation_test</a>
                    </code></b>
                  </td>
-                 <td>Perform a correlation coefficient test whether two samples X and Y come
-from uncorrelated populations.</td>
+                 <td>Perform a correlation coefficient test to determine whether two samples
+X and Y come from uncorrelated populations.</td>
                </tr>
                <tr>
                  <td>
