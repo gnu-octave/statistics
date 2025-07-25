@@ -612,17 +612,17 @@ classdef BinomialDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BinomialDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {BinomialDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {BinomialDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {BinomialDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {BinomialDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {BinomialDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {BinomialDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {BinomialDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{binornd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
