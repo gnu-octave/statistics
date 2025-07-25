@@ -26,9 +26,9 @@ classdef BetaDistribution
   ##
   ## The beta distribution is a family of continuous probability distributions
   ## defined on the interval @math{[0, 1]} in terms of two positive parameters,
-  ## denoted by alpha (α) and beta (β), that appear as exponents of the variable
-  ## and its complement to 1, respectively, and control the shape of the
-  ## distribution.
+  ## denoted by alpha @qcode{(@var{a})} and beta @qcode{(@var{β})}, that appear
+  ## as exponents of the variable and its complement to 1, respectively, and
+  ## control the shape of the distribution.
   ##
   ## There are several ways to create a @code{BetaDistribution} object.
   ##
@@ -105,7 +105,7 @@ classdef BetaDistribution
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} ParameterNames
     ##
-    ## Number of parameters
+    ## Names of parameters
     ##
     ## A @math{2x1} cell array of character vectors with each element containing
     ## the name of a distribution parameter.  This property is read-only.
@@ -116,7 +116,7 @@ classdef BetaDistribution
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} ParameterDescription
     ##
-    ## Number of parameters
+    ## Description of parameters
     ##
     ## A @math{2x1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter.  This property is
