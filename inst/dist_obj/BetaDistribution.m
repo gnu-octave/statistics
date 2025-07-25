@@ -127,6 +127,8 @@ classdef BetaDistribution
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "beta";
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -220,9 +222,7 @@ classdef BetaDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
-    CensoringAllowed = false;
-    DistributionCode = "beta";
+  properties (GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
