@@ -54,32 +54,176 @@ classdef BinomialDistribution
   ## @end deftypefn
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} N
+    ##
+    ## Number of trials
+    ##
+    ## A positive integer value characterizing the number of trials in the
+    ## binomial distribution. You can access the @qcode{N} property using dot
+    ## name assignment.
+    ##
+    ## @end deftp
     N
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} p
+    ##
+    ## Probability of success
+    ##
+    ## A scalar value in the range @math{[0, 1]} characterizing the probability
+    ## of success in each trial of the binomial distribution. You can access
+    ## the @qcode{p} property using dot name assignment.
+    ##
+    ## @end deftp
     p
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object. This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "BinomialDistribution";
-    DistributionCode = "bino";
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution. This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter. This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"N", "p"};
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Number of trials", "Probability of success"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "bino";
     ParameterRange = [realmin, realmin; Inf, 1];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters. This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{N} and @qcode{p}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## parameter estimates. Diagonal elements contain the variance of each
+    ## estimated parameter and non-diagonal elements contain the covariance
+    ## between the parameter estimates. The covariance matrix is only
+    ## meaningful when the distribution was fitted to data. If the distribution
+    ## object was created with fixed parameters, or a parameter of a fitted
+    ## distribution is modified, then all elements of the variance-covariance
+    ## are zero. This property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## which are estimated. @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution. First element contains the lower boundary,
+    ## second element contains the upper boundary. This property is
+    ## read-only. You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not. This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {BinomialDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data} : a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens} : an empty array, since @qcode{BinomialDistribution}
+    ## does not allow censoring.
+    ## @item @qcode{frequency} : a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting. If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
