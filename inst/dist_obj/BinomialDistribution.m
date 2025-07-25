@@ -454,7 +454,7 @@ classdef BinomialDistribution
     ## probability distribution object, @var{pd}.
     ##
     ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
