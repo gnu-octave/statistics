@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,14 +24,11 @@ classdef BetaDistribution
   ## A @code{BetaDistribution} object consists of parameters, a model
   ## description, and sample data for a beta probability distribution.
   ##
-  ## The beta distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{a} @tab 1st Shape parameter @tab @math{α > 0}
-  ## @item @qcode{b} @tab 2nd Shape parameter @tab @math{β > 0}
-  ## @end multitable
+  ## The beta distribution is a family of continuous probability distributions
+  ## defined on the interval @math{[0, 1]} in terms of two positive parameters,
+  ## denoted by alpha (α) and beta (β), that appear as exponents of the variable
+  ## and its complement to 1, respectively, and control the shape of the
+  ## distribution.
   ##
   ## There are several ways to create a @code{BetaDistribution} object.
   ##
@@ -49,23 +46,6 @@ classdef BetaDistribution
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## A @code{BetaDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{BetaDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
-  ##
   ## Further information about the Beta distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Beta_distribution}
   ##
@@ -74,32 +54,176 @@ classdef BetaDistribution
   ## @end deftypefn
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} a
+    ##
+    ## First shape parameter
+    ##
+    ## A positive scalar value characterizing the shape of the beta
+    ## distribution.  You can access the @qcode{a} property using dot name
+    ## assignment.
+    ##
+    ## @end deftp
     a
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} b
+    ##
+    ## Second shape parameter
+    ##
+    ## A positive scalar value characterizing the shape of the beta
+    ## distribution.  You can access the @qcode{a} property using dot name
+    ## assignment.
+    ##
+    ## @end deftp
     b
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "BetaDistribution";
-    DistributionCode = "beta";
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} ParameterNames
+    ##
+    ## Number of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"a", "b"};
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} ParameterDescription
+    ##
+    ## Number of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"1st Shape", "2nd Shape"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only.  You can change the distribution
+    ## parameters by assigning new values to the @qcode{a} and @qcode{b}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## parameter estimates.  Diagonal elements contain the variance of each
+    ## estimated parameter and non-diagonal elements contain the covariance
+    ## between the parameter estimates.  The covariance matrix is only
+    ## meaningful when the distribution was fitted to data.  If the distribution
+    ## object was created with fixed parameters, or a parameter of a fitted
+    ## distribution is modified, then all elements of the variance-covariance
+    ## are zero.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## which are estimated.  @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is
+    ## read-only.  You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {BetaDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data} : a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens} : an empty array, since @qcode{BetaDistribution} does
+    ## not allow censoring.
+    ## @item @qcode{frequency} : a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting.  If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "beta";
+    ParameterCI
   endproperties
 
   methods (Hidden)
@@ -645,62 +769,6 @@ function checkparams (a, b)
   endif
 endfunction
 
-%!demo
-%! ## Generate a data set of 5000 random samples from a Beta distribution with
-%! ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
-%! ## a PDF of the fitted distribution superimposed on a histogram of the data
-%!
-%! pd = makedist ("Beta", "a", 2, "b", 4)
-%! randg ("seed", 21);
-%! data = random (pd, 5000, 1);
-%! pd = fitdist (data, "Beta")
-%! plot (pd)
-%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-%!                 pd.a, pd.b))
-
-%!demo
-%! ## Plot the PDF of a Beta distribution, with parameters a = 2 and b = 4,
-%! ## truncated at [0.1, 0.8] intervals.  Generate 10000 random samples from
-%! ## this truncated distribution and superimpose a histogram with 100 bins
-%! ## scaled accordingly
-%!
-%! pd = makedist ("Beta", "a", 2, "b", 4)
-%! t = truncate (pd, 0.1, 0.8)
-%! randg ("seed", 21);
-%! data = random (t, 10000, 1);
-%! plot (t)
-%! title ("Beta distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
-%! hold on
-%! hist (data, 100, 140)
-%! hold off
-
-%!demo
-%! ## Generate a data set of 100 random samples from a Beta distribution with
-%! ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
-%! ## its CDF superimposed over an empirical CDF of the data
-%!
-%! pd = makedist ("Beta", "a", 2, "b", 4)
-%! randg ("seed", 21);
-%! data = random (pd, 100, 1);
-%! pd = fitdist (data, "Beta")
-%! plot (pd, "plottype", "cdf")
-%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-%!                 pd.a, pd.b))
-%! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
-
-%!demo
-%! ## Generate a data set of 200 random samples from a Beta distribution with
-%! ## parameters a = 2 and b = 4.  Display a probability plot for the Beta
-%! ## distribution fit to the data.
-%!
-%! pd = makedist ("Beta", "a", 2, "b", 4)
-%! randg ("seed", 21);
-%! data = random (pd, 200, 1);
-%! pd = fitdist (data, "Beta")
-%! plot (pd, "plottype", "probability")
-%! title (sprintf ("Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-%!                 pd.a, pd.b))
-%! legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
 
 ## Test output
 %!shared pd, t
