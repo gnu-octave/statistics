@@ -590,9 +590,9 @@ classdef BinomialDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the negative binomial distribution, @qcode{@var{pnum} = 1} selects
-    ## the parameter @qcode{N} and @qcode{@var{pnum} = 2} selects the parameter
-    ## @var{p}.
+    ## For the binomial distribution, @qcode{@var{pnum} = 1} selects the
+    ## parameter @qcode{N} and @qcode{@var{pnum} = 2} selects the parameter
+    ## @qcode{p}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
