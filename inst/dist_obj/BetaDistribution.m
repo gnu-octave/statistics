@@ -26,7 +26,7 @@ classdef BetaDistribution
   ##
   ## The beta distribution is a family of continuous probability distributions
   ## defined on the interval @math{[0, 1]} in terms of two positive parameters,
-  ## denoted by alpha @qcode{(@var{a})} and beta @qcode{(@var{β})}, that appear
+  ## denoted by alpha @qcode{(@var{a})} and beta @qcode{(@var{b})}, that appear
   ## as exponents of the variable and its complement to 1, respectively, and
   ## control the shape of the distribution.
   ##
