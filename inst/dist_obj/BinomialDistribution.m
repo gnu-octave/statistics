@@ -38,29 +38,12 @@ classdef BinomialDistribution
   ## @item Use the constructor @qcode{BinomialDistribution (@var{N}, @var{p})}
   ## to create a binomial distribution with specified parameter values.
   ## @item Use the static method @qcode{BinomialDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data @var{x}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
-  ##
-  ## A @code{BinomialDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{BinomialDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
   ##
   ## Further information about the binomial distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
