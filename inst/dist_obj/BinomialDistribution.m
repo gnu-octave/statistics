@@ -25,9 +25,9 @@ classdef BinomialDistribution
   ## A @code{BinomialDistribution} object consists of parameters, a model
   ## description, and sample data for a binomial probability distribution.
   ##
-  ## The binomial distribution is a discrete probability distribution that models
-  ## the number of successes in a sequence of @math{n} independent trials, each
-  ## with a probability of success @math{p}.
+  ## The binomial distribution is a discrete probability distribution that
+  ## models the number of successes in a sequence of @math{n} independent
+  ## trials, eachwith a probability of success @math{p}.
   ##
   ## There are several ways to create a @code{BinomialDistribution} object.
   ##
@@ -38,7 +38,8 @@ classdef BinomialDistribution
   ## @item Use the constructor @qcode{BinomialDistribution (@var{N}, @var{p})}
   ## to create a binomial distribution with specified parameter values.
   ## @item Use the static method @qcode{BinomialDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data @var{x}.
+  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data
+  ## @var{x}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
