@@ -428,7 +428,7 @@ classdef BinomialDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative loglikelihood
     ## of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
