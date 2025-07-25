@@ -795,86 +795,20 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
               aria-expanded="false" aria-controls="collapseProperty1">
-              <h4 class="d-inline-block mr-2">
-                <b><code>IsCustom</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumObservations</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A positive integer scalar specifying the number of observations in the
+ dataset (including any missing data, where applicable).  This property
+ is read-only.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
-            <div class="border-bottom py-2">
-
-
-<p> A logical scalar specifying whether the <code>cvpartition</code> object
- was created using custom partition partitioning (<code>true</code>) or
- not (<code>false</code>).  This property is read-only.
-</p>
-<div class="ms-5">
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
-              <h4 class="d-inline-block mr-2">
-                <b><code>IsGrouped</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
-            <div class="border-bottom py-2">
-
-
-<p> A logical scalar specifying whether the <code>cvpartition</code> object was
- created using grouping variables (<code>true</code>) or not (<code>false</code>).
- This property is read-only.
-</p>
-<div class="ms-5">
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
-              <h4 class="d-inline-block mr-2">
-                <b><code>IsStratified</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
-            <div class="border-bottom py-2">
-
-
-<p> A logical scalar specifying whether the <code>cvpartition</code> object was
- created with a <code>'stratifyOption'</code> value of <code>true</code>.
- This property is read-only.
-</p>
-<div class="ms-5">
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
-              <h4 class="d-inline-block mr-2">
-                <b><code>NumObservations</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
 
@@ -886,6 +820,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -893,13 +828,23 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
-              aria-expanded="false" aria-controls="collapseProperty5">
-              <h4 class="d-inline-block mr-2">
-                <b><code>NumTestSets</code></b>
-              </h4>
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
+              aria-expanded="false" aria-controls="collapseProperty2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumTestSets</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A positive integer scalar specifying the number of folds for partition
+ types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
+ <code>'holdout'</code> and <code>'resubstitution'</code>, then <code>NumTestSets</code>
+ is 1.  This property is read-only.
+                </div>
+              </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty5">
+          <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
 
@@ -912,6 +857,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -919,40 +865,24 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
-              aria-expanded="false" aria-controls="collapseProperty6">
-              <h4 class="d-inline-block mr-2">
-                <b><code>TestSize</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty6">
-            <div class="border-bottom py-2">
-
-
-<p> A positive integer scalar specifying the size of the test set for
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
+              aria-expanded="false" aria-controls="collapseProperty3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TrainSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A positive integer scalar specifying the size of the train set for
  partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
- vector of positive integers specifying the size of each testing set for
+ vector of positive integers specifying the size of each training set for
  partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
  is read-only.
-</p>
-<div class="ms-5">
-
-</div>
-
-            </div>
+                </div>
+              </div>
           </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
-              aria-expanded="false" aria-controls="collapseProperty7">
-              <h4 class="d-inline-block mr-2">
-                <b><code>TrainSize</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty7">
+          <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
 
@@ -966,6 +896,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -973,13 +904,61 @@
         <div class="container-xl my-1">
           <div class="row">
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
-              aria-expanded="false" aria-controls="collapseProperty8">
-              <h4 class="d-inline-block mr-2">
-                <b><code>Type</code></b>
-              </h4>
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
+              aria-expanded="false" aria-controls="collapseProperty4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TestSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A positive integer scalar specifying the size of the test set for
+ partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
+ vector of positive integers specifying the size of each testing set for
+ partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
+ is read-only.
+                </div>
+              </div>
           </div>
-          <div class="collapse multi-collapse" id="collapseProperty8">
+          <div class="collapse multi-collapse" id="collapseProperty4">
+            <div class="border-bottom py-2">
+
+
+<p> A positive integer scalar specifying the size of the test set for
+ partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
+ vector of positive integers specifying the size of each testing set for
+ partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
+ is read-only.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
+              aria-expanded="false" aria-controls="collapseProperty5">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Type</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A character vector specifying the type of the <code>cvpartition</code> object.
+ It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
+ <code>resubstitution</code>.  This property is read-only.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
 
@@ -990,6 +969,112 @@
 <div class="ms-5">
 
 </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
+              aria-expanded="false" aria-controls="collapseProperty6">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IsCustom</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A logical scalar specifying whether the <code>cvpartition</code> object
+ was created using custom partition partitioning (<code>true</code>) or
+ not (<code>false</code>).  This property is read-only.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty6">
+            <div class="border-bottom py-2">
+
+
+<p> A logical scalar specifying whether the <code>cvpartition</code> object
+ was created using custom partition partitioning (<code>true</code>) or
+ not (<code>false</code>).  This property is read-only.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
+              aria-expanded="false" aria-controls="collapseProperty7">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IsGrouped</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A logical scalar specifying whether the <code>cvpartition</code> object was
+ created using grouping variables (<code>true</code>) or not (<code>false</code>).
+ This property is read-only.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty7">
+            <div class="border-bottom py-2">
+
+
+<p> A logical scalar specifying whether the <code>cvpartition</code> object was
+ created using grouping variables (<code>true</code>) or not (<code>false</code>).
+ This property is read-only.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
+              aria-expanded="false" aria-controls="collapseProperty8">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IsStratified</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  A logical scalar specifying whether the <code>cvpartition</code> object was
+ created with a <code>'stratifyOption'</code> value of <code>true</code>.
+ This property is read-only.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty8">
+            <div class="border-bottom py-2">
+
+
+<p> A logical scalar specifying whether the <code>cvpartition</code> object was
+ created with a <code>'stratifyOption'</code> value of <code>true</code>.
+ This property is read-only.
+</p>
+<div class="ms-5">
+
+</div>
+
 
             </div>
           </div>
@@ -1150,6 +1235,7 @@ test,
 training
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1210,6 +1296,7 @@ test,
 training
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1252,6 +1339,7 @@ test,
 training
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1309,6 +1397,7 @@ summary,
 training
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1366,6 +1455,7 @@ summary,
 test
 </p>
 </div>
+
             </div>
           </div>
         </div>

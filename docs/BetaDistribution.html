@@ -779,14 +779,12 @@
 <p> A <code>BetaDistribution</code> object consists of parameters, a model
  description, and sample data for a beta probability distribution.
 </p>
-<p> The beta distribution uses the following parameters.
+<p> The beta distribution is a family of continuous probability distributions
+ defined on the interval <math>[0, 1]</math> in terms of two positive parameters,
+ denoted by alpha (α) and beta (β), that appear as exponents of the variable
+ and its complement to 1, respectively, and control the shape of the
+ distribution.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>a</code></td><td width="48%">1st Shape parameter</td><td width="27%"><math>α &gt; 0</math></td></tr>
-<tr><td width="25%"><code>b</code></td><td width="48%">2nd Shape parameter</td><td width="27%"><math>β &gt; 0</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>BetaDistribution</code> object.
 </p>
  <ul>
@@ -802,20 +800,6 @@
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
  functions to create probability distribution objects, instead of the
  constructor and the aforementioned static method.
-</p>
-<p> A <code>BetaDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>BetaDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
 </p>
 <p> Further information about the Beta distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
@@ -843,12 +827,123 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
               aria-expanded="false" aria-controls="collapseProperty1">
-              <h4 class="d-inline-block mr-2">
-                <b><code>CensoringAllowed</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>a</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  First shape parameter
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
+
+
+<p> First shape parameter
+</p>
+<div class="ms-5">
+<p> A positive scalar value characterizing the shape of the beta
+ distribution.  You can access the <code>a</code> property using dot name
+ assignment.
+</p>
+
+</div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a beta distribution with default parameters
+ pd = makedist ("beta")
+
+ ## Query parameter 'alpha'
+ pd.a
+
+ ## Set parameter 'alpha'
+ pd.a = 2
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1
+        b = 1
+
+ans = 1
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 1
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a beta distribution object by calling its constructor
+ pd = BetaDistribution (2, 3)
+
+ ## Query parameter 'alpha'
+ pd.a
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 3
+
+ans = 2
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -859,12 +954,123 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
               aria-expanded="false" aria-controls="collapseProperty2">
-              <h4 class="d-inline-block mr-2">
-                <b><code>DistributionCode</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>b</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Second shape parameter
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
+
+
+<p> Second shape parameter
+</p>
+<div class="ms-5">
+<p> A positive scalar value characterizing the shape of the beta
+ distribution.  You can access the <code>a</code> property using dot name
+ assignment.
+</p>
+
+</div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a beta distribution with default parameters
+ pd = makedist ("beta")
+
+ ## Query parameter 'beta'
+ pd.b
+
+ ## Set parameter 'beta'
+ pd.b = 2
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1
+        b = 1
+
+ans = 1
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1
+        b = 2
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a beta distribution object by calling its constructor
+ pd = BetaDistribution (2, 3)
+
+ ## Query parameter 'beta'
+ pd.b
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 3
+
+ans = 3
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -875,12 +1081,30 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
               aria-expanded="false" aria-controls="collapseProperty3">
-              <h4 class="d-inline-block mr-2">
-                <b><code>DistributionName</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DistributionName</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Probability distribution name
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
+
+
+<p> Probability distribution name
+</p>
+<div class="ms-5">
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -891,12 +1115,30 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
               aria-expanded="false" aria-controls="collapseProperty4">
-              <h4 class="d-inline-block mr-2">
-                <b><code>InputData</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>NumParameters</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Number of parameters
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
+
+
+<p> Number of parameters
+</p>
+<div class="ms-5">
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -907,12 +1149,30 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
               aria-expanded="false" aria-controls="collapseProperty5">
-              <h4 class="d-inline-block mr-2">
-                <b><code>IsTruncated</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterNames</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Number of parameters
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
+
+
+<p> Number of parameters
+</p>
+<div class="ms-5">
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -923,12 +1183,31 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty6"
               aria-expanded="false" aria-controls="collapseProperty6">
-              <h4 class="d-inline-block mr-2">
-                <b><code>NumParameters</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterDescription</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Number of parameters
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
+
+
+<p> Number of parameters
+</p>
+<div class="ms-5">
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -939,12 +1218,32 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty7"
               aria-expanded="false" aria-controls="collapseProperty7">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterCI</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterValues</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Distribution parameter values
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
+
+
+<p> Distribution parameter values
+</p>
+<div class="ms-5">
+<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only.  You can change the distribution
+ parameters by assigning new values to the <code>a</code> and <code>b</code>
+ properties.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -955,12 +1254,98 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty8"
               aria-expanded="false" aria-controls="collapseProperty8">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterCovariance</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterCovariance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Covariance matrix of the parameter estimates
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
+
+
+<p> Covariance matrix of the parameter estimates
+</p>
+<div class="ms-5">
+<p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
+ parameter estimates.  Diagonal elements contain the variance of each
+ estimated parameter and non-diagonal elements contain the covariance
+ between the parameter estimates.  The covariance matrix is only
+ meaningful when the distribution was fitted to data.  If the distribution
+ object was created with fixed parameters, or a parameter of a fitted
+ distribution is modified, then all elements of the variance-covariance
+ are zero.  This property is read-only.
+</p>
+
+</div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 5000 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+ ## a PDF of the fitted distribution superimposed on a histogram of the data
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 5000, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd)
+ title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+ pd.ParameterCovariance
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.97369   [1.90215, 2.04792]
+        b = 3.91487   [3.76164, 4.07435]
+
+ans =
+
+   1.3822e-03   2.4731e-03
+   2.4731e-03   6.3606e-03
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.ParameterCovariance_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -971,12 +1356,32 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
               aria-expanded="false" aria-controls="collapseProperty9">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterDescription</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ParameterIsFixed</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Flag for fixed parameters
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
+
+
+<p> Flag for fixed parameters
+</p>
+<div class="ms-5">
+<p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
+ which are estimated.  <code>true</code> values correspond to fixed parameters,
+ <code>false</code> values correspond to parameter estimates.  This property is
+ read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -987,12 +1392,33 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
               aria-expanded="false" aria-controls="collapseProperty10">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterIsFixed</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Truncation</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Truncation interval
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
+
+
+<p> Truncation interval
+</p>
+<div class="ms-5">
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is
+ read-only.  You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -1003,12 +1429,30 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
               aria-expanded="false" aria-controls="collapseProperty11">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterLogCI</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>IsTruncated</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Flag for truncated probability distribution
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
+
+
+<p> Flag for truncated probability distribution
+</p>
+<div class="ms-5">
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+</div>
+
 
             </div>
           </div>
@@ -1019,92 +1463,40 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
               aria-expanded="false" aria-controls="collapseProperty12">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterNames</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>InputData</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Data used for fitting a probability distribution
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterRange</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
-            <div class="border-bottom py-2">
+<p> Data used for fitting a probability distribution
+</p>
+<div class="ms-5">
+<p> A scalar structure containing the following fields:
+ </p><ul>
+<li> <code>data</code> : a numeric vector containing the data used for
+ distribution fitting.
+ </li><li> <code>cens</code> : an empty array, since <code>BetaDistribution</code> does
+ not allow censoring.
+ </li><li> <code>frequency</code> : a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting.  If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
 
-            </div>
-          </div>
-        </div>
+</li></ul>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <h4 class="d-inline-block mr-2">
-                <b><code>ParameterValues</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
 
-            </div>
-          </div>
-        </div>
+</div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <h4 class="d-inline-block mr-2">
-                <b><code>Truncation</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <h4 class="d-inline-block mr-2">
-                <b><code>a</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
-              <h4 class="d-inline-block mr-2">
-                <b><code>b</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
-            <div class="border-bottom py-2">
 
             </div>
           </div>
@@ -1151,6 +1543,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1187,6 +1580,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1221,6 +1615,7 @@
 </p>
 
 </div>
+
 
             </div>
           </div>
@@ -1257,6 +1652,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1292,6 +1688,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1326,6 +1723,7 @@
 </p>
 
 </div>
+
 
             </div>
           </div>
@@ -1382,6 +1780,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1417,6 +1816,7 @@
 </p>
 
 </div>
+
 
             </div>
           </div>
@@ -1484,6 +1884,121 @@
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
+ ## its CDF superimposed over an empirical CDF of the data
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 100, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd, "plottype", "cdf")
+ title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.58844   [1.2184, 2.07086]
+        b =  3.3298   [2.43615, 4.55126]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 200 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 4.  Display a probability plot for the Beta
+ ## distribution fit to the data.
+
+ pd = makedist ("Beta", "a", 2, "b", 4)
+ randg ("seed", 21);
+ data = random (pd, 200, 1);
+ pd = fitdist (data, "Beta")
+ plot (pd, "plottype", "probability")
+ title (sprintf ("Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+                 pd.a, pd.b))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 4
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 1.68235   [1.42401, 1.98756]
+        b =  3.7591   [3.1139, 4.53798]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -1547,6 +2062,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1592,6 +2108,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -1626,6 +2143,7 @@
 </p>
 
 </div>
+
 
             </div>
           </div>
@@ -1667,45 +2185,6 @@
 
 </div>
 
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseMethod14"
-              aria-expanded="false" aria-controls="collapseMethod14">
-              <div class="row align-items-center">
-                <div class="col-3">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>var</code></b>
-                  </h4>
-                </div>
-                <div class="col-9">
-                  Compute the variance of a probability distribution.
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseMethod14">
-            <div class="border-bottom py-2">
-<dl>
-<dt><u>BetaDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
-</dl>
-
-<p> Compute the variance of a probability distribution.
-</p>
-<div class="ms-5">
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
- probability distribution object, <var>pd</var>.
-</p>
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
         <div class="container-xl my-4">
           <div class="card rounded">
             <div class="card-header card-header-mod">
@@ -1713,62 +2192,6 @@
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
                   Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a data set of 5000 random samples from a Beta distribution with
- ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
- ## a PDF of the fitted distribution superimposed on a histogram of the data
-
- pd = makedist ("Beta", "a", 2, "b", 4)
- randg ("seed", 21);
- data = random (pd, 5000, 1);
- pd = fitdist (data, "Beta")
- plot (pd)
- title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-                 pd.a, pd.b))
-
-pd =
-  BetaDistribution
-
-  beta distribution
-        a = 2
-        b = 4
-
-pd =
-  BetaDistribution
-
-  beta distribution
-        a = 1.97369   [1.90215, 2.04792]
-        b = 3.91487   [3.76164, 4.07435]
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/BetaDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
                   </h3>
                 </div>
               </div>
@@ -1813,7 +2236,7 @@ t =
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/BetaDistribution_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/BetaDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -1822,116 +2245,43 @@ t =
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
 
- ## Generate a data set of 100 random samples from a Beta distribution with
- ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
- ## its CDF superimposed over an empirical CDF of the data
-
- pd = makedist ("Beta", "a", 2, "b", 4)
- randg ("seed", 21);
- data = random (pd, 100, 1);
- pd = fitdist (data, "Beta")
- plot (pd, "plottype", "cdf")
- title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-                 pd.a, pd.b))
- legend ({"empirical CDF", "fitted CDF"}, "location", "east")
-
-pd =
-  BetaDistribution
-
-  beta distribution
-        a = 2
-        b = 4
-
-pd =
-  BetaDistribution
-
-  beta distribution
-        a = 1.58844   [1.2184, 2.07086]
-        b =  3.3298   [2.43615, 4.55126]
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/BetaDistribution_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseMethod14"
+              aria-expanded="false" aria-controls="collapseMethod14">
+              <div class="row align-items-center">
+                <div class="col-3">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>var</code></b>
+                  </h4>
+                </div>
+                <div class="col-9">
+                  Compute the variance of a probability distribution.
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="collapse multi-collapse" id="collapseMethod14">
+            <div class="border-bottom py-2">
+<dl>
+<dt><u>BetaDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
+</dl>
 
- ## Generate a data set of 200 random samples from a Beta distribution with
- ## parameters a = 2 and b = 4.  Display a probability plot for the Beta
- ## distribution fit to the data.
+<p> Compute the variance of a probability distribution.
+</p>
+<div class="ms-5">
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+ probability distribution object, <var>pd</var>.
+</p>
 
- pd = makedist ("Beta", "a", 2, "b", 4)
- randg ("seed", 21);
- data = random (pd, 200, 1);
- pd = fitdist (data, "Beta")
- plot (pd, "plottype", "probability")
- title (sprintf ("Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-                 pd.a, pd.b))
- legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+</div>
 
-pd =
-  BetaDistribution
 
-  beta distribution
-        a = 2
-        b = 4
-
-pd =
-  BetaDistribution
-
-  beta distribution
-        a = 1.68235   [1.42401, 1.98756]
-        b =  3.7591   [3.1139, 4.53798]
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/BetaDistribution_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
             </div>
           </div>
         </div>

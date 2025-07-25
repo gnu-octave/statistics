@@ -804,11 +804,56 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
               aria-expanded="false" aria-controls="collapseProperty1">
-              <h4 class="d-inline-block mr-2">
-                <b><code>DistParameter</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Distance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Distance metric used for searches, specified as a character vector (e.g.,
+ <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, <code>&quot;cityblock&quot;</code>). Default
+ is <code>&quot;euclidean&quot;</code>. Supported metrics align with those in
+ <code>pdist2</code>.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
+            <div class="border-bottom py-2">
+
+
+<p> Distance metric used for searches, specified as a character vector (e.g.,
+ <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, <code>&quot;cityblock&quot;</code>). Default
+ is <code>&quot;euclidean&quot;</code>. Supported metrics align with those in
+ <code>pdist2</code>.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
+              aria-expanded="false" aria-controls="collapseProperty2">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DistParameter</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Parameter for the distance metric, with type and value depending on
+ <code>Distance</code>:
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
 
@@ -829,31 +874,6 @@
 
 </div>
 
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
-              aria-expanded="false" aria-controls="collapseProperty2">
-              <h4 class="d-inline-block mr-2">
-                <b><code>Distance</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty2">
-            <div class="border-bottom py-2">
-
-
-<p> Distance metric used for searches, specified as a character vector (e.g.,
- <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, <code>&quot;cityblock&quot;</code>). Default
- is <code>&quot;euclidean&quot;</code>. Supported metrics align with those in
- <code>pdist2</code>.
-</p>
-<div class="ms-5">
-
-</div>
 
             </div>
           </div>
@@ -864,9 +884,17 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
               aria-expanded="false" aria-controls="collapseProperty3">
-              <h4 class="d-inline-block mr-2">
-                <b><code>MaxNumLinksPerNode</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>MaxNumLinksPerNode</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Maximum number of neighbors per node in the HNSW graph. Affects graph
+ connectivity and search accuracy. Default is 16.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
@@ -879,6 +907,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -888,9 +917,17 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
               aria-expanded="false" aria-controls="collapseProperty4">
-              <h4 class="d-inline-block mr-2">
-                <b><code>TrainSetSize</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>TrainSetSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Size of the dynamic candidate list during graph construction. Higher
+ values improve accuracy at the cost of construction time. Default is 200.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
@@ -903,6 +940,7 @@
 
 </div>
 
+
             </div>
           </div>
         </div>
@@ -912,9 +950,18 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty5"
               aria-expanded="false" aria-controls="collapseProperty5">
-              <h4 class="d-inline-block mr-2">
-                <b><code>X</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>X</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Training data, specified as an <math>N&times;P</math> numeric matrix where each row
+ is an observation and each column is a feature.  This property is private
+ and cannot be modified after object creation.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
@@ -927,6 +974,7 @@
 <div class="ms-5">
 
 </div>
+
 
             </div>
           </div>
@@ -1001,6 +1049,7 @@
   <a href="pdist2.html">pdist2</a>
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1065,6 +1114,7 @@
   <a href="pdist2.html">pdist2</a>
 </p>
 </div>
+
             </div>
           </div>
         </div>

@@ -807,20 +807,31 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty1"
               aria-expanded="false" aria-controls="collapseProperty1">
-              <h4 class="d-inline-block mr-2">
-                <b><code>BucketSize</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>X</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Training data, specified as an <math>N&times;P</math> numeric matrix where each row
+ is an observation and each column is a feature.  This property is private
+ and cannot be modified after object creation.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
 
-<p> The maximum number of data points in the leaf node of the KD-tree.
- Default is 50.
+<p> Training data, specified as an <math>N&times;P</math> numeric matrix where each row
+ is an observation and each column is a feature.  This property is private
+ and cannot be modified after object creation.
 </p>
 <div class="ms-5">
 
 </div>
+
 
             </div>
           </div>
@@ -831,11 +842,89 @@
             <button class="btn btn-light btn-sm w-100 text-start" type="button"
               data-bs-toggle="collapse" data-bs-target="#collapseProperty2"
               aria-expanded="false" aria-controls="collapseProperty2">
-              <h4 class="d-inline-block mr-2">
-                <b><code>DistParameter</code></b>
-              </h4>
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>BucketSize</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  The maximum number of data points in the leaf node of the KD-tree.
+ Default is 50.
+                </div>
+              </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
+            <div class="border-bottom py-2">
+
+
+<p> The maximum number of data points in the leaf node of the KD-tree.
+ Default is 50.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
+              aria-expanded="false" aria-controls="collapseProperty3">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>Distance</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Distance metric used for searches, specified as a character vector (e.g.,
+ <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>).  Default is
+ <code>&quot;euclidean&quot;</code>.  Supported metrics are <code>&quot;euclidean&quot;</code>,
+ <code>&quot;cityblock&quot;</code>, <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty3">
+            <div class="border-bottom py-2">
+
+
+<p> Distance metric used for searches, specified as a character vector (e.g.,
+ <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>).  Default is
+ <code>&quot;euclidean&quot;</code>.  Supported metrics are <code>&quot;euclidean&quot;</code>,
+ <code>&quot;cityblock&quot;</code>, <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.
+</p>
+<div class="ms-5">
+
+</div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
+              aria-expanded="false" aria-controls="collapseProperty4">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>DistParameter</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+                  Parameter for the distance metric, with type and value depending on
+ <code>Distance</code>:
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
 
@@ -853,56 +942,6 @@
 
 </div>
 
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty3"
-              aria-expanded="false" aria-controls="collapseProperty3">
-              <h4 class="d-inline-block mr-2">
-                <b><code>Distance</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty3">
-            <div class="border-bottom py-2">
-
-
-<p> Distance metric used for searches, specified as a character vector (e.g.,
- <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>).  Default is
- <code>&quot;euclidean&quot;</code>.  Supported metrics are <code>&quot;euclidean&quot;</code>,
- <code>&quot;cityblock&quot;</code>, <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.
-</p>
-<div class="ms-5">
-
-</div>
-
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty4"
-              aria-expanded="false" aria-controls="collapseProperty4">
-              <h4 class="d-inline-block mr-2">
-                <b><code>X</code></b>
-              </h4>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty4">
-            <div class="border-bottom py-2">
-
-
-<p> Training data, specified as an <math>N&times;P</math> numeric matrix where each row
- is an observation and each column is a feature.  This property is private
- and cannot be modified after object creation.
-</p>
-<div class="ms-5">
-
-</div>
 
             </div>
           </div>
@@ -970,6 +1009,7 @@
   <a href="createns.html">createns</a>
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1033,6 +1073,7 @@
   <a href="rangesearch.html">rangesearch</a>
 </p>
 </div>
+
             </div>
           </div>
         </div>
@@ -1092,6 +1133,7 @@
   <a href="knnsearch.html">knnsearch</a>
 </p>
 </div>
+
             </div>
           </div>
         </div>
