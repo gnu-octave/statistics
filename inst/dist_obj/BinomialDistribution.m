@@ -25,14 +25,9 @@ classdef BinomialDistribution
   ## A @code{BinomialDistribution} object consists of parameters, a model
   ## description, and sample data for a binomial probability distribution.
   ##
-  ## The binomial distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{N} @tab Number of trials @tab positive integer
-  ## @item @qcode{p} @tab Probability of success @tab @math{0 <= p <= 1}
-  ## @end multitable
+  ## The binomial distribution is a discrete probability distribution that models
+  ## the number of successes in a sequence of @math{n} independent trials, each
+  ## with a probability of success @math{p}.
   ##
   ## There are several ways to create a @code{BinomialDistribution} object.
   ##
