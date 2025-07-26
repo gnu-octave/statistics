@@ -1,0 +1,11 @@
+%!demo
+%! ## Create a binomial distribution with specific parameters using the
+%! ## constructor
+%! pd = BinomialDistribution (5, 0.5)
+%!
+%! ## Display the distribution parameters
+%! pd.N
+%! pd.p
+%!
+%! ## Use the constructor to directly create a binomial distribution with known
+%! ## number of trials (N) and success probability (p).
