@@ -140,3 +140,8 @@ endfunction
 %! T(:,:,2) = T2;
 %! t = crosstab (x1, x2, x3);
 %! assert (t, T);
+%!test
+%! x = [1, 2, NaN, 1];
+%! y = [1, 2, 3, NaN];
+%! t = crosstab (x, y);
+%! assert (t, [1, 0, 0; 0, 1, 0]);
