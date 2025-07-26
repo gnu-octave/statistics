@@ -2,6 +2,7 @@
 ## Copyright (C) 2018 John Donoghue
 ## Copyright (C) 2021 Stefano Guidoni
 ## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Yasin Achengli
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -45,9 +46,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
 
   ## main - begin
   v_length = [];                    # vector of lengths of input vectors
-  v_reshape = [];                   # vector of the dimensions of t
+  reshape_format = [];              # vector of the dimensions of t
   X = [];                           # matrix of the indexed input values
   labels = {};                      # cell array of labels
+  coordinates = {};                 # cell array of unique elements
 
   for i = 1:nargin
     vector = varargin{i};
@@ -73,57 +75,32 @@ function [t, chisq, p, labels] = crosstab (varargin)
     for h = 1:length (gnames)
       labels{h, i} = gnames{h};
     endfor
-    v_reshape(i) = length (unique (vector));
+    reshape_format(i) = length (unique (vector(!isnan (vector))));
+    coordinates(i) = unique (vector(!isnan (vector)));
   endfor
 
-  v = unique (X(:, nargin));
-  t = [];
+  t = zeros (reshape_format);
 
-  ## core logic, this employs a recursive function "crosstab_recursive"
-  ## given (x1, x2, x3, ... xn) as inputs
-  ## t(i,j,k,...) = sum (x1(:) == v1(i) & x2(:) == v2(j) & ...)
-  for i = 1:length (v)
-    t = [t, (crosstab_recursive (nargin - 1,...
-      (X(:, nargin) == v(i) | isnan (v(i)) * isnan (X(:, nargin)))))];
+  ## Main logic:
+  ## For each combination of x1, x2, ... xn, search in unique elements stored 
+  ## in coordinates for each dimension and increment the position value in t 
+  ## multidimensional matrix (always if there is no NaN element in the combination).
+  for idx = 1:size (X, 1)
+    if (!any (isnan (X(idx,:))))
+      location = zeros (1,size (X, 2));
+      for jdx = 1:size (X,2)
+        location(jdx) = find (cell2mat (coordinates(jdx)) == X(idx, jdx));
+      endfor
+      t(num2cell (location){:}) += 1;
+    endif
   endfor
 
-  t = reshape(t, v_reshape);        # build the nargin-dimensional matrix
-
-  ## additional statistics
   if (nargout > 1)
-    if (length (v_reshape) > 1)
+    if (length (reshape_format) > 1)
       [p, chisq] = chi2test (t);
     endif
   endif
-  ## main - end
-
-
-  ## function: crosstab_recursive
-  ## while there are input vectors, let's do iterations over them
-  function t_partial = crosstab_recursive (x_idx, t_parent)
-    y = X(:, x_idx);
-    w = unique (y);
-
-    t_partial = [];
-    if (x_idx == 1)
-      ## we have reached the last vector,
-      ## let the computation begin
-      for j = 1:length (w)
-        t_last = sum (t_parent & (y == w(j) | isnan (w(j)) * isnan (y)));
-        t_partial = [t_partial, t_last];
-      endfor
-    else
-      ## if there are more vectors,
-      ## just add data and pass it through to the next iteration
-      for j = 1:length (w)
-        t_next = crosstab_recursive (x_idx - 1, ...
-                 (t_parent & (y == w(j) | isnan (w(j)) * isnan (y))));
-        t_partial = [t_partial, t_next];
-      endfor
-    endif
-  endfunction
 endfunction
-
 
 ## Test input validation
 %!error crosstab ()
@@ -152,4 +129,14 @@ endfunction
 %! y = [1, 2, 3, 5, 1];
 %! t = crosstab (x, y);
 %! assert (t, [2, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1]);
-
+%!test
+%! x1 = [1, 3, 7, 7, 8];
+%! x2 = [4, 2, 1, 1, 1];
+%! x3 = [6, 2, 6, 2, NaN];
+%! T1 = [0, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 0];
+%! T2 = [0, 0, 1; 0, 0, 0; 1, 0, 0; 0, 0, 0];
+%! T = zeros (4, 3, 2);
+%! T(:,:,1) = T1;
+%! T(:,:,2) = T2;
+%! t = crosstab (x1, x2, x3);
+%! assert (t, T);
