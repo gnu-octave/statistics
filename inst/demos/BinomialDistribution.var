@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Binomial distribution
+%! pd = makedist ("Binomial", "N", 20, "p", 0.3)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## number of successes in the distribution.
