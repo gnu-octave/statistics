@@ -25,9 +25,9 @@
 %! data = random (pd, 200, 1);
 %! pd = fitdist (data, "Binomial", "ntrials", 10)
 %! plot (pd, "PlotType", "probability", "Discrete", true)
-%! title (sprintf ("Probability plot of fitted Binomial distribution with ...
-%!                  N = %d and p = %0.2f", pd.N, pd.p))
-%! legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+%! title (sprintf (["Probability plot of fitted Binomial distribution with " ...
+%!                  "N = %d and p = %0.2f"], pd.N, pd.p));
+%! legend ({"empirical CDF", "fitted CDF"}, "location", "southeast");
 %!
 %! ## This creates a probability plot to compare the fitted distribution to the
 %! ## data, useful for checking if the binomial model is appropriate.
