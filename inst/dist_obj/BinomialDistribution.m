@@ -415,7 +415,7 @@ classdef BinomialDistribution
         Fa_b = binocdf ([lx, ux], this.N, this.p);
         m = binoinv (sum (Fa_b) / 2, this.N, this.p);
       else
-        if (! __traditional__() & this.p == 0.5 & rem (this.N, 2) == 1)
+        if (! __traditional__() && this.p == 0.5 && rem (this.N, 2) == 1)
           m = this.mean ();
         else
           m = binoinv (0.5, this.N, this.p);
