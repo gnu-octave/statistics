@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the interquartile range for a Binomial distribution
+%! pd = makedist ("Binomial", "N", 20, "p", 0.3)
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution.

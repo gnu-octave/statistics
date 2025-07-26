@@ -1,0 +1,13 @@
+%!demo
+%! ## Generate random samples from a Binomial distribution
+%! pd = makedist ("Binomial", "N", 10, "p", 0.3)
+%! rand ("seed", 22);
+%! samples = random (pd, 100, 1);
+%! hist (samples, 0:10)
+%! title ("Histogram of 100 random samples from Binomial(N=10, p=0.3)")
+%! xlabel ("Number of successes")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a binomial distribution, useful for
+%! ## simulating experiments with a fixed number of trials and success
+%! ## probability.

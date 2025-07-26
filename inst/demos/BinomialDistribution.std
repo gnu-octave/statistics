@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Binomial distribution
+%! pd = makedist ("Binomial", "N", 20, "p", 0.3)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the
+%! ## variability in the number of successes.

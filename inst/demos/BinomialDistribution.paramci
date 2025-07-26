@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute confidence intervals for parameters of a fitted Binomial
+%! ## distribution
+%! pd = makedist ("Binomial", "N", 10, "p", 0.3)
+%! rand ("seed", 22);
+%! data = random (pd, 1000, 1);
+%! pd_fitted = fitdist (data, "Binomial", "ntrials", 10)
+%! ci = paramci (pd_fitted, "Alpha", 0.05)
+%!
+%! ## Use this to obtain confidence intervals for the estimated parameters,
+%! ## providing a range of plausible values for p given the data.

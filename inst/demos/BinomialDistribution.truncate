@@ -1,0 +1,34 @@
+%!demo
+%! ## Plot the PDF of a Binomial distribution, with parameters N = 10 and
+%! ## p = 0.3, truncated at [2, 8] intervals. Generate 10000 random samples
+%! ## from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! pd = makedist ("Binomial", "N", 10, "p", 0.3)
+%! t = truncate (pd, 2, 8)
+%! rand ("seed", 22);
+%! data = random (t, 10000, 1);
+%!
+%! ## Histogram data for range 2 to 8
+%! edges = 1.5:1:8.5;
+%! centers = 2:8;
+%! counts = histc (data, edges);
+%! counts = counts(1:end-1);  # Remove extra edge bin
+%! probs = counts / sum(counts);  # Normalize to get probabilities
+%!
+%! ## Plot histogram bars
+%! bar (centers, probs, 0.5, "facecolor", [0.6 0.6 1]);
+%! hold on;
+%!
+%! ## PMF of the truncated distribution
+%! pmf = pdf (t, centers);
+%! plot (centers, pmf, 'r-', "linewidth", 2);
+%!
+%! title ("Binomial distribution (N = 10, p = 0.3) truncated at [2, 8]");
+%! xlabel ("x");
+%! ylabel ("Probability");
+%! legend ("Histogram", "Truncated PMF");
+%! hold off
+%!
+%! ## This demonstrates truncating a binomial distribution to a specific range
+%! ## and visualizing the resulting distribution with random samples.

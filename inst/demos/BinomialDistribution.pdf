@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Binomial distribution
+%! x = 0:10;
+%! pd1 = makedist ("Binomial", "N", 10, "p", 0.2);
+%! pd2 = makedist ("Binomial", "N", 10, "p", 0.5);
+%! pd3 = makedist ("Binomial", "N", 10, "p", 0.8);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", "LineWidth", 2)
+%! grid on
+%! legend ({"N = 10, p = 0.2", "N = 10, p = 0.5", "N = 10, p = 0.8"}, ...
+%!          "location", "north")
+%! title ("Binomial PDF")
+%! xlabel ("Number of successes")
+%! ylabel ("Probability")
+%!
+%! ## This visualizes the probability mass function for binomial distributions,
+%! ## showing the likelihood of different numbers of successes.

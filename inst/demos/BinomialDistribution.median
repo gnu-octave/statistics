@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Binomial distributions
+%! pd1 = makedist ("Binomial", "N", 10, "p", 0.2);
+%! pd2 = makedist ("Binomial", "N", 10, "p", 0.5);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median number of successes, which splits the
+%! ## distribution into two equal probability halves.
