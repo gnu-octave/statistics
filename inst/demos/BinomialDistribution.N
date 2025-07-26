@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a binomial distribution with default parameters
+%! pd = makedist ("Binomial")
+%!
+%! ## Query parameter 'N' (number of trials)
+%! pd.N
+%!
+%! ## Set parameter 'N'
+%! pd.N = 10
+%!
+%! ## Use this to initialize or modify the number of trials in a binomial
+%! ## distribution. The number of trials must be a positive integer.
+
+%!demo
+%! ## Create a binomial distribution object by calling its constructor
+%! pd = BinomialDistribution (10, 0.3)
+%!
+%! ## Query parameter 'N'
+%! pd.N
+%!
+%! ## This demonstrates direct construction with specific parameters, useful
+%! ## for defining a binomial distribution with known number of trials.
