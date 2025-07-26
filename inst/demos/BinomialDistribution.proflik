@@ -5,7 +5,7 @@
 %! rand ("seed", 22);
 %! data = random (pd, 1000, 1);
 %! pd_fitted = fitdist (data, "Binomial", "ntrials", 10)
-%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on")
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
 %!
 %! ## Use this to analyze the profile likelihood of the success probability
 %! ## (p), helping to understand the uncertainty in parameter estimates.
