@@ -1,0 +1,18 @@
+%!demo
+%! ## Generate a data set of 5000 random samples from a Binomial distribution
+%! ## with parameters N = 10 and p = 0.3. Fit a Binomial distribution to this
+%! ## data and plot a PDF of the fitted distribution superimposed on a
+%! ## histogram of the data.
+%!
+%! pd = makedist ("Binomial", "N", 10, "p", 0.3)
+%! rand ("seed", 22);
+%! data = random (pd, 5000, 1);
+%! pd = fitdist (data, "Binomial", "ntrials", 10)
+%! plot (pd, "Discrete", true)
+%! title (sprintf ("Fitted Binomial distribution with N = %d and p = %0.2f", ...
+%!                  pd.N, pd.p))
+%! pd.ParameterCovariance
+%!
+%! ## This demo shows how to access the covariance matrix of parameter
+%! ## estimates after fitting to data, useful for understanding parameter
+%! ## estimation uncertainty.
