@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Binomial distributions
+%! pd1 = makedist ("Binomial", "N", 10, "p", 0.2);
+%! pd2 = makedist ("Binomial", "N", 10, "p", 0.5);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected number of successes for binomial
+%! ## distributions with different parameters.
