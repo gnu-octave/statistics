@@ -48,10 +48,10 @@ classdef BetaDistribution
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## Further information about the Beta distribution can be found at
+  ## Further information about the beta distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Beta_distribution}
   ##
-  ## @seealso{fitdist, makedist, betacdf, betainv, betapdf, betarnd, lognfit,
+  ## @seealso{fitdist, makedist, betacdf, betainv, betapdf, betarnd, betafit,
   ## betalike, betastat}
   ## @end deftypefn
 
@@ -74,7 +74,7 @@ classdef BetaDistribution
     ## Second shape parameter
     ##
     ## A positive scalar value characterizing the shape of the beta
-    ## distribution.  You can access the @qcode{a} property using dot name
+    ## distribution. You can access the @qcode{b} property using dot name
     ## assignment.
     ##
     ## @end deftp
@@ -125,7 +125,7 @@ classdef BetaDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"1st Shape", "2nd Shape"};
+    ParameterDescription = {"First shape parameter", "Second shape parameter"};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
@@ -219,6 +219,7 @@ classdef BetaDistribution
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting.  If no frequency vector was used for
     ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
     ##
     ## @end deftp
     InputData
@@ -419,7 +420,7 @@ classdef BetaDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{nLogL} = negloglik (@var{pd})} computes the negative loglikelihood
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative loglikelihood
     ## of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
