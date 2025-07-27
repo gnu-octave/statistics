@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Beta distribution
+%! pd = makedist ("Beta", "a", 2, "b", 5)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the
+%! ## variability of the beta distribution.

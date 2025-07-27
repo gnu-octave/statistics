@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the first shape parameter of
+%! ## a fitted Beta distribution
+%! pd = makedist ("Beta", "a", 2, "b", 5)
+%! rand ("seed", 22);
+%! data = random (pd, 1000, 1);
+%! pd_fitted = fitdist (data, "Beta")
+%! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the shape parameter (a),
+%! ## helping to understand the uncertainty in parameter estimates.

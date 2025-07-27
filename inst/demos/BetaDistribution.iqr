@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the interquartile range for a Beta distribution
+%! pd = makedist ("Beta", "a", 2, "b", 5)
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the beta distribution.

@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Beta distributions
+%! pd1 = makedist ("Beta", "a", 1, "b", 1);
+%! pd2 = makedist ("Beta", "a", 2, "b", 5);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value of beta distributions with
+%! ## different shape parameters, representing the average outcome.

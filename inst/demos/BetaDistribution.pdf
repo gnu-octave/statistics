@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Beta distribution
+%! x = 0:0.01:1;
+%! pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+%! pd2 = makedist ("Beta", "a", 2, "b", 2);
+%! pd3 = makedist ("Beta", "a", 5, "b", 2);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", "LineWidth", 2)
+%! grid on
+%! legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+%!         "location", "north")
+%! title ("Beta PDF")
+%! xlabel ("Value")
+%! ylabel ("Probability Density")
+%!
+%! ## This visualizes the probability density function for beta distributions,
+%! ## showing the likelihood of different values in [0, 1].

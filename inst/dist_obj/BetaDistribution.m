@@ -1,4 +1,5 @@
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -39,17 +40,18 @@ classdef BetaDistribution
   ## @item Use the constructor @qcode{BetaDistribution (@var{a}, @var{b})}
   ## to create a beta distribution with specified parameter values.
   ## @item Use the static method @qcode{BetaDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data
+  ## @var{x}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## Further information about the Beta distribution can be found at
+  ## Further information about the beta distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Beta_distribution}
   ##
-  ## @seealso{fitdist, makedist, betacdf, betainv, betapdf, betarnd, lognfit,
+  ## @seealso{fitdist, makedist, betacdf, betainv, betapdf, betarnd, betafit,
   ## betalike, betastat}
   ## @end deftypefn
 
@@ -72,7 +74,7 @@ classdef BetaDistribution
     ## Second shape parameter
     ##
     ## A positive scalar value characterizing the shape of the beta
-    ## distribution.  You can access the @qcode{a} property using dot name
+    ## distribution. You can access the @qcode{b} property using dot name
     ## assignment.
     ##
     ## @end deftp
@@ -123,7 +125,7 @@ classdef BetaDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"1st Shape", "2nd Shape"};
+    ParameterDescription = {"First shape parameter", "Second shape parameter"};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
@@ -217,6 +219,7 @@ classdef BetaDistribution
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting.  If no frequency vector was used for
     ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
     ##
     ## @end deftp
     InputData
@@ -324,13 +327,13 @@ classdef BetaDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BetaDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {BetaDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -417,7 +420,7 @@ classdef BetaDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative loglikelihood
     ## of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -444,7 +447,7 @@ classdef BetaDistribution
     ## probability distribution object, @var{pd}.
     ##
     ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -507,7 +510,7 @@ classdef BetaDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -581,7 +584,7 @@ classdef BetaDistribution
     ## likelihood against the user-defined range of the selected parameter.
     ##
     ## For the beta distribution, @qcode{@var{pnum} = 1} selects the parameter
-    ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @var{b}.
+    ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @qcode{b}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -601,10 +604,10 @@ classdef BetaDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BetaDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {BetaDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {BetaDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {BetaDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {BetaDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {BetaDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {BetaDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {BetaDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
@@ -665,13 +668,14 @@ classdef BetaDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
+    ## and upper limit, @var{upper}.  If @var{pd} is fitted to data with
+    ## @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -695,7 +699,7 @@ classdef BetaDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn

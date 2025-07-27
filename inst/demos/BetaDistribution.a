@@ -1,16 +1,18 @@
 %!demo
 %! ## Create a beta distribution with default parameters
-%! pd = makedist ("beta")
+%! pd = makedist ("Beta")
 %!
-%! ## Query parameter 'alpha'
+%! ## Query parameter 'alpha' (first shape parameter)
 %! pd.a
 %!
 %! ## Set parameter 'alpha'
 %! pd.a = 2
+%!
+%! ## Use this to initialize or modify the first shape parameter of a beta
+%! ## distribution. The parameter 'alpha' must be a positive real scalar.
 
 %!demo
 %! ## Create a beta distribution object by calling its constructor
 %! pd = BetaDistribution (2, 3)
-%!
 %! ## Query parameter 'alpha'
 %! pd.a
