@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Beta distribution
+%! pd = makedist ("Beta", "a", 2, "b", 5)
+%! rand ("seed", 22);
+%! samples = random (pd, 100, 1);
+%! hist (samples, 20)
+%! title ("Histogram of 100 random samples from Beta(a=2, b=5)")
+%! xlabel ("Value")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a beta distribution, useful for
+%! ## simulating data within the [0, 1] interval.
