@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Beta distribution
+%! pd = makedist ("Beta", "a", 2, "b", 5)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## beta distribution.
