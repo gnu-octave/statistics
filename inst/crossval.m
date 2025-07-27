@@ -97,7 +97,7 @@ function results = crossval (f, X, y, varargin)
     end
     for i = 1:numel(validnames)
       name = validnames(i){:};
-      name_pos = strmatch (name, names);
+      name_pos = find (strcmp (name, names));
       if (! isempty (name_pos))
         eval ([name " = values(name_pos){:};"])
       endif
