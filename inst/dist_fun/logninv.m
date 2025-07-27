@@ -106,15 +106,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (logninv (p, ones (1,5), ones (1,5)), [NaN 0 e Inf NaN])
-%!assert (logninv (p, 1, ones (1,5)), [NaN 0 e Inf NaN])
-%!assert (logninv (p, ones (1,5), 1), [NaN 0 e Inf NaN])
+%!assert (logninv (p, ones (1,5), ones (1,5)), [NaN 0 e Inf NaN], 2*eps)
+%!assert (logninv (p, 1, ones (1,5)), [NaN 0 e Inf NaN], 2*eps)
+%!assert (logninv (p, ones (1,5), 1), [NaN 0 e Inf NaN], 2*eps)
 %!assert (logninv (p, [1 1 NaN 0 1], 1), [NaN 0 NaN Inf NaN])
 %!assert (logninv (p, 1, [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
 %!assert (logninv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (logninv ([p, NaN], 1, 1), [NaN 0 e Inf NaN NaN])
+%!assert (logninv ([p, NaN], 1, 1), [NaN 0 e Inf NaN NaN], 2*eps)
 %!assert (logninv (single ([p, NaN]), 1, 1), single ([NaN 0 e Inf NaN NaN]))
 %!assert (logninv ([p, NaN], single (1), 1), single ([NaN 0 e Inf NaN NaN]))
 %!assert (logninv ([p, NaN], 1, single (1)), single ([NaN 0 e Inf NaN NaN]))

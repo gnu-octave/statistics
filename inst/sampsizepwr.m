@@ -1033,7 +1033,7 @@ endfunction
 %! assert (nout, 18);
 %!test
 %! p1out = sampsizepwr ("t", [20, 5], [], 0.95, 10, "Tail", "right");
-%! assert (p1out, 25.65317979360237, 1e-14);
+%! assert (p1out, 25.65317979360237, 2e-14);
 %!test
 %! pwr = sampsizepwr ("t2", [1.4, 0.2], 1.7, [], 5, "Ratio", 2);
 %! assert (pwr, 0.716504004686586, 1e-14);

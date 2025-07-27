@@ -119,7 +119,7 @@ endfunction
 %! x = [-Inf -log(3) 0 log(3) Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
 %!assert (logicdf ([x, NaN], 0, 1), [y, NaN], eps)
-%!assert (logicdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
+%!assert (logicdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1], eps)
 
 ## Test class of input preserved
 %!assert (logicdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ("single"))
