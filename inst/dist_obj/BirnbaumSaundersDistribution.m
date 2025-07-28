@@ -20,19 +20,15 @@ classdef BirnbaumSaundersDistribution
   ## -*- texinfo -*-
   ## @deftypefn {statistics} BirnbaumSaundersDistribution
   ##
-  ## Gamma probability distribution object.
+  ## Birnbaum-Saunders probability distribution object.
   ##
   ## A @code{BirnbaumSaundersDistribution} object consists of parameters, a
-  ## model description, and sample data for a gamma probability distribution.
+  ## model description, and sample data for a Birnbaum-Saunders probability
+  ## distribution.
   ##
-  ## The gamma distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{a} @tab Shape parameter @tab @math{α > 0}
-  ## @item @qcode{b} @tab Scale parameter @tab @math{β > 0}
-  ## @end multitable
+  ## The Birnbaum-Saunders distribution is a continuous probability distribution
+  ## that models the time to failure of materials subjected to cyclic loading,
+  ## with scale parameter @math{beta} and shape parameter @math{gamma}.
   ##
   ## There are several ways to create a @code{BirnbaumSaundersDistribution}
   ## object.
