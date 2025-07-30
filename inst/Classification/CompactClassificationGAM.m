@@ -262,7 +262,7 @@ classdef CompactClassificationGAM
 
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "ClassificationGAM";
+      classdef_name = "CompactClassificationGAM";
 
       ## Create variables from model properties
       NumPredictors   = this.NumPredictors;

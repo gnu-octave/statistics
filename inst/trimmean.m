@@ -57,7 +57,7 @@
 ## integer.
 ## @item @qcode{"weighted"} @tab @tab If @math{k = i + f}, where @math{i} is an
 ## integer and @math{f} is a fraction, compute a weighted mean with weight
-## @math{(1 – f)} for the @math{(i + 1)}-th and @math{(n – i)}-th values, and
+## @math{(1 - f)} for the @math{(i + 1)}-th and @math{(n - i)}-th values, and
 ## full weight for the values between them.
 ## @end multitable
 ##

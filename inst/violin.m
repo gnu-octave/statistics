@@ -172,7 +172,7 @@ function h = violin (ax, varargin)
   tmp      = cellfun (@(z,y)plot(ax, z, y, 'ok'), Ncc, Mx);
   h.median = tmp;
 
-  ## Overlay 1st and 3th quartiles
+  ## Overlay 1st and 3rd quartiles
   LUBU = cellfun (@(x,y)abs(quantile(x,[0.25 0.75])-y), x, Mx, "unif", 0);
   tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
   ## Flatten errorbar output handles

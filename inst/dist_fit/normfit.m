@@ -217,7 +217,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
     return
   endif
 
-  ## 4. Αll uncensored observations equal and greater than all the
+  ## 4. All uncensored observations equal and greater than all the
   ## censored observations
   x_uncensored = x(censor == 0);
   range_x_uncensored = range (x_uncensored);
@@ -253,7 +253,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   ## Optimize the parameters as doubles, regardless of input data type
   paramhat = cast (paramhat, "double");
 
-  ## Search for parameter that minimize the negative log likelihood function
+  ## Search for parameter that minimizes the negative log likelihood function
   [paramhat, ~, err, output] = fminsearch ...
                     (@(ph) norm_nlogl (ph, x, censor, freq), paramhat, options);
 
