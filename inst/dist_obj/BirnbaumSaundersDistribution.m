@@ -37,68 +37,200 @@ classdef BirnbaumSaundersDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{BirnbaumSaundersDistribution (@var{a},
-  ## @var{b})} to create a gamma distribution with specified parameter values.
+  ## @item Use the constructor @qcode{BirnbaumSaundersDistribution (@var{beta},
+  ## @var{gamma})} to create a Birnbaum-Saunders distribution with specified
+  ## parameter values.
   ## @item Use the static method @qcode{BirnbaumSaundersDistribution.fit
-  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to a distribution to
-  ## data @var{x}.
+  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to fit a distribution
+  ## to data @var{x}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
   ## functions to create probability distribution objects, instead of the
   ## constructor and the aforementioned static method.
   ##
-  ## A @code{BirnbaumSaundersDistribution} object contains the following
-  ## properties, which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{BirnbaumSaundersDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
-  ##
   ## Further information about the Birnbaum-Saunders distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
   ##
-  ## @seealso{fitdist, makedist, bisacdf, bisainv, bisapdf, bisarnd, lognfit,
+  ## @seealso{fitdist, makedist, bisacdf, bisainv, bisapdf, bisarnd, bisafit,
   ## bisalike, bisastat}
   ## @end deftypefn
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} beta
+    ##
+    ## Scale parameter
+    ##
+    ## A positive scalar value characterizing the scale of the
+    ## Birnbaum-Saunders distribution. You can access the @qcode{beta}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     beta
+
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} gamma
+    ##
+    ## Shape parameter
+    ##
+    ## A positive scalar value characterizing the shape of the
+    ## Birnbaum-Saunders distribution. You can access the @qcode{gamma}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     gamma
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = true;
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object. This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "BirnbaumSaundersDistribution";
-    DistributionCode = "bisa";
+    
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution. This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+    
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter. This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"beta", "gamma"};
+
+    
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Scale", "Shape"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = true;
+    DistributionCode = "bisa";
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters. This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{beta} and @qcode{gamma}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## parameter estimates. Diagonal elements contain the variance of each
+    ## estimated parameter, and non-diagonal elements contain the covariance
+    ## between the parameter estimates. The covariance matrix is only meaningful
+    ## when the distribution was fitted to data. If the distribution object was
+    ## created with fixed parameters, or a parameter of a fitted distribution is
+    ## modified, then all elements of the variance-covariance are zero. This
+    ## property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## which are estimated. @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+    
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution. First element contains the lower boundary,
+    ## second element contains the upper boundary. This property is read-only.
+    ## You can only truncate a probability distribution with the @qcode{truncate}
+    ## method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not. This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {BirnbaumSaundersDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data}: a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens}: a numeric vector of logical values indicating
+    ## censoring information corresponding to the elements of the data used for
+    ## distribution fitting. If no censoring vector was used for distribution
+    ## fitting, then this field defaults to an empty array.
+    ## @item @qcode{freq}: a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting. If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
