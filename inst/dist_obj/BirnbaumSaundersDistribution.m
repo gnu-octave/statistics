@@ -704,7 +704,7 @@ classdef BirnbaumSaundersDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -795,7 +795,7 @@ endfunction
 %! data = random (pd, 5000, 1);
 %! pd = fitdist (data, "BirnbaumSaunders")
 %! plot (pd)
-%! msg = "Fitted Birnbaum-Saunders distribution with a = %0.2f and b = %0.2f";
+%! msg = "Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f";
 %! title (sprintf (msg, pd.beta, pd.gamma))
 
 %!demo
@@ -809,7 +809,7 @@ endfunction
 %! randg ("seed", 21);
 %! data = random (t, 10000, 1);
 %! plot (t)
-%! title ("Birnbaum-Saunders distribution (a = 2, b = 4) truncated at [0.1, 0.8]")
+%! title ("Birnbaum-Saunders distribution (beta = 1, gamma = 0.5) truncated at [0, 2]")
 %! hold on
 %! hist (data, 100, 50)
 %! hold off
@@ -825,7 +825,7 @@ endfunction
 %! data = random (pd, 100, 1);
 %! pd = fitdist (data, "BirnbaumSaunders")
 %! plot (pd, "plottype", "cdf")
-%! title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
+%! title (sprintf ("Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f", ...
 %!                 pd.beta, pd.gamma))
 %! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
 
