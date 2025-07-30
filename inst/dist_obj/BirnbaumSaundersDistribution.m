@@ -587,8 +587,9 @@ classdef BirnbaumSaundersDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the gamma distribution, @qcode{@var{pnum} = 1} selects the parameter
-    ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @var{gamma}.
+    ## For the Birnbaum-Saunders distribution, @qcode{@var{pnum} = 1} selects
+    ## the parameter @qcode{beta} and @qcode{@var{pnum} = 2} selects the
+    ## parameter @qcode{gamma}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
