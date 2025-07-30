@@ -289,7 +289,7 @@ classdef BirnbaumSaundersDistribution
     ## @deftypefn  {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
     ## @deftypefnx {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x}, @qcode{"upper"})
     ##
-    ## Compute the inverse cumulative distribution function (iCDF).
+    ## Compute the cumulative distribution function (CDF).
     ##
     ## @code{@var{p} = cdf (@var{pd}, @var{x})} computes the CDF of the
     ## probability distribution object, @var{pd}, evaluated at the values in
