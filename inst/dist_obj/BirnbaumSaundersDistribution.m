@@ -331,13 +331,13 @@ classdef BirnbaumSaundersDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BirnbaumSaundersDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {BirnbaumSaundersDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
-    ## Compute the cumulative distribution function (CDF).
+    ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
