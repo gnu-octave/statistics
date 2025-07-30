@@ -250,11 +250,11 @@ classdef BirnbaumSaundersDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "gamma distribution");
+      __disp__ (this, "Birnbaum-Saunders distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "gamma distribution");
+      __disp__ (this, "Birnbaum-Saunders distribution");
     endfunction
 
     function this = set.beta (this, beta)
