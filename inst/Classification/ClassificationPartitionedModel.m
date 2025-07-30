@@ -479,7 +479,7 @@ classdef ClassificationPartitionedModel
       if (this.KFold == 1)
         testIdx = test (this.Partition, 1);
         y = grp2idx (this.Y);
-        label(testIdx) = this.Y(find (y = mode (y), 1));
+        label(testIdx) = this.Y(find (y == mode (y), 1));
         Score(testIdx, :) = NaN;
         Cost(testIdx, :) = NaN;
         return;

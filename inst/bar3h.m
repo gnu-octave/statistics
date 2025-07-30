@@ -75,7 +75,7 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab @qcode{"width"} @tab A two-element vector specifying the width if
+## @item @tab @qcode{"width"} @tab A two-element vector specifying the width
 ## of the bars along the @qcode{x-} and @qcode{z-axes}, respectively.  Each
 ## element must be in the range @math{(0,1]}.
 ##

@@ -178,7 +178,7 @@ classdef cvpartition
           try
             out = this.(s.subs);
           catch
-            error ("cvpartition.subref: unrecongized property: '%s'", s.subs);
+            error ("cvpartition.subref: unrecognized property: '%s'", s.subs);
           end_try_catch
       endswitch
       ## Chained references
@@ -205,7 +205,7 @@ classdef cvpartition
             error (strcat ("cvpartition.subsasgn: '.' indexing", ...
                            " argument must be a character vector."));
           endif
-          error (strcat ("cvpartition.subsasgn: unrecongized", ...
+          error (strcat ("cvpartition.subsasgn: unrecognized", ...
                          " or read-only property: '%s'"), s.subs);
       endswitch
     endfunction
@@ -329,13 +329,13 @@ classdef cvpartition
     ## range @math{[1,n]} will specify a leave-one-out cross-validation.
     ## @item A logical vector will specify a holdout validation, in which the
     ## @qcode{true} elements correspond to the test set and the @qcode{false}
-    ## elements correspond to the traning set.
+    ## elements correspond to the training set.
     ## @item A logical matrix with @math{k} columns will specify a k-fold
-    ## cross-validation partition, in which each collumn corresponds to a fold
+    ## cross-validation partition, in which each column corresponds to a fold
     ## and each row to an observation.  Alternatively, an @math{nxn} logical
     ## matrix will specify a leave-one-out cross-validation, where @math{n} is
     ## the number of observations.  @qcode{true} elements correspond to the
-    ## test set and the @qcode{false} elements correspond to the traning set.
+    ## test set and the @qcode{false} elements correspond to the training set.
     ## @end itemize
     ##
     ## @seealso{cvpartition, summary, test, training}
@@ -546,8 +546,8 @@ classdef cvpartition
             for i = 1:NumGroups
               GroupSize(i) = sum (inds == i);
             endfor
-            ## Each k-fold attemps to spit the groups to equal sizes in such a
-            ## way so that eash test set contains unique groups that are not
+            ## Each k-fold attempts to split the groups to equal sizes in such a
+            ## way so that each test set contains unique groups that are not
             ## present in the corresponding training set but also not shared
             ## with other test sets.
             GroupIdx = multiway (GroupSize, k);
@@ -800,7 +800,7 @@ classdef cvpartition
             for i = 1:NumGroups
               GroupSize(i) = sum (inds == i);
             endfor
-            ## Each k-fold attemps to spit the groups to equal sizes in such a
+            ## Each k-fold attempts to split the groups to equal sizes in such a
             ## way so that eash test set contains unique groups that are not
             ## present in the corresponding training set but also not shared
             ## with other test sets.
@@ -927,7 +927,7 @@ classdef cvpartition
           for i = 1:NumGroups
             GroupSize(i) = sum (inds == i);
           endfor
-          ## Each k-fold attemps to spit the groups to equal sizes in such a
+          ## Each k-fold attempts to split the groups to equal sizes in such a
           ## way so that eash test set contains unique groups that are not
           ## present in the corresponding training set but also not shared
           ## with other test sets.
@@ -1016,7 +1016,7 @@ classdef cvpartition
     ## is a scalar, then @var{idx} is a logical vector with the indices of the
     ## @math{i-th} set.  If @var{i} is a vector, then @var{idx} is a logical
     ## matrix in which @code{@var{idx}(:,j)} specified the observations in the
-    ## test set @code{@var{i}(j)}.  The value(s) in @var{i} must not excced the
+    ## test set @code{@var{i}(j)}.  The value(s) in @var{i} must not exceed the
     ## number of tests in the @qcode{cvpartition} object @var{C}.
     ##
     ## @code{@var{idx} = test (@var{C}, @qcode{"all"})} returns a logical vector
@@ -1118,7 +1118,7 @@ classdef cvpartition
     ## of the @math{i-th} set.  If @var{i} is a vector, then @var{idx} is a
     ## logical matrix in which @code{@var{idx}(:,j)} specified the observations
     ## in the training set @code{@var{i}(j)}.  The value(s) in @var{i} must not
-    ## excced the number of tests in the @qcode{cvpartition} object @var{C}.
+    ## exceed the number of tests in the @qcode{cvpartition} object @var{C}.
     ##
     ## @code{@var{idx} = training (@var{C}, @qcode{"all"})} returns a logical
     ## vector or matrix for all training sets defined in the @qcode{cvpartition}
