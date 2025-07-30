@@ -36,7 +36,7 @@
 ## standard normal distribution.
 ##
 ## The size of @var{h}, @var{pval}, and @var{zvalue} is the common size of
-## @var{x}, @var{n1}, @var{x2}, and @var{n2}, which must be scalars or of common
+## @var{x1}, @var{n1}, @var{x2}, and @var{n2}, which must be scalars or of common
 ## size.  A scalar input functions as a constant matrix of the same size as the
 ## other inputs.
 ##
@@ -83,6 +83,10 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
 
   if (iscomplex (x1) || iscomplex (n1) || iscomplex (x2) || iscomplex(n2))
     error ("ztest2: X1, N1, X2, and N2 must not be complex.");
+  endif
+  
+  if any(x1(:) > n1(:)) || any(x2(:) > n2(:))
+    error ("ztest2: X1 must be <= N1 and X2 must be <= N2.");
   endif
 
   ## Add defaults and parse optional arguments
@@ -141,6 +145,7 @@ endfunction
 %!error ztest2 (1);
 %!error ztest2 (1, 2);
 %!error ztest2 (1, 2, 3);
+%!error ztest2 (1, 2, 3, 2);
 %!error<ztest2: optional arguments must be in NAME-VALUE pairs.> ...
 %! ztest2 (1, 2, 3, 4, "alpha")
 %!error<ztest2: invalid VALUE for alpha.> ...
