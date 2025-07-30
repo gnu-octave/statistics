@@ -609,17 +609,17 @@ classdef BirnbaumSaundersDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BirnbaumSaundersDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {BirnbaumSaundersDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {BirnbaumSaundersDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{bisarnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
