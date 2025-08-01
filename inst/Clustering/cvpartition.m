@@ -612,8 +612,6 @@ classdef cvpartition
           endfor
           this.classes = classes;
           this.classID = classID;
-        else
-          this.cvptype = 'Hold-out cross validation partition';
         endif
 
         ## Get number of observations
@@ -627,6 +625,7 @@ classdef cvpartition
 
         ## "Holdout"
         if (strcmpi (type, 'holdout'))
+          this.Type = 'holdout';
           if (nargin > 2)
             p = varargin{2};
             if (! isnumeric (p) || ! isscalar (p))
@@ -661,21 +660,22 @@ classdef cvpartition
             elseif (k_check > p)  # remove random elements from test set
               inds(find (inds)(randsample (k_check, k_check - p))) = false;
             endif
+            this.cvptype = 'Stratified hold-out cross validation partition';
           else
             if (p < 1)            # target fraction to sample
               p = round (p * X);  # number of samples
             endif
             inds = false (X, 1);
             inds(randsample (X, p)) = true;  # indices for test set
+            this.cvptype = 'Hold-out cross validation partition';
           endif
           this.indices = inds;
           this.TrainSize = sum (! inds);
           this.TestSize = sum (inds);
-          this.Type = 'holdout';
-          this.cvptype = 'Stratified hold-out cross validation partition';
 
         ## "KFold"
         elseif (strcmpi (type, 'kfold'))
+          this.Type = 'kfold';
           if (nargin > 2)
             k = varargin{2};
             if (! isnumeric (k) || ! isscalar (k))
@@ -696,20 +696,38 @@ classdef cvpartition
           this.NumTestSets = k;
           if (this.IsStratified)
             inds = nan (X, 1);
+            pooled_inds = false (X, 1);
+            do_warn = true;
             for i = 1:NumClasses
-              ## Alternate ordering over classes so that
-              ## the subsets are more nearly the same size
-              if (mod (i, 2))
-                idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
-                inds(classes == i) = randsample (idx, ClassSize(i));
+              ## Check that the elements in each class exceed the number of
+              ## requested folds, otherwise emit a warning and add the class
+              ## elements into a pooled class
+              if (ClassSize(i) < k)
+                if (do_warn)
+                  warning (strcat ("One or more of the unique class values", ...
+                                   " in the stratification variable is not", ...
+                                   " present in one or more folds."));
+                  do_warn = false;
+                endif
+                pooled_inds = pooled_inds | classes == i;
               else
-                idx = floor (((ClassSize(i)-1):-1:0)' * (k / ClassSize(i))) + 1;
+                ## FIX ME: we have to make sure that when X / k = integer, all
+                ## test/train sizes must be equal across all folds
+                idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
                 inds(classes == i) = randsample (idx, ClassSize(i));
               endif
             endfor
+            ## Stratify pooled classes (if any)
+            pooled_size = sum (pooled_inds);
+            if (pooled_size)
+              idx = floor ((0:(pooled_size-1))' * (k / pooled_size)) + 1;
+              inds(pooled_inds) = randsample (idx, pooled_size);
+            endif
+            this.cvptype = 'Stratified k-fold cross validation partition';
           else
             inds = floor ((0:(X - 1))' * (k / X)) + 1;
             inds = randsample (inds, X);
+            this.cvptype = 'K-fold cross validation partition';
           endif
           this.indices = inds;
           nvec = X * ones (1, k);
@@ -717,8 +735,6 @@ classdef cvpartition
             this.TestSize(i) = sum (inds == i);
           endfor
           this.TrainSize = nvec - this.TestSize;
-          this.Type = 'kfold';
-          this.cvptype = 'Stratified k-fold cross validation partition';
 
         ## Invalid paired argument
         else
