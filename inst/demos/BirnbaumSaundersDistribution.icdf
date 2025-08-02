@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Birnbaum-Saunders distribution
+%! p = 0.01:0.01:0.99;
+%! pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
+%! pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
+%! pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", "LineWidth", 2)
+%! grid on
+%! legend ({"beta = 1, gamma = 0.2", "beta = 1, gamma = 0.5", "beta = 1, gamma = 0.8"}, ...
+%!         "location", "northwest")
+%! title ("Birnbaum-Saunders iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Time to failure")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Birnbaum-Saunders
+%! ## distributions, useful for finding the time-to-failure corresponding to
+%! ## given probabilities.

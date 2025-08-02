@@ -1,0 +1,12 @@
+%!demo
+%! ## Create a Birnbaum-Saunders distribution with specific parameters using the
+%! ## constructor
+%! pd = BirnbaumSaundersDistribution (1, 0.5)
+%!
+%! ## Display the distribution parameters
+%! pd.beta
+%! pd.gamma
+%!
+%! ## Use the constructor to directly create a Birnbaum-Saunders distribution with
+%! ## known scale (beta) and shape (gamma) parameters, suitable for modeling
+%! ## fatigue life data.

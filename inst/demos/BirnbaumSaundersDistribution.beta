@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a Birnbaum-Saunders distribution with default parameters
+%! pd = makedist ("BirnbaumSaunders")
+%!
+%! ## Query parameter 'beta' (scale parameter)
+%! pd.beta
+%!
+%! ## Set parameter 'beta'
+%! pd.beta = 2
+%!
+%! ## Use this to initialize or modify the scale parameter of a Birnbaum-Saunders
+%! ## distribution. The scale parameter must be a positive real scalar.
+
+%!demo
+%! ## Create a Birnbaum-Saunders distribution object by calling its constructor
+%! pd = BirnbaumSaundersDistribution (1.5, 0.5)
+%!
+%! ## Query parameter 'beta'
+%! pd.beta
+%!
+%! ## This demonstrates direct construction with a specific scale parameter,
+%! ## useful for modeling time-to-failure data with a known scale.

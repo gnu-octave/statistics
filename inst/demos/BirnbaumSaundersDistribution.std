@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Birnbaum-Saunders distribution
+%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in time to failure.
