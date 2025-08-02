@@ -5,7 +5,7 @@
 %! randg ("seed", 21);
 %! data = random (pd, 1000, 1);
 %! pd_fitted = fitdist (data, "BirnbaumSaunders")
-%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on")
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
 %!
 %! ## Use this to analyze the profile likelihood of the shape parameter (gamma),
 %! ## helping to understand the uncertainty in parameter estimates.
