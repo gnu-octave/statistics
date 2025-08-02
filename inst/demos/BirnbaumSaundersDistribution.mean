@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Birnbaum-Saunders distributions
+%! pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
+%! pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected time to failure for Birnbaum-Saunders
+%! ## distributions with different shape parameters.

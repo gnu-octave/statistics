@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Birnbaum-Saunders distributions
+%! pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
+%! pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median time to failure, which splits the distribution
+%! ## into two equal probability halves.

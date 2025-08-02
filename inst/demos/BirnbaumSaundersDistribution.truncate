@@ -1,0 +1,21 @@
+%!demo
+%! ## Plot the PDF of a Birnbaum-Saunders distribution, with parameters beta = 1
+%! ## and gamma = 0.5, truncated at [0.5, 2] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! t = truncate (pd, 0.5, 2)
+%! randg ("seed", 21);
+%! data = random (t, 10000, 1);
+%!
+%! ## Plot histogram and fitted PDF
+%! plot (t)
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+%! title ("Birnbaum-Saunders distribution (beta = 1, gamma = 0.5) truncated at [0.5, 2]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Birnbaum-Saunders distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.

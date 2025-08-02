@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a Birnbaum-Saunders distribution with default parameters
+%! pd = makedist ("BirnbaumSaunders")
+%!
+%! ## Query parameter 'gamma' (shape parameter)
+%! pd.gamma
+%!
+%! ## Set parameter 'gamma'
+%! pd.gamma = 0.8
+%!
+%! ## Use this to initialize or modify the shape parameter in a Birnbaum-Saunders
+%! ## distribution. The shape parameter must be a positive real scalar.
+
+%!demo
+%! ## Create a Birnbaum-Saunders distribution object by calling its constructor
+%! pd = BirnbaumSaundersDistribution (1.5, 0.5)
+%!
+%! ## Query parameter 'gamma'
+%! pd.gamma
+%!
+%! ## This shows how to set the shape parameter directly via the constructor,
+%! ## ideal for modeling specific variability in failure times.
