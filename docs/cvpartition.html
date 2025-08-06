@@ -1219,13 +1219,13 @@
  range <math>[1,n]</math> will specify a leave-one-out cross-validation.
  </li><li> A logical vector will specify a holdout validation, in which the
  <code>true</code> elements correspond to the test set and the <code>false</code>
- elements correspond to the traning set.
+ elements correspond to the training set.
  </li><li> A logical matrix with <math>k</math> columns will specify a k-fold
- cross-validation partition, in which each collumn corresponds to a fold
+ cross-validation partition, in which each column corresponds to a fold
  and each row to an observation.  Alternatively, an <math>n&times;n</math> logical
  matrix will specify a leave-one-out cross-validation, where <math>n</math> is
  the number of observations.  <code>true</code> elements correspond to the
- test set and the <code>false</code> elements correspond to the traning set.
+ test set and the <code>false</code> elements correspond to the training set.
  </li></ul>
 
 <p> <strong>See also: </strong>
@@ -1382,7 +1382,7 @@ training
  is a scalar, then <var>idx</var> is a logical vector with the indices of the
  <math>i-th</math> set.  If <var>i</var> is a vector, then <var>idx</var> is a logical
  matrix in which <code><var>idx</var>(:,j)</code> specified the observations in the
- test set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not excced the
+ test set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not exceed the
  number of tests in the <code>cvpartition</code> object <var>C</var>.
 </p>
 <p> <code><var>idx</var> = test (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical vector
@@ -1441,7 +1441,7 @@ training
  of the <math>i-th</math> set.  If <var>i</var> is a vector, then <var>idx</var> is a
  logical matrix in which <code><var>idx</var>(:,j)</code> specified the observations
  in the training set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not
- excced the number of tests in the <code>cvpartition</code> object <var>C</var>.
+ exceed the number of tests in the <code>cvpartition</code> object <var>C</var>.
 </p>
 <p> <code><var>idx</var> = training (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical
  vector or matrix for all training sets defined in the <code>cvpartition</code>

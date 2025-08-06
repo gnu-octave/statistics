@@ -789,30 +789,33 @@
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
+ </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>BetaDistribution (<var>a</var>, <var>b</var>)</code>
- to create a beta distribution with specified parameter values.
+ to create a beta distribution with fixed parameter values <code><var>a</var></code>
+ and <code><var>b</var></code>.
  </li><li> Use the static method <code>BetaDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
+ <var>alpha</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to data
+ <code><var>x</var></code> using the same input arguments as the <code>betafit</code>
+ function.
  </li></ul>
 
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
-<p> Further information about the Beta distribution can be found at
+<p> Further information about the beta distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Beta_distribution">https://en.wikipedia.org/wiki/Beta_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitdist.html">fitdist</a>,
-  <a href="makedist.html">makedist</a>,
-  <a href="betacdf.html">betacdf</a>,
-  <a href="betainv.html">betainv</a>,
-  <a href="betapdf.html">betapdf</a>,
-  <a href="betarnd.html">betarnd</a>,
-  <a href="lognfit.html">lognfit</a>,
-  <a href="betalike.html">betalike</a>,
+  <a href="fitdist.html">fitdist</a>, 
+  <a href="makedist.html">makedist</a>, 
+  <a href="betacdf.html">betacdf</a>, 
+  <a href="betainv.html">betainv</a>, 
+  <a href="betapdf.html">betapdf</a>, 
+  <a href="betarnd.html">betarnd</a>, 
+  <a href="betafit.html">betafit</a>, 
+  <a href="betalike.html">betalike</a>, 
   <a href="betastat.html">betastat</a>
 </p>
 <p><strong>Source Code: </strong>
@@ -871,13 +874,16 @@
                     <td><pre class="example">
 
  ## Create a beta distribution with default parameters
- pd = makedist ("beta")
+ pd = makedist ("Beta")
 
- ## Query parameter 'alpha'
+ ## Query parameter 'alpha' (first shape parameter)
  pd.a
 
  ## Set parameter 'alpha'
  pd.a = 2
+
+ ## Use this to initialize or modify the first shape parameter of a beta
+ ## distribution. The parameter 'alpha' must be a positive real scalar.
 
 pd =
   BetaDistribution
@@ -923,7 +929,6 @@ pd =
 
  ## Create a beta distribution object by calling its constructor
  pd = BetaDistribution (2, 3)
-
  ## Query parameter 'alpha'
  pd.a
 
@@ -973,7 +978,7 @@ ans = 2
 </p>
 <div class="ms-5">
 <p> A positive scalar value characterizing the shape of the beta
- distribution.  You can access the <code>a</code> property using dot name
+ distribution. You can access the <code>b</code> property using dot name
  assignment.
 </p>
 
@@ -998,13 +1003,16 @@ ans = 2
                     <td><pre class="example">
 
  ## Create a beta distribution with default parameters
- pd = makedist ("beta")
+ pd = makedist ("Beta")
 
- ## Query parameter 'beta'
+ ## Query parameter 'beta' (second shape parameter)
  pd.b
 
  ## Set parameter 'beta'
  pd.b = 2
+
+ ## Use this to initialize or modify the second shape parameter of a beta
+ ## distribution. The parameter 'beta' must be a positive real scalar.
 
 pd =
   BetaDistribution
@@ -1491,8 +1499,7 @@ ans =
  containing the frequency information corresponding to the elements of the
  data used for distribution fitting.  If no frequency vector was used for
  distribution fitting, then this field defaults to an empty array.
-
-</li></ul>
+ </li></ul>
 
 
 </div>
@@ -1543,6 +1550,56 @@ ans =
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Beta distribution
+ x = 0:0.01:1;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", "LineWidth", 2)
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "southeast")
+ title ("Beta CDF")
+ xlabel ("Value")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different beta distributions, showing how probability accumulates
+ ## over the interval [0, 1].
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1567,18 +1624,67 @@ ans =
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>BetaDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
+<dt><u>BetaDistribution:</u> <var>x</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
 <p> Compute the inverse cumulative distribution function (iCDF).
 </p>
 <div class="ms-5">
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Beta distribution
+ p = 0.01:0.01:0.99;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", "LineWidth", 2)
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "northwest")
+ title ("Beta iCDF")
+ xlabel ("Probability")
+ ylabel ("Value")
+
+ ## This demonstrates the inverse CDF (quantiles) for beta distributions,
+ ## useful for finding values corresponding to given probabilities.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1616,6 +1722,48 @@ ans =
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the beta distribution.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+iqr_value = 0.2283
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1651,6 +1799,44 @@ ans =
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Beta distributions
+ pd1 = makedist ("Beta", "a", 1, "b", 1);
+ pd2 = makedist ("Beta", "a", 2, "b", 5);
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value of beta distributions with
+ ## different shape parameters, representing the average outcome.
+
+mean1 = 0.5000
+mean2 = 0.2857
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1688,6 +1874,44 @@ ans =
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Beta distributions
+ pd1 = makedist ("Beta", "a", 1, "b", 1);
+ pd2 = makedist ("Beta", "a", 2, "b", 5);
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median value, which splits the beta distribution
+ ## into two equal probability halves.
+
+median1 = 0.5000
+median2 = 0.2644
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1718,7 +1942,7 @@ ans =
 <p> Compute the negative loglikelihood of a probability distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
  of the probability distribution object, <var>pd</var>.
 </p>
 
@@ -1760,7 +1984,7 @@ ans =
  probability distribution object, <var>pd</var>.
 </p>
 <p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
- confidence intervals with additional options specified specified by
+ confidence intervals with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
@@ -1779,6 +2003,62 @@ ans =
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute confidence intervals for parameters of a fitted Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ rand ("seed", 22);
+ data = random (pd, 1000, 1);
+ pd_fitted = fitdist (data, "Beta")
+ ci = paramci (pd_fitted, "Alpha", 0.05)
+
+ ## Use this to obtain confidence intervals for the estimated parameters (a, b),
+ ## providing a range of plausible values given the data.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+pd_fitted =
+  BetaDistribution
+
+  beta distribution
+        a = 2.07811   [1.92125, 2.24778]
+        b =   5.243   [4.82346, 5.69904]
+
+ci =
+
+   1.9212   4.8235
+   2.2478   5.6990
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1817,6 +2097,55 @@ ans =
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Beta distribution
+ x = 0:0.01:1;
+ pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
+ pd2 = makedist ("Beta", "a", 2, "b", 2);
+ pd3 = makedist ("Beta", "a", 5, "b", 2);
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", "LineWidth", 2)
+ grid on
+ legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
+         "location", "north")
+ title ("Beta PDF")
+ xlabel ("Value")
+ ylabel ("Probability Density")
+
+ ## This visualizes the probability density function for beta distributions,
+ ## showing the likelihood of different values in [0, 1].
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1849,7 +2178,7 @@ ans =
 <p> Plot a probability distribution object.
 </p>
 <div class="ms-5">
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
@@ -1890,7 +2219,7 @@ ans =
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 1
+                  Example: 2
                   </h3>
                 </div>
               </div>
@@ -1906,23 +2235,23 @@ ans =
  ## parameters a = 2 and b = 4.  Fit a Beta distribution to this data and plot
  ## its CDF superimposed over an empirical CDF of the data
 
- pd = makedist ("Beta", "a", 2, "b", 4)
+ pd_fixed = makedist ("Beta", "a", 2, "b", 4)
  randg ("seed", 21);
- data = random (pd, 100, 1);
- pd = fitdist (data, "Beta")
- plot (pd, "plottype", "cdf")
- title (sprintf ("Fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-                 pd.a, pd.b))
+ data = random (pd_fixed, 100, 1);
+ pd_fitted = fitdist (data, "Beta")
+ plot (pd_fitted, "plottype", "cdf")
+ txt = "Fitted Beta distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (txt, pd_fitted.a, pd_fitted.b))
  legend ({"empirical CDF", "fitted CDF"}, "location", "east")
 
-pd =
+pd_fixed =
   BetaDistribution
 
   beta distribution
         a = 2
         b = 4
 
-pd =
+pd_fitted =
   BetaDistribution
 
   beta distribution
@@ -1932,7 +2261,7 @@ pd =
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/BetaDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/BetaDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -1947,7 +2276,7 @@ pd =
               <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
                   <h3 class="d-inline-block mr-2">
-                  Example: 2
+                  Example: 3
                   </h3>
                 </div>
               </div>
@@ -1963,23 +2292,23 @@ pd =
  ## parameters a = 2 and b = 4.  Display a probability plot for the Beta
  ## distribution fit to the data.
 
- pd = makedist ("Beta", "a", 2, "b", 4)
+ pd_fixed = makedist ("Beta", "a", 2, "b", 4)
  randg ("seed", 21);
- data = random (pd, 200, 1);
- pd = fitdist (data, "Beta")
- plot (pd, "plottype", "probability")
- title (sprintf ("Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f", ...
-                 pd.a, pd.b))
+ data = random (pd_fixed, 200, 1);
+ pd_fitted = fitdist (data, "Beta")
+ plot (pd_fitted, "plottype", "probability")
+ txt = "Probability plot of a fitted Beta distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (txt, pd_fitted.a, pd_fitted.b))
  legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
 
-pd =
+pd_fixed =
   BetaDistribution
 
   beta distribution
         a = 2
         b = 4
 
-pd =
+pd_fitted =
   BetaDistribution
 
   beta distribution
@@ -1989,7 +2318,7 @@ pd =
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
-                    <img src="assets/BetaDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                    <img src="assets/BetaDistribution.plot_301.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>
@@ -2051,7 +2380,7 @@ pd =
  likelihood against the user-defined range of the selected parameter.
 </p>
 <p> For the beta distribution, <code><var>pnum</var> = 1</code> selects the parameter
- <code>a</code> and <code><var>pnum</var> = 2</code> selects the parameter <var>b</var>.
+ <code>a</code> and <code><var>pnum</var> = 2</code> selects the parameter <code>b</code>.
 </p>
 <p> When opted to display the profile likelihood plot, <code>proflik</code> also
  plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -2061,6 +2390,61 @@ pd =
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute and plot the profile likelihood for the first shape parameter of
+ ## a fitted Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ rand ("seed", 22);
+ data = random (pd, 1000, 1);
+ pd_fitted = fitdist (data, "Beta")
+ [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+
+ ## Use this to analyze the profile likelihood of the shape parameter (a),
+ ## helping to understand the uncertainty in parameter estimates.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+pd_fitted =
+  BetaDistribution
+
+  beta distribution
+        a = 2.07971   [1.90886, 2.26585]
+        b = 5.07244   [4.64654, 5.53739]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.proflik_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -2086,10 +2470,10 @@ pd =
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>BetaDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>)</i></dt>
-<dt><u>BetaDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>)</i></dt>
-<dt><u>BetaDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>BetaDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
+<dt><u>BetaDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>)</i></dt>
+<dt><u>BetaDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>)</i></dt>
+<dt><u>BetaDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
+<dt><u>BetaDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
 </dl>
 
 <p> Generate random arrays from the probability distribution object.
@@ -2107,6 +2491,55 @@ pd =
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ rand ("seed", 22);
+ samples = random (pd, 100, 1);
+ hist (samples, 20)
+ title ("Histogram of 100 random samples from Beta(a=2, b=5)")
+ xlabel ("Value")
+ ylabel ("Frequency")
+
+ ## This generates random samples from a beta distribution, useful for
+ ## simulating data within the [0, 1] interval.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -2144,6 +2577,48 @@ pd =
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which measures the
+ ## variability of the beta distribution.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+std_value = 0.1597
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -2174,13 +2649,14 @@ pd =
 <p> Truncate a probability distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit, <var>lower</var>,
+ and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data with
+ <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
 </p>
 
 </div>
@@ -2275,13 +2751,111 @@ t =
 <p> Compute the variance of a probability distribution.
 </p>
 <div class="ms-5">
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
 </div>
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 
+ ## Compute the variance for a Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which quantifies the spread of the
+ ## beta distribution.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+var_value = 0.025510
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 5000 random samples from a Beta distribution with
+ ## parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot
+ ## a PDF of the fitted distribution superimposed on a histogram of the data.
+
+ pd_fixed = makedist ("Beta", "a", 2, "b", 5)
+ randg ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, "Beta")
+ plot (pd_fitted)
+ msg = "Fitted Beta distribution with a = %0.2f and b = %0.2f";
+ title (sprintf (msg, pd_fitted.a, pd_fitted.b))
+
+pd_fixed =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+pd_fitted =
+  BetaDistribution
+
+  beta distribution
+        a = 2.06688   [1.99231, 2.14425]
+        b = 5.18226   [4.98185, 5.39074]
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
