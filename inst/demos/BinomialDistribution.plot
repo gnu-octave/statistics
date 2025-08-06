@@ -4,7 +4,7 @@
 %!
 %! pd = makedist ("Binomial", "N", 20, "p", 0.4)
 %! plot (pd)
-%! title ("Fixed Birnbaum-Saunders distribution with beta = 1 and gamma = 0.5")
+%! title ("Fixed Binomial distribution with N = 20 and p = 0.4")
 
 %!demo
 %! ## Generate a data set of 100 random samples from a Binomial distribution
