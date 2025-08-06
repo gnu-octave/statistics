@@ -1,6 +1,6 @@
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
-%! x = 0:0.1:5;
+%! x = 0:0.02:5;
 %! pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
 %! pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
 %! pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);

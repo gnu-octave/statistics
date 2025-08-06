@@ -1,4 +1,12 @@
 %!demo
+%! ## Create a Binomial distribution with fixed parameters N = 20 and p = 0.4,
+%! ## and plot its PDF.
+%!
+%! pd = makedist ("Binomial", "N", 20, "p", 0.4)
+%! plot (pd)
+%! title ("Fixed Birnbaum-Saunders distribution with beta = 1 and gamma = 0.5")
+
+%!demo
 %! ## Generate a data set of 100 random samples from a Binomial distribution
 %! ## with parameters N = 10 and p = 0.3. Fit a Binomial distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF of the data

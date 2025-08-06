@@ -7,7 +7,7 @@
 %! y1 = pdf (pd1, x);
 %! y2 = pdf (pd2, x);
 %! y3 = pdf (pd3, x);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", "LineWidth", 2)
+%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
 %! grid on
 %! legend ({"N = 10, p = 0.2", "N = 10, p = 0.5", "N = 10, p = 0.8"}, ...
 %!          "location", "north")
