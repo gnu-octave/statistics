@@ -2,7 +2,7 @@
 %! ## Create a Beta distribution with fixed parameters a = 2 and b = 5, and
 %! plot its PDF.
 %!
-%! pd = makedist ("BirnbaumSaunders", "a", 2, "b", 5)
+%! pd = makedist ("Beta", "a", 2, "b", 5)
 %! plot (pd)
 %! title ("Fixed Beta distribution with a = 2 and b = 5")
 

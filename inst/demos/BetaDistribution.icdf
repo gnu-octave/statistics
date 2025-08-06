@@ -7,7 +7,7 @@
 %! x1 = icdf (pd1, p);
 %! x2 = icdf (pd2, p);
 %! x3 = icdf (pd3, p);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", "LineWidth", 2)
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
 %! grid on
 %! legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
 %!         "location", "northwest")
