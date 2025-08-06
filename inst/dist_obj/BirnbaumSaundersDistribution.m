@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -28,26 +28,28 @@ classdef BirnbaumSaundersDistribution
   ##
   ## The Birnbaum-Saunders distribution is a continuous probability distribution
   ## that models the time to failure of materials subjected to cyclic loading,
-  ## with scale parameter @math{beta} and shape parameter @math{gamma}.
+  ## with scale parameter @qcode{@var{beta}} and shape parameter
+  ## @qcode{@var{gamma}}.
   ##
   ## There are several ways to create a @code{BirnbaumSaundersDistribution}
   ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BirnbaumSaundersDistribution (@var{beta},
-  ## @var{gamma})} to create a Birnbaum-Saunders distribution with specified
-  ## parameter values.
+  ## @var{gamma})} to create a Birnbaum-Saunders distribution with fixed
+  ## parameter values @qcode{@var{beta}} and @qcode{@var{gamma}}.
   ## @item Use the static method @qcode{BirnbaumSaundersDistribution.fit
-  ## (@var{x}, @var{censor}, @var{freq}, @var{options})} to fit a distribution
-  ## to data @var{x}.
+  ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
+  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## @code{bisafit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
   ## Further information about the Birnbaum-Saunders distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
@@ -93,7 +95,7 @@ classdef BirnbaumSaundersDistribution
     ##
     ## @end deftp
     DistributionName = "BirnbaumSaundersDistribution";
-    
+
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} NumParameters
     ##
@@ -104,7 +106,7 @@ classdef BirnbaumSaundersDistribution
     ##
     ## @end deftp
     NumParameters = 2;
-    
+
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} ParameterNames
     ##
@@ -116,7 +118,7 @@ classdef BirnbaumSaundersDistribution
     ## @end deftp
     ParameterNames = {"beta", "gamma"};
 
-    
+
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} ParameterDescription
     ##
@@ -180,7 +182,7 @@ classdef BirnbaumSaundersDistribution
     ##
     ## @end deftp
     ParameterIsFixed
-    
+
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} Truncation
     ##
@@ -788,46 +790,15 @@ endfunction
 %! ## Generate a data set of 5000 random samples from a Birnbaum-Saunders
 %! ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
 %! ## distribution to this data and plot a PDF of the fitted distribution
-%! ## superimposed on a histogram of the data
+%! ## superimposed on a histogram of the data.
 %!
-%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
+%! pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
 %! randg ("seed", 21);
-%! data = random (pd, 5000, 1);
-%! pd = fitdist (data, "BirnbaumSaunders")
-%! plot (pd)
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "BirnbaumSaunders")
+%! plot (pd_fitted)
 %! msg = "Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f";
-%! title (sprintf (msg, pd.beta, pd.gamma))
-
-%!demo
-%! ## Plot the PDF of a Birnbaum-Saunders distribution, with parameters beta = 1
-%! ## and gamma = 0.5, truncated at [0, 2] intervals.  Generate 10000 random
-%! ## samples from this truncated distribution and superimpose a histogram with
-%! ## 100 bins scaled accordingly
-%!
-%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! t = truncate (pd, 0, 2)
-%! randg ("seed", 21);
-%! data = random (t, 10000, 1);
-%! plot (t)
-%! title ("Birnbaum-Saunders distribution (beta = 1, gamma = 0.5) truncated at [0, 2]")
-%! hold on
-%! hist (data, 100, 50)
-%! hold off
-
-%!demo
-%! ## Generate a data set of 100 random samples from a Birnbaum-Saunders
-%! ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
-%! ## distribution to this data and plot its CDF superimposed over an empirical
-%! ## CDF of the data
-%!
-%! pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! randg ("seed", 21);
-%! data = random (pd, 100, 1);
-%! pd = fitdist (data, "BirnbaumSaunders")
-%! plot (pd, "plottype", "cdf")
-%! title (sprintf ("Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f", ...
-%!                 pd.beta, pd.gamma))
-%! legend ({"empirical CDF", "fitted CDF"}, "location", "east")
+%! title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))
 
 ## Test output
 %!shared pd, t

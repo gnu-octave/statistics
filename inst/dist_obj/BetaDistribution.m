@@ -35,18 +35,20 @@ classdef BetaDistribution
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BetaDistribution (@var{a}, @var{b})}
-  ## to create a beta distribution with specified parameter values.
+  ## to create a beta distribution with fixed parameter values @qcode{@var{a}}
+  ## and @qcode{@var{b}}.
   ## @item Use the static method @qcode{BetaDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data
-  ## @var{x}.
+  ## @var{alpha}, @var{freq}, @var{options})} to fit a distribution to data
+  ## @qcode{@var{x}} using the same input arguments as the @code{betafit}
+  ## function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
   ## Further information about the beta distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Beta_distribution}
@@ -773,6 +775,18 @@ function checkparams (a, b)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Beta distribution with
+%! ## parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Beta", "a", 2, "b", 5)
+%! randg ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Beta")
+%! plot (pd_fitted)
+%! msg = "Fitted Beta distribution with a = %0.2f and b = %0.2f";
+%! title (sprintf (msg, pd_fitted.a, pd_fitted.b))
 
 ## Test output
 %!shared pd, t

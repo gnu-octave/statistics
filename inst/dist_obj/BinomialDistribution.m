@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -26,25 +26,26 @@ classdef BinomialDistribution
   ## description, and sample data for a binomial probability distribution.
   ##
   ## The binomial distribution is a discrete probability distribution that
-  ## models the number of successes in a sequence of @math{n} independent
-  ## trials, eachwith a probability of success @math{p}.
+  ## models the number of successes in a sequence of @qcode{@var{N}} independent
+  ## trials, each with a probability of success @qcode{@var{p}}.
   ##
   ## There are several ways to create a @code{BinomialDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BinomialDistribution (@var{N}, @var{p})}
-  ## to create a binomial distribution with specified parameter values.
+  ## to create a binomial distribution with fixed parameter values
+  ## @qcode{@var{N}} and @qcode{@var{p}}.
   ## @item Use the static method @qcode{BinomialDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to data
-  ## @var{x}.
+  ## @var{ntrials}, @var{alpha})} to fit a distribution to data @qcode{@var{x}}
+  ## using the same input arguments as the @code{binofit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
   ## Further information about the binomial distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
@@ -557,7 +558,7 @@ classdef BinomialDistribution
       if (! isscalar (this))
         error ("plot: requires a scalar probability distribution.");
       endif
-      h = __plot__ (this, false, varargin{:});
+      h = __plot__ (this, true, varargin{:});
       if (nargout > 0)
         varargout{1} = h;
       endif
