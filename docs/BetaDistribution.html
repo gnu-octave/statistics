@@ -1576,7 +1576,7 @@ ans =
  p1 = cdf (pd1, x);
  p2 = cdf (pd2, x);
  p3 = cdf (pd3, x);
- plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", "LineWidth", 2)
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
  grid on
  legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
          "location", "southeast")
@@ -1663,7 +1663,7 @@ ans =
  x1 = icdf (pd1, p);
  x2 = icdf (pd2, p);
  x3 = icdf (pd3, p);
- plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", "LineWidth", 2)
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
  grid on
  legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
          "location", "northwest")
@@ -2123,7 +2123,7 @@ ci =
  y1 = pdf (pd1, x);
  y2 = pdf (pd2, x);
  y3 = pdf (pd3, x);
- plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", "LineWidth", 2)
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
  grid on
  legend ({"a = 0.5, b = 0.5", "a = 2, b = 2", "a = 5, b = 2"}, ...
          "location", "north")
@@ -2212,6 +2212,50 @@ ci =
 </p>
 
 </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Beta distribution with fixed parameters a = 2 and b = 5, and
+ ## plot its PDF.
+
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ plot (pd)
+ title ("Fixed Beta distribution with a = 2 and b = 5")
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/BetaDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
