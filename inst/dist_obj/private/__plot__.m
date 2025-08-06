@@ -216,7 +216,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     ## Plot
     if (Discrete)
       h = stem (ax, x, y, "color", "r");
-      xlim ([min(y)-0.5, max(y)+0.5]);
+      xlim ([min(x)-0.5, max(x)+0.5]);
       xlabel ("Data");
       ylabel ("Probability");
     else
