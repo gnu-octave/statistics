@@ -1,6 +1,6 @@
 %!demo
 %! ## Create a Beta distribution with fixed parameters a = 2 and b = 5, and
-%! plot its PDF.
+%! ## plot its PDF.
 %!
 %! pd = makedist ("Beta", "a", 2, "b", 5)
 %! plot (pd)
