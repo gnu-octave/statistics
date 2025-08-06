@@ -115,14 +115,11 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   xmin = m - 3.5 * s;
   xmax = m + 3.5 * s;
   ## Fix boundaries for specific distributions
-  PD = {"bisa", "exp", "gam", "invg", "logl", "logn", ...
+  PD = {"bino", "bisa", "exp", "gam", "invg", "logl", "logn", ...
         "naka", "nbin", "poiss", "rayl", "rice", "wbl"};
   if (strcmpi (pd.DistributionCode, "beta"))
     lb = xmin = 0;
     ub = xmax = 1;
-  elseif (strcmpi (pd.DistributionCode, "bino"))
-    lb = xmin = 0;
-    ub = xmax = pd.N;
   elseif (strcmpi (pd.DistributionCode, "burr"))
     lb = xmin = 0;
     ub = xmax = m + 3 * iqr (pd);
