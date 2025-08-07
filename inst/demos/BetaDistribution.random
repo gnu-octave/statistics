@@ -2,9 +2,9 @@
 %! ## Generate random samples from a Beta distribution
 %! pd = makedist ("Beta", "a", 2, "b", 5)
 %! rand ("seed", 22);
-%! samples = random (pd, 100, 1);
+%! samples = random (pd, 500, 1);
 %! hist (samples, 20)
-%! title ("Histogram of 100 random samples from Beta(a=2, b=5)")
+%! title ("Histogram of 500 random samples from Beta(a=2, b=5)")
 %! xlabel ("Value")
 %! ylabel ("Frequency")
 %!
