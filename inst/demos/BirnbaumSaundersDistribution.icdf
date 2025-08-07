@@ -1,6 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Birnbaum-Saunders distribution
-%! p = 0.01:0.01:0.99;
+%! p = 0.001:0.001:0.999;
 %! pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
 %! pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
 %! pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);

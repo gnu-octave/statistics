@@ -1,6 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Beta distribution
-%! p = 0.01:0.01:0.99;
+%! p = 0.001:0.001:0.999;
 %! pd1 = makedist ("Beta", "a", 0.5, "b", 0.5);
 %! pd2 = makedist ("Beta", "a", 2, "b", 2);
 %! pd3 = makedist ("Beta", "a", 5, "b", 2);
