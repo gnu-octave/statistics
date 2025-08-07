@@ -823,13 +823,8 @@
             <div class="border-bottom py-2">
 
 
-<p> Training data, specified as an <math>N&times;P</math> numeric matrix where each row
- is an observation and each column is a feature. This property is private
- and cannot be modified after object creation.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -859,14 +854,8 @@
             <div class="border-bottom py-2">
 
 
-<p> Distance metric used for searches, specified as a character vector (e.g.,
- <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>) or a function handle to a
- custom distance function. Default is <code>&quot;euclidean&quot;</code>.  Supported
- metrics align with those in <code>pdist2</code>.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -894,10 +883,7 @@
             <div class="border-bottom py-2">
 
 
-<p> Parameter for the distance metric, with type and value depending on
- <code>Distance</code>:
-</p>
-<div class="ms-5">
+<p> </p>
  <ul>
 <li> For <code>&quot;minkowski&quot;</code>, a positive scalar exponent (default 2).
  </li><li> For <code>&quot;seuclidean&quot;</code>, a nonnegative vector of scaling factors
@@ -909,7 +895,6 @@
  </li></ul>
 
 
-</div>
 
 
             </div>
@@ -944,10 +929,7 @@
 <dt><u>ExhaustiveSearcher:</u> <var>obj</var> = <b>ExhaustiveSearcher</b><i> (<var>X</var>, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Create an <code>ExhaustiveSearcher</code> object for nearest neighbor
- searches.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>obj</var> = ExhaustiveSearcher (<var>X</var>)</code> constructs an
  <code>ExhaustiveSearcher</code> object with training data <var>X</var> using the
  default <code>&quot;euclidean&quot;</code> distance metric. <var>X</var> must be an
@@ -982,7 +964,7 @@
   <a href="rangesearch.html">rangesearch</a>, 
   <a href="pdist2.html">pdist2</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1011,9 +993,7 @@
 <dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Find the <math>K</math> nearest neighbors in the training data to query points.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>obj</var>, <var>Y</var>)</code> returns the
  indices <var>idx</var> and distances <var>D</var> of the nearest neighbor in
  <var>obj.X</var> to each point in <var>Y</var>, using the distance metric specified
@@ -1045,7 +1025,7 @@
   <a href="rangesearch.html">rangesearch</a>, 
   <a href="pdist2.html">pdist2</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1074,9 +1054,7 @@
 <dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Find all neighbors within a specified radius of query points.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>obj</var>, <var>Y</var>, <var>r</var>)</code>
  returns the indices <var>idx</var> and distances <var>D</var> of all points in
  <var>obj.X</var> within radius <var>r</var> of each point in <var>Y</var>, using the
@@ -1106,7 +1084,7 @@
   <a href="knnsearch.html">knnsearch</a>, 
   <a href="pdist2.html">pdist2</a>
 </p>
-</div>
+
 
             </div>
           </div>

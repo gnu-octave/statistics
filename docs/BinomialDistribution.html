@@ -842,15 +842,12 @@
             <div class="border-bottom py-2">
 
 
-<p> Number of trials
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A positive integer value characterizing the number of trials in the
  binomial distribution. You can access the <code>N</code> property using dot
  name assignment.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -975,15 +972,12 @@ ans = 10
             <div class="border-bottom py-2">
 
 
-<p> Probability of success
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A scalar value in the range <math>[0, 1]</math> characterizing the probability
  of success in each trial of the binomial distribution. You can access
  the <code>p</code> property using dot name assignment.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1108,14 +1102,11 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Probability distribution name
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A character vector specifying the name of the probability distribution
  object. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1142,14 +1133,11 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Number of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A scalar integer value specifying the number of parameters characterizing
  the probability distribution. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1176,14 +1164,11 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Names of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> cell array of character vectors with each element containing
  the name of a distribution parameter. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1210,15 +1195,12 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Description of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> cell array of character vectors with each element containing
  a short description of a distribution parameter. This property is
  read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1245,16 +1227,13 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Distribution parameter values
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> numeric vector containing the values of the distribution
  parameters. This property is read-only. You can change the distribution
  parameters by assigning new values to the <code>N</code> and <code>p</code>
  properties.
 </p>
 
-</div>
 
 
             </div>
@@ -1281,9 +1260,7 @@ ans = 0.3000
             <div class="border-bottom py-2">
 
 
-<p> Covariance matrix of the parameter estimates
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
  parameter estimates. Diagonal elements contain the variance of each
  estimated parameter and non-diagonal elements contain the covariance
@@ -1294,87 +1271,6 @@ ans = 0.3000
  are zero. This property is read-only.
 </p>
 
-</div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a data set of 5000 random samples from a Binomial distribution
- ## with parameters N = 10 and p = 0.3. Fit a Binomial distribution to this
- ## data and plot a PMF of the fitted distribution over a histogram.
-
- pd = makedist ("Binomial", "N", 10, "p", 0.3)
- rand ("seed", 22);
- data = random (pd, 5000, 1);
- pd = fitdist (data, "Binomial", "ntrials", 10)
-
- ## Use hist to compute frequencies and normalize to probabilities
- [counts, bin_centers] = hist (data, 0:pd.N);
- bar (bin_centers, counts / sum(counts), "FaceColor", [0.7 0.7 0.9]);
- hold on;
-
- ## Plot fitted PMF
- x = 0:pd.N;
- y = pdf (pd, x);
- stem (x, y, "r", "filled");
- hold off;
- title (sprintf ("Fitted Binomial distribution with N = %d and p = %0.2f", ...
-                  pd.N, pd.p))
- xlabel("x");
- ylabel("Probability");
-
- ## Show covariance of the estimated parameters
- pd.ParameterCovariance
-
- ## This demo shows how to access the covariance matrix of parameter
- ## estimates after fitting to data, useful for understanding parameter
- ## estimation uncertainty.
-
-pd =
-  BinomialDistribution
-
-  binomial distribution
-        N =  10
-        p = 0.3
-
-pd =
-  BinomialDistribution
-
-  binomial distribution
-        N =      10
-        p = 0.30078   [0.296762, 0.304821]
-
-ans =
-
-            0            0
-            0   4.2062e-06
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/BinomialDistribution.ParameterCovariance_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
 
             </div>
@@ -1401,16 +1297,13 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Flag for fixed parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
  which are estimated. <code>true</code> values correspond to fixed parameters,
  <code>false</code> values correspond to parameter estimates. This property is
  read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1437,9 +1330,7 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Truncation interval
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
  probability distribution. First element contains the lower boundary,
  second element contains the upper boundary. This property is
@@ -1447,7 +1338,6 @@ ans =
  <code>truncate</code> method.
 </p>
 
-</div>
 
 
             </div>
@@ -1474,14 +1364,11 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Flag for truncated probability distribution
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A logical scalar value specifying whether a probability distribution is
  truncated or not. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1508,9 +1395,7 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Data used for fitting a probability distribution
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A scalar structure containing the following fields:
  </p><ul>
 <li> <code>data</code> : a numeric vector containing the data used for
@@ -1525,7 +1410,6 @@ ans =
 </li></ul>
 
 
-</div>
 
 
             </div>
@@ -1559,9 +1443,7 @@ ans =
 <dt><u>BinomialDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
@@ -1571,7 +1453,6 @@ ans =
  the values in <var>x</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1649,15 +1530,12 @@ ans =
 <dt><u>BinomialDistribution:</u> <var>x</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the inverse cumulative distribution function (iCDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
  evaluated at the values in <var>p</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1736,14 +1614,11 @@ ans =
 <dt><u>BinomialDistribution:</u> <var>r</var> = <b>iqr</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the interquartile range of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1814,14 +1689,11 @@ iqr_value = 2
 <dt><u>BinomialDistribution:</u> <var>m</var> = <b>mean</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the mean of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
  distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1888,14 +1760,11 @@ mean2 = 5
 <dt><u>BinomialDistribution:</u> <var>m</var> = <b>median</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the median of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
  distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1962,14 +1831,11 @@ median2 = 5
 <dt><u>BinomialDistribution:</u> <var>nlogL</var> = <b>negloglik</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the negative loglikelihood of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
  of the probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2051,9 +1917,7 @@ nlogL = -181.52
 <dt><u>BinomialDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Compute the confidence intervals for probability distribution parameters.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>ci</var> = paramci (<var>pd</var>)</code> computes the lower and upper
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
@@ -2077,7 +1941,6 @@ nlogL = -181.52
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2162,15 +2025,12 @@ ci =
 <dt><u>BinomialDistribution:</u> <var>y</var> = <b>pdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Compute the probability distribution function (PDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2250,9 +2110,7 @@ ci =
 <dt><u>BinomialDistribution:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Plot a probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
@@ -2286,7 +2144,6 @@ ci =
  objects.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2482,9 +2339,7 @@ pd =
 <dt><u>BinomialDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
 </dl>
 
-<p> Profile likelihood function for a probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>)</code>
  returns a vector <var>nlogL</var> of negative loglikelihood values and a
  vector <var>param</var> of corresponding parameter values for the parameter in
@@ -2515,7 +2370,6 @@ pd =
  values.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2602,9 +2456,7 @@ pd_fitted =
 <dt><u>BinomialDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Generate random arrays from the probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
@@ -2616,7 +2468,6 @@ pd_fitted =
  dimensions, <var>sz</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2695,14 +2546,11 @@ pd =
 <dt><u>BinomialDistribution:</u> <var>s</var> = <b>std</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the standard deviation of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2773,9 +2621,7 @@ std_value = 2.0494
 <dt><u>BinomialDistribution:</u> <var>t</var> = <b>truncate</b><i> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</i></dt>
 </dl>
 
-<p> Truncate a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
  probability distribution <var>t</var>, which is the probability distribution
  <var>pd</var> truncated to the specified interval with lower limit, <var>lower</var>,
@@ -2786,7 +2632,6 @@ std_value = 2.0494
  truncation interval.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2894,14 +2739,11 @@ t =
 <dt><u>BinomialDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the variance of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">

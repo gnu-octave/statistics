@@ -1442,10 +1442,7 @@
 <dt><u>ClassificationKNN:</u> [<var>labels</var>, <var>scores</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
 </dl>
 
-<p> Classify new data points into categories using the kNN algorithm from a
- k-Nearest Neighbor classification model.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the matrix of
  labels predicted for the corresponding instances in <var>XC</var>, using the
  predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
@@ -1477,7 +1474,7 @@
   <a href="ClassificationKNN.html">ClassificationKNN</a>, 
   <a href="knnsearch.html">knnsearch</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1506,9 +1503,7 @@
 <dt><u>ClassificationKNN:</u> <var>L</var> = <b>loss</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Compute loss for a trained ClassificationKNN object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
  <var>L</var>, using the default loss function <code>'mincost'</code>.
 </p>
@@ -1564,7 +1559,7 @@
   <a href="fitcknn.html">fitcknn</a>, 
   <a href="ClassificationKNN.html">ClassificationKNN</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1594,11 +1589,7 @@
 <dt><u>ClassificationKNN:</u> <var>m</var> = <b>margin</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
 </dl>
 
-<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
- the classification margins for <var>obj</var> with data <var>X</var> and
- classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
-</p>
-<div class="ms-5">
+<p> </p>
  <ul>
 <li>
  <code>obj</code> is a <var>ClassificationKNN</var> object trained on <code>X</code>
@@ -1621,7 +1612,7 @@
   <a href="fitcknn.html">fitcknn</a>, 
   <a href="ClassificationKNN.html">ClassificationKNN</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1651,9 +1642,7 @@
 <dt><u>ClassificationKNN:</u> <var>[pd, x, y]</var> = <b>partialDependence</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
 </dl>
 
-<p> Compute partial dependence for a trained ClassificationKNN object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>[pd, x, y]</var> = partialDependence (<var>obj</var>, <var>Vars</var>,
  <var>Labels</var>)</code>
  computes the partial dependence of the classification scores on the
@@ -1706,7 +1695,7 @@
   <a href="fitcknn.html">fitcknn</a>, 
   <a href="ClassificationKNN.html">ClassificationKNN</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1735,9 +1724,7 @@
 <dt><u>ClassificationKNN:</u> <var>CVMdl</var> = <b>crossval</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Cross Validate a ClassificationKNN object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
  object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
  cross-validation by default.
@@ -1768,7 +1755,7 @@
   <a href="cvpartition.html">cvpartition</a>, 
   <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1796,9 +1783,7 @@
 <dt><u>ClassificationKNN:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
 </dl>
 
-<p> Save a ClassificationKNN object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  ClassificationKNN object into an Octave binary file, the name of which is
  specified in <var>filename</var>, along with an extra variable, which defines
@@ -1811,7 +1796,7 @@
   <a href="fitcknn.html">fitcknn</a>, 
   <a href="ClassificationKNN.html">ClassificationKNN</a>
 </p>
-</div>
+
 
             </div>
           </div>

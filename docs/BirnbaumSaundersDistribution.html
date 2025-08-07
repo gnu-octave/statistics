@@ -846,15 +846,12 @@
             <div class="border-bottom py-2">
 
 
-<p> Scale parameter
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A positive scalar value characterizing the scale of the
  Birnbaum-Saunders distribution. You can access the <code>beta</code>
  property using dot name assignment.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -979,15 +976,12 @@ ans = 1.5000
             <div class="border-bottom py-2">
 
 
-<p> Shape parameter
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A positive scalar value characterizing the shape of the
  Birnbaum-Saunders distribution. You can access the <code>gamma</code>
  property using dot name assignment.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1112,14 +1106,11 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Probability distribution name
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A character vector specifying the name of the probability distribution
  object. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1146,14 +1137,11 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Number of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A scalar integer value specifying the number of parameters characterizing
  the probability distribution. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1180,14 +1168,11 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Names of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> cell array of character vectors with each element containing
  the name of a distribution parameter. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1214,15 +1199,12 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Description of parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> cell array of character vectors with each element containing
  a short description of a distribution parameter. This property is
  read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1249,16 +1231,13 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Distribution parameter values
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;1</math> numeric vector containing the values of the distribution
  parameters. This property is read-only. You can change the distribution
  parameters by assigning new values to the <code>beta</code> and <code>gamma</code>
  properties.
 </p>
 
-</div>
 
 
             </div>
@@ -1285,9 +1264,7 @@ ans = 0.5000
             <div class="border-bottom py-2">
 
 
-<p> Covariance matrix of the parameter estimates
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
  parameter estimates. Diagonal elements contain the variance of each
  estimated parameter, and non-diagonal elements contain the covariance
@@ -1298,77 +1275,6 @@ ans = 0.5000
  property is read-only.
 </p>
 
-</div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a data set of 5000 random samples from a Birnbaum-Saunders
- ## distribution with parameters beta = 1 and gamma = 0.5. Fit a Birnbaum-Saunders
- ## distribution to this data and plot a PDF of the fitted distribution over a
- ## histogram.
-
- pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
- randg ("seed", 21);
- data = random (pd, 5000, 1);
- pd = fitdist (data, "BirnbaumSaunders")
-
- ## Plot histogram and fitted PDF
- plot (pd)
- title (sprintf ("Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f", ...
-                 pd.beta, pd.gamma))
-
- ## Show covariance of the estimated parameters
- pd.ParameterCovariance
-
- ## This demo shows how to access the covariance matrix of parameter estimates
- ## after fitting to data, useful for understanding parameter estimation uncertainty.
-
-pd =
-  BirnbaumSaundersDistribution
-
-  Birnbaum-Saunders distribution
-     beta =   1
-    gamma = 0.5
-
-pd =
-  BirnbaumSaundersDistribution
-
-  Birnbaum-Saunders distribution
-     beta =  1.00368   [0.990371, 1.01717]
-    gamma = 0.496978   [0.487332, 0.506814]
-
-ans =
-
-   4.6724e-05  -2.2840e-09
-            0   2.4699e-05
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/BirnbaumSaundersDistribution.ParameterCovariance_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
 
             </div>
@@ -1395,16 +1301,13 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Flag for fixed parameters
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
  which are estimated. <code>true</code> values correspond to fixed parameters,
  <code>false</code> values correspond to parameter estimates. This property is
  read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1431,9 +1334,7 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Truncation interval
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
  probability distribution. First element contains the lower boundary,
  second element contains the upper boundary. This property is read-only.
@@ -1441,7 +1342,6 @@ ans =
  method.
 </p>
 
-</div>
 
 
             </div>
@@ -1468,14 +1368,11 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Flag for truncated probability distribution
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A logical scalar value specifying whether a probability distribution is
  truncated or not. This property is read-only.
 </p>
 
-</div>
 
 
             </div>
@@ -1502,9 +1399,7 @@ ans =
             <div class="border-bottom py-2">
 
 
-<p> Data used for fitting a probability distribution
-</p>
-<div class="ms-5">
+<p> </p>
 <p> A scalar structure containing the following fields:
  </p><ul>
 <li> <code>data</code>: a numeric vector containing the data used for
@@ -1520,7 +1415,6 @@ ans =
  </li></ul>
 
 
-</div>
 
 
             </div>
@@ -1554,9 +1448,7 @@ ans =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</i></dt>
 </dl>
 
-<p> Compute the cumulative distribution function (CDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
@@ -1566,7 +1458,6 @@ ans =
  the values in <var>x</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1587,7 +1478,7 @@ ans =
                     <td><pre class="example">
 
  ## Plot various CDFs from the Birnbaum-Saunders distribution
- x = 0:0.02:5;
+ x = 0:0.01:5;
  pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
  pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
  pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);
@@ -1645,15 +1536,12 @@ ans =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>x</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
 </dl>
 
-<p> Compute the inverse cumulative distribution function (iCDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
  evaluated at the values in <var>p</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1674,7 +1562,7 @@ ans =
                     <td><pre class="example">
 
  ## Plot various iCDFs from the Birnbaum-Saunders distribution
- p = 0.01:0.01:0.99;
+ p = 0.001:0.001:0.999;
  pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
  pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
  pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);
@@ -1732,14 +1620,11 @@ ans =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>r</var> = <b>iqr</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the interquartile range of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1811,14 +1696,11 @@ iqr_value = 0.6840
 <dt><u>BirnbaumSaundersDistribution:</u> <var>m</var> = <b>mean</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the mean of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
  distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1885,14 +1767,11 @@ mean2 = 1.1250
 <dt><u>BirnbaumSaundersDistribution:</u> <var>m</var> = <b>median</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the median of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
  distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -1959,14 +1838,11 @@ median2 = 1
 <dt><u>BirnbaumSaundersDistribution:</u> <var>nlogL</var> = <b>negloglik</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the negative loglikelihood of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
  loglikelihood of the probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2007,10 +1883,10 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta = 0.940379   [0.856579, 1.03238]
-    gamma =   0.4911   [0.427544, 0.564104]
+     beta = 1.00751   [0.909051, 1.11663]
+    gamma = 0.54495   [0.474425, 0.625959]
 
-nlogL = -61.940
+nlogL = -78.996
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2048,9 +1924,7 @@ nlogL = -61.940
 <dt><u>BirnbaumSaundersDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
 </dl>
 
-<p> Compute the confidence intervals for probability distribution parameters.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>ci</var> = paramci (<var>pd</var>)</code> computes the lower and upper
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
@@ -2074,7 +1948,6 @@ nlogL = -61.940
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2116,13 +1989,13 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta = 0.973082   [0.944474, 1.00256]
-    gamma = 0.496867   [0.475561, 0.519127]
+     beta = 0.974238   [0.945964, 1.00336]
+    gamma = 0.489944   [0.468936, 0.511894]
 
 ci =
 
-   0.9445   0.4756
-   1.0026   0.5191
+   0.9460   0.4689
+   1.0034   0.5119
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2160,15 +2033,12 @@ ci =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>y</var> = <b>pdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
 </dl>
 
-<p> Compute the probability distribution function (PDF).
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2189,7 +2059,7 @@ ci =
                     <td><pre class="example">
 
  ## Plot various PDFs from the Birnbaum-Saunders distribution
- x = 0:0.1:5;
+ x = 0:0.01:5;
  pd1 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.2);
  pd2 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5);
  pd3 = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.8);
@@ -2248,9 +2118,7 @@ ci =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
 </dl>
 
-<p> Plot a probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
@@ -2284,7 +2152,6 @@ ci =
  objects.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2376,8 +2243,8 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta =   1.0161   [0.931612, 1.10824]
-    gamma = 0.454699   [0.395854, 0.522291]
+     beta =  1.07336   [0.971323, 1.18611]
+    gamma = 0.528129   [0.459781, 0.606637]
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2437,8 +2304,8 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta =   1.0962   [1.02535, 1.17194]
-    gamma = 0.497576   [0.451128, 0.548807]
+     beta =  1.07073   [1.00275, 1.14332]
+    gamma = 0.487849   [0.442309, 0.538079]
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2482,9 +2349,7 @@ pd_fitted =
 <dt><u>BirnbaumSaundersDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
 </dl>
 
-<p> Profile likelihood function for a probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code>[<var>nlogL</var>, <var>param</var>] = proflik (<var>pd</var>, <var>pnum</var>)</code>
  returns a vector <var>nlogL</var> of negative loglikelihood values and a
  vector <var>param</var> of corresponding parameter values for the parameter in
@@ -2515,7 +2380,6 @@ pd_fitted =
  values.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2557,8 +2421,8 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta =   1.0078   [0.976317, 1.04029]
-    gamma = 0.530761   [0.508002, 0.55454]
+     beta =  1.01481   [0.98503, 1.04548]
+    gamma = 0.495802   [0.474542, 0.518014]
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2602,9 +2466,7 @@ pd_fitted =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
 </dl>
 
-<p> Generate random arrays from the probability distribution object.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
@@ -2616,7 +2478,6 @@ pd_fitted =
  dimensions, <var>sz</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2639,9 +2500,9 @@ pd_fitted =
  ## Generate random samples from a Birnbaum-Saunders distribution
  pd = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
  randg ("seed", 21);
- samples = random (pd, 100, 1);
+ samples = random (pd, 500, 1);
  hist (samples, 50)
- title ("Histogram of 100 random samples from Birnbaum-Saunders(beta=1, gamma=0.5)")
+ title ("Histogram of 500 random samples from Birnbaum-Saunders(beta=1, gamma=0.5)")
  xlabel ("Time to failure")
  ylabel ("Frequency")
 
@@ -2694,14 +2555,11 @@ pd =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>s</var> = <b>std</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the standard deviation of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2772,9 +2630,7 @@ std_value = 0.5728
 <dt><u>BirnbaumSaundersDistribution:</u> <var>t</var> = <b>truncate</b><i> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</i></dt>
 </dl>
 
-<p> Truncate a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
  probability distribution <var>t</var>, which is the probability distribution
  <var>pd</var> truncated to the specified interval with lower limit, <var>lower</var>,
@@ -2785,7 +2641,6 @@ std_value = 0.5728
  truncation interval.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2880,14 +2735,11 @@ t =
 <dt><u>BirnbaumSaundersDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
 </dl>
 
-<p> Compute the variance of a probability distribution.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
-</div>
 
         <div class="container-xl my-4">
           <div class="card rounded">
@@ -2978,8 +2830,8 @@ pd_fitted =
   BirnbaumSaundersDistribution
 
   Birnbaum-Saunders distribution
-     beta = 0.995643   [0.982284, 1.00918]
-    gamma = 0.503336   [0.493567, 0.513299]
+     beta =  1.00789   [0.994443, 1.02153]
+    gamma = 0.500467   [0.490753, 0.510373]
 
                     </pre></td></tr></tbody>
                   </table>

@@ -812,13 +812,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A positive integer scalar specifying the number of observations in the
- dataset (including any missing data, where applicable).  This property
- is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -848,14 +843,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A positive integer scalar specifying the number of folds for partition
- types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
- <code>'holdout'</code> and <code>'resubstitution'</code>, then <code>NumTestSets</code>
- is 1.  This property is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -886,15 +875,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A positive integer scalar specifying the size of the train set for
- partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
- vector of positive integers specifying the size of each training set for
- partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
- is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -925,15 +907,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A positive integer scalar specifying the size of the test set for
- partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
- vector of positive integers specifying the size of each testing set for
- partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
- is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -962,13 +937,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A character vector specifying the type of the <code>cvpartition</code> object.
- It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
- <code>resubstitution</code>.  This property is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -997,13 +967,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A logical scalar specifying whether the <code>cvpartition</code> object
- was created using custom partition partitioning (<code>true</code>) or
- not (<code>false</code>).  This property is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -1032,13 +997,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A logical scalar specifying whether the <code>cvpartition</code> object was
- created using grouping variables (<code>true</code>) or not (<code>false</code>).
- This property is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -1067,13 +1027,8 @@
             <div class="border-bottom py-2">
 
 
-<p> A logical scalar specifying whether the <code>cvpartition</code> object was
- created with a <code>'stratifyOption'</code> value of <code>true</code>.
- This property is read-only.
-</p>
-<div class="ms-5">
+<p> </p>
 
-</div>
 
 
             </div>
@@ -1119,9 +1074,7 @@
 <dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<code>'CustomPartition'</code>, <var>testSets</var>)</i></dt>
 </dl>
 
-<p> Repartition data for cross-validation.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'KFold'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a random nonstratified
  partition for k-fold cross-validation on <var>n</var> observations with each
@@ -1234,7 +1187,7 @@ summary,
 test, 
 training
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1268,9 +1221,7 @@ training
 <dt><u>cvpartition:</u> <var>Cnew</var> = <b>repartition</b><i> (<var>C</var>, <code>'legacy'</code>)</i></dt>
 </dl>
 
-<p> Repartition data for cross-validation.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>Cnew</var> = repartition (<var>C</var>)</code> creates a <code>cvpartition</code>
  object <var>Cnew</var> that defines a new random partition of the same type as
  the <code>cvpartition</code> <var>C</var>.
@@ -1295,7 +1246,7 @@ summary,
 test, 
 training
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1323,9 +1274,7 @@ training
 <dt><u>cvpartition:</u> <var>tbl</var> = <b>summary</b><i> (<var>C</var>)</i></dt>
 </dl>
 
-<p> Summarize cross-validation partition.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>tbl</var> = summary (<var>C</var>)</code> returns a summary table <var>tbl</var> of
  the <code>cvpartition</code> object <var>C</var> as long as its type is either
  k-fold or holdout and it is either stratified of grouped.  This function
@@ -1338,7 +1287,7 @@ repartition,
 test, 
 training
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1368,9 +1317,7 @@ training
 <dt><u>cvpartition:</u> <var>idx</var> = <b>test</b><i> (<var>C</var>, <code>&quot;all&quot;</code>)</i></dt>
 </dl>
 
-<p> Test indices for cross-validation.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>idx</var> = test (<var>C</var>)</code> returns a logical vector <var>idx</var> with
  <code>true</code> values indicating the elements corresponding to the test
  set defined in the code{cvpartition object <var>C</var>.  For k-fold and
@@ -1396,7 +1343,7 @@ repartition,
 summary, 
 training
 </p>
-</div>
+
 
             </div>
           </div>
@@ -1426,9 +1373,7 @@ training
 <dt><u>cvpartition:</u> <var>idx</var> = <b>training</b><i> (<var>C</var>, <code>&quot;all&quot;</code>)</i></dt>
 </dl>
 
-<p> Training indices for cross-validation.
-</p>
-<div class="ms-5">
+<p> </p>
 <p> <code><var>idx</var> = training (<var>C</var>)</code> returns a logical vector <var>idx</var>
  with <code>true</code> values indicating the elements corresponding to the
  training set defined in the code{cvpartition object <var>C</var>.  For k-fold
@@ -1454,7 +1399,7 @@ repartition,
 summary, 
 test
 </p>
-</div>
+
 
             </div>
           </div>
