@@ -944,6 +944,8 @@ classdef ClassificationDiscriminant
     ## -*- texinfo -*-
     ## @deftypefn {ClassificationDiscriminant} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
+    ## Classification margins for discriminant analysis classifier.
+    ##
     ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
     ## the classification margins for @var{obj} with data @var{X} and
     ## classification @var{Y}. @var{m} is a numeric vector of length size (X,1).
