@@ -1,4 +1,5 @@
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -25,27 +26,27 @@ classdef BurrDistribution
   ## description, and sample data for a Burr probability distribution.
   ##
   ## The Burr distribution is a continuous probability distribution that models
-  ## a non-negative random variable with scale parameter @qcode{@var{alpha}} and
-  ## shape parameters @qcode{@var{c}} and @qcode{@var{k}}.  It is most commonly
-  ## used to model household income.
+  ## a non-negative random variable, commonly used to model household income,
+  ## with scale parameter @qcode{@var{alpha}} and shape parameters
+  ## @qcode{@var{c}} and @qcode{@var{k}}.
   ##
   ## There are several ways to create a @code{BurrDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BurrDistribution (@var{alpha}, @var{c},
-  ## @var{k})} to create a generalized extreme value distribution with fixed
-  ## parameter values @qcode{@var{alpha}}, @qcode{@var{c}}, and @qcode{@var{k}}.
+  ## @var{k})} to create a Burr distribution with fixed parameter values
+  ## @qcode{@var{alpha}}, @qcode{@var{c}}, and @qcode{@var{k}}.
   ## @item Use the static method @qcode{BurrDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @code{@var{x}} using the same arguments as the
+  ## distribution to data @qcode{@var{x}} using the same input arguments as the
   ## @code{burrfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
+  ## functions to create probability distribution objects, instead of the class
   ## constructor or the aforementioned static method.
   ##
   ## Further information about the Burr distribution can be found at
@@ -74,8 +75,8 @@ classdef BurrDistribution
     ## First shape parameter
     ##
     ## A positive scalar value characterizing the first shape parameter of the
-    ## Burr distribution. You can access the @qcode{alpha} property using dot
-    ## name assignment.
+    ## Burr distribution. You can access the @qcode{c} property using dot name
+    ## assignment.
     ##
     ## @end deftp
     c
@@ -86,8 +87,8 @@ classdef BurrDistribution
     ## Second shape parameter
     ##
     ## A positive scalar value characterizing the second shape parameter of the
-    ## Burr distribution. You can access the @qcode{alpha} property using dot
-    ## name assignment.
+    ## Burr distribution. You can access the @qcode{k} property using dot name
+    ## assignment.
     ##
     ## @end deftp
     k
@@ -259,11 +260,11 @@ classdef BurrDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "Burr distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "Burr distribution");
     endfunction
 
     function this = set.alpha (this, alpha)
@@ -352,13 +353,13 @@ classdef BurrDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BurrDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {BurrDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -445,8 +446,8 @@ classdef BurrDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
-    ## of the probability distribution object, @var{pd}.
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
     function nlogL = negloglik (this)
@@ -472,7 +473,7 @@ classdef BurrDistribution
     ## probability distribution object, @var{pd}.
     ##
     ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -535,7 +536,7 @@ classdef BurrDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -544,7 +545,7 @@ classdef BurrDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -608,10 +609,9 @@ classdef BurrDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the generalized extreme value distribution, @qcode{@var{pnum} = 1}
-    ## selects the parameter @qcode{alpha}, @qcode{@var{pnum} = 2} selects the
-    ## parameter @var{c}, and @qcode{@var{pnum} = 3} selects the parameter
-    ## @var{k}.
+    ## For the Burr distribution, @qcode{@var{pnum} = 1} selects the parameter
+    ## @qcode{alpha}, @qcode{@var{pnum} = 2} selects the parameter @qcode{c},
+    ## and @qcode{@var{pnum} = 3} selects the parameter @qcode{k}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -631,17 +631,17 @@ classdef BurrDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {BurrDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {BurrDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {BurrDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {BurrDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {BurrDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {BurrDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {BurrDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {BurrDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{burrrnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -695,13 +695,14 @@ classdef BurrDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
+    ## and upper limit, @var{upper}.  If @var{pd} is fitted to data with
+    ## @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -725,7 +726,7 @@ classdef BurrDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -826,7 +827,7 @@ endfunction
 
 %!demo
 %! ## Plot the PDF of a Burr type XII distribution, with parameters alpha = 1,
-%! ## c = 2, and k = 1, truncated at [0, 2] intervals. Generate 10000 random
+%! ## c = 2, and k = 1, truncated at [0.5, 2.5] intervals. Generate 10000 random
 %! ## samples from this truncated distribution and superimpose a histogram with
 %! ## 100 bins scaled accordingly
 %!
