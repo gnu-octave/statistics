@@ -1,5 +1,6 @@
 ## Copyright (C) 2014 Nir Krakauer
 ## Copyright (C) 2025 Yassin Achengli
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -77,84 +78,129 @@
 ## @seealso{cvpartition}
 ## @end deftypefn
 
-function results = crossval (f, X, varargin)
-  if (nargin < 2)
-    print_usage
-  endif
+function results = crossval (f, varargin)
 
-  n = size (X, 1);
+  ## Parse optional Name-Value paired arguments
+  optNames = {'Holdout', 'KFold', 'Leaveout', 'MCReps', ...
+              'Partition', 'Stratify', 'Predfun'};
+  dfValues = {[], [], [], 1, [], [], []};
+  [Holdout, KFold, Leaveout, MCReps, Partition, Stratify, Predfun, args] = ...
+                                   pairedArgs (optNames, dfValues, varargin(:));
 
-  ## extract optional parameter-value argument pairs
-  if (ischar (f) && nargin < 5)
-    error ("categorical evaluation needs X, y inputs. Only X given")
-  else
-    y = cell2mat (varargin(1));
-    varargin = varargin(2:end);
-  endif
-
-  if (ischar (f) && ! strcmp (f, "mse") && ! strcmp (f, "mcr"))
-    error ("Bad criterion. Must be MSE or MCR")
-  endif
-
-  if (numel (varargin) > 1)
-    vargs = varargin;
-    nargs = numel (vargs);
-    values = vargs(2:2:nargs);
-    names = vargs(1:2:nargs)(1:numel(values));
-    validnames = {"KFold", "HoldOut", "LeaveOut", "Partition", ...
-    "Given", "stratify", "mcreps", "Predfun"};
-    for i = 1:numel (names)
-      names(i) = validatestring (names(i){:}, validnames);
-    end
-    for i = 1:numel(validnames)
-      name = validnames(i){:};
-      name_pos = find (strcmp (name, names));
-      if (! isempty (name_pos))
-        eval ([name " = values(name_pos){:};"])
-      endif
-    endfor
-  endif
-
-  if (ischar (f) && ! (exist ("Predfun", "var")))
-    error ("crossval for error validation needs defined Predfun parameter")
-  endif
-
-  ## construct CV partition
-  if exist ("Partition", "var")
-    P = Partition;
-  elseif exist ("Given", "var")
-    P = cvpartition (Given, "Given");
-  elseif exist ("KFold", "var")
-    if (! exist ("stratify", "var"))
-      stratify = n;
-    endif
-    P = cvpartition (stratify, "KFold", KFold);
-  elseif (exist ("HoldOut", "var"))
-    if (! exist ("stratify", "var"))
-      stratify = n;
-    endif
-    P = cvpartition (stratify, "HoldOut", HoldOut);
-    if (! exist ("mcreps", "var") || isempty (mcreps))
-      mcreps = 1;
-    endif
-  elseif (exist ("LeaveOut", "var"))
-    P = cvpartition (n, "LeaveOut");
-  else #KFold
-    if (! exist ("stratify", "var"))
-      stratify = n;
-    endif
-    P = cvpartition (stratify, "KFold");
-  endif
-
-  nr = P.NumTestSets;
-  nreps = 1;
-  if (strcmp (P.Type, "holdout") && exist ("mcreps", "var") &&  mcreps > 1)
-    nreps = mcreps;
-  endif
-
+  ## Check first input argument
   if (ischar (f))
-    results = nan (nreps, nr);
-    for rep = 1:nreps
+    ## Check for valid criterion
+    if (! ismember (f, {'mse',',mcr'}))
+      error ("crossval: criterion must be 'mse' or 'mcr'.");
+    endif
+    ## Check for valid prediction function handle
+    if (is_function_handle (Predfun))
+      ## Check for valid prediction function handle
+      XTrain = [1, 2; 1, 2; 1, 2; 1, 2; 1, 2];
+      yTrain = [1; 2; 1; 2; 1];
+      XTest = [1, 2; 1, 2];
+      try
+        yFit = Predfun (XTrain, yTrain, XTest);
+      catch
+        error ("crossval: bad prediction function handle for error evaluation.");
+      end_try_catch
+      if (! iscolumn (yFit) || numel (yFit) != 2)
+        error (strcat ("crossval: prediction function handle must return", ...
+                       " a column vector with the same rows as XTest."));
+      endif
+    else
+      error (strcat ("crossval: prediction function handle", ...
+                     " is required for error evaluation."));
+    endif
+    ## At least two additional input arguments (X and y) are required
+    nargs = numel (args);
+    if (nargs < 2)
+      error ("crossval: X and Y are required for error evaluation.");
+    endif
+    y = args{end};
+    if (nargs == 2)
+      X = args{1};        # numeric matrix with single data variable
+      n = size (X, 1);
+    else
+      X = args(1:end-1);  # cell array with multiple data variables
+      n = size (args{1}, 1);
+    endif
+
+  elseif (is_function_handle (f))
+    ## Check for valid function handle
+    XTrain = [1, 2; 1, 2; 1, 2; 1, 2; 1, 2];
+    XTest = [1, 2; 1, 2];
+    try
+      value = f (XTrain, XTest);
+    catch
+      error ("crossval: bad function handle to cross-validate.");
+    end_try_catch
+    if (! isrow (value))
+      error ("crossval: function handle must return a scalar or a row vector.");
+    endif
+    ## At least one additional input argument (X) is required
+    nargs = numel (args);
+    if (nargs < 1)
+      error ("crossval: X is required for values evaluation.");
+    endif
+    if (nargs == 1)
+      X = args{1};        # numeric matrix with single data variable
+      n = size (X, 1);
+    else
+      X = args(1:end-1);  # cell array with multiple data variables
+      n = size (args{1}, 1);
+    endif
+  else
+    error ("crossval: invalid first input argument.");
+  endif
+
+  ## Input validation for valid values are handled by the cvpartition class.
+  ## Check for single paired argument for CV partition.
+  vcpa = sum (isempty (Holdout), isempty (KFold), ...
+              isempty (Leaveout), isempty (Partition));
+  if (vcpa > 1)
+    error (strcat ("crossval: you can only set one", ...
+                   " cvpartition type in paired arguments."));
+  endif
+  ## Check for Partition and Stratify paired arguments
+  if (! isempty (Partition) && ! isempty (Stratify))
+    error ("crossval: you cannot specify both 'Partition' and 'Stratify'.");
+  endif
+
+  ## Construct the CV partition
+  if (! isempty (Partition))
+    P = Partition;
+    if (P.IsCustom || ismember (P.Type, {'resubstitution', 'leaveout'}))
+      MCReps = 1;
+    endif
+  elseif (! isempty (Leaveout))
+    P = cvpartition (n, "LeaveOut");
+    MCReps = 1;
+  elseif (! isempty (Holdout))
+    if (isempty (Stratify))
+      P = cvpartition (n, "HoldOut", Holdout);
+    else
+      P = cvpartition (Stratify, "HoldOut", Holdout);
+    endif
+  elseif (! isempty (KFold))
+    if (isempty (Stratify))
+      P = cvpartition (n, "KFold", KFold);
+    else
+      P = cvpartition (Stratify, "KFold", KFold);
+    endif
+  else # KFold by default
+    if (isempty (Stratify))
+      P = cvpartition (n, "KFold");
+    else
+      P = cvpartition (Stratify, "KFold");
+    endif
+  endif
+
+  ## FIX ME: this requires further work to handle multiple data variables
+  ## Currently, it works only for single data variable, where X is numeric.
+  if (ischar (f)) # error evaluation
+    results = nan (MCReps, nr);
+    for rep = 1:MCReps
       if (rep > 1)
         P = repartition (P);
       endif
@@ -163,22 +209,22 @@ function results = crossval (f, X, varargin)
         idx_test = test (P, idx);
         y_fit = Predfun (X(idx_train, :), y(idx_train), X(idx_test, :));
         if (strcmp (f, "mse"))
-          N = numel(y_fit) - 1;
+          N = numel (y_fit) - 1;
           if (N < 1)
             N = 1;
           endif
           err = sum ((y_fit - y(idx_test)).^2) / (N - 1);
           results(rep, idx) = err;
-        else # MCR 
+        else # MCR
           err = numel (y_fit(y_fit == y(idx_test))) / numel (y_fit);
           results(rep, idx) = err;
         endif
       endfor
     endfor
     results = mean (mean (results));
-  else
-    # Model execution
-    for rep = 1:nreps
+
+  else  # model execution
+    for rep = 1:MCReps
       if (rep > 1)
         P = repartition (P);
       endif
@@ -186,7 +232,6 @@ function results = crossval (f, X, varargin)
         idx_train = training (P, idx);
         idx_test = test (P, idx);
         result = f (X(idx_train, :), X(idx_test, :));
-
         results(rep, idx) = result;
       endfor
     endfor
