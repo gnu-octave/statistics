@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a Burr distribution with default parameters
+%! pd = makedist ("Burr")
+%!
+%! ## Query parameter 'alpha' (scale parameter)
+%! pd.alpha
+%!
+%! ## Set parameter 'alpha'
+%! pd.alpha = 2
+%!
+%! ## Use this to initialize or modify the scale parameter of a Burr
+%! ## distribution. The scale parameter must be a positive real scalar.
+
+%!demo
+%! ## Create a Burr distribution object by calling its constructor
+%! pd = BurrDistribution (1.5, 2, 1)
+%!
+%! ## Query parameter 'alpha'
+%! pd.alpha
+%!
+%! ## This demonstrates direct construction with a specific scale parameter,
+%! ## ideal for modeling specific household income distributions.
