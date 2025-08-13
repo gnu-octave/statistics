@@ -1,10 +1,10 @@
 %!demo
 %! ## Generate random samples from a Burr distribution
-%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 3)
 %! rand ("seed", 21);
-%! samples = random (pd, 500, 1);
-%! hist (samples, 50)
-%! title ("Histogram of 500 random samples from Burr(alpha=1, c=2, k=1)")
+%! samples = random (pd, 50, 1);
+%! hist (samples, 90)
+%! title ("Histogram of 50 random samples from Burr(alpha=1, c=2, k=3)")
 %! xlabel ("values in x")
 %! ylabel ("Frequency")
 %!
