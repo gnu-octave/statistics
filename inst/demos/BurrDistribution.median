@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Burr distributions
+%! pd1 = makedist ("Burr", "alpha", 1, "c", 2, "k", 1);
+%! pd2 = makedist ("Burr", "alpha", 1, "c", 3, "k", 1);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution into
+%! ## two equal probability halves, e.g., median household income.

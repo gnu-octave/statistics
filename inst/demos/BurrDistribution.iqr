@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Burr distribution
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, useful for understanding variability
+%! ## in data like household income.

@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Burr distribution
+%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## distribution, e.g., variability in household income.
