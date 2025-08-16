@@ -1,0 +1,18 @@
+%!demo
+%! ## Plot various PDFs from the Exponential distribution
+%! x = 0:0.01:10;
+%! pd1 = makedist ("Exponential", "mu", 1);
+%! pd2 = makedist ("Exponential", "mu", 2);
+%! pd3 = makedist ("Exponential", "mu", 3);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 1", "mu = 2", "mu = 3"}, "location", "northeast")
+%! title ("Exponential PDF")
+%! xlabel ("values in x")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Exponential
+%! ## distributions, showing the likelihood of different values.

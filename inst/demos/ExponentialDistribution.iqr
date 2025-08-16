@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for an Exponential distribution
+%! pd = makedist ("Exponential", "mu", 2)
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, useful for understanding variability
+%! ## in waiting times.

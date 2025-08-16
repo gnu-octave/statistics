@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute confidence intervals for parameters of a fitted Exponential
+%! ## distribution
+%! pd = makedist ("Exponential", "mu", 2)
+%! rand ("seed", 5);
+%! data = random (pd, 1000, 1);
+%! pd_fitted = fitdist (data, "Exponential")
+%! ci = paramci (pd_fitted, "Alpha", 0.05)
+%!
+%! ## Use this to obtain confidence intervals for the estimated parameter (mu),
+%! ## providing a range of plausible values given the data.
