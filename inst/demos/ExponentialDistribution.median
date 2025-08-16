@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Exponential distributions
+%! pd1 = makedist ("Exponential", "mu", 1);
+%! pd2 = makedist ("Exponential", "mu", 2);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves.
