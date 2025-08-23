@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various iCDFs from the Exponential distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("Exponential", "mu", 1);
+%! pd2 = makedist ("Exponential", "mu", 2);
+%! pd3 = makedist ("Exponential", "mu", 3);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 1", "mu = 2", "mu = 3"}, "location", "northwest")
+%! title ("Exponential iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Exponential
+%! ## distributions, useful for finding values corresponding to
+%! ## given probabilities.

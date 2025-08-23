@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Exponential distributions
+%! pd1 = makedist ("Exponential", "mu", 1);
+%! pd2 = makedist ("Exponential", "mu", 2);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Exponential
+%! ## distributions with different mean parameters.

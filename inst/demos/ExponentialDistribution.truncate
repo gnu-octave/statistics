@@ -1,0 +1,21 @@
+%!demo
+%! ## Plot the PDF of an Exponential distribution, with parameter mu = 2,
+%! ## truncated at [1, 5] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! pd = makedist ("Exponential", "mu", 2)
+%! t = truncate (pd, 1, 3)
+%! rand ("seed", 5);
+%! data = random (t, 10000, 1);
+%!
+%! ## Plot histogram and fitted PDF
+%! plot (t)
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+%! title ("Exponential distribution (mu = 2) truncated at [1, 5]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating an Exponential distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.
