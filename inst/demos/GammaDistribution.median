@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Gamma distributions
+%! pd1 = makedist ("Gamma", "a", 1, "b", 1);
+%! pd2 = makedist ("Gamma", "a", 2, "b", 1);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves.

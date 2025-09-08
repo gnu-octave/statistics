@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the shape parameter of a fitted
+%! ## Gamma distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! rand ("seed", 21);
+%! data = gamrnd (2, 1, 1000, 1);
+%! pd_fitted = fitdist (data, "Gamma")
+%! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the shape parameter (a),
+%! ## helping to understand the uncertainty in parameter estimates.
