@@ -14,7 +14,7 @@
 %! hold on
 %! hist (data, 100, 50)
 %! hold off
-%! title ("Extreme Value distribution (mu = 0, sigma = 1) truncated at [-2, 2]")
+%! title ("Extreme Value distribution (mu = 0, sigma = 1) truncated at [0.5, 4]")
 %! legend ("Truncated PDF", "Histogram")
 %!
 %! ## This demonstrates truncating an Extreme Value distribution to a specific
