@@ -5,7 +5,7 @@
 %! ## accordingly
 %!
 %! pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
-%! t = truncate (pd, -2, 2)
+%! t = truncate (pd, 0.5, 4)
 %! rand ("seed", 21);
 %! data = random (t, 10000, 1);
 %!
