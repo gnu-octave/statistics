@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Extreme Value distributions
+%! pd1 = makedist ("ExtremeValue", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("ExtremeValue", "mu", 0, "sigma", 1);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Extreme Value
+%! ## distributions with different scale parameters.

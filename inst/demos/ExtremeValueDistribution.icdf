@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Extreme Value distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("ExtremeValue", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("ExtremeValue", "mu", 0, "sigma", 1);
+%! pd3 = makedist ("ExtremeValue", "mu", 0, "sigma", 1.5);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 1.5"}, ...
+%!         "location", "northwest")
+%! title ("Extreme Value iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Values")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Extreme Value
+%! ## distributions, useful for finding the value corresponding to
+%! ## given probabilities in extreme event modeling.

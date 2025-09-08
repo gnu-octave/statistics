@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for an Extreme Value distribution
+%! pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in extreme values.

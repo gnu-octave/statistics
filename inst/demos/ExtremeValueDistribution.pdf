@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Extreme Value distribution
+%! x = -5:0.01:10;
+%! pd1 = makedist ("ExtremeValue", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("ExtremeValue", "mu", 0, "sigma", 1);
+%! pd3 = makedist ("ExtremeValue", "mu", 0, "sigma", 1.5);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 1.5"}, ...
+%!         "location", "northeast")
+%! title ("Extreme Value PDF")
+%! xlabel ("Values")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Extreme Value
+%! ## distributions, showing the likelihood of different extreme values.
