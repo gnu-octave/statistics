@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Generalized Pareto distributions
+%! pd1 = makedist ("GeneralizedPareto", "k", 0.2, "sigma", 1, "theta", 0);
+%! pd2 = makedist ("GeneralizedPareto", "k", 0.4, "sigma", 1, "theta", 0);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected exceedance value for Generalized Pareto
+%! ## distributions with different shape parameters (note: mean is finite only if k<1).

@@ -1,0 +1,21 @@
+%!demo
+%! ## Create a Generalized Pareto distribution with default parameters
+%! pd = makedist ("GeneralizedPareto")
+%!
+%! ## Query parameter 'theta' (location parameter)
+%! pd.theta
+%!
+%! ## Set parameter 'theta'
+%! pd.theta = 1
+%!
+%! ## Use this to initialize or modify the location parameter in a Generalized Pareto
+%! ## distribution. The location parameter can be any real scalar, often set to a threshold in extreme value analysis.
+
+%!demo
+%! ## Create a Generalized Pareto distribution object by calling its constructor
+%! pd = GeneralizedParetoDistribution (0.5, 1, 1)
+%!
+%! ## Query parameter 'theta'
+%! pd.theta
+%!
+%! ## This demonstrates setting the location parameter directly, useful for shifting the distribution in threshold-exceedance models.

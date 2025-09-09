@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Generalized Pareto distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("GeneralizedPareto", "k", 0.2, "sigma", 1, "theta", 0);
+%! pd2 = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0);
+%! pd3 = makedist ("GeneralizedPareto", "k", 0.8, "sigma", 1, "theta", 0);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"k = 0.2, sigma = 1, theta = 0", "k = 0.5, sigma = 1, theta = 0", "k = 0.8, sigma = 1, theta = 0"}, ...
+%!         "location", "northwest")
+%! title ("Generalized Pareto iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Exceedance value")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Generalized Pareto
+%! ## distributions, useful for finding the exceedance value corresponding to
+%! ## given return probabilities in risk assessment.

@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Generalized Pareto distribution
+%! pd = makedist ("GeneralizedPareto", "k", 0.3, "sigma", 1, "theta", 0)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in exceedance values (finite only if k<0.5).

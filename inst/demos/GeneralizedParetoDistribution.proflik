@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the shape parameter of a fitted
+%! ## Generalized Pareto distribution
+%! pd = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
+%! rand ("seed", 21);
+%! data = random (pd, 1000, 1);
+%! pd_fitted = GeneralizedParetoDistribution.fit (data, 0)
+%! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the shape parameter (k),
+%! ## helping to understand the uncertainty in parameter estimates for tail behavior.
