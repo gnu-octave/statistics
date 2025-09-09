@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a Gamma distribution with default parameters
+%! pd = makedist ("Gamma")
+%!
+%! ## Query parameter 'a' (shape parameter)
+%! pd.a
+%!
+%! ## Set parameter 'a'
+%! pd.a = 2
+%!
+%! ## Use this to initialize or modify the shape parameter of a Gamma
+%! ## distribution. The shape parameter must be a positive real scalar.
+
+%!demo
+%! ## Create a Gamma distribution object by calling its constructor
+%! pd = GammaDistribution (2, 1)
+%!
+%! ## Query parameter 'a'
+%! pd.a
+%!
+%! ## This demonstrates direct construction with a specific shape parameter,
+%! ## useful for modeling waiting times with known variability.

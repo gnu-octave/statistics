@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,82 +25,210 @@ classdef GammaDistribution
   ## A @code{GammaDistribution} object consists of parameters, a model
   ## description, and sample data for a gamma probability distribution.
   ##
-  ## The gamma distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{a} @tab Shape parameter @tab @math{α > 0}
-  ## @item @qcode{b} @tab Scale parameter @tab @math{β > 0}
-  ## @end multitable
+  ## The gamma distribution is a continuous probability distribution that
+  ## models the time to failure of a process, with shape parameter
+  ## @qcode{@var{a}} and scale parameter @qcode{@var{b}}.
   ##
   ## There are several ways to create a @code{GammaDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{GammaDistribution (@var{a}, @var{b})}
-  ## to create a gamma distribution with specified parameter values.
+  ## to create a gamma distribution with fixed parameter values @qcode{@var{a}}
+  ## and @qcode{@var{b}}.
   ## @item Use the static method @qcode{GammaDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
+  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## @code{gamfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
-  ## A @code{GammaDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{GammaDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
-  ##
-  ## Further information about the Gamma distribution can be found at
+  ## Further information about the gamma distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
   ##
-  ## @seealso{fitdist, makedist, gamcdf, gaminv, gampdf, gamrnd, lognfit,
+  ## @seealso{fitdist, makedist, gamcdf, gaminv, gampdf, gamrnd, gamfit,
   ## gamlike, gamstat}
   ## @end deftypefn
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} a
+    ##
+    ## Shape parameter
+    ##
+    ## A positive scalar value characterizing the shape of the
+    ## gamma distribution. You can access the @qcode{a}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     a
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} b
+    ##
+    ## Scale parameter
+    ##
+    ## A positive scalar value characterizing the scale of the
+    ## gamma distribution. You can access the @qcode{b}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     b
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = true;
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object. This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "GammaDistribution";
-    DistributionCode = "gam";
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution. This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter. This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"a", "b"};
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Shape", "Scale"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = true;
+    DistributionCode = "gam";
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters. This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{a} and @qcode{b}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## parameter estimates. Diagonal elements contain the variance of each
+    ## estimated parameter, and non-diagonal elements contain the covariance
+    ## between the parameter estimates. The covariance matrix is only meaningful
+    ## when the distribution was fitted to data. If the distribution object was
+    ## created with fixed parameters, or a parameter of a fitted distribution is
+    ## modified, then all elements of the variance-covariance are zero. This
+    ## property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## which are estimated. @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution. First element contains the lower boundary,
+    ## second element contains the upper boundary. This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not. This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {GammaDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data}: a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens}: a numeric vector of logical values indicating
+    ## censoring information corresponding to the elements of the data used for
+    ## distribution fitting. If no censoring vector was used for distribution
+    ## fitting, then this field defaults to an empty array.
+    ## @item @qcode{freq}: a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting. If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
@@ -200,13 +329,13 @@ classdef GammaDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {GammaDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {GammaDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -293,8 +422,8 @@ classdef GammaDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
-    ## of the probability distribution object, @var{pd}.
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
     function nlogL = negloglik (this)
@@ -320,7 +449,7 @@ classdef GammaDistribution
     ## probability distribution object, @var{pd}.
     ##
     ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -383,7 +512,7 @@ classdef GammaDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -392,7 +521,7 @@ classdef GammaDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -457,7 +586,7 @@ classdef GammaDistribution
     ## likelihood against the user-defined range of the selected parameter.
     ##
     ## For the gamma distribution, @qcode{@var{pnum} = 1} selects the parameter
-    ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @var{b}.
+    ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @qcode{b}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -477,17 +606,17 @@ classdef GammaDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {GammaDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {GammaDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {GammaDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {GammaDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {GammaDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {GammaDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {GammaDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {GammaDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{gamrnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -541,13 +670,14 @@ classdef GammaDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
+    ## and upper limit, @var{upper}.  If @var{pd} is fitted to data with
+    ## @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -571,7 +701,7 @@ classdef GammaDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn

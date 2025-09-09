@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Gamma distributions
+%! pd1 = makedist ("Gamma", "a", 1, "b", 1);
+%! pd2 = makedist ("Gamma", "a", 2, "b", 1);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Gamma
+%! ## distributions with different shape parameters.

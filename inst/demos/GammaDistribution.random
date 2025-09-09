@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Gamma distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Gamma(a=2, b=1)")
+%! xlabel ("Values")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Gamma distribution, useful
+%! ## for simulating waiting times or other positive skewed data.

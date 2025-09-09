@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Gamma distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, useful for understanding variability
+%! ## in waiting times.

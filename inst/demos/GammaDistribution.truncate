@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot the PDF of a Gamma distribution, with parameters a = 2
+%! ## and b = 1, truncated at [1, 5] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! t = truncate (pd, -1, 2)
+%! rand ("seed", 21);
+%! data = random (t, 10000, 1);
+%! ## Plot histogram and fitted PDF
+%! plot (t)
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+%! title ("Gamma distribution (a = 2, b = 1) truncated at [-1, 2]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Gamma distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.

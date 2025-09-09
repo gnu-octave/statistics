@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Gamma distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("Gamma", "a", 1, "b", 1);
+%! pd2 = makedist ("Gamma", "a", 2, "b", 1);
+%! pd3 = makedist ("Gamma", "a", 5, "b", 1);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"a = 1, b = 1", "a = 2, b = 1", "a = 5, b = 1"}, ...
+%!         "location", "northwest")
+%! title ("Gamma iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Values")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Gamma
+%! ## distributions, useful for finding values corresponding to
+%! ## given probabilities.

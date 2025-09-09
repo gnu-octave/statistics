@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Gamma distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! rand ("seed", 21);
+%! data = gamrnd (2, 1, 100, 1);
+%! pd_fitted = fitdist (data, "Gamma")
+%! nlogL = negloglik (pd_fitted)
+%!
+%! ## This is useful for assessing the fit of a Gamma distribution to
+%! ## data, lower values indicate a better fit.

@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Gamma distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the distribution.

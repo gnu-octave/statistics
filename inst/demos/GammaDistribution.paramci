@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute confidence intervals for parameters of a fitted Gamma
+%! ## distribution
+%! pd = makedist ("Gamma", "a", 2, "b", 1)
+%! rand ("seed", 21);
+%! data = gamrnd (2, 1, 1000, 1);
+%! pd_fitted = fitdist (data, "Gamma")
+%! ci = paramci (pd_fitted, "Alpha", 0.05)
+%!
+%! ## Use this to obtain confidence intervals for the estimated parameters (a
+%! ## and b), providing a range of plausible values given the data.
