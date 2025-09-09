@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the scale parameter of a fitted
+%! ## Half-normal distribution
+%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! data = hnrnd (0, 1, 1000, 1);
+%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+%! ## helping to understand the uncertainty in parameter estimates.

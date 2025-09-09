@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Half-normal distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("HalfNormal", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("HalfNormal", "mu", 0, "sigma", 1);
+%! pd3 = makedist ("HalfNormal", "mu", 0, "sigma", 2);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 2"}, ...
+%!         "location", "northwest")
+%! title ("Half-normal iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x >= mu)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Half-normal
+%! ## distributions, useful for finding values corresponding to given
+%! ## probabilities, such as thresholds in quality control.

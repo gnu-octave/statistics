@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Half-normal distribution
+%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! data = hnrnd (0, 1, 100, 1);
+%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! nlogL = negloglik (pd_fitted)
+%!
+%! ## This is useful for assessing the fit of a Half-normal distribution to
+%! ## data, with lower values indicating a better fit, often used in model comparison.

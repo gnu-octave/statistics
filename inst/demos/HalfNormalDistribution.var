@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Half-normal distribution
+%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## positive values in the distribution.

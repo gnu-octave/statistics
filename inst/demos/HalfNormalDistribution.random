@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Half-normal distribution
+%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Half-normal(mu=0, sigma=1)")
+%! xlabel ("values in x (x >= mu)")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Half-normal distribution, useful
+%! ## for simulating positive data like absolute errors or magnitudes.

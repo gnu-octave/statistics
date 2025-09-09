@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute confidence intervals for parameters of a fitted Half-normal
+%! ## distribution
+%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! data = hnrnd (0, 1, 1000, 1);
+%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! ci = paramci (pd_fitted, "Alpha", 0.05)
+%!
+%! ## Use this to obtain confidence intervals for the estimated parameters (mu
+%! ## fixed, sigma estimated), providing a range of plausible values given the data.

@@ -1,0 +1,23 @@
+%!demo
+%! ## Create a Half-normal distribution with default parameters
+%! pd = makedist ("HalfNormal")
+%!
+%! ## Query parameter 'sigma' (scale parameter)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 2
+%!
+%! ## Use this to initialize or modify the scale parameter in a Half-normal
+%! ## distribution. The scale parameter must be a positive real scalar, controlling
+%! ## the spread of the distribution.
+
+%!demo
+%! ## Create a Half-normal distribution object by calling its constructor
+%! pd = HalfNormalDistribution (0, 1.5)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## ideal for modeling variability in positive data, such as absolute residuals.
