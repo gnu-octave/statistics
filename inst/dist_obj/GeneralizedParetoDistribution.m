@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -22,87 +23,228 @@ classdef GeneralizedParetoDistribution
   ## Generalized Pareto probability distribution object.
   ##
   ## A @code{GeneralizedParetoDistribution} object consists of parameters, a
-  ## model description, and sample data for a generalized Pareto probability
+  ## model description, and sample data for a Generalized Pareto probability
   ## distribution.
   ##
-  ## The generalized Pareto distribution uses the following parameters.
+  ## The Generalized Pareto distribution is a continuous probability distribution
+  ## that models the tail behavior of other distributions, commonly used for
+  ## extreme value analysis, with shape parameter @qcode{@var{k}}, scale
+  ## parameter @qcode{@var{sigma}}, and location parameter @qcode{@var{theta}}.
   ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{k} @tab Shape @tab @math{-Inf < k < Inf}
-  ## @item @qcode{sigma} @tab Scale @tab @math{sigma > 0}
-  ## @item @qcode{theta} @tab Location @tab @math{-Inf < theta < Inf}
-  ## @end multitable
-  ##
-  ## There are several ways to create a @code{GeneralizedParetoDistribution} object.
+  ## There are several ways to create a @code{GeneralizedParetoDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{GeneralizedParetoDistribution (@var{k}, @var{sigma})}
-  ## to create a generalized Pareto distribution with specified parameter values.
-  ## @item Use the static method @qcode{GeneralizedParetoDistribution.fit (@var{x},
-  ## @var{k}, @var{freq})} to a distribution to data @var{x}.
+  ## @item Use the constructor @qcode{GeneralizedParetoDistribution (@var{k},
+  ## @var{sigma}, @var{theta})} to create a Generalized Pareto distribution with
+  ## fixed parameter values @qcode{@var{k}}, @qcode{@var{sigma}}, and
+  ## @qcode{@var{theta}}.
+  ## @item Use the static method @qcode{GeneralizedParetoDistribution.fit
+  ## (@var{x}, @var{theta}, @var{alpha}, @var{freq}, @var{options})} to fit a
+  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## @code{gpfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
-  ## A @code{GeneralizedParetoDistribution} object contains the following
-  ## properties, which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{GeneralizedParetoDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
-  ##
-  ## Further information about the generalized Pareto distribution can be found
-  ## at @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
+  ## Further information about the Generalized Pareto distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
   ##
   ## @seealso{fitdist, makedist, gpcdf, gpinv, gppdf, gprnd, gpfit,
   ## gplike, gpstat}
   ## @end deftypefn
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} k
+    ##
+    ## Shape parameter
+    ##
+    ## A scalar value characterizing the shape of the Generalized Pareto
+    ## distribution. You can access the @qcode{k} property using dot name
+    ## assignment.
+    ##
+    ## @end deftp
     k
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} sigma
+    ##
+    ## Scale parameter
+    ##
+    ## A positive scalar value characterizing the scale of the Generalized Pareto
+    ## distribution. You can access the @qcode{sigma} property using dot name
+    ## assignment.
+    ##
+    ## @end deftp
     sigma
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} theta
+    ##
+    ## Location parameter
+    ##
+    ## A scalar value characterizing the location of the Generalized Pareto
+    ## distribution. You can access the @qcode{theta} property using dot name
+    ## assignment.
+    ##
+    ## @end deftp
     theta
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object. This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "GeneralizedParetoDistribution";
-    DistributionCode = "gp";
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution. This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 3;
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{3x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter. This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"k", "sigma", "theta"};
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{3x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Shape", "Scale", "Location"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "gp";
     ParameterRange = [-Inf, realmin, -Inf; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{3x1} numeric vector containing the values of the distribution
+    ## parameters. This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{k}, @qcode{sigma}, and
+    ## @qcode{theta} properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{3x3} numeric matrix containing the variance-covariance of the
+    ## parameter estimates. Diagonal elements contain the variance of each
+    ## estimated parameter, and non-diagonal elements contain the covariance
+    ## between the parameter estimates. The covariance matrix is only meaningful
+    ## when the distribution was fitted to data. If the distribution object was
+    ## created with fixed parameters, or a parameter of a fitted distribution is
+    ## modified, then all elements of the variance-covariance are zero. This
+    ## property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x3} logical vector specifying which parameters are fixed and
+    ## which are estimated. @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates. This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution. First element contains the lower boundary,
+    ## second element contains the upper boundary. This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not. This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {GeneralizedParetoDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data}: a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens}: a numeric vector of logical values indicating
+    ## censoring information corresponding to the elements of the data used for
+    ## distribution fitting. If no censoring vector was used for distribution
+    ## fitting, then this field defaults to an empty array.
+    ## @item @qcode{freq}: a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting. If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
@@ -123,11 +265,11 @@ classdef GeneralizedParetoDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "Generalized Pareto distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "normal distribution");
+      __disp__ (this, "Generalized Pareto distribution");
     endfunction
 
     function this = set.k (this, k)
@@ -216,13 +358,13 @@ classdef GeneralizedParetoDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {GeneralizedParetoDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {GeneralizedParetoDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -309,8 +451,8 @@ classdef GeneralizedParetoDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
-    ## of the probability distribution object, @var{pd}.
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
     function nlogL = negloglik (this)
@@ -336,7 +478,7 @@ classdef GeneralizedParetoDistribution
     ## probability distribution object, @var{pd}.
     ##
     ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -399,7 +541,7 @@ classdef GeneralizedParetoDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -408,7 +550,7 @@ classdef GeneralizedParetoDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -472,9 +614,10 @@ classdef GeneralizedParetoDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the generalized Pareto distribution, @qcode{@var{pnum} = 1} selects
+    ## For the Generalized Pareto distribution, @qcode{@var{pnum} = 1} selects
     ## the parameter @qcode{k}, @qcode{@var{pnum} = 2} selects the parameter
-    ## @var{sigma}, and @qcode{@var{pnum} = 3} selects the parameter @var{theta}.
+    ## @qcode{sigma}, and @qcode{@var{pnum} = 3} selects the parameter
+    ## @qcode{theta}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -494,17 +637,17 @@ classdef GeneralizedParetoDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {GeneralizedParetoDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {GeneralizedParetoDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {GeneralizedParetoDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {GeneralizedParetoDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {GeneralizedParetoDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {GeneralizedParetoDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {GeneralizedParetoDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {GeneralizedParetoDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{random} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -558,13 +701,14 @@ classdef GeneralizedParetoDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
+    ## and upper limit, @var{upper}.  If @var{pd} is fitted to data with
+    ## @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -588,7 +732,7 @@ classdef GeneralizedParetoDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -654,7 +798,7 @@ endclassdef
 
 function checkparams (k, sigma, theta)
   if (! (isscalar (k) && isnumeric (k) && isreal (k) && isfinite (k)))
-    error ("GeneralizedParetoDistribution: MU must be a real scalar.")
+    error ("GeneralizedParetoDistribution: K must be a real scalar.")
   endif
   if (! (isscalar (sigma) && isnumeric (sigma) && isreal (sigma)
                           && isfinite (sigma) && sigma > 0))
@@ -698,15 +842,15 @@ endfunction
 
 ## Test input validation
 ## 'GeneralizedParetoDistribution' constructor
-%!error <GeneralizedParetoDistribution: MU must be a real scalar.> ...
+%!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution(Inf, 1, 1)
-%!error <GeneralizedParetoDistribution: MU must be a real scalar.> ...
+%!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution(i, 1, 1)
-%!error <GeneralizedParetoDistribution: MU must be a real scalar.> ...
+%!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution("a", 1, 1)
-%!error <GeneralizedParetoDistribution: MU must be a real scalar.> ...
+%!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution([1, 2], 1, 1)
-%!error <GeneralizedParetoDistribution: MU must be a real scalar.> ...
+%!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution(NaN, 1, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
 %! GeneralizedParetoDistribution(1, 0, 1)
