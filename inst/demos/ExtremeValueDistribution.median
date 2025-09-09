@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Extreme Value distributions
+%! pd1 = makedist ("ExtremeValue", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("ExtremeValue", "mu", 0, "sigma", 1);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves.

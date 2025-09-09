@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from an Extreme Value distribution
+%! pd = makedist ("ExtremeValue", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from ExtremeValue(mu=0, sigma=1)")
+%! xlabel ("Values")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from an Extreme Value distribution, useful
+%! ## for simulating extreme events like maximum values in data sets.

@@ -1,0 +1,22 @@
+%!demo
+%! ## Create an Extreme Value distribution with default parameters
+%! pd = makedist ("ExtremeValue")
+%!
+%! ## Query parameter 'sigma' (scale parameter)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 0.8
+%!
+%! ## Use this to initialize or modify the scale parameter in an Extreme Value
+%! ## distribution. The scale parameter must be a positive real scalar.
+
+%!demo
+%! ## Create an Extreme Value distribution object by calling its constructor
+%! pd = ExtremeValueDistribution (1.5, 0.5)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## ideal for modeling the spread in extreme value data.
