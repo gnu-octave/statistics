@@ -1,7 +1,7 @@
 ## Copyright (C) 1995-2016 Kurt Hornik
 ## Copyright (C) 2012 Rik Wehbring
 ## Copyright (C) 2013-2017 Julien Bect
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -84,23 +84,20 @@ function p = tcdf (x, df, uflag)
   ## Find finite values in X where 0 < DF < Inf
   k = isfinite (x) & (df > 0) & (df < Inf);
 
-  ## Process more efficiently small positive integer DF up to 1e4
-  ks = k & (fix (df) == df) & (df <= 1e4);
-  if any (ks(:))
+  ## Process more efficiently small positive integer DF up to 1e3
+  ks = k & (fix (df) == df) & (df <= 1e3);
+  if (sum (ks) == 1 && sum (k) == 1)
     if (isscalar (df))
       p(ks) = tcdf_integer_df (x(ks), df);
-      return
     else
       vu = unique (df(ks));
       for i = 1:numel (vu)
-        ki = k & (df == vu(i));
+        ki = ks & (df == vu(i));
         p(ki) = tcdf_integer_df (x(ki), vu(i));
       endfor
     endif
+    return;
   endif
-
-  ## Process remaining values for DF (non-integers and > 1e4) except DF == Inf
-  k &= ! ks;
 
   ## Distinguish between small and big abs(x)
   xx = x .^ 2;
