@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Generalized Extreme Value distribution
+%! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Generalized Extreme Value(k=0, sigma=1, mu=0)")
+%! xlabel ("Value")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a GEV distribution, useful for simulating
+%! ## extreme value data, such as maximum wind speeds or flood levels.

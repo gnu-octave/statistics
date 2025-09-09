@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Generalized Extreme Value distribution
+%! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of extreme
+%! ## values in the GEV distribution.

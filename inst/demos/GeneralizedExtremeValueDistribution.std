@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Generalized Extreme Value distribution
+%! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in extreme values for the GEV distribution.

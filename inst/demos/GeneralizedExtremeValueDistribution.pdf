@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Generalized Extreme Value distribution
+%! x = -2:0.01:5;
+%! pd1 = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0);
+%! pd2 = makedist ("GeneralizedExtremeValue", "k", 0.2, "sigma", 1, "mu", 0);
+%! pd3 = makedist ("GeneralizedExtremeValue", "k", -0.2, "sigma", 1, "mu", 0);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"k = 0, sigma = 1, mu = 0", "k = 0.2, sigma = 1, mu = 0", "k = -0.2, sigma = 1, mu = 0"}, ...
+%!         "location", "northeast")
+%! title ("Generalized Extreme Value PDF")
+%! xlabel ("Value")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for GEV distributions,
+%! ## showing the likelihood of different extreme values.

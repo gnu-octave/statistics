@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot the PDF of a Generalized Extreme Value distribution, with parameters
+%! ## k = 0, sigma = 1, mu = 0, truncated at [0, 2] intervals. Generate 10000
+%! ## random samples from this truncated distribution and superimpose a histogram
+%! ## scaled accordingly
+%! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
+%! t = truncate (pd, 0, 2)
+%! rand ("seed", 21);
+%! data = random (t, 10000, 1);
+%!
+%! ## Plot histogram and fitted PDF
+%! plot (t)
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+%! title ("Generalized Extreme Value distribution (k=0, sigma=1, mu=0) truncated at [0, 2]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a GEV distribution to a specific range and
+%! ## visualizing the resulting distribution with random samples.
