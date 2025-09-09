@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Generalized Pareto distributions
+%! pd1 = makedist ("GeneralizedPareto", "k", 0.2, "sigma", 1, "theta", 0);
+%! pd2 = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median exceedance value, which splits the distribution
+%! ## into two equal probability halves.

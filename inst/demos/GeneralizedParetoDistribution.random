@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Generalized Pareto distribution
+%! pd = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from GeneralizedPareto(k=0.5, sigma=1, theta=0)")
+%! xlabel ("Exceedance value")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Generalized Pareto distribution, useful
+%! ## for simulating extreme exceedances in risk modeling.

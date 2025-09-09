@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Generalized Pareto distribution
+%! pd = makedist ("GeneralizedPareto", "k", 0.3, "sigma", 1, "theta", 0)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## exceedance values in the distribution (finite only if k<0.5).

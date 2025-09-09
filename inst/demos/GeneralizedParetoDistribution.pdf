@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Generalized Pareto distribution
+%! x = 0:0.01:5;
+%! pd1 = makedist ("GeneralizedPareto", "k", 0.2, "sigma", 1, "theta", 0);
+%! pd2 = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0);
+%! pd3 = makedist ("GeneralizedPareto", "k", 0.8, "sigma", 1, "theta", 0);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"k = 0.2, sigma = 1, theta = 0", "k = 0.5, sigma = 1, theta = 0", "k = 0.8, sigma = 1, theta = 0"}, ...
+%!         "location", "northeast")
+%! title ("Generalized Pareto PDF")
+%! xlabel ("Exceedance value")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Generalized Pareto
+%! ## distributions, showing the likelihood of different exceedance values.

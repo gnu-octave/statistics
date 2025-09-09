@@ -1,0 +1,22 @@
+%!demo
+%! ## Create a Generalized Pareto distribution with default parameters
+%! pd = makedist ("GeneralizedPareto")
+%!
+%! ## Query parameter 'sigma' (scale parameter)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 2
+%!
+%! ## Use this to initialize or modify the scale parameter in a Generalized Pareto
+%! ## distribution. The scale parameter must be a positive real scalar.
+
+%!demo
+%! ## Create a Generalized Pareto distribution object by calling its constructor
+%! pd = GeneralizedParetoDistribution (0.5, 2, 0)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## ideal for modeling the spread in extreme value data.
