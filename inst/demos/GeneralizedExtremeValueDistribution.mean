@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Generalized Extreme Value distributions
+%! pd1 = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0);
+%! pd2 = makedist ("GeneralizedExtremeValue", "k", -0.2, "sigma", 1, "mu", 0);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for GEV distributions with
+%! ## different shape parameters, useful for predicting average extreme values.

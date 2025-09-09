@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Generalized Extreme Value distributions
+%! pd1 = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0);
+%! pd2 = makedist ("GeneralizedExtremeValue", "k", -0.2, "sigma", 1, "mu", 0);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median extreme value, which splits the GEV distribution
+%! ## into two equal probability halves.

@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various iCDFs from the Generalized Extreme Value distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0);
+%! pd2 = makedist ("GeneralizedExtremeValue", "k", 0.2, "sigma", 1, "mu", 0);
+%! pd3 = makedist ("GeneralizedExtremeValue", "k", -0.2, "sigma", 1, "mu", 0);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"k = 0, sigma = 1, mu = 0", "k = 0.2, sigma = 1, mu = 0", "k = -0.2, sigma = 1, mu = 0"}, ...
+%!         "location", "northwest")
+%! title ("Generalized Extreme Value iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Value")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for GEV distributions, useful
+%! ## for finding extreme values corresponding to given probabilities.
