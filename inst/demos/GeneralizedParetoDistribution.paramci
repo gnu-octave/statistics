@@ -4,8 +4,9 @@
 %! pd = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
 %! rand ("seed", 21);
 %! data = random (pd, 1000, 1);
-%! pd_fitted = GeneralizedParetoDistribution.fit (data, 0)
-%! ci = paramci (pd_fitted, "Alpha", 0.05)
+%! [phat, ci] = gpfit (data, 0, 0.05, []);
+%! disp ("Estimated parameters (k, sigma, theta):"), disp (phat)
+%! disp ("95% Confidence Intervals for k and sigma:"), disp (ci)
 %!
 %! ## Use this to obtain confidence intervals for the estimated parameters (k and sigma),
 %! ## providing a range of plausible values given the data (theta is fixed).

@@ -2,9 +2,9 @@
 %! ## Create a Generalized Pareto distribution with fixed parameters k = 0.5, sigma = 1, theta = 0
 %! ## and plot its PDF.
 %!
-%! pd = makedist ("GeneralizedPareto", "k", 0.5, "sigma", 1, "theta", 0)
+%! pd = makedist ("GeneralizedPareto", "k", 0.3, "sigma", 1, "theta", 0)
 %! plot (pd)
-%! title ("Fixed Generalized Pareto distribution with k = 0.5, sigma = 1, theta = 0")
+%! title ("Fixed Generalized Pareto distribution with k = 0.3, sigma = 1, theta = 0")
 
 %!demo
 %! ## Generate a data set of 100 random samples from a Generalized Pareto
