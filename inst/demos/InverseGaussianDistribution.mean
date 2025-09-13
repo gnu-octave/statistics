@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Inverse Gaussian distributions
+%! pd1 = makedist ("InverseGaussian", "mu", 1, "lambda", 1);
+%! pd2 = makedist ("InverseGaussian", "mu", 1, "lambda", 2);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Inverse Gaussian
+%! ## distributions with different shape parameters.

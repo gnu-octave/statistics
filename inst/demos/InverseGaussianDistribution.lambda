@@ -1,0 +1,22 @@
+%!demo
+%! ## Create an Inverse Gaussian distribution with default parameters
+%! pd = makedist ("InverseGaussian")
+%!
+%! ## Query parameter 'lambda' (shape parameter)
+%! pd.lambda
+%!
+%! ## Set parameter 'lambda'
+%! pd.lambda = 3
+%!
+%! ## Use this to initialize or modify the shape parameter in an Inverse Gaussian
+%! ## distribution. The shape parameter must be a positive real scalar.
+
+%!demo
+%! ## Create an Inverse Gaussian distribution object by calling its constructor
+%! pd = InverseGaussianDistribution (1.5, 2)
+%!
+%! ## Query parameter 'lambda'
+%! pd.lambda
+%!
+%! ## This shows how to set the shape parameter directly via the constructor,
+%! ## ideal for modeling specific variability in non-negative data.
