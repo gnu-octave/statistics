@@ -1,6 +1,6 @@
 %!demo
 %! ## Generate random samples from a Logistic distribution
-%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! samples = random (pd, 500, 1);
 %! hist (samples, 50)

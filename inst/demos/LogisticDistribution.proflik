@@ -1,7 +1,7 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the scale parameter of a fitted
 %! ## Logistic distribution
-%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd, 1000, 1);
 %! pd_fitted = fitdist (data, "LogisticDistribution")

@@ -1,9 +1,9 @@
 %!demo
 %! ## Plot various CDFs from the Logistic distribution
 %! x = -5:0.01:5;
-%! pd1 = makedist ("LogisticDistribution", "mu", 0, "sigma", 0.5);
-%! pd2 = makedist ("LogisticDistribution", "mu", 0, "sigma", 1);
-%! pd3 = makedist ("LogisticDistribution", "mu", 0, "sigma", 1.5);
+%! pd1 = makedist ("Logistic", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("Logistic", "mu", 0, "sigma", 1);
+%! pd3 = makedist ("Logistic", "mu", 0, "sigma", 1.5);
 %! p1 = cdf (pd1, x);
 %! p2 = cdf (pd2, x);
 %! p3 = cdf (pd3, x);

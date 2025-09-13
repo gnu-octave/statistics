@@ -1,6 +1,6 @@
 %!demo
 %! ## Create a Logistic distribution with default parameters
-%! pd = makedist ("LogisticDistribution")
+%! pd = makedist ("Logistic")
 %!
 %! ## Query parameter 'sigma' (scale parameter)
 %! pd.sigma

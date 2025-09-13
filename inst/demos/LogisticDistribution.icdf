@@ -1,9 +1,9 @@
 %!demo
 %! ## Plot various iCDFs from the Logistic distribution
 %! p = 0.001:0.001:0.999;
-%! pd1 = makedist ("LogisticDistribution", "mu", 0, "sigma", 0.5);
-%! pd2 = makedist ("LogisticDistribution", "mu", 0, "sigma", 1);
-%! pd3 = makedist ("LogisticDistribution", "mu", 0, "sigma", 1.5);
+%! pd1 = makedist ("Logistic", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("Logistic", "mu", 0, "sigma", 1);
+%! pd3 = makedist ("Logistic", "mu", 0, "sigma", 1.5);
 %! x1 = icdf (pd1, p);
 %! x2 = icdf (pd2, p);
 %! x3 = icdf (pd3, p);

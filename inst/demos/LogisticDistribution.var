@@ -1,6 +1,6 @@
 %!demo
 %! ## Compute the variance for a Logistic distribution
-%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! var_value = var (pd)
 %!
 %! ## Use this to calculate the variance, which quantifies the spread of the

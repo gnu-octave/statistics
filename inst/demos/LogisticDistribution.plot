@@ -1,7 +1,7 @@
 %!demo
 %! ## Create a Logistic distribution with fixed parameters mu = 0 and sigma = 1
 %! ## and plot its PDF.
-%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! plot (pd)
 %! title ("Fixed Logistic distribution with mu = 0 and sigma = 1")
 %!
@@ -11,7 +11,7 @@
 %! ## Generate a data set of 100 random samples from a Logistic distribution
 %! ## with parameters mu = 0 and sigma = 1. Fit a Logistic distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF.
-%! pd_fixed = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd_fixed = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "LogisticDistribution")
@@ -27,7 +27,7 @@
 %! ## Generate a data set of 200 random samples from a Logistic distribution
 %! ## with parameters mu = 0 and sigma = 1. Display a probability plot for the
 %! ## Logistic distribution fit to the data.
-%! pd_fixed = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! pd_fixed = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
 %! pd_fitted = fitdist (data, "LogisticDistribution")
