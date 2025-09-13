@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for an Inverse Gaussian distribution
+%! pd = makedist ("InverseGaussian", "mu", 1, "lambda", 2)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in values.

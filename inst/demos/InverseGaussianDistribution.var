@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for an Inverse Gaussian distribution
+%! pd = makedist ("InverseGaussian", "mu", 1, "lambda", 2)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## values in the distribution.

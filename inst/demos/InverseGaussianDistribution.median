@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Inverse Gaussian distributions
+%! pd1 = makedist ("InverseGaussian", "mu", 1, "lambda", 1);
+%! pd2 = makedist ("InverseGaussian", "mu", 1, "lambda", 2);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves.

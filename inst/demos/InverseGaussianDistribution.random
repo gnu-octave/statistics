@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from an Inverse Gaussian distribution
+%! pd = makedist ("InverseGaussian", "mu", 1, "lambda", 2)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Inverse Gaussian(mu=1, lambda=2)")
+%! xlabel ("values")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from an Inverse Gaussian distribution, useful
+%! ## for simulating non-negative skewed data like repair times.
