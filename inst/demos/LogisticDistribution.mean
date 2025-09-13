@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Logistic distributions
+%! pd1 = makedist ("LogisticDistribution", "mu", 0, "sigma", 0.5);
+%! pd2 = makedist ("LogisticDistribution", "mu", 0, "sigma", 1);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Logistic distributions
+%! ## with different scale parameters, representing the central tendency.

@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Logistic distribution
+%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the distribution, useful for understanding data spread.

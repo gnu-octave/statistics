@@ -1,0 +1,17 @@
+%!demo
+%! ## Plot the PDF of a Logistic distribution, with parameters mu = 0 and sigma = 1,
+%! ## truncated at [-2, 2] intervals. Generate 10000 random samples from this
+%! ## truncated distribution and superimpose a histogram scaled accordingly.
+%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! t = truncate (pd, -2, 2)
+%! rand ("seed", 21);
+%! data = random (t, 10000, 1);
+%! plot (t)
+%! hold on
+%! hist (data, 100, 50)
+%! hold off
+%! title ("Logistic distribution (mu = 0, sigma = 1) truncated at [-2, 2]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Logistic distribution to a specific range
+%! ## and visualizing the resulting distribution with random samples.

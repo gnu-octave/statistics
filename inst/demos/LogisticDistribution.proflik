@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the scale parameter of a fitted
+%! ## Logistic distribution
+%! pd = makedist ("LogisticDistribution", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! data = random (pd, 1000, 1);
+%! pd_fitted = fitdist (data, "LogisticDistribution")
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+%! ## helping to understand the uncertainty in parameter estimates.
