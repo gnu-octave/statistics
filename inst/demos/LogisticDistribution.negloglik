@@ -3,7 +3,7 @@
 %! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd, 100, 1);
-%! pd_fitted = fitdist (data, "LogisticDistribution")
+%! pd_fitted = fitdist (data, "Logistic")
 %! nlogL = negloglik (pd_fitted)
 %!
 %! ## This is useful for assessing the fit of a Logistic distribution to data,

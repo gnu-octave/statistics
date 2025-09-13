@@ -14,7 +14,7 @@
 %! pd_fixed = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd_fixed, 100, 1);
-%! pd_fitted = fitdist (data, "LogisticDistribution")
+%! pd_fitted = fitdist (data, "Logistic")
 %! plot (pd_fitted, "PlotType", "cdf")
 %! txt = "Fitted Logistic distribution with mu = %0.2f and sigma = %0.2f";
 %! title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma))
@@ -30,7 +30,7 @@
 %! pd_fixed = makedist ("Logistic", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
 %! data = random (pd_fixed, 200, 1);
-%! pd_fitted = fitdist (data, "LogisticDistribution")
+%! pd_fitted = fitdist (data, "Logistic")
 %! plot (pd_fitted, "PlotType", "probability")
 %! txt = strcat ("Probability plot of fitted Logistic distribution", ...
 %!               " with mu = %0.2f and sigma = %0.2f");
