@@ -160,7 +160,7 @@ function [paramhat, paramci] = logifit (x, alpha, censor, freq, options)
     ## Compute muci using a normal approximation
     paramci(:,1) = norminv (probs, paramhat(1), se(1));
     ## Compute sci using a normal approximation for log (s) and transform back
-    paramci(:,2) = exp (norminv (probs, log (paramhat(2)), log (se(2))));
+    paramci(:,2) = exp (norminv (probs, log (paramhat(2)), se(2) / paramhat(2)));
  endif
 
 endfunction
