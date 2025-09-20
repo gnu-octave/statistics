@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Logistic distribution
+%! pd = makedist ("Logistic", "mu", 0, "sigma", 1)
+%! rand ("seed", 21);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Logistic(mu=0, sigma=1)")
+%! xlabel ("Value")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Logistic distribution, useful for
+%! ## simulating data for logistic regression or neural network modeling.
