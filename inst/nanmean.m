@@ -23,12 +23,12 @@
 ##
 ## Compute the mean while ignoring NaN values.
 ##
-## @code{@var{s} = nanmean (@var{x})} returns the mean of @var{x}, after removing
+## @code{@var{s} = nanmean (@var{x})} returns the mean of @var{x} after removing
 ## @qcode{NaN} values.  If @var{x} is a vector, a scalar value is returned.  If
 ## @var{x} is a matrix, a row vector of column means is returned.  If @var{x} is
-## a multidimensional array, the @code{nanmean} operates along the first
+## a multidimensional array, @code{nanmean} operates along the first
 ## nonsingleton dimension.  If all values along a dimesion are @qcode{NaN}, the
-## mean is returned returned as NaN.
+## mean is returned returned as @qcode{NaN}.
 ##
 ## @code{@var{s} = nanmean (@var{x}, @qcode{'all'})} returns the mean of all
 ## elements of @var{x}, after removing @qcode{NaN} values.  It is the equivalent
@@ -49,7 +49,14 @@
 ## @code{nanmean (@var{x}, @qcode{'all'})}.  Any dimension in @var{vecdim}
 ## greater than @code{ndims (@var{x})} is ignored.
 ##
-## @seealso{mean, nanmean, NaN}
+## @code{nanmean} primarily operates on @qcode{single} and @qcode{double}
+## numeric types, since they support @qcode{NaN} values, while preserving the
+## data type.  Nevertheless, it can also operate on integer types by treating
+## them as @qcode{double} types.  To avoid overflow on very large @qcode{int64}
+## and @qcode{uint64} values, use the @code{mean} function, which applies
+## special handling for such cases.
+##
+## @seealso{mean, nansum, nanmin, nanmax}
 ## @end deftypefn
 
 function y = nanmean (x, dim)
@@ -61,64 +68,52 @@ function y = nanmean (x, dim)
   elseif (isempty (x))
     y = NaN;
   else
-    % size of the input
-    sx = size(x);
-    % Determine the first nonsingleton dimension to operate on
-    if nargin < 2
-        dim = find(sx != 1, 1);
-        if isempty(dim) % scalar
-            dim = 1;
-        end
+    ## Determine the first nonsingleton dimension to operate on
+    sx = size (x);
+    if (nargin < 2)
+      dim = find (sx != 1, 1);
+      if (isempty (dim)) # scalar
+        dim = 1;
+      endif
     else
       if (isscalar (dim))
         if (! isnumeric (dim) || fix (dim) != dim || dim <= 0)
           error ("nanmean: DIM must be a positive integer.");
         endif
-      elseif (isvector (dim)) 
+      elseif (isvector (dim))
         if (ischar (dim))
-          if strcmpi (dim, 'all')
+          if (strcmpi (dim, 'all'))
              x = x(:);
-             dim = []; % type argument 'all' not yet implemented in Octave
+             dim = 1;
           else
-             error ("nanmean: Invalid option.");
+             error ("nanmean: invalid option.");
           endif
         else
           if (! isnumeric (dim) || any (fix (dim) != dim) || any (dim <= 0))
-            error ("nanmean: VECDIM must be a vector of positive integer.");
+            error ("nanmean: VECDIM must be a vector of positive integers.");
           endif
         endif
       endif
     endif
 
-    na = isnan (x); 
+    na = isnan (x);
     x(na) = 0;
-    if isempty (dim)
-      S = sum(x);
-      C = sum(!na);
+    na = ! na;
+    if (isscalar (dim))
+      y = sum (x, dim) ./ sum (na, dim);
     else
-      if numel (dim) > 1, % correction since octave's sum gives wrong result for dim vector
-        S = vsum (x, dim);
-        C = vsum (!na, dim);
-      else
-        S = sum (x, dim);
-        C = sum (!na, dim);
-      endif
+      for i = numel (dim):-1:1,
+        x = sum (x, dim(i));
+        na = sum (na, dim(i));
+      endfor
+      y = x ./ na;
     endif
-    y = S./C;
   endif
-endfunction
-
-function S = vsum(x, dim)
-  x(isnan(x)) = 0;
-  for i=numel (dim):-1:1,
-    x = sum (x, dim(i));
-  endfor
-  S = x;
 endfunction
 
 %!demo
 %! ## Find the column means for a matrix with missing values.,
-%! 
+%!
 %! x = magic (3);
 %! x([1, 4, 7:9]) = NaN
 %! y = nanmean (x)
