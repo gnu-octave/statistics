@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the standard deviation for a Half-normal distribution
-%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! data = abs (randn (10000, 1));
+%! pd = fitdist (data, "HalfNormal");
 %! std_value = std (pd)
 %!
 %! ## Use this to calculate the standard deviation, which measures the variability

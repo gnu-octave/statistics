@@ -1,9 +1,8 @@
 %!demo
 %! ## Compute the negative loglikelihood for a fitted Half-normal distribution
-%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
-%! data = hnrnd (0, 1, 100, 1);
-%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! data = abs (randn (100, 1));
+%! pd_fitted = fitdist (data, "HalfNormal");
 %! params = [pd_fitted.mu, pd_fitted.sigma];
 %! nlogL_hnlike = hnlike (params, data)
 %!

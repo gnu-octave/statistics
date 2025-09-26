@@ -1,6 +1,7 @@
 %!demo
 %! ## Compute the variance for a Half-normal distribution
-%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! data = abs (randn (10000, 1));
+%! pd = fitdist (data, "HalfNormal");
 %! var_value = var (pd)
 %!
 %! ## Use this to calculate the variance, which quantifies the spread of the

@@ -1,6 +1,7 @@
 %!demo
 %! ## Create a Half-normal distribution with default parameters
-%! pd = makedist ("HalfNormal")
+%! data = abs (randn (10000, 1));
+%! pd = fitdist (data, "HalfNormal");
 %!
 %! ## Query parameter 'mu' (location parameter)
 %! pd.mu

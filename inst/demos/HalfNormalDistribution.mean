@@ -1,7 +1,9 @@
 %!demo
 %! ## Compute the mean for different Half-normal distributions
-%! pd1 = makedist ("HalfNormal", "mu", 0, "sigma", 0.5);
-%! pd2 = makedist ("HalfNormal", "mu", 0, "sigma", 1);
+%! data1 = 0.5 * abs (randn (10000, 1));
+%! data2 = 1.0 * abs (randn (10000, 1));
+%! pd1 = fitdist (data1, "HalfNormal");
+%! pd2 = fitdist (data2, "HalfNormal");
 %! mean1 = mean (pd1)
 %! mean2 = mean (pd2)
 %!

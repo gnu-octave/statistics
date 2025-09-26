@@ -2,7 +2,8 @@
 %! ## Create a Half-normal distribution with fixed parameters mu = 0 and
 %! ## sigma = 1 and plot its PDF.
 %!
-%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
+%! data = abs (randn (10000, 1));
+%! pd = fitdist (data, "HalfNormal");
 %! plot (pd)
 %! title ("Fixed Half-normal distribution with mu = 0 and sigma = 1")
 
@@ -12,10 +13,9 @@
 %! ## distribution to this data and plot its CDF superimposed over an empirical
 %! ## CDF.
 %!
-%! pd_fixed = makedist ("HalfNormal", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
-%! data = hnrnd (0, 1, 100, 1);
-%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! data = abs (randn (100, 1));
+%! pd_fitted = fitdist (data, "HalfNormal");
 %! plot (pd_fitted, "PlotType", "cdf")
 %! txt = "Fitted Half-normal distribution with mu = %0.2f and sigma = %0.2f";
 %! title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma))
@@ -29,10 +29,9 @@
 %! ## distribution with parameters mu = 0 and sigma = 1. Display a probability
 %! ## plot for the Half-normal distribution fit to the data.
 %!
-%! pd_fixed = makedist ("HalfNormal", "mu", 0, "sigma", 1)
 %! rand ("seed", 21);
-%! data = hnrnd (0, 1, 200, 1);
-%! pd_fitted = HalfNormalDistribution.fit (data, 0)
+%! data = abs (randn (200, 1));
+%! pd_fitted = fitdist (data, "HalfNormal");
 %! plot (pd_fitted, "PlotType", "probability")
 %! txt = strcat ("Probability plot of fitted Half-normal", ...
 %!               " distribution with mu = %0.2f and sigma = %0.2f");

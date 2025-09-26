@@ -4,15 +4,18 @@
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
 %!
-%! pd = makedist ("HalfNormal", "mu", 0, "sigma", 1)
-%! t = truncate (pd, 0.5, 2)
 %! rand ("seed", 21);
-%! data = random (t, 10000, 1);
+%! data_all = abs (randn (20000, 1));
+%! data = data_all(data_all >= 0.5 & data_all <= 2);
+%! data = data(1:10000);
 %!
-%! ## Plot histogram and fitted PDF
+%! pd = fitdist (data, "HalfNormal");
+%! t = truncate (pd, 0.5, 2);
+%!
+%! ## Plot histogram and truncated PDF
 %! plot (t)
 %! hold on
-%! hist (data, 100, 50)
+%! hist (data, 50)
 %! hold off
 %! title ("Half-normal distribution (mu = 0, sigma = 1) truncated at [0.5, 2]")
 %! legend ("Truncated PDF", "Histogram")

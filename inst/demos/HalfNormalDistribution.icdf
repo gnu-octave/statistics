@@ -1,9 +1,12 @@
 %!demo
 %! ## Plot various iCDFs from the Half-normal distribution
 %! p = 0.001:0.001:0.999;
-%! pd1 = makedist ("HalfNormal", "mu", 0, "sigma", 0.5);
-%! pd2 = makedist ("HalfNormal", "mu", 0, "sigma", 1);
-%! pd3 = makedist ("HalfNormal", "mu", 0, "sigma", 2);
+%! data1 = 0.5 * abs (randn (10000, 1));
+%! data2 = 1.0 * abs (randn (10000, 1));
+%! data3 = 2.0 * abs (randn (10000, 1));
+%! pd1 = fitdist (data1, "HalfNormal");
+%! pd2 = fitdist (data2, "HalfNormal");
+%! pd3 = fitdist (data3, "HalfNormal");
 %! x1 = icdf (pd1, p);
 %! x2 = icdf (pd2, p);
 %! x3 = icdf (pd3, p);
