@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -134,9 +134,6 @@ classdef HalfNormalDistribution
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = "hn";
-  properties (GetAccess = public, Constant = true, Hidden)
-    CensoringAllowed = false;
-    DistributionCode = "hn";
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -231,10 +228,6 @@ classdef HalfNormalDistribution
     ##
     ## @end deftp
     InputData
-  endproperties
-
-  properties (GetAccess = public, SetAccess = protected, Hidden)
-    ParameterCI
   endproperties
 
   properties (GetAccess = public, SetAccess = protected, Hidden)
