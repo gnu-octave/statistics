@@ -1,9 +1,12 @@
 %!demo
 %! ## Plot various CDFs from the Half-normal distribution
 %! x = -1:0.01:5;
-%! pd1 = makedist ("HalfNormal", "mu", 0, "sigma", 0.5);
-%! pd2 = makedist ("HalfNormal", "mu", 0, "sigma", 1);
-%! pd3 = makedist ("HalfNormal", "mu", 0, "sigma", 2);
+%! data1 = 0.5 * abs (randn (10000, 1));
+%! data2 = 1.0 * abs (randn (10000, 1));
+%! data3 = 2.0 * abs (randn (10000, 1));
+%! pd1 = fitdist (data1, "HalfNormal");
+%! pd2 = fitdist (data2, "HalfNormal");
+%! pd3 = fitdist (data3, "HalfNormal");
 %! p1 = cdf (pd1, x);
 %! p2 = cdf (pd2, x);
 %! p3 = cdf (pd3, x);
