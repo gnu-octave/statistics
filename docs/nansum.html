@@ -770,20 +770,40 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> s = <b>nansum</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> s = <b>nansum</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> s = <b>nansum</b><i> (&hellip;, <code>&quot;native&quot;</code>)</i></dt>
-<dt><u>statistics:</u> s = <b>nansum</b><i> (&hellip;, <code>&quot;double&quot;</code>)</i></dt>
-<dt><u>statistics:</u> s = <b>nansum</b><i> (&hellip;, <code>&quot;extra&quot;</code>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>nansum</b><i> (<var>x</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>nanmax</b><i> (<var>x</var>, <code>'all'</code>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>nanmax</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
+<dt><u>statistics:</u> <var>s</var> = <b>nanmax</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
 </dl>
+
 <p> Compute the sum while ignoring NaN values.
 </p>
 <div class="ms-5">
-<p> <code>nansum</code> is identical to the <code>sum</code> function except that NaN
- values are treated as 0 and so ignored.  If all values are NaN, the sum is
- returned as 0.
+<p> <code><var>s</var> = nansum (<var>x</var>)</code> returns the sum of <var>x</var>, after removing
+ <code>NaN</code> values.  If <var>x</var> is a vector, a scalar value is returned.  If
+ <var>x</var> is a matrix, a row vector of column sums is returned.  If <var>x</var> is
+ a multidimensional array, the <code>nansum</code> operates along the first
+ nonsingleton dimension.  If all values along a dimesion are <code>NaN</code>, the
+ sum is returned returned as 0.
 </p>
-<p> See help text of <code>sum</code> for details on the options.
+<p> <code><var>s</var> = nansum (<var>x</var>, <code>'all'</code>)</code> returns the sum of all
+ elements of <var>x</var>, after removing <code>NaN</code> values.  It is the equivalent
+ of <code>nansum (<var>x</var>(:))</code>.
+</p>
+<p> <code><var>s</var> = nansum (<var>x</var>, <var>dim</var>)</code> operates along the dimension
+ <var>dim</var> of <var>x</var>.
+</p>
+<p> <code><var>s</var> = nansum (<var>x</var>, <var>vecdim</var>)</code> returns the sum over the
+ dimensions specified in the vector <var>vecdim</var>.  Each element of
+ <var>vecdim</var> represents a dimension of the input array <var>x</var> and the output
+ <var>s</var> has length 1 in the specified operating dimensions.  The lengths of
+ the other dimensions are the same for <var>x</var> and <var>y</var>.  For example, if
+ <var>x</var> is a 2-by-3-by-4 array, then <code>nanmax (<var>x</var>, [1 2])</code> returns a
+ 1-by-1-by-4 array.  Each element of the output array is the maximum of the
+ elements on the corresponding page of <var>x</var>.  If <var>vecdim</var> indexes all
+ dimensions of <var>x</var>, then it is equivalent to
+ <code>nanmax (<var>x</var>, <code>'all'</code>)</code>.  Any dimension in <var>vecdim</var>
+ greater than <code>ndims (<var>x</var>)</code> is ignored.
 </p>
 <p> <strong>See also: </strong>
 sum, 
@@ -793,6 +813,202 @@ sum,
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/private/nansum.m">nansum</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Find the column sums for a matrix with missing values.,
+
+ x = magic (3);
+ x([1, 4, 7:9]) = NaN
+ s = nansum (x)
+
+x =
+
+   NaN   NaN   NaN
+     3     5   NaN
+     4     9   NaN
+
+s =
+
+    7   14    0
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Find the row sums for a matrix with missing values.,
+
+ x = magic (3);
+ x([1, 4, 7:9]) = NaN
+ s = nansum (x, 2)
+
+x =
+
+   NaN   NaN   NaN
+     3     5   NaN
+     4     9   NaN
+
+s =
+
+    0
+    8
+   13
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Find the sum of all the values in a multidimensional array
+ ## with missing values.
+
+ x = reshape (1:30, [2, 5, 3]);
+ x([10:12, 25]) = NaN
+ s = nansum (x, "all")
+
+x =
+
+ans(:,:,1) =
+
+     1     3     5     7     9
+     2     4     6     8   NaN
+
+ans(:,:,2) =
+
+   NaN    13    15    17    19
+   NaN    14    16    18    20
+
+ans(:,:,3) =
+
+    21    23   NaN    27    29
+    22    24    26    28    30
+
+s = 407
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Find the sum of a multidimensional array with missing values over
+ ## multiple dimensions.
+
+ x = reshape (1:30, [2, 5, 3]);
+ x([10:12, 25]) = NaN
+ s = nansum (x, [2, 3])
+
+x =
+
+ans(:,:,1) =
+
+     1     3     5     7     9
+     2     4     6     8   NaN
+
+ans(:,:,2) =
+
+   NaN    13    15    17    19
+   NaN    14    16    18    20
+
+ans(:,:,3) =
+
+    21    23   NaN    27    29
+    22    24    26    28    30
+
+s =
+
+   189
+   218
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
