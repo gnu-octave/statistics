@@ -22,36 +22,33 @@ classdef HalfNormalDistribution
   ##
   ## Half-normal probability distribution object.
   ##
-  ## A @code{HalfNormalDistribution} object consists of parameters, a
-  ## model description, and sample data for a Half-normal probability
-  ## distribution.
+  ## A @code{HalfNormalDistribution} object consists of parameters, a model
+  ## description, and sample data for a half-normal probability distribution.
   ##
-  ## The Half-normal distribution is a continuous probability distribution
-  ## that models the time to failure of materials subjected to cyclic loading,
-  ## with location parameter @qcode{@var{mu}} and scale parameter
+  ## The half-normal distribution is a continuous probability distribution that
+  ## models the time to failure of materials subjected to cyclic loading, with
+  ## location parameter @qcode{@var{mu}} and scale parameter
   ## @qcode{@var{sigma}}.
   ##
-  ## There are several ways to create a @code{HalfNormalDistribution}
-  ## object.
+  ## There are several ways to create a @code{HalfNormalDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{HalfNormalDistribution (@var{mu},
-  ## @var{sigma})} to create a Half-normal distribution with fixed
+  ## @var{sigma})} to create a half-normal distribution with fixed
   ## parameter values @qcode{@var{mu}} and @qcode{@var{sigma}}.
-  ## @item Use the static method @qcode{HalfNormalDistribution.fit
-  ## (@var{x}, @var{mu}, @var{freq})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
-  ## @code{hnfit} function.
+  ## @item Use the static method @qcode{HalfNormalDistribution.fit (@var{x},
+  ## @var{mu}, @var{freq})} to fit a distribution to data @qcode{@var{x}} using
+  ## the same input arguments as the @code{hnfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
   ## functions to create probability distribution objects, instead of the class
   ## constructor or the aforementioned static method.
   ##
-  ## Further information about the Half-normal distribution can be found at
+  ## Further information about the half-normal distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
   ##
   ## @seealso{fitdist, makedist, hncdf, hninv, hnpdf, hnrnd, hnfit,
@@ -65,7 +62,7 @@ classdef HalfNormalDistribution
     ## Location parameter
     ##
     ## A scalar value characterizing the location of the
-    ## Half-normal distribution. You can access the @qcode{mu}
+    ## half-normal distribution.  You can access the @qcode{mu}
     ## property using dot name assignment.
     ##
     ## @end deftp
@@ -77,7 +74,7 @@ classdef HalfNormalDistribution
     ## Scale parameter
     ##
     ## A positive scalar value characterizing the scale of the
-    ## Half-normal distribution. You can access the @qcode{sigma}
+    ## half-normal distribution.  You can access the @qcode{sigma}
     ## property using dot name assignment.
     ##
     ## @end deftp
@@ -91,7 +88,7 @@ classdef HalfNormalDistribution
     ## Probability distribution name
     ##
     ## A character vector specifying the name of the probability distribution
-    ## object. This property is read-only.
+    ## object.  This property is read-only.
     ##
     ## @end deftp
     DistributionName = "HalfNormalDistribution";
@@ -102,7 +99,7 @@ classdef HalfNormalDistribution
     ## Number of parameters
     ##
     ## A scalar integer value specifying the number of parameters characterizing
-    ## the probability distribution. This property is read-only.
+    ## the probability distribution.  This property is read-only.
     ##
     ## @end deftp
     NumParameters = 2;
@@ -113,7 +110,7 @@ classdef HalfNormalDistribution
     ## Names of parameters
     ##
     ## A @math{2x1} cell array of character vectors with each element containing
-    ## the name of a distribution parameter. This property is read-only.
+    ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
     ParameterNames = {"mu", "sigma"};
@@ -124,7 +121,7 @@ classdef HalfNormalDistribution
     ## Description of parameters
     ##
     ## A @math{2x1} cell array of character vectors with each element containing
-    ## a short description of a distribution parameter. This property is
+    ## a short description of a distribution parameter.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -145,7 +142,7 @@ classdef HalfNormalDistribution
     ## Distribution parameter values
     ##
     ## A @math{2x1} numeric vector containing the values of the distribution
-    ## parameters. This property is read-only. You can change the distribution
+    ## parameters.  This property is read-only. You can change the distribution
     ## parameters by assigning new values to the @qcode{mu} and @qcode{sigma}
     ## properties.
     ##
@@ -158,13 +155,13 @@ classdef HalfNormalDistribution
     ## Covariance matrix of the parameter estimates
     ##
     ## A @math{2x2} numeric matrix containing the variance-covariance of the
-    ## parameter estimates. Diagonal elements contain the variance of each
+    ## parameter estimates.  Diagonal elements contain the variance of each
     ## estimated parameter, and non-diagonal elements contain the covariance
-    ## between the parameter estimates. The covariance matrix is only meaningful
-    ## when the distribution was fitted to data. If the distribution object was
-    ## created with fixed parameters, or a parameter of a fitted distribution is
-    ## modified, then all elements of the variance-covariance are zero. This
-    ## property is read-only.
+    ## between the parameter estimates.  The covariance matrix is only
+    ## meaningful when the distribution was fitted to data.  If the distribution
+    ## object was created with fixed parameters, or a parameter of a fitted
+    ## distribution is modified, then all elements of the variance-covariance
+    ## are zero.  This property is read-only.
     ##
     ## @end deftp
     ParameterCovariance
@@ -175,8 +172,8 @@ classdef HalfNormalDistribution
     ## Flag for fixed parameters
     ##
     ## A @math{1x2} logical vector specifying which parameters are fixed and
-    ## which are estimated. @qcode{true} values correspond to fixed parameters,
-    ## @qcode{false} values correspond to parameter estimates. This property is
+    ## which are estimated.  @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates.  This property is
     ## read-only.
     ##
     ## @end deftp
@@ -188,8 +185,8 @@ classdef HalfNormalDistribution
     ## Truncation interval
     ##
     ## A @math{1x2} numeric vector specifying the truncation interval for the
-    ## probability distribution. First element contains the lower boundary,
-    ## second element contains the upper boundary. This property is read-only.
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
     ## You can only truncate a probability distribution with the
     ## @qcode{truncate} method.
     ##
@@ -202,7 +199,7 @@ classdef HalfNormalDistribution
     ## Flag for truncated probability distribution
     ##
     ## A logical scalar value specifying whether a probability distribution is
-    ## truncated or not. This property is read-only.
+    ## truncated or not.  This property is read-only.
     ##
     ## @end deftp
     IsTruncated
@@ -218,11 +215,11 @@ classdef HalfNormalDistribution
     ## distribution fitting.
     ## @item @qcode{cens}: a numeric vector of logical values indicating
     ## censoring information corresponding to the elements of the data used for
-    ## distribution fitting. If no censoring vector was used for distribution
+    ## distribution fitting.  If no censoring vector was used for distribution
     ## fitting, then this field defaults to an empty array.
     ## @item @qcode{freq}: a numeric vector of non-negative integer values
     ## containing the frequency information corresponding to the elements of the
-    ## data used for distribution fitting. If no frequency vector was used for
+    ## data used for distribution fitting.  If no frequency vector was used for
     ## distribution fitting, then this field defaults to an empty array.
     ## @end itemize
     ##
@@ -451,8 +448,8 @@ classdef HalfNormalDistribution
     ## boundaries of the 95% confidence interval for each parameter of the
     ## probability distribution object, @var{pd}.
     ##
-    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified by
+    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes
+    ## the confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -676,9 +673,9 @@ classdef HalfNormalDistribution
     ##
     ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
     ## probability distribution @var{t}, which is the probability distribution
-    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
-    ## and upper limit, @var{upper}.  If @var{pd} is fitted to data with
-    ## @code{fitdist}, the returned probability distribution @var{t} is not
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower}, and upper limit, @var{upper}.  If @var{pd} is fitted to data
+    ## with @code{fitdist}, the returned probability distribution @var{t} is not
     ## fitted, does not contain any data or estimated values, and it is as it
     ## has been created with the @var{makedist} function, but it includes the
     ## truncation interval.
