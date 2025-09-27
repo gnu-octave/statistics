@@ -1144,7 +1144,6 @@ Find all neighbors within a specified radius of query points.
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Demo to verify implementation using fisheriris dataset
  load fisheriris
  numSamples = size (meas, 1);
  queryIndices = [1, 23, 46, 63, 109];
@@ -1176,33 +1175,13 @@ nearestNeighbors =
    124   100
 
 neighborsInRange =
-{
-  [1,1] =
+  5x1 cell array
 
-     17
-      4
-     38
-     26
-     27
-     39
-      7
-     47
-     36
-
-  [2,1] = [](0x1)
-  [3,1] =
-
-      1
-     12
-     33
-     29
-      2
-      3
-      9
-
-  [4,1] = [](0x1)
-  [5,1] = [](0x1)
-}
+    {9x1 double}    
+    {0x0 double}    
+    {7x1 double}    
+    {0x0 double}    
+    {0x0 double}    
 </pre></td></tr>
                   </table>
 
@@ -1229,7 +1208,6 @@ neighborsInRange =
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Create a KDTreeSearcher with Euclidean distance
  X = [1, 2; 3, 4; 5, 6];
  obj = KDTreeSearcher (X);
  ## Find the nearest neighbor to [2, 3]
@@ -1254,21 +1232,15 @@ Nearest neighbor index:
 Distance:
 1.4142
 Indices within radius:
-{
-  [1,1] =
+  1x1 cell array
 
-     1
-     2
+    {2x1 double}    
 
-}
 Distances:
-{
-  [1,1] =
+  1x1 cell array
 
-     1.4142
-     1.4142
-
-}</pre></td></tr>
+    {2x1 double}    
+</pre></td></tr>
                   </table>
 
             </div>
@@ -1294,7 +1266,6 @@ Distances:
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Create a KDTreeSearcher with Minkowski distance (P=3)
  X = [0, 0; 1, 0; 2, 0];
  obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
  ## Find the nearest neighbor to [1, 0]

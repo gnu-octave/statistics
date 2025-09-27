@@ -2810,11 +2810,6 @@ var_value = 0.3281
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Generate a data set of 5000 random samples from a Birnbaum-Saunders
- ## distribution with parameters β = 1 and γ = 0.5.  Fit a Birnbaum-Saunders
- ## distribution to this data and plot a PDF of the fitted distribution
- ## superimposed on a histogram of the data.
-
  pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
  randg ("seed", 21);
  data = random (pd_fixed, 5000, 1);

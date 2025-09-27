@@ -1924,13 +1924,13 @@ pd_fitted =
   BetaDistribution
 
   beta distribution
-        a = 2.05302   [1.88428, 2.23688]
-        b = 5.04924   [4.57664, 5.57065]
+        a = 2.00852   [1.84292, 2.189]
+        b = 5.17457   [4.70817, 5.68718]
 
 ci =
 
-   1.8843   4.5766
-   2.2369   5.5706
+   1.8429   4.7082
+   2.1890   5.6872
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2730,10 +2730,6 @@ var_value = 0.025510
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Generate a data set of 5000 random samples from a Beta distribution with
- ## parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot
- ## a PDF of the fitted distribution superimposed on a histogram of the data.
-
  pd_fixed = makedist ("Beta", "a", 2, "b", 5)
  randg ("seed", 2);
  data = random (pd_fixed, 5000, 1);

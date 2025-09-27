@@ -1334,8 +1334,6 @@ Sort the classes of the <code>ConfusionMatrixChart</code> object <var>cmc</var>
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Create a simple ConfusionMatrixChart Object
-
  cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"}, {"XLabel","LABEL A"})
  NormalizedValues = cm.NormalizedValues
  ClassLabels = cm.ClassLabels</pre></td></tr>
@@ -1357,10 +1355,9 @@ NormalizedValues =
    1   2
 
 ClassLabels =
-{
-  [1,1] = A
-  [1,2] = B
-}
+  1x2 cell array
+
+    {'A'}    {'B'}    
 </pre></td></tr>
                   </table>
                   <div class="text-center">

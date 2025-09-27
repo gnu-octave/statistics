@@ -2963,11 +2963,6 @@ var_value = Inf
                   <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
- ## Generate a data set of 5000 random samples from a Burr type XII
- ## distribution with parameters alpha = 1, c = 2, and k = 1.  Fit a Burr type
- ## XII distribution to this data and plot a PDF of the fitted distribution
- ## superimposed on a histogram of the data
-
  pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
  rand ("seed", 21);
  data = random (pd, 5000, 1);
