@@ -802,9 +802,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A positive integer scalar specifying the number of observations in the
- dataset (including any missing data, where applicable).  This property
- is read-only.
+Number of observations
                 </div>
               </div>
           </div>
@@ -813,6 +811,10 @@
 
 
 <p> </p>
+<p> A positive integer scalar specifying the number of observations in the
+ dataset (including any missing data, where applicable).  This property
+ is read-only.
+</p>
 
 
 
@@ -832,10 +834,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A positive integer scalar specifying the number of folds for partition
- types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
- <code>'holdout'</code> and <code>'resubstitution'</code>, then <code>NumTestSets</code>
- is 1.  This property is read-only.
+Number of test sets
                 </div>
               </div>
           </div>
@@ -844,6 +843,11 @@
 
 
 <p> </p>
+<p> A positive integer scalar specifying the number of folds for partition
+ types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
+ <code>'holdout'</code> and <code>'resubstitution'</code>, then <code>NumTestSets</code>
+ is 1.  This property is read-only.
+</p>
 
 
 
@@ -863,11 +867,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A positive integer scalar specifying the size of the train set for
- partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
- vector of positive integers specifying the size of each training set for
- partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
- is read-only.
+Size of each train set
                 </div>
               </div>
           </div>
@@ -876,6 +876,12 @@
 
 
 <p> </p>
+<p> A positive integer scalar specifying the size of the train set for
+ partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
+ vector of positive integers specifying the size of each training set for
+ partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
+ is read-only.
+</p>
 
 
 
@@ -895,11 +901,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A positive integer scalar specifying the size of the test set for
- partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
- vector of positive integers specifying the size of each testing set for
- partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
- is read-only.
+Size of each test set
                 </div>
               </div>
           </div>
@@ -908,6 +910,12 @@
 
 
 <p> </p>
+<p> A positive integer scalar specifying the size of the test set for
+ partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
+ vector of positive integers specifying the size of each testing set for
+ partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
+ is read-only.
+</p>
 
 
 
@@ -927,9 +935,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A character vector specifying the type of the <code>cvpartition</code> object.
- It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
- <code>resubstitution</code>.  This property is read-only.
+Type of validation partition
                 </div>
               </div>
           </div>
@@ -938,6 +944,10 @@
 
 
 <p> </p>
+<p> A character vector specifying the type of the <code>cvpartition</code> object.
+ It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
+ <code>resubstitution</code>.  This property is read-only.
+</p>
 
 
 
@@ -957,9 +967,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A logical scalar specifying whether the <code>cvpartition</code> object
- was created using custom partition partitioning (<code>true</code>) or
- not (<code>false</code>).  This property is read-only.
+Flag for custom partition
                 </div>
               </div>
           </div>
@@ -968,6 +976,10 @@
 
 
 <p> </p>
+<p> A logical scalar specifying whether the <code>cvpartition</code> object
+ was created using custom partition partitioning (<code>true</code>) or
+ not (<code>false</code>).  This property is read-only.
+</p>
 
 
 
@@ -987,9 +999,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A logical scalar specifying whether the <code>cvpartition</code> object was
- created using grouping variables (<code>true</code>) or not (<code>false</code>).
- This property is read-only.
+Flag for grouped partition
                 </div>
               </div>
           </div>
@@ -998,6 +1008,10 @@
 
 
 <p> </p>
+<p> A logical scalar specifying whether the <code>cvpartition</code> object was
+ created using grouping variables (<code>true</code>) or not (<code>false</code>).
+ This property is read-only.
+</p>
 
 
 
@@ -1017,9 +1031,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  A logical scalar specifying whether the <code>cvpartition</code> object was
- created with a <code>'stratifyOption'</code> value of <code>true</code>.
- This property is read-only.
+Flag for stratified partition
                 </div>
               </div>
           </div>
@@ -1028,6 +1040,10 @@
 
 
 <p> </p>
+<p> A logical scalar specifying whether the <code>cvpartition</code> object was
+ created with a <code>'stratifyOption'</code> value of <code>true</code>.
+ This property is read-only.
+</p>
 
 
 
@@ -1045,13 +1061,13 @@
               data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
               aria-expanded="false" aria-controls="colapsibleConstructor">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>cvpartition</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Repartition data for cross-validation.
+                <div class="col-8">
+Repartition data for cross-validation.
                 </div>
               </div>
           </div>
@@ -1199,13 +1215,13 @@ training
               data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
               aria-expanded="false" aria-controls="collapseMethod1">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>repartition</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Repartition data for cross-validation.
+                <div class="col-8">
+Repartition data for cross-validation.
                 </div>
               </div>
           </div>
@@ -1258,13 +1274,13 @@ training
               data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
               aria-expanded="false" aria-controls="collapseMethod2">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>summary</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Summarize cross-validation partition.
+                <div class="col-8">
+Summarize cross-validation partition.
                 </div>
               </div>
           </div>
@@ -1299,13 +1315,13 @@ training
               data-bs-toggle="collapse" data-bs-target="#collapseMethod3"
               aria-expanded="false" aria-controls="collapseMethod3">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>test</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Test indices for cross-validation.
+                <div class="col-8">
+Test indices for cross-validation.
                 </div>
               </div>
           </div>
@@ -1355,13 +1371,13 @@ training
               data-bs-toggle="collapse" data-bs-target="#collapseMethod4"
               aria-expanded="false" aria-controls="collapseMethod4">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>training</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Training indices for cross-validation.
+                <div class="col-8">
+Training indices for cross-validation.
                 </div>
               </div>
           </div>
@@ -1404,7 +1420,6 @@ test
             </div>
           </div>
         </div>
-
 
             </div>
           </div>

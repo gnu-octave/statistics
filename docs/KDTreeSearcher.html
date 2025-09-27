@@ -814,9 +814,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Training data, specified as an <math>N&times;P</math> numeric matrix where each row
- is an observation and each column is a feature.  This property is private
- and cannot be modified after object creation.
+Point data
                 </div>
               </div>
           </div>
@@ -825,6 +823,10 @@
 
 
 <p> </p>
+<p> Point data, specified as an <math>N&times;P</math> numeric matrix where each row is
+ an observation and each column is a feature.  This property is private
+ and cannot be modified after object creation.
+</p>
 
 
 
@@ -844,8 +846,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  The maximum number of data points in the leaf node of the KD-tree.
- Default is 50.
+Maximum number of data points in each leaf node
                 </div>
               </div>
           </div>
@@ -854,6 +855,10 @@
 
 
 <p> </p>
+<p> The maximum number of data points in the leaf node of the KD-tree.
+ Default value is 50.  This property is private and cannot be modified
+ after object creation.
+</p>
 
 
 
@@ -873,10 +878,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Distance metric used for searches, specified as a character vector (e.g.,
- <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>).  Default is
- <code>&quot;euclidean&quot;</code>.  Supported metrics are <code>&quot;euclidean&quot;</code>,
- <code>&quot;cityblock&quot;</code>, <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.
+Distance metric
                 </div>
               </div>
           </div>
@@ -885,6 +887,11 @@
 
 
 <p> </p>
+<p> Distance metric used for searches, specified as a character vector.
+ Supported metrics are <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
+ <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.  Default value is
+ <code>&quot;euclidean&quot;</code>.
+</p>
 
 
 
@@ -904,8 +911,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Parameter for the distance metric, with type and value depending on
- <code>Distance</code>:
+Distance parameter
                 </div>
               </div>
           </div>
@@ -914,6 +920,9 @@
 
 
 <p> </p>
+<p> The type and value of the distance parameter depends on the selected
+ <code>Distance</code> metric and can be any of the following:
+</p>
  <ul>
 <li> For <code>&quot;minkowski&quot;</code>, a positive scalar exponent (default 2).
  </li><li> Empty for other metrics (<code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
@@ -938,13 +947,13 @@
               data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
               aria-expanded="false" aria-controls="colapsibleConstructor">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>KDTreeSearcher</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
+                <div class="col-8">
+Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
                 </div>
               </div>
           </div>
@@ -999,13 +1008,13 @@
               data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
               aria-expanded="false" aria-controls="collapseMethod1">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>knnsearch</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Find the <math>K</math> nearest neighbors in the training data to query points.
+                <div class="col-8">
+Find the <math>K</math> nearest neighbors in the training data to query points.
                 </div>
               </div>
           </div>
@@ -1061,13 +1070,13 @@
               data-bs-toggle="collapse" data-bs-target="#collapseMethod2"
               aria-expanded="false" aria-controls="collapseMethod2">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>rangesearch</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Find all neighbors within a specified radius of query points.
+                <div class="col-8">
+Find all neighbors within a specified radius of query points.
                 </div>
               </div>
           </div>
@@ -1113,24 +1122,28 @@
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+ Demo to verify implementation using fisheriris dataset
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  ## Demo to verify implementation using fisheriris dataset
  load fisheriris
  numSamples = size (meas, 1);
@@ -1141,8 +1154,11 @@
  searchRadius = 0.3;
  kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')
  nearestNeighbors = knnsearch (kdTree, queryPoints, "K", 2)
- neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)
-
+ neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 kdTree =
 
   KDTreeSearcher with properties:
@@ -1160,41 +1176,59 @@ nearestNeighbors =
    124   100
 
 neighborsInRange =
-  5x1 cell array
+{
+  [1,1] =
 
-    {9x1 double}    
-    {0x0 double}    
-    {7x1 double}    
-    {0x0 double}    
-    {0x0 double}    
+     17
+      4
+     38
+     26
+     27
+     39
+      7
+     47
+     36
 
-                    </pre></td></tr></tbody>
+  [2,1] = [](0x1)
+  [3,1] =
+
+      1
+     12
+     33
+     29
+      2
+      3
+      9
+
+  [4,1] = [](0x1)
+  [5,1] = [](0x1)
+}
+</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo2"
+              aria-expanded="false" aria-controls="collapseDemo2">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+ Create a KDTreeSearcher with Euclidean distance
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo2">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  ## Create a KDTreeSearcher with Euclidean distance
  X = [1, 2; 3, 4; 5, 6];
  obj = KDTreeSearcher (X);
@@ -1210,49 +1244,56 @@ neighborsInRange =
  disp ("Indices within radius:");
  disp (idx);
  disp ("Distances:");
- disp (D);
-
+ disp (D);</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 Nearest neighbor index:
 1
 Distance:
 1.4142
 Indices within radius:
-  1x1 cell array
+{
+  [1,1] =
 
-    {2x1 double}    
+     1
+     2
 
+}
 Distances:
-  1x1 cell array
+{
+  [1,1] =
 
-    {2x1 double}    
+     1.4142
+     1.4142
 
-                    </pre></td></tr></tbody>
+}</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo3"
+              aria-expanded="false" aria-controls="collapseDemo3">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+ Create a KDTreeSearcher with Minkowski distance (P=3)
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo3">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  ## Create a KDTreeSearcher with Minkowski distance (P=3)
  X = [0, 0; 1, 0; 2, 0];
  obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
@@ -1262,39 +1303,40 @@ Distances:
  disp ("Nearest neighbor index:");
  disp (idx);
  disp ("Distance:");
- disp (D);
-
+ disp (D);</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 Nearest neighbor index:
 2
 Distance:
-0
-                    </pre></td></tr></tbody>
+0</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo4"
+              aria-expanded="false" aria-controls="collapseDemo4">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+demo&nbsp;KDTreeSearcher&nbsp;4
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo4">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  rng(42);
  disp('Demonstrating KDTreeSearcher');
 
@@ -1365,8 +1407,11 @@ Distance:
  hold off
  title ('Points within Radius with KDTreeSearcher');
  xlabel ('X1');
- ylabel ('X2');
-
+ ylabel ('X2');</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 Demonstrating KDTreeSearcher
 For the first query point:
 Query point: 0.3         0.3
@@ -1445,8 +1490,7 @@ Distances:
    0.130208
    0.136007
    0.142870
-   0.143009
-                    </pre></td></tr></tbody>
+   0.143009</pre></td></tr>
                   </table>
                   <div class="text-center">
                     <img src="assets/KDTreeSearcher_402.png" class="rounded img-thumbnail" alt="plotted figure">
@@ -1455,8 +1499,6 @@ Distances:
                     <img src="assets/KDTreeSearcher_401.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>

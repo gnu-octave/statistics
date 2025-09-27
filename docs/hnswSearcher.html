@@ -811,10 +811,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Distance metric used for searches, specified as a character vector (e.g.,
- <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, <code>&quot;cityblock&quot;</code>). Default
- is <code>&quot;euclidean&quot;</code>. Supported metrics align with those in
- <code>pdist2</code>.
+Distance metric
                 </div>
               </div>
           </div>
@@ -823,6 +820,12 @@
 
 
 <p> </p>
+<p> Distance metric used for searches, specified as a character vector (e.g.,
+ <code>&quot;euclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, <code>&quot;cityblock&quot;</code>). Default
+ is <code>&quot;euclidean&quot;</code>. Supported metrics align with those in
+ <code>pdist2</code>.  This property is private and cannot be modified after
+ object creation.
+</p>
 
 
 
@@ -842,8 +845,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Parameter for the distance metric, with type and value depending on
- <code>Distance</code>:
+Distance parameter
                 </div>
               </div>
           </div>
@@ -852,6 +854,9 @@
 
 
 <p> </p>
+<p> The type and value of the distance parameter depends on the selected
+ <code>Distance</code> metric and can be any of the following:
+</p>
  <ul>
 <li> For <code>&quot;minkowski&quot;</code>, a positive scalar exponent (default 2).
  </li><li> For <code>&quot;seuclidean&quot;</code>, a nonnegative vector of scaling factors
@@ -862,6 +867,8 @@
  </li><li> Empty for other metrics.
  </li></ul>
 
+<p> This property is private and cannot be modified after object creation.
+</p>
 
 
 
@@ -881,8 +888,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Maximum number of neighbors per node in the HNSW graph. Affects graph
- connectivity and search accuracy. Default is 16.
+Number of connections created for each node
                 </div>
               </div>
           </div>
@@ -891,6 +897,10 @@
 
 
 <p> </p>
+<p> Maximum number of neighbors per node in the HNSW graph. Affects graph
+ connectivity and search accuracy.  Default value is 16.  This property is
+ private and cannot be modified after object creation.
+</p>
 
 
 
@@ -910,8 +920,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Size of the dynamic candidate list during graph construction. Higher
- values improve accuracy at the cost of construction time. Default is 200.
+Number of potential nearest neighbors
                 </div>
               </div>
           </div>
@@ -920,6 +929,11 @@
 
 
 <p> </p>
+<p> Size of the dynamic candidate list during graph construction.  Higher
+ values improve accuracy at the cost of construction time.  Default value
+ is 200.  This property is private and cannot be modified after object
+ creation.
+</p>
 
 
 
@@ -939,9 +953,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  Training data, specified as an <math>N&times;P</math> numeric matrix where each row
- is an observation and each column is a feature.  This property is private
- and cannot be modified after object creation.
+Point data
                 </div>
               </div>
           </div>
@@ -950,6 +962,10 @@
 
 
 <p> </p>
+<p> Point data, specified as an <math>N&times;P</math> numeric matrix where each row is
+ an observation and each column is a feature.  This property is private
+ and cannot be modified after object creation.
+</p>
 
 
 
@@ -967,13 +983,13 @@
               data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
               aria-expanded="false" aria-controls="colapsibleConstructor">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>hnswSearcher</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Create an <code>hnswSearcher</code> object for approximate nearest neighbor
+                <div class="col-8">
+Create an <code>hnswSearcher</code> object for approximate nearest neighbor
  searches.
                 </div>
               </div>
@@ -1034,13 +1050,13 @@
               data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
               aria-expanded="false" aria-controls="collapseMethod1">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>knnsearch</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Find the nearest neighbors in the training data to query points.
+                <div class="col-8">
+Find the nearest neighbors in the training data to query points.
                 </div>
               </div>
           </div>
@@ -1091,24 +1107,28 @@
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+ Create an hnswSearcher with Euclidean distance
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  ## Create an hnswSearcher with Euclidean distance
  X = [1, 2; 3, 4; 5, 6];
  obj = hnswSearcher (X);
@@ -1118,39 +1138,40 @@
  disp ("Nearest neighbor index:");
  disp (idx);
  disp ("Distance:");
- disp (D);
-
+ disp (D);</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 Nearest neighbor index:
 2
 Distance:
-1.4142
-                    </pre></td></tr></tbody>
+1.4142</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo2"
+              aria-expanded="false" aria-controls="collapseDemo2">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+ Create an hnswSearcher with Minkowski distance (P=3)
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo2">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
  ## Create an hnswSearcher with Minkowski distance (P=3)
  X = [0, 0; 1, 0; 2, 0];
  obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
@@ -1160,17 +1181,17 @@ Distance:
  disp ("Nearest neighbor index:");
  disp (idx);
  disp ("Distance:");
- disp (D);
-
+ disp (D);</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 Nearest neighbor index:
 2
 Distance:
-0
-                    </pre></td></tr></tbody>
+0</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>

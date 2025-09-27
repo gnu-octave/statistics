@@ -869,7 +869,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -892,7 +892,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -915,7 +915,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -938,7 +938,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -961,7 +961,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -984,7 +984,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1007,7 +1007,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1030,7 +1030,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1053,7 +1053,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1076,7 +1076,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1099,7 +1099,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1122,7 +1122,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1145,7 +1145,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1168,7 +1168,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1191,7 +1191,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1214,7 +1214,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1237,7 +1237,7 @@
                   </h4>
                 </div>
                 <div class="col-8">
-                  undocumented
+undocumented
                 </div>
               </div>
           </div>
@@ -1258,13 +1258,13 @@
               data-bs-toggle="collapse" data-bs-target="#collapseMethod1"
               aria-expanded="false" aria-controls="collapseMethod1">
               <div class="row align-items-center">
-                <div class="col-3">
+                <div class="col-4">
                   <h4 class="d-inline-block mr-4">
                     <b><code>kfoldPredict</code></b>
                   </h4>
                 </div>
-                <div class="col-9">
-                  Predict responses for observations not used for training in a
+                <div class="col-8">
+Predict responses for observations not used for training in a
  cross-validated classification model.
                 </div>
               </div>
@@ -1317,24 +1317,28 @@
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+demo&nbsp;ClassificationPartitionedModel&nbsp;1
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
 
  load fisheriris
  x = meas;
@@ -1347,8 +1351,11 @@
  partition = cvpartition (y, "KFold", 5);
 
  ## Create the ClassificationPartitionedModel object
- cvModel = crossval (obj, 'cvPartition', partition)
-
+ cvModel = crossval (obj, 'cvPartition', partition)</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
 cvModel =
 
   ClassificationPartitionedModel object with properties:
@@ -1370,34 +1377,32 @@ cvModel =
                     Trained: [5x1 cell]
                           X: [150x4 double]
                           Y: [150x1 cell]
-
-                    </pre></td></tr></tbody>
+</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo2"
+              aria-expanded="false" aria-controls="collapseDemo2">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code style="font-size:1.2em;">
+demo&nbsp;ClassificationPartitionedModel&nbsp;2
+                  </code>
                 </div>
               </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo2">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
                     <td>&nbsp;</td>
                     <td><pre class="example">
-
 
  load fisheriris
  x = meas;
@@ -1413,14 +1418,14 @@ cvModel =
  [label, score, cost] = kfoldPredict (cvModel);
  fprintf ("Cross-validated accuracy = %1.2f%% (%d/%d)\n", ...
           sum (strcmp (label, y)) / numel (y) *100, ...
-          sum (strcmp (label, y)), numel (y))
-
-Cross-validated accuracy = 96.67% (145/150)
-                    </pre></td></tr></tbody>
+          sum (strcmp (label, y)), numel (y))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+Cross-validated accuracy = 96.67% (145/150)</pre></td></tr>
                   </table>
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
