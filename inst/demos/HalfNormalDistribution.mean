@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Half-normal distributions
+%! data1 = 0.5 * abs (randn (10000, 1));
+%! data2 = 1.0 * abs (randn (10000, 1));
+%! pd1 = fitdist (data1, "HalfNormal");
+%! pd2 = fitdist (data2, "HalfNormal");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Half-normal
+%! ## distributions with different scale parameters, representing average
+%! ## deviation or magnitude.

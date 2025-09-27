@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Half-normal distribution
+%! x = -1:0.01:5;
+%! data1 = 0.5 * abs (randn (10000, 1));
+%! data2 = 1.0 * abs (randn (10000, 1));
+%! data3 = 2.0 * abs (randn (10000, 1));
+%! pd1 = fitdist (data1, "HalfNormal");
+%! pd2 = fitdist (data2, "HalfNormal");
+%! pd3 = fitdist (data3, "HalfNormal");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 2"}, ...
+%!         "location", "northeast")
+%! title ("Half-normal PDF")
+%! xlabel ("values in x (x >= mu)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Half-normal
+%! ## distributions, showing the likelihood for positive values.
