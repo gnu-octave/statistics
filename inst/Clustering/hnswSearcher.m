@@ -36,24 +36,20 @@ classdef hnswSearcher
 ## @end deftp
 
   properties (SetAccess = private, Hidden)
-    ## -*- texinfo -*-
-    ## @deftp {Property} HNSWGraph
-    ##
-    ## The HNSW graph structure built from the training data.  This property is
-    ## private and cannot be modified after object creation.
-    ##
-    ## @end deftp
-    HNSWGraph
+    HNSWGraph # HNSW graph structure
   endproperties
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {Property} Distance
     ##
+    ## Distance metric
+    ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
     ## @qcode{"euclidean"}, @qcode{"minkowski"}, @qcode{"cityblock"}). Default
     ## is @qcode{"euclidean"}. Supported metrics align with those in
-    ## @code{pdist2}.
+    ## @code{pdist2}.  This property is private and cannot be modified after
+    ## object creation.
     ##
     ## @end deftp
     Distance = 'euclidean'
@@ -61,8 +57,10 @@ classdef hnswSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} DistParameter
     ##
-    ## Parameter for the distance metric, with type and value depending on
-    ## @qcode{Distance}:
+    ## Distance parameter
+    ##
+    ## The type and value of the distance parameter depends on the selected
+    ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
     ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
@@ -74,14 +72,19 @@ classdef hnswSearcher
     ## @item Empty for other metrics.
     ## @end itemize
     ##
+    ## This property is private and cannot be modified after object creation.
+    ##
     ## @end deftp
     DistParameter = []
 
     ## -*- texinfo -*-
     ## @deftp {Property} MaxNumLinksPerNode
     ##
+    ## Number of connections created for each node
+    ##
     ## Maximum number of neighbors per node in the HNSW graph. Affects graph
-    ## connectivity and search accuracy. Default is 16.
+    ## connectivity and search accuracy.  Default value is 16.  This property is
+    ## private and cannot be modified after object creation.
     ##
     ## @end deftp
     MaxNumLinksPerNode = 16
@@ -89,8 +92,12 @@ classdef hnswSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} TrainSetSize
     ##
-    ## Size of the dynamic candidate list during graph construction. Higher
-    ## values improve accuracy at the cost of construction time. Default is 200.
+    ## Number of potential nearest neighbors
+    ##
+    ## Size of the dynamic candidate list during graph construction.  Higher
+    ## values improve accuracy at the cost of construction time.  Default value
+    ## is 200.  This property is private and cannot be modified after object
+    ## creation.
     ##
     ## @end deftp
     TrainSetSize = 200
@@ -98,8 +105,10 @@ classdef hnswSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} X
     ##
-    ## Training data, specified as an @math{NxP} numeric matrix where each row
-    ## is an observation and each column is a feature.  This property is private
+    ## Point data
+    ##
+    ## Point data, specified as an @math{NxP} numeric matrix where each row is
+    ## an observation and each column is a feature.  This property is private
     ## and cannot be modified after object creation.
     ##
     ## @end deftp

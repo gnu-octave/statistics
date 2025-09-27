@@ -32,15 +32,19 @@ classdef cvpartition
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} NumObservations
     ##
+    ## Number of observations
+    ##
     ## A positive integer scalar specifying the number of observations in the
     ## dataset (including any missing data, where applicable).  This property
     ## is read-only.
     ##
     ## @end deftp
-    NumObservations = [];     # Number of observations
+    NumObservations = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} NumTestSets
+    ##
+    ## Number of test sets
     ##
     ## A positive integer scalar specifying the number of folds for partition
     ## types @qcode{'kfold'} and @qcode{'leaveout'}.  When partition type is
@@ -48,10 +52,12 @@ classdef cvpartition
     ## is 1.  This property is read-only.
     ##
     ## @end deftp
-    NumTestSets     = [];     # Number of test sets
+    NumTestSets     = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} TrainSize
+    ##
+    ## Size of each train set
     ##
     ## A positive integer scalar specifying the size of the train set for
     ## partition types @qcode{'holdout'} and @qcode{'resubstitution'} or a
@@ -60,10 +66,12 @@ classdef cvpartition
     ## is read-only.
     ##
     ## @end deftp
-    TrainSize       = [];     # Size of each train set
+    TrainSize       = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} TestSize
+    ##
+    ## Size of each test set
     ##
     ## A positive integer scalar specifying the size of the test set for
     ## partition types @qcode{'holdout'} and @qcode{'resubstitution'} or a
@@ -72,47 +80,55 @@ classdef cvpartition
     ## is read-only.
     ##
     ## @end deftp
-    TestSize        = [];     # Size of each test set
+    TestSize        = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} Type
+    ##
+    ## Type of validation partition
     ##
     ## A character vector specifying the type of the @qcode{cvpartition} object.
     ## It can be @qcode{kfold}, @qcode{holdout}, @qcode{leaveout}, or
     ## @qcode{resubstitution}.  This property is read-only.
     ##
     ## @end deftp
-    Type            = '';     # Type of validation partition
+    Type            = '';
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsCustom
+    ##
+    ## Flag for custom partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object
     ## was created using custom partition partitioning (@qcode{true}) or
     ## not (@qcode{false}).  This property is read-only.
     ##
     ## @end deftp
-    IsCustom        = [];     # Indicator of custom partition
+    IsCustom        = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsGrouped
+    ##
+    ## Flag for grouped partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
     ## created using grouping variables (@qcode{true}) or not (@qcode{false}).
     ## This property is read-only.
     ##
     ## @end deftp
-    IsGrouped       = [];     # Indicator of grouped partition
+    IsGrouped       = [];
 
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} IsStratified
+    ##
+    ## Flag for stratified partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
     ## created with a @qcode{'stratifyOption'} value of @qcode{true}.
     ## This property is read-only.
     ##
     ## @end deftp
-    IsStratified    = [];     # Indicator of stratified partition
+    IsStratified    = [];
 
   endproperties
 

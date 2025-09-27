@@ -1,4 +1,5 @@
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -39,7 +40,9 @@ classdef ExhaustiveSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} X
     ##
-    ## Training data, specified as an @math{NxP} numeric matrix where each row
+    ## Point data
+    ##
+    ## Point data, specified as an @math{NxP} numeric matrix where each row
     ## is an observation and each column is a feature. This property is private
     ## and cannot be modified after object creation.
     ##
@@ -50,6 +53,8 @@ classdef ExhaustiveSearcher
   properties
     ## -*- texinfo -*-
     ## @deftp {Property} Distance
+    ##
+    ## Distance metric
     ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
     ## @qcode{"euclidean"}, @qcode{"minkowski"}) or a function handle to a
@@ -62,8 +67,10 @@ classdef ExhaustiveSearcher
     ## -*- texinfo -*-
     ## @deftp {Property} DistParameter
     ##
-    ## Parameter for the distance metric, with type and value depending on
-    ## @qcode{Distance}:
+    ## Distance parameter
+    ##
+    ## The type and value of the distance parameter depends on the selected
+    ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
     ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
