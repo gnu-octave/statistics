@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: InverseGaussianDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: InverseGaussianDistribution</h5></code></dl>
 
 <p> Inverse Gaussian probability distribution object.
 </p>
@@ -793,10 +791,9 @@
  model description, and sample data for a Inverse Gaussian probability
  distribution.
 </p>
-<p> The Inverse Gaussian distribution is a continuous probability distribution
- that is often used to model non-negative positively skewed data, with
- mean parameter <code><var>mu</var></code> and shape parameter
- <code><var>lambda</var></code>.
+<p> The Inverse Gaussian distribution is a continuous probability distribution,
+ which is often used to model non-negative positively skewed data.  Is is
+ defined by mean parameter <var>mu</var> and shape parameter <var>lambda</var>.
 </p>
 <p> There are several ways to create a <code>InverseGaussianDistribution</code>
  object.
@@ -807,10 +804,10 @@
  <code>makedist</code> function.
  </li><li> Use the constructor <code>InverseGaussianDistribution (<var>mu</var>,
  <var>lambda</var>)</code> to create a Inverse Gaussian distribution with fixed
- parameter values <code><var>mu</var></code> and <code><var>lambda</var></code>.
+ parameter values <var>mu</var> and <var>lambda</var>.
  </li><li> Use the static method <code>InverseGaussianDistribution.fit
  (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>invgfit</code> function.
  </li></ul>
 

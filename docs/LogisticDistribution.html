@@ -782,21 +782,18 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: LogisticDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: LogisticDistribution</h5></code></dl>
 
 <p> Logistic probability distribution object.
 </p>
 <div class="ms-5">
-<p> A <code>LogisticDistribution</code> object consists of parameters, a
- model description, and sample data for a logistic probability
- distribution.
+<p> A <code>LogisticDistribution</code> object consists of parameters, a model
+ description, and sample data for a logistic probability distribution.
 </p>
-<p> The logistic distribution is a continuous probability distribution
- that arises in regression analysis and neural networks,
- with location parameter <code><var>mu</var></code> and scale parameter
- <code><var>sigma</var></code>.
+<p> The logistic distribution is a continuous probability distribution, which
+ is commonly used in logistic regression and feedforward neural networks.
+ It is defined by location parameter <var>mu</var> and scale parameter
+ <var>sigma</var>.
 </p>
 <p> There are several ways to create a <code>LogisticDistribution</code>
  object.
@@ -806,11 +803,11 @@
  </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>LogisticDistribution (<var>mu</var>,
- <var>sigma</var>)</code> to create a logistic distribution with fixed
- parameter values <code><var>mu</var></code> and <code><var>sigma</var></code>.
- </li><li> Use the static method <code>LogisticDistribution.fit
- (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ <var>sigma</var>)</code> to create a logistic distribution with fixed parameter values
+ <var>mu</var> and <var>sigma</var>.
+ </li><li> Use the static method <code>LogisticDistribution.fit (<var>x</var>,
+ <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>logifit</code> function.
  </li></ul>
 

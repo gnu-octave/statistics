@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: BirnbaumSaundersDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: BirnbaumSaundersDistribution</h5></code></dl>
 
 <p> Birnbaum-Saunders probability distribution object.
 </p>
@@ -794,9 +792,8 @@
  distribution.
 </p>
 <p> The Birnbaum-Saunders distribution is a continuous probability distribution
- that models the time to failure of materials subjected to cyclic loading,
- with scale parameter <code><var>beta</var></code> and shape parameter
- <code><var>gamma</var></code>.
+ that models the time to failure of materials subjected to cyclic loading.
+ It is defined by scale parameter <var>beta</var> and shape parameter <var>gamma</var>.
 </p>
 <p> There are several ways to create a <code>BirnbaumSaundersDistribution</code>
  object.
@@ -807,10 +804,10 @@
  <code>makedist</code> function.
  </li><li> Use the constructor <code>BirnbaumSaundersDistribution (<var>beta</var>,
  <var>gamma</var>)</code> to create a Birnbaum-Saunders distribution with fixed
- parameter values <code><var>beta</var></code> and <code><var>gamma</var></code>.
+ parameter values <var>beta</var> and <var>gamma</var>.
  </li><li> Use the static method <code>BirnbaumSaundersDistribution.fit
  (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>bisafit</code> function.
  </li></ul>
 

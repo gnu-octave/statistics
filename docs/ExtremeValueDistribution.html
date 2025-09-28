@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: ExtremeValueDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: ExtremeValueDistribution</h5></code></dl>
 
 <p> Extreme value probability distribution object.
 </p>
@@ -794,8 +792,8 @@
 </p>
 <p> The extreme value distribution is also known as the Gumbel distribution for
  maxima, and it is a limiting distribution for the maximum of a large number
- of samples from a continuous distribution, with location parameter
- <code><var>mu</var></code> and scale parameter <code><var>sigma</var></code>.
+ of samples from a continuous distribution.  It is defined by location
+ parameter <var>mu</var> and scale parameter <var>sigma</var>.
 </p>
 <p> There are several ways to create a <code>ExtremeValueDistribution</code> object.
 </p>
@@ -803,11 +801,12 @@
 <li> Fit a distribution to data using the <code>fitdist</code> function.
  </li><li> Create a distribution with specified parameter values using the
  <code>makedist</code> function.
- </li><li> Use the constructor <code>ExtremeValueDistribution (<var>mu</var>, <var>sigma</var>)</code>
- to create an extreme value distribution with specified parameter values.
+ </li><li> Use the constructor <code>ExtremeValueDistribution (<var>mu</var>,
+ <var>sigma</var>)</code> to create an extreme value distribution with specified
+ parameter values.
  </li><li> Use the static method <code>ExtremeValueDistribution.fit (<var>x</var>,
  <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <var>x</var> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>evfit</code> function.
  </li></ul>
 

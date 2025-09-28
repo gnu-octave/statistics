@@ -782,35 +782,33 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: GeneralizedExtremeValueDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: GeneralizedExtremeValueDistribution</h5></code></dl>
 
 <p> Generalized extreme value probability distribution object.
 </p>
 <div class="ms-5">
-<p> A <code>GeneralizedExtremeValueDistribution</code> object consists of parameters, a
- model description, and sample data for a generalized extreme value probability
- distribution.
+<p> A <code>GeneralizedExtremeValueDistribution</code> object consists of parameters,
+ a model description, and sample data for a generalized extreme value
+ probability distribution.
 </p>
 <p> The generalized extreme value distribution is a continuous probability
- distribution that models extreme values, with shape parameter <code><var>k</var></code>,
- scale parameter <code><var>sigma</var></code>, and location parameter <code><var>mu</var></code>.
+ distribution that models extreme values.  It is defined by shape parameter
+ <var>k</var>, scale parameter <var>sigma</var>, and location parameter <var>mu</var>.
 </p>
-<p> There are several ways to create a <code>GeneralizedExtremeValueDistribution</code>
- object.
+<p> There are several ways to create a
+ <code>GeneralizedExtremeValueDistribution</code> object.
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
  </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
- </li><li> Use the constructor <code>GeneralizedExtremeValueDistribution (<var>k</var>,
- <var>sigma</var>, <var>mu</var>)</code> to create a generalized extreme value distribution
- with fixed parameter values <code><var>k</var></code>, <code><var>sigma</var></code>, and
- <code><var>mu</var></code>.
+ </li><li> Use the constructor <code>GeneralizedExtremeValueDistribution
+ (<var>k</var>, <var>sigma</var>, <var>mu</var>)</code> to create a generalized extreme value
+ distribution with fixed parameter values <var>k</var>, <var>sigma</var>, and
+ <var>mu</var>.
  </li><li> Use the static method <code>GeneralizedExtremeValueDistribution.fit
  (<var>x</var>, <var>alpha</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to
- data <code><var>x</var></code> using the same input arguments as the <code>gevfit</code>
+ the data in <var>x</var> using the same input arguments as the <code>gevfit</code>
  function.
  </li></ul>
 
@@ -2151,7 +2149,7 @@ warning: called from
     fit at line 778 column 19
     fitdist at line 377 column 22
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 305 column 16
+    classdef_texi2html at line 310 column 16
     package_texi2html at line 288 column 9
 
 pd_fitted =
@@ -2170,7 +2168,7 @@ warning: called from
     __paramci__ at line 97 column 13
     paramci at line 508 column 12
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 305 column 16
+    classdef_texi2html at line 310 column 16
     package_texi2html at line 288 column 9
 
 ci =
@@ -2610,7 +2608,7 @@ warning: called from
     fit at line 778 column 19
     fitdist at line 377 column 22
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 305 column 16
+    classdef_texi2html at line 310 column 16
     package_texi2html at line 288 column 9
 
 pd_fitted =

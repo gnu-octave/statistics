@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: ExponentialDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: ExponentialDistribution</h5></code></dl>
 
 <p> Exponential probability distribution object.
 </p>
@@ -792,9 +790,9 @@
 <p> A <code>ExponentialDistribution</code> object consists of parameters, a model
  description, and sample data for a exponential probability distribution.
 </p>
-<p> The exponential distribution is a continuous probability distribution
- that models the time between events in a Poisson process, with mean
- parameter <code><var>mu</var></code>.
+<p> The exponential distribution is a continuous probability distribution with
+ mean parameter <var>mu</var> that models the time between events in a Poisson
+ process.
 </p>
 <p> There are several ways to create a <code>ExponentialDistribution</code> object.
 </p>
@@ -803,11 +801,10 @@
  </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>ExponentialDistribution (<var>mu</var>)</code>
- to create a exponential distribution with fixed parameter value
- <code><var>mu</var></code>.
+ to create a exponential distribution with fixed parameter value <var>mu</var>.
  </li><li> Use the static method <code>ExponentialDistribution.fit (<var>x</var>,
  <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>expfit</code> function.
  </li></ul>
 

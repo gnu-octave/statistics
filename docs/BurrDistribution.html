@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: BurrDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: BurrDistribution</h5></code></dl>
 
 <p> Burr probability distribution object.
 </p>
@@ -793,9 +791,9 @@
  description, and sample data for a Burr probability distribution.
 </p>
 <p> The Burr distribution is a continuous probability distribution that models
- a non-negative random variable, commonly used to model household income,
- with scale parameter <code><var>alpha</var></code> and shape parameters
- <code><var>c</var></code> and <code><var>k</var></code>.
+ a non-negative random variable, commonly used to model household income.
+ It is defined by a scale parameter <var>alpha</var> and two shape parameters
+ <var>c</var> and <var>k</var>.
 </p>
 <p> There are several ways to create a <code>BurrDistribution</code> object.
 </p>
@@ -805,10 +803,10 @@
  <code>makedist</code> function.
  </li><li> Use the constructor <code>BurrDistribution (<var>alpha</var>, <var>c</var>,
  <var>k</var>)</code> to create a Burr distribution with fixed parameter values
- <code><var>alpha</var></code>, <code><var>c</var></code>, and <code><var>k</var></code>.
+ <var>alpha</var>, <var>c</var>, and <var>k</var>.
  </li><li> Use the static method <code>BurrDistribution.fit (<var>x</var>,
  <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>burrfit</code> function.
  </li></ul>
 

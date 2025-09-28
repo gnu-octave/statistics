@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: GammaDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: GammaDistribution</h5></code></dl>
 
 <p> Gamma probability distribution object.
 </p>
@@ -792,9 +790,9 @@
 <p> A <code>GammaDistribution</code> object consists of parameters, a model
  description, and sample data for a gamma probability distribution.
 </p>
-<p> The gamma distribution is a continuous probability distribution that
- models the time to failure of a process, with shape parameter
- <code><var>a</var></code> and scale parameter <code><var>b</var></code>.
+<p> The gamma distribution is a continuous probability distribution that models
+ the time to failure of a process.  It is defined by shape parameter <var>a</var>
+ and scale parameter <var>b</var>.
 </p>
 <p> There are several ways to create a <code>GammaDistribution</code> object.
 </p>
@@ -803,11 +801,11 @@
  </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>GammaDistribution (<var>a</var>, <var>b</var>)</code>
- to create a gamma distribution with fixed parameter values <code><var>a</var></code>
- and <code><var>b</var></code>.
+ to create a gamma distribution with fixed parameter values <var>a</var> and
+ <var>b</var>.
  </li><li> Use the static method <code>GammaDistribution.fit (<var>x</var>,
  <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a
- distribution to data <code><var>x</var></code> using the same input arguments as the
+ distribution to the data in <var>x</var> using the same input arguments as the
  <code>gamfit</code> function.
  </li></ul>
 

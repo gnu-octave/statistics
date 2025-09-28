@@ -782,9 +782,7 @@
               </div>
             </div>
             <div class="card-body">
-<dl>
-<dt><code><h5 class="fs">statistics: HalfNormalDistribution</dt>
-</dl>
+<dl><code><h5 class="fs">statistics: HalfNormalDistribution</h5></code></dl>
 
 <p> Half-normal probability distribution object.
 </p>
@@ -793,9 +791,8 @@
  description, and sample data for a half-normal probability distribution.
 </p>
 <p> The half-normal distribution is a continuous probability distribution that
- models the time to failure of materials subjected to cyclic loading, with
- location parameter <code><var>mu</var></code> and scale parameter
- <code><var>sigma</var></code>.
+ models the time to failure of materials subjected to cyclic loading.  It is
+ defined by location parameter <var>mu</var> and scale parameter <var>sigma</var>.
 </p>
 <p> There are several ways to create a <code>HalfNormalDistribution</code> object.
 </p>
@@ -804,10 +801,10 @@
  </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>HalfNormalDistribution (<var>mu</var>,
- <var>sigma</var>)</code> to create a half-normal distribution with fixed
- parameter values <code><var>mu</var></code> and <code><var>sigma</var></code>.
+ <var>sigma</var>)</code> to create a half-normal distribution with fixed parameter
+ values <var>mu</var> and <var>sigma</var>.
  </li><li> Use the static method <code>HalfNormalDistribution.fit (<var>x</var>,
- <var>mu</var>, <var>freq</var>)</code> to fit a distribution to data <code><var>x</var></code> using
+ <var>mu</var>, <var>freq</var>)</code> to fit a distribution to the data in <var>x</var> using
  the same input arguments as the <code>hnfit</code> function.
  </li></ul>
 
