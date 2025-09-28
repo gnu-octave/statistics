@@ -1,4 +1,4 @@
-## Copyright (C) 025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
