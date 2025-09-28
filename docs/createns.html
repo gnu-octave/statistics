@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>Function File:</u> <var>obj</var> = <b>createns</b><i> (<var>X</var>)</i></dt>
-<dt><u>Function File:</u> <var>obj</var> = <b>createns</b><i> (<var>X</var>, <var>name</var>, <var>value</var>, &hellip;)</i></dt>
+<dt><code><h5 class="fs">Function File: <var>obj</var> = <b>createns</b> (<var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">Function File: <var>obj</var> = <b>createns</b> (<var>X</var>, <var>name</var>, <var>value</var>, &hellip;)</code></h5></dt>
 </dl>
 
 <p> Create a nearest neighbor searcher object.

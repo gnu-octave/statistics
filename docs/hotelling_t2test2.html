@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>hotelling_t2test2</b><i> (<var>x</var>, <var>y</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>hotelling_t2test2</b><i> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>hotelling_t2test2</b> (<var>x</var>, <var>y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>hotelling_t2test2</b> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> Compute Hotelling&rsquo;s T^2 (&quot;T-squared&quot;) test for two independent samples.

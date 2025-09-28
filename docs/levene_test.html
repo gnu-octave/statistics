@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,16 +783,16 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>group</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>testtype</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>group</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>group</var>, <var>testtype</var>)</i></dt>
-<dt><u>statistics:</u> <var>h</var> = <b>levene_test</b><i> (<var>x</var>, <var>group</var>, <var>alpha</var>, <var>testtype</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>levene_test</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>W</var>] = <b>levene_test</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>W</var>, <var>df</var>] = <b>levene_test</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>group</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>testtype</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>group</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>group</var>, <var>testtype</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>levene_test</b> (<var>x</var>, <var>group</var>, <var>alpha</var>, <var>testtype</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>] = <b>levene_test</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>W</var>] = <b>levene_test</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>W</var>, <var>df</var>] = <b>levene_test</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Perform a Levene&rsquo;s test for the homogeneity of variances.

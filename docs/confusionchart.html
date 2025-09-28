@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>trueLabels</var>, <var>predictedLabels</var>)</i></dt>
-<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>m</var>)</i></dt>
-<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>m</var>, <var>classLabels</var>)</i></dt>
-<dt><u>statistics:</u> <b>confusionchart</b><i> (<var>parent</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <b>confusionchart</b><i> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>cm</var> = <b>confusionchart</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <b>confusionchart</b> (<var>trueLabels</var>, <var>predictedLabels</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>confusionchart</b> (<var>m</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>confusionchart</b> (<var>m</var>, <var>classLabels</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>confusionchart</b> (<var>parent</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>confusionchart</b> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>cm</var> = <b>confusionchart</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Display a chart of a confusion matrix.

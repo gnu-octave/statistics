@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (<var>A</var>, <var>B</var>, <var>Rho</var>, <var>df</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>mvtcdfqmc</b><i> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>, <var>Display</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>err</var>] = <b>mvtcdfqmc</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>err</var>, <var>FunEvals</var>] = <b>mvtcdfqmc</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>mvtcdfqmc</b> (<var>A</var>, <var>B</var>, <var>Rho</var>, <var>df</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>mvtcdfqmc</b> (&hellip;, <var>TolFun</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>mvtcdfqmc</b> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>mvtcdfqmc</b> (&hellip;, <var>TolFun</var>, <var>MaxFunEvals</var>, <var>Display</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>err</var>] = <b>mvtcdfqmc</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>err</var>, <var>FunEvals</var>] = <b>mvtcdfqmc</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Quasi-Monte-Carlo computation of the multivariate Student&rsquo;s T CDF.

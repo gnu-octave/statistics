@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationDiscriminant</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationDiscriminant</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationDiscriminant</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationDiscriminant</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> Create a <code>ClassificationDiscriminant</code> class object containing a
@@ -865,6 +878,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationDiscriminant.m">ClassificationDiscriminant</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1354,8 +1368,8 @@ Classify new data points into categories using the discriminant
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <var>label</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>ClassificationDiscriminant:</u> [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1417,8 +1431,8 @@ Compute loss for a trained ClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <var>L</var> = <b>loss</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>ClassificationDiscriminant:</u> <var>L</var> = <b>loss</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1501,7 +1515,7 @@ Classification margins for discriminant analysis classifier.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <var>m</var> = <b>margin</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1556,8 +1570,8 @@ Cross Validate a Discriminant classification object.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClassificationDiscriminant:</u> <var>CVMdl</var> = <b>crossval</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1616,7 +1630,7 @@ Create a CompactClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1653,7 +1667,7 @@ Save a ClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationDiscriminant:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationDiscriminant: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

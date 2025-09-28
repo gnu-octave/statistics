@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,10 +783,10 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>predicted_label</var> = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>)</i></dt>
-<dt><u>statistics:</u> <var>predicted_label</var> = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
-<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>decision_values</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
-<dt><u>statistics:</u> [<var>predicted_label</var>, <var>accuracy</var>, <var>prob_estimates</var>] = <b>svmpredict</b><i> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>predicted_label</var> = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>predicted_label</var> = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>predicted_label</var>, <var>accuracy</var>, <var>decision_values</var>] = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>predicted_label</var>, <var>accuracy</var>, <var>prob_estimates</var>] = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>, libsvm_options)</code></h5></dt>
 </dl>
 
 

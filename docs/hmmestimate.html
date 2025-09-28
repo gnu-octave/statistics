@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,11 +783,11 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> [<var>transprobest</var>, <var>outprobest</var>] = <b>hmmestimate</b><i> (<var>sequence</var>, <var>states</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>hmmestimate</b><i> (&hellip;, <code>&quot;statenames&quot;</code>, <var>statenames</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>hmmestimate</b><i> (&hellip;, <code>&quot;symbols&quot;</code>, <var>symbols</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>hmmestimate</b><i> (&hellip;, <code>&quot;pseudotransitions&quot;</code>, <var>pseudotransitions</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>hmmestimate</b><i> (&hellip;, <code>&quot;pseudoemissions&quot;</code>, <var>pseudoemissions</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: [<var>transprobest</var>, <var>outprobest</var>] = <b>hmmestimate</b> (<var>sequence</var>, <var>states</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;statenames&quot;</code>, <var>statenames</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;symbols&quot;</code>, <var>symbols</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;pseudotransitions&quot;</code>, <var>pseudotransitions</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;pseudoemissions&quot;</code>, <var>pseudoemissions</var>)</code></h5></dt>
 </dl>
 
 <p> Estimation of a hidden Markov model for a given sequence.

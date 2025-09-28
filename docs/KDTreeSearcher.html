@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>Class:</u> <b>KDTreeSearcher</b></dt>
+<dt><code><h5 class="fs">Class: <b>KDTreeSearcher</b></h5></code></dt>
 </dl>
 
 <p> KD-tree nearest neighbor searcher class.
@@ -797,6 +810,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/KDTreeSearcher.m">KDTreeSearcher</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -960,8 +974,8 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
           <div class="collapse multi-collapse" id="colapsibleConstructor">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>KDTreeSearcher:</u> <var>obj</var> = <b>KDTreeSearcher</b><i> (<var>X</var>)</i></dt>
-<dt><u>KDTreeSearcher:</u> <var>obj</var> = <b>KDTreeSearcher</b><i> (<var>X</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: <var>obj</var> = <b>KDTreeSearcher</b> (<var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: <var>obj</var> = <b>KDTreeSearcher</b> (<var>X</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1021,8 +1035,8 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>KDTreeSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>obj</var>, <var>Y</var>)</i></dt>
-<dt><u>KDTreeSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1083,8 +1097,8 @@ Find all neighbors within a specified radius of query points.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>KDTreeSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>obj</var>, <var>Y</var>, <var>r</var>)</i></dt>
-<dt><u>KDTreeSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>)</code></h5></dt>
+<dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1175,13 +1189,33 @@ nearestNeighbors =
    124   100
 
 neighborsInRange =
-  5x1 cell array
+{
+  [1,1] =
 
-    {9x1 double}    
-    {0x0 double}    
-    {7x1 double}    
-    {0x0 double}    
-    {0x0 double}    
+     17
+      4
+     38
+     26
+     27
+     39
+      7
+     47
+     36
+
+  [2,1] = [](0x1)
+  [3,1] =
+
+      1
+     12
+     33
+     29
+      2
+      3
+      9
+
+  [4,1] = [](0x1)
+  [5,1] = [](0x1)
+}
 </pre></td></tr>
                   </table>
 
@@ -1232,15 +1266,21 @@ Nearest neighbor index:
 Distance:
 1.4142
 Indices within radius:
-  1x1 cell array
+{
+  [1,1] =
 
-    {2x1 double}    
+     1
+     2
 
+}
 Distances:
-  1x1 cell array
+{
+  [1,1] =
 
-    {2x1 double}    
-</pre></td></tr>
+     1.4142
+     1.4142
+
+}</pre></td></tr>
                   </table>
 
             </div>

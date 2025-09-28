@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,13 +783,13 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>C</var> = <b>multcompare</b><i> (<var>STATS</var>)</i></dt>
-<dt><u>statistics:</u> <var>C</var> = <b>multcompare</b><i> (<var>STATS</var>, &quot;name&quot;, <var>value</var>)</i></dt>
-<dt><u>statistics:</u> [<var>C</var>, <var>M</var>] = <b>multcompare</b><i> (...)</i></dt>
-<dt><u>statistics:</u> [<var>C</var>, <var>M</var>, <var>H</var>] = <b>multcompare</b><i> (...)</i></dt>
-<dt><u>statistics:</u> [<var>C</var>, <var>M</var>, <var>H</var>, <var>GNAMES</var>] = <b>multcompare</b><i> (...)</i></dt>
-<dt><u>statistics:</u> <var>padj</var> = <b>multcompare</b><i> (<var>p</var>)</i></dt>
-<dt><u>statistics:</u> <var>padj</var> = <b>multcompare</b><i> (<var>p</var>, &quot;ctype&quot;, <var>CTYPE</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>C</var> = <b>multcompare</b> (<var>STATS</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>C</var> = <b>multcompare</b> (<var>STATS</var>, &quot;name&quot;, <var>value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>C</var>, <var>M</var>] = <b>multcompare</b> (...)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>C</var>, <var>M</var>, <var>H</var>] = <b>multcompare</b> (...)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>C</var>, <var>M</var>, <var>H</var>, <var>GNAMES</var>] = <b>multcompare</b> (...)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>padj</var> = <b>multcompare</b> (<var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>padj</var> = <b>multcompare</b> (<var>p</var>, &quot;ctype&quot;, <var>CTYPE</var>)</code></h5></dt>
 </dl>
 
 <p> Perform posthoc multiple comparison tests or p-value adjustments to control
@@ -1051,13 +1064,13 @@ M =
 
 H = 1
 GNAMES =
-  5x1 cell array
-
-    {'score=1'}    
-    {'score=2'}    
-    {'score=3'}    
-    {'score=4'}    
-    {'score=5'}    
+{
+  [1,1] = score=1
+  [2,1] = score=2
+  [3,1] = score=3
+  [4,1] = score=4
+  [5,1] = score=5
+}
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1173,14 +1186,14 @@ M =
 
 H = 1
 GNAMES =
-  6x1 cell array
-
-    {'X1=yes, X2=lo' }    
-    {'X1=yes, X2=mid'}    
-    {'X1=yes, X2=hi' }    
-    {'X1=no, X2=lo'  }    
-    {'X1=no, X2=mid' }    
-    {'X1=no, X2=hi'  }    
+{
+  [1,1] = X1=yes, X2=lo
+  [2,1] = X1=yes, X2=mid
+  [3,1] = X1=yes, X2=hi
+  [4,1] = X1=no, X2=lo
+  [5,1] = X1=no, X2=mid
+  [6,1] = X1=no, X2=hi
+}
 
                     </pre></td></tr></tbody>
                   </table>

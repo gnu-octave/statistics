@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,11 +783,11 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>mean</var> = <b>grpstats</b><i> (<var>x</var>, <var>group</var>)</i></dt>
-<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>)</i></dt>
-<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>, <var>whichstats</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b><i> (<var>x</var>, <var>group</var>,  <var>whichstats</var>, <code>&quot;alpha&quot;</code>, <var>a</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>mean</var> = <b>grpstats</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mean</var> = <b>grpstats</b> (<var>x</var>, <var>group</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>whichstats</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>whichstats</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>a</var>, <var>b</var>, &hellip;] = <b>grpstats</b> (<var>x</var>, <var>group</var>,  <var>whichstats</var>, <code>&quot;alpha&quot;</code>, <var>a</var>)</code></h5></dt>
 </dl>
 
 <p> Summary statistics by group.  <code>grpstats</code> computes groupwise summary
@@ -870,11 +883,11 @@ p =
    1754.1   3153.0
 
 g =
-  3x1 cell array
-
-    {'70'}    
-    {'76'}    
-    {'82'}    
+{
+  [1,1] = 70
+  [2,1] = 76
+  [3,1] = 82
+}
 
                     </pre></td></tr></tbody>
                   </table>
@@ -927,11 +940,11 @@ p =
    16.1622    3.0518   16.7907    3.1992
 
 g =
-  3x1 cell array
-
-    {'8'}    
-    {'4'}    
-    {'6'}    
+{
+  [1,1] = 8
+  [2,1] = 4
+  [3,1] = 6
+}
 
                     </pre></td></tr></tbody>
                   </table>

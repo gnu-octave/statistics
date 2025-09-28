@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>cmc</var> = <b>ConfusionMatrixChart</b><i> ()</i></dt>
+<dt><code><h5 class="fs">statistics: <var>cmc</var> = <b>ConfusionMatrixChart</b> ()</code></h5></dt>
 </dl>
 <p> Create object <var>cmc</var>, a Confusion Matrix Chart object.
 </p>
@@ -818,6 +831,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ConfusionMatrixChart.m">ConfusionMatrixChart</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1261,7 +1275,7 @@ Display the properties of the <code>ConfusionMatrixChart</code> object
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ConfusionMatrixChart:</u> <b>disp</b><i> (<var>cmc</var>, <var>order</var>)</i></dt>
+<dt><code><h5 class="fs">ConfusionMatrixChart: <b>disp</b> (<var>cmc</var>, <var>order</var>)</code></h5></dt>
 </dl>
 <p> </p>
 
@@ -1291,7 +1305,7 @@ Sort the classes of the <code>ConfusionMatrixChart</code> object <var>cmc</var>
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ConfusionMatrixChart:</u> <b>sortClasses</b><i> (<var>cmc</var>, <var>order</var>)</i></dt>
+<dt><code><h5 class="fs">ConfusionMatrixChart: <b>sortClasses</b> (<var>cmc</var>, <var>order</var>)</code></h5></dt>
 </dl>
 <p> </p>
 <p> Valid values for <var>order</var> can be an array or cell array including
@@ -1355,9 +1369,10 @@ NormalizedValues =
    1   2
 
 ClassLabels =
-  1x2 cell array
-
-    {'A'}    {'B'}    
+{
+  [1,1] = A
+  [1,2] = B
+}
 </pre></td></tr>
                   </table>
                   <div class="text-center">

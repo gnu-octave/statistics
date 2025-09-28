@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,13 +783,13 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>)</i></dt>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>options</var>)</i></dt>
-<dt><u>statistics:</u> <var>s</var> = <b>boxplot</b><i> (<var>data</var>, <var>group</var>, <var>options</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> [&hellip;, <var>h</var>] = <b>boxplot</b><i> (<var>data</var>, &hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>group</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>group</var>, <var>notched</var>, <var>symbol</var>, <var>orientation</var>, <var>whisker</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>options</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>group</var>, <var>options</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;, <var>h</var>] = <b>boxplot</b> (<var>data</var>, &hellip;)</code></h5></dt>
 </dl>
 
 <p> Produce a box plot.

@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> CompactClassificationGAM</dt>
+<dt><code><h5 class="fs">statistics: CompactClassificationGAM</dt>
 </dl>
 
 <p> A <code>CompactClassificationGAM</code> object is a compact version of a
@@ -799,6 +812,7 @@ compact,
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/CompactClassificationGAM.m">CompactClassificationGAM</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1219,9 +1233,9 @@ Predict labels for new data using the Generalized Additive Model (GAM)
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>CompactClassificationGAM:</u> <var>label</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>CompactClassificationGAM:</u> <var>label</var> = <b>predict</b><i> (&hellip;, <code>'IncludeInteractions'</code>, <var>includeInteractions</var>)</i></dt>
-<dt><u>CompactClassificationGAM:</u> [<var>label</var>, <var>score</var>] = <b>predict</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: <var>label</var> = <b>predict</b> (&hellip;, <code>'IncludeInteractions'</code>, <var>includeInteractions</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: [<var>label</var>, <var>score</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1277,7 +1291,7 @@ Save a ClassificationGAM object.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationGAM:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

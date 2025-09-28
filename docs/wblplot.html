@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,14 +783,14 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <var>handle</var> = <b>wblplot</b><i> (<var>data</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>)</i></dt>
-<dt><u>statistics:</u> [<var>handle</var>, <var>param</var>] = <b>wblplot</b><i> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>, <var>showlegend</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <b>wblplot</b> (<var>data</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>handle</var> = <b>wblplot</b> (<var>data</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>, <var>censor</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>handle</var>, <var>param</var>] = <b>wblplot</b> (<var>data</var>, <var>censor</var>, <var>freq</var>, <var>confint</var>, <var>fancygrid</var>, <var>showlegend</var>)</code></h5></dt>
 </dl>
 
 <p> Plot a column vector <var>data</var> on a Weibull probability plot using rank

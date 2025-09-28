@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,15 +783,15 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <var>nbins</var>)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Nbins&quot;</code>, <var>nbins</var>)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <var>centers</var>)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Ctrs&quot;</code>, <var>centers</var>)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>X</var>, <code>&quot;Edges&quot;</code>, <var>edges</var>)</i></dt>
-<dt><u>statistics:</u> [<var>N</var>, <var>C</var>] = <b>hist3</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> <b>hist3</b><i> (<var>hax</var>, &hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>, <var>nbins</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>, <code>&quot;Nbins&quot;</code>, <var>nbins</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>, <var>centers</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>, <code>&quot;Ctrs&quot;</code>, <var>centers</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>X</var>, <code>&quot;Edges&quot;</code>, <var>edges</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>N</var>, <var>C</var>] = <b>hist3</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>hax</var>, &hellip;)</code></h5></dt>
 </dl>
 
 <p> Produce bivariate (2D) histogram counts or plots.

@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,13 +783,13 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>tab</var> = <b>fitlm</b><i> (<var>X</var>, <var>y</var>)</i></dt>
-<dt><u>statistics:</u> <var>tab</var> = <b>fitlm</b><i> (<var>X</var>, <var>y</var>, <var>name</var>, <var>value</var>)</i></dt>
-<dt><u>statistics:</u> <var>tab</var> = <b>fitlm</b><i> (<var>X</var>, <var>y</var>, <var>modelspec</var>)</i></dt>
-<dt><u>statistics:</u> <var>tab</var> = <b>fitlm</b><i> (<var>X</var>, <var>y</var>, <var>modelspec</var>, <var>name</var>, <var>value</var>)</i></dt>
-<dt><u>statistics:</u> [<var>tab</var>] = <b>fitlm</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>tab</var>, <var>stats</var>] = <b>fitlm</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>tab</var>, <var>stats</var>] = <b>fitlm</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>tab</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>tab</var>, <var>stats</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>tab</var>, <var>stats</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Regress the continuous outcome (i.e. dependent variable) <var>y</var> on

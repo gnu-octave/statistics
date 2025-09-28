@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> CompactClassificationDiscriminant</dt>
+<dt><code><h5 class="fs">statistics: CompactClassificationDiscriminant</dt>
 </dl>
 
 <p> A <code>CompactClassificationDiscriminant</code> object is a compact version of a
@@ -803,6 +816,7 @@ compact,
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/CompactClassificationDiscriminant.m">CompactClassificationDiscriminant</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1177,8 +1191,8 @@ Classify new data points into categories using the discriminant
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>CompactClassificationDiscriminant:</u> <var>label</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>CompactClassificationDiscriminant:</u> [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1240,8 +1254,8 @@ Compute loss for a trained CompactClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>CompactClassificationDiscriminant:</u> <var>L</var> = <b>loss</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>CompactClassificationDiscriminant:</u> <var>L</var> = <b>loss</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1326,7 +1340,7 @@ Compute loss for a trained CompactClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>CompactClassificationDiscriminant:</u> <var>m</var> = <b>margin</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1377,7 +1391,7 @@ Save a CompactClassificationDiscriminant object.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>CompactClassificationDiscriminant:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">CompactClassificationDiscriminant: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

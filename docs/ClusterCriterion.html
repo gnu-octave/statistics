@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClusterCriterion</b><i> (<var>x</var>, <var>clust</var>, <var>criterion</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClusterCriterion</b> (<var>x</var>, <var>clust</var>, <var>criterion</var>)</code></h5></dt>
 </dl>
 
 <p> A clustering evaluation object as created by <code>evalclusters</code>.
@@ -860,6 +873,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/ClusterCriterion.m">ClusterCriterion</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1095,7 +1109,7 @@ Add a new cluster array to inspect the ClusterCriterion object.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClusterCriterion:</u> <var>obj</var> = <b>addK</b><i> (<var>obj</var>, <var>K</var>)</i></dt>
+<dt><code><h5 class="fs">ClusterCriterion: <var>obj</var> = <b>addK</b> (<var>obj</var>, <var>K</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1125,8 +1139,8 @@ Plot the evaluation results.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClusterCriterion:</u> <b>plot</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClusterCriterion:</u> <var>h</var> = <b>plot</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">ClusterCriterion: <b>plot</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClusterCriterion: <var>h</var> = <b>plot</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1160,7 +1174,7 @@ Return a compact ClusterCriterion object (not implemented yet).
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClusterCriterion:</u> <var>obj</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">ClusterCriterion: <var>obj</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

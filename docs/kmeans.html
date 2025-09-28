@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>idx</var> = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
-<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
-<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>, <var>sumd</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
-<dt><u>statistics:</u> [<var>idx</var>, <var>centers</var>, <var>sumd</var>, <var>dist</var>] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>kmeans</b><i> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>kmeans</b><i> (<var>data</var>, [], <code>&quot;start&quot;</code>, <var>start</var>, &hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>idx</var> = <b>kmeans</b> (<var>data</var>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>idx</var>, <var>centers</var>] = <b>kmeans</b> (<var>data</var>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>idx</var>, <var>centers</var>, <var>sumd</var>] = <b>kmeans</b> (<var>data</var>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>idx</var>, <var>centers</var>, <var>sumd</var>, <var>dist</var>] = <b>kmeans</b> (<var>data</var>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>kmeans</b> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>kmeans</b> (<var>data</var>, [], <code>&quot;start&quot;</code>, <var>start</var>, &hellip;)</code></h5></dt>
 </dl>
 
 <p> Perform a <var>k</var>-means clustering of the <math>N&times;D</math> matrix <var>data</var>.

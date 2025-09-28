@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,10 +783,10 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>T</var> = <b>cluster</b><i> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>)</i></dt>
-<dt><u>statistics:</u> <var>T</var> = <b>cluster</b><i> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>, &quot;Depth&quot;, <var>D</var>)</i></dt>
-<dt><u>statistics:</u> <var>T</var> = <b>cluster</b><i> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>, &quot;Criterion&quot;, <var>criterion</var>)</i></dt>
-<dt><u>statistics:</u> <var>T</var> = <b>cluster</b><i> (<var>Z</var>, &quot;MaxClust&quot;, <var>N</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>T</var> = <b>cluster</b> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>T</var> = <b>cluster</b> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>, &quot;Depth&quot;, <var>D</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>T</var> = <b>cluster</b> (<var>Z</var>, &quot;Cutoff&quot;, <var>C</var>, &quot;Criterion&quot;, <var>criterion</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>T</var> = <b>cluster</b> (<var>Z</var>, &quot;MaxClust&quot;, <var>N</var>)</code></h5></dt>
 </dl>
 
 <p> Define clusters from an agglomerative hierarchical cluster tree.

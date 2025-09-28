@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>Function File:</u> <var>obj</var> = <b>evalclusters</b><i> (<var>x</var>, <var>clust</var>, <code>DaviesBouldin</code>)</i></dt>
-<dt><u>Function File:</u> <var>obj</var> = <b>evalclusters</b><i> (&hellip;, <code>Name</code>, <code>Value</code>)</i></dt>
+<dt><code><h5 class="fs">Function File: <var>obj</var> = <b>evalclusters</b> (<var>x</var>, <var>clust</var>, <code>DaviesBouldin</code>)</code></h5></dt>
+<dt><code><h5 class="fs">Function File: <var>obj</var> = <b>evalclusters</b> (&hellip;, <code>Name</code>, <code>Value</code>)</code></h5></dt>
 </dl>
 
 <p> A Davies-Bouldin object to evaluate clustering solutions.
@@ -797,6 +810,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/DaviesBouldinEvaluation.m">DaviesBouldinEvaluation</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Methods
@@ -821,7 +835,7 @@ Add a new cluster array to inspect the DaviesBouldinEvaluation object.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>DaviesBouldinEvaluation:</u> <var>obj</var> = <b>addK</b><i> (<var>obj</var>, <var>K</var>)</i></dt>
+<dt><code><h5 class="fs">DaviesBouldinEvaluation: <var>obj</var> = <b>addK</b> (<var>obj</var>, <var>K</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -851,8 +865,8 @@ Plot the evaluation results.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>DaviesBouldinEvaluation:</u> <b>plot</b><i> (<var>obj</var>)</i></dt>
-<dt><u>DaviesBouldinEvaluation:</u> <var>h</var> = <b>plot</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">DaviesBouldinEvaluation: <b>plot</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">DaviesBouldinEvaluation: <var>h</var> = <b>plot</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -886,7 +900,7 @@ Return a compact DaviesBouldinEvaluation object (not implemented yet).
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>DaviesBouldinEvaluation:</u> <var>obj</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">DaviesBouldinEvaluation: <var>obj</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

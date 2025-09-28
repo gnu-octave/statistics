@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>expcdf</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>expcdf</b><i> (<var>x</var>, <var>mu</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>expcdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b><i> (<var>x</var>, <var>mu</var>, <var>pcov</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b><i> (<var>x</var>, <var>mu</var>, <var>pcov</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b><i> (&hellip;, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>expcdf</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>expcdf</b> (<var>x</var>, <var>mu</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>expcdf</b> (&hellip;, <code>&quot;upper&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b> (<var>x</var>, <var>mu</var>, <var>pcov</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b> (<var>x</var>, <var>mu</var>, <var>pcov</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>plo</var>, <var>pup</var>] = <b>expcdf</b> (&hellip;, <code>&quot;upper&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> Exponential cumulative distribution function (CDF).

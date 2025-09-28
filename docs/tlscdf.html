@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>)</i></dt>
-<dt><u>statistics:</u> <var>p</var> = <b>tlscdf</b><i> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>tlscdf</b> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>tlscdf</b> (<var>x</var>, <var>mu</var>, <var>sigma</var>, <var>nu</var>, <code>&quot;upper&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> Location-scale Student&rsquo;s T cumulative distribution function (CDF).

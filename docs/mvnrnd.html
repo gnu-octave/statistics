@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,10 +783,10 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>n</var>)</i></dt>
-<dt><u>statistics:</u> <var>r</var> = <b>mvnrnd</b><i> (<var>mu</var>, <var>sigma</var>, <var>n</var>, <var>T</var>)</i></dt>
-<dt><u>statistics:</u> [<var>r</var>, <var>T</var>] = <b>mvnrnd</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>r</var> = <b>mvnrnd</b> (<var>mu</var>, <var>sigma</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>r</var> = <b>mvnrnd</b> (<var>mu</var>, <var>sigma</var>, <var>n</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>r</var> = <b>mvnrnd</b> (<var>mu</var>, <var>sigma</var>, <var>n</var>, <var>T</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>r</var>, <var>T</var>] = <b>mvnrnd</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Random vectors from the multivariate normal distribution.

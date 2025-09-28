@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>x</var> = <b>unidinv</b><i> (<var>p</var>, <var>N</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>x</var> = <b>unidinv</b> (<var>p</var>, <var>N</var>)</code></h5></dt>
 </dl>
 
 <p> Inverse of the discrete uniform cumulative distribution function (iCDF).

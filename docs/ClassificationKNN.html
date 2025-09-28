@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationKNN</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationKNN</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> Create a <code>ClassificationKNN</code> class object containing a k-Nearest
@@ -903,6 +916,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationKNN.m">ClassificationKNN</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1438,8 +1452,8 @@ Classify new data points into categories using the kNN algorithm from a
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>labels</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> [<var>labels</var>, <var>scores</var>, <var>cost</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>labels</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationKNN: [<var>labels</var>, <var>scores</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1499,8 +1513,8 @@ Compute loss for a trained ClassificationKNN object.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>L</var> = <b>loss</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> <var>L</var> = <b>loss</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1586,7 +1600,7 @@ Compute loss for a trained ClassificationKNN object.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>m</var> = <b>margin</b><i> (<var>obj</var>, <var>X</var>, <var>Y</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1637,9 +1651,9 @@ Compute partial dependence for a trained ClassificationKNN object.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>[pd, x, y]</var> = <b>partialDependence</b><i> (<var>obj</var>, <var>Vars</var>, <var>Labels</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> <var>[pd, x, y]</var> = <b>partialDependence</b><i> (&hellip;, <var>Data</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> <var>[pd, x, y]</var> = <b>partialDependence</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>[pd, x, y]</var> = <b>partialDependence</b> (<var>obj</var>, <var>Vars</var>, <var>Labels</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>[pd, x, y]</var> = <b>partialDependence</b> (&hellip;, <var>Data</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>[pd, x, y]</var> = <b>partialDependence</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1720,8 +1734,8 @@ Cross Validate a ClassificationKNN object.
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClassificationKNN:</u> <var>CVMdl</var> = <b>crossval</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1780,7 +1794,7 @@ Save a ClassificationKNN object.
           <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationKNN:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationKNN: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1835,11 +1849,11 @@ Save a ClassificationKNN object.
                     <td>&nbsp;</td>
                     <td><pre class="example">
 label =
-  3x1 cell array
-
-    {'versicolor'}    
-    {'versicolor'}    
-    {'virginica' }    
+{
+  [1,1] = versicolor
+  [2,1] = versicolor
+  [3,1] = virginica
+}
 
 score =
 

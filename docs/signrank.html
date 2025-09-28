@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,11 +783,11 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>, <var>my</var>)</i></dt>
-<dt><u>statistics:</u> <var>pval</var> = <b>signrank</b><i> (<var>x</var>, <var>my</var>, <var>Name</var>, <var>Value</var>)</i></dt>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>] = <b>signrank</b><i> (&hellip;)</i></dt>
-<dt><u>statistics:</u> [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signrank</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>pval</var> = <b>signrank</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>pval</var> = <b>signrank</b> (<var>x</var>, <var>my</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>pval</var> = <b>signrank</b> (<var>x</var>, <var>my</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>pval</var>, <var>h</var>] = <b>signrank</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>pval</var>, <var>h</var>, <var>stats</var>] = <b>signrank</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Wilcoxon signed rank test for median.

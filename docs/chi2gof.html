@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,10 +783,10 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>h</var> = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>p</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>chi2gof</b><i> (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>chi2gof</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>p</var>] = <b>chi2gof</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>chi2gof</b> (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code></h5></dt>
 </dl>
 
 <p> Chi-square goodness-of-fit test.

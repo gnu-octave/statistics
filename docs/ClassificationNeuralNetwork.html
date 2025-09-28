@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationNeuralNetwork</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> <var>obj</var> = <b>ClassificationNeuralNetwork</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationNeuralNetwork</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationNeuralNetwork</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> Create a <code>ClassificationNeuralNetwork</code> class object containing a Neural
@@ -887,6 +900,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationNeuralNetwork.m">ClassificationNeuralNetwork</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1399,8 +1413,8 @@ Classify new data points into categories using the Neural Network
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationNeuralNetwork:</u> <var>labels</var> = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
-<dt><u>ClassificationNeuralNetwork:</u> [<var>labels</var>, <var>scores</var>] = <b>predict</b><i> (<var>obj</var>, <var>XC</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>labels</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: [<var>labels</var>, <var>scores</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1454,8 +1468,8 @@ Classify the training data using the trained Neural Network
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationNeuralNetwork:</u> <var>labels</var> = <b>resubPredict</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClassificationNeuralNetwork:</u> [<var>labels</var>, <var>scores</var>] = <b>resubPredict</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>labels</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: [<var>labels</var>, <var>scores</var>] = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1506,8 +1520,8 @@ Cross Validate a Neural Network classification object.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationNeuralNetwork:</u> <var>CVMdl</var> = <b>crossval</b><i> (<var>obj</var>)</i></dt>
-<dt><u>ClassificationNeuralNetwork:</u> <var>CVMdl</var> = <b>crossval</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1566,7 +1580,7 @@ Create a CompactClassificationNeuralNetwork object.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationNeuralNetwork:</u> <var>CVMdl</var> = <b>compact</b><i> (<var>obj</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1603,7 +1617,7 @@ Save a ClassificationNeuralNetwork object.
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ClassificationNeuralNetwork:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">ClassificationNeuralNetwork: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

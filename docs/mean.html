@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>)</i></dt>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>dim</var>)</i></dt>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, <var>vecdim</var>)</i></dt>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (<var>x</var>, &quot;all&quot;)</i></dt>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>nanflag</var>)</i></dt>
-<dt><u>:</u> <var>m</var> = <b>mean</b><i> (&hellip;, <var>outtype</var>)</i></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (<var>x</var>, <var>dim</var>)</code></h5></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (<var>x</var>, <var>vecdim</var>)</code></h5></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (<var>x</var>, &quot;all&quot;)</code></h5></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (&hellip;, <var>nanflag</var>)</code></h5></dt>
+<dt><code><h5 class="fs">: <var>m</var> = <b>mean</b> (&hellip;, <var>outtype</var>)</code></h5></dt>
 </dl>
 <p> Compute the mean of the elements of <var>x</var>.
 </p>

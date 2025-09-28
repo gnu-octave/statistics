@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> TriangularDistribution</dt>
+<dt><code><h5 class="fs">statistics: TriangularDistribution</dt>
 </dl>
 
 <p> Triangular probability distribution object.
@@ -827,6 +840,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_obj/TriangularDistribution.m">TriangularDistribution</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1131,8 +1145,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
-<dt><u>TriangularDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1170,7 +1184,7 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>p</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1204,7 +1218,7 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>r</var> = <b>iqr</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1237,7 +1251,7 @@ Compute the mean of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>m</var> = <b>mean</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1270,7 +1284,7 @@ Compute the median of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>m</var> = <b>median</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1303,7 +1317,7 @@ Compute the probability distribution function (PDF).
           <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>y</var> = <b>pdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1337,9 +1351,9 @@ Plot a probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod7">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <b>plot</b><i> (<var>pd</var>)</i></dt>
-<dt><u>TriangularDistribution:</u> <b>plot</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
-<dt><u>TriangularDistribution:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <b>plot</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1401,10 +1415,10 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod8">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>)</i></dt>
-<dt><u>TriangularDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>)</i></dt>
-<dt><u>TriangularDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>TriangularDistribution:</u> <var>y</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1444,7 +1458,7 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod9">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>s</var> = <b>std</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1477,7 +1491,7 @@ Truncate a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod10">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>t</var> = <b>truncate</b><i> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1515,7 +1529,7 @@ Compute the variance of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>TriangularDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

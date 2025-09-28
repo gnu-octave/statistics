@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>Class:</u> <b>ExhaustiveSearcher</b></dt>
+<dt><code><h5 class="fs">Class: <b>ExhaustiveSearcher</b></h5></code></dt>
 </dl>
 
 <p> Exhaustive nearest neighbor searcher class.
@@ -796,6 +809,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/ExhaustiveSearcher.m">ExhaustiveSearcher</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -931,8 +945,8 @@ Create an <code>ExhaustiveSearcher</code> object for nearest neighbor
           <div class="collapse multi-collapse" id="colapsibleConstructor">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ExhaustiveSearcher:</u> <var>obj</var> = <b>ExhaustiveSearcher</b><i> (<var>X</var>)</i></dt>
-<dt><u>ExhaustiveSearcher:</u> <var>obj</var> = <b>ExhaustiveSearcher</b><i> (<var>X</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: <var>obj</var> = <b>ExhaustiveSearcher</b> (<var>X</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: <var>obj</var> = <b>ExhaustiveSearcher</b> (<var>X</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -995,8 +1009,8 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>obj</var>, <var>Y</var>)</i></dt>
-<dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>knnsearch</b><i> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1056,8 +1070,8 @@ Find all neighbors within a specified radius of query points.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>obj</var>, <var>Y</var>, <var>r</var>)</i></dt>
-<dt><u>ExhaustiveSearcher:</u> [<var>idx</var>, <var>D</var>] = <b>rangesearch</b><i> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>)</code></h5></dt>
+<dt><code><h5 class="fs">ExhaustiveSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1156,15 +1170,110 @@ nearestNeighbors =
    102   115
 
 neighborsInRange =
-  5x1 cell array
+{
+  [1,1] =
 
-Columns 1 through 1:
+   Columns 1 through 19:
 
-    {[ 5 6 21 46 48 44 37 22 1 8 11 27 26 33 18 12 39 7 40 49 32 47 19 3 28 29 17 20 43 23 42 16 30 4 56 34 85 24 ... ]}    
-    {[  98 95 83 88 78 89 55 63 69 91 94 90 82 92 59 80 100 138 131 57 66 67 81 61 125 102 115 145 134 96 110 118 ... ]}    
-    {[104 128 127 106 117 123 58 52 76 50 107 86 74 101 65 75 77 131 96 72 54 73 115 129 51 63 67 91 71 87 110 92 ... ]}    
-    {[  135 65 75 101 111 117 77 54 50 86 137 52 76 119 141 128 74 71 121 142 143 136 58 124 51 109 110 104 68 87 ... ]}    
-    {[102 115 91 94 63 56 145 83 88 95 55 131 66 85 122 78 70 103 125 73 98 84 134 123 51 90 126 67 100 138 61 96 ... ]}    
+       5     6    21    46    48    44    37    22     1     8    11    27    26    33    18    12    39     7    40
+
+   Columns 20 through 38:
+
+      49    32    47    19     3    28    29    17    20    43    23    42    16    30     4    56    34    85    24
+
+   Columns 39 through 57:
+
+      10    51    38    61    13    88    14    35    25    78    91    95     2   125    70     9    45    64   134
+
+   Columns 58 through 76:
+
+      31    98    36    94   122    15    96   109    63    66   115    86   145    82   143    77   103   139    74
+
+   Columns 77 through 95:
+
+      71    55   124    59   126    65   131    75    92   102    83    52   110   111    84   100   138    67   119
+
+   Columns 96 through 98:
+
+      58    79    89
+
+  [2,1] =
+
+   Columns 1 through 19:
+
+      98    95    83    88    78    89    55    63    69    91    94    90    82    92    59    80   100   138   131
+
+   Columns 20 through 38:
+
+      57    66    67    81    61   125   102   115   145   134    96   110   118   126    93     4    53    64    29
+
+   Columns 39 through 57:
+
+      30    72     9    73    47    79    56    38   107   103   124    42    70    51    14    84    10    12    13
+
+   Columns 58 through 76:
+
+      34     3   121   130    71    85   112     7     8    25    74   120    60   143    24    77    49    39    26
+
+   Columns 77 through 95:
+
+     122    54     2    37    58    45     5    97    86   109     1    27   139   105   101    23   111   142    20
+
+   Columns 96 through 114:
+
+      22    18    75    28    40    44    46    52    48    21    35    65    76   123    62    11    43   132   135
+
+   Columns 115 through 121:
+
+      87   119   106     6   127   128   104
+
+  [3,1] =
+
+   Columns 1 through 19:
+
+     104   128   127   106   117   123    58    52    76    50   107    86    74   101    65    75    77   131    96
+
+   Columns 20 through 35:
+
+      72    54    73   115   129    51    63    67    91    71    87   110    92    62   118    82
+
+  [4,1] =
+
+   Columns 1 through 19:
+
+     135    65    75   101   111   117    77    54    50    86   137    52    76   119   141   128    74    71   121
+
+   Columns 20 through 34:
+
+     142   143   136    58   124    51   109   110   104    68    87    96    31    36   139
+
+  [5,1] =
+
+   Columns 1 through 19:
+
+     102   115    91    94    63    56   145    83    88    95    55   131    66    85   122    78    70   103   125
+
+   Columns 20 through 38:
+
+      73    98    84   134   123    51    90   126    67   100   138    61    96   139   110   107    24    44   101
+
+   Columns 39 through 57:
+
+      12   106   109    77    82   130   143    86    59    46    37   104   127    29    69    92    58    72   132
+
+   Columns 58 through 76:
+
+      89    99   116   124    52    74    64     5     8   111     4    30   120    47     7   144   121   118    42
+
+   Columns 77 through 95:
+
+     133    39    80    48    32    81    71   119    27    10     6    54     1    26    75   108    57   128    21
+
+   Columns 96 through 109:
+
+       3    65    79    20    11   112    34    50    49   135    22    38   129     9
+
+}
 </pre></td></tr>
                   </table>
 
@@ -1211,15 +1320,19 @@ Nearest neighbor index:
 Distance:
 1.4142
 Indices within radius:
-  1x1 cell array
+{
+  [1,1] =
 
-    {[1 2]}    
+     1   2
 
+}
 Distances:
-  1x1 cell array
+{
+  [1,1] =
 
-    {[1.41421 1.41421]}    
-</pre></td></tr>
+     1.4142   1.4142
+
+}</pre></td></tr>
                   </table>
 
             </div>

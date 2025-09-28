@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>Class:</u> <b>cvpartition</b></dt>
+<dt><code><h5 class="fs">Class: <b>cvpartition</b></h5></code></dt>
 </dl>
 
 <p> Partition data for cross-validation
@@ -785,6 +798,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/cvpartition.m">cvpartition</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1074,20 +1088,20 @@ Repartition data for cross-validation.
           <div class="collapse multi-collapse" id="colapsibleConstructor">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'KFold'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'KFold'</code>, <var>k</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'KFold'</code>, <var>k</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'Holdout'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'Leaveout'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>n</var>, <code>'Resubstitution'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'KFold'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'KFold'</code>, <var>k</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'Holdout'</code>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>C</var> = <b>cvpartition</b><i> (<code>'CustomPartition'</code>, <var>testSets</var>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'KFold'</code>, <var>k</var>, <code>'GroupingVariables'</code>, <var>grpvars</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Holdout'</code>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Leaveout'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>n</var>, <code>'Resubstitution'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'KFold'</code>, <var>k</var>, <code>'Stratify'</code>, <var>opt</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<code>'CustomPartition'</code>, <var>testSets</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1228,13 +1242,13 @@ Repartition data for cross-validation.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>cvpartition:</u> <var>Cnew</var> = <b>repartition</b><i> (<var>C</var>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>)</code></h5></dt>
 </dl>
  <dl>
-<dt><u>cvpartition:</u> <var>Cnew</var> = <b>repartition</b><i> (<var>C</var>, <var>sval</var>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <var>sval</var>)</code></h5></dt>
 </dl>
  <dl>
-<dt><u>cvpartition:</u> <var>Cnew</var> = <b>repartition</b><i> (<var>C</var>, <code>'legacy'</code>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <code>'legacy'</code>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1287,7 +1301,7 @@ Summarize cross-validation partition.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>cvpartition:</u> <var>tbl</var> = <b>summary</b><i> (<var>C</var>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>tbl</var> = <b>summary</b> (<var>C</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1328,9 +1342,9 @@ Test indices for cross-validation.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>test</b><i> (<var>C</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>test</b><i> (<var>C</var>, <var>i</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>test</b><i> (<var>C</var>, <code>&quot;all&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <code>&quot;all&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1384,9 +1398,9 @@ Training indices for cross-validation.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>training</b><i> (<var>C</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>training</b><i> (<var>C</var>, <var>i</var>)</i></dt>
-<dt><u>cvpartition:</u> <var>idx</var> = <b>training</b><i> (<var>C</var>, <code>&quot;all&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <code>&quot;all&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> </p>

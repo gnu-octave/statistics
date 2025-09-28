@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,11 +783,11 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>h</var> = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>regression_ttest</b><i> (<var>y</var>, <var>x</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>regression_ttest</b> (<var>y</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>] = <b>regression_ttest</b> (<var>y</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>regression_ttest</b> (<var>y</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>stats</var>] = <b>regression_ttest</b> (<var>y</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regression_ttest</b> (<var>y</var>, <var>x</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> Perform a linear regression t-test.

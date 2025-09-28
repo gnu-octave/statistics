@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,13 +783,13 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, &quot;constant&quot;, <var>v</var>)</i></dt>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>method</var>)</i></dt>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>move_method</var>, <var>window_size</var>)</i></dt>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (<var>A</var>, <var>fill_function</var>, <var>window_size</var>)</i></dt>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (&hellip;, <var>dim</var>)</i></dt>
-<dt><u>statistics:</u> <var>B</var> = <b>fillmissing</b><i> (&hellip;, <var>PropertyName</var>, <var>PropertyValue</var>)</i></dt>
-<dt><u>statistics:</u> [<var>B</var>, <var>idx</var>] = <b>fillmissing</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (<var>A</var>, &quot;constant&quot;, <var>v</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (<var>A</var>, <var>method</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (<var>A</var>, <var>move_method</var>, <var>window_size</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (<var>A</var>, <var>fill_function</var>, <var>window_size</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (&hellip;, <var>dim</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (&hellip;, <var>PropertyName</var>, <var>PropertyValue</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>B</var>, <var>idx</var>] = <b>fillmissing</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Replace missing entries of array <var>A</var> either with values in <var>v</var> or

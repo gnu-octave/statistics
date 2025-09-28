@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,8 +783,8 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>obj</var> = <b>RegressionGAM</b><i> (<var>X</var>, <var>Y</var>)</i></dt>
-<dt><u>statistics:</u> <var>obj</var> = <b>RegressionGAM</b><i> (&hellip;, <var>name</var>, <var>value</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>RegressionGAM</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>RegressionGAM</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
 
 <p> Create a <code>RegressionGAM</code> class object containing a Generalized Additive
@@ -870,6 +883,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/RegressionGAM.m">RegressionGAM</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1266,9 +1280,9 @@ Predict new data points using generalized additive model regression object.
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (<var>obj</var>, <var>Xfit</var>)</i></dt>
-<dt><u>RegressionGAM:</u> <var>yFit</var> = <b>predict</b><i> (&hellip;, <var>Name</var>, <var>Value</var>)</i></dt>
-<dt><u>RegressionGAM:</u> [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">RegressionGAM: <var>yFit</var> = <b>predict</b> (<var>obj</var>, <var>Xfit</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RegressionGAM: <var>yFit</var> = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RegressionGAM: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1336,7 +1350,7 @@ Save a RegressionGAM object.
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>RegressionGAM:</u> <b>savemodel</b><i> (<var>obj</var>, <var>filename</var>)</i></dt>
+<dt><code><h5 class="fs">RegressionGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>

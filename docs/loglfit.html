@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,12 +783,12 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> <var>paramhat</var> = <b>loglfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>)</i></dt>
-<dt><u>statistics:</u> [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</i></dt>
-<dt><u>statistics:</u> [&hellip;] = <b>loglfit</b><i> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</i></dt>
+<dt><code><h5 class="fs">statistics: <var>paramhat</var> = <b>loglfit</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b> (<var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>paramhat</var>, <var>paramci</var>] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code></h5></dt>
 </dl>
 
 <p> Estimate mean and confidence intervals for the log-logistic distribution.

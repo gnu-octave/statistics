@@ -23,12 +23,25 @@
       });
     </script>
     <style>
+    h5.fs {
+    margin-top: -0.15em;
+    margin-bottom: -0.15em;
+    }
     h6:hover {
       color: gray;
     }
+    code {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: nowrap;
+    color: gray;
+    }
     var {
-      font-style: italics;
-      font-weight: bold;
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    font-style: normal;
+    font-weight: bold;
+    color: gray;
     }
     td {
       vertical-align: top;
@@ -770,7 +783,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><u>statistics:</u> GeneralizedExtremeValueDistribution</dt>
+<dt><code><h5 class="fs">statistics: GeneralizedExtremeValueDistribution</dt>
 </dl>
 
 <p> Generalized extreme value probability distribution object.
@@ -822,6 +835,7 @@
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_obj/GeneralizedExtremeValueDistribution.m">GeneralizedExtremeValueDistribution</a>
+</p>
 </div>
         <h4 class="d-inline-block my-3">
           Properties
@@ -1586,8 +1600,8 @@ Compute the cumulative distribution function (CDF).
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>p</var> = <b>cdf</b><i> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1675,7 +1689,7 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>x</var> = <b>icdf</b><i> (<var>pd</var>, <var>p</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1758,7 +1772,7 @@ Compute the interquartile range of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod3">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>r</var> = <b>iqr</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1835,7 +1849,7 @@ Compute the mean of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod4">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>m</var> = <b>mean</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1906,7 +1920,7 @@ Compute the median of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod5">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>m</var> = <b>median</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1977,7 +1991,7 @@ Compute the negative loglikelihood of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod6">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>nlogL</var> = <b>negloglik</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>nlogL</var> = <b>negloglik</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2064,8 +2078,8 @@ Compute the confidence intervals for probability distribution parameters.
           <div class="collapse multi-collapse" id="collapseMethod7">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>ci</var> = <b>paramci</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>ci</var> = <b>paramci</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2137,7 +2151,7 @@ warning: called from
     fit at line 778 column 19
     fitdist at line 377 column 22
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 301 column 16
+    classdef_texi2html at line 305 column 16
     package_texi2html at line 288 column 9
 
 pd_fitted =
@@ -2156,7 +2170,7 @@ warning: called from
     __paramci__ at line 97 column 13
     paramci at line 508 column 12
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 301 column 16
+    classdef_texi2html at line 305 column 16
     package_texi2html at line 288 column 9
 
 ci =
@@ -2197,7 +2211,7 @@ Compute the probability distribution function (PDF).
           <div class="collapse multi-collapse" id="collapseMethod8">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>y</var> = <b>pdf</b><i> (<var>pd</var>, <var>x</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2280,9 +2294,9 @@ Plot a probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod9">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <b>plot</b><i> (<var>pd</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <b>plot</b><i> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>h</var> = <b>plot</b><i> (&hellip;)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <b>plot</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2513,10 +2527,10 @@ Profile likelihood function for a probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod10">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> [<var>nlogL</var>, <var>param</var>] = <b>proflik</b><i> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: [<var>nlogL</var>, <var>param</var>] = <b>proflik</b> (<var>pd</var>, <var>pnum</var>, <var>setparam</var>, <code>&quot;Display&quot;</code>, <var>display</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2596,7 +2610,7 @@ warning: called from
     fit at line 778 column 19
     fitdist at line 377 column 22
     build_DEMOS at line 94 column 11
-    classdef_texi2html at line 301 column 16
+    classdef_texi2html at line 305 column 16
     package_texi2html at line 288 column 9
 
 pd_fitted =
@@ -2643,10 +2657,10 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</i></dt>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>r</var> = <b>random</b><i> (<var>pd</var>, [<var>sz</var>])</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2736,7 +2750,7 @@ Compute the standard deviation of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod12">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>s</var> = <b>std</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2812,7 +2826,7 @@ Truncate a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod13">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>t</var> = <b>truncate</b><i> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -2918,7 +2932,7 @@ Compute the variance of a probability distribution.
           <div class="collapse multi-collapse" id="collapseMethod14">
             <div class="border-bottom py-2">
 <dl>
-<dt><u>GeneralizedExtremeValueDistribution:</u> <var>v</var> = <b>var</b><i> (<var>pd</var>)</i></dt>
+<dt><code><h5 class="fs">GeneralizedExtremeValueDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
