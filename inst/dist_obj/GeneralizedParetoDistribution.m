@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,7 +18,7 @@
 
 classdef GeneralizedParetoDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} GeneralizedParetoDistribution
+  ## @deftp {statistics} GeneralizedParetoDistribution
   ##
   ## Generalized Pareto probability distribution object.
   ##
@@ -26,10 +26,10 @@ classdef GeneralizedParetoDistribution
   ## model description, and sample data for a Generalized Pareto probability
   ## distribution.
   ##
-  ## The Generalized Pareto distribution is a continuous probability distribution
-  ## that models the tail behavior of other distributions, commonly used for
-  ## extreme value analysis, with shape parameter @qcode{@var{k}}, scale
-  ## parameter @qcode{@var{sigma}}, and location parameter @qcode{@var{theta}}.
+  ## The Generalized Pareto distribution is a continuous probability
+  ## distribution that models the tail behavior of other distributions, commonly
+  ## used for extreme value analysis.  It is defined by shape parameter @var{k},
+  ## scale parameter @var{sigma}, and location parameter @var{theta}.
   ##
   ## There are several ways to create a @code{GeneralizedParetoDistribution}
   ## object.
@@ -40,11 +40,10 @@ classdef GeneralizedParetoDistribution
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{GeneralizedParetoDistribution (@var{k},
   ## @var{sigma}, @var{theta})} to create a Generalized Pareto distribution with
-  ## fixed parameter values @qcode{@var{k}}, @qcode{@var{sigma}}, and
-  ## @qcode{@var{theta}}.
+  ## fixed parameter values @var{k}, @var{sigma}, and @var{theta}.
   ## @item Use the static method @qcode{GeneralizedParetoDistribution.fit
   ## (@var{x}, @var{theta}, @var{alpha}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{gpfit} function.
   ## @end itemize
   ##
@@ -57,7 +56,7 @@ classdef GeneralizedParetoDistribution
   ##
   ## @seealso{fitdist, makedist, gpcdf, gpinv, gppdf, gprnd, gpfit,
   ## gplike, gpstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,16 +18,16 @@
 
 classdef GammaDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} GammaDistribution
+  ## @deftp {statistics} GammaDistribution
   ##
   ## Gamma probability distribution object.
   ##
   ## A @code{GammaDistribution} object consists of parameters, a model
   ## description, and sample data for a gamma probability distribution.
   ##
-  ## The gamma distribution is a continuous probability distribution that
-  ## models the time to failure of a process, with shape parameter
-  ## @qcode{@var{a}} and scale parameter @qcode{@var{b}}.
+  ## The gamma distribution is a continuous probability distribution that models
+  ## the time to failure of a process.  It is defined by shape parameter @var{a}
+  ## and scale parameter @var{b}.
   ##
   ## There are several ways to create a @code{GammaDistribution} object.
   ##
@@ -36,11 +36,11 @@ classdef GammaDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{GammaDistribution (@var{a}, @var{b})}
-  ## to create a gamma distribution with fixed parameter values @qcode{@var{a}}
-  ## and @qcode{@var{b}}.
+  ## to create a gamma distribution with fixed parameter values @var{a} and
+  ## @var{b}.
   ## @item Use the static method @qcode{GammaDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{gamfit} function.
   ## @end itemize
   ##
@@ -53,7 +53,7 @@ classdef GammaDistribution
   ##
   ## @seealso{fitdist, makedist, gamcdf, gaminv, gampdf, gamrnd, gamfit,
   ## gamlike, gamstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

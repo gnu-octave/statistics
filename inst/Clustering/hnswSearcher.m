@@ -18,7 +18,7 @@
 
 classdef hnswSearcher
 ## -*- texinfo -*-
-## @deftp {Class} hnswSearcher
+## @deftp {statistics} hnswSearcher
 ##
 ## Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
 ##

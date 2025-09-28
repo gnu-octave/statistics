@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,16 +18,16 @@
 
 classdef ExponentialDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} ExponentialDistribution
+  ## @deftp {statistics} ExponentialDistribution
   ##
   ## Exponential probability distribution object.
   ##
   ## A @code{ExponentialDistribution} object consists of parameters, a model
   ## description, and sample data for a exponential probability distribution.
   ##
-  ## The exponential distribution is a continuous probability distribution
-  ## that models the time between events in a Poisson process, with mean
-  ## parameter @qcode{@var{mu}}.
+  ## The exponential distribution is a continuous probability distribution with
+  ## mean parameter @var{mu} that models the time between events in a Poisson
+  ## process.
   ##
   ## There are several ways to create a @code{ExponentialDistribution} object.
   ##
@@ -36,11 +36,10 @@ classdef ExponentialDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{ExponentialDistribution (@var{mu})}
-  ## to create a exponential distribution with fixed parameter value
-  ## @qcode{@var{mu}}.
+  ## to create a exponential distribution with fixed parameter value @var{mu}.
   ## @item Use the static method @qcode{ExponentialDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{expfit} function.
   ## @end itemize
   ##
@@ -53,7 +52,7 @@ classdef ExponentialDistribution
   ##
   ## @seealso{fitdist, makedist, expcdf, expinv, exppdf, exprnd, expfit,
   ## explike, expstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-
@@ -80,7 +79,7 @@ classdef ExponentialDistribution
     ##
     ## @end deftp
     DistributionName = "ExponentialDistribution";
-    
+
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} NumParameters
     ##
@@ -136,7 +135,7 @@ classdef ExponentialDistribution
     ##
     ## @end deftp
     ParameterValues
-    
+
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} ParameterCovariance
     ##

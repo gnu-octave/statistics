@@ -18,7 +18,7 @@
 
 classdef BetaDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} BetaDistribution
+  ## @deftp {statistics} BetaDistribution
   ##
   ## Beta probability distribution object.
   ##
@@ -38,12 +38,11 @@ classdef BetaDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BetaDistribution (@var{a}, @var{b})}
-  ## to create a beta distribution with fixed parameter values @qcode{@var{a}}
-  ## and @qcode{@var{b}}.
+  ## to create a beta distribution with fixed parameter values @var{a} and
+  ## @var{b}.
   ## @item Use the static method @qcode{BetaDistribution.fit (@var{x},
-  ## @var{alpha}, @var{freq}, @var{options})} to fit a distribution to data
-  ## @qcode{@var{x}} using the same input arguments as the @code{betafit}
-  ## function.
+  ## @var{alpha}, @var{freq}, @var{options})} to fit a distribution to the data
+  ## in @var{x} using the same input arguments as the @code{betafit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
@@ -55,7 +54,7 @@ classdef BetaDistribution
   ##
   ## @seealso{fitdist, makedist, betacdf, betainv, betapdf, betarnd, betafit,
   ## betalike, betastat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

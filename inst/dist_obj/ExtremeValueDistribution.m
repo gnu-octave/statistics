@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,7 +18,7 @@
 
 classdef ExtremeValueDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} ExtremeValueDistribution
+  ## @deftp {statistics} ExtremeValueDistribution
   ##
   ## Extreme value probability distribution object.
   ##
@@ -27,8 +27,8 @@ classdef ExtremeValueDistribution
   ##
   ## The extreme value distribution is also known as the Gumbel distribution for
   ## maxima, and it is a limiting distribution for the maximum of a large number
-  ## of samples from a continuous distribution, with location parameter
-  ## @qcode{@var{mu}} and scale parameter @qcode{@var{sigma}}.
+  ## of samples from a continuous distribution.  It is defined by location
+  ## parameter @var{mu} and scale parameter @var{sigma}.
   ##
   ## There are several ways to create a @code{ExtremeValueDistribution} object.
   ##
@@ -36,11 +36,12 @@ classdef ExtremeValueDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{ExtremeValueDistribution (@var{mu}, @var{sigma})}
-  ## to create an extreme value distribution with specified parameter values.
+  ## @item Use the constructor @qcode{ExtremeValueDistribution (@var{mu},
+  ## @var{sigma})} to create an extreme value distribution with specified
+  ## parameter values.
   ## @item Use the static method @qcode{ExtremeValueDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @var{x} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{evfit} function.
   ## @end itemize
   ##
@@ -53,7 +54,7 @@ classdef ExtremeValueDistribution
   ##
   ## @seealso{fitdist, makedist, evcdf, evinv, evpdf, evrnd, evfit,
   ## evlike, evstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-
@@ -67,6 +68,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     mu
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} sigma
     ##
@@ -91,6 +93,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     DistributionName = "ExtremeValueDistribution";
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} NumParameters
     ##
@@ -101,6 +104,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     NumParameters = 2;
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterNames
     ##
@@ -111,6 +115,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     ParameterNames = {"mu", "sigma"};
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterDescription
     ##
@@ -144,6 +149,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     ParameterValues
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterCovariance
     ##
@@ -160,6 +166,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     ParameterCovariance
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterIsFixed
     ##
@@ -172,6 +179,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     ParameterIsFixed
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} Truncation
     ##
@@ -185,6 +193,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     Truncation
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} IsTruncated
     ##
@@ -195,6 +204,7 @@ classdef ExtremeValueDistribution
     ##
     ## @end deftp
     IsTruncated
+
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} InputData
     ##

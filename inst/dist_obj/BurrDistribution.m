@@ -18,7 +18,7 @@
 
 classdef BurrDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} BurrDistribution
+  ## @deftp {statistics} BurrDistribution
   ##
   ## Burr probability distribution object.
   ##
@@ -26,9 +26,9 @@ classdef BurrDistribution
   ## description, and sample data for a Burr probability distribution.
   ##
   ## The Burr distribution is a continuous probability distribution that models
-  ## a non-negative random variable, commonly used to model household income,
-  ## with scale parameter @qcode{@var{alpha}} and shape parameters
-  ## @qcode{@var{c}} and @qcode{@var{k}}.
+  ## a non-negative random variable, commonly used to model household income.
+  ## It is defined by a scale parameter @var{alpha} and two shape parameters
+  ## @var{c} and @var{k}.
   ##
   ## There are several ways to create a @code{BurrDistribution} object.
   ##
@@ -38,10 +38,10 @@ classdef BurrDistribution
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BurrDistribution (@var{alpha}, @var{c},
   ## @var{k})} to create a Burr distribution with fixed parameter values
-  ## @qcode{@var{alpha}}, @qcode{@var{c}}, and @qcode{@var{k}}.
+  ## @var{alpha}, @var{c}, and @var{k}.
   ## @item Use the static method @qcode{BurrDistribution.fit (@var{x},
   ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{burrfit} function.
   ## @end itemize
   ##
@@ -54,7 +54,7 @@ classdef BurrDistribution
   ##
   ## @seealso{fitdist, makedist, burrcdf, burrinv, burrpdf, burrrnd, burrfit,
   ## burrlike, burrstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

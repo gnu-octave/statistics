@@ -18,7 +18,7 @@
 
 classdef BirnbaumSaundersDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} BirnbaumSaundersDistribution
+  ## @deftp {statistics} BirnbaumSaundersDistribution
   ##
   ## Birnbaum-Saunders probability distribution object.
   ##
@@ -27,9 +27,8 @@ classdef BirnbaumSaundersDistribution
   ## distribution.
   ##
   ## The Birnbaum-Saunders distribution is a continuous probability distribution
-  ## that models the time to failure of materials subjected to cyclic loading,
-  ## with scale parameter @qcode{@var{beta}} and shape parameter
-  ## @qcode{@var{gamma}}.
+  ## that models the time to failure of materials subjected to cyclic loading.
+  ## It is defined by scale parameter @var{beta} and shape parameter @var{gamma}.
   ##
   ## There are several ways to create a @code{BirnbaumSaundersDistribution}
   ## object.
@@ -40,10 +39,10 @@ classdef BirnbaumSaundersDistribution
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BirnbaumSaundersDistribution (@var{beta},
   ## @var{gamma})} to create a Birnbaum-Saunders distribution with fixed
-  ## parameter values @qcode{@var{beta}} and @qcode{@var{gamma}}.
+  ## parameter values @var{beta} and @var{gamma}.
   ## @item Use the static method @qcode{BirnbaumSaundersDistribution.fit
   ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{bisafit} function.
   ## @end itemize
   ##
@@ -56,7 +55,7 @@ classdef BirnbaumSaundersDistribution
   ##
   ## @seealso{fitdist, makedist, bisacdf, bisainv, bisapdf, bisarnd, bisafit,
   ## bisalike, bisastat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

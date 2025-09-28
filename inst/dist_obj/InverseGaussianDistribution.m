@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,7 +18,7 @@
 
 classdef InverseGaussianDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} InverseGaussianDistribution
+  ## @deftp {statistics} InverseGaussianDistribution
   ##
   ## Inverse Gaussian probability distribution object.
   ##
@@ -26,10 +26,9 @@ classdef InverseGaussianDistribution
   ## model description, and sample data for a Inverse Gaussian probability
   ## distribution.
   ##
-  ## The Inverse Gaussian distribution is a continuous probability distribution
-  ## that is often used to model non-negative positively skewed data, with
-  ## mean parameter @qcode{@var{mu}} and shape parameter
-  ## @qcode{@var{lambda}}.
+  ## The Inverse Gaussian distribution is a continuous probability distribution,
+  ## which is often used to model non-negative positively skewed data.  Is is
+  ## defined by mean parameter @var{mu} and shape parameter @var{lambda}.
   ##
   ## There are several ways to create a @code{InverseGaussianDistribution}
   ## object.
@@ -40,10 +39,10 @@ classdef InverseGaussianDistribution
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{InverseGaussianDistribution (@var{mu},
   ## @var{lambda})} to create a Inverse Gaussian distribution with fixed
-  ## parameter values @qcode{@var{mu}} and @qcode{@var{lambda}}.
+  ## parameter values @var{mu} and @var{lambda}.
   ## @item Use the static method @qcode{InverseGaussianDistribution.fit
   ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{invgfit} function.
   ## @end itemize
   ##
@@ -56,7 +55,7 @@ classdef InverseGaussianDistribution
   ##
   ## @seealso{fitdist, makedist, invgcdf, invginv, invgpdf, invgrnd, invgfit,
   ## invglike, invgstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

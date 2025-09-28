@@ -18,7 +18,7 @@
 
 classdef HalfNormalDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} HalfNormalDistribution
+  ## @deftp {statistics} HalfNormalDistribution
   ##
   ## Half-normal probability distribution object.
   ##
@@ -26,9 +26,8 @@ classdef HalfNormalDistribution
   ## description, and sample data for a half-normal probability distribution.
   ##
   ## The half-normal distribution is a continuous probability distribution that
-  ## models the time to failure of materials subjected to cyclic loading, with
-  ## location parameter @qcode{@var{mu}} and scale parameter
-  ## @qcode{@var{sigma}}.
+  ## models the time to failure of materials subjected to cyclic loading.  It is
+  ## defined by location parameter @var{mu} and scale parameter @var{sigma}.
   ##
   ## There are several ways to create a @code{HalfNormalDistribution} object.
   ##
@@ -37,10 +36,10 @@ classdef HalfNormalDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{HalfNormalDistribution (@var{mu},
-  ## @var{sigma})} to create a half-normal distribution with fixed
-  ## parameter values @qcode{@var{mu}} and @qcode{@var{sigma}}.
+  ## @var{sigma})} to create a half-normal distribution with fixed parameter
+  ## values @var{mu} and @var{sigma}.
   ## @item Use the static method @qcode{HalfNormalDistribution.fit (@var{x},
-  ## @var{mu}, @var{freq})} to fit a distribution to data @qcode{@var{x}} using
+  ## @var{mu}, @var{freq})} to fit a distribution to the data in @var{x} using
   ## the same input arguments as the @code{hnfit} function.
   ## @end itemize
   ##
@@ -53,7 +52,7 @@ classdef HalfNormalDistribution
   ##
   ## @seealso{fitdist, makedist, hncdf, hninv, hnpdf, hnrnd, hnfit,
   ## hnlike, hnstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

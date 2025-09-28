@@ -17,7 +17,7 @@
 
 classdef cvpartition
 ## -*- texinfo -*-
-## @deftp {Class} cvpartition
+## @deftp {statistics} cvpartition
 ##
 ## Partition data for cross-validation
 ##

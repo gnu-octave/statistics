@@ -18,7 +18,7 @@
 
 classdef BinomialDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} BinomialDistribution
+  ## @deftp {statistics} BinomialDistribution
   ##
   ## Binomial probability distribution object.
   ##
@@ -26,8 +26,8 @@ classdef BinomialDistribution
   ## description, and sample data for a binomial probability distribution.
   ##
   ## The binomial distribution is a discrete probability distribution that
-  ## models the number of successes in a sequence of @qcode{@var{N}} independent
-  ## trials, each with a probability of success @qcode{@var{p}}.
+  ## models the number of successes in a sequence of @var{N} independent trials,
+  ## each with a probability of success @var{p}.
   ##
   ## There are several ways to create a @code{BinomialDistribution} object.
   ##
@@ -36,10 +36,10 @@ classdef BinomialDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{BinomialDistribution (@var{N}, @var{p})}
-  ## to create a binomial distribution with fixed parameter values
-  ## @qcode{@var{N}} and @qcode{@var{p}}.
+  ## to create a binomial distribution with fixed parameter values @var{N} and
+  ## @var{p}.
   ## @item Use the static method @qcode{BinomialDistribution.fit (@var{x},
-  ## @var{ntrials}, @var{alpha})} to fit a distribution to data @qcode{@var{x}}
+  ## @var{ntrials}, @var{alpha})} to fit a distribution to the data in @var{x}
   ## using the same input arguments as the @code{binofit} function.
   ## @end itemize
   ##
@@ -52,7 +52,7 @@ classdef BinomialDistribution
   ##
   ## @seealso{fitdist, makedist, binocdf, binoinv, binopdf, binornd, binofit,
   ## binolike, binostat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

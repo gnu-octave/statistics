@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,18 +18,17 @@
 
 classdef LogisticDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} LogisticDistribution
+  ## @deftp {statistics} LogisticDistribution
   ##
   ## Logistic probability distribution object.
   ##
-  ## A @code{LogisticDistribution} object consists of parameters, a
-  ## model description, and sample data for a logistic probability
-  ## distribution.
+  ## A @code{LogisticDistribution} object consists of parameters, a model
+  ## description, and sample data for a logistic probability distribution.
   ##
-  ## The logistic distribution is a continuous probability distribution
-  ## that arises in regression analysis and neural networks,
-  ## with location parameter @qcode{@var{mu}} and scale parameter
-  ## @qcode{@var{sigma}}.
+  ## The logistic distribution is a continuous probability distribution, which
+  ## is commonly used in logistic regression and feedforward neural networks.
+  ## It is defined by location parameter @var{mu} and scale parameter
+  ## @var{sigma}.
   ##
   ## There are several ways to create a @code{LogisticDistribution}
   ## object.
@@ -39,11 +38,11 @@ classdef LogisticDistribution
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{LogisticDistribution (@var{mu},
-  ## @var{sigma})} to create a logistic distribution with fixed
-  ## parameter values @qcode{@var{mu}} and @qcode{@var{sigma}}.
-  ## @item Use the static method @qcode{LogisticDistribution.fit
-  ## (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
-  ## distribution to data @qcode{@var{x}} using the same input arguments as the
+  ## @var{sigma})} to create a logistic distribution with fixed parameter values
+  ## @var{mu} and @var{sigma}.
+  ## @item Use the static method @qcode{LogisticDistribution.fit (@var{x},
+  ## @var{alpha}, @var{censor}, @var{freq}, @var{options})} to fit a
+  ## distribution to the data in @var{x} using the same input arguments as the
   ## @code{logifit} function.
   ## @end itemize
   ##
@@ -56,7 +55,7 @@ classdef LogisticDistribution
   ##
   ## @seealso{fitdist, makedist, logicdf, logiinv, logipdf, logirnd, logifit,
   ## logilike, logistat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-

@@ -18,7 +18,7 @@
 
 classdef ExhaustiveSearcher
 ## -*- texinfo -*-
-## @deftp {Class} ExhaustiveSearcher
+## @deftp {statistics} ExhaustiveSearcher
 ##
 ## Exhaustive nearest neighbor searcher class.
 ##

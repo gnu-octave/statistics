@@ -18,7 +18,7 @@
 
 classdef KDTreeSearcher
 ## -*- texinfo -*-
-## @deftp {Class} KDTreeSearcher
+## @deftp {statistics} KDTreeSearcher
 ##
 ## KD-tree nearest neighbor searcher class.
 ##

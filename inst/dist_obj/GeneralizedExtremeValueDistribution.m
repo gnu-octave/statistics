@@ -1,4 +1,4 @@
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -18,32 +18,32 @@
 
 classdef GeneralizedExtremeValueDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} GeneralizedExtremeValueDistribution
+  ## @deftp {statistics} GeneralizedExtremeValueDistribution
   ##
   ## Generalized extreme value probability distribution object.
   ##
-  ## A @code{GeneralizedExtremeValueDistribution} object consists of parameters, a
-  ## model description, and sample data for a generalized extreme value probability
-  ## distribution.
+  ## A @code{GeneralizedExtremeValueDistribution} object consists of parameters,
+  ## a model description, and sample data for a generalized extreme value
+  ## probability distribution.
   ##
   ## The generalized extreme value distribution is a continuous probability
-  ## distribution that models extreme values, with shape parameter @qcode{@var{k}},
-  ## scale parameter @qcode{@var{sigma}}, and location parameter @qcode{@var{mu}}.
+  ## distribution that models extreme values.  It is defined by shape parameter
+  ## @var{k}, scale parameter @var{sigma}, and location parameter @var{mu}.
   ##
-  ## There are several ways to create a @code{GeneralizedExtremeValueDistribution}
-  ## object.
+  ## There are several ways to create a
+  ## @code{GeneralizedExtremeValueDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{GeneralizedExtremeValueDistribution (@var{k},
-  ## @var{sigma}, @var{mu})} to create a generalized extreme value distribution
-  ## with fixed parameter values @qcode{@var{k}}, @qcode{@var{sigma}}, and
-  ## @qcode{@var{mu}}.
+  ## @item Use the constructor @qcode{GeneralizedExtremeValueDistribution
+  ## (@var{k}, @var{sigma}, @var{mu})} to create a generalized extreme value
+  ## distribution with fixed parameter values @var{k}, @var{sigma}, and
+  ## @var{mu}.
   ## @item Use the static method @qcode{GeneralizedExtremeValueDistribution.fit
   ## (@var{x}, @var{alpha}, @var{freq}, @var{options})} to fit a distribution to
-  ## data @qcode{@var{x}} using the same input arguments as the @code{gevfit}
+  ## the data in @var{x} using the same input arguments as the @code{gevfit}
   ## function.
   ## @end itemize
   ##
@@ -57,7 +57,7 @@ classdef GeneralizedExtremeValueDistribution
   ##
   ## @seealso{fitdist, makedist, gevcdf, gevinv, gevpdf, gevrnd, gevfit,
   ## gevlike, gevstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
     ## -*- texinfo -*-
