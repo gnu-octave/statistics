@@ -36,6 +36,13 @@
     white-space: nowrap;
     color: gray;
     }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
     var {
     font-family: Consolas, "Courier New", monospace;
     border-radius: 0.3em;
@@ -1935,13 +1942,13 @@ pd_fitted =
   BetaDistribution
 
   beta distribution
-        a = 2.14986   [1.97375, 2.34168]
-        b = 5.33581   [4.86732, 5.8494]
+        a = 2.07505   [1.90591, 2.25919]
+        b = 5.33533   [4.84916, 5.87023]
 
 ci =
 
-   1.9738   4.8673
-   2.3417   5.8494
+   1.9059   4.8492
+   2.2592   5.8702
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2730,7 +2737,7 @@ var_value = 0.025510
               aria-expanded="false" aria-controls="collapseDemo1">
               <div class="row align-items-center">
                 <div class="col-12">
-                  <code style="font-size:1.2em;">
+                  <code class="description">
  Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
                   </code>
                 </div>

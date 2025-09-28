@@ -36,6 +36,13 @@
     white-space: nowrap;
     color: gray;
     }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
     var {
     font-family: Consolas, "Courier New", monospace;
     border-radius: 0.3em;
@@ -1130,7 +1137,7 @@ Find the nearest neighbors in the training data to query points.
               aria-expanded="false" aria-controls="collapseDemo1">
               <div class="row align-items-center">
                 <div class="col-12">
-                  <code style="font-size:1.2em;">
+                  <code class="description">
  Create an hnswSearcher with Euclidean distance
                   </code>
                 </div>
@@ -1172,7 +1179,7 @@ Distance:
               aria-expanded="false" aria-controls="collapseDemo2">
               <div class="row align-items-center">
                 <div class="col-12">
-                  <code style="font-size:1.2em;">
+                  <code class="description">
  Create an hnswSearcher with Minkowski distance (P=3)
                   </code>
                 </div>

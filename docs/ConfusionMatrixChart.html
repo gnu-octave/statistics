@@ -36,6 +36,13 @@
     white-space: nowrap;
     color: gray;
     }
+    code.description {
+    font-family: Consolas, "Courier New", monospace;
+    border-radius: 0.3em;
+    white-space: normal;
+    font-size:1.2em;
+    color: gray;
+    }
     var {
     font-family: Consolas, "Courier New", monospace;
     border-radius: 0.3em;
@@ -1335,7 +1342,7 @@ Sort the classes of the <code>ConfusionMatrixChart</code> object <var>cmc</var>
               aria-expanded="false" aria-controls="collapseDemo1">
               <div class="row align-items-center">
                 <div class="col-12">
-                  <code style="font-size:1.2em;">
+                  <code class="description">
  Create a simple ConfusionMatrixChart Object
                   </code>
                 </div>
@@ -1367,10 +1374,9 @@ NormalizedValues =
    1   2
 
 ClassLabels =
-{
-  [1,1] = A
-  [1,2] = B
-}
+  1x2 cell array
+
+    {'A'}    {'B'}    
 </pre></td></tr>
                   </table>
                   <div class="text-center">
