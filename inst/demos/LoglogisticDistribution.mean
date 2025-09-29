@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Log-logistic distributions
+%! data1 = loglrnd (0, 0.5, 10000, 1);
+%! data2 = loglrnd (0, 1, 10000, 1);
+%! pd1 = fitdist (data1, "Loglogistic");
+%! pd2 = fitdist (data2, "Loglogistic");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Log-logistic
+%! ## distributions with different sigma parameters. Note that the mean may be
+%! ## infinite for sigma <= 1, useful in heavy-tailed modeling.

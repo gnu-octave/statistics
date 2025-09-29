@@ -1,0 +1,23 @@
+%!demo
+%! ## Plot various iCDFs from the Log-logistic distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = loglrnd (0, 0.5, 10000, 1);
+%! data2 = loglrnd (0, 1, 10000, 1);
+%! data3 = loglrnd (0, 2, 10000, 1);
+%! pd1 = fitdist (data1, "Loglogistic");
+%! pd2 = fitdist (data2, "Loglogistic");
+%! pd3 = fitdist (data3, "Loglogistic");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 2"}, ...
+%!         "location", "northwest")
+%! title ("Log-logistic iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x > 0)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Log-logistic
+%! ## distributions, useful for finding values corresponding to given
+%! ## probabilities, such as percentiles in income data or survival quantiles.

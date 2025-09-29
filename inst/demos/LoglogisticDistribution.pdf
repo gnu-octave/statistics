@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Log-logistic distribution
+%! x = 0:0.01:10;
+%! data1 = loglrnd (0, 0.5, 10000, 1);
+%! data2 = loglrnd (0, 1, 10000, 1);
+%! data3 = loglrnd (0, 2, 10000, 1);
+%! pd1 = fitdist (data1, "Loglogistic");
+%! pd2 = fitdist (data2, "Loglogistic");
+%! pd3 = fitdist (data3, "Loglogistic");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 2"}, ...
+%!         "location", "northeast")
+%! title ("Log-logistic PDF")
+%! xlabel ("values in x (x > 0)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Log-logistic
+%! ## distributions, showing the likelihood for positive values with varying tails.

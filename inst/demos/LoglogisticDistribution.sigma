@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a Log-logistic distribution with default parameters
+%! data = loglrnd (0, 1, 10000, 1);
+%! pd = fitdist (data, "Loglogistic");
+%!
+%! ## Query parameter 'sigma' (scale of logarithmic values)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 2
+%!
+%! ## Use this to initialize or modify the scale of the logarithmic values in a
+%! ## Log-logistic distribution. The sigma parameter must be a positive real
+%! ## scalar, controlling the shape and tail heaviness of the distribution.
+
+%!demo
+%! ## Create a Log-logistic distribution object by calling its constructor
+%! pd = LoglogisticDistribution (0, 1.5);
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the sigma parameter directly via the constructor,
+%! ## ideal for modeling variability in positive skewed data, such as failure times.

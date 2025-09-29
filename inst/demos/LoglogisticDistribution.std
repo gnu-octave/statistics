@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Log-logistic distribution
+%! data = loglrnd (0, 1, 10000, 1);
+%! pd = fitdist (data, "Loglogistic");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the positive skewed values. Note it may be infinite for certain parameters.

@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the interquartile range for a Log-logistic distribution
+%! data = loglrnd (0, 1, 10000, 1);
+%! pd = fitdist (data, "Loglogistic");
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, helpful for understanding central
+%! ## variability in positive skewed data like lifetimes.
