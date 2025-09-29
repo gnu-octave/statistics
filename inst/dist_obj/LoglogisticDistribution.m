@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,100 +18,218 @@
 
 classdef LoglogisticDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} LoglogisticDistribution
+  ## @deftp {statistics} LoglogisticDistribution
   ##
-  ## Loglogistic probability distribution object.
+  ## Log-logistic probability distribution object.
   ##
   ## A @code{LoglogisticDistribution} object consists of parameters, a model
-  ## description, and sample data for a loglogistic probability distribution.
+  ## description, and sample data for a log-logistic probability distribution.
   ##
-  ## The loglogistic distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{mu} @tab Mean of logarithmic values @tab @math{mu >= 0}
-  ## @item @qcode{sigma} @tab Scale of logarithmic values @tab @math{sigma > 0}
-  ## @end multitable
+  ## The log-logistic distribution is a continuous probability distribution that
+  ## models non-negative random variables whose logarithm follows the logistic
+  ## distribution.  It is defined by location parameter @var{mu} and scale
+  ## parameter @var{sigma}.
   ##
   ## There are several ways to create a @code{LoglogisticDistribution} object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{LoglogisticDistribution (@var{mu}, @var{sigma})}
-  ## to create a loglogistic distribution with specified parameter values.
+  ## @item Use the constructor @qcode{LoglogisticDistribution (@var{mu},
+  ## @var{sigma})} to create a log-logistic distribution with fixed parameter
+  ## values @var{mu} and @var{sigma}.
   ## @item Use the static method @qcode{LoglogisticDistribution.fit (@var{x},
-  ## @var{censor}, @var{freq}, @var{options})} to a distribution to data @var{x}.
+  ## @var{censor}, @var{freq}, @var{options})} to fit a distribution to the data
+  ## in @var{x} using the same input arguments as the @code{loglfit} function.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{fitdist} and @code{makedist}
-  ## functions to create probability distribution objects, instead of the
-  ## constructor and the aforementioned static method.
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
-  ## A @code{LoglogisticDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
+  ## Further information about the log-logistic distribution can be found at
+  ## @url{https://en.wikipedia.org/wiki/Log-logistic_distribution}
   ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{ParameterValues} @tab @qcode{ParameterCI}
-  ## @item @qcode{ParameterIsFixed} @tab @qcode{Truncation} @tab
-  ## @qcode{IsTruncated} @tab @qcode{InputData}
-  ## @end multitable
-  ##
-  ## A @code{LoglogisticDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{negloglik}, @code{paramci}, @code{pdf}, @code{plot}, @code{proflik},
-  ## @code{random}, @code{std}, @code{truncate}, @code{var}.
-  ##
-  ## Further information about the loglogistic distribution can be found at
-  ## @url{https://en.wikipedia.org/wiki/Loglogistic_distribution}
-  ##
-  ## OCTAVE/MATLAB use an alternative parameterization given by the pair
-  ## @math{μ, s}, i.e. @var{mu} and @var{sigma}, in analogy with the logistic
-  ## distribution.  Their relation to the @math{α} and @math{b} parameters used
-  ## in Wikipedia are given below:
-  ##
-  ## @itemize
-  ## @item @qcode{@var{mu} = log (@var{a})}
-  ## @item @qcode{@var{sigma} = 1 / @var{a}}
-  ## @end itemize
-  ##
-  ## @seealso{fitdist, makedist, loglcdf, loglinv, loglpdf, loglrnd, lognfit,
+  ## @seealso{fitdist, makedist, loglcdf, loglinv, loglpdf, loglrnd, loglfit,
   ## logllike, loglstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} mu
+    ##
+    ## Mean of logarithmic values
+    ##
+    ## A scalar value characterizing the mean of the logarithmic values of the
+    ## log-logistic distribution.  You can access the @qcode{mu}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     mu
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} sigma
+    ##
+    ## Scale of logarithmic values
+    ##
+    ## A positive scalar value characterizing the scale of the logarithmic
+    ## values of the log-logistic distribution.  You can access the @qcode{sigma}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     sigma
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = true;
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "LoglogisticDistribution";
-    DistributionCode = "logl";
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"mu", "sigma"};
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Mean of logarithmic values", ...
                             "Scale of logarithmic values"};
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = true;
+    DistributionCode = "logl";
     ParameterRange = [0, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{mu} and @qcode{sigma}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
-    ParameterCI
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} ParameterCovariance
+    ##
+    ## Covariance matrix of the parameter estimates
+    ##
+    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## parameter estimates.  Diagonal elements contain the variance of each
+    ## estimated parameter, and non-diagonal elements contain the covariance
+    ## between the parameter estimates.  The covariance matrix is only
+    ## meaningful when the distribution was fitted to data.  If the distribution
+    ## object was created with fixed parameters, or a parameter of a fitted
+    ## distribution is modified, then all elements of the variance-covariance
+    ## are zero.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} ParameterIsFixed
+    ##
+    ## Flag for fixed parameters
+    ##
+    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## which are estimated.  @qcode{true} values correspond to fixed parameters,
+    ## @qcode{false} values correspond to parameter estimates.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterIsFixed
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
+
+    ## -*- texinfo -*-
+    ## @deftp {LoglogisticDistribution} {property} InputData
+    ##
+    ## Data used for fitting a probability distribution
+    ##
+    ## A scalar structure containing the following fields:
+    ## @itemize
+    ## @item @qcode{data}: a numeric vector containing the data used for
+    ## distribution fitting.
+    ## @item @qcode{cens}: a numeric vector of logical values indicating
+    ## censoring information corresponding to the elements of the data used for
+    ## distribution fitting.  If no censoring vector was used for distribution
+    ## fitting, then this field defaults to an empty array.
+    ## @item @qcode{freq}: a numeric vector of non-negative integer values
+    ## containing the frequency information corresponding to the elements of the
+    ## data used for distribution fitting.  If no frequency vector was used for
+    ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
+    ##
+    ## @end deftp
     InputData
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
   endproperties
 
   methods (Hidden)
@@ -211,13 +330,13 @@ classdef LoglogisticDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {LoglogisticDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {LoglogisticDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -304,8 +423,8 @@ classdef LoglogisticDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{m} = negloglik (@var{pd})} computes the negative loglikelihood
-    ## of the probability distribution object, @var{pd}.
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
     function nlogL = negloglik (this)
@@ -330,8 +449,8 @@ classdef LoglogisticDistribution
     ## boundaries of the 95% confidence interval for each parameter of the
     ## probability distribution object, @var{pd}.
     ##
-    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
-    ## confidence intervals with additional options specified specified by
+    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes
+    ## the confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
@@ -394,7 +513,7 @@ classdef LoglogisticDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -403,7 +522,7 @@ classdef LoglogisticDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -467,9 +586,9 @@ classdef LoglogisticDistribution
     ## @var{setparam}, @qcode{"Display"}, @qcode{"on"})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
-    ## For the loglogistic distribution, @qcode{@var{pnum} = 1} selects the
-    ## parameter @qcode{mu} and @qcode{@var{pnum} = 2} selects the parameter
-    ## @var{sigma}.
+    ## For the Log-logistic distribution, @qcode{@var{pnum} = 1} selects
+    ## the parameter @qcode{mu} and @qcode{@var{pnum} = 2} selects the
+    ## parameter @qcode{sigma}.
     ##
     ## When opted to display the profile likelihood plot, @code{proflik} also
     ## plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -489,17 +608,17 @@ classdef LoglogisticDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {LoglogisticDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {LoglogisticDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {LoglogisticDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {LoglogisticDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {LoglogisticDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {LoglogisticDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {LoglogisticDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {LoglogisticDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{random} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -545,13 +664,14 @@ classdef LoglogisticDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower}, and upper limit, @var{upper}.  If @var{pd} is fitted to data
+    ## with @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -575,7 +695,7 @@ classdef LoglogisticDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
