@@ -3,6 +3,8 @@
 %! rand ("seed", 21);
 %! samples = loglrnd (0, 1, 500, 1);
 %! hist (samples, 50)
+%! p99 = prctile (samples, 99);
+%! xlim ([0, p99]);
 %! title ("Histogram of 500 random samples from Log-logistic(mu=0, sigma=1)")
 %! xlabel ("values in x (x > 0)")
 %! ylabel ("Frequency")
