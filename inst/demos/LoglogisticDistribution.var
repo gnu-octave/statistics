@@ -1,6 +1,6 @@
 %!demo
 %! ## Compute the variance for a Log-logistic distribution
-%! data = loglrnd (0, 1, 10000, 1);
+%! data = loglrnd (0, 0.4, 10000, 1);
 %! pd = fitdist (data, "Loglogistic");
 %! var_value = var (pd)
 %!
