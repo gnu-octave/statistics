@@ -5,20 +5,24 @@
 %! ## accordingly
 %!
 %! rand ("seed", 21);
-%! data_all = loglrnd (0, 1, 20000, 1);
+%! data_all = loglrnd (0, 1, 30000, 1);
 %! data = data_all(data_all >= 0.5 & data_all <= 5);
 %! data = data(1:10000);
 %!
 %! pd = fitdist (data, "Loglogistic");
 %! t = truncate (pd, 0.5, 5);
 %!
-%! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
-%! hist (data, 50)
-%! hold off
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%! 
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
 %! title ("Log-logistic distribution (mu = 0, sigma = 1) truncated at [0.5, 5]")
 %! legend ("Truncated PDF", "Histogram")
+%! hold off;
 %!
 %! ## This demonstrates truncating a Log-logistic distribution to a specific
 %! ## range and visualizing the resulting distribution with random samples,
