@@ -1,6 +1,6 @@
 %!demo
 %! ## Plot various iCDFs from the Log-logistic distribution
-%! p = 0.001:0.001:0.999;
+%! p = 0.0001:0.001:0.95;
 %! data1 = loglrnd (0, 0.5, 10000, 1);
 %! data2 = loglrnd (0, 1, 10000, 1);
 %! data3 = loglrnd (0, 2, 10000, 1);
