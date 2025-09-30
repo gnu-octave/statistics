@@ -27,8 +27,10 @@
 ## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
-## Both parameters, @var{mu} and @var{sigma}, must be positive reals and @var{x}
-## is supported in the range @math{[0,inf)}, otherwise @qcode{NaN} is returned.
+## Mean of logarithmic values @var{mu} must be a non-negative real value, scale
+## parameter of logarithmic values @var{sigma} must be a positive real value and
+## @var{x} is supported in the range @math{[0,Inf)}, otherwise @qcode{NaN} is
+## returned.
 ##
 ## @code{@var{p} = loglcdf (@var{x}, @var{mu}, @var{sigma}, "upper")} computes
 ## the upper tail probability of the log-logistic distribution with parameters

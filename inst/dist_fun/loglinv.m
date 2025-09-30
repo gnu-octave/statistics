@@ -26,8 +26,10 @@
 ## @var{mu}, and @var{sigma}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
-## Both parameters, @var{mu} and @var{sigma}, must be positive reals and @var{p}
-## is supported in the range @math{[0,1]}, otherwise @qcode{NaN} is returned.
+## Mean of logarithmic values @var{mu} must be a non-negative real value, scale
+## parameter of logarithmic values @var{sigma} must be a positive real value and
+## @var{p} is supported in the range @math{[0,1]}, otherwise @qcode{NaN} is
+## returned.
 ##
 ## Further information about the loglogistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-logistic_distribution}

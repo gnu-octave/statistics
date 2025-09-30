@@ -29,7 +29,9 @@
 ## @var{mu} and @var{sigma}.  A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
-## Both parameters must be positive reals, otherwise @qcode{NaN} is returned.
+## Mean of logarithmic values @var{mu} must be a non-negative real value and
+## scale parameter of logarithmic values @var{sigma} must be a positive real
+## value.
 ##
 ## When called with mu single size argument, @code{loglrnd} returns mu square
 ## matrix with the dimension specified.  When called with more than one scalar
