@@ -4,8 +4,13 @@
 %!
 %! data = loglrnd (0, 1, 10000, 1);
 %! pd = fitdist (data, "Loglogistic");
-%! plot (pd)
+%! x = linspace (0.01, 20, 1000);
+%! y = pdf (pd, x);
+%! plot (x, y, "b", "LineWidth", 2)
+%! grid on
 %! title ("Fixed Log-logistic distribution with mu = 0 and sigma = 1")
+%! xlabel ("x")
+%! ylabel ("PDF")
 
 %!demo
 %! ## Generate a data set of 100 random samples from a Log-logistic
@@ -16,10 +21,18 @@
 %! rand ("seed", 21);
 %! data = loglrnd (0, 1, 100, 1);
 %! pd_fitted = fitdist (data, "Loglogistic");
-%! plot (pd_fitted, "PlotType", "cdf")
+%! ecdf (data);
+%! hold on;
+%! x = linspace (icdf (pd_fitted, 0.01), icdf (pd_fitted, 0.99), 1000);
+%! y = cdf (pd_fitted, x);
+%! plot (x, y, "r", "LineWidth", 2);
 %! txt = "Fitted Log-logistic distribution with mu = %0.2f and sigma = %0.2f";
 %! title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma))
 %! legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+%! xlabel ("x")
+%! ylabel ("CDF")
+%! grid on
+%! hold off;
 %!
 %! ## Use this to visualize the fitted CDF compared to the empirical CDF of the
 %! ## data, useful for assessing model fit in skewed positive data.
