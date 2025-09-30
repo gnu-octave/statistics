@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Log-logistic distribution
+%! data = loglrnd (0, 0.4, 10000, 1);
+%! pd = fitdist (data, "Loglogistic");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## positive skewed values. Note it may be infinite for sigma <= 2.

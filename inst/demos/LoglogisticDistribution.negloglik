@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Log-logistic distribution
+%! rand ("seed", 21);
+%! data = loglrnd (0, 1, 100, 1);
+%! pd_fitted = fitdist (data, "Loglogistic");
+%! nlogL = negloglik (pd_fitted)
+%!
+%! ## This is useful for assessing the fit of a Log-logistic distribution to
+%! ## data, with lower values indicating a better fit, often used in model
+%! ## selection or optimization.
