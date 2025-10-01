@@ -1,5 +1,4 @@
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ## Based on previous work by Paul Kienzle <pkienzle@users.sf.net> originally
 ## granted to the public domain.
 ##
