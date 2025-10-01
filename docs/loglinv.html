@@ -802,8 +802,10 @@
  <var>mu</var>, and <var>sigma</var>.  A scalar input functions as a constant matrix of
  the same size as the other inputs.
 </p>
-<p> Both parameters, <var>mu</var> and <var>sigma</var>, must be positive reals and <var>p</var>
- is supported in the range <math>[0,1]</math>, otherwise <code>NaN</code> is returned.
+<p> Mean of logarithmic values <var>mu</var> must be a non-negative real value, scale
+ parameter of logarithmic values <var>sigma</var> must be a positive real value and
+ <var>p</var> is supported in the range <math>[0,1]</math>, otherwise <code>NaN</code> is
+ returned.
 </p>
 <p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>

@@ -805,7 +805,9 @@
  <var>mu</var> and <var>sigma</var>.  A scalar input functions as a constant matrix of
  the same size as the other inputs.
 </p>
-<p> Both parameters must be positive reals, otherwise <code>NaN</code> is returned.
+<p> Mean of logarithmic values <var>mu</var> must be a non-negative real value and
+ scale parameter of logarithmic values <var>sigma</var> must be a positive real
+ value.
 </p>
 <p> When called with mu single size argument, <code>loglrnd</code> returns mu square
  matrix with the dimension specified.  When called with more than one scalar

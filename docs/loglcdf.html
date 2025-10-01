@@ -803,8 +803,10 @@
  <var>mu</var>, and <var>sigma</var>.  A scalar input functions as a constant matrix of
  the same size as the other inputs.
 </p>
-<p> Both parameters, <var>mu</var> and <var>sigma</var>, must be positive reals and <var>x</var>
- is supported in the range <math>[0,inf)</math>, otherwise <code>NaN</code> is returned.
+<p> Mean of logarithmic values <var>mu</var> must be a non-negative real value, scale
+ parameter of logarithmic values <var>sigma</var> must be a positive real value and
+ <var>x</var> is supported in the range <math>[0,Inf)</math>, otherwise <code>NaN</code> is
+ returned.
 </p>
 <p> <code><var>p</var> = loglcdf (<var>x</var>, <var>mu</var>, <var>sigma</var>, &quot;upper&quot;)</code> computes
  the upper tail probability of the log-logistic distribution with parameters

@@ -1850,6 +1850,58 @@ Compute the negative loglikelihood of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the negative loglikelihood for a fitted Beta distribution
+ pd = makedist ("Beta", "a", 2, "b", 5)
+ rand ("seed", 22);
+ data = random (pd, 100, 1);
+ pd_fitted = fitdist (data, "Beta")
+ nlogL = negloglik (pd_fitted)
+
+ ## This is useful for assessing the fit of a beta distribution to data,
+ ## lower values indicate a better fit.
+
+pd =
+  BetaDistribution
+
+  beta distribution
+        a = 2
+        b = 5
+
+pd_fitted =
+  BetaDistribution
+
+  beta distribution
+        a = 2.12506   [1.67808, 2.69109]
+        b =  4.9212   [3.79565, 6.38052]
+
+nlogL = 46.174
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1942,13 +1994,13 @@ pd_fitted =
   BetaDistribution
 
   beta distribution
-        a = 1.88773   [1.73762, 2.05081]
-        b = 4.81477   [4.41719, 5.24814]
+        a = 2.06672   [1.90838, 2.2382]
+        b =  5.0353   [4.63522, 5.46991]
 
 ci =
 
-   1.7376   4.4172
-   2.0508   5.2481
+   1.9084   4.6352
+   2.2382   5.4699
 
                     </pre></td></tr></tbody>
                   </table>
