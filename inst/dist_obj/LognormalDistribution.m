@@ -773,6 +773,19 @@ function checkparams (mu, sigma)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Lognormal distribution with
+%! ## parameters mu = 0 and sigma = 1.  Fit a Lognormal distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Lognormal", "mu", 0, "sigma", 1)
+%! randn ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Lognormal")
+%! plot (pd_fitted)
+%! msg = "Fitted Lognormal distribution with mu = %0.2f and sigma = %0.2f";
+%! title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))
+
 ## Test output
 %!shared pd, t
 %! pd = LognormalDistribution;
