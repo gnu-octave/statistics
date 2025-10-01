@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the sigma parameter of a fitted
+%! ## Lognormal distribution
+%! rand ("seed", 21);
+%! data = lognrnd (0, 1, 1000, 1);
+%! pd_fitted = fitdist (data, "Lognormal");
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the sigma parameter,
+%! ## helping to understand the uncertainty in parameter estimates.

@@ -1,0 +1,23 @@
+%!demo
+%! ## Plot various iCDFs from the Lognormal distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = lognrnd (0, 0.5, 10000, 1);
+%! data2 = lognrnd (0, 1.0, 10000, 1);
+%! data3 = lognrnd (0, 1.5, 10000, 1);
+%! pd1 = fitdist (data1, "Lognormal");
+%! pd2 = fitdist (data2, "Lognormal");
+%! pd3 = fitdist (data3, "Lognormal");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 1.5"}, ...
+%!         "location", "northwest")
+%! title ("Lognormal iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x > 0)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Lognormal
+%! ## distributions, useful for finding values corresponding to given
+%! ## probabilities, such as risk thresholds in finance.
