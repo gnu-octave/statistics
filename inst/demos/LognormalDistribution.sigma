@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a Lognormal distribution with default parameters
+%! data = lognrnd (0, 1, 10000, 1);
+%! pd = fitdist (data, "Lognormal");
+%!
+%! ## Query parameter 'sigma' (standard deviation of logarithmic values)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 0.5
+%!
+%! ## Use this to initialize or modify the sigma parameter in a Lognormal
+%! ## distribution. The sigma parameter must be a positive real scalar, controlling
+%! ## the skewness and spread of the distribution.
+
+%!demo
+%! ## Create a Lognormal distribution object by calling its constructor
+%! pd = LognormalDistribution (0, 1.5)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the sigma parameter directly via the constructor,
+%! ## ideal for modeling variability in positive skewed data, such as stock returns.

@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Lognormal distributions
+%! data1 = lognrnd (0, 0.5, 10000, 1);
+%! data2 = lognrnd (0, 1.0, 10000, 1);
+%! pd1 = fitdist (data1, "Lognormal");
+%! pd2 = fitdist (data2, "Lognormal");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Lognormal
+%! ## distributions with different sigma parameters, representing average
+%! ## outcomes in multiplicative processes.

@@ -1,0 +1,24 @@
+%!demo
+%! ## Plot the PDF of a Lognormal distribution, with parameters mu = 0
+%! ## and sigma = 1, truncated at [0.5, 5] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! rand ("seed", 21);
+%! data_all = lognrnd (0, 1, 20000, 1);
+%! data = data_all(data_all >= 0.5 & data_all <= 5);
+%! data = data(1:10000);
+%!
+%! pd = fitdist (data, "Lognormal");
+%! t = truncate (pd, 0.5, 5);
+%!
+%! ## Plot histogram and truncated PDF
+%! plot (t)
+%! hold on
+%! hist (data, 50)
+%! hold off
+%! title ("Lognormal distribution (mu = 0, sigma = 1) truncated at [0.5, 5]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Lognormal distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.
