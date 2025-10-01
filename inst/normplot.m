@@ -85,10 +85,10 @@ function h = normplot (varargin)
     yc = norminv (([1:row_xc]' - 0.5) / row_xc);
     xc = sort(xc);
     ## Find quartiles
-    q1x = prctile(xc,25);
-    q3x = prctile(xc,75);
-    q1y = prctile(yc,25);
-    q3y = prctile(yc,75);
+    q1x = prctile (xc, 25);
+    q3x = prctile (xc, 75);
+    q1y = prctile (yc, 25);
+    q3y = prctile (yc, 75);
     qx = [q1x; q3x];
     qy = [q1y; q3y];
     ## Calculate coordinates and limits for fitting lines
