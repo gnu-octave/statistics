@@ -531,6 +531,21 @@ function checkparams (Lower, Upper)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Log-uniform distribution with
+%! ## parameters Lower = 1 and Upper = 10.  Plot a PDF of the distribution superimposed
+%! ## on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Loguniform", "Lower", 1, "Upper", 10);
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! plot (pd_fixed)
+%! hold on
+%! hist (data, 50)
+%! hold off
+%! msg = "Log-uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! title (sprintf (msg, pd_fixed.Lower, pd_fixed.Upper))
+
 ## Test output
 %!shared pd, t
 %! pd = LoguniformDistribution (1, 4);
