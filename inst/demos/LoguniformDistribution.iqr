@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Log-uniform distribution
+%! pd = LoguniformDistribution (1, 10);
+%! iqr_value = iqr (pd)
+%! 
+%! ## Use this to calculate the interquartile range, measuring the spread
+%! ## of the middle 50% of the distribution on a log scale, helpful for
+%! ## robust statistics in skewed data.

@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Log-uniform distribution
+%! pd = LoguniformDistribution (1, 10);
+%! std_value = std (pd)
+%! 
+%! ## Use this to calculate the standard deviation, measuring the variability
+%! ## in the distribution's values.

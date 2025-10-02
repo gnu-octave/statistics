@@ -1,0 +1,25 @@
+%!demo
+%! ## Create a Log-uniform distribution with default parameters
+%! pd = LoguniformDistribution ();
+%! 
+%! ## Query parameter 'Lower' (lower limit)
+%! pd.Lower
+%! 
+%! ## Set parameter 'Lower'
+%! pd.Lower = 0.5
+%! 
+%! ## Use this to initialize or modify the lower limit of a Log-uniform
+%! ## distribution. The lower limit must be a positive real scalar, defining
+%! ## the minimum value in the support range, useful for modeling quantities
+%! ## spanning orders of magnitude, like particle sizes or frequencies.
+
+%!demo
+%! ## Create a Log-uniform distribution object by calling its constructor
+%! pd = LoguniformDistribution (0.1, 10)
+%! 
+%! ## Query parameter 'Lower'
+%! pd.Lower
+%! 
+%! ## This demonstrates direct construction with a specific lower limit,
+%! ## suitable for scenarios where the distribution starts from a small
+%! ## positive value, such as in Bayesian priors for scale parameters.
