@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Log-uniform distributions
+%! pd1 = LoguniformDistribution (1, 5);
+%! pd2 = LoguniformDistribution (1, 10);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%! 
+%! ## Use this to find the median value, which is the geometric mean of
+%! ## the bounds, splitting the distribution into equal probability halves.

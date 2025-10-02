@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Log-uniform distribution
+%! rand ("seed", 21);
+%! pd = LoguniformDistribution (1, 10);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Log-uniform(Lower=1, Upper=10)")
+%! xlabel ("values in x (Lower <= x <= Upper)")
+%! ylabel ("Frequency")
+%! 
+%! ## This generates random samples from a Log-uniform distribution, useful
+%! ## for simulating data uniform on a log scale, like in power-law phenomena.

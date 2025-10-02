@@ -1,0 +1,40 @@
+%!demo
+%! ## Create a Log-uniform distribution with default parameters
+%! pd = LoguniformDistribution ();
+%! 
+%! ## Query parameter 'Upper' (upper limit)
+%! pd.Upper
+%! 
+%! ## Set parameter 'Upper'
+%! pd.Upper = 5
+%! 
+%! ## Use this to initialize or modify the upper limit of a Log-uniform
+%! ## distribution. The upper limit must be a positive real scalar greater
+%! ## than Lower, defining the maximum value in the support range.
+
+%!demo
+%! ## Create a Log-uniform distribution object by calling its constructor
+%! pd = LoguniformDistribution (1, 100)
+%! 
+%! ## Query parameter 'Upper'
+%! pd.Upper
+%! 
+%! ## This shows how to set the upper limit directly via the constructor,
+%! ## ideal for bounding the distribution in applications like parameter
+%! ## estimation over wide ranges.
+
+LoguniformDistribution:
+%!demo
+%! ## Create a Log-uniform distribution with default parameters (Lower=1, Upper=4)
+%! pd = LoguniformDistribution ()
+%! 
+%! ## This is the basic constructor call, useful for quick initialization
+%! ## with standard bounds for exploratory analysis.
+
+%!demo
+%! ## Create a Log-uniform distribution with specified parameters
+%! pd = LoguniformDistribution (0.01, 100)
+%! 
+%! ## Use this constructor to define custom bounds, appropriate for modeling
+%! ## variables with logarithmic uniformity, such as in astrophysics or
+%! ## economics for quantities like incomes or sizes.

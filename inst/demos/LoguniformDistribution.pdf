@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Log-uniform distribution
+%! x = 0.1:0.01:10;
+%! pd1 = LoguniformDistribution (1, 4);
+%! pd2 = LoguniformDistribution (1, 6);
+%! pd3 = LoguniformDistribution (1, 8);
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"Lower=1, Upper=4", "Lower=1, Upper=6", "Lower=1, Upper=8"}, ...
+%!         "location", "northeast")
+%! title ("Log-uniform PDF")
+%! xlabel ("values in x (Lower <= x <= Upper)")
+%! ylabel ("Probability density")
+%! 
+%! ## This visualizes the probability density function for Log-uniform
+%! ## distributions, showing the likelihood decreasing inversely with x.

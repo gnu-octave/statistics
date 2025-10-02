@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,72 +18,153 @@
 
 classdef LoguniformDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} LoguniformDistribution
+  ## @deftp {statistics} LoguniformDistribution
   ##
   ## Log-uniform probability distribution object.
   ##
-  ## A @code{LoguniformDistribution} object consists of parameters, a model
-  ## description, and sample data for a log-uniform probability distribution.
+  ## A @code{LoguniformDistribution} object consists of parameters and a model
+  ## description for a log-uniform probability distribution.
   ##
-  ## The log-uniform distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{Lower} @tab Lower limit @tab @math{0 < Lower < Upper}
-  ## @item @qcode{Upper} @tab Upper limit @tab @math{Lower < Upper < Inf}
-  ## @end multitable
+  ## The log-uniform distribution is a continuous probability distribution that
+  ## is constant between locations @var{Lower} and @var{Upper} on a logarithmic
+  ## scale.
   ##
   ## There are several ways to create a @code{LoguniformDistribution} object.
   ##
   ## @itemize
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{LoguniformDistribution (@var{Lower})}
-  ## to create a log-uniform distribution with specified parameter values.
+  ## @item Use the constructor @qcode{LoguniformDistribution (@var{Lower},
+  ## @var{Upper})} to create a log-uniform distribution with specified parameter
+  ## values @var{Lower} and @var{Upper}.
   ## @end itemize
   ##
-  ## It is highly recommended to use the @code{makedist} function to create
-  ## probability distribution objects, instead of the constructor.
-  ##
-  ## A @code{LoguniformDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{Truncation} @tab @qcode{IsTruncated}
-  ## @end multitable
-  ##
-  ## A @code{LoguniformDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
-  ## @code{var}.
+  ## It is highly recommended to use @code{makedist} function to create
+  ## probability distribution objects, instead of the class constructor.
   ##
   ## Further information about the log-uniform distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Reciprocal_distribution}
   ##
-  ## @seealso{fitdist, makedist}
-  ## @end deftypefn
+  ## @seealso{makedist}
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} Lower
+    ##
+    ## Lower limit
+    ##
+    ## A positive scalar value characterizing the lower limit of the
+    ## log-uniform distribution.  You can access the @qcode{Lower}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     Lower
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} Upper
+    ##
+    ## Upper limit
+    ##
+    ## A positive scalar value characterizing the upper limit of the
+    ## log-uniform distribution.  You can access the @qcode{Upper}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     Upper
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "LoguniformDistribution";
-    DistributionCode = "logu";
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"Lower", "Upper"};
-    ParameterDescription = {"Outcome probabilities"};
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    ParameterDescription = {"Lower limit", "Upper limit"};
+  endproperties
+
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "logu";
+    ParameterRange = [realmin, realmin; Inf, Inf];
+    ParameterLogCI = [false, false];
   endproperties
 
   properties (GetAccess = public , SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{Lower} and @qcode{Upper}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {LoguniformDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
   endproperties
 
@@ -96,15 +178,16 @@ classdef LoguniformDistribution
       checkparams (Lower, Upper);
       this.IsTruncated = false;
       this.ParameterValues = [Lower, Upper];
+      this.Truncation = [];
     endfunction
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "loguniform distribution");
+      __disp__ (this, "Log-uniform distribution");
     endfunction
 
     function disp (this)
-      __disp__ (this, "loguniform distribution");
+      __disp__ (this, "Log-uniform distribution");
     endfunction
 
     function this = set.Lower (this, Lower)
@@ -178,13 +261,13 @@ classdef LoguniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {LoguniformDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {LoguniformDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -297,25 +380,18 @@ classdef LoguniformDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
-    ## probability distribution object @var{pd}.  If @var{pd} contains data,
-    ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
-    ## histogram of the data.
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
+    ## probability distribution object @var{pd}.
     ##
     ## @code{plot (@var{pd}, @var{Name}, @var{Value})} specifies additional
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
-    ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
-    ## @var{pd} is fit to data, the PDF is superimposed on a histogram of the
-    ## data.  @qcode{"cdf"} plots the cumulative density function (CDF).  When
-    ## @var{pd} is fit to data, the CDF is superimposed over an empirical CDF.
-    ## @qcode{"probability"} plots a probability plot using a CDF of the data
-    ## and a CDF of the fitted probability distribution.  This option is
-    ## available only when @var{pd} is fitted to data.
+    ## type.  @qcode{"pdf"} plots the probability density function (PDF).
+    ## @qcode{"cdf"} plots the cumulative density function (CDF).
     ##
     ## @item @qcode{"Discrete"} @tab @tab A logical scalar to specify whether to
     ## plot the PDF or CDF of a discrete distribution object as a line plot or a
@@ -344,17 +420,17 @@ classdef LoguniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {LoguniformDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {LoguniformDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {LoguniformDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {LoguniformDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {LoguniformDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {LoguniformDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {LoguniformDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {LoguniformDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{random} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -392,13 +468,10 @@ classdef LoguniformDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower}, and upper limit, @var{upper}.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -407,8 +480,7 @@ classdef LoguniformDistribution
       endif
       if (nargin < 3)
         error ("truncate: missing input argument.");
-      endif
-      if (lower >= upper)
+      elseif (lower >= upper)
         error ("truncate: invalid lower upper limits.");
       endif
       this.Truncation = [lower, upper];
@@ -420,7 +492,7 @@ classdef LoguniformDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -458,6 +530,21 @@ function checkparams (Lower, Upper)
     error ("LoguniformDistribution: LOWER must be less than UPPER.")
   endif
 endfunction
+
+%!demo
+%! ## Generate a data set of 5000 random samples from a Log-uniform distribution with
+%! ## parameters Lower = 1 and Upper = 10.  Plot a PDF of the distribution superimposed
+%! ## on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Loguniform", "Lower", 1, "Upper", 10);
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! plot (pd_fixed)
+%! hold on
+%! hist (data, 50)
+%! hold off
+%! msg = "Log-uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! title (sprintf (msg, pd_fixed.Lower, pd_fixed.Upper))
 
 ## Test output
 %!shared pd, t

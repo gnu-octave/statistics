@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Log-uniform distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = LoguniformDistribution (1, 4);
+%! pd2 = LoguniformDistribution (1, 6);
+%! pd3 = LoguniformDistribution (1, 8);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"Lower=1, Upper=4", "Lower=1, Upper=6", "Lower=1, Upper=8"}, ...
+%!         "location", "northwest")
+%! title ("Log-uniform iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (Lower <= x <= Upper)")
+%! 
+%! ## This demonstrates the inverse CDF (quantiles) for Log-uniform
+%! ## distributions, useful for finding values at specific probabilities,
+%! ## such as in Monte Carlo simulations.
