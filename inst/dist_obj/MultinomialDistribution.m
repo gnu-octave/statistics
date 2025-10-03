@@ -575,9 +575,9 @@ function checkparams (Probabilities)
 endfunction
 
 %!demo
-%! ## Generate a data set of 5000 random samples from a Multinomial distribution with
-%! ## parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution
-%! ## and plot the PDF superimposed on a histogram of the data.
+%! ## Generate a data set of 5000 random samples from a Multinomial distribution
+%! ## with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create
+%! ## the distribution and plot the PDF superimposed on a histogram of the data.
 %!
 %! probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
 %! pd = makedist ("Multinomial", "Probabilities", probs);
