@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,21 +18,17 @@
 
 classdef MultinomialDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} MultinomialDistribution
+  ## @deftp {statistics} MultinomialDistribution
   ##
   ## Multinomial probability distribution object.
   ##
   ## A @code{MultinomialDistribution} object consists of parameters, a model
   ## description, and sample data for a multinomial probability distribution.
   ##
-  ## The multinomial distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{Probabilities} @tab Outcome probabilities @tab
-  ## @math{0 <= Probabilities(i) <= 1; sum_i (Probabilities) = 1}
-  ## @end multitable
+  ## The multinomial distribution is a discrete probability distribution that
+  ## models the outcomes of n independent trials of a k-category system, where
+  ## each trial has a probability of falling into each category.  It is
+  ## defined by the vector of probabilities for each outcome.
   ##
   ## There are several ways to create a @code{MultinomialDistribution} object.
   ##
@@ -45,43 +42,114 @@ classdef MultinomialDistribution
   ## It is highly recommended to use the @code{makedist} function to create
   ## probability distribution objects, instead of the constructor.
   ##
-  ## A @code{MultinomialDistribution} object contains the following properties,
-  ## which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{Truncation} @tab @qcode{IsTruncated}
-  ## @end multitable
-  ##
-  ## A @code{MultinomialDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
-  ## @code{var}.
-  ##
   ## Further information about the multinomial distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Multinomial_distribution}
   ##
-  ## @seealso{fitdist, makedist, mnpdf, mnrnd}
-  ## @end deftypefn
+  ## @seealso{makedist, mnpdf, mnrnd}
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} Probabilities
+    ##
+    ## Outcome probabilities
+    ##
+    ## A row vector of probabilities for each outcome.  You can access the
+    ## @qcode{Probabilities} property using dot name assignment.
+    ##
+    ## @end deftp
     Probabilities
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "MultinomialDistribution";
-    DistributionCode = "mn";
+
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 1;
+
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{1x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"Probabilities"};
+
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{1x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Outcome probabilities"};
   endproperties
 
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "mn";
+  endproperties
+
   properties (GetAccess = public , SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{Probabilities}
+    ## property.
+    ##
+    ## @end deftp
     ParameterValues
+
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {MultinomialDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
   endproperties
 
@@ -384,7 +452,7 @@ classdef MultinomialDistribution
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{mnrnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
