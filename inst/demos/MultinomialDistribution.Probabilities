@@ -1,0 +1,34 @@
+%!demo
+%! ## Create a Multinomial distribution with default parameters
+%! pd = MultinomialDistribution ();
+%! 
+%! ## Query parameter 'Probabilities' (outcome probabilities)
+%! pd.Probabilities
+%!
+%! ## Use this to query the vector of probabilities for each outcome in a
+%! ## Multinomial distribution. The probabilities must sum to 1 and represent
+%! ## the likelihood of each category in a single trial.
+
+%!demo
+%! ## Create a Multinomial distribution with specified parameters
+%! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+%! 
+%! ## Query parameter 'Probabilities'
+%! pd.Probabilities
+%!
+%! ## Set parameter 'Probabilities'
+%! pd.Probabilities = [0.4, 0.3, 0.3]
+%!
+%! ## Use this to initialize or modify the probabilities vector in a Multinomial
+%! ## distribution. The vector must be positive real scalars summing to 1, useful
+%! ## for modeling categorical outcomes like dice rolls or survey responses.
+
+%!demo
+%! ## Create a Multinomial distribution object by calling its constructor
+%! pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+%! 
+%! ## Query parameter 'Probabilities'
+%! pd.Probabilities
+%!
+%! ## This demonstrates direct construction with specific probabilities,
+%! ## ideal for modeling fair or biased categorical events, such as a dice roll.

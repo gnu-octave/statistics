@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the median for different Multinomial distributions
+%! pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+%! pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median outcome index, which splits the distribution
+%! ## into two equal probability halves, robust to uneven probabilities.

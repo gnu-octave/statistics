@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot the PDF of a Multinomial distribution truncated at [2, 5] intervals.
+%! ## Generate 10000 random samples from this truncated distribution and
+%! ## superimpose a histogram.
+%! 
+%! rand ("seed", 21);
+%! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+%! t = truncate (pd, 2, 5);
+%! data_all = random (pd, 20000, 1);
+%! data = data_all(data_all >= 2 & data_all <= 5);
+%! data = data(1:10000);
+%! 
+%! ## Plot histogram and truncated PDF
+%! plot (t)
+%! hold on
+%! hist (data, 4)
+%! hold off
+%! title ("Multinomial distribution truncated at [2, 5]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Multinomial distribution to a specific
+%! ## range of outcomes and visualizing the resulting distribution with random samples.

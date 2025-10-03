@@ -1,0 +1,12 @@
+%!demo
+%! ## Generate random samples from a Multinomial distribution
+%! rand ("seed", 21);
+%! pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+%! samples = random (pd, 500, 1);
+%! hist (samples, 6)
+%! title ("Histogram of 500 random samples from Multinomial (fair dice)")
+%! xlabel ("values in x (outcome index)")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random categorical outcomes from a Multinomial
+%! ## distribution, useful for simulating events like dice rolls or classifications.

@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Multinomial distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+%! pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+%! pd3 = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"3 outcomes", "5 outcomes", "6 outcomes (dice)"}, ...
+%!         "location", "northwest")
+%! title ("Multinomial iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (outcome index)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Multinomial
+%! ## distributions, useful for finding outcome thresholds corresponding to
+%! ## given probabilities, such as in risk assessment.
