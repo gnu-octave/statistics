@@ -175,7 +175,7 @@ classdef MultinomialDistribution
 
     function this = set.Probabilities (this, Probabilities)
       checkparams (Probabilities);
-      this.ParameterValues(1) = Probabilities;
+      this.ParameterValues = Probabilities(:)';
     endfunction
 
     function Probabilities = get.Probabilities (this)
