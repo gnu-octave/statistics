@@ -11,7 +11,9 @@
 %! data = data(1:10000);
 %! 
 %! ## Plot histogram and truncated PDF
-%! plot (t)
+%! x = 2:5;
+%! y = pdf (t, x);
+%! plot (x, y * numel (data), "bo-")
 %! hold on
 %! hist (data, 4)
 %! hold off
