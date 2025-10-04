@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the shape parameter of a fitted
+%! ## Nakagami distribution
+%! rand ("seed", 21);
+%! data = nakarnd (1, 1, 1000, 1);
+%! pd_fitted = fitdist (data, "Nakagami");
+%! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the shape parameter (mu),
+%! ## helping to understand the uncertainty in parameter estimates.

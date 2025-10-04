@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different Nakagami distributions
+%! data1 = nakarnd (0.6, 1, 10000, 1);
+%! data2 = nakarnd (1, 1, 10000, 1);
+%! pd1 = fitdist (data1, "Nakagami");
+%! pd2 = fitdist (data2, "Nakagami");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Nakagami distributions
+%! ## with different shape parameters, representing average signal amplitude.
