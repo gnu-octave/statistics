@@ -1,7 +1,7 @@
 %!demo
 %! ## Plot various CDFs from the Nakagami distribution
 %! x = -1:0.01:5;
-%! data1 = nakarnd (0.5, 1, 10000, 1);
+%! data1 = nakarnd (0.6, 1, 10000, 1);
 %! data2 = nakarnd (1, 1, 10000, 1);
 %! data3 = nakarnd (2, 1, 10000, 1);
 %! pd1 = fitdist (data1, "Nakagami");
@@ -12,7 +12,7 @@
 %! p3 = cdf (pd3, x);
 %! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
 %! grid on
-%! legend ({"mu = 0.5, omega = 1", "mu = 1, omega = 1", "mu = 2, omega = 1"}, ...
+%! legend ({"mu = 0.6, omega = 1", "mu = 1, omega = 1", "mu = 2, omega = 1"}, ...
 %!         "location", "southeast")
 %! title ("Nakagami CDF")
 %! xlabel ("values in x (x >= 0)")
