@@ -11,12 +11,15 @@
 %!
 %! pd = fitdist (data, "Nakagami");
 %! t = truncate (pd, 0.5, 2);
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
 %!
 %! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
-%! hist (data, 50)
-%! hold off
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
 %! title ("Nakagami distribution (mu = 1, omega = 1) truncated at [0.5, 2]")
 %! legend ("Truncated PDF", "Histogram")
 %!
