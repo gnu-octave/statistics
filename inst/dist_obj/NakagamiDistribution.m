@@ -786,6 +786,19 @@ function checkparams (mu, omega)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Nakagami distribution with
+%! ## parameters mu = 1 and omega = 1.  Fit a Nakagami distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Nakagami", "mu", 1, "omega", 1)
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Nakagami")
+%! plot (pd_fitted)
+%! msg = "Fitted Nakagami distribution with mu = %0.2f and omega = %0.2f";
+%! title (sprintf (msg, pd_fitted.mu, pd_fitted.omega))
+
 ## Test output
 %!shared pd, t
 %! pd = NakagamiDistribution;
