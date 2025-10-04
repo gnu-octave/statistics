@@ -1,0 +1,11 @@
+%!demo
+%! ## Generate random samples from a Nakagami distribution
+%! rand ("seed", 21);
+%! samples = nakarnd (1, 1, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Nakagami(mu=1, omega=1)")
+%! xlabel ("values in x (x >= 0)")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Nakagami distribution, useful for
+%! ## simulating fading channels or signal envelopes in communications.

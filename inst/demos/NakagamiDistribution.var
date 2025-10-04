@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Nakagami distribution
+%! data = nakarnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Nakagami");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## signal amplitudes in the distribution.

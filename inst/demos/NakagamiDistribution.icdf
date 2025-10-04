@@ -1,0 +1,23 @@
+%!demo
+%! ## Plot various iCDFs from the Nakagami distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = nakarnd (0.5, 1, 10000, 1);
+%! data2 = nakarnd (1, 1, 10000, 1);
+%! data3 = nakarnd (2, 1, 10000, 1);
+%! pd1 = fitdist (data1, "Nakagami");
+%! pd2 = fitdist (data2, "Nakagami");
+%! pd3 = fitdist (data3, "Nakagami");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0.5, omega = 1", "mu = 1, omega = 1", "mu = 2, omega = 1"}, ...
+%!         "location", "northwest")
+%! title ("Nakagami iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x >= 0)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Nakagami distributions,
+%! ## useful for finding amplitude thresholds corresponding to given probabilities,
+%! ## such as in fading channel simulations.

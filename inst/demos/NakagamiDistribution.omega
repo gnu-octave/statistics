@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a Nakagami distribution with default parameters
+%! data = nakarnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Nakagami");
+%!
+%! ## Query parameter 'omega' (spread parameter)
+%! pd.omega
+%!
+%! ## Set parameter 'omega'
+%! pd.omega = 2
+%!
+%! ## Use this to initialize or modify the spread parameter in a Nakagami
+%! ## distribution. The spread parameter must be a positive real scalar, representing
+%! ## the average power in signal amplitude modeling.
+
+%!demo
+%! ## Create a Nakagami distribution object by calling its constructor
+%! pd = NakagamiDistribution (1, 1.5)
+%!
+%! ## Query parameter 'omega'
+%! pd.omega
+%!
+%! ## This shows how to set the spread parameter directly via the constructor,
+%! ## ideal for simulating signal envelopes with specified power levels.

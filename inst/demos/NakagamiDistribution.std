@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Nakagami distribution
+%! data = nakarnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Nakagami");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in signal amplitudes.

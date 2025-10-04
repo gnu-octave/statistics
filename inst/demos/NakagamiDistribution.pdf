@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Nakagami distribution
+%! x = -1:0.01:5;
+%! data1 = nakarnd (0.5, 1, 10000, 1);
+%! data2 = nakarnd (1, 1, 10000, 1);
+%! data3 = nakarnd (2, 1, 10000, 1);
+%! pd1 = fitdist (data1, "Nakagami");
+%! pd2 = fitdist (data2, "Nakagami");
+%! pd3 = fitdist (data3, "Nakagami");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0.5, omega = 1", "mu = 1, omega = 1", "mu = 2, omega = 1"}, ...
+%!         "location", "northeast")
+%! title ("Nakagami PDF")
+%! xlabel ("values in x (x >= 0)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Nakagami distributions,
+%! ## showing the likelihood for signal amplitudes.
