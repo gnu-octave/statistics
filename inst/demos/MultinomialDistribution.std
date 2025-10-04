@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Multinomial distribution
+%! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the outcome indices for categorical data.

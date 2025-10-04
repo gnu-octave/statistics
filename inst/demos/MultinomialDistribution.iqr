@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Multinomial distribution
+%! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the categorical outcomes, helpful for understanding
+%! ## central variability in discrete data.
