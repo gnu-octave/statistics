@@ -227,6 +227,10 @@ classdef NakagamiDistribution
     InputData
   endproperties
 
+  properties (GetAccess = public, SetAccess = protected, Hidden)
+    ParameterCI
+  endproperties
+
   methods (Hidden)
 
     function this = NakagamiDistribution (mu, omega)
