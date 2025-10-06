@@ -813,6 +813,20 @@ function checkparams (R, P)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Negative Binomial
+%! ## distribution with parameters R = 5 and P = 0.5.  Fit a Negative Binomial
+%! ## distribution to this data and plot a PDF of the fitted distribution
+%! ## superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("NegativeBinomial", "R", 5, "P", 0.5)
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "NegativeBinomial")
+%! plot (pd_fitted)
+%! msg = "Fitted Negative Binomial distribution with R = %0.2f and P = %0.2f";
+%! title (sprintf (msg, pd_fitted.R, pd_fitted.P))
+
 ## Test output
 %!shared pd, t, t_inf
 %! pd = NegativeBinomialDistribution (5, 0.5);
