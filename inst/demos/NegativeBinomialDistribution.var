@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Negative Binomial distribution
+%! data = nbinrnd(5, 0.5, 10000, 1);
+%! pd = fitdist (data, "NegativeBinomial");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## count values in the distribution.

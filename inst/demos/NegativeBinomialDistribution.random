@@ -1,0 +1,11 @@
+%!demo
+%! ## Generate random samples from a Negative Binomial distribution
+%! rand ("seed", 21);
+%! samples = random (NegativeBinomialDistribution(5, 0.5), 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from NegativeBinomial(R=5, P=0.5)")
+%! xlabel ("values in x (number of failures)")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Negative Binomial distribution, useful
+%! ## for simulating count data like failures in trials or overdispersed Poisson processes.

@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various iCDFs from the Negative Binomial distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = nbinrnd(5, 0.3, 10000, 1);
+%! data2 = nbinrnd(5, 0.5, 10000, 1);
+%! data3 = nbinrnd(5, 0.7, 10000, 1);
+%! pd1 = fitdist (data1, "NegativeBinomial");
+%! pd2 = fitdist (data2, "NegativeBinomial");
+%! pd3 = fitdist (data3, "NegativeBinomial");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"R=5, P=0.3", "R=5, P=0.5", "R=5, P=0.7"}, "location", "northwest")
+%! title ("Negative Binomial iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (number of failures)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Negative Binomial
+%! ## distributions, useful for finding count values corresponding to given
+%! ## probabilities, such as in risk assessment or inventory thresholds.

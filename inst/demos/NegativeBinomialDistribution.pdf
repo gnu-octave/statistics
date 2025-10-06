@@ -1,0 +1,21 @@
+%!demo
+%! ## Plot various PDFs from the Negative Binomial distribution
+%! x = 0:20;
+%! data1 = nbinrnd(5, 0.3, 10000, 1);
+%! data2 = nbinrnd(5, 0.5, 10000, 1);
+%! data3 = nbinrnd(5, 0.7, 10000, 1);
+%! pd1 = fitdist (data1, "NegativeBinomial");
+%! pd2 = fitdist (data2, "NegativeBinomial");
+%! pd3 = fitdist (data3, "NegativeBinomial");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"R=5, P=0.3", "R=5, P=0.5", "R=5, P=0.7"}, "location", "northeast")
+%! title ("Negative Binomial PDF")
+%! xlabel ("values in x (number of failures)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability mass function for Negative Binomial
+%! ## distributions, showing the likelihood for discrete count values.

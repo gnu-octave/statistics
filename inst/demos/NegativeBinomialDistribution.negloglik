@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Negative Binomial distribution
+%! rand ("seed", 21);
+%! data = nbinrnd(5, 0.5, 100, 1);
+%! pd_fitted = fitdist (data, "NegativeBinomial");
+%! params = [pd_fitted.R, pd_fitted.P];
+%! nlogL_nbinlike = nbinlike (params, data)
+%!
+%! ## This is useful for assessing the fit of a Negative Binomial distribution to
+%! ## data, with lower values indicating a better fit, often used in model comparison.

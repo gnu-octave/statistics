@@ -1,0 +1,27 @@
+%!demo
+%! ## Plot the PDF of a Negative Binomial distribution, with parameters R=5
+%! ## and P=0.5, truncated at [2, 10] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%!
+%! rand ("seed", 21);
+%! data_all = nbinrnd(5, 0.5, 20000, 1);
+%! data = data_all(data_all >= 2 & data_all <= 10);
+%! data = data(1:10000);
+%!
+%! pd = fitdist (data, "NegativeBinomial");
+%! t = truncate (pd, 2, 10);
+%!
+%! ## Plot histogram and truncated PDF
+%! plot (t)
+%! hold on
+%! 
+%! [counts, centers] = hist (data, 50);
+%! bar (centers, counts / trapz (centers, counts), 'hist');
+%! 
+%! hold off
+%! title ("Negative Binomial distribution (R=5, P=0.5) truncated at [2, 10]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Negative Binomial distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.
