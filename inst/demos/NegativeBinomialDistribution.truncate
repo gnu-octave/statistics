@@ -15,7 +15,10 @@
 %! ## Plot histogram and truncated PDF
 %! plot (t)
 %! hold on
-%! hist (data, 50)
+%! 
+%! [counts, centers] = hist (data, 50);
+%! bar (centers, counts / trapz (centers, counts), 'hist');
+%! 
 %! hold off
 %! title ("Negative Binomial distribution (R=5, P=0.5) truncated at [2, 10]")
 %! legend ("Truncated PDF", "Histogram")
