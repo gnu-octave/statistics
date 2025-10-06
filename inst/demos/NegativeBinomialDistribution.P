@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a Negative Binomial distribution with default parameters
+%! data = nbinrnd(5, 0.5, 10000, 1);
+%! pd = fitdist (data, "NegativeBinomial");
+%!
+%! ## Query parameter 'P' (probability of success)
+%! pd.P
+%!
+%! ## Set parameter 'P'
+%! pd.P = 0.3
+%!
+%! ## Use this to initialize or modify the success probability in a Negative
+%! ## Binomial distribution. P must be a real scalar in (0,1], influencing the
+%! ## mean and variance of the distribution.
+
+%!demo
+%! ## Create a Negative Binomial distribution object by calling its constructor
+%! pd = NegativeBinomialDistribution(5, 0.3)
+%!
+%! ## Query parameter 'P'
+%! pd.P
+%!
+%! ## This shows how to set the success probability directly via the constructor,
+%! ## ideal for modeling varying success rates in repeated trials.

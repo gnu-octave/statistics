@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Negative Binomial distribution
+%! data = nbinrnd(5, 0.5, 10000, 1);
+%! pd = fitdist (data, "NegativeBinomial");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the count values of the distribution.

@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Negative Binomial distributions
+%! data1 = nbinrnd(5, 0.3, 10000, 1);
+%! data2 = nbinrnd(5, 0.5, 10000, 1);
+%! pd1 = fitdist (data1, "NegativeBinomial");
+%! pd2 = fitdist (data2, "NegativeBinomial");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Negative Binomial
+%! ## distributions with different success probabilities, representing average
+%! ## number of failures.

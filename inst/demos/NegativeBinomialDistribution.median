@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the median for different Negative Binomial distributions
+%! data1 = nbinrnd(5, 0.3, 10000, 1);
+%! data2 = nbinrnd(5, 0.5, 10000, 1);
+%! pd1 = fitdist (data1, "NegativeBinomial");
+%! pd2 = fitdist (data2, "NegativeBinomial");
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves, robust to skewness in count data.
