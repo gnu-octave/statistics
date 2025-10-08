@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different Normal distributions
+%! data1 = 0 + 0.5 * randn (10000, 1);
+%! data2 = 0 + 1.0 * randn (10000, 1);
+%! pd1 = fitdist (data1, "Normal");
+%! pd2 = fitdist (data2, "Normal");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Normal
+%! ## distributions with different scale parameters, representing the average value.

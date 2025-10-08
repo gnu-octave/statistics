@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Normal distribution
+%! data = randn (10000, 1);
+%! pd = fitdist (data, "Normal");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which is sigma squared
+%! ## and quantifies the spread in symmetric distributions.
