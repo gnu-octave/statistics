@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Normal distribution
+%! x = -5:0.01:5;
+%! data1 = 0 + 0.5 * randn (10000, 1);
+%! data2 = 0 + 1.0 * randn (10000, 1);
+%! data3 = 0 + 2.0 * randn (10000, 1);
+%! pd1 = fitdist (data1, "Normal");
+%! pd2 = fitdist (data2, "Normal");
+%! pd3 = fitdist (data3, "Normal");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5", "mu = 0, sigma = 1", "mu = 0, sigma = 2"}, ...
+%!         "location", "northeast")
+%! title ("Normal PDF")
+%! xlabel ("values in x")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Normal
+%! ## distributions, showing the bell-shaped curve for symmetric data.

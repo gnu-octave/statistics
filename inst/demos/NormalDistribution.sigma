@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a Normal distribution with default parameters
+%! data = randn (10000, 1);
+%! pd = fitdist (data, "Normal");
+%!
+%! ## Query parameter 'sigma' (scale parameter, standard deviation)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 2
+%!
+%! ## Use this to initialize or modify the standard deviation in a Normal
+%! ## distribution. The scale parameter must be a positive real scalar, controlling
+%! ## the spread around the mean.
+
+%!demo
+%! ## Create a Normal distribution object by calling its constructor
+%! pd = NormalDistribution (0, 1.5)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## ideal for modeling variability in symmetric data, such as measurement precision.

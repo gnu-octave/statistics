@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Normal distribution
+%! data = randn (10000, 1);
+%! pd = fitdist (data, "Normal");
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, robust to outliers in symmetric data.
