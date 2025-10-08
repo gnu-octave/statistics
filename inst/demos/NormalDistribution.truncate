@@ -8,14 +8,17 @@
 %! data_all = randn (20000, 1);
 %! data = data_all(data_all >= -2 & data_all <= 2);
 %! data = data(1:10000);
-%!
 %! pd = fitdist (data, "Normal");
 %! t = truncate (pd, -2, 2);
-%!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%! 
 %! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
-%! hist (data, 50)
+%! x = linspace (-2, 2, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
 %! hold off
 %! title ("Normal distribution (mu = 0, sigma = 1) truncated at [-2, 2]")
 %! legend ("Truncated PDF", "Histogram")
