@@ -559,6 +559,29 @@ function checkparams (x, Fx)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Beta distribution with
+%! ## parameters a = 2 and b = 5 scaled to [0,10].
+%! ## Compute empirical CDF, subsample, create PiecewiseLinearDistribution,
+%! ## and plot the PDF superimposed on a histogram of the data.
+%!
+%! randg ("seed", 2);
+%! data = betarnd (2, 5, 5000, 1) * 10;
+%! [f, x] = ecdf (data);
+%! f = f(1:5:end);
+%! x = x(1:5:end);
+%! pd = PiecewiseLinearDistribution (x, f);
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on
+%! vals = min (data):0.1:max (data);
+%! y = pdf (pd, vals);
+%! plot (vals, y, "-r", "LineWidth", 2)
+%! hold off
+%! title ("Piecewise Linear approximation to scaled Beta(2,5) data")
+%! legend ("Histogram", "Piecewise PDF")
+
 ## Test output
 %!shared pd, t
 %! load patients
