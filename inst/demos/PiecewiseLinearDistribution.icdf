@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Piecewise Linear distribution
+%! load patients
+%! [f1, x1] = ecdf (Weight);
+%! [f2, x2] = ecdf (Height);
+%! pd1 = PiecewiseLinearDistribution (x1(1:10:end), f1(1:10:end));
+%! pd2 = PiecewiseLinearDistribution (x2(1:10:end), f2(1:10:end));
+%! p = 0.001:0.001:0.999;
+%! x_vals1 = icdf (pd1, p);
+%! x_vals2 = icdf (pd2, p);
+%! plot (p, x_vals1, "-b", p, x_vals2, "-r")
+%! grid on
+%! legend ({"Weight", "Height"}, "location", "northwest")
+%! title ("Piecewise Linear iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Piecewise Linear
+%! ## distributions, useful for finding values corresponding to given
+%! ## probabilities in empirical data.

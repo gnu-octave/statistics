@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the standard deviation for a Piecewise Linear distribution
+%! load patients
+%! [f, x] = ecdf (Weight);
+%! pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, measuring variability
+%! ## in the empirical distribution.

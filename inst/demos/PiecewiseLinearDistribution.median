@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the median for different Piecewise Linear distributions
+%! load patients
+%! [f1, x1] = ecdf (Weight);
+%! [f2, x2] = ecdf (Height);
+%! pd1 = PiecewiseLinearDistribution (x1(1:5:end), f1(1:5:end));
+%! pd2 = PiecewiseLinearDistribution (x2(1:5:end), f2(1:5:end));
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves, robust for skewed empirical data.

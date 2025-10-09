@@ -1,0 +1,13 @@
+%!demo
+%! ## Generate random samples from a Piecewise Linear distribution
+%! load patients
+%! [f, x] = ecdf (Weight);
+%! pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+%! samples = random (pd, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Piecewise Linear (Weight data)")
+%! xlabel ("values in x")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Piecewise Linear distribution,
+%! ## useful for simulating data based on empirical distributions.

@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Piecewise Linear distributions
+%! load patients
+%! [f1, x1] = ecdf (Weight);
+%! [f2, x2] = ecdf (Height);
+%! pd1 = PiecewiseLinearDistribution (x1(1:5:end), f1(1:5:end));
+%! pd2 = PiecewiseLinearDistribution (x2(1:5:end), f2(1:5:end));
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Piecewise Linear
+%! ## distributions based on empirical data, representing the average value.
