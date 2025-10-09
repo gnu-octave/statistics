@@ -10,9 +10,11 @@
 %! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and truncated PDF
-%! plot (t)
+%! [counts, centers] = hist (data, 20);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
 %! hold on
-%! hist (data, 50)
+%! plot (t)
 %! hold off
 %! title ("Piecewise Linear distribution truncated at [130, 180]")
 %! legend ("Truncated PDF", "Histogram")
