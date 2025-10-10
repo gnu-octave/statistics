@@ -544,6 +544,31 @@ function checkparams (Lower, Upper)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Uniform distribution with
+%! ## parameters Lower = 0 and Upper = 10. Create a Uniform distribution with these
+%! ## parameters and plot its PDF superimposed on a histogram of the data.
+%!
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10);
+%! rand ("seed", 21);
+%! data = random (pd, 5000, 1);
+%! 
+%! x = linspace (pd.Lower - 1, pd.Upper + 1, 500);
+%! y = pdf (pd, x);
+%! plot (x, y, 'r-', 'LineWidth', 2);
+%! hold on;
+%! 
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! normalized_counts = counts / (sum (counts) * bin_width);
+%! bar (centers, normalized_counts, 1);
+%! 
+%! msg = "Uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! title (sprintf (msg, pd.Lower, pd.Upper));
+%! legend ("PDF", "Histogram", "location", "northeast");
+%! 
+%! hold off;
+
 ## Test output
 %!shared pd, t
 %! pd = UniformDistribution (0, 5);
