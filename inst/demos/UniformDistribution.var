@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Uniform distribution
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10)
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## values within the uniform interval.

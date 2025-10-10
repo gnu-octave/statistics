@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the mean for different Uniform distributions
+%! pd1 = makedist ("Uniform", "Lower", 0, "Upper", 5);
+%! pd2 = makedist ("Uniform", "Lower", 2, "Upper", 8);
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Uniform distributions
+%! ## with different bounds, representing the average value within the interval.

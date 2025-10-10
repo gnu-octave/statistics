@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Uniform distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = makedist ("Uniform", "Lower", 0, "Upper", 5);
+%! pd2 = makedist ("Uniform", "Lower", 2, "Upper", 8);
+%! pd3 = makedist ("Uniform", "Lower", 4, "Upper", 10);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"Lower = 0, Upper = 5", "Lower = 2, Upper = 8", "Lower = 4, Upper = 10"}, ...
+%!         "location", "northwest")
+%! title ("Uniform iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Values in x")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Uniform distributions,
+%! ## useful for finding values corresponding to given probabilities, such as
+%! ## thresholds in uniform sampling.

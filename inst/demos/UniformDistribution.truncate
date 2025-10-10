@@ -1,0 +1,24 @@
+%!demo
+%! ## Plot the PDF of a Uniform distribution, with parameters Lower = 0
+%! ## and Upper = 10, truncated at [2, 8] intervals. Generate 10000 random
+%! ## samples from this truncated distribution and superimpose a histogram scaled
+%! ## accordingly
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10)
+%! t = truncate (pd, 2, 8)
+%! rand ("seed", 21);
+%! data = random (t, 10000, 1);
+%!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%!
+%! ## Plot histogram and truncated PDF
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
+%! title ("Uniform distribution (Lower = 0, Upper = 10) truncated at [2, 8]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Uniform distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.

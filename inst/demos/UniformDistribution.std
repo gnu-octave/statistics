@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Uniform distribution
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10)
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## within the uniform interval.

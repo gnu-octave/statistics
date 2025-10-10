@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,73 +18,155 @@
 
 classdef UniformDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} UniformDistribution
+  ## @deftp {statistics} UniformDistribution
   ##
   ## Continuous uniform probability distribution object.
   ##
   ## A @code{UniformDistribution} object consists of parameters, a model
   ## description, and sample data for a uniform probability distribution.
   ##
-  ## The uniform distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{Lower} @tab Lower limit @tab @math{-Inf < Lower < Upper}
-  ## @item @qcode{Upper} @tab Upper limit @tab @math{Lower < Upper < Inf}
-  ## @end multitable
+  ## The uniform distribution is a continuous probability distribution that
+  ## models random variables that are equally likely to take any value within a
+  ## specified interval defined by the lower limit @var{Lower} and upper limit
+  ## @var{Upper}.
   ##
   ## There are several ways to create a @code{UniformDistribution} object.
   ##
   ## @itemize
-  ## @item Create a distribution with specified parameter values using the
+  ## @item Fit a distribution to data using the @code{fitdist} function.
+  ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{UniformDistribution (@var{Lower},
-  ## @var{Upper})} to create a uniform distribution with specified parameter
-  ## values.
+  ## @var{Upper})} to create a uniform distribution with fixed parameter
+  ## values @var{Lower} and @var{Upper}.
   ## @end itemize
   ##
-  ## It is highly recommended to use @code{makedist} function to create
-  ## probability distribution objects, instead of the constructor.
-  ##
-  ## A @code{UniformDistribution} object contains the following
-  ## properties, which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{Truncation} @tab @qcode{IsTruncated}
-  ## @end multitable
-  ##
-  ## A @code{UniformDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
-  ## @code{var}.
+  ## It is highly recommended to use @code{fitdist} and @code{makedist}
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor.
   ##
   ## Further information about the continuous uniform distribution can be found
   ## at @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
   ##
-  ## @seealso{makedist, unifcdf, unifinv, unifpdf, unifrnd, unifit, unifstat}
-  ## @end deftypefn
+  ## @seealso{fitdist, makedist, unifcdf, unifinv, unifpdf, unifrnd, unifit,
+  ## unifstat}
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} Lower
+    ##
+    ## Lower limit parameter
+    ##
+    ## A scalar value characterizing the lower bound of the uniform
+    ## distribution.  You can access the @qcode{Lower} property using dot
+    ## name assignment.
+    ##
+    ## @end deftp
     Lower
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} Upper
+    ##
+    ## Upper limit parameter
+    ##
+    ## A scalar value characterizing the upper bound of the uniform
+    ## distribution.  You can access the @qcode{Upper} property using dot
+    ## name assignment.
+    ##
+    ## @end deftp
     Upper
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "UniformDistribution";
-    DistributionCode = "unif";
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"Lower", "Upper"};
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Lower limit", "Upper limit"};
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "unif";
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only.  You can change the distribution
+    ## parameters by assigning new values to the @qcode{Lower} and @qcode{Upper}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {UniformDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
   endproperties
 
@@ -176,13 +259,13 @@ classdef UniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {UniformDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -217,7 +300,7 @@ classdef UniformDistribution
       if (! isscalar (this))
         error ("iqr: requires a scalar probability distribution.");
       endif
-        r = diff (icdf (this, [0.25, 0.75]));
+      r = diff (icdf (this, [0.25, 0.75]));
     endfunction
 
     ## -*- texinfo -*-
@@ -296,7 +379,7 @@ classdef UniformDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -305,7 +388,7 @@ classdef UniformDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -343,17 +426,17 @@ classdef UniformDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {UniformDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {UniformDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {UniformDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {UniformDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {UniformDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {UniformDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{unifrnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -394,13 +477,14 @@ classdef UniformDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower}, and upper limit, @var{upper}.  If @var{pd} is fitted to data
+    ## with @code{fitdist}, the returned probability distribution @var{t} is not
+    ## fitted, does not contain any data or estimated values, and it is as it
+    ## has been created with the @var{makedist} function, but it includes the
+    ## truncation interval.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -424,7 +508,7 @@ classdef UniformDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -459,6 +543,31 @@ function checkparams (Lower, Upper)
     error ("UniformDistribution: LOWER must be less than UPPER.")
   endif
 endfunction
+
+%!demo
+%! ## Generate a data set of 5000 random samples from a Uniform distribution with
+%! ## parameters Lower = 0 and Upper = 10. Create a Uniform distribution with these
+%! ## parameters and plot its PDF superimposed on a histogram of the data.
+%!
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10);
+%! rand ("seed", 21);
+%! data = random (pd, 5000, 1);
+%! 
+%! x = linspace (pd.Lower - 1, pd.Upper + 1, 500);
+%! y = pdf (pd, x);
+%! plot (x, y, 'r-', 'LineWidth', 2);
+%! hold on;
+%! 
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! normalized_counts = counts / (sum (counts) * bin_width);
+%! bar (centers, normalized_counts, 1);
+%! 
+%! msg = "Uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! title (sprintf (msg, pd.Lower, pd.Upper));
+%! legend ("PDF", "Histogram", "location", "northeast");
+%! 
+%! hold off;
 
 ## Test output
 %!shared pd, t
