@@ -550,13 +550,13 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = fitcgam (x, y, "Interactions", "all");
-%! cvModel = crossval (a, "KFold", 3);
+%! cvModel = crossval (a, "KFold", 2);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 3);
+%! assert (numel (cvModel.Trained), 2);
 %! assert (class (cvModel.Trained{1}), "CompactClassificationGAM");
 %! assert (cvModel.CrossValidatedModel, "ClassificationGAM");
-%! assert (cvModel.KFold, 3);
+%! assert (cvModel.KFold, 2);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
@@ -572,7 +572,7 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
 %! a = fitcknn (x, y);
-%! partition = cvpartition (y, "KFold", 3);
+%! partition = cvpartition (y, "KFold", 2);
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (class (cvModel.Trained{1}), "ClassificationKNN");
@@ -598,7 +598,7 @@ endclassdef
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
-%! k = 3;
+%! k = 2;
 %! a = fitcknn (x, y, "NumNeighbors" ,k);
 %! partition = cvpartition (numel (y), "LeaveOut");
 %! cvModel = ClassificationPartitionedModel (a, partition);
@@ -614,13 +614,13 @@ endclassdef
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
 %! a = fitcnet (x, y, "IterationLimit", 50);
-%! cvModel = crossval (a, "KFold", 3);
+%! cvModel = crossval (a, "KFold", 2);
 %! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert (cvModel.NumObservations, 4);
-%! assert (numel (cvModel.Trained), 3);
+%! assert (numel (cvModel.Trained), 2);
 %! assert (class (cvModel.Trained{1}), "CompactClassificationNeuralNetwork");
 %! assert (cvModel.CrossValidatedModel, "ClassificationNeuralNetwork");
-%! assert (cvModel.KFold, 3);
+%! assert (cvModel.KFold, 2);
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {"a"; "a"; "b"; "b"};
