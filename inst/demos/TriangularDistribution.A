@@ -1,0 +1,25 @@
+%!demo
+%! ## Create a Triangular distribution with default parameters
+%! pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);
+%!
+%! ## Query parameter 'A' (lower limit)
+%! pd.A
+%!
+%! ## Set parameter 'A'
+%! pd.A = -1
+%!
+%! ## Use this to initialize or modify the lower limit parameter of a Triangular
+%! ## distribution. The lower limit must be a real scalar less than the upper
+%! ## limit C, useful for defining the minimum possible value in scenarios like
+%! ## cost estimation or time to completion.
+
+%!demo
+%! ## Create a Triangular distribution object by calling its constructor
+%! pd = TriangularDistribution (1, 2, 3);
+%!
+%! ## Query parameter 'A'
+%! pd.A
+%!
+%! ## This demonstrates direct construction with a specific lower limit,
+%! ## useful for modeling bounded data, such as project durations or resource
+%! ## requirements.

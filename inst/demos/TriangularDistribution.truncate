@@ -1,0 +1,27 @@
+%!demo
+%! ## Plot the PDF of a Triangular distribution with parameters A=0, B=1, C=2,
+%! ## truncated at [0.5, 1.5] intervals. Generate 10000 random samples from this
+%! ## truncated distribution and superimpose a histogram scaled accordingly.
+%! rand ("seed", 21);
+%! data_all = trirnd (0, 1, 2, 20000, 1);
+%! data = data_all(data_all >= 0.5 & data_all <= 1.5);
+%! data = data(1:10000);
+%!
+%! pd = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
+%! t = truncate (pd, 0.5, 1.5);
+%!
+%! [counts, centers] = hist (data, 20);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%!
+%! ## Plot histogram and truncated PDF
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
+%! title ("Triangular distribution (A=0, B=1, C=2) truncated at [0.5, 1.5]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Triangular distribution to a specific range
+%! ## and visualizing the resulting distribution with random samples, useful for
+%! ## constrained scenarios like limited budgets.

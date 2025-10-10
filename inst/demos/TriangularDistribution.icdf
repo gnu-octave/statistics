@@ -1,0 +1,20 @@
+%!demo
+%! ## Plot various iCDFs from the Triangular distribution
+%! p = 0.001:0.001:0.999;
+%! pd1 = TriangularDistribution (0, 1, 2);
+%! pd2 = TriangularDistribution (1, 2, 3);
+%! pd3 = TriangularDistribution (2, 3, 4);
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"A=0, B=1, C=2", "A=1, B=2, C=3", "A=2, B=3, C=4"}, ...
+%!         "location", "northwest")
+%! title ("Triangular iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Values in x (A <= x <= C)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Triangular distributions,
+%! ## useful for finding values corresponding to given probabilities, such as
+%! ## thresholds in project planning or quality control.

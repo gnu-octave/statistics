@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the standard deviation for a Triangular distribution
+%! pd = TriangularDistribution (0, 1, 2);
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## within the bounds of the Triangular distribution, useful for risk assessment.
