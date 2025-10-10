@@ -814,6 +814,20 @@ function checkparams (mu, sigma, nu)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a t Location-Scale distribution
+%! ## with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale
+%! ## distribution to this data and plot a PDF of the fitted distribution
+%! ## superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("tLocationScale", "mu", 0, "sigma", 1, "nu", 5);
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "tLocationScale");
+%! plot (pd_fitted);
+%! msg = "Fitted t Location-Scale distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f";
+%! title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu));
+
 ## Test output
 %!shared pd, t
 %! pd = tLocationScaleDistribution;
