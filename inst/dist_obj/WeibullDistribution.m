@@ -782,6 +782,19 @@ function checkparams (lambda, k)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Weibull distribution with
+%! ## parameters lambda = 1 and k = 2.  Fit a Weibull distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of a data.
+%!
+%! pd_fixed = makedist ("Weibull", "lambda", 1, "k", 2)
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Weibull")
+%! plot (pd_fitted)
+%! msg = "Fitted Weibull distribution with lambda = %0.2f and k = %0.2f";
+%! title (sprintf (msg, pd_fitted.lambda, pd_fitted.k))
+
 ## Test output
 %!shared pd, t
 %! pd = WeibullDistribution;
