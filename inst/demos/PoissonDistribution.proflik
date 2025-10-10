@@ -1,0 +1,10 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the rate parameter of a fitted
+%! ## Poisson distribution
+%! rand ("seed", 21);
+%! data = poissrnd (5, 1000, 1);
+%! pd_fitted = fitdist (data, "Poisson");
+%! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the rate parameter (lambda),
+%! ## helping to understand uncertainty in parameter estimates for count models.

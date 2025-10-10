@@ -1,0 +1,25 @@
+%!demo
+%! ## Create a Poisson distribution from data
+%! rand ("seed", 21);
+%! data = poissrnd (5, 100, 1);
+%! pd = fitdist (data, "Poisson");
+%!
+%! ## Query parameter 'lambda' (rate parameter)
+%! pd.lambda
+%!
+%! ## Set parameter 'lambda'
+%! pd.lambda = 10
+%!
+%! ## Use this to initialize or modify the rate parameter of a Poisson distribution.
+%! ## The rate parameter must be a positive real scalar, representing both the mean
+%! ## and variance, ideal for count data modeling.
+
+%!demo
+%! ## Create a Poisson distribution object by calling its constructor
+%! pd = PoissonDistribution (7.5)
+%!
+%! ## Query parameter 'lambda'
+%! pd.lambda
+%!
+%! ## This shows direct construction with a specific rate parameter, useful for
+%! ## theoretical analysis or when lambda is estimated from prior knowledge.

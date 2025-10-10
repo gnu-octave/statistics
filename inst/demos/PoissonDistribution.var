@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Poisson distribution
+%! data = poissrnd (5, 10000, 1);
+%! pd = fitdist (data, "Poisson");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which equals lambda, quantifying the
+%! ## spread in count data.

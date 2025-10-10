@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the median for different Poisson distributions
+%! data1 = poissrnd (2, 10000, 1);
+%! data2 = poissrnd (5, 10000, 1);
+%! pd1 = fitdist (data1, "Poisson");
+%! pd2 = fitdist (data2, "Poisson");
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median count, which splits the distribution into
+%! ## two equal probability halves, robust for skewed count data.

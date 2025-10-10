@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Poisson distribution
+%! rand ("seed", 21);
+%! data = poissrnd (5, 100, 1);
+%! pd_fitted = fitdist (data, "Poisson");
+%! nlogL = negloglik (pd_fitted)
+%!
+%! ## This is useful for assessing the fit of a Poisson distribution to data,
+%! ## with lower values indicating better fit, often used in model selection.

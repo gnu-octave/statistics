@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Poisson distribution
+%! data = poissrnd (5, 10000, 1);
+%! pd = fitdist (data, "Poisson");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which equals sqrt(lambda),
+%! ## measuring variability in event counts.
