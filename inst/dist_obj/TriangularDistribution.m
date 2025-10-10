@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,7 +18,7 @@
 
 classdef TriangularDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} TriangularDistribution
+  ## @deftp {statistics} TriangularDistribution
   ##
   ## Triangular probability distribution object.
   ##
@@ -39,53 +40,147 @@ classdef TriangularDistribution
   ## @itemize
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{TriangularDistribution (@var{A}, @var{B}
+  ## @item Use the constructor @qcode{TriangularDistribution (@var{A}, @var{B},
   ## @var{C})} to create a triangular distribution with specified parameter
-  ## values.
+  ## values @var{A}, @var{B}, and @var{C}.
   ## @end itemize
   ##
   ## It is highly recommended to use @code{makedist} function to create
   ## probability distribution objects, instead of the constructor.
   ##
-  ## A @code{TriangularDistribution} object contains the following
-  ## properties, which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{Truncation} @tab @qcode{IsTruncated}
-  ## @end multitable
-  ##
-  ## A @code{TriangularDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
-  ## @code{var}.
-  ##
   ## Further information about the triangular distribution can be found
   ## at @url{https://en.wikipedia.org/wiki/Triangular_distribution}
   ##
   ## @seealso{makedist, tricdf, triinv, tripdf, trirnd, tristat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} A
+    ##
+    ## Lower limit parameter
+    ##
+    ## A scalar value characterizing the lower limit of the
+    ## triangular distribution.  You can access the @qcode{A}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     A
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} B
+    ##
+    ## Peak location parameter
+    ##
+    ## A scalar value characterizing the peak location of the
+    ## triangular distribution.  You can access the @qcode{B}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     B
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} C
+    ##
+    ## Upper limit parameter
+    ##
+    ## A scalar value characterizing the upper limit of the
+    ## triangular distribution.  You can access the @qcode{C}
+    ## property using dot name assignment.
+    ##
+    ## @end deftp
     C
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "TriangularDistribution";
-    DistributionCode = "tri";
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 3;
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{3x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"A", "B", "C"};
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{3x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"Lower limit", "Peak location", "Upper limit"};
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "tri";
+  endproperties
+
+  properties (GetAccess = public, SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{3x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only.  You can change the distribution
+    ## parameters by assigning new values to the @qcode{A}, @qcode{B}, and
+    ## @qcode{C} properties.
+    ##
+    ## @end deftp
     ParameterValues
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+
+    ## -*- texinfo -*-
+    ## @deftp {TriangularDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
   endproperties
 
@@ -188,13 +283,13 @@ classdef TriangularDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {TriangularDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {TriangularDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -279,7 +374,7 @@ classdef TriangularDistribution
     ## -*- texinfo -*-
     ## @deftypefn  {TriangularDistribution} {@var{y} =} pdf (@var{pd}, @var{x})
     ##
-    ## Compute the probability distribution function (PDF).
+    ## Compute the probability density function (PDF).
     ##
     ## @code{@var{y} = pdf (@var{pd}, @var{x})} computes the PDF of the
     ## probability distribution object, @var{pd}, evaluated at the values in
@@ -308,34 +403,27 @@ classdef TriangularDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
-    ## probability distribution object @var{pd}.  If @var{pd} contains data,
-    ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
-    ## histogram of the data.
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
+    ## probability distribution object @var{pd}.
     ##
     ## @code{plot (@var{pd}, @var{Name}, @var{Value})} specifies additional
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
-    ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
-    ## @var{pd} is fit to data, the PDF is superimposed on a histogram of the
-    ## data.  @qcode{"cdf"} plots the cumulative density function (CDF).  When
-    ## @var{pd} is fit to data, the CDF is superimposed over an empirical CDF.
-    ## @qcode{"probability"} plots a probability plot using a CDF of the data
-    ## and a CDF of the fitted probability distribution.  This option is
-    ## available only when @var{pd} is fitted to data.
+    ## type.  @qcode{"pdf"} plots the probability density function (PDF).
+    ## @qcode{"cdf"} plots the cumulative density function (CDF).
     ##
     ## @item @qcode{"Discrete"} @tab @tab A logical scalar to specify whether to
     ## plot the PDF or CDF of a discrete distribution object as a line plot or a
     ## stem plot, by specifying @qcode{false} or @qcode{true}, respectively.  By
     ## default, it is @qcode{true} for discrete distributions and @qcode{false}
     ## for continuous distributions.  When @var{pd} is a continuous distribution
-    ## object, option is ignored.
+    ## object, this option is ignored.
     ##
-    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for plot.  If
+    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for the plot.  If
     ## not specified, the @code{plot} function plots into the current axes or
     ## creates a new axes object if one does not exist.
     ## @end multitable
@@ -355,17 +443,17 @@ classdef TriangularDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {TriangularDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {TriangularDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {TriangularDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {TriangularDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {TriangularDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {TriangularDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
     ## @code{@var{r} = random (@var{pd})} returns a random number from the
     ## distribution object @var{pd}.
     ##
-    ## When called with a single size argument, @code{betarnd} returns a square
+    ## When called with a single size argument, @code{trirnd} returns a square
     ## matrix with the dimension specified.  When called with more than one
     ## scalar argument, the first two arguments are taken as the number of rows
     ## and columns and any further arguments specify additional matrix
@@ -419,13 +507,10 @@ classdef TriangularDistribution
     ##
     ## Truncate a probability distribution.
     ##
-    ## @code{@var{t} = truncate (@var{pd})} returns a probability distribution
-    ## @var{t}, which is the probability distribution @var{pd} truncated to the
-    ## specified interval with lower limit, @var{lower}, and upper limit,
-    ## @var{upper}.  If @var{pd} is fitted to data with @code{fitdist}, the
-    ## returned probability distribution @var{t} is not fitted, does not contain
-    ## any data or estimated values, and it is as it has been created with the
-    ## @var{makedist} function, but it includes the truncation interval.
+    ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
+    ## probability distribution @var{t}, which is the probability distribution
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower}, and upper limit, @var{upper}.
     ##
     ## @end deftypefn
     function this = truncate (this, lower, upper)
@@ -449,7 +534,7 @@ classdef TriangularDistribution
     ##
     ## Compute the variance of a probability distribution.
     ##
-    ## @code{@var{v} = var (@var{pd})} computes the standard deviation of the
+    ## @code{@var{v} = var (@var{pd})} computes the variance of the
     ## probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
