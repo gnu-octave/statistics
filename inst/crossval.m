@@ -49,7 +49,7 @@
 ##
 ## @item @qcode{"LeaveOut"}
 ## Leave-one-out partition (each element is placed in its own subset).
-## The value is ignored.
+## The value is ignored, but it is required.
 ##
 ## @item @qcode{"Partition"}
 ## The value should be a @var{cvpartition} object.
@@ -93,22 +93,8 @@ function results = crossval (f, varargin)
     if (! ismember (f, {'mse',',mcr'}))
       error ("crossval: criterion must be 'mse' or 'mcr'.");
     endif
-    ## Check for valid prediction function handle
-    if (is_function_handle (Predfun))
-      ## Check for valid prediction function handle
-      XTrain = [1, 2; 1, 2; 1, 2; 1, 2; 1, 2];
-      yTrain = [1; 2; 1; 2; 1];
-      XTest = [1, 2; 1, 2];
-      try
-        yFit = Predfun (XTrain, yTrain, XTest);
-      catch
-        error ("crossval: bad prediction function handle for error evaluation.");
-      end_try_catch
-      if (! iscolumn (yFit) || numel (yFit) != 2)
-        error (strcat ("crossval: prediction function handle must return", ...
-                       " a column vector with the same rows as XTest."));
-      endif
-    else
+    ## Check for user supplied prediction function handle
+    if (! is_function_handle (Predfun))
       error (strcat ("crossval: prediction function handle", ...
                      " is required for error evaluation."));
     endif
@@ -121,23 +107,28 @@ function results = crossval (f, varargin)
     if (nargs == 2)
       X = args{1};        # numeric matrix with single data variable
       n = size (X, 1);
+      is_cellarray = false;
     else
       X = args(1:end-1);  # cell array with multiple data variables
       n = size (args{1}, 1);
+      is_cellarray = true;
+    endif
+    ## Check for valid prediction function handle on user data
+    try
+      if (is_cellarray)
+        yFit = Predfun (X{:}, y, X{:});
+      else
+        yFit = Predfun (X, y, X);
+      endif
+    catch
+      error ("crossval: bad prediction function handle for error evaluation.");
+    end_try_catch
+    if (! iscolumn (yFit) || numel (yFit) != numel (y))
+      error (strcat ("crossval: prediction function handle must return", ...
+                     " a column vector with the same rows as XTest."));
     endif
 
   elseif (is_function_handle (f))
-    ## Check for valid function handle
-    XTrain = [1, 2; 1, 2; 1, 2; 1, 2; 1, 2];
-    XTest = [1, 2; 1, 2];
-    try
-      value = f (XTrain, XTest);
-    catch
-      error ("crossval: bad function handle to cross-validate.");
-    end_try_catch
-    if (! isrow (value))
-      error ("crossval: function handle must return a scalar or a row vector.");
-    endif
     ## At least one additional input argument (X) is required
     nargs = numel (args);
     if (nargs < 1)
@@ -146,19 +137,39 @@ function results = crossval (f, varargin)
     if (nargs == 1)
       X = args{1};        # numeric matrix with single data variable
       n = size (X, 1);
+      is_cellarray = false;
     else
       X = args(1:end-1);  # cell array with multiple data variables
       n = size (args{1}, 1);
+      is_cellarray = true;
     endif
+    ## Check for valid function handle on user data
+    try
+      if (is_cellarray)
+        value = f (X{:}, X{:});
+      else
+        value = f (X, X);
+      endif
+    catch
+      error ("crossval: bad function handle to cross-validate.");
+    end_try_catch
+    if (isscalar (value))
+      is_scalar = true;
+    elseif (isrow (value))
+      is_scalar = false;
+    else
+      error ("crossval: function handle must return a scalar or a row vector.");
+    endif
+
   else
     error ("crossval: invalid first input argument.");
   endif
 
   ## Input validation for valid values are handled by the cvpartition class.
   ## Check for single paired argument for CV partition.
-  vcpa = sum (isempty (Holdout), isempty (KFold), ...
-              isempty (Leaveout), isempty (Partition));
-  if (vcpa > 1)
+  vcpa = sum ([isempty(Holdout), isempty(KFold), ...
+              isempty(Leaveout), isempty(Partition)]);
+  if (vcpa < 3) # at least 3 must be empty
     error (strcat ("crossval: you can only set one", ...
                    " cvpartition type in paired arguments."));
   endif
@@ -170,11 +181,13 @@ function results = crossval (f, varargin)
   ## Construct the CV partition
   if (! isempty (Partition))
     P = Partition;
+    nSets = P.NumTestSets;
     if (P.IsCustom || ismember (P.Type, {'resubstitution', 'leaveout'}))
       MCReps = 1;
     endif
   elseif (! isempty (Leaveout))
     P = cvpartition (n, "LeaveOut");
+    nSets = P.NumTestSets;
     MCReps = 1;
   elseif (! isempty (Holdout))
     if (isempty (Stratify))
@@ -182,41 +195,45 @@ function results = crossval (f, varargin)
     else
       P = cvpartition (Stratify, "HoldOut", Holdout);
     endif
+    nSets = P.NumTestSets;
   elseif (! isempty (KFold))
     if (isempty (Stratify))
       P = cvpartition (n, "KFold", KFold);
     else
       P = cvpartition (Stratify, "KFold", KFold);
     endif
+    nSets = P.NumTestSets;
   else # KFold by default
     if (isempty (Stratify))
       P = cvpartition (n, "KFold");
     else
       P = cvpartition (Stratify, "KFold");
     endif
+    nSets = P.NumTestSets;
   endif
 
-  ## FIX ME: this requires further work to handle multiple data variables
-  ## Currently, it works only for single data variable, where X is numeric.
+  ## Apply cross-validation scheme
   if (ischar (f)) # error evaluation
-    results = nan (MCReps, nr);
+    results = nan (MCReps, nSets);
     for rep = 1:MCReps
       if (rep > 1)
         P = repartition (P);
       endif
-      for idx = 1:nr
+      for idx = 1:nSets
         idx_train = training (P, idx);
         idx_test = test (P, idx);
-        y_fit = Predfun (X(idx_train, :), y(idx_train), X(idx_test, :));
+        if (is_cellarray)
+          Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
+          Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+          y_fit = Predfun (Xtrain{:}, y(idx_train), Xtest{:});
+        else
+          y_fit = Predfun (X(idx_train, :), y(idx_train), X(idx_test, :));
+        endif
         if (strcmp (f, "mse"))
-          N = numel (y_fit) - 1;
-          if (N < 1)
-            N = 1;
-          endif
-          err = sum ((y_fit - y(idx_test)).^2) / (N - 1);
+          err = sum ((y_fit - y(idx_test)).^2) / numel (y_fit);
           results(rep, idx) = err;
         else # MCR
-          err = numel (y_fit(y_fit == y(idx_test))) / numel (y_fit);
+          err = sum (y_fit == y(idx_test)) / numel (y_fit);
           results(rep, idx) = err;
         endif
       endfor
@@ -224,42 +241,110 @@ function results = crossval (f, varargin)
     results = mean (mean (results));
 
   else  # model execution
-    for rep = 1:MCReps
-      if (rep > 1)
-        P = repartition (P);
-      endif
-      for idx = 1:nr
-        idx_train = training (P, idx);
-        idx_test = test (P, idx);
-        result = f (X(idx_train, :), X(idx_test, :));
-        results(rep, idx) = result;
+    if (is_scalar)
+      results = nan (MCReps, nSets);
+      for rep = 1:MCReps
+        if (rep > 1)
+          P = repartition (P);
+        endif
+        for idx = 1:nSets
+          idx_train = training (P, idx);
+          idx_test = test (P, idx);
+          if (is_cellarray)
+            Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
+            Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+            result = f (Xtrain{:}, Xtest{:});
+          else
+            result = f (X(idx_train, :), X(idx_test, :));
+          endif
+          results(rep, idx) = result;
+        endfor
       endfor
-    endfor
+    else  # concatenate Monte Carlo repetitions along first dimension
+      results = [];
+      for rep = 1:MCReps
+        if (rep > 1)
+          P = repartition (P);
+        endif
+        tmpresults = [];
+        for idx = 1:nSets
+          idx_train = training (P, idx);
+          idx_test = test (P, idx);
+          if (is_cellarray)
+            Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
+            Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+            result = f (Xtrain{:}, Xtest{:});
+          else
+            result = f (X(idx_train, :), X(idx_test, :));
+          endif
+          tmpresults = [tmpresults; result];
+        endfor
+        results = [results; tmpresults];
+      endfor
+    endif
   endif
 endfunction
 
-%!test
+%!demo
+%! ## Determine the optimal number of clusters using cross-validation
+%!
+%! ## Declare a function to compute the sum of squared distances
+%! ## between data points and a varying number of clusters.
+%! function D = dist2clusters (X, Y, k)
+%!   [Z, Zmu, Zstd] = zscore (X);
+%!   [~, C] = kmeans (Z, k);
+%!   ZY = (Y - Zmu) ./ Zstd;
+%!   d = pdist2 (C, ZY, 'euclidean', 'Smallest', 1);
+%!   D = sum (d .^ 2);
+%! endfunction
+%!
 %! load fisheriris
-%! y = meas(:, 1);
-%! X = [ones(size(y)) meas(:, 2:4)];
-%! f = @(X1, y1, X2, y2) meansq (y2 - X2*regress(y1, X1));
-%! results0 = crossval (f, X, y);
-%! results1 = crossval (f, X, y, 'KFold', 10);
-%! folds = 5;
-%! results2 = crossval (f, X, y, 'KFold', folds);
-%! results3 = crossval (f, X, y, 'Partition', cvpartition (numel (y), 'KFold', folds));
-%! results4 = crossval (f, X, y, 'LeaveOut', 1);
-%! mcreps = 2; n_holdout = 20;
-%! results5 = crossval (f, X, y, 'HoldOut', n_holdout, 'mcreps', mcreps);
+%! for k = 1:8
+%!   fcn = @(X, Y) dist2clusters (X, Y, k);
+%!   distances = crossval (fcn, meas);
+%!   cvdist(k) = sum (distances);
+%! endfor
 %!
-%! ## ensure equal representation of iris species in the training set -- tends
-%! ## to slightly reduce cross-validation mean square error
-%! results6 = crossval (f, X, y, 'KFold', 5, 'stratify', grp2idx(species));
+%! plot(cvdist)
+%! xlabel('Number of Clusters')
+%! ylabel('CV Sum of Squared Distances')
+%! xlim ([1,8]);
+
+## Test output
+%!test
+%! function yfit = regf (Xtrain, ytrain, Xtest)
+%!   b = regress (ytrain, Xtrain);
+%!   yfit = Xtest * b;
+%! endfunction
 %!
-%!# assert (results0, results1, 2e-15);
-%!# assert (results2, results3, 5e-17);
-%!# assert (size(results4), [1 numel(y)]);
-%!# assert (mean(results4), 0.1018, 1e-4);
-%!# assert (size(results5), [mcreps 1]);
+%! load carsmall
+%! data = [Acceleration Horsepower Weight MPG];
+%! data(any(isnan(data),2),:) = [];
+%!
+%! y = data(:,4);
+%! X = [ones(length(y),1) data(:,1:3)];
+%! rand ("seed", 3);
+%! cvMSE = crossval('mse',X,y,'Predfun',@regf);
+%! assert (cvMSE, 18.720, 1e-3);
 
-
+## Test input validation
+%!error <crossval: criterion must be 'mse' or 'mcr'.> ...
+%! crossval ('fe', rand (10, 1), rand (10, 1), 1);
+%!error <crossval: prediction function handle is required for error evaluation.>  ...
+%! crossval ('mse', rand (10, 1), rand (10, 1), 1);
+%!error <crossval: X and Y are required for error evaluation.> ...
+%! crossval ('mse', rand (10, 1), 'Predfun', @(x,y) x + y);
+%!error <crossval: bad prediction function handle for error evaluation.> ...
+%! crossval ('mse', rand (10, 3), rand (10, 1), 'Predfun', @(x,y) sum (x + y));
+%!error <crossval: prediction function handle must return a column vector with the same rows as XTest.> ...
+%! crossval ('mse', rand (10, 3), rand (10, 1), 'Predfun', @(x,y,z) sum (x + y));
+%!error <crossval: X is required for values evaluation.> crossval (@(x) x);
+%!error <crossval: bad function handle to cross-validate.> ...
+%! crossval (@(x) x, rand (10, 3), rand (10, 1));
+%!error <crossval: function handle must return a scalar or a row vector.> ...
+%! crossval (@(x,y) [x, y], rand (10, 3), rand (10, 1));
+%!error <crossval: invalid first input argument.> crossval ({1}, 1, 1);
+%!error <crossval: you can only set one cvpartition type in paired arguments.> ...
+%! crossval (@(x,y) sum ([x; y]), rand (10, 3), 'Holdout', 0.1, 'Leaveout', true)
+%!error <crossval: you cannot specify both 'Partition' and 'Stratify'.> ...
+%! crossval (@(x,y) sum ([x; y]), rand (10, 3), 'Partition', cvpartition (10, 'Leaveout'), 'Stratify', true)
