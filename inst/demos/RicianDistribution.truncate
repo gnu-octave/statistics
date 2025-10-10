@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot the PDF of a Rician distribution, with parameters s = 1 and sigma = 1,
+%! ## truncated at [0.5, 3] intervals. Generate 10000 random samples from this
+%! ## truncated distribution and superimpose a histogram scaled accordingly
+%! rand ("seed", 21);
+%! data_all = ricernd (1, 1, [20000, 1]);
+%! data = data_all(data_all >= 0.5 & data_all <= 3);
+%! data = data(1:10000);
+%!
+%! pd = fitdist (data, "Rician");
+%! t = truncate (pd, 0.5, 3);
+%!
+%! ## Plot histogram and truncated PDF
+%! plot (t)
+%! hold on
+%! hist (data, 50)
+%! hold off
+%! title ("Rician distribution (s = 1, sigma = 1) truncated at [0.5, 3]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Rician distribution to a specific range and
+%! ## visualizing the resulting distribution with random samples.

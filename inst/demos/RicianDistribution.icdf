@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various iCDFs from the Rician distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = ricernd (1, 0.5, [10000, 1]);
+%! data2 = ricernd (1, 1, [10000, 1]);
+%! data3 = ricernd (1, 2, [10000, 1]);
+%! pd1 = fitdist (data1, "Rician");
+%! pd2 = fitdist (data2, "Rician");
+%! pd3 = fitdist (data3, "Rician");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"s = 1, sigma = 0.5", "s = 1, sigma = 1", "s = 1, sigma = 2"}, ...
+%!         "location", "northwest")
+%! title ("Rician iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x >= 0)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Rician distributions,
+%! ## useful for finding signal magnitude thresholds in applications like radar.

@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Rician distribution
+%! data = ricernd (1, 1, [10000, 1]);
+%! pd = fitdist (data, "Rician");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the signal magnitudes of the distribution.

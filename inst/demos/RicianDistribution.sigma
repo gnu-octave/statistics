@@ -1,0 +1,37 @@
+%!demo
+%! ## Create a Rician distribution with fitted parameters
+%! data = ricernd (1, 1, [10000, 1]);
+%! pd = fitdist (data, "Rician");
+%!
+%! ## Query parameter 'sigma' (scale parameter)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 1.2
+%!
+%! ## Use this to initialize or modify the scale parameter in a Rician
+%! ## distribution. The scale parameter 'sigma' must be a positive real scalar,
+%! ## controlling the spread due to Gaussian noise.
+
+%!demo
+%! ## Create a Rician distribution object by calling its constructor
+%! pd = RicianDistribution (1, 1.5)
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## ideal for modeling variability in signal magnitude data.
+
+RicianDistribution constructor:
+%!demo
+%! ## Create a Rician distribution with specific parameters
+%! pd = RicianDistribution (2, 1)
+%!
+%! ## Display the distribution parameters
+%! pd.s
+%! pd.sigma
+%!
+%! ## Use the constructor to create a Rician distribution with fixed parameters
+%! ## 's' and 'sigma', suitable for scenarios where signal and noise parameters
+%! ## are known, such as in communication systems or image processing.
