@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a t Location-Scale distribution
+%! data = tlsrnd (0, 1, 5, 10000, 1);
+%! pd = fitdist (data, "tLocationScale");
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, helpful for assessing central variability.

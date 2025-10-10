@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various iCDFs from the t Location-Scale distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+%! data2 = tlsrnd (0, 1, 5, 10000, 1);
+%! data3 = tlsrnd (0, 2, 5, 10000, 1);
+%! pd1 = fitdist (data1, "tLocationScale");
+%! pd2 = fitdist (data2, "tLocationScale");
+%! pd3 = fitdist (data3, "tLocationScale");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5, nu = 5", "mu = 0, sigma = 1, nu = 5", ...
+%!         "mu = 0, sigma = 2, nu = 5"}, "location", "northwest")
+%! title ("t Location-Scale iCDF")
+%! xlabel ("Probability")
+%! ylabel ("Values in x")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for t Location-Scale
+%! ## distributions, useful for finding critical values or thresholds in statistical testing.

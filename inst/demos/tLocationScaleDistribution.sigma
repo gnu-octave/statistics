@@ -1,0 +1,24 @@
+%!demo
+%! ## Create a t Location-Scale distribution with fitted parameters
+%! data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+%! pd = fitdist (data, "tLocationScale");
+%!
+%! ## Query parameter 'sigma' (scale parameter)
+%! pd.sigma
+%!
+%! ## Set parameter 'sigma'
+%! pd.sigma = 2
+%!
+%! ## Use this to initialize or modify the scale parameter, which controls the
+%! ## spread of the t Location-Scale distribution. Sigma must be a positive real
+%! ## scalar, useful for modeling variability in data like financial returns.
+
+%!demo
+%! ## Create a t Location-Scale distribution object by calling its constructor
+%! pd = tLocationScaleDistribution (0, 1.5, 5);
+%!
+%! ## Query parameter 'sigma'
+%! pd.sigma
+%!
+%! ## This shows how to set the scale parameter directly via the constructor,
+%! ## useful for modeling data with specific variability, such as process errors.

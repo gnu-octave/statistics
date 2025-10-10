@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the t Location-Scale distribution
+%! x = -5:0.01:5;
+%! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+%! data2 = tlsrnd (0, 1, 5, 10000, 1);
+%! data3 = tlsrnd (0, 2, 5, 10000, 1);
+%! pd1 = fitdist (data1, "tLocationScale");
+%! pd2 = fitdist (data2, "tLocationScale");
+%! pd3 = fitdist (data3, "tLocationScale");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"mu = 0, sigma = 0.5, nu = 5", "mu = 0, sigma = 1, nu = 5", ...
+%!         "mu = 0, sigma = 2, nu = 5"}, "location", "northeast")
+%! title ("t Location-Scale PDF")
+%! xlabel ("Values in x")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for t Location-Scale
+%! ## distributions, showing the likelihood across values, useful for data analysis.
