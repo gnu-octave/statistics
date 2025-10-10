@@ -1,0 +1,24 @@
+%!demo
+%! ## Plot the PDF of a truncated t Location-Scale distribution
+%! rand ("seed", 21);
+%! data_all = tlsrnd (0, 1, 5, 20000, 1);
+%! data = data_all(data_all >= -1 & data_all <= 1);
+%! data = data(1:10000);
+%!
+%! pd = fitdist (data, "tLocationScale");
+%! t = truncate (pd, -1, 1);
+%!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%!
+%! ## Plot histogram and truncated PDF
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
+%! title ("t Location-Scale distribution (mu = 0, sigma = 1, nu = 5) truncated at [-1, 1]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a t Location-Scale distribution to a specific
+%! ## range and visualizing the resulting distribution with random samples.

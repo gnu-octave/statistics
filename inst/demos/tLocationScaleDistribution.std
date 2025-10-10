@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a t Location-Scale distribution
+%! data = tlsrnd (0, 1, 5, 10000, 1);
+%! pd = fitdist (data, "tLocationScale");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in the distribution, useful for understanding data dispersion.

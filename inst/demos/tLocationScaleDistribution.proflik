@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute and plot the profile likelihood for the scale parameter
+%! rand ("seed", 21);
+%! data = tlsrnd (0, 1, 5, 1000, 1);
+%! pd_fitted = fitdist (data, "tLocationScale");
+%! [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+%!
+%! ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+%! ## helping to understand the uncertainty in parameter estimates.

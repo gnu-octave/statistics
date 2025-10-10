@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different t Location-Scale distributions
+%! data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+%! data2 = tlsrnd (0, 1, 5, 10000, 1);
+%! pd1 = fitdist (data1, "tLocationScale");
+%! pd2 = fitdist (data2, "tLocationScale");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for t Location-Scale
+%! ## distributions, representing the average value, useful in financial modeling or quality control.
