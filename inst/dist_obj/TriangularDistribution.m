@@ -576,6 +576,35 @@ function checkparams (A, B, C)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Triangular distribution
+%! ## with parameters A = 0, B = 1, C = 2. Fit a Triangular distribution to
+%! ## this data and plot a PDF of the fitted distribution superimposed on a
+%! ## histogram of the data.
+%!
+%! pd_fixed = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! A = min (data);
+%! C = mean (data);
+%! B = max (data);
+%!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! normalized_counts = counts / (sum (counts) * bin_width);
+%! bar (centers, normalized_counts, 1);
+%! hold on;
+%!
+%! x = linspace (A, B, 100);
+%! y = (2 * (x - A) / (C - A) .* (x <= C)) + (2 * (B - x) / (B - C) .* (x > C));
+%!
+%! plot (x, y, 'r-', 'LineWidth', 2);
+%!
+%! msg = sprintf ("Fitted Triangular distribution with A = %0.2f, C = %0.2f, B = %0.2f", A, C, B);
+%! title (msg);
+%!
+%! hold off;
+
 ## Test output
 %!shared pd, t
 %! pd = TriangularDistribution (0, 3, 5);
