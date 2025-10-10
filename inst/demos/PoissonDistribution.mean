@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different Poisson distributions
+%! data1 = poissrnd (2, 10000, 1);
+%! data2 = poissrnd (5, 10000, 1);
+%! pd1 = fitdist (data1, "Poisson");
+%! pd2 = fitdist (data2, "Poisson");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Poisson distributions,
+%! ## which equals lambda, representing the average number of events.

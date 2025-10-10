@@ -1,0 +1,21 @@
+%!demo
+%! ## Plot various PDFs from the Poisson distribution
+%! x = 0:20;
+%! data1 = poissrnd (2, 10000, 1);
+%! data2 = poissrnd (5, 10000, 1);
+%! data3 = poissrnd (10, 10000, 1);
+%! pd1 = fitdist (data1, "Poisson");
+%! pd2 = fitdist (data2, "Poisson");
+%! pd3 = fitdist (data3, "Poisson");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"lambda = 2", "lambda = 5", "lambda = 10"}, "location", "northeast")
+%! title ("Poisson PDF")
+%! xlabel ("values in x (non-negative integers)")
+%! ylabel ("Probability")
+%!
+%! ## This visualizes the probability mass function for Poisson distributions,
+%! ## showing the likelihood of exact count values.
