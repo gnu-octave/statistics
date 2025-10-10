@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the median for different Rayleigh distributions
+%! data1 = raylrnd (0.5, 10000, 1);
+%! data2 = raylrnd (1.0, 10000, 1);
+%! pd1 = fitdist (data1, "Rayleigh");
+%! pd2 = fitdist (data2, "Rayleigh");
+%! median1 = median (pd1)
+%! median2 = median (pd2)
+%!
+%! ## Use this to find the median value, which splits the distribution
+%! ## into two equal probability halves, robust to skewness in nonnegative data.

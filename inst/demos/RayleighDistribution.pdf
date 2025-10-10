@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Rayleigh distribution
+%! x = -1:0.01:5;
+%! data1 = raylrnd (0.5, 10000, 1);
+%! data2 = raylrnd (1.0, 10000, 1);
+%! data3 = raylrnd (2.0, 10000, 1);
+%! pd1 = fitdist (data1, "Rayleigh");
+%! pd2 = fitdist (data2, "Rayleigh");
+%! pd3 = fitdist (data3, "Rayleigh");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"sigma = 0.5", "sigma = 1", "sigma = 2"}, ...
+%!         "location", "northeast")
+%! title ("Rayleigh PDF")
+%! xlabel ("values in x (x >= 0)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Rayleigh
+%! ## distributions, showing the likelihood for nonnegative values.
