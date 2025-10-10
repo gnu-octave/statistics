@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different Weibull distributions
+%! data1 = wblrnd (1, 0.5, 10000, 1);
+%! data2 = wblrnd (1, 2, 10000, 1);
+%! pd1 = fitdist (data1, "Weibull");
+%! pd2 = fitdist (data2, "Weibull");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Weibull distributions
+%! ## with different shape parameters, representing average lifetime or duration.

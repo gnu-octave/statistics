@@ -1,0 +1,26 @@
+%!demo
+%! ## Create a Weibull distribution with default parameters
+%! data = wblrnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Weibull");
+%!
+%! ## Query parameter 'lambda' (scale parameter)
+%! pd.lambda
+%!
+%! ## Set parameter 'lambda'
+%! pd.lambda = 1.5
+%!
+%! ## Use this to initialize or modify the scale parameter of a Weibull
+%! ## distribution. The scale parameter must be a positive real scalar, often
+%! ## representing the characteristic life in reliability analysis or the spread
+%! ## in lifetime modeling.
+
+%!demo
+%! ## Create a Weibull distribution object by calling its constructor
+%! pd = WeibullDistribution (2, 1.5)
+%!
+%! ## Query parameter 'lambda'
+%! pd.lambda
+%!
+%! ## This demonstrates direct construction with a specific scale parameter,
+%! ## useful for modeling failure times where lambda shifts the distribution,
+%! ## such as in survival or wind speed data.

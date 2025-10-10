@@ -1,0 +1,23 @@
+%!demo
+%! ## Plot various iCDFs from the Weibull distribution
+%! p = 0.001:0.001:0.999;
+%! data1 = wblrnd (1, 0.5, 10000, 1);
+%! data2 = wblrnd (1, 1, 10000, 1);
+%! data3 = wblrnd (1, 2, 10000, 1);
+%! pd1 = fitdist (data1, "Weibull");
+%! pd2 = fitdist (data2, "Weibull");
+%! pd3 = fitdist (data3, "Weibull");
+%! x1 = icdf (pd1, p);
+%! x2 = icdf (pd2, p);
+%! x3 = icdf (pd3, p);
+%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! grid on
+%! legend ({"lambda = 1, k = 0.5", "lambda = 1, k = 1", "lambda = 1, k = 2"}, ...
+%!         "location", "northwest")
+%! title ("Weibull iCDF")
+%! xlabel ("Probability")
+%! ylabel ("values in x (x >= 0)")
+%!
+%! ## This demonstrates the inverse CDF (quantiles) for Weibull distributions,
+%! ## useful for finding values corresponding to given probabilities, such as
+%! ## predicting failure times in engineering applications.
