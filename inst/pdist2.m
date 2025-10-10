@@ -1,5 +1,5 @@
 ## Copyright (C) 2014-2019 Piotr Dollar <pdollar@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -316,7 +316,7 @@ function [D, I] = pdist2 (X, Y, varargin)
   ## From vector to matrix
   D = reshape (D, size (Y, 1), size (X, 1))';
 
-  if (nargout > 1)
+  if (nargout > 1 || parcount)
     [D, I] = sort (D', 2, SortOrder);
     K = min (size (D, 2), K);   # fix max K to avoid out of bound error
     D = D(:,1:K)';
