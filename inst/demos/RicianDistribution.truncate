@@ -10,11 +10,15 @@
 %! pd = fitdist (data, "Rician");
 %! t = truncate (pd, 0.5, 3);
 %!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%!
 %! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
-%! hist (data, 50)
-%! hold off
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
 %! title ("Rician distribution (s = 1, sigma = 1) truncated at [0.5, 3]")
 %! legend ("Truncated PDF", "Histogram")
 %!
