@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Weibull distribution
+%! data = wblrnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Weibull");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## positive values in lifetime or reliability data.

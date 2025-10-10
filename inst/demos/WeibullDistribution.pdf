@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Weibull distribution
+%! x = 0:0.01:5;
+%! data1 = wblrnd (1, 0.5, 10000, 1);
+%! data2 = wblrnd (1, 1, 10000, 1);
+%! data3 = wblrnd (1, 2, 10000, 1);
+%! pd1 = fitdist (data1, "Weibull");
+%! pd2 = fitdist (data2, "Weibull");
+%! pd3 = fitdist (data3, "Weibull");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"lambda = 1, k = 0.5", "lambda = 1, k = 1", "lambda = 1, k = 2"}, ...
+%!         "location", "northeast")
+%! title ("Weibull PDF")
+%! xlabel ("values in x (x >= 0)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Weibull distributions,
+%! ## showing the likelihood for positive values, common in wind speed or failure rate modeling.

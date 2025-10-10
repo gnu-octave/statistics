@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Weibull distribution
+%! data = wblrnd (1, 1, 10000, 1);
+%! pd = fitdist (data, "Weibull");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## in lifetime or positive data modeled by Weibull.

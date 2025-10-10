@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Weibull distribution
+%! rand ("seed", 21);
+%! data = wblrnd (1, 1, 100, 1);
+%! pd_fitted = fitdist (data, "Weibull");
+%! params = [pd_fitted.lambda, pd_fitted.k];
+%! nlogL_wbllike = wbllike (params, data)
+%!
+%! ## This is useful for assessing the fit of a Weibull distribution to data,
+%! ## with lower values indicating a better fit, often used in model selection
+%! ## for reliability data.
