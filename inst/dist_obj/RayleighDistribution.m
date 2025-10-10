@@ -735,6 +735,19 @@ function checkparams (sigma)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Rayleigh distribution with
+%! ## parameter sigma = 2.  Fit a Rayleigh distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Rayleigh", "sigma", 2)
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Rayleigh")
+%! plot (pd_fitted)
+%! msg = "Fitted Rayleigh distribution with sigma = %0.2f";
+%! title (sprintf (msg, pd_fitted.sigma))
+
 ## Test output
 %!shared pd, t
 %! pd = RayleighDistribution;
