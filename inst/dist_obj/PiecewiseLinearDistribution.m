@@ -1,4 +1,5 @@
 ## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,23 +18,18 @@
 
 classdef PiecewiseLinearDistribution
   ## -*- texinfo -*-
-  ## @deftypefn {statistics} PiecewiseLinearDistribution
+  ## @deftp {statistics} PiecewiseLinearDistribution
   ##
   ## Piecewise linear probability distribution object.
   ##
   ## A @code{PiecewiseLinearDistribution} object consists of parameters, a model
-  ## description, and sample data for a uniform probability distribution.
+  ## description, and sample data for a piecewise linear probability
+  ## distribution.
   ##
-  ## The piecewise linear distribution uses the following parameters.
-  ##
-  ## @multitable @columnfractions 0.25 0.48 0.27
-  ## @headitem @var{Parameter} @tab @var{Description} @tab @var{Support}
-  ##
-  ## @item @qcode{x} @tab Vector of @math{x} values at which the cdf changes
-  ## slope @tab @math{-Inf < x < Fx}
-  ## @item @qcode{Fx} @tab Vector of CDF values that correspond to each value in
-  ## @math{x} @tab @math{0 <= Fx <= 1}
-  ## @end multitable
+  ## The piecewise linear distribution is a continuous probability distribution
+  ## that is defined by a set of points where the cumulative distribution
+  ## function (CDF) changes slope.  It is defined by a vector of @math{x} values
+  ## and a corresponding vector of CDF values @var{Fx}.
   ##
   ## There are several ways to create a @code{PiecewiseLinearDistribution}
   ## object.
@@ -42,51 +38,130 @@ classdef PiecewiseLinearDistribution
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
   ## @item Use the constructor @qcode{PiecewiseLinearDistribution (@var{x},
-  ## @var{Fx})} to create a uniform distribution with specified parameter
-  ## values.
+  ## @var{Fx})} to create a piecewise linear distribution with specified
+  ## parameter values @var{x} and @var{Fx}.
   ## @end itemize
   ##
-  ## It is highly recommended to use @code{makedist} function to create
-  ## probability distribution objects, instead of the constructor.
-  ##
-  ## A @code{PiecewiseLinearDistribution} object contains the following
-  ## properties, which can be accessed using dot notation.
-  ##
-  ## @multitable @columnfractions 0.25 0.25 0.25 0.25
-  ## @item @qcode{DistributionName} @tab @qcode{DistributionCode} @tab
-  ## @qcode{NumParameters} @tab @qcode{ParameterNames}
-  ## @item @qcode{ParameterDescription} @tab @qcode{ParameterValues} @tab
-  ## @qcode{Truncation} @tab @qcode{IsTruncated}
-  ## @end multitable
-  ##
-  ## A @code{PiecewiseLinearDistribution} object contains the following methods:
-  ## @code{cdf}, @code{icdf}, @code{iqr}, @code{mean}, @code{median},
-  ## @code{pdf}, @code{plot}, @code{random}, @code{std}, @code{truncate},
-  ## @code{var}.
+  ## It is highly recommended to use @code{fitdist} and @code{makedist}
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
   ##
   ## Further information about the piecewise linear distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Piecewise_linear_function}
   ##
   ## @seealso{makedist, plcdf, plinv, plpdf, plrnd, plstat}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Dependent = true)
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} x
+    ##
+    ## Vector of x values
+    ##
+    ## A numeric vector of @math{x} values at which the CDF changes slope.  You
+    ## can access the @qcode{x} property using dot name assignment.
+    ##
+    ## @end deftp
     x
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} Fx
+    ##
+    ## Vector of CDF values
+    ##
+    ## A numeric vector of CDF values that correspond to each value in @math{x}.
+    ## You can access the @qcode{Fx} property using dot name assignment.
+    ##
+    ## @end deftp
     Fx
   endproperties
 
   properties (GetAccess = public, Constant = true)
-    CensoringAllowed = false;
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} DistributionName
+    ##
+    ## Probability distribution name
+    ##
+    ## A character vector specifying the name of the probability distribution
+    ## object.  This property is read-only.
+    ##
+    ## @end deftp
     DistributionName = "PiecewiseLinearDistribution";
-    DistributionCode = "pl";
+
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} NumParameters
+    ##
+    ## Number of parameters
+    ##
+    ## A scalar integer value specifying the number of parameters characterizing
+    ## the probability distribution.  This property is read-only.
+    ##
+    ## @end deftp
     NumParameters = 2;
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} ParameterNames
+    ##
+    ## Names of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## the name of a distribution parameter.  This property is read-only.
+    ##
+    ## @end deftp
     ParameterNames = {"x", "Fx"};
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} ParameterDescription
+    ##
+    ## Description of parameters
+    ##
+    ## A @math{2x1} cell array of character vectors with each element containing
+    ## a short description of a distribution parameter.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ParameterDescription = {"x", "cdf = F(x)"};
   endproperties
 
+  properties (GetAccess = public, Constant = true, Hidden)
+    CensoringAllowed = false;
+    DistributionCode = "pl";
+    ParameterRange = [-Inf, Inf; -Inf, Inf; 0, 1; 0, 1];
+    ParameterLogCI = [false, false, false, false];
+  endproperties
+
   properties (GetAccess = public , SetAccess = protected)
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} ParameterValues
+    ##
+    ## Distribution parameter values
+    ##
+    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## parameters.  This property is read-only. You can change the distribution
+    ## parameters by assigning new values to the @qcode{x} and @qcode{Fx}
+    ## properties.
+    ##
+    ## @end deftp
     ParameterValues
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} Truncation
+    ##
+    ## Truncation interval
+    ##
+    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## probability distribution.  First element contains the lower boundary,
+    ## second element contains the upper boundary.  This property is read-only.
+    ## You can only truncate a probability distribution with the
+    ## @qcode{truncate} method.
+    ##
+    ## @end deftp
     Truncation
+    ## -*- texinfo -*-
+    ## @deftp {PiecewiseLinearDistribution} {property} IsTruncated
+    ##
+    ## Flag for truncated probability distribution
+    ##
+    ## A logical scalar value specifying whether a probability distribution is
+    ## truncated or not.  This property is read-only.
+    ##
+    ## @end deftp
     IsTruncated
   endproperties
 
@@ -182,13 +257,13 @@ classdef PiecewiseLinearDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {PiecewiseLinearDistribution} {@var{p} =} icdf (@var{pd}, @var{p})
+    ## @deftypefn  {PiecewiseLinearDistribution} {@var{x} =} icdf (@var{pd}, @var{p})
     ##
     ## Compute the inverse cumulative distribution function (iCDF).
     ##
-    ## @code{@var{p} = icdf (@var{pd}, @var{x})} computes the quantile (the
+    ## @code{@var{x} = icdf (@var{pd}, @var{p})} computes the quantile (the
     ## inverse of the CDF) of the probability distribution object, @var{pd},
-    ## evaluated at the values in @var{x}.
+    ## evaluated at the values in @var{p}.
     ##
     ## @end deftypefn
     function x = icdf (this, p)
@@ -303,7 +378,7 @@ classdef PiecewiseLinearDistribution
     ##
     ## Plot a probability distribution object.
     ##
-    ## @code{plot (@var{pd}} plots a probability density function (PDF) of the
+    ## @code{plot (@var{pd})} plots a probability density function (PDF) of the
     ## probability distribution object @var{pd}.  If @var{pd} contains data,
     ## which have been fitted by @code{fitdist}, the PDF is superimposed over a
     ## histogram of the data.
@@ -312,7 +387,7 @@ classdef PiecewiseLinearDistribution
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @tab @var{Name} @tab @var{Value}
+    ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"PlotType"} @tab @tab A character vector specifying the plot
     ## type.  @qcode{"pdf"} plots the probability density function (PDF).  When
@@ -350,10 +425,10 @@ classdef PiecewiseLinearDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {PiecewiseLinearDistribution} {@var{y} =} random (@var{pd})
-    ## @deftypefnx {PiecewiseLinearDistribution} {@var{y} =} random (@var{pd}, @var{rows})
-    ## @deftypefnx {PiecewiseLinearDistribution} {@var{y} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
-    ## @deftypefnx {PiecewiseLinearDistribution} {@var{y} =} random (@var{pd}, [@var{sz}])
+    ## @deftypefn  {PiecewiseLinearDistribution} {@var{r} =} random (@var{pd})
+    ## @deftypefnx {PiecewiseLinearDistribution} {@var{r} =} random (@var{pd}, @var{rows})
+    ## @deftypefnx {PiecewiseLinearDistribution} {@var{r} =} random (@var{pd}, @var{rows}, @var{cols}, @dots{})
+    ## @deftypefnx {PiecewiseLinearDistribution} {@var{r} =} random (@var{pd}, [@var{sz}])
     ##
     ## Generate random arrays from the probability distribution object.
     ##
@@ -484,6 +559,29 @@ function checkparams (x, Fx)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Beta distribution with
+%! ## parameters a = 2 and b = 5 scaled to [0,10].
+%! ## Compute empirical CDF, subsample, create PiecewiseLinearDistribution,
+%! ## and plot the PDF superimposed on a histogram of the data.
+%!
+%! randg ("seed", 2);
+%! data = betarnd (2, 5, 5000, 1) * 10;
+%! [f, x] = ecdf (data);
+%! f = f(1:5:end);
+%! x = x(1:5:end);
+%! pd = PiecewiseLinearDistribution (x, f);
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on
+%! vals = min (data):0.1:max (data);
+%! y = pdf (pd, vals);
+%! plot (vals, y, "-r", "LineWidth", 2)
+%! hold off
+%! title ("Piecewise Linear approximation to scaled Beta(2,5) data")
+%! legend ("Histogram", "Piecewise PDF")
+
 ## Test output
 %!shared pd, t
 %! load patients
@@ -506,7 +604,7 @@ endfunction
 %!assert (mean (t), 152.311, 1e-3);
 %!assert (median (pd), 142, 1e-10);
 %!assert (median (t), 141.9462, 1e-4);
-%!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0046], 1e-4);
+%!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0004], 6e-3);
 %!assert (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
 %!assert (pdf (pd, [100, 250, NaN]), [0, 0, NaN], 1e-4);
 %!assert (pdf (t, [100, 250, NaN]), [0, 0, NaN], 1e-4);

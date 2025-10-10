@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the variance for a Piecewise Linear distribution
+%! load patients
+%! [f, x] = ecdf (Weight);
+%! pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, quantifying the spread in the
+%! ## empirical distribution.

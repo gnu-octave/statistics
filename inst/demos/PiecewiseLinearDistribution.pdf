@@ -1,0 +1,19 @@
+%!demo
+%! ## Plot various PDFs from the Piecewise Linear distribution
+%! load patients
+%! [f1, x1] = ecdf (Weight);
+%! [f2, x2] = ecdf (Height);
+%! pd1 = PiecewiseLinearDistribution (x1(1:10:end), f1(1:10:end));
+%! pd2 = PiecewiseLinearDistribution (x2(1:10:end), f2(1:10:end));
+%! vals = 50:0.1:250;
+%! y1 = pdf (pd1, vals);
+%! y2 = pdf (pd2, vals);
+%! plot (vals, y1, "-b", vals, y2, "-r")
+%! grid on
+%! legend ({"Weight", "Height"}, "location", "northeast")
+%! title ("Piecewise Linear PDF")
+%! xlabel ("values in x")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Piecewise Linear
+%! ## distributions, showing the density across segments.

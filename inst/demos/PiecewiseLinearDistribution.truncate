@@ -1,0 +1,23 @@
+%!demo
+%! ## Plot the PDF of a Piecewise Linear distribution truncated at [130, 180].
+%! ## Generate 10000 random samples from this truncated distribution and
+%! ## superimpose a histogram.
+%!
+%! load patients
+%! [f, x] = ecdf (Weight);
+%! pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+%! t = truncate (pd, 130, 180);
+%! data = random (t, 10000, 1);
+%!
+%! ## Plot histogram and truncated PDF
+%! [counts, centers] = hist (data, 20);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on
+%! plot (t)
+%! hold off
+%! title ("Piecewise Linear distribution truncated at [130, 180]")
+%! legend ("Truncated PDF", "Histogram")
+%!
+%! ## This demonstrates truncating a Piecewise Linear distribution to a specific
+%! ## range and visualizing the result with random samples.
