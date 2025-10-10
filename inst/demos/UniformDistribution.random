@@ -1,0 +1,11 @@
+%!demo
+%! ## Generate random samples from a Uniform distribution
+%! rand ("seed", 21);
+%! samples = unifrnd (0, 5, 500, 1);
+%! hist (samples, 50)
+%! title ("Histogram of 500 random samples from Uniform(Lower=0, Upper=5)")
+%! xlabel ("Values in x")
+%! ylabel ("Frequency")
+%!
+%! ## This generates random samples from a Uniform distribution, useful
+%! ## for simulating data with equal probability over a fixed interval.

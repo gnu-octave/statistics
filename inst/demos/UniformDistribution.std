@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the standard deviation for a Uniform distribution
+%! data = unifrnd (0, 10, 10000, 1);
+%! pd = fitdist (data, "Uniform");
+%! std_value = std (pd)
+%!
+%! ## Use this to calculate the standard deviation, which measures the variability
+%! ## within the uniform interval.

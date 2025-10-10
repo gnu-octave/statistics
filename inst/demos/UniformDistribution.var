@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Uniform distribution
+%! data = unifrnd (0, 10, 10000, 1);
+%! pd = fitdist (data, "Uniform");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## values within the uniform interval.

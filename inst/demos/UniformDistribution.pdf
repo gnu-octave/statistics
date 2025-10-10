@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Uniform distribution
+%! x = -1:0.01:12;
+%! data1 = unifrnd (0, 5, 10000, 1);
+%! data2 = unifrnd (2, 8, 10000, 1);
+%! data3 = unifrnd (4, 10, 10000, 1);
+%! pd1 = fitdist (data1, "Uniform");
+%! pd2 = fitdist (data2, "Uniform");
+%! pd3 = fitdist (data3, "Uniform");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"Lower = 0, Upper = 5", "Lower = 2, Upper = 8", "Lower = 4, Upper = 10"}, ...
+%!         "location", "northeast")
+%! title ("Uniform PDF")
+%! xlabel ("Values in x")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Uniform distributions,
+%! ## showing the constant likelihood within the defined interval.
