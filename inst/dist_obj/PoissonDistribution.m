@@ -765,6 +765,19 @@ function checkparams (lambda)
   endif
 endfunction
 
+%!demo
+%! ## Generate a data set of 5000 random samples from a Poisson distribution with
+%! ## parameter lambda = 5.  Fit a Poisson distribution to this data and plot
+%! ## a PDF of the fitted distribution superimposed on a histogram of the data.
+%!
+%! pd_fixed = makedist ("Poisson", "lambda", 5)
+%! rand ("seed", 2);
+%! data = random (pd_fixed, 5000, 1);
+%! pd_fitted = fitdist (data, "Poisson")
+%! plot (pd_fitted)
+%! msg = "Fitted Poisson distribution with lambda = %0.2f";
+%! title (sprintf (msg, pd_fitted.lambda))
+
 ## Test output
 %!shared pd, t, t_inf
 %! pd = PoissonDistribution;

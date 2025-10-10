@@ -13,8 +13,11 @@
 %! ## Plot histogram and truncated PDF
 %! plot (t)
 %! hold on
-%! hist (data, 20)
-%! hold off
+%! [counts, centers] = hist (data, 20);
+%! bin_width = centers(2) - centers(1);
+%! counts_norm = counts / (sum (counts) * bin_width);
+%! bar (centers, counts_norm, 1);
+%!
 %! title ("Poisson distribution (lambda=5) truncated at [2, 10]")
 %! legend ("Truncated PDF", "Histogram")
 %!
