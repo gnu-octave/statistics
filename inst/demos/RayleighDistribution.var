@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Rayleigh distribution
+%! data = raylrnd (1, 10000, 1);
+%! pd = fitdist (data, "Rayleigh");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## nonnegative values in the distribution.

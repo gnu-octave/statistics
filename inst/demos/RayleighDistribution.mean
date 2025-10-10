@@ -1,0 +1,12 @@
+%!demo
+%! ## Compute the mean for different Rayleigh distributions
+%! data1 = raylrnd (0.5, 10000, 1);
+%! data2 = raylrnd (1.0, 10000, 1);
+%! pd1 = fitdist (data1, "Rayleigh");
+%! pd2 = fitdist (data2, "Rayleigh");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Rayleigh
+%! ## distributions with different scale parameters, representing average
+%! ## magnitude in applications like acoustics.
