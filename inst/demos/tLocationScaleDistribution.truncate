@@ -8,11 +8,15 @@
 %! pd = fitdist (data, "tLocationScale");
 %! t = truncate (pd, -1, 1);
 %!
+%! [counts, centers] = hist (data, 50);
+%! bin_width = centers(2) - centers(1);
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on;
+%!
 %! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
-%! hist (data, 50)
-%! hold off
+%! x = linspace (0.5, 5, 500);
+%! y = pdf (t, x);
+%! plot (x, y, "r", "linewidth", 2);
 %! title ("t Location-Scale distribution (mu = 0, sigma = 1, nu = 5) truncated at [-1, 1]")
 %! legend ("Truncated PDF", "Histogram")
 %!
