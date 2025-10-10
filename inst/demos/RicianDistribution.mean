@@ -1,0 +1,11 @@
+%!demo
+%! ## Compute the mean for different Rician distributions
+%! data1 = ricernd (1, 0.5, [10000, 1]);
+%! data2 = ricernd (1, 1, [10000, 1]);
+%! pd1 = fitdist (data1, "Rician");
+%! pd2 = fitdist (data2, "Rician");
+%! mean1 = mean (pd1)
+%! mean2 = mean (pd2)
+%!
+%! ## This shows how to compute the expected value for Rician distributions
+%! ## with different scale parameters, representing the average signal magnitude.

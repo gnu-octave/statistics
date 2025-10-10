@@ -1,0 +1,22 @@
+%!demo
+%! ## Plot various PDFs from the Rician distribution
+%! x = 0:0.01:5;
+%! data1 = ricernd (1, 0.5, [10000, 1]);
+%! data2 = ricernd (1, 1, [10000, 1]);
+%! data3 = ricernd (1, 2, [10000, 1]);
+%! pd1 = fitdist (data1, "Rician");
+%! pd2 = fitdist (data2, "Rician");
+%! pd3 = fitdist (data3, "Rician");
+%! y1 = pdf (pd1, x);
+%! y2 = pdf (pd2, x);
+%! y3 = pdf (pd3, x);
+%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! grid on
+%! legend ({"s = 1, sigma = 0.5", "s = 1, sigma = 1", "s = 1, sigma = 2"}, ...
+%!         "location", "northeast")
+%! title ("Rician PDF")
+%! xlabel ("values in x (x >= 0)")
+%! ylabel ("Probability density")
+%!
+%! ## This visualizes the probability density function for Rician distributions,
+%! ## showing the likelihood for non-negative signal magnitudes.

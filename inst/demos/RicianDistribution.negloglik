@@ -1,0 +1,9 @@
+%!demo
+%! ## Compute the negative loglikelihood for a fitted Rician distribution
+%! rand ("seed", 21);
+%! data = ricernd (1, 1, [100, 1]);
+%! pd_fitted = fitdist (data, "Rician");
+%! nlogL = negloglik (pd_fitted)
+%!
+%! ## This is useful for assessing the fit of a Rician distribution to data,
+%! ## with lower values indicating a better fit, often used in model comparison.

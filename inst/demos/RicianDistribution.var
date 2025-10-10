@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the variance for a Rician distribution
+%! data = ricernd (1, 1, [10000, 1]);
+%! pd = fitdist (data, "Rician");
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of the
+%! ## signal magnitudes in the distribution.
