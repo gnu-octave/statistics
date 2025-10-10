@@ -828,7 +828,7 @@
 <dt> <code>&quot;LeaveOut&quot;</code></dt>
 </dl>
 <p> Leave-one-out partition (each element is placed in its own subset).
- The value is ignored.
+ The value is ignored, but it is required.
 </p>
  </dd>
 <dt> <code>&quot;Partition&quot;</code></dt>
@@ -869,6 +869,60 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/crossval.m">crossval</a>
 </div>
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Determine the optimal number of clusters using cross-validation
+
+ ## Declare a function to compute the sum of squared distances
+ ## between data points and a varying number of clusters.
+ function D = dist2clusters (X, Y, k)
+   [Z, Zmu, Zstd] = zscore (X);
+   [~, C] = kmeans (Z, k);
+   ZY = (Y - Zmu) ./ Zstd;
+   d = pdist2 (C, ZY, 'euclidean', 'Smallest', 1);
+   D = sum (d .^ 2);
+ endfunction
+
+ load fisheriris
+ for k = 1:8
+   fcn = @(X, Y) dist2clusters (X, Y, k);
+   distances = crossval (fcn, meas);
+   cvdist(k) = sum (distances);
+ endfor
+
+ plot(cvdist)
+ xlabel('Number of Clusters')
+ ylabel('CV Sum of Squared Distances')
+ xlim ([1,8]);
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/crossval_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

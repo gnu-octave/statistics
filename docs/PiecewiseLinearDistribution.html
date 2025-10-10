@@ -795,18 +795,14 @@
 </p>
 <div class="ms-5">
 <p> A <code>PiecewiseLinearDistribution</code> object consists of parameters, a model
- description, and sample data for a uniform probability distribution.
+ description, and sample data for a piecewise linear probability
+ distribution.
 </p>
-<p> The piecewise linear distribution uses the following parameters.
+<p> The piecewise linear distribution is a continuous probability distribution
+ that is defined by a set of points where the cumulative distribution
+ function (CDF) changes slope.  It is defined by a vector of <math>&times;</math> values
+ and a corresponding vector of CDF values <var>Fx</var>.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>x</code></td><td width="48%">Vector of <math>&times;</math> values at which the cdf changes
- slope</td><td width="27%"><math>-Inf &lt;&times; &lt; F&times;</math></td></tr>
-<tr><td width="25%"><code>Fx</code></td><td width="48%">Vector of CDF values that correspond to each value in
- <math>&times;</math></td><td width="27%"><math>0 &lt;= F&times; &lt;= 1</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>PiecewiseLinearDistribution</code>
  object.
 </p>
@@ -814,25 +810,13 @@
 <li> Create a distribution with specified parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>PiecewiseLinearDistribution (<var>x</var>,
- <var>Fx</var>)</code> to create a uniform distribution with specified parameter
- values.
+ <var>Fx</var>)</code> to create a piecewise linear distribution with specified
+ parameter values <var>x</var> and <var>Fx</var>.
  </li></ul>
 
-<p> It is highly recommended to use <code>makedist</code> function to create
- probability distribution objects, instead of the constructor.
-</p>
-<p> A <code>PiecewiseLinearDistribution</code> object contains the following
- properties, which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td></tr>
-</table>
-
-<p> A <code>PiecewiseLinearDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>pdf</code>, <code>plot</code>, <code>random</code>, <code>std</code>, <code>truncate</code>,
- <code>var</code>.
+<p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
 <p> Further information about the piecewise linear distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Piecewise_linear_function">https://en.wikipedia.org/wiki/Piecewise_linear_function</a>
@@ -865,13 +849,72 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Vector of x values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.x</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of <math>&times;</math> values at which the CDF changes slope.  You
+ can access the <code>x</code> property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Piecewise Linear distribution object by calling its constructor
+ pd = PiecewiseLinearDistribution ([0; 1; 2; 3], [0; 0.3; 0.7; 1])
+
+ ## Query parameter 'x'
+ pd.x
+
+ ## This demonstrates direct construction with specific x values, useful for
+ ## modeling custom empirical distributions or interpolating between known points.
+
+pd =
+  PiecewiseLinearDistribution
+
+F(0) = 0
+F(1) = 0.3
+F(2) = 0.7
+F(3) = 1
+
+ans =
+
+   0
+   1
+   2
+   3
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -888,13 +931,72 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Vector of CDF values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.Fx</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of CDF values that correspond to each value in <math>&times;</math>.
+ You can access the <code>Fx</code> property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Piecewise Linear distribution object by calling its constructor
+ pd = PiecewiseLinearDistribution ([0; 1; 2; 3], [0; 0.3; 0.7; 1])
+
+ ## Query parameter 'Fx'
+ pd.Fx
+
+ ## This shows how to set CDF values directly via the constructor, ideal for
+ ## defining piecewise linear approximations of arbitrary distributions.
+
+pd =
+  PiecewiseLinearDistribution
+
+F(0) = 0
+F(1) = 0.3
+F(2) = 0.7
+F(3) = 1
+
+ans =
+
+        0
+   0.3000
+   0.7000
+   1.0000
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -907,17 +1009,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -930,17 +1040,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -953,17 +1071,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -976,17 +1102,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -999,17 +1134,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>x</code> and <code>Fx</code>
+ properties.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1022,17 +1167,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1045,63 +1201,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.ParameterValues</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
-            <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
-            <div class="border-bottom py-2">
-<b><code>PiecewiseLinearDistribution.IsTruncated</code></b> is not documented.
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1144,6 +1262,56 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Piecewise Linear distribution
+ load patients
+ [f1, x1] = ecdf (Weight);
+ [f2, x2] = ecdf (Height);
+ pd1 = PiecewiseLinearDistribution (x1(1:10:end), f1(1:10:end));
+ pd2 = PiecewiseLinearDistribution (x2(1:10:end), f2(1:10:end));
+ vals = 50:0.1:250;
+ p1 = cdf (pd1, vals);
+ p2 = cdf (pd2, vals);
+ plot (vals, p1, "-b", vals, p2, "-r")
+ grid on
+ legend ({"Weight", "Height"}, "location", "southeast")
+ title ("Piecewise Linear CDF")
+ xlabel ("values in x")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Piecewise Linear distributions, showing how probability
+ ## accumulates across the defined segments.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1168,15 +1336,65 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Piecewise Linear distribution
+ load patients
+ [f1, x1] = ecdf (Weight);
+ [f2, x2] = ecdf (Height);
+ pd1 = PiecewiseLinearDistribution (x1(1:10:end), f1(1:10:end));
+ pd2 = PiecewiseLinearDistribution (x2(1:10:end), f2(1:10:end));
+ p = 0.001:0.001:0.999;
+ x_vals1 = icdf (pd1, p);
+ x_vals2 = icdf (pd2, p);
+ plot (p, x_vals1, "-b", p, x_vals2, "-r")
+ grid on
+ legend ({"Weight", "Height"}, "location", "northwest")
+ title ("Piecewise Linear iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x")
+
+ ## This demonstrates the inverse CDF (quantiles) for Piecewise Linear
+ ## distributions, useful for finding values corresponding to given
+ ## probabilities in empirical data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1211,6 +1429,44 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Piecewise Linear distribution
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the distribution, helpful for summarizing variability
+ ## in empirical datasets.
+
+iqr_value = 50.083
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1244,6 +1500,47 @@ Compute the mean of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Piecewise Linear distributions
+ load patients
+ [f1, x1] = ecdf (Weight);
+ [f2, x2] = ecdf (Height);
+ pd1 = PiecewiseLinearDistribution (x1(1:5:end), f1(1:5:end));
+ pd2 = PiecewiseLinearDistribution (x2(1:5:end), f2(1:5:end));
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for Piecewise Linear
+ ## distributions based on empirical data, representing the average value.
+
+mean1 = 153.61
+mean2 = 56.500
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1276,6 +1573,47 @@ Compute the median of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Piecewise Linear distributions
+ load patients
+ [f1, x1] = ecdf (Weight);
+ [f2, x2] = ecdf (Height);
+ pd1 = PiecewiseLinearDistribution (x1(1:5:end), f1(1:5:end));
+ pd2 = PiecewiseLinearDistribution (x2(1:5:end), f2(1:5:end));
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median value, which splits the distribution
+ ## into two equal probability halves, robust for skewed empirical data.
+
+median1 = 142
+median2 = 66.727
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1311,6 +1649,55 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Piecewise Linear distribution
+ load patients
+ [f1, x1] = ecdf (Weight);
+ [f2, x2] = ecdf (Height);
+ pd1 = PiecewiseLinearDistribution (x1(1:10:end), f1(1:10:end));
+ pd2 = PiecewiseLinearDistribution (x2(1:10:end), f2(1:10:end));
+ vals = 50:0.1:250;
+ y1 = pdf (pd1, vals);
+ y2 = pdf (pd2, vals);
+ plot (vals, y1, "-b", vals, y2, "-r")
+ grid on
+ legend ({"Weight", "Height"}, "location", "northeast")
+ title ("Piecewise Linear PDF")
+ xlabel ("values in x")
+ ylabel ("Probability density")
+
+ ## This visualizes the probability density function for Piecewise Linear
+ ## distributions, showing the density across segments.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1341,7 +1728,7 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
@@ -1350,7 +1737,7 @@ Plot a probability distribution object.
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
  type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
  <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
@@ -1374,6 +1761,83 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Piecewise Linear distribution and plot its PDF.
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ plot (pd)
+ title ("Piecewise Linear distribution from Weight data")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Piecewise Linear distribution from data and plot its CDF.
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ plot (pd, "PlotType", "cdf")
+ title ("CDF of Piecewise Linear distribution from Weight data")
+
+ ## Use this to visualize the CDF of the Piecewise Linear distribution,
+ ## useful for comparing to empirical CDF.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1399,10 +1863,10 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod8">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">PiecewiseLinearDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1417,6 +1881,49 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Piecewise Linear distribution
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ samples = random (pd, 500, 1);
+ hist (samples, 50)
+ title ("Histogram of 500 random samples from Piecewise Linear (Weight data)")
+ xlabel ("values in x")
+ ylabel ("Frequency")
+
+ ## This generates random samples from a Piecewise Linear distribution,
+ ## useful for simulating data based on empirical distributions.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1450,6 +1957,43 @@ Compute the standard deviation of a probability distribution.
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Piecewise Linear distribution
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, measuring variability
+ ## in the empirical distribution.
+
+std_value = 26.520
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1489,6 +2033,59 @@ Truncate a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Piecewise Linear distribution truncated at [130, 180].
+ ## Generate 10000 random samples from this truncated distribution and
+ ## superimpose a histogram.
+
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ t = truncate (pd, 130, 180);
+ data = random (t, 10000, 1);
+
+ ## Plot histogram and truncated PDF
+ [counts, centers] = hist (data, 20);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on
+ plot (t)
+ hold off
+ title ("Piecewise Linear distribution truncated at [130, 180]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Piecewise Linear distribution to a specific
+ ## range and visualizing the result with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1522,10 +2119,100 @@ Compute the variance of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Piecewise Linear distribution
+ load patients
+ [f, x] = ecdf (Weight);
+ pd = PiecewiseLinearDistribution (x(1:5:end), f(1:5:end));
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, quantifying the spread in the
+ ## empirical distribution.
+
+var_value = 703.29
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Beta distribution with parameters a = 2 and b = 5 scaled to [0,10]. Compute empirical CDF, subsample, create PiecewiseLinearDistribution, and plot the PDF superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ randg ("seed", 2);
+ data = betarnd (2, 5, 5000, 1) * 10;
+ [f, x] = ecdf (data);
+ f = f(1:5:end);
+ x = x(1:5:end);
+ pd = PiecewiseLinearDistribution (x, f);
+ [counts, centers] = hist (data, 50);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on
+ vals = min (data):0.1:max (data);
+ y = pdf (pd, vals);
+ plot (vals, y, "-r", "LineWidth", 2)
+ hold off
+ title ("Piecewise Linear approximation to scaled Beta(2,5) data")
+ legend ("Histogram", "Piecewise PDF")</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PiecewiseLinearDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

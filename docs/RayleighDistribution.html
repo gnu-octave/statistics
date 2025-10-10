@@ -797,42 +797,28 @@
 <p> A <code>RayleighDistribution</code> object consists of parameters, a model
  description, and sample data for a Rayleigh probability distribution.
 </p>
-<p> The Rayleigh distribution uses the following parameters.
+<p> The Rayleigh distribution is a continuous probability distribution for
+ nonnegative random variables.  It is often used to model the magnitude of
+ a vector in two dimensions where the components are normally distributed
+ with zero mean and equal variance.  It is defined by scale parameter
+ <var>sigma</var>.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>sigma</code></td><td width="48%">Scale parameter</td><td width="27%"><math>sigma &gt; 0</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>RayleighDistribution</code> object.
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
+ </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>RayleighDistribution (<var>sigma</var>)</code>
- to create a Rayleigh distribution with specified parameter values.
+ to create a Rayleigh distribution with fixed parameter value <var>sigma</var>.
  </li><li> Use the static method <code>RayleighDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
+ <var>censor</var>, <var>freq</var>)</code> to fit a distribution to the data in <var>x</var>
+ using the same input arguments as the <code>raylfit</code> function.
  </li></ul>
 
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
-</p>
-<p> A <code>RayleighDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>RayleighDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
 <p> Further information about the Rayleigh distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rayleigh_distribution">https://en.wikipedia.org/wiki/Rayleigh_distribution</a>
@@ -868,13 +854,65 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Scale parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the scale of the
+ Rayleigh distribution.  You can access the <code>sigma</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rayleigh distribution object by calling its constructor
+ pd = RayleighDistribution (1.5)
+
+ ## Query parameter 'sigma'
+ pd.sigma
+
+ ## This demonstrates direct construction with a specific scale parameter,
+ ## useful for modeling nonnegative data like signal amplitudes in communications.
+
+pd =
+  RayleighDistribution
+
+  Rayleigh distribution
+    sigma = 1.5
+
+ans = 1.5000
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -887,17 +925,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -910,17 +956,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -933,17 +987,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -956,17 +1018,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -979,17 +1050,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the values of the distribution
+ parameters.  This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>sigma</code>
+ property.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1002,17 +1083,31 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>ParameterCovariance</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Covariance matrix of the parameter estimates
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric matrix containing the variance-covariance of the
+ parameter estimates.  Diagonal elements contain the variance of each
+ estimated parameter, and non-diagonal elements contain the covariance
+ between the parameter estimates.  The covariance matrix is only
+ meaningful when the distribution was fitted to data.  If the distribution
+ object was created with fixed parameters, or a parameter of a fitted
+ distribution is modified, then all elements of the variance-covariance
+ are zero.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1025,17 +1120,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterRange</code></b>
+                    <b><code>ParameterIsFixed</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for fixed parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterRange</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical vector specifying which parameters are fixed and
+ which are estimated.  <code>true</code> values correspond to fixed parameters,
+ <code>false</code> values correspond to parameter estimates.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1048,17 +1153,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterLogCI</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterLogCI</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1071,17 +1187,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterValues</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1094,132 +1218,36 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCI</code></b>
+                    <b><code>InputData</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Data used for fitting a probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterCI</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCovariance</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
-            <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterCovariance</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterIsFixed</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
-            <div class="border-bottom py-2">
-<b><code>RayleighDistribution.ParameterIsFixed</code></b> is not documented.
-            </div>
-          </div>
-        </div>
+<p> </p>
+<p> A scalar structure containing the following fields:
+ </p><ul>
+<li> <code>data</code>: a numeric vector containing the data used for
+ distribution fitting.
+ </li><li> <code>cens</code>: a numeric vector of logical values indicating
+ censoring information corresponding to the elements of the data used for
+ distribution fitting.  If no censoring vector was used for distribution
+ fitting, then this field defaults to an empty array.
+ </li><li> <code>freq</code>: a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting.  If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
+ </li></ul>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
-<b><code>RayleighDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-<b><code>RayleighDistribution.IsTruncated</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>InputData</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-<b><code>RayleighDistribution.InputData</code></b> is not documented.
+
             </div>
           </div>
         </div>
@@ -1262,6 +1290,59 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Rayleigh distribution
+ x = -1:0.01:5;
+ data1 = raylrnd (0.5, 10000, 1);
+ data2 = raylrnd (1.0, 10000, 1);
+ data3 = raylrnd (2.0, 10000, 1);
+ pd1 = fitdist (data1, "Rayleigh");
+ pd2 = fitdist (data2, "Rayleigh");
+ pd3 = fitdist (data3, "Rayleigh");
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"sigma = 0.5", "sigma = 1", "sigma = 2"}, ...
+         "location", "southeast")
+ title ("Rayleigh CDF")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Rayleigh distributions, showing how probability
+ ## accumulates for nonnegative values, useful in signal processing or physics.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1286,15 +1367,68 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">RayleighDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RayleighDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Rayleigh distribution
+ p = 0.001:0.001:0.999;
+ data1 = raylrnd (0.5, 10000, 1);
+ data2 = raylrnd (1.0, 10000, 1);
+ data3 = raylrnd (2.0, 10000, 1);
+ pd1 = fitdist (data1, "Rayleigh");
+ pd2 = fitdist (data2, "Rayleigh");
+ pd3 = fitdist (data3, "Rayleigh");
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"sigma = 0.5", "sigma = 1", "sigma = 2"}, ...
+         "location", "northwest")
+ title ("Rayleigh iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x (x >= 0)")
+
+ ## This demonstrates the inverse CDF (quantiles) for Rayleigh
+ ## distributions, useful for finding values corresponding to given
+ ## probabilities, such as thresholds in radar detection.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1329,6 +1463,43 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Rayleigh distribution
+ data = raylrnd (1, 10000, 1);
+ pd = fitdist (data, "Rayleigh");
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the distribution, helpful for understanding central
+ ## variability in nonnegative data.
+
+iqr_value = 0.9024
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1361,6 +1532,47 @@ Compute the mean of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Rayleigh distributions
+ data1 = raylrnd (0.5, 10000, 1);
+ data2 = raylrnd (1.0, 10000, 1);
+ pd1 = fitdist (data1, "Rayleigh");
+ pd2 = fitdist (data2, "Rayleigh");
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for Rayleigh
+ ## distributions with different scale parameters, representing average
+ ## magnitude in applications like acoustics.
+
+mean1 = 0.6212
+mean2 = 1.2431
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1395,6 +1607,46 @@ Compute the median of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Rayleigh distributions
+ data1 = raylrnd (0.5, 10000, 1);
+ data2 = raylrnd (1.0, 10000, 1);
+ pd1 = fitdist (data1, "Rayleigh");
+ pd2 = fitdist (data2, "Rayleigh");
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median value, which splits the distribution
+ ## into two equal probability halves, robust to skewness in nonnegative data.
+
+median1 = 0.5892
+median2 = 1.1769
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1423,10 +1675,47 @@ Compute the negative loglikelihood of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
- of the probability distribution object, <var>pd</var>.
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
+ loglikelihood of the probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the negative loglikelihood for a fitted Rayleigh distribution
+ rand ("seed", 21);
+ data = raylrnd (1, 100, 1);
+ pd_fitted = fitdist (data, "Rayleigh");
+ nlogL = negloglik (pd_fitted)
+
+ ## This is useful for assessing the fit of a Rayleigh distribution to
+ ## data, with lower values indicating a better fit, often used in model comparison.
+
+nlogL = -91.102
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1461,8 +1750,8 @@ Compute the confidence intervals for probability distribution parameters.
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
 </p>
-<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
- confidence intervals with additional options specified specified by
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes
+ the confidence intervals with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
@@ -1480,6 +1769,48 @@ Compute the confidence intervals for probability distribution parameters.
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute confidence intervals for parameters of a fitted Rayleigh
+ ## distribution
+ rand ("seed", 21);
+ data = raylrnd (1, 1000, 1);
+ pd_fitted = fitdist (data, "Rayleigh");
+ ci = paramci (pd_fitted, "Alpha", 0.05)
+
+ ## Use this to obtain confidence intervals for the estimated parameter (sigma),
+ ## providing a range of plausible values given the data.
+
+ci =
+
+   0.9788
+   1.0414
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1515,6 +1846,58 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Rayleigh distribution
+ x = -1:0.01:5;
+ data1 = raylrnd (0.5, 10000, 1);
+ data2 = raylrnd (1.0, 10000, 1);
+ data3 = raylrnd (2.0, 10000, 1);
+ pd1 = fitdist (data1, "Rayleigh");
+ pd2 = fitdist (data2, "Rayleigh");
+ pd3 = fitdist (data3, "Rayleigh");
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"sigma = 0.5", "sigma = 1", "sigma = 2"}, ...
+         "location", "northeast")
+ title ("Rayleigh PDF")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Probability density")
+
+ ## This visualizes the probability density function for Rayleigh
+ ## distributions, showing the likelihood for nonnegative values.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1545,7 +1928,7 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
@@ -1554,7 +1937,7 @@ Plot a probability distribution object.
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
  type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
  <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
@@ -1578,6 +1961,135 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rayleigh distribution with fixed parameter sigma = 1 and plot its PDF.
+
+ data = raylrnd (1, 10000, 1);
+ pd = fitdist (data, "Rayleigh");
+ plot (pd)
+ title ("Fixed Rayleigh distribution with sigma = 1")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Rayleigh
+ ## distribution with parameter sigma = 1. Fit a Rayleigh
+ ## distribution to this data and plot its CDF superimposed over an empirical
+ ## CDF.
+
+ rand ("seed", 21);
+ data = raylrnd (1, 100, 1);
+ pd_fitted = fitdist (data, "Rayleigh");
+ plot (pd_fitted, "PlotType", "cdf")
+ txt = "Fitted Rayleigh distribution with sigma = %0.2f";
+ title (sprintf (txt, pd_fitted.sigma))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## Use this to visualize the fitted CDF compared to the empirical CDF of the
+ ## data, useful for assessing model fit.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 200 random samples from a Rayleigh
+ ## distribution with parameter sigma = 1. Display a probability
+ ## plot for the Rayleigh distribution fit to the data.
+
+ rand ("seed", 21);
+ data = raylrnd (1, 200, 1);
+ pd_fitted = fitdist (data, "Rayleigh");
+ plot (pd_fitted, "PlotType", "probability")
+ txt = strcat ("Probability plot of fitted Rayleigh", ...
+               " distribution with sigma = %0.2f");
+ title (sprintf (txt, pd_fitted.sigma))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## This creates a probability plot to compare the fitted distribution to the
+ ## data, useful for checking if the Rayleigh model is appropriate.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.plot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1629,8 +2141,8 @@ Profile likelihood function for a probability distribution object.
  <var>setparam</var>, <code>&quot;Display&quot;</code>, <code>&quot;on&quot;</code>)</code> also plots the profile
  likelihood against the user-defined range of the selected parameter.
 </p>
-<p> For the Rayleigh distribution, <code><var>pnum</var> = 1</code> selects the
- parameter <var>sigma</var>.
+<p> For the Rayleigh distribution, <code><var>pnum</var> = 1</code> selects
+ the parameter <code>sigma</code>.
 </p>
 <p> When opted to display the profile likelihood plot, <code>proflik</code> also
  plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -1639,6 +2151,46 @@ Profile likelihood function for a probability distribution object.
  values.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute and plot the profile likelihood for the scale parameter of a fitted
+ ## Rayleigh distribution
+ rand ("seed", 21);
+ data = raylrnd (1, 1000, 1);
+ pd_fitted = fitdist (data, "Rayleigh");
+ [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+
+ ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+ ## helping to understand the uncertainty in parameter estimates.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.proflik_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1664,10 +2216,10 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">RayleighDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RayleighDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RayleighDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">RayleighDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">RayleighDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RayleighDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RayleighDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">RayleighDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1682,6 +2234,47 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Rayleigh distribution
+ rand ("seed", 21);
+ samples = raylrnd (1, 500, 1);
+ hist (samples, 50)
+ title ("Histogram of 500 random samples from Rayleigh(sigma=1)")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Frequency")
+
+ ## This generates random samples from a Rayleigh distribution, useful
+ ## for simulating nonnegative data like envelope of narrowband signals.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1716,6 +2309,42 @@ Compute the standard deviation of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Rayleigh distribution
+ data = raylrnd (1, 10000, 1);
+ pd = fitdist (data, "Rayleigh");
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which measures the variability
+ ## in the nonnegative values of the distribution.
+
+std_value = 0.6546
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1744,15 +2373,74 @@ Truncate a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>, and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data
+ with <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Rayleigh distribution, with parameter sigma = 1,
+ ## truncated at [0.5, 2] intervals. Generate 10000 random
+ ## samples from this truncated distribution and superimpose a histogram scaled
+ ## accordingly
+
+ rand ("seed", 21);
+ data_all = raylrnd (1, 20000, 1);
+ data = data_all(data_all >= 0.5 & data_all <= 2);
+ data = data(1:10000);
+
+ pd = fitdist (data, "Rayleigh");
+ t = truncate (pd, 0.5, 2);
+
+ [counts, centers] = hist (data, 50);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on;
+
+ ## Plot histogram and truncated PDF
+ x = linspace (0.5, 5, 500);
+ y = pdf (t, x);
+ plot (x, y, "r", "linewidth", 2);
+ title ("Rayleigh distribution (sigma = 1) truncated at [0.5, 2]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Rayleigh distribution to a specific
+ ## range and visualizing the resulting distribution with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1782,15 +2470,106 @@ Compute the variance of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Rayleigh distribution
+ data = raylrnd (1, 10000, 1);
+ pd = fitdist (data, "Rayleigh");
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which quantifies the spread of the
+ ## nonnegative values in the distribution.
+
+var_value = 0.4250
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Rayleigh distribution with parameter sigma = 2.  Fit a Rayleigh distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ pd_fixed = makedist ("Rayleigh", "sigma", 2)
+ rand ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, "Rayleigh")
+ plot (pd_fitted)
+ msg = "Fitted Rayleigh distribution with sigma = %0.2f";
+ title (sprintf (msg, pd_fitted.sigma))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+pd_fixed =
+  RayleighDistribution
+
+  Rayleigh distribution
+    sigma = 2
+
+pd_fitted =
+  RayleighDistribution
+
+  Rayleigh distribution
+    sigma = 1.97536   [1.94836, 2.00313]
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RayleighDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

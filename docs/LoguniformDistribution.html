@@ -794,47 +794,30 @@
 <p> Log-uniform probability distribution object.
 </p>
 <div class="ms-5">
-<p> A <code>LoguniformDistribution</code> object consists of parameters, a model
- description, and sample data for a log-uniform probability distribution.
+<p> A <code>LoguniformDistribution</code> object consists of parameters and a model
+ description for a log-uniform probability distribution.
 </p>
-<p> The log-uniform distribution uses the following parameters.
+<p> The log-uniform distribution is a continuous probability distribution that
+ is constant between locations <var>Lower</var> and <var>Upper</var> on a logarithmic
+ scale.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>Lower</code></td><td width="48%">Lower limit</td><td width="27%"><math>0 &lt; Lower &lt; Upper</math></td></tr>
-<tr><td width="25%"><code>Upper</code></td><td width="48%">Upper limit</td><td width="27%"><math>Lower &lt; Upper &lt; Inf</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>LoguniformDistribution</code> object.
 </p>
  <ul>
 <li> Create a distribution with specified parameter values using the
  <code>makedist</code> function.
- </li><li> Use the constructor <code>LoguniformDistribution (<var>Lower</var>)</code>
- to create a log-uniform distribution with specified parameter values.
+ </li><li> Use the constructor <code>LoguniformDistribution (<var>Lower</var>,
+ <var>Upper</var>)</code> to create a log-uniform distribution with specified parameter
+ values <var>Lower</var> and <var>Upper</var>.
  </li></ul>
 
-<p> It is highly recommended to use the <code>makedist</code> function to create
- probability distribution objects, instead of the constructor.
-</p>
-<p> A <code>LoguniformDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td></tr>
-</table>
-
-<p> A <code>LoguniformDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>pdf</code>, <code>plot</code>, <code>random</code>, <code>std</code>, <code>truncate</code>,
- <code>var</code>.
+<p> It is highly recommended to use <code>makedist</code> function to create
+ probability distribution objects, instead of the class constructor.
 </p>
 <p> Further information about the log-uniform distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Reciprocal_distribution">https://en.wikipedia.org/wiki/Reciprocal_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitdist.html">fitdist</a>, 
   <a href="makedist.html">makedist</a>
 </p>
 <p><strong>Source Code: </strong>
@@ -857,13 +840,116 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Lower limit
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.Lower</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the lower limit of the
+ log-uniform distribution.  You can access the <code>Lower</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution with default parameters
+ pd = LoguniformDistribution ();
+ 
+ ## Query parameter 'Lower' (lower limit)
+ pd.Lower
+ 
+ ## Set parameter 'Lower'
+ pd.Lower = 0.5
+ 
+ ## Use this to initialize or modify the lower limit of a Log-uniform
+ ## distribution. The lower limit must be a positive real scalar, defining
+ ## the minimum value in the support range, useful for modeling quantities
+ ## spanning orders of magnitude, like particle sizes or frequencies.
+
+ans = 1
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower = 0.5
+    Upper =   4
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution object by calling its constructor
+ pd = LoguniformDistribution (0.1, 10)
+ 
+ ## Query parameter 'Lower'
+ pd.Lower
+ 
+ ## This demonstrates direct construction with a specific lower limit,
+ ## suitable for scenarios where the distribution starts from a small
+ ## positive value, such as in Bayesian priors for scale parameters.
+
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower = 0.1
+    Upper =  10
+
+ans = 0.1000
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -880,13 +966,196 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Upper limit
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.Upper</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the upper limit of the
+ log-uniform distribution.  You can access the <code>Upper</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution with default parameters
+ pd = LoguniformDistribution ();
+ 
+ ## Query parameter 'Upper' (upper limit)
+ pd.Upper
+ 
+ ## Set parameter 'Upper'
+ pd.Upper = 5
+ 
+ ## Use this to initialize or modify the upper limit of a Log-uniform
+ ## distribution. The upper limit must be a positive real scalar greater
+ ## than Lower, defining the maximum value in the support range.
+
+ans = 4
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower = 1
+    Upper = 5
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution object by calling its constructor
+ pd = LoguniformDistribution (1, 100)
+ 
+ ## Query parameter 'Upper'
+ pd.Upper
+ 
+ ## This shows how to set the upper limit directly via the constructor,
+ ## ideal for bounding the distribution in applications like parameter
+ ## estimation over wide ranges.
+
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower =   1
+    Upper = 100
+
+ans = 100
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution with default parameters (Lower=1, Upper=4)
+ pd = LoguniformDistribution ()
+ 
+ ## This is the basic constructor call, useful for quick initialization
+ ## with standard bounds for exploratory analysis.
+
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower = 1
+    Upper = 4
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 4
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution with specified parameters
+ pd = LoguniformDistribution (0.01, 100)
+ 
+ ## Use this constructor to define custom bounds, appropriate for modeling
+ ## variables with logarithmic uniformity, such as in astrophysics or
+ ## economics for quantities like incomes or sizes.
+
+pd =
+  LoguniformDistribution
+
+  Log-uniform distribution
+    Lower = 0.01
+    Upper =  100
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -899,17 +1168,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -922,17 +1199,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -945,17 +1230,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -968,17 +1261,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -991,17 +1293,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>Lower</code> and <code>Upper</code>
+ properties.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1014,17 +1326,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1037,63 +1360,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.ParameterValues</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
-            <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty11"
-              aria-expanded="false" aria-controls="collapseProperty11">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty11">
-            <div class="border-bottom py-2">
-<b><code>LoguniformDistribution.IsTruncated</code></b> is not documented.
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1136,6 +1421,56 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Log-uniform distribution
+ x = 0:0.01:10;
+ pd1 = LoguniformDistribution (1, 4);
+ pd2 = LoguniformDistribution (1, 6);
+ pd3 = LoguniformDistribution (1, 8);
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"Lower=1, Upper=4", "Lower=1, Upper=6", "Lower=1, Upper=8"}, ...
+         "location", "southeast")
+ title ("Log-uniform CDF")
+ xlabel ("values in x (Lower <= x <= Upper)")
+ ylabel ("Cumulative probability")
+ 
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Log-uniform distributions, showing how probability
+ ## accumulates over the range, useful in uncertainty modeling.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1160,15 +1495,65 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">LoguniformDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">LoguniformDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Log-uniform distribution
+ p = 0.001:0.001:0.999;
+ pd1 = LoguniformDistribution (1, 4);
+ pd2 = LoguniformDistribution (1, 6);
+ pd3 = LoguniformDistribution (1, 8);
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"Lower=1, Upper=4", "Lower=1, Upper=6", "Lower=1, Upper=8"}, ...
+         "location", "northwest")
+ title ("Log-uniform iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x (Lower <= x <= Upper)")
+ 
+ ## This demonstrates the inverse CDF (quantiles) for Log-uniform
+ ## distributions, useful for finding values at specific probabilities,
+ ## such as in Monte Carlo simulations.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1203,6 +1588,42 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Log-uniform distribution
+ pd = LoguniformDistribution (1, 10);
+ iqr_value = iqr (pd)
+ 
+ ## Use this to calculate the interquartile range, measuring the spread
+ ## of the middle 50% of the distribution on a log scale, helpful for
+ ## robust statistics in skewed data.
+
+iqr_value = 3.8451
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1236,6 +1657,45 @@ Compute the mean of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Log-uniform distributions
+ pd1 = LoguniformDistribution (1, 5);
+ pd2 = LoguniformDistribution (1, 10);
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+ 
+ ## This shows how to compute the expected value for Log-uniform
+ ## distributions with different upper limits, representing the average
+ ## value over the range.
+
+mean1 = 2.4853
+mean2 = 3.9087
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1268,6 +1728,44 @@ Compute the median of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Log-uniform distributions
+ pd1 = LoguniformDistribution (1, 5);
+ pd2 = LoguniformDistribution (1, 10);
+ median1 = median (pd1)
+ median2 = median (pd2)
+ 
+ ## Use this to find the median value, which is the geometric mean of
+ ## the bounds, splitting the distribution into equal probability halves.
+
+median1 = 2.2361
+median2 = 3.1623
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1303,6 +1801,55 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Log-uniform distribution
+ x = 0.1:0.01:10;
+ pd1 = LoguniformDistribution (1, 4);
+ pd2 = LoguniformDistribution (1, 6);
+ pd3 = LoguniformDistribution (1, 8);
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"Lower=1, Upper=4", "Lower=1, Upper=6", "Lower=1, Upper=8"}, ...
+         "location", "northeast")
+ title ("Log-uniform PDF")
+ xlabel ("values in x (Lower <= x <= Upper)")
+ ylabel ("Probability density")
+ 
+ ## This visualizes the probability density function for Log-uniform
+ ## distributions, showing the likelihood decreasing inversely with x.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1333,24 +1880,17 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
- probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
- which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
- histogram of the data.
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
+ probability distribution object <var>pd</var>.
 </p>
 <p> <code>plot (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> specifies additional
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
- type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
- <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
- data.  <code>&quot;cdf&quot;</code> plots the cumulative density function (CDF).  When
- <var>pd</var> is fit to data, the CDF is superimposed over an empirical CDF.
- <code>&quot;probability&quot;</code> plots a probability plot using a CDF of the data
- and a CDF of the fitted probability distribution.  This option is
- available only when <var>pd</var> is fitted to data.</td></tr>
+ type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).
+ <code>&quot;cdf&quot;</code> plots the cumulative density function (CDF).</td></tr>
 <tr><td width="18%"><code>&quot;Discrete&quot;</code></td><td width="2%"></td><td width="80%">A logical scalar to specify whether to
  plot the PDF or CDF of a discrete distribution object as a line plot or a
  stem plot, by specifying <code>false</code> or <code>true</code>, respectively.  By
@@ -1366,6 +1906,83 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Log-uniform distribution with fixed parameters Lower=1 and
+ ## Upper=4 and plot its PDF.
+ pd = LoguniformDistribution (1, 4);
+ plot (pd)
+ title ("Fixed Log-uniform distribution with Lower=1 and Upper=4")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Log-uniform
+ ## distribution with parameters Lower=1 and Upper=10. Plot its CDF.
+ rand ("seed", 21);
+ data = exp (unifrnd (log (1), log (10), 100, 1));
+ pd = LoguniformDistribution (1, 10);
+ plot (pd, "PlotType", "cdf")
+ title ("Log-uniform distribution with Lower=1 and Upper=10")
+ 
+ ## Use this to visualize the CDF, useful for understanding cumulative
+ ## probabilities in the distribution.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1391,17 +2008,17 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod8">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">LoguniformDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LoguniformDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">LoguniformDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">LoguniformDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">LoguniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">LoguniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">LoguniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">LoguniformDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
-<p> When called with a single size argument, <code>betarnd</code> returns a square
+<p> When called with a single size argument, <code>random</code> returns a square
  matrix with the dimension specified.  When called with more than one
  scalar argument, the first two arguments are taken as the number of rows
  and columns and any further arguments specify additional matrix
@@ -1409,6 +2026,48 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Log-uniform distribution
+ rand ("seed", 21);
+ pd = LoguniformDistribution (1, 10);
+ samples = random (pd, 500, 1);
+ hist (samples, 50)
+ title ("Histogram of 500 random samples from Log-uniform(Lower=1, Upper=10)")
+ xlabel ("values in x (Lower <= x <= Upper)")
+ ylabel ("Frequency")
+ 
+ ## This generates random samples from a Log-uniform distribution, useful
+ ## for simulating data uniform on a log scale, like in power-law phenomena.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1443,6 +2102,41 @@ Compute the standard deviation of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Log-uniform distribution
+ pd = LoguniformDistribution (1, 10);
+ std_value = std (pd)
+ 
+ ## Use this to calculate the standard deviation, measuring the variability
+ ## in the distribution's values.
+
+std_value = 2.4940
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1471,15 +2165,69 @@ Truncate a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>, and upper limit, <var>upper</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Log-uniform distribution, with parameters Lower=1
+ ## and Upper=10, truncated at [2, 5] intervals. Generate 10000 random
+ ## samples from this truncated distribution and superimpose a histogram scaled
+ ## accordingly
+ rand ("seed", 21);
+ data_all = exp (unifrnd (log (1), log (10), 20000, 1));
+ data = data_all(data_all >= 2 & data_all <= 5);
+ data = data(1:7500);
+ 
+ pd = LoguniformDistribution (1, 10);
+ t = truncate (pd, 2, 5);
+ 
+ [counts, centers] = hist (data, 50);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on;
+ 
+ ## Plot histogram and truncated PDF
+ x = linspace (0.5, 5, 500);
+ y = pdf (t, x);
+ plot (x, y, "r", "linewidth", 2);
+ title ("Log-uniform distribution (Lower=1, Upper=10) truncated at [2, 5]")
+ legend ("Truncated PDF", "Histogram")
+ 
+ ## This demonstrates truncating a Log-uniform distribution to a specific
+ ## range and visualizing the resulting distribution with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1509,15 +2257,96 @@ Compute the variance of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Log-uniform distribution
+ pd = LoguniformDistribution (1, 10);
+ var_value = var (pd)
+ 
+ ## Use this to calculate the variance, quantifying the spread of the
+ ## values in the distribution.
+
+var_value = 6.2200
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Log-uniform distribution with parameters Lower = 1 and Upper = 10.  Plot a PDF of the distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ pd_fixed = makedist ("Loguniform", "Lower", 1, "Upper", 10);
+ rand ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ plot (pd_fixed)
+ hold on
+ hist (data, 50)
+ hold off
+ msg = "Log-uniform distribution with Lower = %0.2f and Upper = %0.2f";
+ title (sprintf (msg, pd_fixed.Lower, pd_fixed.Upper))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/LoguniformDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

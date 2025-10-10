@@ -797,43 +797,27 @@
 <p> A <code>RicianDistribution</code> object consists of parameters, a model
  description, and sample data for a Rician probability distribution.
 </p>
-<p> The Rician distribution uses the following parameters.
+<p> The Rician distribution is a continuous probability distribution that
+ models the magnitude of a signal in the presence of Gaussian noise.  It is
+ defined by noncentrality parameter <var>s</var> and scale parameter <var>sigma</var>.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>s</code></td><td width="48%">Noncentrality parameter</td><td width="27%"><math>s &gt;= 0</math></td></tr>
-<tr><td width="25%"><code>sigma</code></td><td width="48%">Scale parameter</td><td width="27%"><math>sigma &gt; 0</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>RicianDistribution</code> object.
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
+ </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>RicianDistribution (<var>s</var>, <var>sigma</var>)</code>
- to create a Rician distribution with specified parameter values.
+ to create a Rician distribution with fixed parameter values <var>s</var> and
+ <var>sigma</var>.
  </li><li> Use the static method <code>RicianDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
+ <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to data
+ <var>x</var>.
  </li></ul>
 
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
-</p>
-<p> A <code>RicianDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>RicianDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
 <p> Further information about the Rician distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Rice_distribution">https://en.wikipedia.org/wiki/Rice_distribution</a>
@@ -869,13 +853,115 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Noncentrality parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.s</code></b> is not documented.
+
+
+<p> </p>
+<p> A non-negative scalar value characterizing the noncentrality of the
+ Rician distribution.  You can access the <code>s</code> property using dot
+ name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution by fitting to data
+ data = ricernd (1, 1, [10000, 1]);  % Generate data with s=1, sigma=1
+ pd = fitdist (data, "Rician");
+
+ ## Query parameter 's' (noncentrality parameter)
+ pd.s
+
+ ## Set parameter 's'
+ pd.s = 1.5
+
+ ## Use this to initialize or modify the noncentrality parameter of a Rician
+ ## distribution. The noncentrality parameter 's' must be a non-negative real
+ ## scalar, representing the magnitude of the signal in the presence of noise.
+
+ans = 0.9969
+pd =
+  RicianDistribution
+
+  Rician distribution
+        s =      1.5
+    sigma = 0.991154
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution object by calling its constructor
+ pd = RicianDistribution (2, 1)
+
+ ## Query parameter 's'
+ pd.s
+
+ ## This demonstrates direct construction with a specific noncentrality
+ ## parameter, useful for modeling data with a known signal strength.
+
+pd =
+  RicianDistribution
+
+  Rician distribution
+        s = 2
+    sigma = 1
+
+ans = 2
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -892,13 +978,162 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Scale parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the scale of the Rician
+ distribution.  You can access the <code>sigma</code> property using dot name
+ assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution with fitted parameters
+ data = ricernd (1, 1, [10000, 1]);
+ pd = fitdist (data, "Rician");
+
+ ## Query parameter 'sigma' (scale parameter)
+ pd.sigma
+
+ ## Set parameter 'sigma'
+ pd.sigma = 1.2
+
+ ## Use this to initialize or modify the scale parameter in a Rician
+ ## distribution. The scale parameter 'sigma' must be a positive real scalar,
+ ## controlling the spread due to Gaussian noise.
+
+ans = 0.9913
+pd =
+  RicianDistribution
+
+  Rician distribution
+        s = 1.00301
+    sigma =     1.2
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution object by calling its constructor
+ pd = RicianDistribution (1, 1.5)
+
+ ## Query parameter 'sigma'
+ pd.sigma
+
+ ## This shows how to set the scale parameter directly via the constructor,
+ ## ideal for modeling variability in signal magnitude data.
+
+pd =
+  RicianDistribution
+
+  Rician distribution
+        s =   1
+    sigma = 1.5
+
+ans = 1.5000
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution with specific parameters
+ pd = RicianDistribution (2, 1)
+
+ ## Display the distribution parameters
+ pd.s
+ pd.sigma
+
+ ## Use the constructor to create a Rician distribution with fixed parameters
+ ## 's' and 'sigma', suitable for scenarios where signal and noise parameters
+ ## are known, such as in communication systems or image processing.
+
+pd =
+  RicianDistribution
+
+  Rician distribution
+        s = 2
+    sigma = 1
+
+ans = 2
+ans = 1
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -911,17 +1146,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -934,17 +1177,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -957,17 +1208,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -980,17 +1239,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1003,17 +1271,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only.  You can change the distribution
+ parameters by assigning new values to the <code>s</code> and <code>sigma</code>
+ properties.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1026,17 +1304,31 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>ParameterCovariance</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Covariance matrix of the parameter estimates
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>2&times;2</math> numeric matrix containing the variance-covariance of the
+ parameter estimates.  Diagonal elements contain the variance of each
+ estimated parameter, and non-diagonal elements contain the covariance
+ between the parameter estimates. The covariance matrix is only
+ meaningful when the distribution was fitted to data.  If the distribution
+ object was created with fixed parameters, or a parameter of a fitted
+ distribution is modified, then all elements of the variance-covariance
+ are zero.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1049,17 +1341,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterRange</code></b>
+                    <b><code>ParameterIsFixed</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for fixed parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterRange</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> logical vector specifying which parameters are fixed and
+ which are estimated.  <code>true</code> values correspond to fixed parameters,
+ <code>false</code> values correspond to parameter estimates.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1072,17 +1374,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterLogCI</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterLogCI</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1095,17 +1408,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterValues</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1118,132 +1439,36 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCI</code></b>
+                    <b><code>InputData</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Data used for fitting a probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterCI</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCovariance</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
-            <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterCovariance</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterIsFixed</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
-<b><code>RicianDistribution.ParameterIsFixed</code></b> is not documented.
-            </div>
-          </div>
-        </div>
+<p> </p>
+<p> A scalar structure containing the following fields:
+ </p><ul>
+<li> <code>data</code>: a numeric vector containing the data used for
+ distribution fitting.
+ </li><li> <code>cens</code>: a numeric vector of logical values indicating
+ censoring information corresponding to the elements of the data used for
+ distribution fitting.  If no censoring vector was used for distribution
+ fitting, then this field defaults to an empty array.
+ </li><li> <code>freq</code>: a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting.  If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
+ </li></ul>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-<b><code>RicianDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-<b><code>RicianDistribution.IsTruncated</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>InputData</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
-            <div class="border-bottom py-2">
-<b><code>RicianDistribution.InputData</code></b> is not documented.
+
             </div>
           </div>
         </div>
@@ -1286,6 +1511,68 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Rician distribution
+ x = 0:0.01:5;
+ data1 = ricernd (1, 0.5, [10000, 1]);
+ data2 = ricernd (1, 1, [10000, 1]);
+ data3 = ricernd (1, 2, [10000, 1]);
+ pd1 = fitdist (data1, "Rician");
+ pd2 = fitdist (data2, "Rician");
+ pd3 = fitdist (data3, "Rician");
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"s = 1, sigma = 0.5", "s = 1, sigma = 1", "s = 1, sigma = 2"}, ...
+         "location", "southeast")
+ title ("Rician CDF")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Rician distributions, showing how probability accumulates
+ ## for non-negative signal magnitudes, useful in signal processing.
+
+warning: ricefit: maximum number of iterations are exceeded.
+warning: called from
+    ricefit at line 171 column 7
+    fit at line 752 column 19
+    fitdist at line 652 column 22
+    build_DEMOS at line 94 column 11
+    classdef_texi2html at line 310 column 16
+    package_texi2html at line 288 column 9
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1310,15 +1597,67 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">RicianDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RicianDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Rician distribution
+ p = 0.001:0.001:0.999;
+ data1 = ricernd (1, 0.5, [10000, 1]);
+ data2 = ricernd (1, 1, [10000, 1]);
+ data3 = ricernd (1, 2, [10000, 1]);
+ pd1 = fitdist (data1, "Rician");
+ pd2 = fitdist (data2, "Rician");
+ pd3 = fitdist (data3, "Rician");
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"s = 1, sigma = 0.5", "s = 1, sigma = 1", "s = 1, sigma = 2"}, ...
+         "location", "northwest")
+ title ("Rician iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x (x >= 0)")
+
+ ## This demonstrates the inverse CDF (quantiles) for Rician distributions,
+ ## useful for finding signal magnitude thresholds in applications like radar.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1353,6 +1692,43 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Rician distribution
+ data = ricernd (1, 1, [10000, 1]);
+ pd = fitdist (data, "Rician");
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the distribution, helpful for understanding variability
+ ## in signal magnitudes.
+
+iqr_value = 1.0924
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1385,6 +1761,46 @@ Compute the mean of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Rician distributions
+ data1 = ricernd (1, 0.5, [10000, 1]);
+ data2 = ricernd (1, 1, [10000, 1]);
+ pd1 = fitdist (data1, "Rician");
+ pd2 = fitdist (data2, "Rician");
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for Rician distributions
+ ## with different scale parameters, representing the average signal magnitude.
+
+mean1 = 1.1363
+mean2 = 1.5349
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1419,6 +1835,46 @@ Compute the median of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Rician distributions
+ data1 = ricernd (1, 0.5, [10000, 1]);
+ data2 = ricernd (1, 1, [10000, 1]);
+ pd1 = fitdist (data1, "Rician");
+ pd2 = fitdist (data2, "Rician");
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median value, which splits the distribution into
+ ## two equal probability halves, robust to skewness in signal data.
+
+median1 = 1.1198
+median2 = 1.4845
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1447,10 +1903,47 @@ Compute the negative loglikelihood of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
- of the probability distribution object, <var>pd</var>.
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
+ loglikelihood of the probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the negative loglikelihood for a fitted Rician distribution
+ rand ("seed", 21);
+ data = ricernd (1, 1, [100, 1]);
+ pd_fitted = fitdist (data, "Rician");
+ nlogL = negloglik (pd_fitted)
+
+ ## This is useful for assessing the fit of a Rician distribution to data,
+ ## with lower values indicating a better fit, often used in model comparison.
+
+nlogL = -113.17
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1485,8 +1978,8 @@ Compute the confidence intervals for probability distribution parameters.
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
 </p>
-<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
- confidence intervals with additional options specified specified by
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes
+ the confidence intervals with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
@@ -1504,6 +1997,47 @@ Compute the confidence intervals for probability distribution parameters.
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute confidence intervals for parameters of a fitted Rician distribution
+ rand ("seed", 21);
+ data = ricernd (1, 1, [1000, 1]);
+ pd_fitted = fitdist (data, "Rician");
+ ci = paramci (pd_fitted, "Alpha", 0.05)
+
+ ## Use this to obtain confidence intervals for the estimated parameters (s
+ ## and sigma), providing a range of plausible values given the data.
+
+ci =
+
+   0.7184   0.9400
+   0.9412   1.2697
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1539,6 +2073,58 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Rician distribution
+ x = 0:0.01:5;
+ data1 = ricernd (1, 0.5, [10000, 1]);
+ data2 = ricernd (1, 1, [10000, 1]);
+ data3 = ricernd (1, 2, [10000, 1]);
+ pd1 = fitdist (data1, "Rician");
+ pd2 = fitdist (data2, "Rician");
+ pd3 = fitdist (data3, "Rician");
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"s = 1, sigma = 0.5", "s = 1, sigma = 1", "s = 1, sigma = 2"}, ...
+         "location", "northeast")
+ title ("Rician PDF")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Probability density")
+
+ ## This visualizes the probability density function for Rician distributions,
+ ## showing the likelihood for non-negative signal magnitudes.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1569,7 +2155,7 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
@@ -1578,7 +2164,7 @@ Plot a probability distribution object.
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
  type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
  <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
@@ -1602,6 +2188,134 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Rician distribution with fixed parameters s = 1 and sigma = 1
+ ## and plot its PDF.
+ pd = RicianDistribution (1, 1);
+ plot (pd)
+ title ("Rician distribution with s = 1 and sigma = 1")
+
+ ## Use this to visualize the PDF of a Rician distribution with fixed parameters,
+ ## useful for understanding the shape of the distribution.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Rician distribution
+ ## with parameters s = 1 and sigma = 1. Fit a Rician distribution to this
+ ## data and plot its CDF superimposed over an empirical CDF.
+ rand ("seed", 21);
+ data = ricernd (1, 1, [100, 1]);
+ pd_fitted = fitdist (data, "Rician");
+ plot (pd_fitted, "PlotType", "cdf")
+ txt = "Fitted Rician distribution with s = %0.2f and sigma = %0.2f";
+ title (sprintf (txt, pd_fitted.s, pd_fitted.sigma))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## Use this to visualize the fitted CDF compared to the empirical CDF of the
+ ## data, useful for assessing model fit.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 200 random samples from a Rician distribution
+ ## with parameters s = 1 and sigma = 1. Display a probability plot for the
+ ## Rician distribution fit to the data.
+ rand ("seed", 21);
+ data = ricernd (1, 1, [200, 1]);
+ pd_fitted = fitdist (data, "Rician");
+ plot (pd_fitted, "PlotType", "probability")
+ txt = strcat ("Probability plot of fitted Rician distribution", ...
+               " with s = %0.2f and sigma = %0.2f");
+ title (sprintf (txt, pd_fitted.s, pd_fitted.sigma))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## This creates a probability plot to compare the fitted distribution to the
+ ## data, useful for checking if the Rician model is appropriate.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.plot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1655,7 +2369,7 @@ Profile likelihood function for a probability distribution object.
 </p>
 <p> For the Rician distribution, <code><var>pnum</var> = 1</code> selects the
  parameter <code>s</code> and <code><var>pnum</var> = 2</code> selects the parameter
- <var>sigma</var>.
+ <code>sigma</code>.
 </p>
 <p> When opted to display the profile likelihood plot, <code>proflik</code> also
  plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -1664,6 +2378,46 @@ Profile likelihood function for a probability distribution object.
  values.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute and plot the profile likelihood for the scale parameter of a fitted
+ ## Rician distribution
+ rand ("seed", 21);
+ data = ricernd (1, 1, [1000, 1]);
+ pd_fitted = fitdist (data, "Rician");
+ [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+
+ ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+ ## helping to understand the uncertainty in parameter estimates.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.proflik_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1689,17 +2443,17 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">RicianDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RicianDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">RicianDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">RicianDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">RicianDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
-<p> When called with a single size argument, <code>betarnd</code> returns a square
+<p> When called with a single size argument, <code>ricernd</code> returns a square
  matrix with the dimension specified.  When called with more than one
  scalar argument, the first two arguments are taken as the number of rows
  and columns and any further arguments specify additional matrix
@@ -1707,6 +2461,47 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Rician distribution
+ rand ("seed", 21);
+ samples = ricernd (1, 1, [500, 1]);
+ hist (samples, 50)
+ title ("Histogram of 500 random samples from Rician(s=1, sigma=1)")
+ xlabel ("values in x (x >= 0)")
+ ylabel ("Frequency")
+
+ ## This generates random samples from a Rician distribution, useful for
+ ## simulating signal magnitudes in applications like wireless communications.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1741,6 +2536,42 @@ Compute the standard deviation of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Rician distribution
+ data = ricernd (1, 1, [10000, 1]);
+ pd = fitdist (data, "Rician");
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which measures the variability
+ ## in the signal magnitudes of the distribution.
+
+std_value = 0.7810
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1769,15 +2600,72 @@ Truncate a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>, and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data
+ with <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Rician distribution, with parameters s = 1 and sigma = 1,
+ ## truncated at [0.5, 3] intervals. Generate 10000 random samples from this
+ ## truncated distribution and superimpose a histogram scaled accordingly
+ rand ("seed", 21);
+ data_all = ricernd (1, 1, [20000, 1]);
+ data = data_all(data_all >= 0.5 & data_all <= 3);
+ data = data(1:10000);
+
+ pd = fitdist (data, "Rician");
+ t = truncate (pd, 0.5, 3);
+
+ [counts, centers] = hist (data, 50);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on;
+
+ ## Plot histogram and truncated PDF
+ x = linspace (0.5, 5, 500);
+ y = pdf (t, x);
+ plot (x, y, "r", "linewidth", 2);
+ title ("Rician distribution (s = 1, sigma = 1) truncated at [0.5, 3]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Rician distribution to a specific range and
+ ## visualizing the resulting distribution with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1807,15 +2695,108 @@ Compute the variance of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Rician distribution
+ data = ricernd (1, 1, [10000, 1]);
+ pd = fitdist (data, "Rician");
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which quantifies the spread of the
+ ## signal magnitudes in the distribution.
+
+var_value = 0.6012
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Rician distribution with parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ pd_fixed = makedist ("Rician", "s", 2, "sigma", 1)
+ rand ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, "Rician")
+ plot (pd_fitted)
+ msg = "Fitted Rician distribution with s = %0.2f and sigma = %0.2f";
+ title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+pd_fixed =
+  RicianDistribution
+
+  Rician distribution
+        s = 2
+    sigma = 1
+
+pd_fitted =
+  RicianDistribution
+
+  Rician distribution
+        s = 2.01215   [1.982, 2.04275]
+    sigma = 1.01103   [0.986101, 1.0366]
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/RicianDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

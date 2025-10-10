@@ -791,53 +791,39 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: tLocationScaleDistribution</h5></code></dl>
 
-<p> Weibull probability distribution object.
+<p> Location-Scale Student&rsquo;s T probability distribution object.
 </p>
 <div class="ms-5">
 <p> A <code>tLocationScaleDistribution</code> object consists of parameters, a model
- description, and sample data for a Weibull probability distribution.
+ description, and sample data for a location-scale Student&rsquo;s T probability
+ distribution.
 </p>
-<p> The Weibull distribution uses the following parameters.
+<p> The location-scale Student&rsquo;s T distribution is a continuous probability
+ distribution that generalizes the standard Student&rsquo;s T distribution by
+ including location and scale parameters.  It is defined by location parameter
+ <var>mu</var>, scale parameter <var>sigma</var>, and degrees of freedom <var>nu</var>.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>mu</code></td><td width="48%">Location parameter</td><td width="27%"><math>-Inf &lt; mu &lt; Inf</math></td></tr>
-<tr><td width="25%"><code>sigma</code></td><td width="48%">Scale parameter</td><td width="27%"><math>sigma &gt; 0</math></td></tr>
-<tr><td width="25%"><code>nu</code></td><td width="48%">Degrees of Freedom</td><td width="27%"><math>nu &gt; 0</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>tLocationScaleDistribution</code> object.
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
+ </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
- </li><li> Use the constructor <code>tLocationScaleDistribution (<var>lambda</var>,
- <var>mu</var>)</code> to create a Weibull distribution with specified parameter values.
+ </li><li> Use the constructor <code>tLocationScaleDistribution (<var>mu</var>,
+ <var>sigma</var>, <var>nu</var>)</code> to create a location-scale Student&rsquo;s T distribution
+ with fixed parameter values <var>mu</var>, <var>sigma</var>, and <var>nu</var>.
  </li><li> Use the static method <code>tLocationScaleDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
+ <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to fit a distribution to the data
+ in <var>x</var> using the same input arguments as the <code>tlsfit</code> function.
  </li></ul>
 
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
-</p>
-<p> A <code>tLocationScaleDistribution</code> object contains the following
- properties, which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>tLocationScaleDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
 <p> Further information about the location-scale Student&rsquo;s T distribution can be
- found at <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution</a>
+ found at
+ <a href="https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution">https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="fitdist.html">fitdist</a>, 
@@ -870,13 +856,109 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Location parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.mu</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar value characterizing the location of the
+ location-scale Student&rsquo;s T distribution.  You can access the <code>mu</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution by fitting to data
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+ pd = fitdist (data, "tLocationScale");
+
+ ## Query parameter 'mu' (location parameter)
+ pd.mu
+
+ ## Set parameter 'mu'
+ pd.mu = 1
+
+ ## Use this to initialize or modify the location parameter of a t Location-Scale
+ ## distribution. The location parameter (mu) is a real scalar that shifts the
+ ## distribution, useful for modeling data centered around a specific value.
+
+ans = -8.6155e-03
+pd =
+  tLocationScaleDistribution
+
+  t Location-Scale distribution
+       mu =       1
+    sigma = 1.01003
+       nu = 5.40008
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution object by calling its constructor
+ pd = tLocationScaleDistribution (2, 1, 5);
+
+ ## Query parameter 'mu'
+ pd.mu
+
+ ## This demonstrates direct construction with a specific location parameter,
+ ## ideal for modeling data with a known center, such as test scores or residuals.
+
+ans = 2
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -893,13 +975,109 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Scale parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the scale of the
+ location-scale Student&rsquo;s T distribution.  You can access the <code>sigma</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution with fitted parameters
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+ pd = fitdist (data, "tLocationScale");
+
+ ## Query parameter 'sigma' (scale parameter)
+ pd.sigma
+
+ ## Set parameter 'sigma'
+ pd.sigma = 2
+
+ ## Use this to initialize or modify the scale parameter, which controls the
+ ## spread of the t Location-Scale distribution. Sigma must be a positive real
+ ## scalar, useful for modeling variability in data like financial returns.
+
+ans = 0.9967
+pd =
+  tLocationScaleDistribution
+
+  t Location-Scale distribution
+       mu = -0.0162831
+    sigma =          2
+       nu =    5.29942
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution object by calling its constructor
+ pd = tLocationScaleDistribution (0, 1.5, 5);
+
+ ## Query parameter 'sigma'
+ pd.sigma
+
+ ## This shows how to set the scale parameter directly via the constructor,
+ ## useful for modeling data with specific variability, such as process errors.
+
+ans = 1.5000
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -916,13 +1094,109 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Degrees of freedom
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.nu</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the degrees of freedom of the
+ location-scale Student&rsquo;s T distribution.  You can access the <code>nu</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution with fitted parameters
+ data = tlsrnd (0, 1, 5, 10000, 1);  % Generate data with mu=0, sigma=1, nu=5
+ pd = fitdist (data, "tLocationScale");
+
+ ## Query parameter 'nu' (degrees of freedom)
+ pd.nu
+
+ ## Set parameter 'nu'
+ pd.nu = 10
+
+ ## Use this to initialize or modify the degrees of freedom, which controls the
+ ## tail heaviness of the t Location-Scale distribution. Nu must be a positive
+ ## real scalar, useful for modeling heavy-tailed data like stock returns.
+
+ans = 4.9211
+pd =
+  tLocationScaleDistribution
+
+  t Location-Scale distribution
+       mu = 0.0128332
+    sigma =   1.00553
+       nu =        10
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution object by calling its constructor
+ pd = tLocationScaleDistribution (0, 1, 3);
+
+ ## Query parameter 'nu'
+ pd.nu
+
+ ## This demonstrates setting the degrees of freedom directly via the constructor,
+ ## ideal for modeling data with specific tail behavior, such as outlier-prone datasets.
+
+ans = 3
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -935,17 +1209,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -958,17 +1240,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -981,17 +1271,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>3&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1004,17 +1302,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>3&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1027,17 +1334,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>3&times;1</math> numeric vector containing the values of the distribution
+ parameters.  This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>mu</code>, <code>sigma</code>, and
+ <code>nu</code> properties.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1050,17 +1367,31 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>ParameterCovariance</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Covariance matrix of the parameter estimates
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>3&times;3</math> numeric matrix containing the variance-covariance of the
+ parameter estimates.  Diagonal elements contain the variance of each
+ estimated parameter, and non-diagonal elements contain the covariance
+ between the parameter estimates.  The covariance matrix is only
+ meaningful when the distribution was fitted to data.  If the distribution
+ object was created with fixed parameters, or a parameter of a fitted
+ distribution is modified, then all elements of the variance-covariance
+ are zero. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1073,17 +1404,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterRange</code></b>
+                    <b><code>ParameterIsFixed</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for fixed parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterRange</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;3</math> logical vector specifying which parameters are fixed and
+ which are estimated.  <code>true</code> values correspond to fixed parameters,
+ <code>false</code> values correspond to parameter estimates.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1096,17 +1437,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterLogCI</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterLogCI</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1119,17 +1471,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterValues</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1142,132 +1502,36 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCI</code></b>
+                    <b><code>InputData</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Data used for fitting a probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterCI</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCovariance</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterCovariance</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterIsFixed</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.ParameterIsFixed</code></b> is not documented.
-            </div>
-          </div>
-        </div>
+<p> </p>
+<p> A scalar structure containing the following fields:
+ </p><ul>
+<li> <code>data</code>: a numeric vector containing the data used for
+ distribution fitting.
+ </li><li> <code>cens</code>: a numeric vector of logical values indicating
+ censoring information corresponding to the elements of the data used for
+ distribution fitting. If no censoring vector was used for distribution
+ fitting, then this field defaults to an empty array.
+ </li><li> <code>freq</code>: a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting.  If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
+ </li></ul>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
-            <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.IsTruncated</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>InputData</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
-            <div class="border-bottom py-2">
-<b><code>tLocationScaleDistribution.InputData</code></b> is not documented.
+
             </div>
           </div>
         </div>
@@ -1310,6 +1574,59 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the t Location-Scale distribution
+ x = -5:0.01:5;
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+ data2 = tlsrnd (0, 1, 5, 10000, 1);
+ data3 = tlsrnd (0, 2, 5, 10000, 1);
+ pd1 = fitdist (data1, "tLocationScale");
+ pd2 = fitdist (data2, "tLocationScale");
+ pd3 = fitdist (data3, "tLocationScale");
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"mu = 0, sigma = 0.5, nu = 5", "mu = 0, sigma = 1, nu = 5", ...
+         "mu = 0, sigma = 2, nu = 5"}, "location", "southeast")
+ title ("t Location-Scale CDF")
+ xlabel ("Values in x")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different t Location-Scale distributions, showing how probability
+ ## accumulates, useful in risk analysis or hypothesis testing.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1334,15 +1651,67 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">tLocationScaleDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">tLocationScaleDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the t Location-Scale distribution
+ p = 0.001:0.001:0.999;
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+ data2 = tlsrnd (0, 1, 5, 10000, 1);
+ data3 = tlsrnd (0, 2, 5, 10000, 1);
+ pd1 = fitdist (data1, "tLocationScale");
+ pd2 = fitdist (data2, "tLocationScale");
+ pd3 = fitdist (data3, "tLocationScale");
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"mu = 0, sigma = 0.5, nu = 5", "mu = 0, sigma = 1, nu = 5", ...
+         "mu = 0, sigma = 2, nu = 5"}, "location", "northwest")
+ title ("t Location-Scale iCDF")
+ xlabel ("Probability")
+ ylabel ("Values in x")
+
+ ## This demonstrates the inverse CDF (quantiles) for t Location-Scale
+ ## distributions, useful for finding critical values or thresholds in statistical testing.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1377,6 +1746,42 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a t Location-Scale distribution
+ data = tlsrnd (0, 1, 5, 10000, 1);
+ pd = fitdist (data, "tLocationScale");
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the distribution, helpful for assessing central variability.
+
+iqr_value = 1.4477
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1409,6 +1814,46 @@ Compute the mean of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different t Location-Scale distributions
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+ data2 = tlsrnd (0, 1, 5, 10000, 1);
+ pd1 = fitdist (data1, "tLocationScale");
+ pd2 = fitdist (data2, "tLocationScale");
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for t Location-Scale
+ ## distributions, representing the average value, useful in financial modeling or quality control.
+
+mean1 = -1.1782e-04
+mean2 = -0.015206
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1443,6 +1888,46 @@ Compute the median of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different t Location-Scale distributions
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+ data2 = tlsrnd (0, 1, 5, 10000, 1);
+ pd1 = fitdist (data1, "tLocationScale");
+ pd2 = fitdist (data2, "tLocationScale");
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median value, which splits the distribution into
+ ## two equal probability halves, robust to heavy-tailed data.
+
+median1 = 4.4011e-04
+median2 = 0.018577
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1471,10 +1956,48 @@ Compute the negative loglikelihood of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
- of the probability distribution object, <var>pd</var>.
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
+ loglikelihood of the probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the negative loglikelihood for a fitted t Location-Scale distribution
+ rand ("seed", 21);
+ data = tlsrnd (0, 1, 5, 100, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ params = [pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu];
+ nlogL_tlslike = tlslike (params, data)
+
+ ## This is useful for assessing the fit of a t Location-Scale distribution to
+ ## data, with lower values indicating a better fit, often used in model comparison.
+
+nlogL_tlslike = 171.08
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1509,8 +2032,8 @@ Compute the confidence intervals for probability distribution parameters.
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
 </p>
-<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
- confidence intervals with additional options specified specified by
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes
+ the confidence intervals with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
@@ -1528,6 +2051,48 @@ Compute the confidence intervals for probability distribution parameters.
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute confidence intervals for parameters of a fitted t Location-Scale
+ ## distribution
+ rand ("seed", 21);
+ data = tlsrnd (0, 1, 5, 1000, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ ci = paramci (pd_fitted, "Alpha", 0.05)
+
+ ## Use this to obtain confidence intervals for the estimated parameters (mu,
+ ## sigma, nu), providing a range of plausible values given the data.
+
+ci =
+
+  -6.0005e-02   1.0178e+00   5.1018e+00
+   8.9910e-02   1.1804e+00   1.3766e+01
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1563,6 +2128,58 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the t Location-Scale distribution
+ x = -5:0.01:5;
+ data1 = tlsrnd (0, 0.5, 5, 10000, 1);
+ data2 = tlsrnd (0, 1, 5, 10000, 1);
+ data3 = tlsrnd (0, 2, 5, 10000, 1);
+ pd1 = fitdist (data1, "tLocationScale");
+ pd2 = fitdist (data2, "tLocationScale");
+ pd3 = fitdist (data3, "tLocationScale");
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"mu = 0, sigma = 0.5, nu = 5", "mu = 0, sigma = 1, nu = 5", ...
+         "mu = 0, sigma = 2, nu = 5"}, "location", "northeast")
+ title ("t Location-Scale PDF")
+ xlabel ("Values in x")
+ ylabel ("Probability density")
+
+ ## This visualizes the probability density function for t Location-Scale
+ ## distributions, showing the likelihood across values, useful for data analysis.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1593,8 +2210,8 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
- probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
+ probability distribution object <var>pd</var>. If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
 </p>
@@ -1602,7 +2219,7 @@ Plot a probability distribution object.
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
  type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
  <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
@@ -1626,6 +2243,129 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a t Location-Scale distribution with fixed parameters and plot its PDF
+ pd = tLocationScaleDistribution (0, 1, 5);
+ plot (pd)
+ title ("t Location-Scale distribution with mu = 0, sigma = 1, nu = 5")
+
+ ## Use this to visualize the PDF of a t Location-Scale distribution with
+ ## fixed parameters, helpful for theoretical exploration.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set and plot the CDF of a fitted t Location-Scale distribution
+ rand ("seed", 21);
+ data = tlsrnd (0, 1, 5, 100, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ plot (pd_fitted, "PlotType", "cdf")
+ txt = "Fitted t Location-Scale distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f";
+ title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## Use this to visualize the fitted CDF compared to the empirical CDF of the
+ ## data, useful for assessing model fit.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set and display a probability plot for a fitted t Location-Scale distribution
+ rand ("seed", 21);
+ data = tlsrnd (0, 1, 5, 200, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ plot (pd_fitted, "PlotType", "probability")
+ txt = strcat ("Probability plot of fitted t Location-Scale", ...
+               " distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f");
+ title (sprintf (txt, pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## This creates a probability plot to compare the fitted distribution to the
+ ## data, useful for checking if the t Location-Scale model is appropriate.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.plot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1677,9 +2417,10 @@ Profile likelihood function for a probability distribution object.
  <var>setparam</var>, <code>&quot;Display&quot;</code>, <code>&quot;on&quot;</code>)</code> also plots the profile
  likelihood against the user-defined range of the selected parameter.
 </p>
-<p> For the location-scale T distribution, <code><var>pnum</var> = 1</code> selects the
- parameter <code>mu</code>, <code><var>pnum</var> = 2</code> selects the parameter
- <code>sigma</code>, and <code><var>pnum</var> = 3</code> selects the parameter <var>nu</var>.
+<p> For the location-scale Student&rsquo;s T distribution, <code><var>pnum</var> = 1</code>
+ selects the parameter <code>mu</code>, <code><var>pnum</var> = 2</code> selects the
+ parameter <code>sigma</code>, and <code><var>pnum</var> = 3</code> selects the
+ parameter <code>nu</code>.
 </p>
 <p> When opted to display the profile likelihood plot, <code>proflik</code> also
  plots the baseline loglikelihood computed at the lower bound of the 95%
@@ -1688,6 +2429,45 @@ Profile likelihood function for a probability distribution object.
  values.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute and plot the profile likelihood for the scale parameter
+ rand ("seed", 21);
+ data = tlsrnd (0, 1, 5, 1000, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ [nlogL, param] = proflik (pd_fitted, 2, "Display", "on");
+
+ ## Use this to analyze the profile likelihood of the scale parameter (sigma),
+ ## helping to understand the uncertainty in parameter estimates.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.proflik_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1713,17 +2493,17 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">tLocationScaleDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">tLocationScaleDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">tLocationScaleDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">tLocationScaleDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">tLocationScaleDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">tLocationScaleDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">tLocationScaleDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">tLocationScaleDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
-<p> When called with a single size argument, <code>betarnd</code> returns a square
+<p> When called with a single size argument, <code>tlsrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one
  scalar argument, the first two arguments are taken as the number of rows
  and columns and any further arguments specify additional matrix
@@ -1731,6 +2511,47 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a t Location-Scale distribution
+ rand ("seed", 21);
+ samples = tlsrnd (0, 1, 5, 500, 1);
+ hist (samples, 50)
+ title ("Histogram of 500 random samples from t Location-Scale(mu=0, sigma=1, nu=5)")
+ xlabel ("Values in x")
+ ylabel ("Frequency")
+
+ ## This generates random samples from a t Location-Scale distribution, useful
+ ## for simulating data with heavy tails, such as financial or experimental data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1765,6 +2586,42 @@ Compute the standard deviation of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a t Location-Scale distribution
+ data = tlsrnd (0, 1, 5, 10000, 1);
+ pd = fitdist (data, "tLocationScale");
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which measures the variability
+ ## in the distribution, useful for understanding data dispersion.
+
+std_value = 1.2839
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1793,15 +2650,79 @@ Truncate a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>, and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data
+ with <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a truncated t Location-Scale distribution
+ rand ("seed", 21);
+ data_all = tlsrnd (0, 1, 5, 20000, 1);
+ data = data_all(data_all >= -1 & data_all <= 1);
+ data = data(1:10000);
+
+ pd = fitdist (data, "tLocationScale");
+ t = truncate (pd, -1, 1);
+
+ [counts, centers] = hist (data, 50);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on;
+
+ ## Plot histogram and truncated PDF
+ x = linspace (0.5, 5, 500);
+ y = pdf (t, x);
+ plot (x, y, "r", "linewidth", 2);
+ title ("t Location-Scale distribution (mu = 0, sigma = 1, nu = 5) truncated at [-1, 1]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a t Location-Scale distribution to a specific
+ ## range and visualizing the resulting distribution with random samples.
+
+warning: tlsfit: maximum number of iterations are exceeded.
+warning: called from
+    tlsfit at line 136 column 7
+    fit at line 781 column 19
+    fitdist at line 683 column 22
+    build_DEMOS at line 94 column 11
+    classdef_texi2html at line 310 column 16
+    package_texi2html at line 288 column 9
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1831,15 +2752,95 @@ Compute the variance of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a t Location-Scale distribution
+ data = tlsrnd (0, 1, 5, 10000, 1);
+ pd = fitdist (data, "tLocationScale");
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which quantifies the spread of the
+ ## distribution, useful for statistical analysis of variability.
+
+var_value = 1.7420
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a t Location-Scale distribution with parameters mu = 0, sigma = 1, and nu = 5. Fit a t Location-Scale distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ pd_fixed = makedist ("tLocationScale", "mu", 0, "sigma", 1, "nu", 5);
+ rand ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, "tLocationScale");
+ plot (pd_fitted);
+ msg = "Fitted t Location-Scale distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f";
+ title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu));</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/tLocationScaleDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

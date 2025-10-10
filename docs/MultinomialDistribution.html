@@ -797,13 +797,11 @@
 <p> A <code>MultinomialDistribution</code> object consists of parameters, a model
  description, and sample data for a multinomial probability distribution.
 </p>
-<p> The multinomial distribution uses the following parameters.
+<p> The multinomial distribution is a discrete probability distribution that
+ models the outcomes of n independent trials of a k-category system, where
+ each trial has a probability of falling into each category.  It is
+ defined by the vector of probabilities for each outcome.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>Probabilities</code></td><td width="48%">Outcome probabilities</td><td width="27%"><math>0 &lt;= Probabilities(i) &lt;= 1; sum_i (Probabilities) = 1</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>MultinomialDistribution</code> object.
 </p>
  <ul>
@@ -816,24 +814,10 @@
 <p> It is highly recommended to use the <code>makedist</code> function to create
  probability distribution objects, instead of the constructor.
 </p>
-<p> A <code>MultinomialDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td></tr>
-</table>
-
-<p> A <code>MultinomialDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>pdf</code>, <code>plot</code>, <code>random</code>, <code>std</code>, <code>truncate</code>,
- <code>var</code>.
-</p>
 <p> Further information about the multinomial distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Multinomial_distribution">https://en.wikipedia.org/wiki/Multinomial_distribution</a>
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitdist.html">fitdist</a>, 
   <a href="makedist.html">makedist</a>, 
   <a href="mnpdf.html">mnpdf</a>, 
   <a href="mnrnd.html">mnrnd</a>
@@ -858,13 +842,152 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Outcome probabilities
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.Probabilities</code></b> is not documented.
+
+
+<p> </p>
+<p> A row vector of probabilities for each outcome.  You can access the
+ <code>Probabilities</code> property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Multinomial distribution with default parameters
+ pd = MultinomialDistribution ();
+ 
+ ## Query parameter 'Probabilities' (outcome probabilities)
+ pd.Probabilities
+
+ ## Use this to query the vector of probabilities for each outcome in a
+ ## Multinomial distribution. The probabilities must sum to 1 and represent
+ ## the likelihood of each category in a single trial.
+
+ans =
+
+   0.5000   0.5000
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Multinomial distribution with specified parameters
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ 
+ ## Query parameter 'Probabilities'
+ pd.Probabilities
+
+ ## Set parameter 'Probabilities'
+ pd.Probabilities = [0.4, 0.3, 0.3]
+
+ ## Use this to initialize or modify the probabilities vector in a Multinomial
+ ## distribution. The vector must be positive real scalars summing to 1, useful
+ ## for modeling categorical outcomes like dice rolls or survey responses.
+
+ans =
+
+   0.1000   0.2000   0.3000   0.2000   0.1000   0.1000
+
+pd =
+  MultinomialDistribution
+
+  Probabilities:
+    0.4000    0.3000    0.3000
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Multinomial distribution object by calling its constructor
+ pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+ 
+ ## Query parameter 'Probabilities'
+ pd.Probabilities
+
+ ## This demonstrates direct construction with specific probabilities,
+ ## ideal for modeling fair or biased categorical events, such as a dice roll.
+
+ans =
+
+   0.1667   0.1667   0.1667   0.1667   0.1667   0.1667
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -877,17 +1000,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -900,17 +1031,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -923,17 +1062,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -946,17 +1093,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -969,17 +1125,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the values of the distribution
+ parameters.  This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>Probabilities</code>
+ property.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -992,17 +1158,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution.  First element contains the lower boundary,
+ second element contains the upper boundary.  This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1015,63 +1192,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.ParameterValues</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty9"
-              aria-expanded="false" aria-controls="collapseProperty9">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty9">
-            <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty10"
-              aria-expanded="false" aria-controls="collapseProperty10">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty10">
-            <div class="border-bottom py-2">
-<b><code>MultinomialDistribution.IsTruncated</code></b> is not documented.
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1114,6 +1253,56 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Multinomial distribution
+ x = 1:0.1:6;
+ pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+ pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+ pd3 = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"3 outcomes", "5 outcomes", "6 outcomes (dice)"}, ...
+         "location", "southeast")
+ title ("Multinomial CDF")
+ xlabel ("values in x (outcome index)")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Multinomial distributions, showing how probability
+ ## accumulates across categorical outcomes, useful in decision analysis.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1148,6 +1337,56 @@ Compute the inverse cumulative distribution function (iCDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Multinomial distribution
+ p = 0.001:0.001:0.999;
+ pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+ pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+ pd3 = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"3 outcomes", "5 outcomes", "6 outcomes (dice)"}, ...
+         "location", "northwest")
+ title ("Multinomial iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x (outcome index)")
+
+ ## This demonstrates the inverse CDF (quantiles) for Multinomial
+ ## distributions, useful for finding outcome thresholds corresponding to
+ ## given probabilities, such as in risk assessment.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1180,6 +1419,42 @@ Compute the interquartile range of a probability distribution.
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Multinomial distribution
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, which measures the spread
+ ## of the middle 50% of the categorical outcomes, helpful for understanding
+ ## central variability in discrete data.
+
+iqr_value = 2
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1214,6 +1489,45 @@ Compute the mean of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Multinomial distributions
+ pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+ pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for Multinomial
+ ## distributions with different probabilities, representing the average
+ ## outcome index in categorical data.
+
+mean1 = 1.9000
+mean2 = 3
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1246,6 +1560,44 @@ Compute the median of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Multinomial distributions
+ pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+ pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median outcome index, which splits the distribution
+ ## into two equal probability halves, robust to uneven probabilities.
+
+median1 = 2
+median2 = 3
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1280,6 +1632,55 @@ Compute the probability distribution function (PDF).
  <var>x</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Multinomial distribution
+ x = 1:0.1:6;
+ pd1 = MultinomialDistribution ([0.4, 0.3, 0.3]);
+ pd2 = MultinomialDistribution ([0.2, 0.2, 0.2, 0.2, 0.2]);
+ pd3 = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"3 outcomes", "5 outcomes", "6 outcomes (dice)"}, ...
+         "location", "northeast")
+ title ("Multinomial PDF")
+ xlabel ("values in x (outcome index)")
+ ylabel ("Probability")
+
+ ## This visualizes the probability mass function for Multinomial
+ ## distributions, showing the likelihood for each discrete outcome.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1345,6 +1746,79 @@ Plot a probability distribution object.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Multinomial distribution with fixed parameters and plot its PDF.
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ plot (pd)
+ title ("Multinomial distribution PDF")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Multinomial distribution and plot its CDF.
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ plot (pd, "PlotType", "cdf")
+ title ("Multinomial distribution CDF")
+
+ ## Use this to visualize the cumulative distribution function,
+ ## useful for understanding probability accumulation across outcomes.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1379,7 +1853,7 @@ Generate random arrays from the probability distribution object.
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
-<p> When called with a single size argument, <code>betarnd</code> returns a square
+<p> When called with a single size argument, <code>mnrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one
  scalar argument, the first two arguments are taken as the number of rows
  and columns and any further arguments specify additional matrix
@@ -1387,6 +1861,48 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Multinomial distribution
+ rand ("seed", 21);
+ pd = MultinomialDistribution ([1/6, 1/6, 1/6, 1/6, 1/6, 1/6]);
+ samples = random (pd, 500, 1);
+ hist (samples, 6)
+ title ("Histogram of 500 random samples from Multinomial (fair dice)")
+ xlabel ("values in x (outcome index)")
+ ylabel ("Frequency")
+
+ ## This generates random categorical outcomes from a Multinomial
+ ## distribution, useful for simulating events like dice rolls or classifications.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1420,6 +1936,41 @@ Compute the standard deviation of a probability distribution.
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Multinomial distribution
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which measures the variability
+ ## in the outcome indices for categorical data.
+
+std_value = 1.4177
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1459,6 +2010,60 @@ Truncate a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Multinomial distribution truncated at [2, 5] intervals.
+ ## Generate 10000 random samples from this truncated distribution and
+ ## superimpose a histogram.
+ 
+ rand ("seed", 21);
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ t = truncate (pd, 2, 5);
+ data_all = random (pd, 20000, 1);
+ data = data_all(data_all >= 2 & data_all <= 5);
+ data = data(1:10000);
+ 
+ ## Plot histogram and truncated PDF
+ x = 2:5;
+ y = pdf (t, x);
+ plot (x, y * numel (data), "bo-")
+ hold on
+ hist (data, 4)
+ hold off
+ title ("Multinomial distribution truncated at [2, 5]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Multinomial distribution to a specific
+ ## range of outcomes and visualizing the resulting distribution with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1492,10 +2097,95 @@ Compute the variance of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Multinomial distribution
+ pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which quantifies the spread of the
+ ## outcome indices in the distribution.
+
+var_value = 2.0100
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Multinomial distribution with parameters Probabilities = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1].  Create the distribution and plot the PDF superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
+ pd = makedist ("Multinomial", "Probabilities", probs);
+ rand ("seed", 2);
+ data = random (pd, 5000, 1);
+ hist (data, length (probs));
+ hold on
+ x = 1:length (probs);
+ y = pdf (pd, x) * 5000;
+ stem (x, y, "r", "LineWidth", 2);
+ hold off
+ msg = "Multinomial distribution with Probabilities = [%s]";
+ probs_str = num2str (probs, "%0.1f ");
+ title (sprintf (msg, probs_str))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/MultinomialDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

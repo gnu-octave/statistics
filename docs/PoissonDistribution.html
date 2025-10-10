@@ -797,42 +797,27 @@
 <p> A <code>PoissonDistribution</code> object consists of parameters, a model
  description, and sample data for a Poisson probability distribution.
 </p>
-<p> The Poisson distribution uses the following parameters.
+<p> The Poisson distribution is a discrete probability distribution that
+ models the number of events occurring in a fixed interval of time or space,
+ given a constant average rate of occurrence. It is defined by the rate
+ parameter <var>lambda</var>.
 </p>
- <table>
-<thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
-<tr><td width="25%"><code>lambda</code></td><td width="48%">Rate parameter</td><td width="27%"><math>lambda &gt; 0</math></td></tr>
-</table>
-
 <p> There are several ways to create a <code>PoissonDistribution</code> object.
 </p>
  <ul>
 <li> Fit a distribution to data using the <code>fitdist</code> function.
- </li><li> Create a distribution with specified parameter values using the
+ </li><li> Create a distribution with fixed parameter values using the
  <code>makedist</code> function.
  </li><li> Use the constructor <code>PoissonDistribution (<var>lambda</var>)</code>
- to create a Poisson distribution with specified parameter values.
+ to create a Poisson distribution with fixed parameter value <var>lambda</var>.
  </li><li> Use the static method <code>PoissonDistribution.fit (<var>x</var>,
- <var>censor</var>, <var>freq</var>, <var>options</var>)</code> to a distribution to data <var>x</var>.
+ <var>freq</var>)</code> to fit a distribution to the data in <var>x</var> using
+ the same input arguments as the <code>poissfit</code> function.
  </li></ul>
 
 <p> It is highly recommended to use <code>fitdist</code> and <code>makedist</code>
- functions to create probability distribution objects, instead of the
- constructor and the aforementioned static method.
-</p>
-<p> A <code>PoissonDistribution</code> object contains the following properties,
- which can be accessed using dot notation.
-</p>
- <table>
-<tr><td width="25%"><code>DistributionName</code></td><td width="25%"><code>DistributionCode</code></td><td width="25%"><code>NumParameters</code></td><td width="25%"><code>ParameterNames</code></td></tr>
-<tr><td width="25%"><code>ParameterDescription</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterValues</code></td><td width="25%"><code>ParameterCI</code></td></tr>
-<tr><td width="25%"><code>ParameterIsFixed</code></td><td width="25%"><code>Truncation</code></td><td width="25%"><code>IsTruncated</code></td><td width="25%"><code>InputData</code></td></tr>
-</table>
-
-<p> A <code>PoissonDistribution</code> object contains the following methods:
- <code>cdf</code>, <code>icdf</code>, <code>iqr</code>, <code>mean</code>, <code>median</code>,
- <code>negloglik</code>, <code>paramci</code>, <code>pdf</code>, <code>plot</code>, <code>proflik</code>,
- <code>random</code>, <code>std</code>, <code>truncate</code>, <code>var</code>.
+ functions to create probability distribution objects, instead of the class
+ constructor or the aforementioned static method.
 </p>
 <p> Further information about the Poisson distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a>
@@ -868,13 +853,114 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Rate parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.lambda</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value characterizing the rate of the
+ Poisson distribution. You can access the <code>lambda</code>
+ property using dot name assignment.
+</p>
+
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Poisson distribution from data
+ rand ("seed", 21);
+ data = poissrnd (5, 100, 1);
+ pd = fitdist (data, "Poisson");
+
+ ## Query parameter 'lambda' (rate parameter)
+ pd.lambda
+
+ ## Set parameter 'lambda'
+ pd.lambda = 10
+
+ ## Use this to initialize or modify the rate parameter of a Poisson distribution.
+ ## The rate parameter must be a positive real scalar, representing both the mean
+ ## and variance, ideal for count data modeling.
+
+ans = 4.9100
+pd =
+  PoissonDistribution
+
+  Poisson distribution
+   lambda = 10
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Poisson distribution object by calling its constructor
+ pd = PoissonDistribution (7.5)
+
+ ## Query parameter 'lambda'
+ pd.lambda
+
+ ## This shows direct construction with a specific rate parameter, useful for
+ ## theoretical analysis or when lambda is estimated from prior knowledge.
+
+pd =
+  PoissonDistribution
+
+  Poisson distribution
+   lambda = 7.5
+
+ans = 7.5000
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
             </div>
           </div>
         </div>
@@ -887,17 +973,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>CensoringAllowed</code></b>
+                    <b><code>DistributionName</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Probability distribution name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.CensoringAllowed</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the probability distribution
+ object. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -910,17 +1004,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionName</code></b>
+                    <b><code>NumParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.DistributionName</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar integer value specifying the number of parameters characterizing
+ the probability distribution. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -933,17 +1035,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>DistributionCode</code></b>
+                    <b><code>ParameterNames</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.DistributionCode</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+ the name of a distribution parameter. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -956,17 +1066,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>NumParameters</code></b>
+                    <b><code>ParameterDescription</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Description of parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.NumParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> cell array of character vectors with each element containing
+ a short description of a distribution parameter. This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -979,17 +1098,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterNames</code></b>
+                    <b><code>ParameterValues</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distribution parameter values
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> numeric vector containing the values of the distribution
+ parameters. This property is read-only. You can change the distribution
+ parameters by assigning new values to the <code>lambda</code> property.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1002,17 +1130,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterDescription</code></b>
+                    <b><code>ParameterCovariance</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Covariance matrix of the parameter estimates
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterDescription</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;1</math> numeric matrix containing the variance of the parameter
+ estimate. This matrix is only meaningful when the distribution was fitted
+ to data. If the distribution object was created with fixed parameters,
+ or a parameter of a fitted distribution is modified, then the
+ variance is zero. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1025,17 +1164,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterRange</code></b>
+                    <b><code>ParameterIsFixed</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for fixed parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterRange</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar specifying whether the parameter is fixed or estimated.
+ A <code>true</code> value corresponds to a fixed parameter, a <code>false</code>
+ value corresponds to a parameter estimate. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1048,17 +1196,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterLogCI</code></b>
+                    <b><code>Truncation</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Truncation interval
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterLogCI</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
+ probability distribution. The first element contains the lower boundary,
+ the second element contains the upper boundary. This property is read-only.
+ You can only truncate a probability distribution with the
+ <code>truncate</code> method.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1071,17 +1230,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterValues</code></b>
+                    <b><code>IsTruncated</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for truncated probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterValues</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar value specifying whether a probability distribution is
+ truncated or not. This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1094,132 +1261,36 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCI</code></b>
+                    <b><code>InputData</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Data used for fitting a probability distribution
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterCI</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty12"
-              aria-expanded="false" aria-controls="collapseProperty12">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterCovariance</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty12">
-            <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterCovariance</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty13"
-              aria-expanded="false" aria-controls="collapseProperty13">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>ParameterIsFixed</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty13">
-            <div class="border-bottom py-2">
-<b><code>PoissonDistribution.ParameterIsFixed</code></b> is not documented.
-            </div>
-          </div>
-        </div>
+<p> </p>
+<p> A scalar structure containing the following fields:
+ </p><ul>
+<li> <code>data</code>: a numeric vector containing the data used for
+ distribution fitting.
+ </li><li> <code>cens</code>: a numeric vector of logical values indicating
+ censoring information corresponding to the elements of the data used for
+ distribution fitting. If no censoring vector was used for distribution
+ fitting, then this field defaults to an empty array.
+ </li><li> <code>freq</code>: a numeric vector of non-negative integer values
+ containing the frequency information corresponding to the elements of the
+ data used for distribution fitting. If no frequency vector was used for
+ distribution fitting, then this field defaults to an empty array.
+ </li></ul>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty14"
-              aria-expanded="false" aria-controls="collapseProperty14">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>Truncation</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty14">
-            <div class="border-bottom py-2">
-<b><code>PoissonDistribution.Truncation</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty15"
-              aria-expanded="false" aria-controls="collapseProperty15">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>IsTruncated</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty15">
-            <div class="border-bottom py-2">
-<b><code>PoissonDistribution.IsTruncated</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty16"
-              aria-expanded="false" aria-controls="collapseProperty16">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>InputData</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty16">
-            <div class="border-bottom py-2">
-<b><code>PoissonDistribution.InputData</code></b> is not documented.
+
             </div>
           </div>
         </div>
@@ -1262,6 +1333,58 @@ Compute the cumulative distribution function (CDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various CDFs from the Poisson distribution
+ x = 0:20;
+ data1 = poissrnd (2, 10000, 1);
+ data2 = poissrnd (5, 10000, 1);
+ data3 = poissrnd (10, 10000, 1);
+ pd1 = fitdist (data1, "Poisson");
+ pd2 = fitdist (data2, "Poisson");
+ pd3 = fitdist (data3, "Poisson");
+ p1 = cdf (pd1, x);
+ p2 = cdf (pd2, x);
+ p3 = cdf (pd3, x);
+ plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+ grid on
+ legend ({"lambda = 2", "lambda = 5", "lambda = 10"}, "location", "southeast")
+ title ("Poisson CDF")
+ xlabel ("values in x (non-negative integers)")
+ ylabel ("Cumulative probability")
+
+ ## Use this to compute and visualize the cumulative distribution function
+ ## for different Poisson distributions, showing the probability of observing
+ ## at most k events, useful in risk assessment or queueing theory.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1286,15 +1409,67 @@ Compute the inverse cumulative distribution function (iCDF).
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">PoissonDistribution: <var>p</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PoissonDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>p</var> = icdf (<var>pd</var>, <var>x</var>)</code> computes the quantile (the
+<p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
- evaluated at the values in <var>x</var>.
+ evaluated at the values in <var>p</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various iCDFs from the Poisson distribution
+ p = 0.001:0.001:0.999;
+ data1 = poissrnd (2, 10000, 1);
+ data2 = poissrnd (5, 10000, 1);
+ data3 = poissrnd (10, 10000, 1);
+ pd1 = fitdist (data1, "Poisson");
+ pd2 = fitdist (data2, "Poisson");
+ pd3 = fitdist (data3, "Poisson");
+ x1 = icdf (pd1, p);
+ x2 = icdf (pd2, p);
+ x3 = icdf (pd3, p);
+ plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+ grid on
+ legend ({"lambda = 2", "lambda = 5", "lambda = 10"}, "location", "northwest")
+ title ("Poisson iCDF")
+ xlabel ("Probability")
+ ylabel ("values in x (non-negative integers)")
+
+ ## This demonstrates the inverse CDF (quantiles) for Poisson distributions,
+ ## useful for finding the number of events corresponding to a given probability,
+ ## such as in inventory management for stock levels.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1329,6 +1504,42 @@ Compute the interquartile range of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the interquartile range for a Poisson distribution
+ data = poissrnd (5, 10000, 1);
+ pd = fitdist (data, "Poisson");
+ iqr_value = iqr (pd)
+
+ ## Use this to calculate the interquartile range, measuring the spread of the
+ ## middle 50% of the distribution, helpful for understanding variability in count data.
+
+iqr_value = 3
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1361,6 +1572,46 @@ Compute the mean of a probability distribution.
  distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the mean for different Poisson distributions
+ data1 = poissrnd (2, 10000, 1);
+ data2 = poissrnd (5, 10000, 1);
+ pd1 = fitdist (data1, "Poisson");
+ pd2 = fitdist (data2, "Poisson");
+ mean1 = mean (pd1)
+ mean2 = mean (pd2)
+
+ ## This shows how to compute the expected value for Poisson distributions,
+ ## which equals lambda, representing the average number of events.
+
+mean1 = 2.0276
+mean2 = 5.0409
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1395,6 +1646,46 @@ Compute the median of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the median for different Poisson distributions
+ data1 = poissrnd (2, 10000, 1);
+ data2 = poissrnd (5, 10000, 1);
+ pd1 = fitdist (data1, "Poisson");
+ pd2 = fitdist (data2, "Poisson");
+ median1 = median (pd1)
+ median2 = median (pd2)
+
+ ## Use this to find the median count, which splits the distribution into
+ ## two equal probability halves, robust for skewed count data.
+
+median1 = 2
+median2 = 5
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1423,10 +1714,47 @@ Compute the negative loglikelihood of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>m</var> = negloglik (<var>pd</var>)</code> computes the negative loglikelihood
- of the probability distribution object, <var>pd</var>.
+<p> <code><var>nlogL</var> = negloglik (<var>pd</var>)</code> computes the negative
+ loglikelihood of the probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the negative loglikelihood for a fitted Poisson distribution
+ rand ("seed", 21);
+ data = poissrnd (5, 100, 1);
+ pd_fitted = fitdist (data, "Poisson");
+ nlogL = negloglik (pd_fitted)
+
+ ## This is useful for assessing the fit of a Poisson distribution to data,
+ ## with lower values indicating better fit, often used in model selection.
+
+nlogL = -209.83
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1461,8 +1789,8 @@ Compute the confidence intervals for probability distribution parameters.
  boundaries of the 95% confidence interval for each parameter of the
  probability distribution object, <var>pd</var>.
 </p>
-<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes the
- confidence intervals with additional options specified specified by
+<p> <code><var>ci</var> = paramci (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> computes
+ the confidence intervals with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
@@ -1480,6 +1808,47 @@ Compute the confidence intervals for probability distribution parameters.
  otherwise an empty array, <code>[]</code>, is returned.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute confidence intervals for parameters of a fitted Poisson distribution
+ rand ("seed", 21);
+ data = poissrnd (5, 1000, 1);
+ pd_fitted = fitdist (data, "Poisson");
+ ci = paramci (pd_fitted, "Alpha", 0.05)
+
+ ## Use this to obtain confidence intervals for the estimated parameter (lambda),
+ ## providing a range of plausible values based on the data.
+
+ci =
+
+   4.8239
+   5.1001
+
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1515,6 +1884,57 @@ Compute the probability distribution function (PDF).
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot various PDFs from the Poisson distribution
+ x = 0:20;
+ data1 = poissrnd (2, 10000, 1);
+ data2 = poissrnd (5, 10000, 1);
+ data3 = poissrnd (10, 10000, 1);
+ pd1 = fitdist (data1, "Poisson");
+ pd2 = fitdist (data2, "Poisson");
+ pd3 = fitdist (data3, "Poisson");
+ y1 = pdf (pd1, x);
+ y2 = pdf (pd2, x);
+ y3 = pdf (pd3, x);
+ plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+ grid on
+ legend ({"lambda = 2", "lambda = 5", "lambda = 10"}, "location", "northeast")
+ title ("Poisson PDF")
+ xlabel ("values in x (non-negative integers)")
+ ylabel ("Probability")
+
+ ## This visualizes the probability mass function for Poisson distributions,
+ ## showing the likelihood of exact count values.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1545,7 +1965,7 @@ Plot a probability distribution object.
 </dl>
 
 <p> </p>
-<p> <code>plot (<var>pd</var></code> plots a probability density function (PDF) of the
+<p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.  If <var>pd</var> contains data,
  which have been fitted by <code>fitdist</code>, the PDF is superimposed over a
  histogram of the data.
@@ -1554,7 +1974,7 @@ Plot a probability distribution object.
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
  <table>
-<thead><tr><th width="18%"></th><th width="2%"><var>Name</var></th><th width="80%"><var>Value</var></th></tr></thead>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
  type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).  When
  <var>pd</var> is fit to data, the PDF is superimposed on a histogram of the
@@ -1567,9 +1987,8 @@ Plot a probability distribution object.
  plot the PDF or CDF of a discrete distribution object as a line plot or a
  stem plot, by specifying <code>false</code> or <code>true</code>, respectively.  By
  default, it is <code>true</code> for discrete distributions and <code>false</code>
- for continuous distributions.  When <var>pd</var> is a continuous distribution
- object, option is ignored.</td></tr>
-<tr><td width="18%"><code>&quot;Parent&quot;</code></td><td width="2%"></td><td width="80%">An axes graphics object for plot.  If
+ for continuous distributions.</td></tr>
+<tr><td width="18%"><code>&quot;Parent&quot;</code></td><td width="2%"></td><td width="80%">An axes graphics object for the plot.  If
  not specified, the <code>plot</code> function plots into the current axes or
  creates a new axes object if one does not exist.</td></tr>
 </table>
@@ -1578,6 +1997,129 @@ Plot a probability distribution object.
  objects.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Create a Poisson distribution with fixed parameter lambda=5 and plot its PDF.
+ data = poissrnd (5, 10000, 1);
+ pd = fitdist (data, "Poisson");
+ plot (pd)
+ title ("Fixed Poisson distribution with lambda = 5")
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 2
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 100 random samples from a Poisson distribution with
+ ## lambda=5. Fit a Poisson distribution to this data and plot its CDF superimposed
+ ## over an empirical CDF.
+ rand ("seed", 21);
+ data = poissrnd (5, 100, 1);
+ pd_fitted = fitdist (data, "Poisson");
+ plot (pd_fitted, "PlotType", "cdf")
+ txt = "Fitted Poisson distribution with lambda = %0.2f";
+ title (sprintf (txt, pd_fitted.lambda))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## Use this to visualize the fitted CDF compared to the empirical CDF of the data,
+ ## useful for assessing model fit in count data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 3
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a data set of 200 random samples from a Poisson distribution with
+ ## lambda=5. Display a probability plot for the Poisson distribution fit to the data.
+ rand ("seed", 21);
+ data = poissrnd (5, 200, 1);
+ pd_fitted = fitdist (data, "Poisson");
+ plot (pd_fitted, "PlotType", "probability")
+ txt = strcat ("Probability plot of fitted Poisson distribution with lambda = %0.2f");
+ title (sprintf (txt, pd_fitted.lambda))
+ legend ({"empirical CDF", "fitted CDF"}, "location", "southeast")
+
+ ## This creates a probability plot to compare the fitted distribution to the data,
+ ## useful for checking if the Poisson model is appropriate for count data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.plot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1630,15 +2172,55 @@ Profile likelihood function for a probability distribution object.
  likelihood against the user-defined range of the selected parameter.
 </p>
 <p> For the Poisson distribution, <code><var>pnum</var> = 1</code> selects the
- parameter <var>lambda</var>.
+ parameter <code>lambda</code>.
 </p>
 <p> When opted to display the profile likelihood plot, <code>proflik</code> also
  plots the baseline loglikelihood computed at the lower bound of the 95%
  confidence interval and estimated maximum likelihood.  The latter might
- not be observable if it is outside of the used-defined range of parameter
+ not be observable if it is outside of the user-defined range of parameter
  values.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute and plot the profile likelihood for the rate parameter of a fitted
+ ## Poisson distribution
+ rand ("seed", 21);
+ data = poissrnd (5, 1000, 1);
+ pd_fitted = fitdist (data, "Poisson");
+ [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
+
+ ## Use this to analyze the profile likelihood of the rate parameter (lambda),
+ ## helping to understand uncertainty in parameter estimates for count models.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.proflik_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1664,17 +2246,17 @@ Generate random arrays from the probability distribution object.
           <div class="collapse multi-collapse" id="collapseMethod11">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">PoissonDistribution: <var>y</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
-<dt><code><h5 class="fs">PoissonDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">PoissonDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">PoissonDistribution: <var>y</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">PoissonDistribution: <var>r</var> = <b>random</b> (<var>pd</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PoissonDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>)</code></h5></dt>
+<dt><code><h5 class="fs">PoissonDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">PoissonDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
 
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
 </p>
-<p> When called with a single size argument, <code>betarnd</code> returns a square
+<p> When called with a single size argument, <code>poissrnd</code> returns a square
  matrix with the dimension specified.  When called with more than one
  scalar argument, the first two arguments are taken as the number of rows
  and columns and any further arguments specify additional matrix
@@ -1682,6 +2264,47 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate random samples from a Poisson distribution
+ rand ("seed", 21);
+ samples = poissrnd (5, 500, 1);
+ hist (samples, 20)
+ title ("Histogram of 500 random samples from Poisson(lambda=5)")
+ xlabel ("values in x (non-negative integers)")
+ ylabel ("Frequency")
+
+ ## This generates random count samples from a Poisson distribution, useful
+ ## for simulating event occurrences like defect counts or traffic arrivals.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1716,6 +2339,42 @@ Compute the standard deviation of a probability distribution.
 </p>
 
 
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the standard deviation for a Poisson distribution
+ data = poissrnd (5, 10000, 1);
+ pd = fitdist (data, "Poisson");
+ std_value = std (pd)
+
+ ## Use this to calculate the standard deviation, which equals sqrt(lambda),
+ ## measuring variability in event counts.
+
+std_value = 2.2371
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
@@ -1744,15 +2403,71 @@ Truncate a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>t</var> = truncate (<var>pd</var>)</code> returns a probability distribution
- <var>t</var>, which is the probability distribution <var>pd</var> truncated to the
- specified interval with lower limit, <var>lower</var>, and upper limit,
- <var>upper</var>.  If <var>pd</var> is fitted to data with <code>fitdist</code>, the
- returned probability distribution <var>t</var> is not fitted, does not contain
- any data or estimated values, and it is as it has been created with the
- <var>makedist</var> function, but it includes the truncation interval.
+<p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
+ probability distribution <var>t</var>, which is the probability distribution
+ <var>pd</var> truncated to the specified interval with lower limit,
+ <var>lower</var>, and upper limit, <var>upper</var>.  If <var>pd</var> is fitted to data
+ with <code>fitdist</code>, the returned probability distribution <var>t</var> is not
+ fitted, does not contain any data or estimated values, and it is as it
+ has been created with the <var>makedist</var> function, but it includes the
+ truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Poisson distribution, with lambda=5, truncated at [2, 10]
+ ## intervals. Generate 10000 random samples from this truncated distribution and
+ ## superimpose a histogram scaled accordingly
+ rand ("seed", 21);
+ data_all = poissrnd (5, 20000, 1);
+ data = data_all(data_all >= 2 & data_all <= 10);
+ data = data(1:10000);
+
+ pd = fitdist (data, "Poisson");
+ t = truncate (pd, 2, 10);
+
+ ## Plot histogram and truncated PDF
+ plot (t)
+ hold on
+ [counts, centers] = hist (data, 20);
+ bin_width = centers(2) - centers(1);
+ counts_norm = counts / (sum (counts) * bin_width);
+ bar (centers, counts_norm, 1);
+
+ title ("Poisson distribution (lambda=5) truncated at [2, 10]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Poisson distribution to a specific range
+ ## and visualizing the result with random samples, useful for bounded count data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -1782,15 +2497,106 @@ Compute the variance of a probability distribution.
 </dl>
 
 <p> </p>
-<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the standard deviation of the
+<p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Compute the variance for a Poisson distribution
+ data = poissrnd (5, 10000, 1);
+ pd = fitdist (data, "Poisson");
+ var_value = var (pd)
+
+ ## Use this to calculate the variance, which equals lambda, quantifying the
+ ## spread in count data.
+
+var_value = 4.9747
+                    </pre></td></tr></tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
           </div>
         </div>
+
+        <h4 class="d-inline-block my-3">
+          Examples
+        </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Generate a data set of 5000 random samples from a Poisson distribution with parameter lambda = 5.  Fit a Poisson distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ pd_fixed = makedist ("Poisson", "lambda", 5)
+ rand ("seed", 2);
+ data = random (pd_fixed, 5000, 1);
+ pd_fitted = fitdist (data, "Poisson")
+ plot (pd_fitted)
+ msg = "Fitted Poisson distribution with lambda = %0.2f";
+ title (sprintf (msg, pd_fitted.lambda))</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+pd_fixed =
+  PoissonDistribution
+
+  Poisson distribution
+   lambda = 5
+
+pd_fitted =
+  PoissonDistribution
+
+  Poisson distribution
+   lambda = 4.9748   [4.91298, 5.03662]
+</pre></td></tr>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>
