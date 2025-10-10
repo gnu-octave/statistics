@@ -1,7 +1,7 @@
 %!demo
 %! ## Create a Uniform distribution with fixed parameters Lower = 0 and Upper = 5
 %! ## and plot its PDF.
-%! pd = UniformDistribution (0, 5);
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 5)
 %! plot (pd)
 %! title ("Uniform distribution with Lower = 0 and Upper = 5")
 %!
@@ -13,7 +13,8 @@
 %! ## with parameters Lower = 0 and Upper = 5. Fit a Uniform distribution to this
 %! ## data and plot its CDF superimposed over an empirical CDF.
 %! rand ("seed", 21);
-%! data = unifrnd (0, 5, 100, 1);
+%! pd_fixed = makedist ("Uniform", "Lower", 0, "Upper", 5);
+%! data = random (pd_fixed, 100, 1);
 %! pd_fitted = fitdist (data, "Uniform");
 %! plot (pd_fitted, "PlotType", "cdf")
 %! txt = "Fitted Uniform distribution with Lower = %0.2f and Upper = %0.2f";

@@ -1,13 +1,12 @@
 %!demo
-%! ## Create a Uniform distribution by fitting to data
-%! data = unifrnd (2, 8, 10000, 1);
-%! pd = fitdist (data, "Uniform");
+%! ## Create a Uniform distribution with default parameters
+%! pd = makedist ("Uniform")
 %!
 %! ## Query parameter 'Upper' (upper limit parameter)
 %! pd.Upper
 %!
 %! ## Set parameter 'Upper'
-%! pd.Upper = 9
+%! pd.Upper = 8
 %!
 %! ## Use this to initialize or modify the upper bound of a Uniform distribution.
 %! ## The upper limit must be a real scalar greater than the lower limit, controlling
@@ -15,7 +14,7 @@
 
 %!demo
 %! ## Create a Uniform distribution object by calling its constructor
-%! pd = UniformDistribution (1, 10);
+%! pd = UniformDistribution (1, 10)
 %!
 %! ## Query parameter 'Upper'
 %! pd.Upper

@@ -1,9 +1,7 @@
 %!demo
 %! ## Compute the mean for different Uniform distributions
-%! data1 = unifrnd (0, 5, 10000, 1);
-%! data2 = unifrnd (2, 8, 10000, 1);
-%! pd1 = fitdist (data1, "Uniform");
-%! pd2 = fitdist (data2, "Uniform");
+%! pd1 = makedist ("Uniform", "Lower", 0, "Upper", 5);
+%! pd2 = makedist ("Uniform", "Lower", 2, "Upper", 8);
 %! mean1 = mean (pd1)
 %! mean2 = mean (pd2)
 %!

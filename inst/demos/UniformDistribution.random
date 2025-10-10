@@ -1,7 +1,8 @@
 %!demo
 %! ## Generate random samples from a Uniform distribution
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 5)
 %! rand ("seed", 21);
-%! samples = unifrnd (0, 5, 500, 1);
+%! samples = random (pd, 500, 1);
 %! hist (samples, 50)
 %! title ("Histogram of 500 random samples from Uniform(Lower=0, Upper=5)")
 %! xlabel ("Values in x")

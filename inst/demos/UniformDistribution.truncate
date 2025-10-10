@@ -3,13 +3,10 @@
 %! ## and Upper = 10, truncated at [2, 8] intervals. Generate 10000 random
 %! ## samples from this truncated distribution and superimpose a histogram scaled
 %! ## accordingly
+%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10)
+%! t = truncate (pd, 2, 8)
 %! rand ("seed", 21);
-%! data_all = unifrnd (0, 10, 20000, 1);
-%! data = data_all(data_all >= 2 & data_all <= 8);
-%! data = data(1:10000);
-%!
-%! pd = fitdist (data, "Uniform");
-%! t = truncate (pd, 2, 8);
+%! data = random (t, 10000, 1);
 %!
 %! ## Plot histogram and truncated PDF
 %! plot (t)

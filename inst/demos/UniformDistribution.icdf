@@ -1,12 +1,9 @@
 %!demo
 %! ## Plot various iCDFs from the Uniform distribution
 %! p = 0.001:0.001:0.999;
-%! data1 = unifrnd (0, 5, 10000, 1);
-%! data2 = unifrnd (2, 8, 10000, 1);
-%! data3 = unifrnd (4, 10, 10000, 1);
-%! pd1 = fitdist (data1, "Uniform");
-%! pd2 = fitdist (data2, "Uniform");
-%! pd3 = fitdist (data3, "Uniform");
+%! pd1 = makedist ("Uniform", "Lower", 0, "Upper", 5);
+%! pd2 = makedist ("Uniform", "Lower", 2, "Upper", 8);
+%! pd3 = makedist ("Uniform", "Lower", 4, "Upper", 10);
 %! x1 = icdf (pd1, p);
 %! x2 = icdf (pd2, p);
 %! x3 = icdf (pd3, p);

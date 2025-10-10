@@ -1,24 +1,23 @@
 %!demo
-%! ## Create a Uniform distribution by fitting to data
-%! data = unifrnd (2, 8, 10000, 1);
-%! pd = fitdist (data, "Uniform");
+%! ## Create a Uniform distribution with default parameters
+%! pd = makedist ("Uniform")
 %!
 %! ## Query parameter 'Lower' (lower limit parameter)
 %! pd.Lower
 %!
 %! ## Set parameter 'Lower'
-%! pd.Lower = 3
+%! pd.Lower = 2
 %!
 %! ## Use this to initialize or modify the lower bound of a Uniform distribution.
 %! ## The lower limit must be a real scalar less than the upper limit, useful for
-%! ## defining the range of a uniform variable, such as time intervals or sensor readings.
+%! ## defining the range of a uniform variable, such as random measurements or time intervals.
 
 %!demo
 %! ## Create a Uniform distribution object by calling its constructor
-%! pd = UniformDistribution (1, 10);
+%! pd = UniformDistribution (1, 10)
 %!
 %! ## Query parameter 'Lower'
 %! pd.Lower
 %!
 %! ## This demonstrates direct construction with a specific lower limit, ideal for
-%! ## modeling data uniformly distributed over a known interval, like random selections.
+%! ## modeling data uniformly distributed over a known interval, such as random selections.
