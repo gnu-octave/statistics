@@ -474,7 +474,7 @@ classdef WeibullDistribution
       if (! isscalar (this))
         error ("paramci: requires a scalar probability distribution.");
       endif
-      if (empty (this.InputData))
+      if (isempty (this.InputData))
         ci = [this.ParameterValues; this.ParameterValues];
       else
         ci = __paramci__ (this, varargin{:});
