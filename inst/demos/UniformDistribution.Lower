@@ -1,6 +1,6 @@
 %!demo
 %! ## Create a Uniform distribution with default parameters
-%! pd = makedist ("Uniform")
+%! pd = makedist ("Uniform", "Lower", 2, "Upper", 5);
 %!
 %! ## Query parameter 'Lower' (lower limit parameter)
 %! pd.Lower
