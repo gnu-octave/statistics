@@ -1,0 +1,8 @@
+%!demo
+%! ## Compute the interquartile range for a Triangular distribution
+%! pd = TriangularDistribution (0, 1, 2);
+%! iqr_value = iqr (pd)
+%!
+%! ## Use this to calculate the interquartile range, which measures the spread
+%! ## of the middle 50% of the distribution, helpful for understanding central
+%! ## variability in bounded data like cost estimates.

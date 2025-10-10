@@ -1,0 +1,7 @@
+%!demo
+%! ## Compute the variance for a Triangular distribution
+%! pd = TriangularDistribution (0, 1, 2);
+%! var_value = var (pd)
+%!
+%! ## Use this to calculate the variance, which quantifies the spread of values
+%! ## within the bounds of the Triangular distribution, useful for uncertainty analysis.
