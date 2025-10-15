@@ -310,6 +310,7 @@ Regression
  canoncorr
  cholcov
  dcov
+ factoran
  glmfit
  glmval
  logistic_regression
