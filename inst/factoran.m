@@ -167,4 +167,4 @@ endfunction
 %!error factoran (ones (5,3), 3)
 %!error<factoran: X must be a numeric matrix.> factoran ({1,2}, 1)
 %!error<factoran: X must be a numeric matrix.> factoran (ones (2,2,2), 1)
-%!error<EIG: matrix contains Inf or NaN values> x=ones(3,2); x(:,2)=0; factoran (x,1)
+%!error<EIG: matrix contains Inf or NaN values> x=ones (3,2); x(:,2)=0; factoran (x,1)
