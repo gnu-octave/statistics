@@ -514,8 +514,8 @@ classdef cvpartition
                              " an integer scalar in the range [1, n)."));
             endif
           else
-            if (X <= 10)
-              k = X - 1;
+            if (X < 10)
+              k = X;
             else
               k = 10;
             endif
@@ -1272,7 +1272,6 @@ endclassdef
 %! idx1 = training (cv, 'all');
 %! idx2 = test (cv, 'all');
 %! assert (idx1, ! idx2);
-
 %!test
 %! custom = logical ([1, 1, 1, 0, 0, 0, 1, 0, 1, 1])';
 %! cv = cvpartition ('CustomPartition', custom);
@@ -1290,7 +1289,6 @@ endclassdef
 %! idx = test (cv, 1);
 %! assert (idx, custom == 1);
 %! assert (idx, test (cv, 'all'));
-
 %!test
 %! custom = logical ([1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1]);
 %! cv = cvpartition ('CustomPartition', custom);
@@ -1312,7 +1310,6 @@ endclassdef
 %! assert (idx, custom(:,2) == true);
 %! assert (! custom, training (cv, 'all'));
 %! assert (custom, test (cv, 'all'));
-
 %!test
 %! cv = cvpartition ('CustomPartition', [1:8]);
 %! assert (cv.Type, 'leaveout');
@@ -1330,7 +1327,6 @@ endclassdef
 %! assert (sum (test (cv, 1)), 1);
 %! assert (sum (test (cv, 'all')), cv.TestSize);
 %! assert (! training (cv, 'all'), test (cv, 'all'));
-
 %!test
 %! cv = cvpartition ('CustomPartition', logical (eye (8)));
 %! assert (cv.Type, 'leaveout');
@@ -1350,6 +1346,76 @@ endclassdef
 %! assert (! training (cv, 'all'), test (cv, 'all'));
 
 ## Test output results for scalar input N
+%!test
+%! cv = cvpartition (10, 'resubstitution');
+%! assert (cv.Type, 'resubstitution');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 10);
+%! assert (cv.TestSize, 10);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (class (training (cv, 1)), 'logical');
+%! assert (sum (training (cv, 1)), 10);
+%! assert (training (cv, 'all'), logical (ones (10, 1)));
+%! assert (class (test (cv, 1)), 'logical');
+%! assert (sum (test (cv, 1)), 10);
+%! assert (test (cv, 'all'), logical (ones (10, 1)));
+%! assert (test (cv), training (cv));
+%!test
+%! cv = cvpartition (10, 'leaveout');
+%! assert (cv.Type, 'leaveout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 10);
+%! assert (cv.TrainSize, ones (1, 10) * 9);
+%! assert (cv.TestSize, ones (1, 10));
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (class (training (cv, 1)), 'logical');
+%! assert (sum (training (cv, 1)), 9);
+%! assert (training (cv, 'all'), ! logical (eye (10)));
+%! assert (class (test (cv, 1)), 'logical');
+%! assert (sum (test (cv, 1)), 1);
+%! assert (test (cv, 'all'), logical (eye (10)));
+%! assert (test (cv), ! training (cv));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%!test
+%! rand ('seed', 5);  # for reproducibility
+%! cv = cvpartition (10, 'holdout', 0.3);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 7);
+%! assert (cv.TestSize, 3);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (class (training (cv, 1)), 'logical');
+%! assert (sum (training (cv, 1)), 7);
+%! assert (training (cv, 'all'), logical ([1, 0, 1, 1, 0, 1, 1, 1, 0, 1])');
+%! assert (class (test (cv, 1)), 'logical');
+%! assert (sum (test (cv, 1)), 3);
+%! assert (test (cv, 'all'), logical ([0, 1, 0, 0, 1, 0, 0, 0, 1, 0])');
+%! assert (test (cv), ! training (cv));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%!test
+%! cv = cvpartition (10, 'holdout', 4);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 6);
+%! assert (cv.TestSize, 4);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (class (training (cv, 1)), 'logical');
+%! assert (sum (training (cv, 1)), 6);
+%! assert (class (test (cv, 1)), 'logical');
+%! assert (sum (test (cv, 1)), 4);
+%! assert (test (cv), ! training (cv));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
 
 ## Test input validation
 %!error <cvpartition: too few input arguments.> cvpartition (2)
