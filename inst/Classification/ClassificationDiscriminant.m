@@ -18,6 +18,27 @@
 
 classdef ClassificationDiscriminant
 ## -*- texinfo -*-
+## @deftp {statistics} ClassificationDiscriminant
+##
+## Discriminant analysis classification
+##
+## The @code{ClassificationDiscriminant} class implements a linear discriminant
+## analysis classifier object, which can predict responses for new data using
+## the @code{predict} method.
+##
+## Discriminant analysis classification is a statistical method used to classify
+## observations into predefined groups based on their characteristics.  It
+## estimates the parameters of different distributions for each class and
+## predicts the class of new observations by finding the one with the smallest
+## misclassification cost.
+##
+## Create a @code{ClassificationDiscriminant} object by using the
+## @code{fitcdiscr} function or the class constructor.
+##
+## @seealso{fitcdiscr}
+## @end deftp
+
+## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
 ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
 ##
@@ -129,30 +150,296 @@ classdef ClassificationDiscriminant
 ## @end deftypefn
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numerix matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X = [];
 
-    X = [];                   # Predictor data
-    Y = [];                   # Class labels
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric vector, or cell array of character
+    ## vectors.  Each value in @var{Y} is the observed class label for the
+    ## corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y = [];
 
-    NumObservations = [];     # Number of observations in training dataset
-    RowsUsed        = [];     # Rows used in fitting
-    NumPredictors   = [];     # Number of predictors
-    PredictorNames  = [];     # Predictor variables names
-    ResponseName    = [];     # Response variable name
-    ClassNames      = [];     # Names of classes in Y
-    Prior           = [];     # Prior probability for each class
-    Cost            = [];     # Cost of Misclassification
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the ClassificationDiscriminant model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations = [];
 
-    ScoreTransform  = [];     # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} RowsUsed
+    ##
+    ## Rows used for fitting
+    ##
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X} specifying which rows have been used for
+    ## fitting the ClassificationDiscriminant model.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    RowsUsed        = [];
 
-    Sigma           = [];     # Within-class covariance
-    Mu              = [];     # Class means
-    Coeffs          = [];     # Coefficient matrices
-    Delta           = [];     # Threshold for linear discriminant model
-    DiscrimType     = [];     # Discriminant type
-    Gamma           = [];     # Gamma regularization parameter
-    MinGamma        = [];     # Minimum value of Gamma
-    LogDetSigma     = [];     # Log of det of within-class covariance matrix
-    XCentered       = [];     # X data with class means subtracted
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationDiscriminant model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames  = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## Add or change the @qcode{Prior} using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Prior           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a character vector representing a built-in function or as a
+    ## function handle for transforming the classification scores.  The
+    ## following built-in functions are supported:
+    ##
+    ## @itemize
+    ## @item @qcode{'doublelogit'}
+    ## @item @qcode{'invlogit'}
+    ## @item @qcode{'ismax'}
+    ## @item @qcode{'logit'}
+    ## @item @qcode{'none'}
+    ## @item @qcode{'identity'}
+    ## @item @qcode{'sign'}
+    ## @item @qcode{'symmetric'}
+    ## @item @qcode{'symmetricismax'}
+    ## @item @qcode{'symmetriclogit'}
+    ## @end itemize
+    ##
+    ## Add or change the @qcode{ScoreTransform} using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
+    ## @end itemize
+    ##
+    ## @end deftp
+    ScoreTransform  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Sigma
+    ##
+    ## Within-class covariance
+    ##
+    ## A numeric array specifying the within-class covariance.  For linear
+    ## discriminant type (currently supported) this is a @math{PxP} matrix,
+    ## where @math{P} is the number of predictors in @var{X}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Sigma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Mu
+    ##
+    ## Class means
+    ##
+    ## A @math {KxP} numeric matrix specifying the mean of the multivariate
+    ## normal distribution of each corresponding class, where @math{K} is the
+    ## number of classes and @math{P} is the number of predictors in @var{X}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Mu              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Coeffs
+    ##
+    ## Coefficient matrices
+    ##
+    ## A @math {KxK} structure containing the coeeficient matrices, where
+    ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
+    ## was set to @qcode{'off'} in either the @code{fitcdiscr} function or the
+    ## @code{ClassificationDiscriminant} constructor, then @qcode{Coeffs} is
+    ## empty @qcode{([])}.  This property is read-only.
+    ##
+    ## @qcode{Coeffs(i,j)} contains the coefficients of the linear (currently
+    ## supported) boundaries between the classes @code{i} and @code{j} in the
+    ## following fields:
+    ##
+    ## @itemize
+    ## @item @qcode{DiscrimType} - A character vector
+    ## @item @qcode{Class1} - @qcode{@var{ClassNames}(i)}
+    ## @item @qcode{Class2} - @qcode{@var{ClassNames}(j)}
+    ## @item @qcode{Const} - A scalar
+    ## @item @qcode{Linear} - A vector with length as the number of predictors.
+    ## @end itemize
+    ##
+    ## @end deftp
+    Coeffs          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Delta
+    ##
+    ## Delta threshold
+    ##
+    ## A nonnegative scalar specifying the threshold for linear discriminant
+    ## model.  Currently unimplemented and fixed to 0.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Delta           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} DiscrimType
+    ##
+    ## Discriminant type
+    ##
+    ## A character vector specifying the type discriminant model.  Currently
+    ## only linear discriminant models are supported.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    DiscrimType     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} Gamma
+    ##
+    ## Gamma regularization parameter
+    ##
+    ## A scalar value ranging from 0 to 1, specifying the Gamma regularization
+    ## parameter.  This property is read-only.
+    ##
+    ## @end deftp
+    Gamma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} MinGamma
+    ##
+    ## Minimum value for Gamma regularization parameter
+    ##
+    ## A scalar value ranging from 0 to 1, specifying the minimum value that the
+    ## Gamma regularization parameter can have.  This property is read-only.
+    ##
+    ## @end deftp
+    MinGamma        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} LogDetSigma
+    ##
+    ## A scalar value specifying the logarithm of the determinant of the
+    ## within-class covariance matrix.  This property is read-only.
+    ##
+    ## @end deftp
+    LogDetSigma     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationDiscriminant} {property} XCentered
+    ##
+    ## A matrix of the same size as @var{X} and the values in @var{X} with the
+    ## corresponding class means subtracted.  This property is read-only.
+    ##
+    ## @end deftp
+    XCentered       = [];
 
   endproperties
 
@@ -243,6 +530,10 @@ classdef ClassificationDiscriminant
                            " indexing argument must be a character vector."));
           endif
           switch (s.subs)
+            case 'Cost'
+              this.Cost = setCost (this, val);
+            case 'Prior'
+              this.Prior = setPrior (this, val);
             case 'ScoreTransform'
               name = "ClassificationDiscriminant";
               this.ScoreTransform = parseScoreTransform (val, name);
@@ -257,8 +548,82 @@ classdef ClassificationDiscriminant
   endmethods
 
   methods (Access = public)
-
-    ## Constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ClassificationDiscriminant} class object containing a
+    ## discriminant analysis model.
+    ##
+    ## @code{@var{obj} = ClassificationDiscriminant (@var{X}, @var{Y})} returns
+    ## a ClassificationDiscriminant object, with @var{X} as the predictor data
+    ## and @var{Y} containing the class labels of observations in @var{X}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
+    ## @var{X} will be used to train the discriminant model.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} can contain any type
+    ## of categorical data. @var{Y} must have the same number of rows as
+    ## @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{obj} = ClassificationDiscriminant (@dots{}, @var{name},
+    ## @var{value})} returns a ClassificationDiscriminant object with parameters
+    ## specified by the following@qcode{@var{name}, @var{value}} pair arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## vectors specifying the names of the predictors. The length of this array
+    ## must match the number of columns in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## name of the response variable.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## labels, @var{Y}, used for fitting the Discriminant model.
+    ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+    ##
+    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## probabilities for each class.  The order of the elements in @qcode{Prior}
+    ## corresponds to the order of the classes in @qcode{ClassNames}.
+    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
+    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## probabilities.
+    ##
+    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
+    ## misclassification cost for the corresponding instances in @var{X}, where
+    ## @math{R} is the number of unique categories in @var{Y}.  If an instance
+    ## is correctly classified into its category the cost is calculated to be 1,
+    ## otherwise 0. The cost matrix can be altered by using
+    ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
+    ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
+    ##
+    ## @item @qcode{'DiscrimType'} @tab @tab A character vector or string scalar
+    ## specifying the type of discriminant analysis to perform. The only
+    ## supported value is @qcode{'linear'}.
+    ##
+    ## @item @qcode{'FillCoeffs'} @tab @tab A character vector or string scalar
+    ## with values @qcode{'on'} or @qcode{'off'} specifying whether to fill the
+    ## coefficients after fitting. If set to @qcode{"on"}, the coefficients are
+    ## computed during model fitting, which can be useful for prediction.
+    ##
+    ## @item @qcode{'Gamma'} @tab @tab A numeric scalar specifying the
+    ## regularization parameter for the covariance matrix. It adjusts the linear
+    ## discriminant analysis to make the model more stable in the presence of
+    ## multicollinearity or small sample sizes. A value of 0 corresponds to no
+    ## regularization, while a value of 1 corresponds to
+    ## a completely regularized model.
+    ## @end multitable
+    ##
+    ## @seealso{fitcdiscr}
+    ## @end deftypefn
     function this = ClassificationDiscriminant (X, Y, varargin)
 
       ## Check for appropriate number of input arguments
@@ -295,7 +660,7 @@ classdef ClassificationDiscriminant
       Gamma                = 0;
       Delta                = 0;
       NumPredictors        = [];
-      PredictorNames       = [];
+      PredictorNames       = {};
       ResponseName         = 'Y';
       Prior                = "empirical";
       FillCoeffs           = "on";
@@ -441,33 +806,9 @@ classdef ClassificationDiscriminant
       this.NumObservations = sum (RowsUsed);
       this.RowsUsed = RowsUsed;
 
-      ## Handle Prior and Cost
-      if (strcmpi ("uniform", Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
-        pr = [];
-        for i = 1:numel (gnY)
-          pr = [pr; sum(gY==i)];
-        endfor
-        this.Prior = pr ./ sum (pr);
-      elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
-          error (strcat ("ClassificationDiscriminant: the elements", ...
-                         " in 'Prior' do not correspond to the", ...
-                         " selected classes in Y."));
-        endif
-        this.Prior = Prior ./ sum (Prior);
-      endif
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationDiscriminant: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
+      ## Handle Cost and Prior
+      this = setCost (this, Cost, gnY);
+      this = setPrior (this, Prior, gnY, gY);
 
       ## Assign DiscrimType
       this.DiscrimType = DiscrimType;
@@ -497,7 +838,7 @@ classdef ClassificationDiscriminant
         endfor
         this.Sigma = this.Sigma / (this.NumObservations - num_classes);
 
-        ## Check for predictors zero within-class variance
+        ## Check for predictors wih zero within-class variance
         zwcv = find (diag (this.Sigma) == 0);
         if (! isempty (zwcv))
           msg = strcat ("ClassificationDiscriminant: Predictor", ...
@@ -508,8 +849,8 @@ classdef ClassificationDiscriminant
         D = diag (diag (this.Sigma));
 
         ## FIX ME: MinGamma calculation is not same as Matlab.
-        ## Instead of using (det (sigma) > 0) this criteria (line no: 391)
-        ## may be Matlab is using some threshold.
+        ## Instead of using (det (sigma) > 0) as a criterion (see code below),
+        ## maybe Matlab is using some threshold.
         ## Also linear search might not be best here.
 
         ## Regularize Sigma
@@ -613,7 +954,6 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{ClassificationDiscriminant, fitcdiscr}
     ## @end deftypefn
-
     function [label, score, cost] = predict (this, XC)
       ## Check for sufficient input arguments
       if (nargin < 2)
@@ -725,7 +1065,6 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{ClassificationDiscriminant}
     ## @end deftypefn
-
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
@@ -970,7 +1309,6 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
-
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -1093,7 +1431,6 @@ classdef ClassificationDiscriminant
     ## @seealso{fitcdiscr, ClassificationDiscriminant, cvpartition,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
-
     function CVMdl = crossval (this, varargin)
       ## Check input
       if (nargin < 1)
@@ -1182,7 +1519,6 @@ classdef ClassificationDiscriminant
     ## @seealso{fitcdiscr, ClassificationDiscriminant,
     ## CompactClassificationDiscriminant}
     ## @end deftypefn
-
     function CVMdl = compact (this)
       ## Create a compact model
       CVMdl = CompactClassificationDiscriminant (this);
@@ -1202,7 +1538,6 @@ classdef ClassificationDiscriminant
     ##
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
-
     function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationDiscriminant";
@@ -1257,6 +1592,70 @@ classdef ClassificationDiscriminant
       for i = 1:numel (props)
         mdl.(props{i}) = data.(props{i});
       endfor
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    function this = setCost (this, Cost, gnY = [])
+      if (isempty (gnY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("ClassificationDiscriminant: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
+
+    endfunction
+
+    function this = setPrior (this, Prior, gnY = [], gY = [])
+      if (isempty (gnY) || isempty (gY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      ## Set prior
+      if (strcmpi ("uniform", Prior))
+        this.Prior = ones (size (gnY)) ./ numel (gnY);
+      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
+        pr = [];
+        for i = 1:numel (gnY)
+          pr = [pr; sum(gY==i)];
+        endfor
+        this.Prior = pr ./ sum (pr);
+      elseif (isnumeric (Prior))
+        if (numel (gnY) != numel (Prior))
+          error (strcat ("ClassificationDiscriminant: the elements", ...
+                         " in 'Prior' do not correspond to the", ...
+                         " selected classes in Y."));
+        endif
+        this.Prior = Prior ./ sum (Prior);
+      endif
+
+      ## Recalculate the Const field in the Coeffs structure
+      if (! isempty (this.Coeffs))
+        num_classes = rows (this.ClassNames);
+        ## Calculate coefficients
+        switch (this.DiscrimType)
+          case "linear"
+            for i = 1:num_classes
+              for j = 1:num_classes
+                if (i != j)
+                  K = log (this.Prior(i) ...
+                      / this.Prior(j)) - 0.5 * (this.Mu(i, :) ...
+                      / this.Sigma * this.Mu(i, :)') + 0.5 * (this.Mu(j, :) ...
+                      / this.Sigma * this.Mu(j, :)');
+                  this.Coeffs(i, j).Const = K;
+                endif
+              endfor
+            endfor
+        endswitch
+      endif
     endfunction
 
   endmethods
