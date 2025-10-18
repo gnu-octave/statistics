@@ -123,16 +123,15 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, varargin)
 
   switch (lower (method))
     case "completekk"
-      [gindex, partition, gsize] = complete_karmarkar_karp (numbers, num_parts);
+      [gindex, partition, gsize] = completeKK (numbers, num_parts);
     case "greedy"
-      [gindex, partition, gsize] = greedy_partition (numbers, num_parts);
+      [gindex, partition, gsize] = greedy (numbers, num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
   endswitch
 endfunction
 
-function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
-                                                                 num_parts)
+function [groupindex, partition, groupsizes] = greedy (numbers, num_parts)
   [sorted_numbers, sorted_indices] = sort (numbers, 'descend');
   n = numel (sorted_numbers);
 
@@ -156,9 +155,8 @@ function [groupindex, partition, groupsizes] = greedy_partition (numbers, ...
   endif
 endfunction
 
-function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers, ...
-                                                                        num_parts)
-  if isempty (numbers)
+function [groupindex, partition, groupsizes] = completeKK (numbers, num_parts)
+  if (isempty (numbers))
     partition = cell (1, num_parts);
     for i = 1:num_parts
       partition{i} = [];
@@ -177,12 +175,8 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
     part_sums = zeros (1, num_parts);
     part{end} = numbers(i);
     part_sums(end) = numbers(i);
-    initial_nodes{i} = struct ( ...
-      'parts', {part}, ...
-      'sums', part_sums, ...
-      'diff', numbers(i), ...
-      'id', i ...
-    );
+    initial_nodes{i} = struct ('parts', {part},  'sums', part_sums, ...
+                               'diff', numbers(i), 'id', i );
   endfor
 
   processing_stack = {initial_nodes};
@@ -190,21 +184,21 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
   best_node = [];
   id_counter = numel (numbers);
 
-  while ~isempty (processing_stack)
+  while (! isempty (processing_stack))
     current_nodes = processing_stack{end};
     processing_stack(end) = [];
 
     min_possible_diff = calculate_lower_bound (current_nodes, num_parts);
-    if min_possible_diff >= best_diff
+    if (min_possible_diff >= best_diff)
       continue;
     endif
 
-    if numel (current_nodes) == 1
+    if (numel (current_nodes) == 1)
       current_diff = current_nodes{1}.diff;
-      if current_diff < best_diff
+      if (current_diff < best_diff)
         best_diff = current_diff;
         best_node = current_nodes{1};
-        if current_diff == 0
+        if (current_diff == 0)
           break;
         endif
       endif
@@ -237,7 +231,7 @@ function [groupindex, partition, groupsizes] = complete_karmarkar_karp (numbers,
   partition = best_node.parts;
   groupsizes = best_node.sums;
 
-  if nargout >= 1
+  if (nargout >= 1)
     idx_cell = convert_to_indices (partition, numbers);
     groupindex = zeros (size (numbers));
     for j = 1:num_parts
@@ -258,7 +252,7 @@ function indices = convert_to_indices (parts, original_numbers)
     idxs = [];
     for val = parts{i}
       pos = find (numbers_copy == val, 1);
-      if isempty (pos)
+      if (isempty (pos))
         error ("Value %d not found during index conversion", val);
       endif
       idxs = [idxs, pos];
@@ -289,12 +283,8 @@ function new_nodes = combine_partitions (node1, node2, start_id)
 
     part_diff = max (combined_sums) - min (combined_sums);
 
-    new_node = struct ( ...
-      'parts', {combined_parts}, ...
-      'sums', combined_sums, ...
-      'diff', part_diff, ...
-      'id', start_id + idx - 1 ...
-    );
+    new_node = struct ('parts', {combined_parts}, 'sums', combined_sums, ...
+                       'diff', part_diff, 'id', start_id + idx - 1);
 
     new_nodes{idx} = new_node;
   endfor
