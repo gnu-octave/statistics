@@ -545,12 +545,26 @@ classdef cvpartition
             endif
             grpvars = varargin{4};
             if (isvector (grpvars))
+              ## Remove any missing values
+              remove_idx = ismissing (grpvars);
+              if (any (remove_idx))
+                grpvars(remove_idx) = [];
+                X -= sum (remove_idx);
+              endif
+              ## Get indices for each group
               if (isa (grpvars, 'categorical'))
                 [~, idx, inds] = unique (grpvars, 'stable');
               else
                 [~, idx, inds] = __unique__ (grpvars, 'stable');
               endif
             elseif (ismatrix (grpvars))
+              ## Remove any missing values
+              remove_idx = any (ismissing (grpvars), 2);
+              if (any (remove_idx))
+                grpvars(remove_idx, :) = [];
+                X -= sum (remove_idx);
+              endif
+              ## Get indices for each group
               if (isa (grpvars, 'categorical'))
                 [~, idx, inds] = unique (grpvars, 'rows', 'stable');
               else
@@ -570,25 +584,44 @@ classdef cvpartition
             for i = 1:NumGroups
               GroupSize(i) = sum (inds == i);
             endfor
-            ## Each k-fold attempts to split the groups to equal sizes in such a
-            ## way so that each test set contains unique groups that are not
-            ## present in the corresponding training set but also not shared
-            ## with other test sets.
-            GroupIdx = multiway (GroupSize, k);
-            GroupIdx = randsample (GroupIdx, k);
+            ## Compare k-fold to number of groups and reduce K accordingly
+            if (k > NumGroups)
+              warning (strcat ("cvpartition: number of folds K in greater", ...
+                               " that the groups in 'GroupingVariables'."));
+                k = NumGroups;
+            endif
+            ## If k == NumGroups, then each group becomes a test in a fold.
+            ## If k < NumGroups, then use cluster NumGroups to k folds.
             indices = zeros (X, 1);
+            if (k == NumGroups)
+              for i = 1:k
+                indices(inds == i) = i;
+              endfor
+            else
+              [GroupIdx, ~, GroupSz] = multiway (GroupSize, k);
+              ## Largest group goes into 1st fold
+              [~, Group_ix] = sort (GroupSz, 'descend');
+              for i = 1:k #randsample ([1:k], k)
+                #idxGV = find (GroupIdx == Group_ix(i));
+                idxGV = find (GroupIdx == i);
+                vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
+                index = vecGV{1};
+                if (numel (vecGV) > 1)
+                  for j = 2:numel (vecGV)
+                    index = index | vecGV{j};
+                  endfor
+                endif
+                indices(index) = i;
+              endfor
+            endif
+            ## Randomize the order of folds
+            random_idx = randsample ([1:k], k);
+            randomized = zeros (size (inds));
             for i = 1:k
-              idxGV = inds(idx(GroupIdx == i));
-              vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
-              index = vecGV{1};
-              if (numel (vecGV) > 1)
-                for j = 2:numel (vecGV)
-                  index = index | vecGV{j};
-                endfor
-              endif
-              indices(index) = i;
+              randomized(indices == i) = random_idx(i);
             endfor
-            this.indices = indices;
+            ## Save values to properties
+            this.indices = randomized;
             this.NumObservations = X;
             this.NumTestSets = k;
             nvec = X * ones (1, k);
@@ -840,8 +873,8 @@ classdef cvpartition
             for i = 1:NumGroups
               GroupSize(i) = sum (inds == i);
             endfor
-            ## Each k-fold attempts to split the groups to equal sizes in such a
-            ## way so that eash test set contains unique groups that are not
+            ## Each k-fold attempts to split the groups to equal sizes in such
+            ## a way so that eash test set contains unique groups that are not
             ## present in the corresponding training set but also not shared
             ## with other test sets.
             GroupIdx = multiway (GroupSize, k);
@@ -1416,6 +1449,156 @@ endclassdef
 %! assert (sum (test (cv, 1)), 4);
 %! assert (test (cv), ! training (cv));
 %! assert (test (cv, 'all'), ! training (cv, 'all'));
+%!test
+%! cv = cvpartition (5, 'kfold');
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 5);
+%! assert (cv.NumTestSets, 5);
+%!test
+%! cv = cvpartition (20, 'kfold');
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 20);
+%! assert (cv.NumTestSets, 10);
+%!test
+%! cv = cvpartition (10, 'kfold', 5);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 5);
+%! assert (cv.TrainSize, [8, 8, 8, 8, 8]);
+%! assert (cv.TestSize, [2, 2, 2, 2, 2]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [10, 5]);
+%!test
+%! grpvar = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 5];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 5, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 5);
+%! assert (cv.TrainSize, [10, 10, 10, 8, 10]);
+%! assert (cv.TestSize, [2, 2, 2, 4, 2]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 5]);
+%! assert (sum (test (cv, 'all')), [2, 2, 2, 4, 2]);
+%! assert (sum (training (cv, 'all')), [10, 10, 10, 8, 10]);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 3, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 3);
+%! assert (cv.TrainSize, [9, 10, 5]);
+%! assert (cv.TestSize, [3, 2, 7]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 3]);
+%! assert (sum (test (cv, 'all')), [3, 2, 7]);
+%! assert (sum (training (cv, 'all')), [9, 10, 5]);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [6, 6]);
+%! assert (cv.TestSize, [6, 6]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 2]);
+%! assert (sum (test (cv, 'all')), [6, 6]);
+%! assert (sum (training (cv, 'all')), [6, 6]);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, NaN, 2, 3, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 11);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [6, 5]);
+%! assert (cv.TestSize, [5, 6]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [11, 2]);
+%! assert (sum (test (cv, 'all')), [5, 6]);
+%! assert (sum (training (cv, 'all')), [6, 5]);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [7, 5]);
+%! assert (cv.TestSize, [5, 7]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 2]);
+%! assert (sum (test (cv, 'all')), [5, 7]);
+%! assert (sum (training (cv, 'all')), [7, 5]);
+%! assert (test (cv, 1)', grpvar != 2);
+%! assert (test (cv, 2)', grpvar == 2);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [7, 5]);
+%! assert (cv.TestSize, [5, 7]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 2]);
+%! assert (sum (test (cv, 'all')), [5, 7]);
+%! assert (sum (training (cv, 'all')), [7, 5]);
+%! assert (test (cv, 1)', grpvar == 2);
+%! assert (test (cv, 2)', grpvar != 2);
+%!test
+%! grpvar = [1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3];
+%! rand ('seed', 5);
+%! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 12);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [7, 5]);
+%! assert (cv.TestSize, [5, 7]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (size (test (cv, 'all')), [12, 2]);
+%! assert (sum (test (cv, 'all')), [5, 7]);
+%! assert (sum (training (cv, 'all')), [7, 5]);
+%! assert (test (cv, 1)', grpvar == 3);
+%! assert (test (cv, 2)', grpvar != 3);
+
+## Test output results for vector input X
 
 ## Test input validation
 %!error <cvpartition: too few input arguments.> cvpartition (2)
@@ -1460,6 +1643,8 @@ endclassdef
 %! cvpartition (10, "kfold", 3, "GroupingVariables", ones (3, 3, 3))
 %!error <cvpartition: grouping variable does not match the number of observations.> ...
 %! cvpartition (10, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'})
+%!warning <cvpartition: number of folds K in greater that the groups in 'GroupingVariables'.> ...
+%! cvpartition (5, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'});
 %!error <cvpartition: invalid optional paired argument.> ...
 %! cvpartition (20, "some")
 %!error <cvpartition: invalid optional paired argument for stratification.> ...
