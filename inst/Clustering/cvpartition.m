@@ -603,10 +603,7 @@ classdef cvpartition
               else
                 [GroupIdx, ~, GroupSz] = multiway (GroupSize, k);
               endif
-              ## Largest group goes into 1st fold
-              [~, Group_ix] = sort (GroupSz, 'descend');
-              for i = 1:k #randsample ([1:k], k)
-                #idxGV = find (GroupIdx == Group_ix(i));
+              for i = 1:k
                 idxGV = find (GroupIdx == i);
                 vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
                 index = vecGV{1};
@@ -972,6 +969,7 @@ classdef cvpartition
           inds(randsample (X, p)) = true;  # indices for test set
         endif
         this.indices = inds;
+
       elseif (strcmpi (this.Type, "kfold"))
         X = this.NumObservations;
         k = this.NumTestSets;
@@ -985,44 +983,17 @@ classdef cvpartition
           endfor
           this.TrainSize = nvec - this.TestSize;
         elseif (this.IsGrouped)
-          grpvars = this.grpvars;
-          if (isvector (grpvars))
-            if (isa (grpvars, 'categorical'))
-              [~, idx, inds] = unique (grpvars, 'stable');
-            else
-              [~, idx, inds] = __unique__ (grpvars, 'stable');
-            endif
-          else
-            if (isa (grpvars, 'categorical'))
-              [~, idx, inds] = unique (grpvars, 'rows', 'stable');
-            else
-              [~, idx, inds] = __unique__ (grpvars, 'rows', 'stable');
-            endif
-          endif
-          ## Get number of groups and group sizes
-          NumGroups = numel (idx);
-          for i = 1:NumGroups
-            GroupSize(i) = sum (inds == i);
-          endfor
-          ## Each k-fold attempts to split the groups to equal sizes in such a
-          ## way so that eash test set contains unique groups that are not
-          ## present in the corresponding training set but also not shared
-          ## with other test sets.
-          GroupIdx = multiway (GroupSize, k);
-          GroupIdx = randsample (GroupIdx, k);
-          indices = zeros (X, 1);
+          ## We only need resample the order of folds in this case
+          ## Randomize the order of folds
+          random_idx = randsample ([1:k], k);
+          randomized = zeros (size (this.indices));
           for i = 1:k
-            idxGV = inds(idx(GroupIdx == i));
-            vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
-            index = vecGV{1};
-            if (numel (vecGV) > 1)
-              for j = 2:numel (vecGV)
-                index = index | vecGV{j};
-              endfor
-            endif
-            indices(index) = i;
+            randomized(this.indices == i) = random_idx(i);
           endfor
-          this.indices = indices;
+          ## Save values to properties
+          this.indices = randomized;
+          this.NumObservations = X;
+          this.NumTestSets = k;
           nvec = X * ones (1, k);
           for i = 1:k
             this.TestSize(i) = sum (this.indices == i);
