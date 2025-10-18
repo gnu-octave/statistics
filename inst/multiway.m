@@ -1,4 +1,5 @@
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,28 +18,38 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{groupindex} =} multiway (@var{numbers}, @var{num_parts})
-## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}] =} multiway (@var{numbers}, @var{num_parts})
-## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}, @var{groupsizes}] =} multiway (@var{numbers}, @var{num_parts})
-## @deftypefnx {statistics} {[@dots{}] =} multiway (@dots{}, @qcode{"method"}, @var{method})
+## @deftypefnx {statistics} {@var{groupindex} =} multiway (@var{numbers}, @var{num_parts}, @var{method})
+## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}] =} multiway (@dots{})
+## @deftypefnx {statistics} {[@var{groupindex}, @var{partition}, @var{groupsizes}] =} multiway (@dots{})
 ##
 ## Solve the multiway number partitioning problem.
 ##
-## @code{multiway} partitions a set of numbers into a specified number of
-## subsets such that the sums of the subsets are as equal as possible.
+## @code{@var{groupindex} = multiway (@var{numbers}, @var{num_parts})} splits
+## a set of numbers in @var{numbers} into a number of subsets specified in
+## @var{num_parts} such that the sums of the subsets are as equal as possible
+## and returns a vector of group indices in @var{groupindex} with each index
+## corresponding to the set of numbers provided as input.
 ##
-## @var{numbers} is a vector of positive real numbers to be partitioned.
-##
-## @var{num_parts} is a positive integer scalar specifying the number of
-## partitions (subsets) to create.
-##
-## The optional parameter @qcode{"method"} specifies the algorithm used for
-## partitioning.  Supported methods are:
 ## @itemize
-## @item @qcode{"completeKK"} (Complete Karmarkar-Karp)
-## @item @qcode{"greedy"} (Greedy algorithm)
+## @item @var{numbers} is a vector of positive real numbers to be partitioned.
+## @item @var{num_parts} is a positive integer scalar specifying the number of
+## partitions (subsets) to split the numbers into.
 ## @end itemize
 ##
-## The output arguments are:
+## @code{@var{groupindex} = multiway (@var{numbers}, @var{num_parts},
+## @var{method})} also specifies the algorithm used for partitioning the set of
+## numbers.  By default, @code{multiway} uses the greedy algorithm, which is
+## optimized for speed, but may not return the optimal partitioning.  The
+## following methods are supported:
+##
+## @itemize
+## @item @qcode{'greedy'} (Greedy algorithm)
+## @item @qcode{'completeKK'} (Complete Karmarkar-Karp algorithm)
+## @end itemize
+##
+## The @code{multiway} function may return up to three output arguments
+## described below:
+##
 ## @itemize
 ## @item
 ## @var{groupindex}: A vector of the same length as @var{numbers} containing
@@ -59,13 +70,17 @@
 ## @end group
 ## @end example
 ##
-## @seealso{}
+## @seealso{cvpartition}
 ## @end deftypefn
 
-function [gindex, partition, gsize] = multiway (numbers, num_parts, varargin)
+function [gindex, partition, gsize] = multiway (numbers, num_parts, method)
 
   if (nargin < 2)
     error ("multiway: too few input arguments.");
+  elseif (nargin == 2)
+    method = 'greedy';
+  elseif (! (ischar (method) && isvector (method)))
+    error ("multiway: METHOD value must be a character vector.");
   endif
 
   ## Validate numbers vector
@@ -94,37 +109,11 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, varargin)
                    " number of elements in NUMBERS."));
   endif
 
-  method = "completeKK";
-
-  ## Parse optional name-value pairs
-  if (numel (varargin) > 0)
-    if (mod (numel (varargin), 2) != 0)
-      error ("multiway: optional arguments must be in name-value pairs.");
-    endif
-
-    for i = 1:2:numel (varargin)
-      param = varargin{i};
-      if (! ischar (param))
-        error ("multiway: parameter names must be strings.");
-      endif
-      value = varargin{i+1};
-
-      switch (tolower (param))
-        case "method"
-          if (! ischar (value))
-            error ("multiway: METHOD value must be a string.");
-          endif
-          method = value;
-        otherwise
-          error ("multiway: unknown parameter '%s'.", param);
-      endswitch
-    endfor
-  endif
-
+  ## Select method
   switch (lower (method))
-    case "completekk"
+    case 'completekk'
       [gindex, partition, gsize] = completeKK (numbers, num_parts);
-    case "greedy"
+    case'greedy'
       [gindex, partition, gsize] = greedy (numbers, num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
@@ -298,72 +287,63 @@ function bound = calculate_lower_bound (nodes, num_parts)
   bound = max_val - (total - max_val) / (num_parts - 1);
 endfunction
 
+## Test completeKK method
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
-
 %!test
 %! numbers = [1, 2, 3, 4, 5, 6];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
 %! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
-
 %!test
 %! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
 %! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
-
 %!test
 %! numbers = [10, 10, 10];
 %! num_parts = 3;
-%! [~, partition] = multiway (numbers, num_parts);
+%! [~, partition] = multiway (numbers, num_parts, "completeKK");
 %! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
-
 %!test
 %! numbers = 1:10;
 %! num_parts = 2;
-%! [~, partition] = multiway (numbers, num_parts);
+%! [~, partition] = multiway (numbers, num_parts, "completeKK");
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test greedy method
-
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
-
 %!test
 %! numbers = [1, 2, 3, 4, 5, 6];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
-
 %!test
 %! numbers = [10, 7, 5, 5, 6, 4, 10, 11, 12, 9, 10, 4, 3, 4, 5];
 %! num_parts = 4;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), sort ([27, 27, 27, 24]));
-
 %!test
 %! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), sort ([35, 37, 41]));
-
 %!test
 %! numbers = [10, 10, 10];
 %! num_parts = 3;
-%! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
+%! [~, partition] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
-
 %!test
 %! numbers = 1:10;
 %! num_parts = 2;
-%! [~, partition] = multiway (numbers, num_parts, "method", "greedy");
+%! [~, partition] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test column vector input
@@ -371,14 +351,13 @@ endfunction
 %!test
 %! numbers = [4; 5; 6; 7; 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
 %! assert (iscolumn (groupindex), true)
 %! assert (iscolumn (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
-
 %! numbers = [4; 5; 6; 7; 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (iscolumn (groupindex), true)
 %! assert (iscolumn (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
@@ -388,15 +367,14 @@ endfunction
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
 %! assert (isrow (groupindex), true)
 %! assert (isrow (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
-
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "method", "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
 %! assert (isrow (groupindex), true)
 %! assert (isrow (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
@@ -404,8 +382,10 @@ endfunction
 ## Test input validation
 %!error<multiway: too few input arguments.> multiway ()
 %!error<multiway: too few input arguments.> multiway ([1, 2])
+%!error<multiway: METHOD value must be a character vector.> ...
+%! multiway ([1, 2, 3], 2, 1)
 %!error<multiway: NUMBERS must be a non-empty vector.> multiway ([], 2)
-%!error<multiway: NUMBERS must be a non-empty vector.> multiway (ones (2,2), 2)
+%!error<multiway: NUMBERS must be a non-empty vector.> multiway (ones (2, 2), 2)
 %!error<multiway: NUMBERS must be numeric and cannot contain NaN values.> ...
 %! multiway ({1, 2, 3}, 2)
 %!error<multiway: NUMBERS must be non-negative.> multiway ([1, -2, 3], 2)
@@ -413,19 +393,11 @@ endfunction
 %! multiway ([1, 2, NaN], 2)
 %!error<multiway: NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
 %!error<multiway: NUM_PARTS must be a real numeric value.> ...
-%! multiway ([1,2,3], "2")
-%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], 0)
-%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], 1.5)
-%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1,2,3], -1)
+%! multiway ([1, 2, 3], "2")
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], 0)
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], 1.5)
+%!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], -1)
 %!error<multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
-%! multiway ([1,2], 3)
-%!error <multiway: optional arguments must be in name-value pairs.> ...
-%! multiway ([1,2,3], 2, "method")
-%!error<multiway: parameter names must be strings.> ...
-%! multiway ([1,2,3], 2, 1, "completeKK")
-%!error<multiway: METHOD value must be a string.> ...
-%! multiway ([1,2,3], 2, "method", 1)
-%!error<multiway: unknown parameter 'algorithm'.> ...
-%! multiway ([1,2,3], 2, "algorithm", "completeKK")
+%! multiway ([1, 2], 3)
 %!error <multiway: unsupported method 'greedyalgo'.> ...
-%! multiway ([1,2,3], 2, "method", "greedyalgo")
+%! multiway ([1,2,3], 2, "greedyalgo")
