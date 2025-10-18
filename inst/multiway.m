@@ -26,9 +26,9 @@
 ##
 ## @code{@var{groupindex} = multiway (@var{numbers}, @var{num_parts})} splits
 ## a set of numbers in @var{numbers} into a number of subsets specified in
-## @var{num_parts} such that the sums of the subsets are as equal as possible
-## and returns a vector of group indices in @var{groupindex} with each index
-## corresponding to the set of numbers provided as input.
+## @var{num_parts} such that the sums of the subsets are nearly as equal as
+## possible and returns a vector of group indices in @var{groupindex} with each
+## index corresponding to the set of numbers provided as input.
 ##
 ## @itemize
 ## @item @var{numbers} is a vector of positive real numbers to be partitioned.
@@ -145,18 +145,6 @@ function [groupindex, partition, groupsizes] = greedy (numbers, num_parts)
 endfunction
 
 function [groupindex, partition, groupsizes] = completeKK (numbers, num_parts)
-  if (isempty (numbers))
-    partition = cell (1, num_parts);
-    for i = 1:num_parts
-      partition{i} = [];
-    endfor
-    groupindex = zeros (size (numbers));
-    groupsizes = zeros (1, num_parts);
-    if (iscolumn (numbers))
-      groupsizes = groupsizes';
-    endif
-    return;
-  endif
 
   initial_nodes = cell (1, numel (numbers));
   for i = 1:numel (numbers)
