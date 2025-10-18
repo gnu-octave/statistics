@@ -598,7 +598,11 @@ classdef cvpartition
                 indices(inds == i) = i;
               endfor
             else
-              [GroupIdx, ~, GroupSz] = multiway (GroupSize, k);
+              if (k <= 3 && NumGroups <= 5)
+                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
+              else
+                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k);
+              endif
               ## Largest group goes into 1st fold
               [~, Group_ix] = sort (GroupSz, 'descend');
               for i = 1:k #randsample ([1:k], k)
