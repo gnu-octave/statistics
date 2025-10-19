@@ -113,7 +113,7 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, method)
   switch (lower (method))
     case 'completekk'
       [gindex, partition, gsize] = completeKK (numbers, num_parts);
-    case'greedy'
+    case 'greedy'
       [gindex, partition, gsize] = greedy (numbers, num_parts);
     otherwise
       error ("multiway: unsupported method '%s'.", method);
@@ -145,76 +145,82 @@ function [groupindex, partition, groupsizes] = greedy (numbers, num_parts)
 endfunction
 
 function [groupindex, partition, groupsizes] = completeKK (numbers, num_parts)
+  [gidx_g, part_g, gsize_g] = greedy (numbers, num_parts);
+  best_diff = max (gsize_g) - min (gsize_g);
+  best_partition = part_g;
+  groupindex = gidx_g;
 
-  initial_nodes = cell (1, numel (numbers));
-  for i = 1:numel (numbers)
-    part = cell (1, num_parts);
-    part_sums = zeros (1, num_parts);
-    part{end} = numbers(i);
-    part_sums(end) = numbers(i);
-    initial_nodes{i} = struct ('parts', {part},  'sums', part_sums, ...
-                               'diff', numbers(i), 'id', i );
-  endfor
-
-  processing_stack = {initial_nodes};
-  best_diff = Inf;
-  best_node = [];
-  id_counter = numel (numbers);
-
-  while (! isempty (processing_stack))
-    current_nodes = processing_stack{end};
-    processing_stack(end) = [];
-
-    min_possible_diff = calculate_lower_bound (current_nodes, num_parts);
-    if (min_possible_diff >= best_diff)
-      continue;
+  if (best_diff == 0)
+    partition = best_partition;
+    groupsizes = gsize_g;
+    if (iscolumn (numbers))
+      groupsizes = groupsizes';
     endif
-
-    if (numel (current_nodes) == 1)
-      current_diff = current_nodes{1}.diff;
-      if (current_diff < best_diff)
-        best_diff = current_diff;
-        best_node = current_nodes{1};
-        if (current_diff == 0)
-          break;
-        endif
-      endif
-      continue;
-    endif
-
-    diff_vals = cellfun (@(x) x.diff, current_nodes);
-    [~, idx1] = min (diff_vals);
-    diff_vals(idx1) = Inf;
-    [~, idx2] = min (diff_vals);
-    node1 = current_nodes{idx1};
-    node2 = current_nodes{idx2};
-    remaining_nodes = current_nodes;
-    remaining_nodes([idx1, idx2]) = [];
-
-    new_nodes = combine_partitions (node1, node2, id_counter);
-    id_counter = id_counter + numel (new_nodes);
-
-    candidate_sets = cell (1, numel (new_nodes));
-    for i = 1:numel (new_nodes)
-      candidate_sets{i} = [remaining_nodes, new_nodes{i}];
-    endfor
-
-    candidate_bounds = cellfun (@(x) calculate_lower_bound (x, num_parts), ...
-                                candidate_sets);
-    [~, order] = sort (candidate_bounds, 'ascend');
-    processing_stack = [processing_stack, candidate_sets(order)];
-  endwhile
-
-  partition = best_node.parts;
-  groupsizes = best_node.sums;
-
-  if (nargout >= 1)
-    idx_cell = convert_to_indices (partition, numbers);
-    groupindex = zeros (size (numbers));
-    for j = 1:num_parts
-      groupindex(idx_cell{j}) = j;
-    endfor
+    return;
   endif
+
+  sorted_numbers = numbers(:).';
+  [sorted_numbers, sorted_indices] = sort (sorted_numbers, 'descend');
+  n = numel (sorted_numbers);
+  total = sum (sorted_numbers);
+  average = total / num_parts;
+
+  function rec (k, current_sums, current_assign)
+    if (k > n)
+      this_diff = max (current_sums) - min (current_sums);
+      if (this_diff < best_diff)
+        best_diff = this_diff;
+        for jj = 1:num_parts
+          best_partition{jj} = sorted_numbers(current_assign == jj);
+        endfor
+      endif
+      return;
+    endif
+
+    rem_max = sorted_numbers(k);
+    this_min = min (current_sums);
+    lb_max = max (max (current_sums), this_min + rem_max);
+    lb_diff = max (0, lb_max - average);
+    if (lb_diff >= best_diff)
+      return;
+    endif
+
+    [~, perm] = sort (current_sums);
+
+    for jj = 1:num_parts
+      j = perm (jj);
+      new_sums = current_sums;
+      new_sums (j) += sorted_numbers (k);
+
+      new_max = max (new_sums);
+      if (k < n)
+        next_rem_max = sorted_numbers (k + 1);
+        sub_min = min (new_sums);
+        sub_lb_max = max (new_max, sub_min + next_rem_max);
+      else
+        sub_lb_max = new_max;
+      endif
+      sub_lb_diff = max (0, sub_lb_max - average);
+      if (sub_lb_diff >= best_diff)
+        continue;
+      endif
+
+      new_assign = current_assign;
+      new_assign (k) = j;
+      rec (k + 1, new_sums, new_assign);
+    endfor
+  endfunction
+
+  rec (1, zeros (1, num_parts), zeros (1, n));
+
+  partition = best_partition;
+  groupsizes = cellfun (@sum, partition);
+
+  idx_cell = convert_to_indices (partition, numbers);
+  groupindex = zeros (size (numbers));
+  for j = 1:num_parts
+    groupindex(idx_cell{j}) = j;
+  endfor
 
   if (iscolumn (numbers))
     groupsizes = groupsizes';
@@ -230,49 +236,13 @@ function indices = convert_to_indices (parts, original_numbers)
     for val = parts{i}
       pos = find (numbers_copy == val, 1);
       if (isempty (pos))
-        error ("Value %d not found during index conversion", val);
+        error ("Value %g not found during index conversion", val);
       endif
       idxs = [idxs, pos];
       numbers_copy(pos) = NaN;
     endfor
     indices{i} = idxs;
   endfor
-endfunction
-
-function new_nodes = combine_partitions (node1, node2, start_id)
-  parts1 = node1.parts;
-  parts2 = node2.parts;
-  num_parts = numel (parts1);
-
-  all_perm = perms (1:num_parts);
-  num_perm = size (all_perm, 1);
-  new_nodes = cell (1, num_perm);
-
-  for idx = 1:num_perm
-    p_row = all_perm(idx, :);
-    combined_parts = cell (1, num_parts);
-    combined_sums = zeros (1, num_parts);
-
-    for i = 1:num_parts
-      combined_parts{i} = [parts1{p_row(i)}, parts2{i}];
-      combined_sums(i) = sum (combined_parts{i});
-    endfor
-
-    part_diff = max (combined_sums) - min (combined_sums);
-
-    new_node = struct ('parts', {combined_parts}, 'sums', combined_sums, ...
-                       'diff', part_diff, 'id', start_id + idx - 1);
-
-    new_nodes{idx} = new_node;
-  endfor
-endfunction
-
-function bound = calculate_lower_bound (nodes, num_parts)
-  all_sums = cellfun (@(x) x.sums, nodes, "UniformOutput", false);
-  all_sums = [all_sums{:}];
-  total = sum (all_sums);
-  max_val = max (all_sums);
-  bound = max_val - (total - max_val) / (num_parts - 1);
 endfunction
 
 ## Test completeKK method
