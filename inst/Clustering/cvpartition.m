@@ -598,10 +598,10 @@ classdef cvpartition
                 indices(inds == i) = i;
               endfor
             else
-              if (k <= 3 && NumGroups <= 5)
+              if (k <= 10 && NumGroups <= 5)
                 [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
               else
-                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k);
+                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'greedy');
               endif
               for i = 1:k
                 idxGV = find (GroupIdx == i);
@@ -756,6 +756,7 @@ classdef cvpartition
             inds = nan (X, 1);
             pooled_inds = false (X, 1);
             do_warn = true;
+            do_ceil = false;
             for i = 1:NumClasses
               ## Check that the elements in each class exceed the number of
               ## requested folds, otherwise emit a warning and add the class
@@ -768,9 +769,22 @@ classdef cvpartition
                   do_warn = false;
                 endif
                 pooled_inds = pooled_inds | classes == i;
+              elseif (fix (X / k) == X / k)
+                ## Make sure that when X / k = integer, all
+                ## test/training sizes must be equal across all folds
+                if (do_ceil)
+                  idx = ceil ((0:(ClassSize(i)-1))' * (k / ClassSize(i)));
+                  idx(idx == 0) = max (idx);
+                  do_ceil = false;
+                else
+                  idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
+                  tmp = arrayfun (@(x) numel (find (x == idx)), [1:k]);
+                  if (any (diff (tmp)))
+                    do_ceil = true;
+                  endif
+                endif
+                inds(classes == i) = randsample (idx, ClassSize(i));
               else
-                ## FIX ME: we have to make sure that when X / k = integer, all
-                ## test/train sizes must be equal across all folds
                 idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
                 inds(classes == i) = randsample (idx, ClassSize(i));
               endif
@@ -778,6 +792,9 @@ classdef cvpartition
             ## Stratify pooled classes (if any)
             pooled_size = sum (pooled_inds);
             if (pooled_size)
+              ## Pooled classes must be distributed in a way to make all
+              ## folds as equal as possible.  If X / k = integer, then
+              ## all folds must have equal test/training sizes
               idx = floor ((0:(pooled_size-1))' * (k / pooled_size)) + 1;
               inds(pooled_inds) = randsample (idx, pooled_size);
             endif
