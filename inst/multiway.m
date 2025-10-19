@@ -83,7 +83,7 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, method)
     if (numel (numbers) <= 10 && num_parts <= 5)
       method = 'completeKK';
     else
-    method = 'greedy';
+      method = 'greedy';
     endif
   elseif (! (ischar (method) && isvector (method)))
     error ("multiway: METHOD value must be a character vector.");

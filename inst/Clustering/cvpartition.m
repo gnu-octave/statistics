@@ -591,18 +591,14 @@ classdef cvpartition
                 k = NumGroups;
             endif
             ## If k == NumGroups, then each group becomes a test in a fold.
-            ## If k < NumGroups, then use cluster NumGroups to k folds.
+            ## If k < NumGroups, then cluster NumGroups to k folds.
             indices = zeros (X, 1);
             if (k == NumGroups)
               for i = 1:k
                 indices(inds == i) = i;
               endfor
             else
-              if (k <= 10 && NumGroups <= 5)
-                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
-              else
-                [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'greedy');
-              endif
+              [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
               for i = 1:k
                 idxGV = find (GroupIdx == i);
                 vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
@@ -745,8 +741,8 @@ classdef cvpartition
                              " an integer scalar in the range [1, n)."));
             endif
           else
-            if (X <= 10)
-              k = X - 1;
+            if (X < 10)
+              k = X;
             else
               k = 10;
             endif
@@ -758,10 +754,12 @@ classdef cvpartition
             do_warn = true;
             do_ceil = false;
             for i = 1:NumClasses
+              cls_size = ClassSize(i);
+              cls_k_eq = fix (cls_size / k) == (cls_size / k);
               ## Check that the elements in each class exceed the number of
               ## requested folds, otherwise emit a warning and add the class
               ## elements into a pooled class
-              if (ClassSize(i) < k)
+              if (cls_size < k)
                 if (do_warn)
                   warning (strcat ("One or more of the unique class values", ...
                                    " in the stratification variable is not", ...
@@ -772,21 +770,31 @@ classdef cvpartition
               elseif (fix (X / k) == X / k)
                 ## Make sure that when X / k = integer, all
                 ## test/training sizes must be equal across all folds
-                if (do_ceil)
-                  idx = ceil ((0:(ClassSize(i)-1))' * (k / ClassSize(i)));
+                if (do_ceil && ! cls_k_eq)
+                  idx = ceil ((0:(cls_size - 1))' * (k / cls_size));
                   idx(idx == 0) = max (idx);
                   do_ceil = false;
                 else
-                  idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
+                  idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
                   tmp = arrayfun (@(x) numel (find (x == idx)), [1:k]);
                   if (any (diff (tmp)))
                     do_ceil = true;
                   endif
                 endif
-                inds(classes == i) = randsample (idx, ClassSize(i));
+                inds(classes == i) = randsample (idx, cls_size);
               else
-                idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
-                inds(classes == i) = randsample (idx, ClassSize(i));
+                ## Alternate ordering over classes so that
+                ## the subsets are more nearly the same size
+                if (! do_ceil || cls_k_eq)
+                  idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                  if (! cls_k_eq)
+                    do_ceil = true;
+                  endif
+                else
+                  idx = floor (((cls_size - 1):-1:0)' * (k / cls_size)) + 1;
+                  do_ceil = false;
+                endif
+                inds(classes == i) = randsample (idx, cls_size);
               endif
             endfor
             ## Stratify pooled classes (if any)
