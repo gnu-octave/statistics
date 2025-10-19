@@ -207,3 +207,45 @@
 
  ** ztest: fix second output for one-tailed tests (#199, #200)
 
+
+ Summary of important user-visible changes for statistics 1.7.6:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ New functions:
+ ==============
+
+ ** factoran (#257)
+
+ ** nanmean (#239)
+
+ Improvements:
+ =============
+
+ ** Update documentation add demos to all distrbution objects. Several minor
+    bug fixes.
+
+ ** ClassificationDiscriminant: improve documentation, allow changing 'Cost'
+                                and 'Prior' properties in existing objects
+
+ ** ClassificationKNN: 'predict' can use either exhaustive or kdtree method
+
+ ** crosstab: fix NaN input handling, improve efficiency (#214, #219)
+
+ ** crossval: fix MATLAB compatibility (#217, #223, #229)
+
+ ** cvpartition: fix MATLAB compatibility (#227)
+
+ ** multiway: simplified function signature, improved efficiency (#258, #259)
+
+ ** nansum: fix MATLAB compatibility to handle 'vecdim' and 'all' options
+
+ ** pdist2: fix returning the smallest/largest K values for single output
+
+ ** tcdf: improve speed and fix edge case in processing small DF (#232)
+
+ ** ztest2: improve input validation (#226)
