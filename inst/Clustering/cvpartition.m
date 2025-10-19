@@ -750,7 +750,7 @@ classdef cvpartition
           this.NumTestSets = k;
           if (this.IsStratified)
             inds = nan (X, 1);
-            pooled_inds = false (X, 1);
+            pooled_idx = false (X, 1);
             do_warn = true;
             do_ceil = false;
             for i = 1:NumClasses
@@ -766,7 +766,7 @@ classdef cvpartition
                                    " present in one or more folds."));
                   do_warn = false;
                 endif
-                pooled_inds = pooled_inds | classes == i;
+                pooled_idx = pooled_idx | classes == i;
               elseif (fix (X / k) == X / k)
                 ## Make sure that when X / k = integer, all
                 ## test/training sizes must be equal across all folds
@@ -797,15 +797,21 @@ classdef cvpartition
                 inds(classes == i) = randsample (idx, cls_size);
               endif
             endfor
-            ## Stratify pooled classes (if any)
-            pooled_size = sum (pooled_inds);
-            if (pooled_size)
-              ## Pooled classes must be distributed in a way to make all
-              ## folds as equal as possible.  If X / k = integer, then
-              ## all folds must have equal test/training sizes
-              idx = floor ((0:(pooled_size-1))' * (k / pooled_size)) + 1;
-              inds(pooled_inds) = randsample (idx, pooled_size);
-            endif
+            ## Stratify pooled classes (if any).  They must be distributed
+            ## in a way to make the test/training sizes as equal as possible
+            ## across folds.
+            pooled_inds = find (pooled_idx);
+            while (numel (pooled_inds) > 0)
+              tmp = arrayfun (@(x) numel (find (x == inds)), [1:k]);
+              [min_cls, min_idx] = min (tmp);
+              [max_cls, max_idx] = max (tmp);
+              if (min_cls != max_cls)
+                inds(pooled_inds(1)) = min_idx;
+              else
+                inds(pooled_inds(1)) = randsample (k, 1);
+              endif
+              pooled_inds(1) = [];
+            endwhile
             this.cvptype = 'Stratified K-fold cross validation partition';
           else
             inds = floor ((0:(X - 1))' * (k / X)) + 1;
@@ -1031,17 +1037,68 @@ classdef cvpartition
             ClassSize(i) = sum (classes == i);
           endfor
           inds = nan (X, 1);
+          pooled_idx = false (X, 1);
+          do_warn = true;
+          do_ceil = false;
           for i = 1:NumClasses
-            ## Alternate ordering over classes so that
-            ## the subsets are more nearly the same size
-            if (mod (i, 2))
-              idx = floor ((0:(ClassSize(i)-1))' * (k / ClassSize(i))) + 1;
-              inds(classes == i) = randsample (idx, ClassSize(i));
+            cls_size = ClassSize(i);
+            cls_k_eq = fix (cls_size / k) == (cls_size / k);
+            ## Check that the elements in each class exceed the number of
+            ## requested folds, otherwise emit a warning and add the class
+            ## elements into a pooled class
+            if (cls_size < k)
+              if (do_warn)
+                warning (strcat ("One or more of the unique class values", ...
+                                 " in the stratification variable is not", ...
+                                 " present in one or more folds."));
+                do_warn = false;
+              endif
+              pooled_idx = pooled_idx | classes == i;
+            elseif (fix (X / k) == X / k)
+              ## Make sure that when X / k = integer, all
+              ## test/training sizes must be equal across all folds
+              if (do_ceil && ! cls_k_eq)
+                idx = ceil ((0:(cls_size - 1))' * (k / cls_size));
+                idx(idx == 0) = max (idx);
+                do_ceil = false;
+              else
+                idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                tmp = arrayfun (@(x) numel (find (x == idx)), [1:k]);
+                if (any (diff (tmp)))
+                  do_ceil = true;
+                endif
+              endif
+              inds(classes == i) = randsample (idx, cls_size);
             else
-              idx = floor (((ClassSize(i)-1):-1:0)' * (k / ClassSize(i))) + 1;
-              inds(classes == i) = randsample (idx, ClassSize(i));
+              ## Alternate ordering over classes so that
+              ## the subsets are more nearly the same size
+              if (! do_ceil || cls_k_eq)
+                idx = floor ((0:(cls_size - 1))' * (k / cls_size)) + 1;
+                if (! cls_k_eq)
+                  do_ceil = true;
+                endif
+              else
+                idx = floor (((cls_size - 1):-1:0)' * (k / cls_size)) + 1;
+                do_ceil = false;
+              endif
+              inds(classes == i) = randsample (idx, cls_size);
             endif
           endfor
+          ## Stratify pooled classes (if any).  They must be distributed
+          ## in a way to make the test/training sizes as equal as possible
+          ## across folds.
+          pooled_inds = find (pooled_idx);
+          while (numel (pooled_inds) > 0)
+            tmp = arrayfun (@(x) numel (find (x == inds)), [1:k]);
+            [min_cls, min_idx] = min (tmp);
+            [max_cls, max_idx] = max (tmp);
+            if (min_cls != max_cls)
+              inds(pooled_inds(1)) = min_idx;
+            else
+              inds(pooled_inds(1)) = randsample (k, 1);
+            endif
+            pooled_inds(1) = [];
+          endwhile
           this.indices = inds;
           nvec = X * ones (1, k);
           for i = 1:k
