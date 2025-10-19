@@ -50,7 +50,7 @@ MacOS users, who wish to enable parallel processing for the [`fitncet`](https://
 After installation, type:
 - `pkg load statistics` to load the **statistics** package.
 - `news statistics` to review all the user visible changes since last version.
-- `pkg test statistics` to run a test suite for all 452 [^1] functions and class definitions currently available and ensure that they work properly on your system.
+- `pkg test statistics` to run a test suite for all 454 [^1] functions and class definitions currently available and ensure that they work properly on your system.
 
 [^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
