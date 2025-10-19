@@ -860,7 +860,8 @@ classdef cvpartition
     ## to @qcode{cvpartition} objects @var{C} that use k-fold partitioning and
     ## it will repartition @var{C} in the same non-random manner that was
     ## previously used by the old-style @qcode{cvpartition} class of the
-    ## statistics package.
+    ## statistics package.  The @qcode{'legacy'} option does not apply to
+    ## stratified or grouped partitions.
     ##
     ## @seealso{cvpartition, summary, test, training}
     ## @end deftypefn
@@ -885,73 +886,10 @@ classdef cvpartition
               this.TestSize(i) = sum (inds == i);
             endfor
             this.TrainSize = nvec - this.TestSize;
-          elseif (this.IsGrouped)
-            grpvars = this.grpvars;
-            if (isvector (grpvars))
-              if (isa (grpvars, 'categorical'))
-                [~, idx, inds] = unique (grpvars, 'stable');
-              else
-                [~, idx, inds] = __unique__ (grpvars, 'stable');
-              endif
-            else
-              if (isa (grpvars, 'categorical'))
-                [~, idx, inds] = unique (grpvars, 'rows', 'stable');
-              else
-                [~, idx, inds] = __unique__ (grpvars, 'rows', 'stable');
-              endif
-            endif
-            ## Get number of groups and group sizes
-            NumGroups = numel (idx);
-            for i = 1:NumGroups
-              GroupSize(i) = sum (inds == i);
-            endfor
-            ## Each k-fold attempts to split the groups to equal sizes in such
-            ## a way so that eash test set contains unique groups that are not
-            ## present in the corresponding training set but also not shared
-            ## with other test sets.
-            GroupIdx = multiway (GroupSize, k);
-            indices = zeros (X, 1);
-            for i = 1:k
-              idxGV = inds(idx(GroupIdx == i));
-              vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
-              index = vecGV{1};
-              if (numel (vecGV) > 1)
-                for j = 2:numel (vecGV)
-                  index = index | vecGV{j};
-                endfor
-              endif
-              indices(index) = i;
-            endfor
-            this.indices = indices;
-            nvec = X * ones (1, k);
-            for i = 1:k
-              this.TestSize(i) = sum (this.indices == i);
-            endfor
-            this.TrainSize = nvec - this.TestSize;
-          else  # is stratified
-            NumClasses = numel (this.classID);
-            classes = this.classes;
-            for i = 1:NumClasses
-              ClassSize(i) = sum (classes == i);
-            endfor
-            inds = nan (X, 1);
-            for i = 1:NumClasses
-              ## Alternate ordering over classes so that
-              ## the subsets are more nearly the same size
-              if (mod (i, 2))
-                inds(classes == i) = floor ((0:(ClassSize(i)-1))' * ...
-                                            (k / ClassSize(i))) + 1;
-              else
-                inds(classes == i) = floor (((ClassSize(i)-1):-1:0)' * ...
-                                            (k / ClassSize(i))) + 1;
-              endif
-            endfor
-            this.indices = inds;
-            nvec = X * ones (1, k);
-            for i = 1:k
-              this.TestSize(i) = sum (inds == i);
-            endfor
-            this.TrainSize = nvec - this.TestSize;
+          else  # legacy option does not apply for grouped or stratified
+            error (strcat ("cvpartition.repartition: 'legacy' flag does", ...
+                           " not apply to stratified or grouped 'kfold'", ...
+                           " partitioned objects."));
           endif
           return;
         else
@@ -1604,18 +1542,18 @@ endclassdef
 %! assert (cv.Type, 'kfold');
 %! assert (cv.NumObservations, 12);
 %! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [7, 5]);
-%! assert (cv.TestSize, [5, 7]);
+%! assert (cv.TrainSize, [5, 7]);
+%! assert (cv.TestSize, [7, 5]);
 %! assert (cv.IsCustom, false);
 %! assert (cv.IsGrouped, true);
 %! assert (cv.IsStratified, false);
 %! assert (test (cv, 1), ! training (cv, 1));
 %! assert (test (cv, 'all'), ! training (cv, 'all'));
 %! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [5, 7]);
-%! assert (sum (training (cv, 'all')), [7, 5]);
-%! assert (test (cv, 1)', grpvar != 2);
-%! assert (test (cv, 2)', grpvar == 2);
+%! assert (sum (test (cv, 'all')), [7, 5]);
+%! assert (sum (training (cv, 'all')), [5, 7]);
+%! assert (test (cv, 1)', grpvar == 2);
+%! assert (test (cv, 2)', grpvar != 2);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3];
 %! rand ('seed', 5);
@@ -1656,6 +1594,81 @@ endclassdef
 %! assert (test (cv, 2)', grpvar != 3);
 
 ## Test output results for vector input X
+%!test
+%! rand ('seed', 5);
+%! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 3);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 7);
+%! assert (cv.TestSize, 3);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, true);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv), logical ([0, 0, 0, 0, 1, 0, 1, 0, 0, 1])');
+%!test
+%! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 4);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 6);
+%! assert (cv.TestSize, 4);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, true);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (sum (test (cv)(1:5)), 2);
+%! assert (sum (test (cv)(6:10)), 2);
+%!test
+%! grpvar = [1, 1, 1, 1, 1, 2, 2, 2, 2, 2];
+%! rand ('seed', 5);
+%! cv = cvpartition (grpvar, 'holdout', 4, 'Stratify', false);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 6);
+%! assert (cv.TestSize, 4);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (sum (test (cv)(1:5)), 3);
+%! assert (sum (test (cv)(6:10)), 1);
+%!test
+%! cv = cvpartition ([1 1 1 1 1 2 2 2 2 1], 'kfold', 2);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [5, 5]);
+%! assert (cv.TestSize, [5, 5]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, true);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (sum (test (cv, 1)(1:5)), 3);
+%! assert (sum (test (cv, 2)(1:5)), 2);
+%! assert (sum (test (cv, 1)(6:10)), 2);
+%! assert (sum (test (cv, 2)(6:10)), 3);
+%!test
+%! grpvar = [1 1 1 1 1 2 2 2 2 1];
+%! rand ('seed', 5);
+%! cv = cvpartition (grpvar, 'kfold', 2, 'Stratify', false);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 10);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [5, 5]);
+%! assert (cv.TestSize, [5, 5]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, false);
+%! assert (test (cv, 1), ! training (cv, 1));
+%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert (sum (test (cv, 1)(1:5)), 4);
+%! assert (sum (test (cv, 2)(1:5)), 1);
+%! assert (sum (test (cv, 1)(6:10)), 1);
+%! assert (sum (test (cv, 2)(6:10)), 4);
 
 ## Test input validation
 %!error <cvpartition: too few input arguments.> cvpartition (2)
@@ -1767,6 +1780,8 @@ endclassdef
 
 %!error <cvpartition.repartition: cannot repartition a custom partition.> ...
 %! repartition (cvpartition ('CustomPartition', [1,1,2,2,3,3]))
+%!error <cvpartition.repartition: 'legacy' flag does not apply to stratified or grouped 'kfold' partitioned objects.> ...
+%! repartition (cvpartition ([1 1 1 1 1 2 2 2 2 1], 'kfold', 2, 'Stratify', true), 'legacy')
 %!error <cvpartition.repartition: 'legacy' flag is only valid for 'kfold' partitioned objects.> ...
 %! repartition (cvpartition (20, 'Leaveout', 0.2), 'legacy')
 %!error <cvpartition.repartition: SVAL must be a real scalar or vector.> ...
