@@ -38,9 +38,11 @@
 ##
 ## @code{@var{groupindex} = multiway (@var{numbers}, @var{num_parts},
 ## @var{method})} also specifies the algorithm used for partitioning the set of
-## numbers.  By default, @code{multiway} uses the greedy algorithm, which is
-## optimized for speed, but may not return the optimal partitioning.  The
-## following methods are supported:
+## numbers.  By default, @code{multiway} uses the complete Karmarkar-Karp
+## algorithm, when the set of numbers contains up to 10 elements and the
+## requested number of subsets does not exceed 5, otherwise it defaults to the
+## greedy algorithm, which is optimized for speed, but may not return the
+## optimal partitioning.  The following methods are supported:
 ##
 ## @itemize
 ## @item @qcode{'greedy'} (Greedy algorithm)
@@ -78,7 +80,11 @@ function [gindex, partition, gsize] = multiway (numbers, num_parts, method)
   if (nargin < 2)
     error ("multiway: too few input arguments.");
   elseif (nargin == 2)
+    if (numel (numbers) <= 10 && num_parts <= 5)
+      method = 'completeKK';
+    else
     method = 'greedy';
+    endif
   elseif (! (ischar (method) && isvector (method)))
     error ("multiway: METHOD value must be a character vector.");
   endif
@@ -304,8 +310,13 @@ endfunction
 %! [~, partition] = multiway (numbers, num_parts, "greedy");
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
-## Test column vector input
+## Test algorithm switch
+%!test
+%! grpidx_ckk = multiway ([3 2 4 3 9 3 64], 3);
+%! grpidx_greedy = multiway ([3 2 4 3 9 3 64], 3, 'greedy');
+%! assert (isequal (grpidx_ckk, grpidx_greedy), false);
 
+## Test column vector input
 %!test
 %! numbers = [4; 5; 6; 7; 8];
 %! num_parts = 2;
@@ -321,7 +332,6 @@ endfunction
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
 
 ## Test row vector input
-
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
