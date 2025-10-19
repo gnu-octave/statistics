@@ -5,20 +5,25 @@ This is the official repository for the Statistics package for GNU Octave.
 **Content:**
 
 1. [About](#1-about)
-2. [Documentation](#2-documentation)
-3. [Install statistics](#3-install-statistics)
-4. [Provide feedback](#4-provide-feedback)
-5. [Contribute](#5-contribute)
+2. [Planning](#2-planning)
+3. [Documentation](#2-documentation)
+4. [Install statistics](#3-install-statistics)
+5. [Provide feedback](#4-provide-feedback)
+6. [Contribute](#5-contribute)
 
 ## 1. About
 
-The **statistics** package is a collection of functions for statistical analysis. As with GNU Octave, the **statistics** package aims to be mostly compatible with MATLAB's equivalent Statistics and Machine Learning Toolbox. However, this is not always applicable of even possible. Hence, identical (in name) functions do not necessarily share the same functionality or behavior. Nevertheless, they produce consistent and correct results, unless there is a bug: see [Murphy's Law](https://en.wikipedia.org/wiki/Murphy's_law) :smile:.
+The **statistics** package is a collection of functions for statistical analysis. As with GNU Octave, the **statistics** package aims to be mostly compatible with MATLAB's equivalent Statistics and Machine Learning Toolbox. However, this is not always applicable, desirable, or even possible. Hence, identical (in name) functions do not necessarily share the same functionality or behavior. Nevertheless, they produce consistent and correct results, unless there is a bug: see [Murphy's Law](https://en.wikipedia.org/wiki/Murphy's_law) :smile:.
 
-As of 10.6.2022, the development of the **statistics** package was moved from [SourceForge](https://octave.sourceforge.io/statistics/) and [Mercurial](https://en.wikipedia.org/wiki/Mercurial) to [GitHub](https://github.com/gnu-octave/statistics) and [Git](https://en.wikipedia.org/wiki/Git). Given the opportunity of this transition, the package has been redesigned, as compared to the its previous point [release 1.4.3](https://octave.sourceforge.io/download.php?package=statistics-1.4.3.tar.gz) at SourceForge, with the aim to keep its structure simplified and easier to maintain. To this end, two major decisions have been made:
+## 2. Planning
+
+As of 10.6.2022, the development of the **statistics** package was moved from [SourceForge](https://octave.sourceforge.io/statistics/) and [Mercurial](https://en.wikipedia.org/wiki/Mercurial) to [GitHub](https://github.com/gnu-octave/statistics) and [Git](https://en.wikipedia.org/wiki/Git). Given the opportunity of this transition, the package has been redesigned, as compared to the its previous point [release 1.4.3](https://octave.sourceforge.io/download.php?package=statistics-1.4.3.tar.gz) at SourceForge, with the aim to keep its structure simplified and easier to maintain. To this end, two major decisions were made:
 - Keep a single dependency to the last two major point releases of GNU Octave.
 - Deprecate old functions once their fully Matlab compatible equivalents are implemented.
 
-## 2. Documentation
+Since then (moving to GitHub), more than 3 years have passed and 19 releases were made, introducing considered improvements to the **statistics** package. As of 19.10.2025, landmarked by point [release 1.7.6](https://github.com/gnu-octave/statistics/releases/tag/release-1.7.6), a new road map is laid out for future development, since there are no remaining old functions to deprecate and, most importantly, the rule of a single dependency to core Octave is prohibiting further improvements with respect to MATLAB compatibility. To this end, the next major release of the statistics package (**1.8.0**), which will (hopefully, but most likely) coinside with the release of Octave 11, it will introduce a package dependency to the [`datatypes`](https://github.com/pr0m1th3as/datatypes) package in order to keep advancing the functionality of existing functions (and enhancing their MATLAB compatibility) as well as introduce new functionality, which requires new datatypes essential to statistical analysis, such as categorical values.
+
+## 3. Documentation
 All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of methods of classdefs objects. For example:
 ```
 help ClassificationKNN.predict
@@ -29,7 +34,7 @@ You can also find the entire documentation of the **statistics** package along w
 package_texi2html ("statistics")
 ```
 
-## 3. Install statistics
+## 4. Install statistics
 
 To install the latest release, you need Octave (>=8.1.0) installed on your system. Install it by typing:
 
@@ -54,7 +59,7 @@ After installation, type:
 
 [^1]: Several functions are still missing from the statistics package, but you are welcome to [contribute](https://github.com/gnu-octave/statistics/blob/main/CONTRIBUTING.md)!
 
-## 4. Provide feedback
+## 5. Provide feedback
 
 You are encouraged to provide feedback regarding possible bugs, missing features[^2], discrepancies or incompatibilities with Matlab functions. You may open an [issue](https://github.com/gnu-octave/statistics/issues) to open a discussion to your particular case. **Please, do NOT use the issue tracker for requesting help.** Use the [discourse group](https://octave.discourse.group/c/help/6) for requesting help with using functions and programming in Octave.
 
@@ -62,7 +67,7 @@ Please, make sure that when reporting a bug you provide as much information as p
 
 [^2]: Don't open an issue just for requesting a missing function! Implement it yourself and make an invaluable contribution :innocent:
 
-## 5. Contribute
+## 6. Contribute
 
 The **statistics** package is **open source**! Everyone is welcome to contribute.
 
