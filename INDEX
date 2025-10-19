@@ -70,6 +70,7 @@ Descriptive Statistics
  mean
  median
  nanmax
+ nanmean
  nanmin
  nansum
  std
