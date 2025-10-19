@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -1371,23 +1373,23 @@ CMdl =
 
   ClassificationPartitionedModel object with properties:
 
-                   BinEdges: [0x0 double]
-      CategoricalPredictors: [0x0 double]
+                   BinEdges: []
+      CategoricalPredictors: []
+                          X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]
+                          Y: [150x1 cell]
                  ClassNames: [3x1 cell]
-                       Cost: [3x3 double]
-        CrossValidatedModel: ClassificationDiscriminant
-                      KFold: [1x1 double]
+                       Cost: [0, 1, 1; 1, 0, 1; 1, 1, 0]
+        CrossValidatedModel: 'ClassificationDiscriminant'
+                      KFold: 10
             ModelParameters: [1x1 struct]
-            NumObservations: [1x1 double]
+            NumObservations: 150
                   Partition: [1x1 cvpartition]
              PredictorNames: [1x4 cell]
-                      Prior: [3x1 double]
-               ResponseName: Y
-             ScoreTransform: none
-                Standardize: [0x0 double]
+                      Prior: [0.3333; 0.3333; 0.3333]
+               ResponseName: 'Y'
+             ScoreTransform: 'none'
+                Standardize: []
                     Trained: [10x1 cell]
-                          X: [150x4 double]
-                          Y: [150x1 cell]
 </pre></td></tr>
                   </table>
 

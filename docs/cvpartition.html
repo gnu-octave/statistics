@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -1128,7 +1130,8 @@ Repartition data for cross-validation.
  with each fold containing the same combination of group labels as defined
  by <var>grpvars</var>.  The grouping variables specified in <var>grpvars</var> can
  be one of the following:
- </p><ul>
+</p>
+ <ul>
 <li> A numeric vector, logical vector, categorical vector, character
  array, string array, or cell array of character vectors containing one
  grouping variable.
@@ -1195,23 +1198,23 @@ Repartition data for cross-validation.
  validation, which is stratified if <var>opt</var> is <code>true</code>, or
  nonstratified if <var>opt</var> is <code>false</code>.
 </p>
-<p> <code><var>C</var> =</code> cvpartition (<code>'CustomPartition'</code>, <var>testSets</var>)
+<p> <code><var>C</var> = cvpartition (<code>'CustomPartition'</code>, <var>testSets</var>)</code>
  creates a custom partition according to <var>testSets</var>, which can be a
  positive integer vector, a logical vector, or a logical matrix according
  to the following options:
  </p><ul>
-<li> A positive integer vector of length <math>n</math> with values in the
- range <math>[1,k]</math>, where <math>k &lt; n</math>, will specify a k-fold
+<li> A positive integer vector of length <math>N</math> with values in the
+ range <math>[1,K]</math>, where <math>K &lt; N</math>, will specify a K-fold
  cross-validation partition, in which each value indicates the test set
  of each observation.  Alternatively, the same vector with values in the
- range <math>[1,n]</math> will specify a leave-one-out cross-validation.
+ range <math>[1,N]</math> will specify a leave-one-out cross-validation.
  </li><li> A logical vector will specify a holdout validation, in which the
  <code>true</code> elements correspond to the test set and the <code>false</code>
  elements correspond to the training set.
- </li><li> A logical matrix with <math>k</math> columns will specify a k-fold
+ </li><li> A logical matrix with <math>K</math> columns will specify a K-fold
  cross-validation partition, in which each column corresponds to a fold
- and each row to an observation.  Alternatively, an <math>n&times;n</math> logical
- matrix will specify a leave-one-out cross-validation, where <math>n</math> is
+ and each row to an observation.  Alternatively, an <math>N&times;N</math> logical
+ matrix will specify a leave-one-out cross-validation, where <math>N</math> is
  the number of observations.  <code>true</code> elements correspond to the
  test set and the <code>false</code> elements correspond to the training set.
  </li></ul>
@@ -1273,7 +1276,8 @@ Repartition data for cross-validation.
  to <code>cvpartition</code> objects <var>C</var> that use k-fold partitioning and
  it will repartition <var>C</var> in the same non-random manner that was
  previously used by the old-style <code>cvpartition</code> class of the
- statistics package.
+ statistics package.  The <code>'legacy'</code> option does not apply to
+ stratified or grouped partitions.
 </p>
 <p> <strong>See also: </strong>
   <a href="cvpartition.html">cvpartition</a>, 
@@ -1355,7 +1359,7 @@ Test indices for cross-validation.
 <p> </p>
 <p> <code><var>idx</var> = test (<var>C</var>)</code> returns a logical vector <var>idx</var> with
  <code>true</code> values indicating the elements corresponding to the test
- set defined in the code{cvpartition object <var>C</var>.  For k-fold and
+ set defined in the code{cvpartition object <var>C</var>.  For K-fold and
  leave-one-out partitions, the indices corresponding to the first test set
  are returned.
 </p>
@@ -1370,7 +1374,7 @@ Test indices for cross-validation.
 <p> <code><var>idx</var> = test (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical vector
  or matrix for all test sets defined in the <code>cvpartition</code> object
  <var>C</var>.  For holdout and resubstitution partition types, a vector is
- returned.  For k-fold and leave-one-out, a matrix is returned.
+ returned.  For K-fold and leave-one-out, a matrix is returned.
 </p>
 <p> <strong>See also: </strong>
   <a href="cvpartition.html">cvpartition</a>, 
@@ -1411,7 +1415,7 @@ Training indices for cross-validation.
 <p> </p>
 <p> <code><var>idx</var> = training (<var>C</var>)</code> returns a logical vector <var>idx</var>
  with <code>true</code> values indicating the elements corresponding to the
- training set defined in the code{cvpartition object <var>C</var>.  For k-fold
+ training set defined in the code{cvpartition object <var>C</var>.  For K-fold
  and leave-one-out partitions, the indices corresponding to the first
  training set are returned.
 </p>
@@ -1426,7 +1430,7 @@ Training indices for cross-validation.
 <p> <code><var>idx</var> = training (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical
  vector or matrix for all training sets defined in the <code>cvpartition</code>
  object <var>C</var>.  For holdout and resubstitution partition types, a vector
- is returned.  For k-fold and leave-one-out, a matrix is returned.
+ is returned.  For K-fold and leave-one-out, a matrix is returned.
 </p>
 <p> <strong>See also: </strong>
   <a href="cvpartition.html">cvpartition</a>, 

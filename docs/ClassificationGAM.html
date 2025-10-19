@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -1665,27 +1667,27 @@ obj =
 
   ClassificationGAM object with properties:
 
-            BaseModel: [1x1 struct]
-           ClassNames: [2x1 cell]
-                 Cost: [2x2 double]
-                  DoF: [1x2 double]
-              Formula: [0x0 double]
-            IntMatrix: [1x1 double]
-         Interactions: all
-                Knots: [1x2 double]
-         LearningRate: [1x1 double]
-            ModelwInt: [1x1 struct]
-        NumIterations: [1x1 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-                Order: [1x2 double]
+                    X: [1, 2; 2, 3; 3, 3; 4, 5; 5, 5; ...]
+                    Y: [0; 0; 0; 0; 0; 1; 1; 1; 1; 1]
+      NumObservations: 10
+             RowsUsed: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1]
+        NumPredictors: 2
        PredictorNames: [1x2 cell]
-                Prior: [0x0 double]
-         ResponseName: Y
-             RowsUsed: [10x1 double]
-       ScoreTransform: none
-                    X: [10x2 double]
-                    Y: [10x1 double]
+         ResponseName: "Y"
+           ClassNames: [2x1 cell]
+                Prior: []
+                 Cost: [0, 1; 1, 0]
+       ScoreTransform: 'none'
+              Formula: []
+         Interactions: "all"
+                Knots: [5, 5]
+                Order: [3, 3]
+                  DoF: [8, 8]
+         LearningRate: 0.1000
+        NumIterations: 100
+            BaseModel: [1x1 struct]
+            ModelwInt: [1x1 struct]
+            IntMatrix: 2
 </pre></td></tr>
                   </table>
 

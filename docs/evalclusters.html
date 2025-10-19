@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -956,15 +958,15 @@ eva =
 
   CalinskiHarabaszEvaluation object with properties:
 
-      ClusteringFunction: kmeans
-           CriterionName: CalinskiHarabasz
-         CriterionValues: [1x6 double]
-              InspectedK: [1x6 double]
-                 Missing: [1x150 double]
-         NumObservations: [1x1 double]
-                OptimalK: [1x1 double]
-                OptimalY: [150x1 double]
-                       X: [150x4 double]
+      ClusteringFunction: 'kmeans'
+           CriterionName: "CalinskiHarabasz"
+         CriterionValues: [NaN, 513.92, 561.59, 530.77, 459.45, 469.51]
+              InspectedK: [1, 2, 3, 4, 5, 6]
+                 Missing: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...]
+         NumObservations: 150
+                OptimalK: 3
+                OptimalY: [3; 3; 3; 3; 3; 3; 3; 3; 3; 3; ...]
+                       X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]
 
 ans = -184.88
                     </pre></td></tr></tbody>

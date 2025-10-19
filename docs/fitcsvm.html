@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -1005,28 +1007,28 @@ SVMModel =
 
   ClassificationSVM object with properties:
 
-                    Alpha: [24x1 double]
-                     Beta: [0x0 double]
-                     Bias: [1x1 double]
-               ClassNames: [2x1 cell]
-                     Cost: [2x2 double]
-          IsSupportVector: [100x1 double]
-                    Model: [1x1 struct]
-          ModelParameters: [1x1 struct]
-                       Mu: [0x0 double]
-          NumObservations: [1x1 double]
-            NumPredictors: [1x1 double]
-           PredictorNames: [1x2 cell]
-                    Prior: [2x1 double]
-             ResponseName: Y
-                 RowsUsed: [100x1 double]
-           ScoreTransform: none
-                    Sigma: [0x0 double]
-              Standardize: 0
-      SupportVectorLabels: [100x1 double]
-           SupportVectors: [24x2 double]
-                        X: [100x2 double]
+                        X: [4.7000, 1.4000; 4.5000, 1.5000; 4.9000, 1.5000; 4, 1.3000; 4.6000, 1.5000; ...]
                         Y: [100x1 cell]
+          NumObservations: 100
+                 RowsUsed: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
+            NumPredictors: 2
+           PredictorNames: [1x2 cell]
+             ResponseName: "Y"
+               ClassNames: [2x1 cell]
+                    Prior: [0.5000; 0.5000]
+                     Cost: [0, 1; 1, 0]
+           ScoreTransform: 'none'
+              Standardize: 0
+                    Sigma: []
+                       Mu: []
+          ModelParameters: [1x1 struct]
+                    Model: [1x1 struct]
+                    Alpha: [0.7073; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
+                     Beta: []
+                     Bias: -14.415
+          IsSupportVector: [1; 0; 1; 0; 1; 0; 1; 0; 0; 0; ...]
+      SupportVectorLabels: [-1; 0; -1; 0; -1; 0; -1; 0; 0; 0; ...]
+           SupportVectors: [24x2 double]
 
 ans =
 

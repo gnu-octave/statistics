@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -2413,61 +2415,6 @@ Truncate a probability distribution.
  truncation interval.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot the PDF of a Poisson distribution, with lambda=5, truncated at [2, 10]
- ## intervals. Generate 10000 random samples from this truncated distribution and
- ## superimpose a histogram scaled accordingly
- rand ("seed", 21);
- data_all = poissrnd (5, 20000, 1);
- data = data_all(data_all >= 2 & data_all <= 10);
- data = data(1:10000);
-
- pd = fitdist (data, "Poisson");
- t = truncate (pd, 2, 10);
-
- ## Plot histogram and truncated PDF
- plot (t)
- hold on
- [counts, centers] = hist (data, 20);
- bin_width = centers(2) - centers(1);
- counts_norm = counts / (sum (counts) * bin_width);
- bar (centers, counts_norm, 1);
-
- title ("Poisson distribution (lambda=5) truncated at [2, 10]")
- legend ("Truncated PDF", "Histogram")
-
- ## This demonstrates truncating a Poisson distribution to a specific range
- ## and visualizing the result with random samples, useful for bounded count data.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/PoissonDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
 
             </div>

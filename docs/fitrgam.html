@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -927,22 +929,22 @@ a =
 
   RegressionGAM object with properties:
 
+                    X: [-0.5511, 0.9865; 0.8265, -0.9455; -0.6589, -0.5152; 0.087086, 0.4869; -0.7131, -0.6714; ...]
+                    Y: [1.0248; -1.8638; -0.5401; 1.0877; -0.9494; -1.5003; -0.8341; 0.1051; 1.1597; 0.3435; ...]
             BaseModel: [1x1 struct]
-                  DoF: [1x2 double]
-              Formula: [0x0 double]
-            IntMatrix: [0x0 double]
-         Interactions: [0x0 double]
-                Knots: [1x2 double]
-            ModelwInt: [0x0 double]
-      NumObservations: [1x1 double]
-        NumPredictors: [1x1 double]
-                Order: [1x2 double]
+            ModelwInt: []
+            IntMatrix: []
+      NumObservations: 50
+             RowsUsed: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
+        NumPredictors: 2
        PredictorNames: [1x2 cell]
-         ResponseName: Y
-             RowsUsed: [50x1 double]
-                  Tol: [1x1 double]
-                    X: [50x2 double]
-                    Y: [50x1 double]
+         ResponseName: "Y"
+              Formula: []
+         Interactions: []
+                Knots: [5, 5]
+                Order: [3, 3]
+                  DoF: [8, 8]
+                  Tol: 1.0000e-03
 
                     </pre></td></tr></tbody>
                   </table>

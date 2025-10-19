@@ -240,6 +240,7 @@
 					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
 					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
+					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
 					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
@@ -747,6 +748,7 @@
 					<li><a href="canoncorr.html" class="text-decoration-none font-monospace"><small>canoncorr</small></a></li>
 					<li><a href="cholcov.html" class="text-decoration-none font-monospace"><small>cholcov</small></a></li>
 					<li><a href="dcov.html" class="text-decoration-none font-monospace"><small>dcov</small></a></li>
+					<li><a href="factoran.html" class="text-decoration-none font-monospace"><small>factoran</small></a></li>
 					<li><a href="glmfit.html" class="text-decoration-none font-monospace"><small>glmfit</small></a></li>
 					<li><a href="glmval.html" class="text-decoration-none font-monospace"><small>glmval</small></a></li>
 					<li><a href="logistic_regression.html" class="text-decoration-none font-monospace"><small>logistic_regression</small></a></li>
@@ -791,31 +793,43 @@
             <div class="card-body">
 <dl>
 <dt><code><h5 class="fs">statistics: <var>groupindex</var> = <b>multiway</b> (<var>numbers</var>, <var>num_parts</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>] = <b>multiway</b> (<var>numbers</var>, <var>num_parts</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>, <var>groupsizes</var>] = <b>multiway</b> (<var>numbers</var>, <var>num_parts</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>multiway</b> (&hellip;, <code>&quot;method&quot;</code>, <var>method</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>groupindex</var> = <b>multiway</b> (<var>numbers</var>, <var>num_parts</var>, <var>method</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>] = <b>multiway</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>, <var>groupsizes</var>] = <b>multiway</b> (&hellip;)</code></h5></dt>
 </dl>
 
 <p> Solve the multiway number partitioning problem.
 </p>
 <div class="ms-5">
-<p> <code>multiway</code> partitions a set of numbers into a specified number of
- subsets such that the sums of the subsets are as equal as possible.
+<p> <code><var>groupindex</var> = multiway (<var>numbers</var>, <var>num_parts</var>)</code> splits
+ a set of numbers in <var>numbers</var> into a number of subsets specified in
+ <var>num_parts</var> such that the sums of the subsets are nearly as equal as
+ possible and returns a vector of group indices in <var>groupindex</var> with each
+ index corresponding to the set of numbers provided as input.
 </p>
-<p> <var>numbers</var> is a vector of positive real numbers to be partitioned.
-</p>
-<p> <var>num_parts</var> is a positive integer scalar specifying the number of
- partitions (subsets) to create.
-</p>
-<p> The optional parameter <code>&quot;method&quot;</code> specifies the algorithm used for
- partitioning.  Supported methods are:
- </p><ul>
-<li> <code>&quot;completeKK&quot;</code> (Complete Karmarkar-Karp)
- </li><li> <code>&quot;greedy&quot;</code> (Greedy algorithm)
+ <ul>
+<li> <var>numbers</var> is a vector of positive real numbers to be partitioned.
+ </li><li> <var>num_parts</var> is a positive integer scalar specifying the number of
+ partitions (subsets) to split the numbers into.
  </li></ul>
 
-<p> The output arguments are:
- </p><ul>
+<p> <code><var>groupindex</var> = multiway (<var>numbers</var>, <var>num_parts</var>,
+ <var>method</var>)</code> also specifies the algorithm used for partitioning the set of
+ numbers.  By default, <code>multiway</code> uses the complete Karmarkar-Karp
+ algorithm, when the set of numbers contains up to 10 elements and the
+ requested number of subsets does not exceed 5, otherwise it defaults to the
+ greedy algorithm, which is optimized for speed, but may not return the
+ optimal partitioning.  The following methods are supported:
+</p>
+ <ul>
+<li> <code>'greedy'</code> (Greedy algorithm)
+ </li><li> <code>'completeKK'</code> (Complete Karmarkar-Karp algorithm)
+ </li></ul>
+
+<p> The <code>multiway</code> function may return up to three output arguments
+ described below:
+</p>
+ <ul>
 <li>
  <var>groupindex</var>: A vector of the same length as <var>numbers</var> containing
  the group index (from 1 to <var>num_parts</var>) for each number.
@@ -833,7 +847,7 @@
  </pre><pre class="example"> </pre></td></tr></table>
 
 <p> <strong>See also: </strong>
-
+  <a href="cvpartition.html">cvpartition</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/multiway.m">multiway</a>
