@@ -13,6 +13,7 @@
 %! freq = round (probs * N);
 %! data = [];
 %! data = repelem (x_vals, freq);
+%! warning ("off", "all");
 %! pd = fitdist (data, "NegativeBinomial");
 %! t = truncate (pd, 2, 10);
 %!
