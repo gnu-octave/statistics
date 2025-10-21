@@ -534,7 +534,11 @@ endclassdef
 %! X = meas;
 %! Y = species;
 %!
-%! Mdl = fitcsvm (X, Y, 'ClassNames', unique (species))
+%! selected_classes = unique (Y)(randperm (3, 2));
+%! selected_indices = ismember (Y, selected_classes);
+%! X_selected = X(selected_indices, :);
+%! Y_selected = Y(selected_indices);
+%! Mdl = fitcsvm (X_selected, Y_selected, 'ClassNames', selected_classes);
 %! CMdl = crossval (Mdl)
 
 ## Test input validation for constructor
