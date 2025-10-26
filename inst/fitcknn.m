@@ -563,6 +563,7 @@ endfunction
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ["a"; "a"; "b"; "b"];
+%! rand ("seed", 23);
 %! a = fitcknn (x, y, "NSMethod", "exhaustive", "CrossVal", "on");
 %! assert (class (a), "ClassificationPartitionedModel");
 %! assert ({a.X, a.Y, a.Trained{1}.NumNeighbors}, {x, y, 1})
