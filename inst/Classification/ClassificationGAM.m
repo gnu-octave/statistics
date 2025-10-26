@@ -730,8 +730,8 @@ classdef ClassificationGAM
       endif
 
       ## Add default values
-      if (this.NumObservations <= 10)
-        numFolds  = this.NumObservations - 1;
+      if (this.NumObservations < 10)
+        numFolds  = this.NumObservations;
       else
         numFolds  = 10;
       endif

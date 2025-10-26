@@ -1335,7 +1335,11 @@ classdef ClassificationDiscriminant
       endif
 
       ## Add default values
-      numFolds    = 10;
+      if (this.NumObservations < 10)
+        numFolds  = this.NumObservations;
+      else
+        numFolds  = 10;
+      endif
       Holdout     = [];
       Leaveout    = 'off';
       CVPartition = [];
