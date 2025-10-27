@@ -169,34 +169,385 @@ classdef ClassificationKNN
 ## @end deftypefn
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X = [];
 
-    X = [];                   # Predictor data
-    Y = [];                   # Class labels
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y = [];
 
-    NumObservations = [];     # Number of observations in training dataset
-    RowsUsed        = [];     # Rows used in fitting
-    NumPredictors   = [];     # Number of predictors
-    PredictorNames  = [];     # Predictor variables names
-    ResponseName    = [];     # Response variable name
-    ClassNames      = [];     # Names of classes in Y
-    Prior           = [];     # Prior probability for each class
-    Cost            = [];     # Cost of misclassification
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the ClassificationKNN model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations = [];
 
-    ScoreTransform  = [];     # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} RowsUsed
+    ##
+    ## Rows used for fitting
+    ##
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X} specifying which rows have been used for
+    ## fitting the ClassificationKNN model.  This property is read-only.
+    ##
+    ## @end deftp
+    RowsUsed        = [];
 
-    Standardize     = [];     # Flag to standardize predictors
-    Sigma           = [];     # Predictor standard deviations
-    Mu              = [];     # Predictor means
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationKNN model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors   = [];
 
-    BreakTies       = [];     # Tie-breaking algorithm
-    NumNeighbors    = [];     # Number of nearest neighbors
-    Distance        = [];     # Distance metric
-    DistanceWeight  = [];     # Distance weighting function
-    DistParameter   = [];     # Parameter for distance metric
-    NSMethod        = [];     # Nearest neighbor search method
-    IncludeTies     = [];     # Flag for handling ties
-    BucketSize      = [];     # Maximum data points in each node
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames  = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## Add or change the @qcode{Prior} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Prior           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a character vector representing a built-in function or as a
+    ## function handle for transforming the classification scores.  The
+    ## following built-in functions are supported:
+    ##
+    ## @itemize
+    ## @item @qcode{'doublelogit'}
+    ## @item @qcode{'invlogit'}
+    ## @item @qcode{'ismax'}
+    ## @item @qcode{'logit'}
+    ## @item @qcode{'none'}
+    ## @item @qcode{'identity'}
+    ## @item @qcode{'sign'}
+    ## @item @qcode{'symmetric'}
+    ## @item @qcode{'symmetricismax'}
+    ## @item @qcode{'symmetriclogit'}
+    ## @end itemize
+    ##
+    ## Add or change the @qcode{ScoreTransform} property using dot notation as
+    ## in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
+    ## @end itemize
+    ##
+    ## @end deftp
+    ScoreTransform  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Standardize
+    ##
+    ## Standardization flag
+    ##
+    ## A logical scalar specifying whether the predictor data in @var{X} have
+    ## been standardized prior to training.  This property is read-only.
+    ##
+    ## @end deftp
+    Standardize     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Sigma
+    ##
+    ## Predictor standard deviations
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} with the
+    ## standard deviations corresponding to each predictor.  If the predictor
+    ## variables have not been standardized, then @qcode{"obj.Sigma"} is empty.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Sigma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Mu
+    ##
+    ## Predictor means
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} with the
+    ## mean values corresponding to each predictor.  If the predictor variables
+    ## have not been standardized, then @qcode{"obj.Sigma"} is empty.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    Mu              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} BreakTies
+    ##
+    ## Tie-breaking algorithm
+    ##
+    ## A character vector specifying the tie-breaking algorithm used by the
+    ## @code{predict} method, when multiple classes have the same smallest cost.
+    ## It can be one of the following:
+    ##
+    ## @itemize
+    ## @item @qcode{"smallest"} (default), which favors the class with the
+    ## smallest index among the tied groups, i.e. the one that appears first in
+    ## the training labelled data.
+    ## @item @qcode{"nearest"}, which favors the class with the nearest neighbor
+    ## among the tied groups, i.e. the class with the closest member point
+    ## according to the distance metric used.
+    ## @item @qcode{"random"}, which randomly picks one class among the tied
+    ## groups.
+    ## @end itemize
+    ##
+    ## The tie-breaking algorithm is only used when @qcode{IncludeTies} is
+    ## @qcode{false}.  Change the @qcode{BreakTies} property using dot notation
+    ## as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.BreakTies = @var{algorithm}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    BreakTies       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} NumNeighbors
+    ##
+    ## Number of nearest neighbors
+    ##
+    ## A positive integer value specifyingNumber of nearest neighbors in @var{X}
+    ## used to classify each point during prediction.  Change the
+    ## @qcode{NumNeighbors} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.NumNeighbors = @var{newNumNeighbors}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    NumNeighbors    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} Distance
+    ##
+    ## Distance metric
+    ##
+    ## A character vector specifying the distance metric used by the
+    ## neighbor-searcher method.  See the available distance metrics in
+    ## @code{knnseaarch} for more info.  Change the @qcode{Distance} property
+    ## using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Distance = @var{newDistance}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Distance        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} DistanceWeight
+    ##
+    ## Distance weighting function
+    ##
+    ## A character vector or a function handle specifying the distance weighting
+    ## function, which can be any of the following values:
+    ##
+    ## @itemize
+    ## @item @qcode{"equal"}, which corresponds to @code{@(d) d}.
+    ## @item @qcode{"inverse"}, which corresponds to @code{@(d) 1/d}.
+    ## @item @qcode{"squaredinverse"}, which corresponds to @code{@(d) 1/d.^2}.
+    ## @item @qcode{@fcn}, which is a function handle that accepts a matrix of
+    ## nonnegative distances, and returns a matrix the same size containing
+    ## nonnegative distance weights.
+    ## @end itemize
+    ##
+    ## Change the @qcode{DistanceWeight} property
+    ## using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.DistanceWeight = @var{newDistanceWeight}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    DistanceWeight  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} DistParameter
+    ##
+    ## Parameter for distance metric
+    ##
+    ## A positive definite covariance matrix, a positive scalar, or a vector of
+    ## positive scale values specifying the parameter for the corresponding
+    ## distance metric as shown below:
+    ##
+    ## @itemize
+    ## @item @qcode{"mahalanobis"} accepts a positive definite covariance matrix.
+    ## @item @qcode{"minkowski"} accepts a positive scalar as the Minkowski
+    ## distance exponent.
+    ## @item @qcode{"seuclidean"} accepts a vector of positive scale values of
+    ## equal length as the number of predictors in @var{X}.
+    ## @end itemize
+    ##
+    ## For any other distance metric, @qcode{DistParameter} is empty
+    ## @qcode{([])}.  Change the @qcode{DistParameter} property using dot
+    ## notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.DistParameter = @var{distParam}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    DistParameter   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} NSMethod
+    ##
+    ## Nearest neighbor search method
+    ##
+    ## A character vector specified as either @qcode{"kdtree"}, which creates
+    ## and uses a Kd-tree to find nearest neighbors, or @qcode{"exhaustive"},
+    ## which uses the exhaustive search algorithm by computing the distance
+    ## values from all points in @var{X} to find nearest neighbors.
+    ##
+    ## Change the @qcode{NSMethod} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.NSMethod = @var{newNSMethod}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    NSMethod        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} IncludeTies
+    ##
+    ## Flag for handling ties
+    ##
+    ## A logical scalar specifying whether prediction includes all the neighbors
+    ## whose distance values are equal to the @math{k^th} smallest distance.  If
+    ## @qcode{IncludeTies} is @qcode{true}, prediction includes all of these
+    ## neighbors.  Otherwise, prediction uses exactly @math{k} neighbors.
+    ##
+    ## Change the @qcode{IncludeTies} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.IncludeTies = @var{flag}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    IncludeTies     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationKNN} {property} BucketSize
+    ##
+    ## Maximum data points in each node
+    ##
+    ## A positive integer scalar specifying the maximum number of data points in
+    ## the leaf node of the Kd-tree.  @qcode{BucketSize} only applies when the
+    ## @qcode{NSMethod} property is @qcode{"kdtree"}.
+    ##
+    ## Change the @qcode{BucketSize} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.BucketSize = @var{maxnum}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    BucketSize      = [];
   endproperties
 
   methods (Hidden)
@@ -286,6 +637,10 @@ classdef ClassificationKNN
                            " indexing argument must be a character vector."));
           endif
           switch (s.subs)
+            case 'Cost'
+              this.Cost = setCost (this, val);
+            case 'Prior'
+              this.Prior = setPrior (this, val);
             case 'ScoreTransform'
               name = "ClassificationKNN";
               this.ScoreTransform = parseScoreTransform (val, name);
@@ -301,7 +656,35 @@ classdef ClassificationKNN
 
   methods (Access = public)
 
-    ## Constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
+    ## Neighbor classification model.
+    ##
+    ## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns a
+    ## ClassificationKNN object, with @var{X} as the predictor data and @var{Y}
+    ## containing the class labels of observations in @var{X}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.  @var{X} will be used to train the kNN model.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
+    ## of categorical data.  @var{Y} must have same numbers of Rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{obj} = ClassificationKNN (@dots{}, @var{name}, @var{value})}
+    ## returns a ClassificationKNN object with parameters specified by the
+    ## @qcode{@var{name}, @var{value}} paired input arguments.  For more details
+    ## see the @code{fitcknn} function.
+    ##
+    ## @seealso{fitcknn, knnsearch, rangesearch, pdist2}
+    ## @end deftypefn
     function this = ClassificationKNN (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -595,7 +978,7 @@ classdef ClassificationKNN
 
       ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed);
+      Y         = Y (RowsUsed, :);
       X         = X (RowsUsed, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
@@ -631,32 +1014,9 @@ classdef ClassificationKNN
         this.BreakTies = BreakTies;
       endif
 
-      ## Handle Prior and Cost
-      if (strcmpi ("uniform", Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
-        pr = [];
-        for i = 1:numel (gnY)
-          pr = [pr; sum(gY==i)];
-        endfor
-        this.Prior = pr ./ sum (pr);
-      elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
-          error (strcat ("ClassificationKNN: the elements in 'Prior'", ...
-                         " do not correspond to selected classes in Y."));
-        endif
-        this.Prior = Prior ./ sum (Prior);
-      endif
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationKNN: the number of rows", ...
-                         " and columns in 'Cost' must correspond", ...
-                         " to selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
+      ## Handle Cost and Prior
+      this = setCost (this, Cost, gnY);
+      this = setPrior (this, Prior, gnY, gY);
 
       ## Get number of neighbors
       if (isempty (NumNeighbors))
@@ -1777,6 +2137,47 @@ classdef ClassificationKNN
       for i = 1:numel (props)
         mdl.(props{i}) = data.(props{i});
       endfor
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    function this = setCost (this, Cost, gnY = [])
+      if (isempty (gnY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("ClassificationKNN: the number of rows and columns", ...
+                         " in 'Cost' must correspond to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
+    endfunction
+
+    function this = setPrior (this, Prior, gnY = [], gY = [])
+      if (isempty (gnY) || isempty (gY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      ## Set prior
+      if (strcmpi ("uniform", Prior))
+        this.Prior = ones (size (gnY)) ./ numel (gnY);
+      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
+        pr = [];
+        for i = 1:numel (gnY)
+          pr = [pr; sum(gY==i)];
+        endfor
+        this.Prior = pr ./ sum (pr);
+      elseif (isnumeric (Prior))
+        if (numel (gnY) != numel (Prior))
+          error (strcat ("ClassificationKNN: the elements in 'Prior' do", ...
+                         " not correspond to the selected classes in Y."));
+        endif
+        this.Prior = Prior ./ sum (Prior);
+      endif
     endfunction
 
   endmethods
