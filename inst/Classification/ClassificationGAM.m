@@ -1184,7 +1184,7 @@ endfunction
 %! y = [0; 0; 1; 1; 0];
 %! obj = fitcgam (x, y);
 %!test
-%! CVMdl = crossval (obj);
+%! CVMdl = crossval (obj, "KFold", 3);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 4)
