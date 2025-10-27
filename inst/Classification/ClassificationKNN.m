@@ -2714,7 +2714,11 @@ endfunction
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Distance', ...
 %!      'mahalanobis', 'Cov', covMatrix);
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 10)
@@ -2723,7 +2727,11 @@ endfunction
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (!CVMdl.ModelParameters.Standardize)
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "KFold", 5);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
@@ -2732,8 +2740,11 @@ endfunction
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "Distance", "cityblock");
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
@@ -2742,6 +2753,11 @@ endfunction
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
 %! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
+%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! warning (status);
 %! CVMdl = crossval (obj, "LeaveOut", 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
@@ -2751,7 +2767,11 @@ endfunction
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
 %! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! partition = cvpartition (y, 'KFold', 3);
+%! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert (CVMdl.KFold == 3)

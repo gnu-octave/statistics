@@ -1858,7 +1858,11 @@ endclassdef
 ## Test output for crossval method
 %!test
 %! SVMModel = fitcsvm (x, y);
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (SVMModel, "KFold", 5);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
@@ -1866,14 +1870,22 @@ endclassdef
 %! assert (CVMdl.CrossValidatedModel, "ClassificationSVM")
 %!test
 %! obj = fitcsvm (x, y);
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationSVM")
 %!test
 %! obj = fitcsvm (x, y);
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")

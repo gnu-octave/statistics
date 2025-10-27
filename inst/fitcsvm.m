@@ -361,7 +361,11 @@ endfunction
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! a = fitcsvm (x, y, "KernelFunction", "linear", "CrossVal", 'on');
+%! warning (status);
 %! assert (class (a), "ClassificationPartitionedModel");
 %! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
 %! assert (a.ModelParameters.PolynomialOrder, 3)

@@ -1184,27 +1184,43 @@ endfunction
 %! y = [0; 0; 1; 1; 0];
 %! obj = fitcgam (x, y);
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 4)
+%! assert (CVMdl.KFold == 5)
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "KFold", 2);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 2)
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
+%! status = warning;
+%! warning ('off');
+%! rand ("seed", 23);
 %! partition = cvpartition (y, 'KFold', 3);
+%! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert (CVMdl.KFold == 3)
