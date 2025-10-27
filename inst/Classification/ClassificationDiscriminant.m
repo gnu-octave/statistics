@@ -44,7 +44,7 @@ classdef ClassificationDiscriminant
     ##
     ## Predictor data
     ##
-    ## A numerix matrix containing the unstandardized predictor data.  Each
+    ## A numeric matrix containing the unstandardized predictor data.  Each
     ## column of @var{X} represents one predictor (variable), and each row
     ## represents one observation.  This property is read-only.
     ##
@@ -56,9 +56,10 @@ classdef ClassificationDiscriminant
     ##
     ## Class labels
     ##
-    ## Specified as a logical or numeric vector, or cell array of character
-    ## vectors.  Each value in @var{Y} is the observed class label for the
-    ## corresponding row in @var{X}.  This property is read-only.
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
     ##
     ## @end deftp
     Y = [];
@@ -158,7 +159,7 @@ classdef ClassificationDiscriminant
     ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
     ## for correct classification and 1 for incorrect classification.
     ##
-    ## Add or change the @qcode{Cost} using dot notation as in:
+    ## Add or change the @qcode{Cost} property using dot notation as in:
     ## @itemize
     ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
     ## @end itemize
@@ -175,7 +176,7 @@ classdef ClassificationDiscriminant
     ## order of the elements in @qcode{Prior} corresponds to the order of the
     ## classes in @qcode{ClassNames}.
     ##
-    ## Add or change the @qcode{Prior} using dot notation as in:
+    ## Add or change the @qcode{Prior} property using dot notation as in:
     ## @itemize
     ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
     ## @end itemize
@@ -205,7 +206,8 @@ classdef ClassificationDiscriminant
     ## @item @qcode{'symmetriclogit'}
     ## @end itemize
     ##
-    ## Add or change the @qcode{ScoreTransform} using dot notation as in:
+    ## Add or change the @qcode{ScoreTransform} property using dot notation as
+    ## in:
     ## @itemize
     ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
     ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
@@ -315,6 +317,8 @@ classdef ClassificationDiscriminant
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} LogDetSigma
     ##
+    ## Logarithm of the determinant of the within-class covariance matrix
+    ##
     ## A scalar value specifying the logarithm of the determinant of the
     ## within-class covariance matrix.  This property is read-only.
     ##
@@ -323,6 +327,8 @@ classdef ClassificationDiscriminant
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} XCentered
+    ##
+    ## Predictor data with class means subtracted
     ##
     ## A matrix of the same size as @var{X} and the values in @var{X} with the
     ## corresponding class means subtracted.  This property is read-only.
@@ -437,6 +443,7 @@ classdef ClassificationDiscriminant
   endmethods
 
   methods (Access = public)
+
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
     ## @deftypefnx {statistics} {@var{obj} =} ClassificationDiscriminant (@dots{}, @var{name}, @var{value})
@@ -452,18 +459,18 @@ classdef ClassificationDiscriminant
     ## @item
     ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
-    ## variables.
-    ## @var{X} will be used to train the discriminant model.
+    ## variables.  @var{X} will be used to train the discriminant model.
     ## @item
     ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
-    ## of corresponding predictor data in @var{X}. @var{Y} can contain any type
+    ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
     ## of categorical data. @var{Y} must have the same number of rows as
     ## @var{X}.
     ## @end itemize
     ##
     ## @code{@var{obj} = ClassificationDiscriminant (@dots{}, @var{name},
     ## @var{value})} returns a ClassificationDiscriminant object with parameters
-    ## specified by the following@qcode{@var{name}, @var{value}} pair arguments:
+    ## specified by the following @qcode{@var{name}, @var{value}} paired input
+    ## arguments:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
@@ -678,7 +685,7 @@ classdef ClassificationDiscriminant
 
       ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed);
+      Y         = Y (RowsUsed, :);
       X         = X (RowsUsed, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
@@ -691,7 +698,7 @@ classdef ClassificationDiscriminant
 
       ## Assign the number of observations and their corresponding indices
       ## on the original data, which will be used for training the model,
-      ## to the ClassificationNeuralNetwork object
+      ## to the ClassificationDiscriminant object
       this.NumObservations = sum (RowsUsed);
       this.RowsUsed = RowsUsed;
 
