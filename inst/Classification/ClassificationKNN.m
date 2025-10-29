@@ -3149,7 +3149,7 @@ endfunction
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
