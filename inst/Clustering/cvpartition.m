@@ -133,6 +133,7 @@ classdef cvpartition
   endproperties
 
   properties (SetAccess = private, Hidden)
+    missidx = [];
     indices = [];
     cvptype = '';
     classes = [];
@@ -445,14 +446,14 @@ classdef cvpartition
         if (! (isnumeric (X) && X > 0 && fix (X) == X))
           error ("cvpartition: X must be a scalar positive integer value.");
         endif
-        ## Get partition type
+        ## Get number of observations and partition type
+        this.NumObservations = X;
         type = varargin{1};
         this.IsCustom = false;
         this.IsStratified = false;
 
         ## "Resubstitution"
         if (strcmpi (type, 'resubstitution'))
-          this.NumObservations = X;
           this.NumTestSets = 1;
           this.TrainSize = X;
           this.TestSize = X;
@@ -462,7 +463,6 @@ classdef cvpartition
 
         ## "Leaveout"
         elseif (strcmpi (type, 'leaveout'))
-          this.NumObservations = X;
           this.NumTestSets = X;
           this.TrainSize = (X - 1) * ones (1, X);
           this.TestSize = ones (1, X);
@@ -481,12 +481,11 @@ classdef cvpartition
             if (! ((p > 0 && p < 1) || (p == fix (p) && p > 0 && p < X)))
               error (strcat ("cvpartition: P value for 'holdout' must be", ...
                              " a scalar in the range (0,1) or an integer", ...
-                             " scalar in the range [1, n)."));
+                             " scalar in the range [1, N)."));
             endif
           else
             p = 0.1;
           endif
-          this.NumObservations = X;
           this.NumTestSets = 1;
           if (p < 1)            # target fraction to sample
             p = round (p * X);  # number of samples
@@ -509,10 +508,6 @@ classdef cvpartition
               error (strcat ("cvpartition: K value for 'kfold'", ...
                              " must be a numeric scalar."));
             endif
-            if (! (k == fix (k) && k > 0 && k < X))
-              error (strcat ("cvpartition: K value for 'kfold' must be", ...
-                             " an integer scalar in the range [1, n)."));
-            endif
           else
             if (X < 10)
               k = X;
@@ -522,7 +517,10 @@ classdef cvpartition
           endif
           ## No grouping variables
           if (nargin < 4)
-            this.NumObservations = X;
+            if (! (k == fix (k) && k > 0 && k <= X))
+              error (strcat ("cvpartition: K value for 'kfold' must be", ...
+                             " an integer scalar in the range [1, N]."));
+            endif
             this.NumTestSets = k;
             indices = floor ((0:(X - 1))' * (k / X)) + 1;
             indices = randsample (indices, X);
@@ -546,10 +544,10 @@ classdef cvpartition
             grpvars = varargin{4};
             if (isvector (grpvars))
               ## Remove any missing values
-              remove_idx = ismissing (grpvars);
-              if (any (remove_idx))
-                grpvars(remove_idx) = [];
-                X -= sum (remove_idx);
+              this.missidx = ismissing (grpvars);
+              if (any (this.missidx))
+                grpvars(this.missidx) = [];
+                X -= sum (this.missidx);
               endif
               ## Get indices for each group
               if (isa (grpvars, 'categorical'))
@@ -559,10 +557,10 @@ classdef cvpartition
               endif
             elseif (ismatrix (grpvars))
               ## Remove any missing values
-              remove_idx = any (ismissing (grpvars), 2);
-              if (any (remove_idx))
-                grpvars(remove_idx, :) = [];
-                X -= sum (remove_idx);
+              this.missidx = any (ismissing (grpvars), 2);
+              if (any (this.missidx))
+                grpvars(this.missidx, :) = [];
+                X -= sum (this.missidx);
               endif
               ## Get indices for each group
               if (isa (grpvars, 'categorical'))
@@ -586,8 +584,9 @@ classdef cvpartition
             endfor
             ## Compare k-fold to number of groups and reduce K accordingly
             if (k > NumGroups)
-              warning (strcat ("cvpartition: number of folds K in greater", ...
-                               " that the groups in 'GroupingVariables'."));
+              warning (strcat ("cvpartition: number of folds K is greater", ...
+                               " than the groups in 'GroupingVariables'.", ...
+                               " K is set to the number of groups."));
                 k = NumGroups;
             endif
             ## If k == NumGroups, then each group becomes a test in a fold.
@@ -619,7 +618,6 @@ classdef cvpartition
             endfor
             ## Save values to properties
             this.indices = randomized;
-            this.NumObservations = X;
             this.NumTestSets = k;
             nvec = X * ones (1, k);
             for i = 1:k
@@ -637,8 +635,15 @@ classdef cvpartition
 
       ## Check first input being a vector for stratification
       elseif (isvector (X))
-        ## Remove missing values
-        X(ismissing (X)) = [];
+        ## Get number of observations (including missing values)
+        this.NumObservations = numel (X);
+
+        ## Remove missing values from partitioning.
+        ## Keep missing index to include them in the test indices.
+        this.missidx = ismissing (X);
+        X(this.missidx) = [];
+        X = numel (X);
+
         ## Get stratify option
         if (nargin < 4)
           this.IsStratified = true;
@@ -657,6 +662,7 @@ classdef cvpartition
           endif
           this.IsStratified = varargin{4};
         endif
+
         ## Handle stratification
         if (this.IsStratified)
           [classID, idx, classes] = unique (X);
@@ -667,10 +673,6 @@ classdef cvpartition
           this.classes = classes;
           this.classID = classID;
         endif
-
-        ## Get number of observations
-        X = numel (X);
-        this.NumObservations = X;
 
         ## Get partition type
         type = varargin{1};
@@ -689,7 +691,8 @@ classdef cvpartition
             if (! ((p > 0 && p < 1) || (p == fix (p) && p > 0 && p < X)))
               error (strcat ("cvpartition: P value for 'holdout' must be", ...
                              " a scalar in the range (0,1) or an integer", ...
-                             " scalar in the range [1, n)."));
+                             " scalar in the range [1, N), where N is the", ...
+                             " number of nonmissing observations in X."));
             endif
           else
             p = 0.1;
@@ -736,9 +739,11 @@ classdef cvpartition
               error (strcat ("cvpartition: K value for 'kfold'", ...
                              " must be a numeric scalar."));
             endif
-            if (! (k == fix (k) && k > 0 && k < X))
+            if (! (k == fix (k) && k > 0 && k <= X))
               error (strcat ("cvpartition: K value for 'kfold' must be", ...
-                             " an integer scalar in the range [1, n)."));
+                             " an integer scalar in the range [1, N],", ...
+                             " where N is the number of nonmissing", ...
+                             " observations in X."));
             endif
           else
             if (X < 10)
@@ -913,10 +918,10 @@ classdef cvpartition
 
       ## Handle repartitioning of randomized holdout and kfold options
       if (strcmpi (this.Type, "holdout"))
-        X = this.NumObservations;
         p = this.TestSize;
-        inds = false (X, 1);
         if (this.IsStratified)
+          X = sum (! this.missidx);
+          inds = false (X, 1);
           NumClasses = numel (this.classID);
           classes = this.classes;
           for i = 1:NumClasses
@@ -935,14 +940,16 @@ classdef cvpartition
             inds(find (inds)(randsample (k_check, k_check - p))) = false;
           endif
         else
+          X = this.NumObservations;
+          inds = false (X, 1);
           inds(randsample (X, p)) = true;  # indices for test set
         endif
         this.indices = inds;
 
       elseif (strcmpi (this.Type, "kfold"))
-        X = this.NumObservations;
         k = this.NumTestSets;
         if (! (this.IsGrouped || this.IsStratified))
+          X = this.NumObservations;
           inds = floor ((0:(X - 1))' * (k / X)) + 1;
           inds = randsample (inds, X);
           this.indices = inds;
@@ -961,14 +968,14 @@ classdef cvpartition
           endfor
           ## Save values to properties
           this.indices = randomized;
-          this.NumObservations = X;
           this.NumTestSets = k;
-          nvec = X * ones (1, k);
+          nvec = sum (! this.missidx) * ones (1, k);
           for i = 1:k
             this.TestSize(i) = sum (this.indices == i);
           endfor
           this.TrainSize = nvec - this.TestSize;
         else  # is stratified
+          X = sum (! this.missidx);
           NumClasses = numel (this.classID);
           classes = this.classes;
           for i = 1:NumClasses
@@ -1107,18 +1114,29 @@ classdef cvpartition
           switch (this.Type)
             case "kfold"
               for i = 1:this.NumTestSets
-                cid = this.indices == i;
+                if (this.IsStratified || this.IsGrouped)
+                  cid = false (this.NumObservations, 1);
+                  cid(! this.missidx) = this.indices == i;
+                else
+                  cid = this.indices == i;
+                endif
                 idx = [idx, cid];
               endfor
-            case "leaveout"
+            case "leaveout" # no stratification
               for i = 1:this.NumTestSets
                 cid = false (this.NumObservations, 1);
                 cid(i) = true;
                 idx = [idx, cid];
               endfor
             case "holdout"
+              if (this.IsStratified)
+                idx = false (this.NumObservations, 1);
+                idx(! this.missidx) = this.indices;
+              else
+                idx = this.indices;
+              endif
               idx = this.indices;
-            case "resubstitution"
+            case "resubstitution" # no stratification
               idx = true (this.NumObservations, 1);
           endswitch
           return
@@ -1139,15 +1157,25 @@ classdef cvpartition
       switch (this.Type)
         case  "kfold"
           if (isscalar (i))
-            idx = this.indices == i;
+            if (this.IsStratified || this.IsGrouped)
+              idx = false (this.NumObservations, 1);
+              idx(! this.missidx) = this.indices == i;
+            else
+              idx = this.indices == i;
+            endif
           else
             idx = logical ([]);
             for j = i
-              new = this.indices == j;
-              idx = [idx, new];
+              if (this.IsStratified || this.IsGrouped)
+                cid = false (this.NumObservations, 1);
+                cid(! this.missidx) = this.indices == i;
+              else
+                cid = this.indices == i;
+              endif
+              idx = [idx, cid];
             endfor
           endif
-        case "leaveout"
+        case "leaveout" # no stratification
           if (isscalar (i))
             idx = false (this.NumObservations, 1);
             idx(i) = true;
@@ -1160,8 +1188,13 @@ classdef cvpartition
             endfor
           endif
         case "holdout"
-          idx = this.indices;
-        case "resubstitution"
+          if (this.IsStratified)
+            idx = false (this.NumObservations, 1);
+            idx(! this.missidx) = this.indices;
+          else
+            idx = this.indices;
+          endif
+        case "resubstitution" # no stratification
           idx = true (this.NumObservations, 1);
       endswitch
 
@@ -1208,18 +1241,28 @@ classdef cvpartition
           switch (this.Type)
             case "kfold"
               for i = 1:this.NumTestSets
-                cid = this.indices != i;
+                if (this.IsStratified || this.IsGrouped)
+                  cid = false (this.NumObservations, 1);
+                  cid(! this.missidx) = this.indices != i;
+                else
+                  cid = this.indices != i;
+                endif
                 idx = [idx, cid];
               endfor
-            case "leaveout"
+            case "leaveout" # no stratification
               for i = 1:this.NumTestSets
                 cid = true (this.NumObservations, 1);
                 cid(i) = false;
                 idx = [idx, cid];
               endfor
             case "holdout"
-              idx = ! this.indices;
-            case "resubstitution"
+              if (this.IsStratified)
+                idx = false (this.NumObservations, 1);
+                idx(! this.missidx) = ! this.indices;
+              else
+                idx = ! this.indices;
+              endif
+            case "resubstitution" # no stratification
               idx = true (this.NumObservations, 1);
           endswitch
           return
@@ -1241,15 +1284,25 @@ classdef cvpartition
       switch (this.Type)
         case  "kfold"
           if (isscalar (i))
-            idx = this.indices != i;
+            if (this.IsStratified || this.IsGrouped)
+              idx = false (this.NumObservations, 1);
+              idx(! this.missidx) = this.indices != i;
+            else
+              idx = this.indices != i;
+            endif
           else
             idx = logical ([]);
             for j = i
-              new = this.indices != j;
-              idx = [idx, new];
+              if (this.IsStratified || this.IsGrouped)
+                cid = false (this.NumObservations, 1);
+                cid(! this.missidx) = this.indices != i;
+              else
+                cid = this.indices != i;
+              endif
+              idx = [idx, cid];
             endfor
           endif
-        case "leaveout"
+        case "leaveout" # no stratification
           if (isscalar (i))
             idx = true (this.NumObservations, 1);
             idx(i) = false;
@@ -1262,8 +1315,13 @@ classdef cvpartition
             endfor
           endif
         case "holdout"
-          idx = ! this.indices;
-        case "resubstitution"
+          if (this.IsStratified)
+            idx = false (this.NumObservations, 1);
+            idx(! this.missidx) = ! this.indices;
+          else
+            idx = ! this.indices;
+          endif
+        case "resubstitution" # no stratification
           idx = true (this.NumObservations, 1);
       endswitch
 
@@ -1445,6 +1503,22 @@ endclassdef
 %! assert (test (cv), ! training (cv));
 %! assert (test (cv, 'all'), ! training (cv, 'all'));
 %!test
+%! cv = cvpartition (5, 'holdout', 4);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 5);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 1);
+%! assert (cv.TestSize, 4);
+%! assert (sum (test (cv, 1)), 4);
+%!test
+%! cv = cvpartition (5, 'holdout', 1);
+%! assert (cv.Type, 'holdout');
+%! assert (cv.NumObservations, 5);
+%! assert (cv.NumTestSets, 1);
+%! assert (cv.TrainSize, 4);
+%! assert (cv.TestSize, 1);
+%! assert (sum (test (cv, 1)), 1);
+%!test
 %! cv = cvpartition (5, 'kfold');
 %! assert (cv.Type, 'kfold');
 %! assert (cv.NumObservations, 5);
@@ -1523,16 +1597,17 @@ endclassdef
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
 %! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 11);
+%! assert (cv.NumObservations, 12);
 %! assert (cv.NumTestSets, 2);
 %! assert (cv.TrainSize, [6, 5]);
 %! assert (cv.TestSize, [5, 6]);
 %! assert (cv.IsCustom, false);
 %! assert (cv.IsGrouped, true);
 %! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [11, 2]);
+%! idx = ! isnan (grpvar);
+%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert (test (cv, 'all')(idx, :), ! training (cv, 'all')(idx, :));
+%! assert (size (test (cv, 'all')), [12, 2]);
 %! assert (sum (test (cv, 'all')), [5, 6]);
 %! assert (sum (training (cv, 'all')), [6, 5]);
 %!test
@@ -1592,6 +1667,25 @@ endclassdef
 %! assert (sum (training (cv, 'all')), [7, 5]);
 %! assert (test (cv, 1)', grpvar == 3);
 %! assert (test (cv, 2)', grpvar != 3);
+%!test
+%! status = warning;
+%! warning ('off');
+%! cv = cvpartition (5, 'kfold', 5, 'GroupingVariables', {'a';'a';'b';'b';''});
+%! warning (status);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 5);
+%! assert (cv.NumTestSets, 2);
+%! assert (cv.TrainSize, [2, 2]);
+%! assert (cv.TestSize, [2, 2]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, true);
+%! assert (cv.IsStratified, false);
+%! idx = ! ismissing ({'a';'a';'b';'b';''});
+%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
+%! assert (size (test (cv, 'all')), [5, 2]);
+%! assert (sum (test (cv, 'all')), [2, 2]);
+%! assert (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
 
 ## Test output results for vector input X
 %!test
@@ -1606,7 +1700,7 @@ endclassdef
 %! assert (cv.IsGrouped, false);
 %! assert (cv.IsStratified, true);
 %! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv), logical ([0, 0, 0, 0, 1, 0, 1, 0, 0, 1])');
+%! assert (test (cv), logical ([0, 1, 0, 0, 1, 0, 0, 0, 1, 0])');
 %!test
 %! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 4);
 %! assert (cv.Type, 'holdout');
@@ -1669,6 +1763,23 @@ endclassdef
 %! assert (sum (test (cv, 2)(1:5)), 1);
 %! assert (sum (test (cv, 1)(6:10)), 1);
 %! assert (sum (test (cv, 2)(6:10)), 4);
+%!test
+%! status = warning;
+%! warning ('off');
+%! cv = cvpartition ({'a','a','b','b',''}, 'kfold');
+%! warning (status);
+%! assert (cv.Type, 'kfold');
+%! assert (cv.NumObservations, 5);
+%! assert (cv.NumTestSets, 4);
+%! assert (cv.TrainSize, [3, 3, 3, 3]);
+%! assert (cv.TestSize, [1, 1, 1, 1]);
+%! assert (cv.IsCustom, false);
+%! assert (cv.IsGrouped, false);
+%! assert (cv.IsStratified, true);
+%! idx = ! ismissing ({'a','a','b','b',''});
+%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
+%! assert (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
 
 ## Test input validation
 %!error <cvpartition: too few input arguments.> cvpartition (2)
@@ -1691,19 +1802,19 @@ endclassdef
 %! cvpartition (20, "HoldOut", [0.2, 0.3])
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
 %! cvpartition (20, "HoldOut", 'a')
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
 %! cvpartition (20, "HoldOut", 0)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
 %! cvpartition (20, "HoldOut", -0.1)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
 %! cvpartition (20, "HoldOut", 21)
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
 %! cvpartition (20, "kfold", [2, 3])
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
 %! cvpartition (20, "kfold", 'a')
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\].> ...
 %! cvpartition (20, "kfold", 2.5)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\].> ...
 %! cvpartition (20, "kfold", 21)
 %!error <cvpartition: invalid optional paired argument for 'GroupingVariables'.> ...
 %! cvpartition (10, "kfold", 3, "Group")
@@ -1713,7 +1824,7 @@ endclassdef
 %! cvpartition (10, "kfold", 3, "GroupingVariables", ones (3, 3, 3))
 %!error <cvpartition: grouping variable does not match the number of observations.> ...
 %! cvpartition (10, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'})
-%!warning <cvpartition: number of folds K in greater that the groups in 'GroupingVariables'.> ...
+%!warning <cvpartition: number of folds K is greater than the groups in 'GroupingVariables'. K is set to the number of groups.> ...
 %! cvpartition (5, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'});
 %!error <cvpartition: invalid optional paired argument.> ...
 %! cvpartition (20, "some")
@@ -1733,21 +1844,21 @@ endclassdef
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", [0.2, 0.3])
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", [0.2, 0.3], "stratify", true)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 0)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 0, "stratify", true)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", -0.1)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", -0.1, "stratify", true)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 1.2)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 1.2, "stratify", false)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 6)
-%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, n\).> ...
+%!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "holdout", 6, "stratify", false)
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", 'a')
@@ -1757,18 +1868,18 @@ endclassdef
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", [2, 3])
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", [2, 3], "stratify", false)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", 0)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", 0, "stratify", true)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", 1.5)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "kfold", 1.5, "stratify", true)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 5)
-%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, n\).> ...\
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 5, "stratify", true)
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
+%! cvpartition ([1, 1, 1, 2, 2], "kfold", 6)
+%!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
+%! cvpartition ([1, 1, 1, 2, 2], "kfold", 6, "stratify", true)
 %!error <cvpartition: invalid optional paired argument.> ...
 %! cvpartition ([1, 1, 1, 2, 2], "leaveout")
 %!error <cvpartition: invalid optional paired argument.> ...
