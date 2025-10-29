@@ -1512,7 +1512,6 @@ classdef ClassificationDiscriminant
         endif
         this.Cost = Cost;
       endif
-
     endfunction
 
     function this = setPrior (this, Prior, gnY = [], gY = [])
@@ -1536,7 +1535,6 @@ classdef ClassificationDiscriminant
         endif
         this.Prior = Prior ./ sum (Prior);
       endif
-
       ## Recalculate the Const field in the Coeffs structure
       if (! isempty (this.Coeffs))
         num_classes = rows (this.ClassNames);
