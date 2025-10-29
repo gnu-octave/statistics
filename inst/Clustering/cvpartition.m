@@ -642,7 +642,6 @@ classdef cvpartition
         ## Keep missing index to include them in the test indices.
         this.missidx = ismissing (X);
         X(this.missidx) = [];
-        X = numel (X);
 
         ## Get stratify option
         if (nargin < 4)
@@ -673,6 +672,7 @@ classdef cvpartition
           this.classes = classes;
           this.classID = classID;
         endif
+        X = numel (X);
 
         ## Get partition type
         type = varargin{1};
@@ -1700,7 +1700,7 @@ endclassdef
 %! assert (cv.IsGrouped, false);
 %! assert (cv.IsStratified, true);
 %! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv), logical ([0, 1, 0, 0, 1, 0, 0, 0, 1, 0])');
+%! assert (test (cv), logical ([0, 0, 0, 0, 1, 0, 1, 0, 0, 1])');
 %!test
 %! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 4);
 %! assert (cv.Type, 'holdout');
