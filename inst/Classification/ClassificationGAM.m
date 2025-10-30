@@ -1,5 +1,6 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -18,195 +19,533 @@
 
 classdef ClassificationGAM
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@dots{}, @var{name}, @var{value})
+## @deftp {statistics} ClassificationGAM
 ##
-## Create a @qcode{ClassificationGAM} class object containing a generalized
-## additive classification model.
+## Generalized additive model classification
 ##
-## The @qcode{ClassificationGAM} class implements a gradient boosting algorithm
-## for classification, using spline fitting as the weak learner. This approach
+## The @code{ClassificationGAM} class implements a gradient boosting algorithm
+## for classification, using spline fitting as the weak learner.  This approach
 ## allows the model to capture non-linear relationships between predictors and
 ## the binary response variable.
 ##
-## @code{@var{obj} = ClassificationGAM (@var{X}, @var{Y})} returns a
-## ClassificationGAM object, with @var{X} as the predictor data and @var{Y}
-## containing the class labels of observations in @var{X}.
+## Generalized additive model classification is a statistical method that
+## extends linear models by allowing non-linear relationships between each
+## predictor and the response variable through smooth functions.  It combines
+## the interpretability of linear models with the flexibility of non-parametric
+## methods.
 ##
-## @itemize
-## @item
-## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
-## correspond to observations and columns correspond to features or variables.
-## @item
-## @code{Y} is @math{Nx1} numeric vector containing binary class labels,
-## typically 0 or 1.
-## @end itemize
+## Create a @code{ClassificationGAM} object by using the @code{fitcgam}
+## function or the class constructor.
 ##
-## @code{@var{obj} = ClassificationGAM (@dots{}, @var{name}, @var{value})}
-## returns a ClassificationGAM object with parameters specified by
-## @qcode{Name-Value} pair arguments. Type @code{help fitcgam} for more info.
-##
-## A @qcode{ClassificationGAM} object, @var{obj}, stores the labeled training
-## data and various parameters for the Generalized Additive Model (GAM) for
-## classification, which can be accessed in the following fields:
-##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Predictor data, specified as a
-## numeric matrix. Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{Y} @tab @tab Class labels, specified as numeric vector
-## of 0's and 1's. Each value in @var{Y} is the observed class
-## label for the corresponding row in @var{X}.
-##
-## @item @qcode{BaseModel} @tab @tab A structure containing the parameters
-## of the base model without any interaction terms. The base model represents
-## the generalized additive model (GAM) with only the main effects (predictor
-## terms) included.
-##
-## @item @qcode{ModelwInt} @tab @tab A structure containing the parameters
-## of the model that includes interaction terms. This model extends the base
-## model by adding interaction terms between predictors, as specified by the
-## @qcode{Interactions} property.
-##
-## @item @qcode{IntMatrix} @tab @tab A logical matrix or a matrix of
-## column indices that describes the interaction terms applied to the predictor
-## data.
-##
-## @item @qcode{NumObservations} @tab @tab Number of observations used in
-## training the ClassificationGAM model, specified as a positive integer scalar.
-## This number can be less than the number of rows in the training data because
-## rows containing @qcode{NaN} values are not part of the fit.
-##
-## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
-## used in fitting the ClassificationGAM model, specified as a numerical vector.
-## If you want to use this vector for indexing the training data in @var{X}, you
-## have to convert it to a logical vector, i.e
-## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
-##
-## @item @qcode{NumPredictors} @tab @tab The number of predictors
-## (variables) in @var{X}.
-##
-## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
-## specified as a cell array of character vectors. The variable names are in
-## the same order in which they appear in the training data @var{X}.
-##
-## @item @qcode{ResponseName} @tab @tab Response variable name, specified
-## as a character vector.
-##
-## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
-## data @var{Y} with duplicates removed, specified as a cell array of character
-## vectors.
-##
-## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
-## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
-## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
-## correspond to the true class and the columns correspond to the predicted
-## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
-## order of the classes in @qcode{ClassNames}.  The number of rows and columns
-## in @qcode{Cost} is the number of unique classes in the response.  By default,
-## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
-## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
-## 1 for incorrect classification.
-##
-## @item @qcode{Formula} @tab @tab A model specification given as a string
-## in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the response
-## variable and @qcode{terms} the predictor variables. The formula can be used
-## to specify a subset of variables for training model. For example:
-## @qcode{"Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3"} specifies four linear terms
-## for the first four columns of for predictor data, and @qcode{x1:x2} and
-## @qcode{x2:x3} specify the two interaction terms for 1st-2nd and 3rd-4th
-## columns respectively.  Only these terms will be used for training the model,
-## but @var{X} must have at least as many columns as referenced in the formula.
-## If Predictor Variable names have been defined, then the terms in the formula
-## must reference to those.  When @qcode{"formula"} is specified, all terms used
-## for training the model are referenced in the @qcode{IntMatrix} field of the
-## @var{obj} class object as a matrix containing the column indexes for each
-## term including both the predictors and the interactions used.
-##
-## @item @qcode{Interactions} @tab @tab A logical matrix, a positive integer
-## scalar, or the string @qcode{"all"} for defining the interactions between
-## predictor variables.  When given a logical matrix, it must have the same
-## number of columns as @var{X} and each row corresponds to a different
-## interaction term combining the predictors indexed as @qcode{true}.  Each
-## interaction term is appended as a column vector after the available predictor
-## column in @var{X}.  When @qcode{"all"} is defined, then all possible
-## combinations of interactions are appended in @var{X} before training.  At the
-## moment, parsing a positive integer has the same effect as the @qcode{"all"}
-## option.  When @qcode{"interactions"} is specified, only the interaction terms
-## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
-## @var{obj} class object.
-##
-## @item @qcode{Knots} @tab @tab A scalar or a row vector with the same
-## columns as @var{X}.  It defines the knots for fitting a polynomial when
-## training the GAM.  As a scalar, it is expanded to a row vector.  The default
-## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
-## parse a row vector with different number of knots for each predictor
-## variable to be fitted with, although not recommended.
-##
-## @item @qcode{Order} @tab @tab A scalar or a row vector with the same
-## columns as @var{X}.  It defines the order of the polynomial when training the
-## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
-## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
-## vector with different number of polynomial order for each predictor variable
-## to be fitted with, although not recommended.
-##
-## @item @qcode{DoF} @tab @tab A scalar or a row vector with the same
-## columns as @var{X}.  It defines the degrees of freedom for fitting a
-## polynomial when training the GAM.  As a scalar, it is expanded to a row
-## vector.  The default value is 8, hence expanded to
-## @qcode{ones (1, columns (X)) * 8}. You can parse a row vector with different
-## degrees of freedom for each predictor variable to be fitted with,
-## although not recommended.
-##
-## @end multitable
-##
-## You can parse either a @qcode{"Formula"} or an @qcode{"Interactions"}
-## optional parameter.  Parsing both parameters will result an error.
-## Accordingly, you can only pass up to two parameters among @qcode{"Knots"},
-## @qcode{"Order"}, and @qcode{"DoF"} to define the required polynomial for
-## training the GAM model.
-##
-## @seealso{fitcgam, CompactClassificationGAM, ClassificationPartitionedModel}
-## @end deftypefn
+## @seealso{fitcgam}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X = [];
 
-    X = [];                 # Predictor data
-    Y = [];                 # Class labels
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y = [];
 
-    NumObservations = [];   # Number of observations in training dataset
-    RowsUsed        = [];   # Rows used in fitting
-    NumPredictors   = [];   # Number of predictors
-    PredictorNames  = [];   # Predictor variable names
-    ResponseName    = [];   # Response variable name
-    ClassNames      = [];   # Names of classes in Y
-    Prior           = [];   # Prior probability for each class
-    Cost            = [];   # Cost of Misclassification
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the ClassificationGAM model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations = [];
 
-    ScoreTransform  = [];   # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} RowsUsed
+    ##
+    ## Rows used for fitting
+    ##
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X} specifying which rows have been used for
+    ## fitting the ClassificationGAM model.  This property is read-only.
+    ##
+    ## @end deftp
+    RowsUsed        = [];
 
-    Formula         = [];   # Formula for GAM model
-    Interactions    = [];   # Number or matrix of interaction terms
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationGAM model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors   = [];
 
-    Knots           = [];   # Knots of spline fitting
-    Order           = [];   # Order of spline fitting
-    DoF             = [];   # Degrees of freedom for fitting spline
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames  = {};
 
-    LearningRate    = [];   # Learning rate for training
-    NumIterations   = [];   # Max number of iterations for training
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = [];
 
-    BaseModel = [];         # Base model parameters (no interactions)
-    ModelwInt = [];         # Model parameters with interactions
-    IntMatrix = [];         # Interactions matrix applied to predictor data
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## Add or change the @qcode{Prior} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Prior           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a character vector representing a built-in function or as a
+    ## function handle for transforming the classification scores.  The
+    ## following built-in functions are supported:
+    ##
+    ## @itemize
+    ## @item @qcode{'doublelogit'}
+    ## @item @qcode{'invlogit'}
+    ## @item @qcode{'ismax'}
+    ## @item @qcode{'logit'}
+    ## @item @qcode{'none'}
+    ## @item @qcode{'identity'}
+    ## @item @qcode{'sign'}
+    ## @item @qcode{'symmetric'}
+    ## @item @qcode{'symmetricismax'}
+    ## @item @qcode{'symmetriclogit'}
+    ## @end itemize
+    ##
+    ## Add or change the @qcode{ScoreTransform} property using dot notation as
+    ## in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
+    ## @end itemize
+    ##
+    ## @end deftp
+    ScoreTransform  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Formula
+    ##
+    ## Model specification formula
+    ##
+    ## A character vector specifying the model formula in the form
+    ## @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable and
+    ## @qcode{terms} specifies the predictor variables and interaction terms.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Formula         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Interactions
+    ##
+    ## Interaction terms specification
+    ##
+    ## A logical matrix, positive integer scalar, or character vector
+    ## @qcode{"all"} specifying the interaction terms between predictor
+    ## variables.  This property is read-only.
+    ##
+    ## @end deftp
+    Interactions    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Knots
+    ##
+    ## Knots for spline fitting
+    ##
+    ## A scalar or row vector specifying the number of knots for each predictor
+    ## variable in the spline fitting.  This property is read-only.
+    ##
+    ## @end deftp
+    Knots           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Order
+    ##
+    ## Order of spline fitting
+    ##
+    ## A scalar or row vector specifying the order of the spline for each
+    ## predictor variable.  This property is read-only.
+    ##
+    ## @end deftp
+    Order           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} DoF
+    ##
+    ## Degrees of freedom for spline fitting
+    ##
+    ## A scalar or row vector specifying the degrees of freedom for each
+    ## predictor variable in the spline fitting.  This property is read-only.
+    ##
+    ## @end deftp
+    DoF             = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} LearningRate
+    ##
+    ## Learning rate for gradient boosting
+    ##
+    ## A scalar value between 0 and 1 specifying the learning rate used in the
+    ## gradient boosting algorithm.  This property is read-only.
+    ##
+    ## @end deftp
+    LearningRate    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} NumIterations
+    ##
+    ## Maximum number of iterations
+    ##
+    ## A positive integer specifying the maximum number of iterations for the
+    ## gradient boosting algorithm.  This property is read-only.
+    ##
+    ## @end deftp
+    NumIterations   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} BaseModel
+    ##
+    ## Base model parameters
+    ##
+    ## A structure containing the parameters of the base model without any
+    ## interaction terms.  The base model represents the generalized additive
+    ## model with only the main effects (predictor terms) included.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BaseModel = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} ModelwInt
+    ##
+    ## Model parameters with interactions
+    ##
+    ## A structure containing the parameters of the model that includes
+    ## interaction terms.  This model extends the base model by adding
+    ## interaction terms between predictors.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelwInt = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} IntMatrix
+    ##
+    ## Interaction matrix
+    ##
+    ## A logical matrix or matrix of column indices describing the interaction
+    ## terms applied to the predictor data.  This property is read-only.
+    ##
+    ## @end deftp
+    IntMatrix = [];
 
   endproperties
 
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  ClassificationGAM\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      if (! isempty (this.Formula))
+        fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
+      endif
+      if (! isempty (this.Interactions))
+        if (ischar (this.Interactions))
+          fprintf ("%+25s: '%s'\n", 'Interactions', this.Interactions);
+        else
+          fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
+                   size (this.Interactions, 1), size (this.Interactions, 2), ...
+                   class (this.Interactions));
+        endif
+      endif
+      fprintf ("%+25s: [1x%d double]\n", 'Knots', numel (this.Knots));
+      fprintf ("%+25s: [1x%d double]\n", 'Order', numel (this.Order));
+      fprintf ("%+25s: [1x%d double]\n", 'DoF', numel (this.DoF));
+      fprintf ("%+25s: %g\n", 'LearningRate', this.LearningRate);
+      fprintf ("%+25s: %d\n\n", 'NumIterations', this.NumIterations);
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a ClassificationGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a ClassificationGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationGAM.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("ClassificationGAM.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("ClassificationGAM.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a ClassificationGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a ClassificationGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationGAM.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'Cost'
+              this.Cost = setCost (this, val);
+            case 'Prior'
+              this.Prior = setPrior (this, val);
+            case 'ScoreTransform'
+              name = "ClassificationGAM";
+              this.ScoreTransform = parseScoreTransform (val, name);
+            otherwise
+              error (strcat ("ClassificationGAM.subsasgn:", ...
+                             " unrecognized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
-    ## Class object constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationGAM (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ClassificationGAM} class object containing a generalized
+    ## additive classification model.
+    ##
+    ## @code{@var{obj} = ClassificationGAM (@var{X}, @var{Y})} returns
+    ## a ClassificationGAM object, with @var{X} as the predictor data
+    ## and @var{Y} containing the class labels of observations in @var{X}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.  @var{X} will be used to train the GAM model.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
+    ## of categorical data. @var{Y} must have the same number of rows as
+    ## @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{obj} = ClassificationGAM (@dots{}, @var{name},
+    ## @var{value})} returns a ClassificationGAM object with parameters
+    ## specified by the following @qcode{@var{name}, @var{value}} paired input
+    ## arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## vectors specifying the names of the predictors. The length of this array
+    ## must match the number of columns in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## name of the response variable.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## labels, @var{Y}, used for fitting the GAM model.
+    ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+    ##
+    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## probabilities for each class.  The order of the elements in @qcode{Prior}
+    ## corresponds to the order of the classes in @qcode{ClassNames}.
+    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
+    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## probabilities.
+    ##
+    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
+    ## misclassification cost for the corresponding instances in @var{X}, where
+    ## @math{R} is the number of unique categories in @var{Y}.  If an instance
+    ## is correctly classified into its category the cost is calculated to be 1,
+    ## otherwise 0. The cost matrix can be altered by using
+    ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
+    ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
+    ##
+    ## @item @qcode{'ScoreTransform'} @tab @tab A character vector or string
+    ## scalar specifying the transformation applied to predicted classification
+    ## scores.  Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
+    ## @qcode{'ismax'}, @qcode{'logit'}, @qcode{'none'}, @qcode{'identity'},
+    ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
+    ## @qcode{'symmetriclogit'}.
+    ##
+    ## @item @qcode{'Formula'} @tab @tab A character vector specifying the model
+    ## formula in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the
+    ## response variable and @qcode{terms} specifies the predictor variables and
+    ## interaction terms.
+    ##
+    ## @item @qcode{'Interactions'} @tab @tab A logical matrix, a positive
+    ## integer scalar, or the string @qcode{"all"} for defining the interactions
+    ## between predictor variables.
+    ##
+    ## @item @qcode{'Knots'} @tab @tab A scalar or row vector specifying the
+    ## number of knots for each predictor variable in the spline fitting.
+    ##
+    ## @item @qcode{'Order'} @tab @tab A scalar or row vector specifying the
+    ## order of the spline for each predictor variable.
+    ##
+    ## @item @qcode{'DoF'} @tab @tab A scalar or row vector specifying the
+    ## degrees of freedom for each predictor variable in the spline fitting.
+    ##
+    ## @item @qcode{'LearningRate'} @tab @tab A scalar value between 0 and 1
+    ## specifying the learning rate used in the gradient boosting algorithm.
+    ##
+    ## @item @qcode{'NumIterations'} @tab @tab A positive integer specifying
+    ## the maximum number of iterations for the gradient boosting algorithm.
+    ## @end multitable
+    ##
+    ## @seealso{fitcgam}
+    ## @end deftypefn
     function this = ClassificationGAM (X, Y, varargin)
 
       ## Check for sufficient number of input arguments
@@ -539,23 +878,23 @@ classdef ClassificationGAM
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationGAM} {@var{label} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationGAM} {@var{label} =} predict (@dots{}, @qcode{'IncludeInteractions'}, @var{includeInteractions})
-    ## @deftypefnx {ClassificationGAM} {[@var{label}, @var{score}] =} predict (@dots{})
+    ## @deftypefnx {ClassificationGAM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationGAM} {[@var{label}, @var{score}] =} predict (@dots{}, @qcode{'IncludeInteractions'}, @var{includeInteractions})
     ##
     ## Predict labels for new data using the Generalized Additive Model (GAM)
     ## stored in a ClassificationGAM object.
     ##
     ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the predicted
-    ## labels for the data in @var{X} based on the model stored in the
+    ## labels for the data in @var{XC} based on the model stored in the
     ## ClassificationGAM object, @var{obj}.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{XC}, 'IncludeInteractions',
-    ## @var{includeInteractions})} allows you to specify whether interaction
-    ## terms should be included when making predictions.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each observation.
     ##
-    ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
-    ## @var{score}, which contains the predicted class scores or posterior
-    ## probabilities for each observation.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC},
+    ## 'IncludeInteractions', @var{includeInteractions})} allows you to specify
+    ## whether interaction terms should be included when making predictions.
     ##
     ## @itemize
     ## @item
@@ -564,11 +903,11 @@ classdef ClassificationGAM
     ## @var{XC} must be an @math{MxP} numeric matrix where each row is an
     ## observation and each column corresponds to a predictor variable.
     ## @item
-    ## @var{includeInteractions} is a 'true' or 'false' indicating whether to
+    ## @var{includeInteractions} is a logical scalar indicating whether to
     ## include interaction terms in the predictions.
     ## @end itemize
     ##
-    ## @seealso{fitcgam, ClassificationGAM}
+    ## @seealso{ClassificationGAM, fitcgam}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC, varargin)
@@ -678,7 +1017,7 @@ classdef ClassificationGAM
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationGAM} {@var{CVMdl} =} crossval (@var{obj})
-    ## @deftypefnx {ClassificationGAM} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ## @deftypefnx {ClassificationGAM} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
     ##
     ## Cross Validate a Generalized Additive Model classification object.
     ##
@@ -794,6 +1133,89 @@ classdef ClassificationGAM
 
       ## Create a cross-validated model object
       CVMdl = ClassificationPartitionedModel (this, partition);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {@var{CVMdl} =} compact (@var{obj})
+    ##
+    ## Create a CompactClassificationGAM object.
+    ##
+    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
+    ## ClassificationGAM object, @var{obj}.
+    ##
+    ## @seealso{fitcgam, ClassificationGAM, CompactClassificationGAM}
+    ## @end deftypefn
+    function CVMdl = compact (this)
+      ## Create a compact model
+      CVMdl = CompactClassificationGAM (this);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
+    ##
+    ## Save a ClassificationGAM object.
+    ##
+    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
+    ## ClassificationGAM object into an Octave binary file, the name of which is
+    ## specified in @var{filename}, along with an extra variable, which defines
+    ## the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
+    ##
+    ## @seealso{loadmodel, fitcgam, ClassificationGAM}
+    ## @end deftypefn
+    function savemodel (this, fname)
+      ## Generate variable for class name
+      classdef_name = "ClassificationGAM";
+
+      ## Create variables from model properties
+      X = this.X;
+      Y = this.Y;
+      NumObservations = this.NumObservations;
+      RowsUsed        = this.RowsUsed;
+      NumPredictors   = this.NumPredictors;
+      PredictorNames  = this.PredictorNames;
+      ResponseName    = this.ResponseName;
+      ClassNames      = this.ClassNames;
+      Prior           = this.Prior;
+      Cost            = this.Cost;
+      ScoreTransform  = this.ScoreTransform;
+      Formula         = this.Formula;
+      Interactions    = this.Interactions;
+      Knots           = this.Knots;
+      Order           = this.Order;
+      DoF             = this.DoF;
+      BaseModel       = this.BaseModel;
+      ModelwInt       = this.ModelwInt;
+      IntMatrix       = this.IntMatrix;
+
+      ## Save classdef name and all model properties as individual variables
+      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
+            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
+            "ClassNames", "Prior", "Cost", "ScoreTransform", "Formula", ...
+            "Interactions", "Knots", "Order", "DoF", "BaseModel", ...
+            "ModelwInt", "IntMatrix");
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function mdl = load_model (filename, data)
+      ## Create a ClassificationGAM object
+      mdl = ClassificationGAM (1, 1);
+
+      ## Check that fieldnames in DATA match properties in ClassificationGAM
+      names = fieldnames (data);
+      props = fieldnames (mdl);
+      if (! isequal (sort (names), sort (props)))
+        error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
+      endif
+
+      ## Copy data into object
+      for i = 1:numel (props)
+        mdl.(props{i}) = data.(props{i});
+      endfor
     endfunction
 
   endmethods
@@ -930,94 +1352,43 @@ classdef ClassificationGAM
       RSS = sum (res .^ 2);
     endfunction
 
-  endmethods
-
-  methods (Access = public)
-
-    ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationGAM} {@var{CVMdl} =} compact (@var{obj})
-    ##
-    ## Create a CompactClassificationGAM object.
-    ##
-    ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
-    ## ClassificationGAM object, @var{obj}.
-    ##
-    ## @seealso{fitcdiscr, ClassificationGAM, CompactClassificationGAM}
-    ## @end deftypefn
-
-    function CVMdl = compact (this)
-      ## Create a compact model
-      CVMdl = CompactClassificationGAM (this);
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
-    ##
-    ## Save a ClassificationGAM object.
-    ##
-    ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
-    ## ClassificationGAM object into an Octave binary file, the name of which is
-    ## specified in @var{filename}, along with an extra variable, which defines
-    ## the type classification object these variables constitute.  Use
-    ## @code{loadmodel} in order to load a classification object into Octave's
-    ## workspace.
-    ##
-    ## @seealso{loadmodel, fitcgam, ClassificationGAM, cvpartition,
-    ## ClassificationPartitionedModel}
-    ## @end deftypefn
-
-    function savemodel (this, fname)
-      ## Generate variable for class name
-      classdef_name = "ClassificationGAM";
-
-      ## Create variables from model properties
-      X = this.X;
-      Y = this.Y;
-      NumObservations = this.NumObservations;
-      RowsUsed        = this.RowsUsed;
-      NumPredictors   = this.NumPredictors;
-      PredictorNames  = this.PredictorNames;
-      ResponseName    = this.ResponseName;
-      ClassNames      = this.ClassNames;
-      Prior           = this.Prior;
-      Cost            = this.Cost;
-      ScoreTransform  = this.ScoreTransform;
-      Formula         = this.Formula;
-      Interactions    = this.Interactions;
-      Knots           = this.Knots;
-      Order           = this.Order;
-      DoF             = this.DoF;
-      BaseModel       = this.BaseModel;
-      ModelwInt       = this.ModelwInt;
-      IntMatrix       = this.IntMatrix;
-
-      ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
-            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
-            "ClassNames", "Prior", "Cost", "ScoreTransform", "Formula", ...
-            "Interactions", "Knots", "Order", "DoF", "BaseModel", ...
-            "ModelwInt", "IntMatrix");
-    endfunction
-
-  endmethods
-
-  methods (Static, Hidden)
-
-    function mdl = load_model (filename, data)
-      ## Create a ClassificationGAM object
-      mdl = ClassificationGAM (1, 1);
-
-      ## Check that fieldnames in DATA match properties in ClassificationGAM
-      names = fieldnames (data);
-      props = fieldnames (mdl);
-      if (! isequal (sort (names), sort (props)))
-        error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
+    function this = setCost (this, Cost, gnY = [])
+      if (isempty (gnY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
       endif
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("ClassificationGAM: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
+    endfunction
 
-      ## Copy data into object
-      for i = 1:numel (props)
-        mdl.(props{i}) = data.(props{i});
-      endfor
+    function this = setPrior (this, Prior, gnY = [], gY = [])
+      if (isempty (gnY) || isempty (gY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      ## Set prior
+      if (strcmpi ("uniform", Prior))
+        this.Prior = ones (size (gnY)) ./ numel (gnY);
+      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
+        pr = [];
+        for i = 1:numel (gnY)
+          pr = [pr; sum(gY==i)];
+        endfor
+        this.Prior = pr ./ sum (pr);
+      elseif (isnumeric (Prior))
+        if (numel (gnY) != numel (Prior))
+          error (strcat ("ClassificationGAM: the elements", ...
+                         " in 'Prior' do not correspond to the", ...
+                         " selected classes in Y."));
+        endif
+        this.Prior = Prior ./ sum (Prior);
+      endif
     endfunction
 
   endmethods
