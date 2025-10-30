@@ -149,14 +149,9 @@ classdef ClassificationGAM
     ##
     ## Prior probability for each class
     ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.
-    ##
-    ## Add or change the @qcode{Prior} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
-    ## @end itemize
+    ## A 2-element numeric vector specifying the prior probabilities for each
+    ## class.  The order of the elements in @qcode{Prior} corresponds to the
+    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
     ##
     ## @end deftp
     Prior           = [];
@@ -438,8 +433,6 @@ classdef ClassificationGAM
           switch (s.subs)
             case 'Cost'
               this.Cost = setCost (this, val);
-            case 'Prior'
-              this.Prior = setPrior (this, val);
             case 'ScoreTransform'
               name = "ClassificationGAM";
               this.ScoreTransform = parseScoreTransform (val, name);
@@ -791,16 +784,9 @@ classdef ClassificationGAM
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
 
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationGAM: the number of rows", ...
-                         " and columns in 'Cost' must correspond", ...
-                         " to selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
+      ## Assign Cost and compute Prior (FIXME: not used)
+      this = setCost (this, Cost, gnY);
+      this.Prior = [sum(gY == 1), sum(gY == 2)];
 
       ## Assign remaining optional parameters
       this.Formula       = Formula;
@@ -1365,29 +1351,6 @@ classdef ClassificationGAM
                          " correspond to selected classes in Y."));
         endif
         this.Cost = Cost;
-      endif
-    endfunction
-
-    function this = setPrior (this, Prior, gnY = [], gY = [])
-      if (isempty (gnY) || isempty (gY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
-      endif
-      ## Set prior
-      if (strcmpi ("uniform", Prior))
-        this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
-        pr = [];
-        for i = 1:numel (gnY)
-          pr = [pr; sum(gY==i)];
-        endfor
-        this.Prior = pr ./ sum (pr);
-      elseif (isnumeric (Prior))
-        if (numel (gnY) != numel (Prior))
-          error (strcat ("ClassificationGAM: the elements", ...
-                         " in 'Prior' do not correspond to the", ...
-                         " selected classes in Y."));
-        endif
-        this.Prior = Prior ./ sum (Prior);
       endif
     endfunction
 
