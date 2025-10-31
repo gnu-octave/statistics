@@ -1469,7 +1469,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [0; 0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', 'empirical');
-%! assert (a.Prior, [0.6, 0.4], 1e-6);
+%! assert (a.Prior, [0.6; 0.4], 1e-6);
 %!test
 %! ## Test numeric prior
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
@@ -1481,7 +1481,7 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10; 11, 12];
 %! y = [0; 0; 0; 1; 1; 1];
 %! a = ClassificationGAM (x, y);
-%! assert (a.Prior, [0.5, 0.5], 1e-6);
+%! assert (a.Prior, [0.5; 0.5], 1e-6);
 %!test
 %! ## Test prior normalization
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
