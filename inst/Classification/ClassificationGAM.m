@@ -149,9 +149,9 @@ classdef ClassificationGAM
     ##
     ## Prior probability for each class
     ##
-    ## A 2-element numeric vector specifying the prior probabilities for each
-    ## class.  The order of the elements in @qcode{Prior} corresponds to the
-    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  This property is read-only.
     ##
     ## @end deftp
     Prior           = [];
@@ -363,6 +363,9 @@ classdef ClassificationGAM
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      if (! isempty (this.Prior))
+        fprintf ("%+25s: [%g %g]\n", 'Prior', this.Prior);
+      endif
       if (! isempty (this.Formula))
         fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
       endif
@@ -432,7 +435,7 @@ classdef ClassificationGAM
           endif
           switch (s.subs)
             case 'Cost'
-              this.Cost = setCost (this, val);
+              this.Cost = val;
             case 'ScoreTransform'
               name = "ClassificationGAM";
               this.ScoreTransform = parseScoreTransform (val, name);
@@ -567,6 +570,7 @@ classdef ClassificationGAM
       Formula        = [];
       Interactions   = [];
       ClassNames     = [];
+      Prior          = "empirical";
       DoF            = ones (1, ndims_X) * 8;
       Order          = ones (1, ndims_X) * 3;
       Knots          = ones (1, ndims_X) * 5;
@@ -623,6 +627,20 @@ classdef ClassificationGAM
                 error (strcat ("ClassificationGAM: not all 'ClassNames'", ...
                                " are present in Y."));
               endif
+            endif
+
+          case "prior"
+            Prior = varargin{2};
+            if (! (isnumeric (Prior) || ischar (Prior)))
+              error (strcat ("ClassificationGAM: 'Prior' must be", ...
+                             " a numeric vector or a string."));
+            endif
+            if (ischar (Prior) && ! any (strcmpi (Prior, {"empirical", "uniform"})))
+              error (strcat ("ClassificationGAM: 'Prior' must be", ...
+                             " 'empirical', 'uniform', or a numeric vector."));
+            endif
+            if (isnumeric (Prior) && numel (Prior) != 2)
+              error ("ClassificationGAM: 'Prior' must be a 2-element vector.");
             endif
 
           case "cost"
@@ -773,6 +791,19 @@ classdef ClassificationGAM
         error ("ClassificationGAM: can only be used for binary classification.");
       endif
 
+      ## Calculate prior probabilities
+      if (ischar (Prior))
+        if (strcmpi (Prior, "uniform"))
+          this.Prior = [0.5, 0.5];
+        elseif (strcmpi (Prior, "empirical"))
+          counts = histc (gY, 1:2);
+          this.Prior = counts / sum (counts);
+        endif
+      else
+        ## Numeric prior - normalize to sum to 1
+        this.Prior = Prior / sum (Prior);
+      endif
+
       ## Force Y into numeric
       if (! isnumeric (Y))
         Y = gY - 1;
@@ -784,9 +815,16 @@ classdef ClassificationGAM
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
 
-      ## Assign Cost and compute Prior (FIXME: not used)
-      this = setCost (this, Cost, gnY);
-      this.Prior = [sum(gY == 1), sum(gY == 2)];
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("ClassificationGAM: the number of rows", ...
+                         " and columns in 'Cost' must correspond", ...
+                         " to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
 
       ## Assign remaining optional parameters
       this.Formula       = Formula;
@@ -1338,22 +1376,6 @@ classdef ClassificationGAM
       RSS = sum (res .^ 2);
     endfunction
 
-    function this = setCost (this, Cost, gnY = [])
-      if (isempty (gnY))
-        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
-      endif
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationGAM: the number", ...
-                         " of rows and columns in 'Cost' must", ...
-                         " correspond to selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
-    endfunction
-
   endmethods
 
 endclassdef
@@ -1434,6 +1456,48 @@ endfunction
 %! assert (a.Order, [3, 3, 3])
 %! assert (a.DoF, [7, 7, 7])
 %! assert (a.BaseModel.Intercept, 0.4055, 1e-1)
+
+## Test Prior calculation
+%!test
+%! ## Test uniform prior
+%! x = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = [0; 0; 1; 1];
+%! a = ClassificationGAM (x, y, 'Prior', 'uniform');
+%! assert (a.Prior, [0.5, 0.5], 1e-6);
+%!test
+%! ## Test empirical prior
+%! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
+%! y = [0; 0; 0; 1; 1];
+%! a = ClassificationGAM (x, y, 'Prior', 'empirical');
+%! assert (a.Prior, [0.6, 0.4], 1e-6);
+%!test
+%! ## Test numeric prior
+%! x = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = [0; 0; 1; 1];
+%! a = ClassificationGAM (x, y, 'Prior', [0.7, 0.3]);
+%! assert (a.Prior, [0.7, 0.3], 1e-6);
+%!test
+%! ## Test default prior (empirical)
+%! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10; 11, 12];
+%! y = [0; 0; 0; 1; 1; 1];
+%! a = ClassificationGAM (x, y);
+%! assert (a.Prior, [0.5, 0.5], 1e-6);
+%!test
+%! ## Test prior normalization
+%! x = [1, 2; 3, 4; 5, 6; 7, 8];
+%! y = [0; 0; 1; 1];
+%! a = ClassificationGAM (x, y, 'Prior', [2, 1]);
+%! assert (a.Prior, [2/3, 1/3], 1e-6);
+
+## Test input validation for Prior
+%!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
+%! ClassificationGAM (ones(4,2), ones(4,1), "Prior", [1])
+%!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
+%! ClassificationGAM (ones(4,2), ones(4,1), "Prior", [1, 2, 3])
+%!error<ClassificationGAM: 'Prior' must be a numeric vector or a string.> ...
+%! ClassificationGAM (ones(4,2), ones(4,1), "Prior", {1, 2})
+%!error<ClassificationGAM: 'Prior' must be> ...
+%! ClassificationGAM (ones(4,2), ones(4,1), "Prior", "invalid")
 
 ## Test input validation for constructor
 %!error<ClassificationGAM: too few input arguments.> ClassificationGAM ()
