@@ -363,9 +363,6 @@ classdef ClassificationGAM
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      if (! isempty (this.Prior))
-        fprintf ("%+25s: [%g %g]\n", 'Prior', this.Prior);
-      endif
       if (! isempty (this.Formula))
         fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
       endif
