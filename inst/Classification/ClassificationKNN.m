@@ -195,7 +195,7 @@ classdef ClassificationKNN
     ##
     ## @itemize
     ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
-    ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
     ## @end itemize
     ##
     ## When specified as a character vector, it can be any of the following
@@ -203,11 +203,11 @@ classdef ClassificationKNN
     ## always stores their function handle equivalent.
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
-    ## @headitem @tab @var{Value} @tab @var{Description}
+    ## @headitem @var{Value} @tab @tab @var{Description}
     ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
     ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
-    ## largest score to 1, and sets the scores for all other classes to 0
+    ## largest score to 1, and for all other classes to 0
     ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)

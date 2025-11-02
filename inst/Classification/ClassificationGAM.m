@@ -185,32 +185,37 @@ classdef ClassificationGAM
     ##
     ## Transformation function for classification scores
     ##
-    ## Specified as a character vector representing a built-in function or as a
-    ## function handle for transforming the classification scores.  The
-    ## following built-in functions are supported:
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
     ##
-    ## @itemize
-    ## @item @qcode{'doublelogit'}
-    ## @item @qcode{'invlogit'}
-    ## @item @qcode{'ismax'}
-    ## @item @qcode{'logit'}
-    ## @item @qcode{'none'}
-    ## @item @qcode{'identity'}
-    ## @item @qcode{'sign'}
-    ## @item @qcode{'symmetric'}
-    ## @item @qcode{'symmetricismax'}
-    ## @item @qcode{'symmetriclogit'}
-    ## @end itemize
-    ##
-    ## Add or change the @qcode{ScoreTransform} property using dot notation as
-    ## in:
     ## @itemize
     ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
-    ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
     ## @end itemize
     ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
     ## @end deftp
-    ScoreTransform  = [];
+    ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Formula
@@ -489,13 +494,6 @@ classdef ClassificationGAM
     ## labels, @var{Y}, used for fitting the GAM model.
     ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
     ##
-    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
-    ## probabilities for each class.  The order of the elements in @qcode{Prior}
-    ## corresponds to the order of the classes in @qcode{ClassNames}.
-    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
-    ## class probabilities or @qcode{"uniform"} to assume equal class
-    ## probabilities.
-    ##
     ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
     ## misclassification cost for the corresponding instances in @var{X}, where
     ## @math{R} is the number of unique categories in @var{Y}.  If an instance
@@ -504,9 +502,17 @@ classdef ClassificationGAM
     ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
     ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
     ##
-    ## @item @qcode{'ScoreTransform'} @tab @tab A character vector or string
-    ## scalar specifying the transformation applied to predicted classification
-    ## scores.  Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
+    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## probabilities for each class.  The order of the elements in @qcode{Prior}
+    ## corresponds to the order of the classes in @qcode{ClassNames}.
+    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
+    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## probabilities.
+    ##
+    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## or a character vector specifying one of the following builtin functions
+    ## specifying the transformation applied to predicted classification scores.
+    ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
     ## @qcode{'ismax'}, @qcode{'logit'}, @qcode{'none'}, @qcode{'identity'},
     ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
     ## @qcode{'symmetriclogit'}.
@@ -573,7 +579,6 @@ classdef ClassificationGAM
       LearningRate   = 0.1;
       NumIterations  = 100;
       Cost           = [];
-      this.ScoreTransform  = 'none';
 
       ## Number of parameters for Knots, DoF, Order (maximum 2 allowed)
       KOD = 0;
