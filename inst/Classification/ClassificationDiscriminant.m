@@ -335,7 +335,10 @@ classdef ClassificationDiscriminant
     ##
     ## @end deftp
     XCentered       = [];
+  endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
   endproperties
 
   methods (Hidden)
@@ -368,7 +371,7 @@ classdef ClassificationDiscriminant
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
@@ -431,7 +434,8 @@ classdef ClassificationDiscriminant
               this.Prior = setPrior (this, val);
             case 'ScoreTransform'
               name = "ClassificationDiscriminant";
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
             otherwise
               error (strcat ("ClassificationDiscriminant.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -625,7 +629,8 @@ classdef ClassificationDiscriminant
 
           case "scoretransform"
             name = "ClassificationDiscriminant";
-            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                 (varargin{2}, name);
 
           case "discrimtype"
             DiscrimType = tolower (varargin{2});
@@ -1463,13 +1468,14 @@ classdef ClassificationDiscriminant
       MinGamma        = this.MinGamma;
       LogDetSigma     = this.LogDetSigma;
       XCentered       = this.XCentered;
+      STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
             "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
             "ClassNames", "ScoreTransform", "Prior", "Cost", "Sigma", "Mu", ...
             "Coeffs", "Delta", "DiscrimType", "Gamma", "MinGamma", ...
-            "LogDetSigma", "XCentered");
+            "LogDetSigma", "XCentered", "STname");
     endfunction
 
   endmethods

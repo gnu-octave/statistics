@@ -550,6 +550,10 @@ classdef ClassificationKNN
     BucketSize      = [];
   endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods (Hidden)
 
     ## Custom display
@@ -580,7 +584,7 @@ classdef ClassificationKNN
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'Distance', this.Distance);
@@ -643,7 +647,8 @@ classdef ClassificationKNN
               this.Prior = setPrior (this, val);
             case 'ScoreTransform'
               name = "ClassificationKNN";
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
             otherwise
               error (strcat ("ClassificationKNN.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -802,7 +807,8 @@ classdef ClassificationKNN
 
           case "scoretransform"
             name = "ClassificationKNN";
-            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                 (varargin{2}, name);
 
           case "breakties"
             BreakTies = varargin{2};
@@ -2108,6 +2114,7 @@ classdef ClassificationKNN
       NSMethod        = this.NSMethod;
       IncludeTies     = this.IncludeTies;
       BucketSize      = this.BucketSize;
+      STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
@@ -2115,7 +2122,7 @@ classdef ClassificationKNN
             "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
             "ScoreTransform", "BreakTies", "NumNeighbors", "Distance", ...
             "DistanceWeight", "DistParameter", "NSMethod", "IncludeTies", ...
-            "BucketSize");
+            "BucketSize", "STname");
     endfunction
 
   endmethods

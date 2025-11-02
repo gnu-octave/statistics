@@ -327,7 +327,6 @@ classdef ClassificationGAM
     ##
     ## @end deftp
     IntMatrix = [];
-
   endproperties
 
   properties (Access = private, Hidden)
@@ -434,7 +433,8 @@ classdef ClassificationGAM
               this.Cost = val;
             case 'ScoreTransform'
               name = "ClassificationGAM";
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
             otherwise
               error (strcat ("ClassificationGAM.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
