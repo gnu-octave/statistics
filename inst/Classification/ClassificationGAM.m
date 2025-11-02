@@ -149,9 +149,9 @@ classdef ClassificationGAM
     ##
     ## Prior probability for each class
     ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  This property is read-only.
+    ## A 2-element numeric vector specifying the prior probabilities for each
+    ## class.  The order of the elements in @qcode{Prior} corresponds to the
+    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
     ##
     ## @end deftp
     Prior           = [];
@@ -330,6 +330,10 @@ classdef ClassificationGAM
 
   endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods (Hidden)
 
     ## Custom display
@@ -360,7 +364,7 @@ classdef ClassificationGAM
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       if (! isempty (this.Formula))
@@ -375,11 +379,6 @@ classdef ClassificationGAM
                    class (this.Interactions));
         endif
       endif
-      fprintf ("%+25s: [1x%d double]\n", 'Knots', numel (this.Knots));
-      fprintf ("%+25s: [1x%d double]\n", 'Order', numel (this.Order));
-      fprintf ("%+25s: [1x%d double]\n", 'DoF', numel (this.DoF));
-      fprintf ("%+25s: %g\n", 'LearningRate', this.LearningRate);
-      fprintf ("%+25s: %d\n\n", 'NumIterations', this.NumIterations);
     endfunction
 
     ## Class specific subscripted reference
@@ -649,7 +648,8 @@ classdef ClassificationGAM
 
           case "scoretransform"
             name = "ClassificationGAM";
-            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                 (varargin{2}, name);
 
           case "formula"
             if (F_I < 1)
@@ -788,19 +788,6 @@ classdef ClassificationGAM
         error ("ClassificationGAM: can only be used for binary classification.");
       endif
 
-      ## Calculate prior probabilities
-      if (ischar (Prior))
-        if (strcmpi (Prior, "uniform"))
-          this.Prior = [0.5, 0.5];
-        elseif (strcmpi (Prior, "empirical"))
-          counts = histc (gY, 1:2);
-          this.Prior = counts / sum (counts);
-        endif
-      else
-        ## Numeric prior - normalize to sum to 1
-        this.Prior = Prior / sum (Prior);
-      endif
-
       ## Force Y into numeric
       if (! isnumeric (Y))
         Y = gY - 1;
@@ -812,15 +799,18 @@ classdef ClassificationGAM
       ## Assign the number of original predictors to the ClassificationGAM object
       this.NumPredictors = ndims_X;
 
-      if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
-      else
-        if (numel (gnY) != sqrt (numel (Cost)))
-          error (strcat ("ClassificationGAM: the number of rows", ...
-                         " and columns in 'Cost' must correspond", ...
-                         " to selected classes in Y."));
+      ## Assign Cost and compute Prior
+      this = setCost (this, Cost, gnY);
+      if (ischar (Prior))
+        if (strcmpi (Prior, "uniform"))
+          this.Prior = [0.5, 0.5];
+        elseif (strcmpi (Prior, "empirical"))
+          counts = histc (gY, 1:2);
+          this.Prior = counts / sum (counts);
         endif
-        this.Cost = Cost;
+      else
+        ## Numeric prior - normalize to sum to 1
+        this.Prior = Prior / sum (Prior);
       endif
 
       ## Assign remaining optional parameters
@@ -1209,13 +1199,14 @@ classdef ClassificationGAM
       BaseModel       = this.BaseModel;
       ModelwInt       = this.ModelwInt;
       IntMatrix       = this.IntMatrix;
+      STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
             "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
             "ClassNames", "Prior", "Cost", "ScoreTransform", "Formula", ...
             "Interactions", "Knots", "Order", "DoF", "BaseModel", ...
-            "ModelwInt", "IntMatrix");
+            "ModelwInt", "IntMatrix", "STname");
     endfunction
 
   endmethods
@@ -1371,6 +1362,23 @@ classdef ClassificationGAM
       ## Final residuals and RSS calculation
       res = Y  - 1 ./ (1 + exp (-f));
       RSS = sum (res .^ 2);
+    endfunction
+
+    ## Set cost
+    function this = setCost (this, Cost, gnY = [])
+      if (isempty (gnY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("ClassificationGAM: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
     endfunction
 
   endmethods
