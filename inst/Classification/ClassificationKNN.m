@@ -19,154 +19,25 @@
 
 classdef ClassificationKNN
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} ClassificationKNN (@dots{}, @var{name}, @var{value})
+## @deftp {statistics} ClassificationKNN
 ##
-## Create a @qcode{ClassificationKNN} class object containing a k-Nearest
-## Neighbor classification model.
+## K-nearest neighbors classification
 ##
-## @code{@var{obj} = ClassificationKNN (@var{X}, @var{Y})} returns a
-## ClassificationKNN object, with @var{X} as the predictor data and @var{Y}
-## containing the class labels of observations in @var{X}.
+## The @code{ClassificationKNN} class implements a K-nearest neighbor classifier
+## object, which can predict responses for new data using the @code{predict}
+## method.  The implemented algorithm allows you choose a range of different
+## distance metrics, the number of nearest neighbors, as well as the searching
+## algorithm.
 ##
-## @itemize
-## @item
-## @code{X} must be a @math{NxP} numeric matrix of input data where rows
-## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the kNN model.
-## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
-## corresponding predictor data in @var{X}. @var{Y} can contain any type of
-## categorical data. @var{Y} must have same numbers of Rows as @var{X}.
-## @end itemize
+## The K-nearest neighbors (k-NN) classifier is a simple, non-parametric machine
+## learning algorithm used for classification tasks.  It classifies a data point
+## based on the majority class of its k closest neighbors in the feature space.
 ##
-## @code{@var{obj} = ClassificationKNN (@dots{}, @var{name}, @var{value})}
-## returns a ClassificationKNN object with parameters specified by
-## @qcode{Name-Value} pair arguments.  Type @code{help fitcknn} for more info.
+## Create a @code{ClassificationKNN} object by using the @code{fitcknn}
+## function or the class constructor.
 ##
-## A @qcode{ClassificationKNN} object, @var{obj}, stores the labelled training
-## data and various parameters for the k-Nearest Neighbor classification model,
-## which can be accessed in the following fields:
-##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
-## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
-## the observed class label for the corresponding row in @var{X}.
-##
-## @item @qcode{NumObservations} @tab @tab Number of observations used in
-## training the ClassificationKNN model, specified as a positive integer scalar.
-## This number can be less than the number of rows in the training data because
-## rows containing @qcode{NaN} values are not part of the fit.
-##
-## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
-## used in fitting the ClassificationKNN model, specified as a numerical vector.
-## If you want to use this vector for indexing the training data in @var{X}, you
-## have to convert it to a logical vector, i.e
-## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
-##
-## @item @qcode{Standardize} @tab @tab A boolean flag indicating whether
-## the data in @var{X} have been standardized prior to training.
-##
-## @item @qcode{Sigma} @tab @tab Predictor standard deviations, specified
-## as a numeric vector of the same length as the columns in @var{X}.  If the
-## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
-## empty.
-##
-## @item @qcode{Mu} @tab @tab Predictor means, specified as a numeric
-## vector of the same length as the columns in @var{X}.  If the predictor
-## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
-##
-## @item @qcode{NumPredictors} @tab @tab The number of predictors
-## (variables) in @var{X}.
-##
-## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
-## specified as a cell array of character vectors.  The variable names are in
-## the same order in which they appear in the training data @var{X}.
-##
-## @item @qcode{ResponseName} @tab @tab Response variable name, specified
-## as a character vector.
-##
-## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
-## data @var{Y} with duplicates removed, specified as a cell array of character
-## vectors.
-##
-## @item @qcode{BreakTies} @tab @tab Tie-breaking algorithm used by predict
-## when multiple classes have the same smallest cost, specified as one of the
-## following character arrays: @qcode{"smallest"} (default), which favors the
-## class with the smallest index among the tied groups, i.e. the one that
-## appears first in the training labelled data.  @qcode{"nearest"}, which favors
-## the class with the nearest neighbor among the tied groups, i.e. the class
-## with the closest member point according to the distance metric used.
-## @qcode{"random"}, which randomly picks one class among the tied groups.
-##
-## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
-## specified as a numeric vector.  The order of the elements in @qcode{Prior}
-## corresponds to the order of the classes in @qcode{ClassNames}.
-##
-## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
-## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
-## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
-## correspond to the true class and the columns correspond to the predicted
-## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
-## order of the classes in @qcode{ClassNames}.  The number of rows and columns
-## in @qcode{Cost} is the number of unique classes in the response.  By default,
-## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
-## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
-## 1 for incorrect classification.
-##
-## @item @qcode{ScoreTransform} @tab @tab A function_handle which is used
-## for transforming the kNN prediction score into a posterior probability.  By
-## default, it is @qcode{'none'}, in which case the @code{predict} and
-## @code{resubPredict} methods return the prediction scores.
-##
-## @item @qcode{NumNeighbors} @tab @tab Number of nearest neighbors in
-## @var{X} used to classify each point during prediction, specified as a
-## positive integer value.
-##
-## @item @qcode{Distance} @tab @tab Distance metric, specified as a
-## character vector.  The allowable distance metric names depend on the choice
-## of the neighbor-searcher method.  See the available distance metrics in
-## @code{knnseaarch} for more info.
-##
-## @item @qcode{DistanceWeight} @tab @tab Distance weighting function,
-## specified as a function handle, which accepts a matrix of nonnegative
-## distances, and returns a matrix the same size containing nonnegative distance
-## weights.
-##
-## @item @qcode{DistParameter} @tab @tab Parameter for the distance
-## metric, specified either as a positive definite covariance matrix (when the
-## distance metric is @qcode{"mahalanobis"}, or a positive scalar as the
-## Minkowski distance exponent (when the distance metric is @qcode{"minkowski"},
-## or a vector of positive scale values with length equal to the number of
-## columns of @var{X} (when the distance metric is @qcode{"seuclidean"}.  For
-## any other distance metric, the value of @qcode{DistParameter} is empty.
-##
-## @item @qcode{NSMethod} @tab @tab Nearest neighbor search method,
-## specified as either @qcode{"kdtree"}, which creates and uses a Kd-tree to
-## find nearest neighbors, or @qcode{"exhaustive"}, which uses the exhaustive
-## search algorithm by computing the distance values from all points in @var{X}
-## to find nearest neighbors.
-##
-## @item @qcode{IncludeTies} @tab @tab A boolean flag indicating whether
-## prediction includes all the neighbors whose distance values are equal to the
-## @math{k^th} smallest distance.  If @qcode{IncludeTies} is @qcode{true},
-## prediction includes all of these neighbors.  Otherwise, prediction uses
-## exactly @math{k} neighbors.
-##
-## @item @qcode{BucketSize} @tab @tab Maximum number of data points in the
-## leaf node of the Kd-tree, specified as positive integer value. This argument
-## is meaningful only when @qcode{NSMethod} is @qcode{"kdtree"}.
-##
-## @end multitable
-##
-## @seealso{fitcknn, knnsearch, rangesearch, pdist2}
-## @end deftypefn
+## @seealso{fitcknn}
+## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
@@ -318,32 +189,37 @@ classdef ClassificationKNN
     ##
     ## Transformation function for classification scores
     ##
-    ## Specified as a character vector representing a built-in function or as a
-    ## function handle for transforming the classification scores.  The
-    ## following built-in functions are supported:
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
     ##
-    ## @itemize
-    ## @item @qcode{'doublelogit'}
-    ## @item @qcode{'invlogit'}
-    ## @item @qcode{'ismax'}
-    ## @item @qcode{'logit'}
-    ## @item @qcode{'none'}
-    ## @item @qcode{'identity'}
-    ## @item @qcode{'sign'}
-    ## @item @qcode{'symmetric'}
-    ## @item @qcode{'symmetricismax'}
-    ## @item @qcode{'symmetriclogit'}
-    ## @end itemize
-    ##
-    ## Add or change the @qcode{ScoreTransform} property using dot notation as
-    ## in:
     ## @itemize
     ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
     ## @item @qcode{@var{obj}.ScoreTransform = @function_handle}
     ## @end itemize
     ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @tab @var{Value} @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and sets the scores for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
     ## @end deftp
-    ScoreTransform  = [];
+    ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} Standardize
@@ -685,8 +561,104 @@ classdef ClassificationKNN
     ##
     ## @code{@var{obj} = ClassificationKNN (@dots{}, @var{name}, @var{value})}
     ## returns a ClassificationKNN object with parameters specified by the
-    ## @qcode{@var{name}, @var{value}} paired input arguments.  For more details
-    ## see the @code{fitcknn} function.
+    ## following @qcode{@var{name}, @var{value}} paired input arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## vectors specifying the names of the predictors. The length of this array
+    ## must match the number of columns in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## name of the response variable.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## labels, @var{Y}, used for fitting the GAM model.
+    ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+    ##
+    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
+    ## misclassification cost for the corresponding instances in @var{X}, where
+    ## @math{R} is the number of unique categories in @var{Y}.  If an instance
+    ## is correctly classified into its category the cost is calculated to be 1,
+    ## otherwise 0. The cost matrix can be altered by using
+    ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
+    ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
+    ##
+    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## probabilities for each class.  The order of the elements in @qcode{Prior}
+    ## corresponds to the order of the classes in @qcode{ClassNames}.
+    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
+    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## probabilities.
+    ##
+    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## or a character vector specifying one of the following builtin functions
+    ## specifying the transformation applied to predicted classification scores.
+    ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
+    ## @qcode{'ismax'}, @qcode{'logit'}, @qcode{'none'}, @qcode{'identity'},
+    ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
+    ## @qcode{'symmetriclogit'}.
+    ##
+    ## @item @qcode{"BreakTies"} @tab @tab A character vector specifying the
+    ## tie-breaking algorithm used by @code{predict} method, when multiple
+    ## classes have the same smallest cost.  Available options are
+    ## @qcode{"smallest"} (default), which uses the smallest index among tied
+    ## groups, @qcode{"nearest"}, which uses the class with the nearest neighbor
+    ## among tied groups, and @qcode{"random"}, which randomly selects one of
+    ## the tied groups.
+    ##
+    ## @item @qcode{"NumNeighbors"} @tab @tab A positive integer value that
+    ## specifies the number of nearest neighbors to be found in the kNN search
+    ## algorithm for classifying each point during prediction.  By default,
+    ## it is 1.
+    ##
+    ## @item @qcode{"Distance"} @tab @tab Any valid distance metric supported by
+    ## the @code{pdist2} function.  Note that the allowable distrance metrics
+    ## depend on the selected nearest neighbor search method.
+    ##
+    ## @item @qcode{"DistanceWeight"} @tab @tab Either a distance weighting
+    ## function, specified either as a function handle, which accepts a matrix
+    ## of nonnegative distances and returns a matrix the same size containing
+    ## nonnegative distance weights, or a character vector with one of the
+    ## following values: @qcode{"equal"}, which corresponds to no weighting;
+    ## @qcode{"inverse"}, which corresponds to a weight equal to
+    ## @math{1/distance}; @qcode{"squaredinverse"}, which corresponds to a
+    ## weight equal to @math{1/distance^2}.
+    ##
+    ## @item @qcode{"Cov"} @tab @tab A square matrix with the same number of
+    ## columns @var{X} specifying the covariance matrix for computing the
+    ## mahalanobis distance.  This must be a positive definite matrix matching.
+    ## This argument is only valid when the selected distance metric is
+    ## @qcode{"mahalanobis"}.
+    ##
+    ## @item @qcode{"Exponent"} @tab @tab A positive scalar (usually an integer)
+    ## specifying the Minkowski distance exponent.  This argument is only valid
+    ## when the selected distance metric is @qcode{"minkowski"}.  By default,
+    ## it is 2.
+    ##
+    ## @item @qcode{"Scale"} @tab @tab A nonnegative numeric vector specifying
+    ## the scale parameters for the standardized Euclidean distance.  The vector
+    ## length must be equal to the number of columns in @var{X}.  This argument
+    ## is only valid when the selected distance metric is @qcode{"seuclidean"},
+    ## in which case each coordinate of @var{X} is scaled by the corresponding
+    ## element of @qcode{"scale"}, as is each query point in @var{Y}.  By
+    ## default, the scale parameter is the standard deviation of each coordinate
+    ## in @var{X}.  If a variable in @var{X} is constant, i.e. zero variance,
+    ## this value is forced to 1 to avoid division by zero.  This is the
+    ## equivalent of this variable not being standardized.
+    ##
+    ## @item @qcode{"NSMethod"} @tab @tab A character vector specifying the
+    ## nearest neighbor search method used by @code{knnsearch}, which can be
+    ## @qcode{"kdtree"} or @qcode{"exhaustive"}.  See @code{knnsearch} for more
+    ## information about default values and allowable distance metrics for each
+    ## search method.
+    ##
+    ## @item @qcode{"BucketSize"} @tab @tab A positive integer value specifying
+    ## the maximum number of data points in the leaf node of the Kd-tree.  This
+    ## argument is meaningful only when the selected nearest neighbor search
+    ## method is @qcode{"kdtree"}.  By default, it is 50.
+    ## @end multitable
     ##
     ## @seealso{fitcknn, knnsearch, rangesearch, pdist2}
     ## @end deftypefn
@@ -726,7 +698,6 @@ classdef ClassificationKNN
       NSMethod        = [];
       IncludeTies     = false;
       BucketSize      = 50;
-      this.ScoreTransform  = 'none';
 
       ## Number of parameters for Standardize, Scale, Cov (maximum 1 allowed)
       SSC = 0;
@@ -1263,10 +1234,8 @@ classdef ClassificationKNN
         scores = [scores; freq];
         cost = [cost; 1-freq];
 
-        ## Apply ScoreTransform (if applicable)
-        if (! strcmp (this.ScoreTransform, "none"))
-          scores = this.ScoreTransform (scores);
-        endif
+        ## Apply ScoreTransform
+        scores = this.ScoreTransform (scores);
 
       endfor
 
