@@ -23,28 +23,30 @@
 ##
 ## @end deftypefn
 
-function f = parseScoreTransform (ScoreTransform, classname)
+function [f, st] = parseScoreTransform (ScoreTransform, classname)
 
   stList = {"doublelogit", "invlogit", "ismax", "logit", "none", ...
             "identity", "sign", "symmetric", "symmetricismax", ...
             "symmetriclogit"};
   if (! (ischar (ScoreTransform) ||
          strcmp (class (ScoreTransform), "function_handle")))
-    error (strcat (["%s: 'ScoreTransform' must be a character"], ...
-                   [" vector or a function handle."]), classname);
-  endif
-  if (! ismember (ScoreTransform, stList))
-    error ("%s: unrecognized 'ScoreTransform' function.", classname);
+    error (strcat ("%s: 'ScoreTransform' must be a character", ...
+                   " vector or a function handle."), classname);
   endif
   ## Handle ScoreTransform here
   if (is_function_handle (ScoreTransform))
     m = eye (5);
     if (! isequal (size (m), size (ScoreTransform (m))))
-      error (strcat (["%s: function handle for 'ScoreTransform' must"], ...
-                     [" return the same size as its input."]), classname);
+      error (strcat ("%s: function handle for 'ScoreTransform' must", ...
+                     " return the same size as its input."), classname);
     endif
     f = ScoreTransform;
+    st = 'custom function handle';
   else
+    if (! ismember (ScoreTransform, stList))
+      error ("%s: unrecognized 'ScoreTransform' function.", classname);
+    endif
+    st = ScoreTransform;
     if (strcmpi ("doublelogit", ScoreTransform))
       f = @(x) 1 ./ (1 + exp (-2 * x));
     elseif (strcmpi ("invlogit", ScoreTransform))
