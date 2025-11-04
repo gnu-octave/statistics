@@ -18,168 +18,323 @@
 
 classdef ClassificationNeuralNetwork
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
+## @deftp {statistics} ClassificationNeuralNetwork
 ##
-## Create a @qcode{ClassificationNeuralNetwork} class object containing a Neural
-## Network classification model.
+## Neural network classification
 ##
-## @code{@var{obj} = ClassificationNeuralNetwork (@var{X}, @var{Y})} returns a
-## ClassificationNeuralNetwork object, with @var{X} as the predictor data and
-## @var{Y} containing the class labels of observations in @var{X}.
+## The @code{ClassificationNeuralNetwork} class implements a neural network
+## classifier object, which can predict responses for new data using the
+## @code{predict} method.
 ##
-## @itemize
-## @item
-## @code{X} must be a @math{NxP} numeric matrix of input data where rows
-## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the model.
-## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
-## corresponding predictor data in @var{X}. @var{Y} can contain any type of
-## categorical data. @var{Y} must have same numbers of rows as @var{X}.
-## @end itemize
+## Neural network classification is a machine learning method that uses
+## interconnected nodes in multiple layers to learn complex patterns in data.
+## It processes inputs through hidden layers with activation functions to
+## produce classification outputs.
 ##
-## @code{@var{obj} = ClassificationNeuralNetwork (@dots{}, @var{name},
-## @var{value})} returns a ClassificationNeuralNetwork object with parameters
-## specified by @qcode{Name-Value} pair arguments. Type @code{help fitcnet}
-## for more info.
+## Create a @code{ClassificationNeuralNetwork} object by using the
+## @code{fitcnet} function or the class constructor.
 ##
-## A @qcode{ClassificationNeuralNetwork} object, @var{obj}, stores the labelled
-## training data and various parameters for the Neural Network classification
-## model, which can be accessed in the following fields:
-##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
-## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
-## the observed class label for the corresponding row in @var{X}.
-##
-## @item @qcode{NumObservations} @tab @tab Number of observations used in
-## training the model, specified as a positive integer scalar. This number can
-## be less than the number of rows in the training data because rows containing
-## @qcode{NaN} values are not part of the fit.
-##
-## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
-## used in fitting the ClassificationNeuralNetwork model, specified as a
-## numerical vector. If you want to use this vector for indexing the training
-## data in @var{X}, you have to convert it to a logical vector, i.e
-## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
-##
-## @item @qcode{Standardize} @tab @tab A boolean flag indicating whether
-## the data in @var{X} have been standardized prior to training.
-##
-## @item @qcode{Sigma} @tab @tab Predictor standard deviations, specified
-## as a numeric vector of the same length as the columns in @var{X}.  If the
-## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
-## empty.
-##
-## @item @qcode{Mu} @tab @tab Predictor means, specified as a numeric
-## vector of the same length as the columns in @var{X}.  If the predictor
-## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
-##
-## @item @qcode{NumPredictors} @tab @tab The number of predictors
-## (variables) in @var{X}.
-##
-## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
-## specified as a cell array of character vectors.  The variable names are in
-## the same order in which they appear in the training data @var{X}.
-##
-## @item @qcode{ResponseName} @tab @tab Response variable name, specified
-## as a character vector.
-##
-## @item @qcode{ClassNames} @tab @tab Names of the classes in the class
-## labels, @var{Y}, used for fitting the ClassificationNeuralNetwork model.
-## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
-##
-## @item @qcode{LayerSizes} @tab @tab Sizes of the fully connected layers
-## in the neural network model, returned as a positive integer vector. The ith
-## element of LayerSizes is the number of outputs in the ith fully connected
-## layer of the neural network model. LayerSizes does not include the size of
-## the final fully connected layer. This layer always has K outputs, where K
-## is the number of classes in Y.
-##
-## @item @qcode{Activations} @tab @tab  A character vector or a cell array of
-## character vector specifying the activation functions used in the hidden
-## layers of the neural network.
-##
-## @item @qcode{OutputLayerActivation} @tab @tab  A character vector specifying
-## the activation function of the output layer the neural network.
-##
-## @item @qcode{LearningRate} @tab @tab A positive scalar value defining the
-## learning rate used by the gradient descend algorithm during training.
-##
-## @item @qcode{IterationLimit} @tab @tab A positive scalar value defining
-## the number of epochs for training the model.
-##
-## @item @qcode{DisplayInfo} @tab @tab A boolean flag indicating whether to
-## print information during training.
-##
-## @item @qcode{ModelParameters} @tab @tab A structure containing the
-## parameters used to train the Neural Network classifier model containing the
-## fields @code{LayerWeights} and @code{Activations} as generated by the
-## @code{fcnntrain} function.
-##
-## @item @qcode{ConvergenceInfo} @tab @tab A structure containing the
-## Convergence info of the Neural Network classifier model with the following
-## fields:
-##
-## @multitable @columnfractions 0.05 0.30 0.75
-## @headitem @tab @var{Fields} @tab @var{Description}
-## @item @tab @qcode{Accuracy} @tab The prediction accuracy at each
-## iteration during the neural network model's training process.
-## @item @tab @qcode{TrainingLoss} @tab The loss value recorded at each
-## iteration during the neural network model's training process.
-## @item @tab @qcode{Time} @tab The cumulative time taken for all iterations,
-## measured in seconds.
-## @end multitable
-##
-## @item @qcode{Solver} @tab @tab Solver used to train the neural network
-## model, returned as 'Gradient Search'.
-##
-## @item @qcode{ScoreTransform} @tab @tab A function_handle which is used
-## for transforming the Neural Network prediction score into a posterior
-## probability.  By default, it is @qcode{'none'}, in which case the
-## @code{predict} and @code{resubPredict} methods return the prediction scores.
-##
-## @end multitable
-##
-## @seealso{fitcnet, fcnntrain, fcnnpredict}
-## @end deftypefn
+## @seealso{fitcnet}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X                     = [];
 
-    X                     = [];  # Predictor data
-    Y                     = [];  # Class labels
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y                     = [];
 
-    NumObservations       = [];  # Number of observations in training dataset
-    RowsUsed              = [];  # Rows used in fitting
-    NumPredictors         = [];  # Number of predictors
-    PredictorNames        = [];  # Predictor variables names
-    ResponseName          = [];  # Response variable name
-    ClassNames            = [];  # Names of classes in Y
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the ClassificationNeuralNetwork model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations       = [];
 
-    ScoreTransform        = [];  # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} RowsUsed
+    ##
+    ## Rows used for fitting
+    ##
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X} specifying which rows have been used for
+    ## fitting the ClassificationNeuralNetwork model.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    RowsUsed              = [];
 
-    Standardize           = [];  # Flag to standardize predictors
-    Sigma                 = [];  # Predictor standard deviations
-    Mu                    = [];  # Predictor means
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationNeuralNetwork model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors         = [];
 
-    LayerSizes            = [];  # Size of fully connected layers
-    Activations           = [];  # Activation functions for hidden layers
-    OutputLayerActivation = [];  # Activation function for output layer
-    LearningRate          = [];  # Learning rate for gradient descend
-    IterationLimit        = [];  # Number of training epochs
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames        = [];
 
-    ModelParameters       = [];  # Model parameters
-    ConvergenceInfo       = [];  # Training history
-    DisplayInfo           = [];  # Display information during training
-    Solver                = [];  # Solver used
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName          = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Standardize
+    ##
+    ## Flag to standardize predictors
+    ##
+    ## A boolean flag indicating whether the predictor data has been standardized
+    ## prior to training.  When @qcode{true}, the predictors are centered and
+    ## scaled to have zero mean and unit variance.  This property is read-only.
+    ##
+    ## @end deftp
+    Standardize           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Sigma
+    ##
+    ## Predictor standard deviations
+    ##
+    ## A numeric vector containing the standard deviations of the predictors
+    ## used for standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Sigma                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Mu
+    ##
+    ## Predictor means
+    ##
+    ## A numeric vector containing the means of the predictors used for
+    ## standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Mu                    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} LayerSizes
+    ##
+    ## Sizes of fully connected layers
+    ##
+    ## A positive integer vector specifying the sizes of the fully connected
+    ## layers in the neural network model.  The i-th element of @qcode{LayerSizes}
+    ## is the number of outputs in the i-th fully connected layer of the neural
+    ## network model.  @qcode{LayerSizes} does not include the size of the final
+    ## fully connected layer.  This layer always has K outputs, where K is the
+    ## number of classes in Y.  This property is read-only.
+    ##
+    ## @end deftp
+    LayerSizes            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Activations
+    ##
+    ## Activation functions for hidden layers
+    ##
+    ## A character vector or cell array of character vectors specifying the
+    ## activation functions used in the hidden layers of the neural network.
+    ## Supported activation functions include: @qcode{"linear"},
+    ## @qcode{"sigmoid"}, @qcode{"relu"}, @qcode{"tanh"}, @qcode{"softmax"},
+    ## @qcode{"lrelu"}, @qcode{"prelu"}, @qcode{"elu"}, and @qcode{"gelu"}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Activations           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} OutputLayerActivation
+    ##
+    ## Activation function for output layer
+    ##
+    ## A character vector specifying the activation function of the output layer
+    ## of the neural network.  Supported activation functions are the same as
+    ## for the @qcode{Activations} property.  This property is read-only.
+    ##
+    ## @end deftp
+    OutputLayerActivation = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} LearningRate
+    ##
+    ## Learning rate for gradient descent
+    ##
+    ## A positive scalar value defining the learning rate used by the gradient
+    ## descent algorithm during training.  This property is read-only.
+    ##
+    ## @end deftp
+    LearningRate          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} IterationLimit
+    ##
+    ## Maximum number of training iterations
+    ##
+    ## A positive integer value defining the maximum number of epochs for
+    ## training the model.  This property is read-only.
+    ##
+    ## @end deftp
+    IterationLimit        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ModelParameters
+    ##
+    ## Neural network model parameters
+    ##
+    ## A structure containing the parameters used to train the neural network
+    ## classifier model, including layer weights and activations as generated by
+    ## the @code{fcnntrain} function.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} ConvergenceInfo
+    ##
+    ## Training convergence information
+    ##
+    ## A structure containing convergence information of the neural network
+    ## classifier model with the following fields:
+    ##
+    ## @itemize
+    ## @item @qcode{Accuracy} - The prediction accuracy at each iteration
+    ## during training
+    ## @item @qcode{TrainingLoss} - The loss value recorded at each iteration
+    ## during training
+    ## @item @qcode{Time} - The cumulative time taken for all iterations in
+    ## seconds
+    ## @end itemize
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ConvergenceInfo       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} DisplayInfo
+    ##
+    ## Display training information flag
+    ##
+    ## A boolean flag indicating whether to print information during training.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    DisplayInfo           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationNeuralNetwork} {property} Solver
+    ##
+    ## Solver used for training
+    ##
+    ## A character vector specifying the solver algorithm used to train the
+    ## neural network model.  Currently only @qcode{"Gradient Descend"} is
+    ## supported.  This property is read-only.
+    ##
+    ## @end deftp
+    Solver                = [];
   endproperties
 
   methods (Hidden)
@@ -296,7 +451,88 @@ classdef ClassificationNeuralNetwork
 
   methods (Access = public)
 
-    ## Constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} ClassificationNeuralNetwork (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationNeuralNetwork (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ClassificationNeuralNetwork} class object containing a
+    ## neural network classification model.
+    ##
+    ## @code{@var{obj} = ClassificationNeuralNetwork (@var{X}, @var{Y})} returns
+    ## a ClassificationNeuralNetwork object, with @var{X} as the predictor data
+    ## and @var{Y} containing the class labels of observations in @var{X}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.  @var{X} will be used to train the neural network model.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
+    ## of categorical data. @var{Y} must have the same number of rows as
+    ## @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{obj} = ClassificationNeuralNetwork (@dots{}, @var{name},
+    ## @var{value})} returns a ClassificationNeuralNetwork object with
+    ## parameters specified by the following @qcode{@var{name}, @var{value}}
+    ## paired input arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## vectors specifying the names of the predictors. The length of this array
+    ## must match the number of columns in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## name of the response variable.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## labels, @var{Y}, used for fitting the neural network model.
+    ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
+    ##
+    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## or a character vector specifying one of the following builtin functions
+    ## specifying the transformation applied to predicted classification scores.
+    ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
+    ## @qcode{'ismax'}, @qcode{'logit'}, @qcode{'none'}, @qcode{'identity'},
+    ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
+    ## @qcode{'symmetriclogit'}.
+    ##
+    ## @item @qcode{'Standardize'} @tab @tab A logical scalar specifying whether
+    ## to standardize the predictor data.  When @qcode{true}, the predictors are
+    ## centered and scaled to have zero mean and unit variance.
+    ##
+    ## @item @qcode{'LayerSizes'} @tab @tab A positive integer vector specifying
+    ## the sizes of the fully connected layers in the neural network.  The
+    ## default is 10.
+    ##
+    ## @item @qcode{'Activations'} @tab @tab A character vector or cell array of
+    ## character vectors specifying the activation functions for the hidden
+    ## layers.  Supported values include @qcode{'linear'}, @qcode{'sigmoid'},
+    ## @qcode{'relu'}, @qcode{'tanh'}, @qcode{'softmax'}, @qcode{'lrelu'},
+    ## @qcode{'prelu'}, @qcode{'elu'}, and @qcode{'gelu'}.  The default is
+    ## @qcode{'sigmoid'}.
+    ##
+    ## @item @qcode{'OutputLayerActivation'} @tab @tab A character vector
+    ## specifying the activation function for the output layer.  Supported
+    ## values are the same as for @qcode{'Activations'}.  The default is
+    ## @qcode{'sigmoid'}.
+    ##
+    ## @item @qcode{'LearningRate'} @tab @tab A positive scalar specifying the
+    ## learning rate for gradient descent.  The default is 0.01.
+    ##
+    ## @item @qcode{'IterationLimit'} @tab @tab A positive integer specifying
+    ## the maximum number of training iterations.  The default is 1000.
+    ##
+    ## @item @qcode{'DisplayInfo'} @tab @tab A logical scalar specifying whether
+    ## to display training information.  The default is @qcode{false}.
+    ## @end multitable
+    ##
+    ## @seealso{fitcnet}
+    ## @end deftypefn
     function this = ClassificationNeuralNetwork (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -568,33 +804,38 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationNeuralNetwork} {@var{labels} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{labels}, @var{scores}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
     ##
-    ## Classify new data points into categories using the Neural Network
-    ## classification object.
+    ## Classify new data points into categories using the neural network
+    ## classification model from a ClassificationNeuralNetwork object.
     ##
-    ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## trained neural network classification model in @var{obj}.
+    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
+    ## stored in the ClassificationNeuralNetwork model, @var{obj}.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## predictors @math{P} as the corresponding predictors of the trained neural
-    ## network model in @var{obj}.
+    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the neural network
+    ## model in @var{obj}.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
-    ## returns @var{scores}, which represent the probability of each label
-    ## belonging to a specific class. For each observation in X, the predicted
-    ## class label is the one with the highest score among all classes.
-    ## Alternatively, @var{scores} can contain the posterior probabilities if
-    ## the ScoreTransform has been previously set.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each instance of the corresponding unique
+    ## classes.
     ##
-    ## @seealso{fitcnet, ClassificationNeuralNetwork}
+    ## The @var{score} matrix contains the classification scores for each class.
+    ## For each observation in @var{XC}, the predicted class label is the one
+    ## with the highest score among all classes.  If the @qcode{ScoreTransform}
+    ## property is set to a transformation function, the scores are transformed
+    ## accordingly before being returned.
+    ##
+    ## @seealso{ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC)
@@ -634,16 +875,16 @@ classdef ClassificationNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationNeuralNetwork} {@var{labels} =} resubPredict (@var{obj})
-    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{labels}, @var{scores}] =} resubPredict (@var{obj})
+    ## @deftypefn  {ClassificationNeuralNetwork} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationNeuralNetwork} {[@var{label}, @var{score}] =} resubPredict (@var{obj})
     ##
-    ## Classify the training data using the trained Neural Network
+    ## Classify the training data using the trained neural network
     ## classification object.
     ##
-    ## @code{@var{labels} = resubPredict (@var{obj})} returns the vector of
+    ## @code{@var{label} = resubPredict (@var{obj})} returns the vector of
     ## labels predicted for the corresponding instances in the training data,
     ## using the predictor data in @code{obj.X} and corresponding labels,
-    ## @code{obj.Y}, stored in the Neural Network classification model,
+    ## @code{obj.Y}, stored in the neural network classification model,
     ## @var{obj}.
     ##
     ## @itemize
@@ -651,14 +892,12 @@ classdef ClassificationNeuralNetwork
     ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = resubPredict (@var{obj}, @var{XC})}
-    ## also returns @var{scores}, which represent the probability of each label
-    ## belonging to a specific class. For each observation in X, the predicted
-    ## class label is the one with the highest score among all classes.
-    ## Alternatively, @var{scores} can contain the posterior probabilities if
-    ## the ScoreTransform has been previously set.
+    ## @code{[@var{label}, @var{score}] = resubPredict (@var{obj})} also
+    ## returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each instance of the corresponding unique
+    ## classes.
     ##
-    ## @seealso{fitcnet, ClassificationNeuralNetwork}
+    ## @seealso{ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
 
     function [labels, scores] = resubPredict (this)
@@ -835,14 +1074,13 @@ classdef ClassificationNeuralNetwork
     ## Save a ClassificationNeuralNetwork object.
     ##
     ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
-    ## ClassificationNeuralNetwork object into an Octave binary file, the name
-    ## of which is specified in @var{filename}, along with an extra variable,
-    ## which defines the type classification object these variables constitute.
-    ## Use @code{loadmodel} in order to load a classification object into
-    ## Octave's workspace.
+    ## ClassificationNeuralNetwork object into an Octave binary file, the name of
+    ## which is specified in @var{filename}, along with an extra variable, which
+    ## defines the type classification object these variables constitute.  Use
+    ## @code{loadmodel} in order to load a classification object into Octave's
+    ## workspace.
     ##
-    ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork, cvpartition,
-    ## ClassificationPartitionedModel}
+    ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
 
     function savemodel (this, fname)
