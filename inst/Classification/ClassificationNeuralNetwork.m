@@ -177,7 +177,7 @@ classdef ClassificationNeuralNetwork
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform        = [];
+    ScoreTransform        = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationNeuralNetwork} {property} Standardize
@@ -337,6 +337,10 @@ classdef ClassificationNeuralNetwork
     Solver                = [];
   endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods (Hidden)
 
     ## Custom display
@@ -367,7 +371,7 @@ classdef ClassificationNeuralNetwork
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
       str = repmat ({"%d"}, 1, numel (this.LayerSizes));
@@ -438,7 +442,8 @@ classdef ClassificationNeuralNetwork
           switch (s.subs)
             case 'ScoreTransform'
               name = "ClassificationNeuralNetwork";
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
             otherwise
               error (strcat ("ClassificationNeuralNetwork.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -624,7 +629,8 @@ classdef ClassificationNeuralNetwork
 
           case "scoretransform"
             name = "ClassificationNeuralNetwork";
-            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                 (varargin{2}, name);
 
           case 'layersizes'
             LayerSizes = varargin{2};
@@ -837,7 +843,6 @@ classdef ClassificationNeuralNetwork
     ##
     ## @seealso{ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
-
     function [labels, scores] = predict (this, XC)
 
       ## Check for sufficient input arguments
@@ -899,7 +904,6 @@ classdef ClassificationNeuralNetwork
     ##
     ## @seealso{ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
-
     function [labels, scores] = resubPredict (this)
 
       ## Get used rows
@@ -964,7 +968,6 @@ classdef ClassificationNeuralNetwork
     ## @seealso{fitcnet, ClassificationNeuralNetwork, cvpartition,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
-
     function CVMdl = crossval (this, varargin)
 
       ## Check for sufficient input arguments
@@ -1062,7 +1065,6 @@ classdef ClassificationNeuralNetwork
     ## @seealso{fitcnet, ClassificationNeuralNetwork,
     ## CompactClassificationNeuralNetwork}
     ## @end deftypefn
-
     function CVMdl = compact (this)
       ## Create a compact model
       CVMdl = CompactClassificationNeuralNetwork (this);
@@ -1082,7 +1084,6 @@ classdef ClassificationNeuralNetwork
     ##
     ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
-
     function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationNeuralNetwork";
@@ -1109,6 +1110,7 @@ classdef ClassificationNeuralNetwork
       ConvergenceInfo         = this.ConvergenceInfo;
       DisplayInfo             = this.DisplayInfo;
       Solver                  = this.Solver;
+      STname                  = this.STname;
 
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
@@ -1116,7 +1118,7 @@ classdef ClassificationNeuralNetwork
             "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
             "LayerSizes", "Activations", "OutputLayerActivation", ...
             "LearningRate", "IterationLimit", "Solver", "ModelParameters", ...
-            "ConvergenceInfo", "DisplayInfo");
+            "ConvergenceInfo", "DisplayInfo", "STname");
     endfunction
 
   endmethods
