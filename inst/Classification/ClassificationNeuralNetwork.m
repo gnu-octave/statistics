@@ -870,12 +870,8 @@ classdef ClassificationNeuralNetwork
       # Get class labels
       labels = this.ClassNames(labels);
 
-      if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
-          scores = this.ScoreTransform (scores);
-        endif
-      endif
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
 
     endfunction
 
@@ -921,12 +917,8 @@ classdef ClassificationNeuralNetwork
       # Get class labels
       labels = this.ClassNames(labels);
 
-      if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
-          scores = this.ScoreTransform (scores);
-        endif
-      endif
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
 
     endfunction
 
