@@ -19,116 +19,253 @@
 
 classdef ClassificationPartitionedModel
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{CVMdl} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
+## @deftp {statistics} ClassificationPartitionedModel
 ##
-## Create a @qcode{ClassificationPartitionedModel} class for cross-validation
-## of classification models.
+## Cross-validated classification model
 ##
-## @code{@var{CVMdl} = ClassificationPartitionedModel (@var{Mdl},
-## @var{Partition})} returns a ClassificationPartitionedModel object, with
-## @var{Mdl} as the trained ClassificationKNN or ClassificationSVM object and
-## @var{Partition} as the partitioning object obtained using cvpartition
-## function.
+## The @code{ClassificationPartitionedModel} class stores cross-validated
+## classification models trained on different partitions of the data.
+## It can predict responses for observations not used for training using
+## the @code{kfoldPredict} method.
 ##
-## A @qcode{ClassificationPartitionedModel} object, @var{CVMdl}, stores the
-## classification models trained on cross-validated folds
-## and various parameters for the cross-validated model,
-## which can be accessed in the following fields:
+## Create a @code{ClassificationPartitionedModel} object by using the
+## @code{crossval} function.
 ##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
-## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
-## the observed class label for the corresponding row in @var{X}.
-##
-## @item @qcode{ClassNames} @tab @tab Names of the classes in the training
-## data @var{Y} with duplicates removed, specified as a cell array of character
-## vectors.
-##
-## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
-## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
-## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
-## correspond to the true class and the columns correspond to the predicted
-## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
-## order of the classes in @qcode{ClassNames}.  The number of rows and columns
-## in @qcode{Cost} is the number of unique classes in the response.  By default,
-## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
-## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
-## 1 for incorrect classification.
-##
-## @item @qcode{CrossValidatedModel} @tab @tab Class of the
-## cross-validated model, specified as a character vector. This field
-## contains the type of model that was
-## used for the training, e.g., @qcode{"ClassificationKNN"}.
-##
-## @item @qcode{KFold} @tab @tab Number of cross-validated folds,
-## specified as a positive integer scalar. Represents how many folds the
-## data was divided into for cross-validation purposes.
-##
-## @item @qcode{ModelParameters} @tab @tab Model parameters used during
-## training, specified as a structure. This includes any model-specific
-## parameters that were configured prior to training, such as
-## @qcode{NumNeighbors} or @qcode{Distance} in the case of a KNN model.
-##
-## @item @qcode{NumObservations} @tab @tab Number of observations used in
-## training the ClassificationKNN model, specified as a positive integer scalar.
-## This number can be less than the number of rows in the training data because
-## rows containing @qcode{NaN} values are not part of the fit.
-##
-## @item @qcode{Partition} @tab @tab Partition configuration used for
-## cross-validation, specified as a cvpartition object. This field stores the
-## cvpartition instance that describes how the data was split into training and
-## validation sets.
-##
-## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
-## specified as a cell array of character vectors.  The variable names are in
-## the same order in which they appear in the training data @var{X}.
-##
-## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
-## specified as a numeric vector.  The order of the elements in @qcode{Prior}
-## corresponds to the order of the classes in @qcode{ClassNames}.
-##
-## @item @qcode{ResponseName} @tab @tab Response variable name, specified
-## as a character vector.
-##
-## @item @qcode{Trained} @tab @tab Models trained on each fold,
-## specified as a cell array of models. Each cell contains a model trained on
-## the minus-one fold of the data (all but one fold used for training and the
-## remaining fold used for validation).
-##
-## @end multitable
-##
-## @seealso{cvpartition, ClassificationDiscriminant, ClassificationGAM,
-## ClassificationKNN, ClassificationNeuralNetwork, ClassificationSVM}
-## @end deftypefn
+## @seealso{crossval}
+## @end deftp
 
   properties
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} BinEdges
+    ##
+    ## Bin edges
+    ##
+    ## A cell array specifying the bin edges for binned predictors.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     BinEdges                     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} CategoricalPredictors
+    ##
+    ## Indices of categorical predictors
+    ##
+    ## A vector of positive integers specifying the indices of categorical
+    ## predictors.  This property is read-only.
+    ##
+    ## @end deftp
     CategoricalPredictors        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
     X                            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
     Y                            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
     ClassNames                   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## @end deftp
     Cost                         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
+    ##
+    ## Cross-validated model class
+    ##
+    ## A character vector specifying the class of the cross-validated model.
+    ## This field contains the type of model that was used for the training,
+    ## e.g., @qcode{"ClassificationKNN"}.  This property is read-only.
+    ##
+    ## @end deftp
     CrossValidatedModel          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} KFold
+    ##
+    ## Number of cross-validated folds
+    ##
+    ## A positive integer value specifying the number of cross-validated folds.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     KFold                        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ModelParameters
+    ##
+    ## Model parameters
+    ##
+    ## A structure containing the model parameters used during training.
+    ## This includes any model-specific parameters that were configured prior
+    ## to training.  This property is read-only.
+    ##
+    ## @end deftp
     ModelParameters              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the cross-validated model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     NumObservations              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Partition
+    ##
+    ## Partition configuration
+    ##
+    ## A @code{cvpartition} object specifying the partition configuration used
+    ## for cross-validation.  This field stores the cvpartition instance that
+    ## describes how the data was split into training and validation sets.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Partition                    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
     PredictorNames               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  This property is read-only.
+    ##
+    ## @end deftp
     Prior                        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     ResponseName                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  This property is read-only.
+    ##
+    ## @end deftp
     ScoreTransform               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Standardize
+    ##
+    ## Standardize predictors flag
+    ##
+    ## A logical scalar specifying whether to standardize the predictors.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     Standardize                  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationPartitionedModel} {property} Trained
+    ##
+    ## Models trained on each fold
+    ##
+    ## A cell array of models trained on each fold.  Each cell contains a model
+    ## trained on the minus-one fold of the data (all but one fold used for
+    ## training and the remaining fold used for validation).  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     Trained                      = [];
   endproperties
 
   methods (Access = public)
-    ## Constructor to initialize the partitioned model
+    ## -*- texinfo -*-
+    ## @deftypefn  {ClassificationPartitionedModel} {@var{this} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
+    ##
+    ## Create a @code{ClassificationPartitionedModel} class object for cross-validation
+    ## of classification models.
+    ##
+    ## @code{@var{this} = ClassificationPartitionedModel (@var{Mdl},
+    ## @var{Partition})} returns a ClassificationPartitionedModel object, with
+    ## @var{Mdl} as the trained classification model object and
+    ## @var{Partition} as the partitioning object obtained using @code{cvpartition}
+    ## function.
+    ##
+    ## @seealso{cvpartition}
+    ## @end deftypefn
     function this = ClassificationPartitionedModel (Mdl, Partition)
 
       ## Check input arguments
@@ -373,18 +510,18 @@ classdef ClassificationPartitionedModel
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationPartitionedModel} {@var{label} =} kfoldPredict (@var{CVMdl})
-    ## @deftypefnx {ClassificationPartitionedModel} {[@var{label}, @var{score}, @var{cost}] =} kfoldPredict (@var{CVMdl})
+    ## @deftypefn  {ClassificationPartitionedModel} {@var{label} =} kfoldPredict (@var{this})
+    ## @deftypefnx {ClassificationPartitionedModel} {[@var{label}, @var{score}, @var{cost}] =} kfoldPredict (@var{this})
     ##
     ## Predict responses for observations not used for training in a
     ## cross-validated classification model.
     ##
-    ## @code{@var{[label, Score, Cost]} = kfoldPredict (@var{CVMdl})}
+    ## @code{@var{[label, Score, Cost]} = kfoldPredict (@var{this})}
     ## returns the predicted class labels, classification scores, and
     ## classification costs for the data used
-    ## to train the cross-validated model @var{CVMdl}.
+    ## to train the cross-validated model @var{this}.
     ##
-    ## @var{CVMdl} is a @code{ClassificationPartitionedModel} object.
+    ## @var{this} is a @code{ClassificationPartitionedModel} object.
     ## The function predicts the response for each observation that was
     ## held out during training in the cross-validation process.
     ##
