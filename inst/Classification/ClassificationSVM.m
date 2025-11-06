@@ -18,190 +18,460 @@
 
 classdef ClassificationSVM
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
-## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
+## @deftp {statistics} ClassificationSVM
 ##
-## Create a @qcode{ClassificationSVM} class object containing a Support Vector
-## Machine classification model for one-class or two-class problems.
+## Support Vector Machine classification
 ##
-## @code{@var{obj} = ClassificationSVM (@var{X}, @var{Y})} returns a
-## ClassificationSVM object, with @var{X} as the predictor data and @var{Y}
-## containing the class labels of observations in @var{X}.
+## The @code{ClassificationSVM} class implements a Support Vector Machine
+## classifier object for one-class or two-class problems, which can predict
+## responses for new data using the @code{predict} method.
 ##
-## @itemize
-## @item
-## @code{X} must be a @math{NxP} numeric matrix of input data where rows
-## correspond to observations and columns correspond to features or variables.
-## @var{X} will be used to train the SVM model.
-## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
-## corresponding predictor data in @var{X}.  @var{Y} can be either numeric,
-## logical, or cell array of character vectors.  It must have same numbers of
-## rows as @var{X}.
-## @end itemize
+## Support Vector Machine classification is a supervised learning method used
+## for classification tasks. It works by finding the optimal hyperplane that
+## separates classes in the feature space with the maximum margin. For
+## non-linearly separable data, it uses kernel functions to map data to a
+## higher-dimensional space where separation is possible.
 ##
-## @code{@var{obj} = ClassificationSVM (@dots{}, @var{name}, @var{value})}
-## returns a ClassificationSVM object with parameters specified by
-## @qcode{Name-Value} pair arguments.  Type @code{help fitcsvm} for more info.
+## Create a @code{ClassificationSVM} object by using the @code{fitcsvm} function
+## or the class constructor.
 ##
-## A @qcode{ClassificationSVM} object, @var{obj}, stores the labelled training
-## data and various parameters for the Support Vector machine classification
-## model, which can be accessed in the following fields:
-##
-## @multitable @columnfractions 0.23 0.02 0.75
-## @headitem @var{Field} @tab @tab @var{Description}
-##
-## @item @qcode{X} @tab @tab Unstandardized predictor data, specified as a
-## numeric matrix.  Each column of @var{X} represents one predictor (variable),
-## and each row represents one observation.
-##
-## @item @qcode{Y} @tab @tab Class labels, specified as a logical or
-## numeric vector, or cell array of character vectors.  Each value in @var{Y} is
-## the observed class label for the corresponding row in @var{X}.
-##
-## @item  @qcode{NumObservations} @tab@tab Number of observations used in
-## training the ClassificationSVM model, specified as a positive integer scalar.
-## This number can be less than the number of rows in the training data because
-## rows containing @qcode{NaN} values are not part of the fit.
-##
-## @item @qcode{RowsUsed} @tab @tab Rows of the original training data
-## used in fitting the ClassificationSVM model, specified as a numerical vector.
-## If you want to use this vector for indexing the training data in @var{X}, you
-## have to convert it to a logical vector, i.e
-## @qcode{X = obj.X(logical (obj.RowsUsed), :);}
-##
-## @item @qcode{Standardize} @tab @tab A boolean flag indicating whether
-## the data in @var{X} have been standardized prior to training.
-##
-## @item @qcode{Sigma} @tab @tab Predictor standard deviations, specified
-## as a numeric vector of the same length as the columns in @var{X}.  If the
-## predictor variables have not been standardized, then @qcode{"obj.Sigma"} is
-## empty.
-##
-## @item @qcode{Mu} @tab @tab Predictor means, specified as a numeric
-## vector of the same length as the columns in @var{X}.  If the predictor
-## variables have not been standardized, then @qcode{"obj.Mu"} is empty.
-##
-## @item @qcode{NumPredictors} @tab @tab The number of predictors
-## (variables) in @var{X}.
-##
-## @item @qcode{PredictorNames} @tab @tab Predictor variable names,
-## specified as a cell array of character vectors.  The variable names are in
-## the same order in which they appear in the training data @var{X}.
-##
-## @item @qcode{ResponseName} @tab @tab Response variable name, specified
-## as a character vector.
-##
-## @item @qcode{ClassNames} @tab @tab Names of the classes in the class
-## labels, @var{Y}, used for fitting the SVM model.  @qcode{ClassNames} are of
-## the same type as the class labels in @var{Y}.
-##
-## @item @qcode{Prior} @tab @tab Prior probabilities for each class,
-## specified as a numeric vector.  The order of the elements in @qcode{Prior}
-## corresponds to the order of the classes in @qcode{ClassNames}.
-##
-## @item @qcode{Cost} @tab @tab Cost of the misclassification of a point,
-## specified as a square matrix. @qcode{Cost(i,j)} is the cost of classifying a
-## point into class @qcode{j} if its true class is @qcode{i} (that is, the rows
-## correspond to the true class and the columns correspond to the predicted
-## class).  The order of the rows and columns in @qcode{Cost} corresponds to the
-## order of the classes in @qcode{ClassNames}.  The number of rows and columns
-## in @qcode{Cost} is the number of unique classes in the response.  By default,
-## @qcode{Cost(i,j) = 1} if @qcode{i != j}, and @qcode{Cost(i,j) = 0} if
-## @qcode{i = j}.  In other words, the cost is 0 for correct classification and
-## 1 for incorrect classification.
-##
-## @item @qcode{ScoreTransform} @tab @tab A function_handle which is used
-## for transforming the SVM prediction score into a posterior probability.  By
-## default, it is @qcode{'none'}, in which case the @code{predict} and
-## @code{resubPredict} methods return the prediction scores.  Use the
-## @code{fitPosterior} method to compute the appropriate @code{ScoreTransform},
-## in which case the @code{predict} and @code{resubPredict} methods return the
-## posterior probabilities.
-##
-## @item @qcode{ModelParameters} @tab @tab  A structure containing the
-## parameters used to train the SVM model with the following fields:
-## @code{SVMtype}, @code{BoxConstraint}, @code{CacheSize}, @code{KernelScale},
-## @code{KernelOffset}, @code{KernelFunction}, @code{PolynomialOrder},
-## @code{Nu}, @code{Tolerance}, and @code{Shrinking}.  Type @code{help fitcsvm}
-## for more info on their usage and default values.
-##
-## @item @qcode{Model} @tab @tab  A structure containing the trained model in
-## @qcode{'libsvm'} format.
-##
-## @item @qcode{Alpha} @tab @tab The coefficients of the trained SVM
-## classifier specified as an @math{sx1} numeric vector, where @math{s} is the
-## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the
-## SVM classifier was trained with a @qcode{'linear'} kernel function, then
-## @qcode{obj.Alpha} is left empty.
-##
-## @item @qcode{Beta} @tab @tab The linear predictor coefficients specified
-## as an @math{sx1} numeric vector, where @math{s} is the number of support
-## vectors equal to @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier
-## was trained with a kernel function other than @qcode{'linear'}, then
-## @qcode{obj.Beta} is left empty.
-##
-## @item @qcode{Bias} @tab @tab The bias term specified as a scalar.
-##
-## @item @qcode{IsSupportVector} @tab @tab Support vector indicator,
-## specified as an @math{Nx1} logical vector that flags whether a corresponding
-## observation in the predictor data matrix is a Support Vector.  @math{N} is
-## the number of observations in the training data (see @code{NumObservations}).
-##
-## @item @qcode{SupportVectorLabels} @tab @tab The support vector class
-## labels specified as an @math{sx1} numeric vector, where @math{s} is the
-## number of support vectors equal to @qcode{sum (obj.IsSupportVector)}.  A
-## value of +1 in @code{SupportVectorLabels} indicates that the corresponding
-## support vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A
-## value of -1 indicates that the corresponding support vector belongs to the
-## negative class @qcode{(ClassNames@{1@})}.
-##
-## @item @qcode{SupportVectors} @tab @tab The support vectors of the
-## trained SVM classifier specified an @math{sxp} numeric matrix, where @math{s}
-## is the number of support vectors equal to @qcode{sum (obj.IsSupportVector)},
-## and @math{p} is the number of predictor variables in the predictor data.
-##
-## @end multitable
-##
-## @seealso{fitcsvm, svmtrain, svmpredict}
-## @end deftypefn
+## @seealso{fitcsvm}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} X
+    ##
+    ## Predictor data
+    ##
+    ## A numeric matrix containing the unstandardized predictor data.  Each
+    ## column of @var{X} represents one predictor (variable), and each row
+    ## represents one observation.  This property is read-only.
+    ##
+    ## @end deftp
+    X                   = [];
 
-    X                   = [];    # Predictor data
-    Y                   = [];    # Class labels
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Y
+    ##
+    ## Class labels
+    ##
+    ## Specified as a logical or numeric column vector, or as a character array
+    ## or a cell array of character vectors with the same number of rows as the
+    ## predictor data.  Each row in @var{Y} is the observed class label for
+    ## the corresponding row in @var{X}.  This property is read-only.
+    ##
+    ## @end deftp
+    Y                   = [];
 
-    NumObservations     = [];    # Number of observations in training dataset
-    RowsUsed            = [];    # Rows used in fitting
-    NumPredictors       = [];    # Number of predictors
-    PredictorNames      = [];    # Predictor variables names
-    ResponseName        = [];    # Response variable name
-    ClassNames          = [];    # Names of classes in Y
-    Prior               = [];    # Prior probability for each class
-    Cost                = [];    # Cost of misclassification
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## A positive integer value specifying the number of observations in the
+    ## training dataset used for training the ClassificationSVM model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumObservations     = [];
 
-    ScoreTransform      = [];    # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} RowsUsed
+    ##
+    ## Rows used for fitting
+    ##
+    ## A logical column vector with the same length as the observations in the
+    ## original predictor data @var{X} specifying which rows have been used for
+    ## fitting the ClassificationSVM model.  This property is read-only.
+    ##
+    ## @end deftp
+    RowsUsed            = [];
 
-    Standardize         = [];    # Flag to standardize predictors
-    Sigma               = [];    # Predictor standard deviations
-    Mu                  = [];    # Predictor means
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationSVM model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors       = [];
 
-    ModelParameters     = [];    # SVM parameters
-    Model               = [];    # Stores the 'libsvm' trained model
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames      = {};
 
-    Alpha               = [];    # Trained classifier coefficients
-    Beta                = [];    # Linear predictor coefficients
-    Bias                = [];    # Bias term
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName        = [];
 
-    IsSupportVector     = [];    # Indices of Support vectors
-    SupportVectorLabels = [];    # Support vector class labels
-    SupportVectors      = [];    # Support vectors
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames          = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## Add or change the @qcode{Prior} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Prior               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Standardize
+    ##
+    ## Flag to standardize predictors
+    ##
+    ## A boolean flag indicating whether the data in @var{X} have been
+    ## standardized prior to training.  This property is read-only.
+    ##
+    ## @end deftp
+    Standardize         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Sigma
+    ##
+    ## Predictor standard deviations
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} containing
+    ## the standard deviations of predictor variables.  If the predictor
+    ## variables have not been standardized, then @qcode{Sigma} is empty.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Sigma               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Mu
+    ##
+    ## Predictor means
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} containing
+    ## the means of predictor variables.  If the predictor variables have not
+    ## been standardized, then @qcode{Mu} is empty.  This property is read-only.
+    ##
+    ## @end deftp
+    Mu                  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} ModelParameters
+    ##
+    ## SVM training parameters
+    ##
+    ## A structure containing the parameters used to train the SVM model with
+    ## the following fields: @code{SVMtype}, @code{BoxConstraint},
+    ## @code{CacheSize}, @code{KernelScale}, @code{KernelOffset},
+    ## @code{KernelFunction}, @code{PolynomialOrder}, @code{Nu},
+    ## @code{Tolerance}, and @code{Shrinking}.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Model
+    ##
+    ## Trained SVM model
+    ##
+    ## A structure containing the trained model in @qcode{'libsvm'} format.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Model               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Alpha
+    ##
+    ## Trained classifier coefficients
+    ##
+    ## The coefficients of the trained SVM classifier specified as an @math{sx1}
+    ## numeric vector, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained with
+    ## a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
+    ## empty.  This property is read-only.
+    ##
+    ## @end deftp
+    Alpha               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Beta
+    ##
+    ## Linear predictor coefficients
+    ##
+    ## The linear predictor coefficients specified as an @math{sx1} numeric
+    ## vector, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained with
+    ## a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Beta                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} Bias
+    ##
+    ## Bias term
+    ##
+    ## The bias term specified as a scalar.  This property is read-only.
+    ##
+    ## @end deftp
+    Bias                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} IsSupportVector
+    ##
+    ## Support vector indicator
+    ##
+    ## An @math{Nx1} logical vector that flags whether a corresponding
+    ## observation in the predictor data matrix is a Support Vector.  @math{N}
+    ## is the number of observations in the training data.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    IsSupportVector     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} SupportVectorLabels
+    ##
+    ## Support vector class labels
+    ##
+    ## The support vector class labels specified as an @math{sx1} numeric vector,
+    ## where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  A value of +1 in
+    ## @code{SupportVectorLabels} indicates that the corresponding support vector
+    ## belongs to the positive class @qcode{(ClassNames@{2@})}.  A value of -1
+    ## indicates that the corresponding support vector belongs to the negative
+    ## class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ##
+    ## @end deftp
+    SupportVectorLabels = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationSVM} {property} SupportVectors
+    ##
+    ## Support vectors
+    ##
+    ## The support vectors of the trained SVM classifier specified an @math{sxp}
+    ## numeric matrix, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of predictor
+    ## variables in the predictor data.  This property is read-only.
+    ##
+    ## @end deftp
+    SupportVectors      = [];
   endproperties
 
   methods (Access = public)
 
-    ## Class object constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
+    ## @deftypefnx {statistics} {@var{obj} =} ClassificationSVM (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ClassificationSVM} class object containing a Support
+    ## Vector Machine classification model for one-class or two-class problems.
+    ##
+    ## @code{@var{obj} = ClassificationSVM (@var{X}, @var{Y})} returns a
+    ## ClassificationSVM object, with @var{X} as the predictor data and @var{Y}
+    ## containing the class labels of observations in @var{X}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.  @var{X} will be used to train the SVM model.
+    ## @item
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} can be either
+    ## numeric, logical, or cell array of character vectors.  It must have same
+    ## numbers of rows as @var{X}.
+    ## @end itemize
+    ##
+    ## @code{@var{obj} = ClassificationSVM (@dots{}, @var{name}, @var{value})}
+    ## returns a ClassificationSVM object with parameters specified by the
+    ## following @qcode{@var{name}, @var{value}} paired input arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## vectors specifying the names of the predictors. The length of this array
+    ## must match the number of columns in @var{X}.
+    ##
+    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## name of the response variable.
+    ##
+    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## labels, @var{Y}, used for fitting the SVM model. @qcode{ClassNames} are
+    ## of the same type as the class labels in @var{Y}.
+    ##
+    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
+    ## misclassification cost for the corresponding instances in @var{X}, where
+    ## @math{R} is the number of unique categories in @var{Y}.  If an instance
+    ## is correctly classified into its category the cost is calculated to be 1,
+    ## otherwise 0. The cost matrix can be altered by using
+    ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
+    ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
+    ##
+    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## probabilities for each class.  The order of the elements in @qcode{Prior}
+    ## corresponds to the order of the classes in @qcode{ClassNames}.
+    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
+    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## probabilities.
+    ##
+    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## or a character vector specifying one of the following builtin functions
+    ## specifying the transformation applied to predicted classification scores.
+    ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
+    ## @qcode{'ismax'}, @qcode{'logit'}, @qcode{'none'}, @qcode{'identity'},
+    ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
+    ## @qcode{'symmetriclogit'}.
+    ##
+    ## @item @qcode{'Standardize'} @tab @tab A logical scalar specifying whether
+    ## to standardize the predictor variables.  Default is @qcode{false}.
+    ##
+    ## @item @qcode{'SVMtype'} @tab @tab A character vector specifying the type
+    ## of SVM to use.  Supported values are @qcode{'c_svc'} (C-support vector
+    ## classification), @qcode{'nu_svc'} (nu-support vector classification), and
+    ## @qcode{'one_class_svm'} (one-class SVM).
+    ##
+    ## @item @qcode{'KernelFunction'} @tab @tab A character vector specifying
+    ## the kernel function to use.  Supported values are @qcode{'linear'},
+    ## @qcode{'rbf'} or @qcode{'gaussian'}, @qcode{'polynomial'}, and
+    ## @qcode{'sigmoid'}.
+    ##
+    ## @item @qcode{'PolynomialOrder'} @tab @tab A positive integer specifying
+    ## the order of the polynomial kernel function.  Default is 3.
+    ##
+    ## @item @qcode{'KernelScale'} @tab @tab A positive scalar specifying the
+    ## kernel scale parameter.  Default is 1.
+    ##
+    ## @item @qcode{'KernelOffset'} @tab @tab A non-negative scalar specifying
+    ## the kernel offset parameter.  Default is 0.
+    ##
+    ## @item @qcode{'BoxConstraint'} @tab @tab A positive scalar specifying the
+    ## box constraint parameter.  Default is 1.
+    ##
+    ## @item @qcode{'Nu'} @tab @tab A positive scalar in the range (0,1]
+    ## specifying the nu parameter for nu-SVM and one-class SVM.  Default is 0.5.
+    ##
+    ## @item @qcode{'CacheSize'} @tab @tab A positive scalar specifying the
+    ## cache size in MB.  Default is 1000.
+    ##
+    ## @item @qcode{'Tolerance'} @tab @tab A positive scalar specifying the
+    ## tolerance of termination criterion.  Default is 1e-6.
+    ##
+    ## @item @qcode{'Shrinking'} @tab @tab Either 0 or 1 specifying whether to
+    ## use the shrinking heuristics.  Default is 1.
+    ##
+    ## @item @qcode{'OutlierFraction'} @tab @tab A positive scalar in the range
+    ## [0,1) specifying the fraction of outliers for one-class SVM.
+    ## @end multitable
+    ##
+    ## @seealso{fitcsvm}
+    ## @end deftypefn
+
     function this = ClassificationSVM (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -413,7 +683,7 @@ classdef ClassificationSVM
       ## Get number of variables in training data
       ndims_X = columns (X);
 
-      ## Assign the number of predictors to the ClassificationKNN object
+      ## Assign the number of predictors to the ClassificationSVM object
       this.NumPredictors = ndims_X;
 
       ## Handle class names
@@ -614,33 +884,34 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{labels} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {ClassificationSVM} {[@var{labels}, @var{scores}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefn  {ClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
     ##
     ## Classify new data points into categories using the Support Vector Machine
-    ## classification object.
+    ## classification model from a ClassificationSVM object.
     ##
-    ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## trained Support Vector Machine classification model, @var{obj}.
-    ## For one-class SVM model, +1 or -1 is returned.
+    ## predictor data in @code{obj.X} and corresponding labels, @code{obj.Y},
+    ## stored in the ClassificationSVM model, @var{obj}.  For one-class SVM
+    ## model, +1 or -1 is returned.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
-    ## predictors @math{P} as the corresponding predictors of the SVM model in
+    ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
-    ## returns @var{scores}, which contains the decision values for each each
-    ## prediction.   Alternatively, @var{scores} can contain the posterior
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the decision values for each each
+    ## prediction.  Alternatively, @var{score} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
     ## @code{fitPosterior} method.
     ##
-    ## @seealso{fitcsvm, ClassificationSVM.fitPosterior}
+    ## @seealso{ClassificationSVM, fitcsvm, ClassificationSVM.fitPosterior}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC)
@@ -704,13 +975,13 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{labels} =} resubPredict (@var{obj})
-    ## @deftypefnx {ClassificationSVM} {[@var{labels}, @var{score}] =} resubPredict (@var{obj})
+    ## @deftypefn  {ClassificationSVM} {@var{label} =} resubPredict (@var{obj})
+    ## @deftypefnx {ClassificationSVM} {[@var{label}, @var{score}] =} resubPredict (@var{obj})
     ##
     ## Classify the training data using the trained Support Vector Machine
     ## classification object.
     ##
-    ## @code{@var{labels} = resubPredict (@var{obj})} returns the vector of
+    ## @code{@var{label} = resubPredict (@var{obj})} returns the vector of
     ## labels predicted for the corresponding instances in the training data,
     ## using the predictor data in @code{obj.X} and corresponding labels,
     ## @code{obj.Y}, stored in the Support Vector Machine classification model,
@@ -721,7 +992,7 @@ classdef ClassificationSVM
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = resubPredict (@var{obj}} also
+    ## @code{[@var{label}, @var{scores}] = resubPredict (@var{obj}} also
     ## returns @var{scores}, which contains the decision values for each each
     ## prediction.   Alternatively, @var{scores} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
@@ -789,30 +1060,29 @@ classdef ClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
-    ## Determine the classification margins for a Support Vector Machine
-    ## classification object.
+    ## Classification margins for Support Vector Machine classifier.
     ##
-    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the
-    ## classification margins for the trained support vector machine (SVM)
-    ## classifier @var{obj} using the sample data in @var{X} and the class
-    ## labels in @var{Y}. It supports only binary classifier models. The
-    ## classification margin is commonly defined as @var{m} = @var{y}f(@var{x}),
-    ## where @var{f(x)} is the classification score and @var{y} is the true
-    ## class label corresponding to @var{x}. A greater margin indicates a better
-    ## model.
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
+    ## the classification margins for @var{obj} with data @var{X} and
+    ## classification @var{Y}. @var{m} is a numeric vector of length size (X,1).
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
+    ## @var{obj} is a @var{ClassificationSVM} object trained on @code{X}
+    ## and @code{Y}.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
-    ## @var{obj}.
+    ## @var{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
     ## @item
-    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
-    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
-    ## number of rows as @var{X}.
+    ## @var{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} must have same
+    ## numbers of Rows as @var{X}.
     ## @end itemize
+    ##
+    ## The classification margin for each observation is the difference between
+    ## the classification score for the true class and the maximal
+    ## classification score for the false classes.
     ##
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
@@ -849,82 +1119,63 @@ classdef ClassificationSVM
     ## @deftypefn  {ClassificationSVM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {ClassificationSVM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
-    ## Determine the classification error for a Support Vector Machine
-    ## classifier.
+    ## Compute loss for a trained ClassificationSVM object.
     ##
-    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the
-    ## predictive accuracy of support vector machine (SVM) classification models.
-    ## Comparing the same type of loss across multiple models allows you to
-    ## identify which model is more accurate, with a lower loss indicating
-    ## superior predictive performance. It supports only binary classifier
-    ## models.
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the loss,
+    ## @var{L}, using the default loss function @qcode{'classiferror'}.
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
+    ## @code{obj} is a @var{ClassificationSVM} object trained on
+    ## @code{X} and @code{Y}.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
-    ## @var{obj}.
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
     ## @item
-    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
-    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
-    ## number of rows as @var{X}.
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} must have same
+    ## numbers of Rows as @var{X}.
     ## @end itemize
     ##
-    ## @code{@var{L} = loss (@dots{}, @var{Name}, @var{Value})} returns the
-    ## aforementioned results with additional properties specified by
-    ## @qcode{Name-Value} pair arguments listed below.
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
+    ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"LossFun"} @tab @tab Loss function, specified as a built-in
-    ## loss function name. It accepts the following options: (Default is
-    ## 'classiferror')
-    ##
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use.
+    ## Can be a function handle with four input arguments (C, S, W, Cost)
+    ## which returns a scalar value or one of:
+    ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
+    ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
-    ##
-    ## @item 'binodeviance': Binomial deviance:
-    ## The binomial deviance loss function is used to evaluate the performance
-    ## of a binary classifier. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-2m_j]\}}
-    ##
-    ## @item 'classiferror': Misclassification rate in decimal
-    ## The classification error measures the fraction of misclassified instances
-    ## out of the total instances. It is calculated as:
-    ## @math{L = \frac{1}{n} \sum_{j=1}^{n} \mathbb{I}(m_j \leq 0)}
-    ##
-    ## @item 'exponential': Exponential loss:
-    ## The exponential loss function is used to penalize misclassified instances
-    ## exponentially. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \exp [-m_j]}
-    ##
-    ## @item 'hinge': Hinge loss:
-    ## The hinge loss function is often used for maximum-margin classification,
-    ## particularly for support vector machines. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \max (0, 1 - m_j)}
-    ##
-    ## @item 'logit': Logistic loss:
-    ## The logistic loss function, also known as log loss, measures the
-    ## performance of a classification model where the prediction is a
-    ## probability value. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-m_j]\}}
-    ##
-    ## @item 'quadratic': Quadratic loss:
-    ## The quadratic loss function penalizes the square of the margin.
-    ## It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j (1 - m_j)^2}
-    ##
+    ## @item
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## number of observations and @math{K} is the number of classes.
+    ## The element @code{C(i,j)} is true if the class label of the i-th
+    ## observation is equal to the j-th class.
+    ## @item
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## represents the classification score for the corresponding class.
+    ## @item
+    ## @code{W} is a numeric vector of length @math{N}, representing
+    ## the observation weights.
+    ## @item
+    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
-    ## weighs each observation (row) in X. The size of Weights must be equal
-    ## to the number of rows in X. The default value is: ones(size(X,1),1)
+    ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be
+    ## a numeric vector of length equal to the number of rows in X.
+    ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
+    ## observation weights in each class sum to the prior probability of that
+    ## class. When you supply Weights, loss computes the weighted
+    ## classification loss.
     ##
     ## @end multitable
     ##
-    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @seealso{ClassificationSVM}
     ## @end deftypefn
 
     function L = loss (this, X, Y, varargin)
@@ -1032,72 +1283,55 @@ classdef ClassificationSVM
     ## @deftypefn  {ClassificationSVM} {@var{L} =} resubLoss (@var{obj})
     ## @deftypefnx {ClassificationSVM} {@var{L} =} resubLoss (@dots{}, @var{name}, @var{value})
     ##
-    ## Compute the resubstitution classification loss for the trained Support
-    ## Vector Machine classification object.
+    ## Compute resubstitution loss for a trained ClassificationSVM object.
     ##
-    ## @code{@var{L} = resubLoss (@var{obj})} returns the classification loss by
-    ## resubstitution (L), or the in-sample classification loss, for the trained
-    ## classification model @var{obj} using the training data stored in
-    ## @code{obj.X} and the corresponding class labels stored in @code{obj.Y}.
+    ## @code{@var{L} = resubLoss (@var{obj})} computes the resubstitution loss,
+    ## @var{L}, using the default loss function @qcode{'classiferror'}.
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary class @qcode{ClassificationSVM} object.
+    ## @code{obj} is a @var{ClassificationSVM} object trained on
+    ## @code{X} and @code{Y}.
     ## @end itemize
     ##
-    ## @code{@var{l} = resubLoss (@dots{}, @var{Name}, @var{Value})} returns the
-    ## aforementioned results with additional properties specified by
-    ## @qcode{Name-Value} pair arguments listed below.
+    ## @code{@var{L} = resubLoss (@dots{}, @var{name}, @var{value})} allows
+    ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"LossFun"} @tab @tab Loss function, specified as a built-in
-    ## loss function name. It accepts the following options: (Default is
-    ## 'classiferror')
-    ##
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use.
+    ## Can be a function handle with four input arguments (C, S, W, Cost)
+    ## which returns a scalar value or one of:
+    ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
+    ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
-    ##
-    ## @item 'binodeviance': Binomial deviance:
-    ## The binomial deviance loss function is used to evaluate the performance
-    ## of a binary classifier. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-2m_j]\}}
-    ##
-    ## @item 'classiferror': Misclassification rate in decimal
-    ## The classification error measures the fraction of misclassified instances
-    ## out of the total instances. It is calculated as:
-    ## @math{L = \frac{1}{n} \sum_{j=1}^{n} \mathbb{I}(m_j \leq 0)}
-    ##
-    ## @item 'exponential': Exponential loss:
-    ## The exponential loss function is used to penalize misclassified instances
-    ## exponentially. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \exp [-m_j]}
-    ##
-    ## @item 'hinge': Hinge loss:
-    ## The hinge loss function is often used for maximum-margin classification,
-    ## particularly for support vector machines. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \max (0, 1 - m_j)}
-    ##
-    ## @item 'logit': Logistic loss:
-    ## The logistic loss function, also known as log loss, measures the
-    ## performance of a classification model where the prediction is a
-    ## probability value. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-m_j]\}}
-    ##
-    ## @item 'quadratic': Quadratic loss:
-    ## The quadratic loss function penalizes the square of the margin.
-    ## It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j (1 - m_j)^2}
-    ##
+    ## @item
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## number of observations and @math{K} is the number of classes.
+    ## The element @code{C(i,j)} is true if the class label of the i-th
+    ## observation is equal to the j-th class.
+    ## @item
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## represents the classification score for the corresponding class.
+    ## @item
+    ## @code{W} is a numeric vector of length @math{N}, representing
+    ## the observation weights.
+    ## @item
+    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
-    ## weighs each observation (row) in X. The size of Weights must be equal
-    ## to the number of rows in X. The default value is: ones(size(X,1),1)
+    ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be
+    ## a numeric vector of length equal to the number of rows in X.
+    ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
+    ## observation weights in each class sum to the prior probability of that
+    ## class. When you supply Weights, loss computes the weighted
+    ## classification loss.
     ##
     ## @end multitable
     ##
-    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @seealso{ClassificationSVM}
     ## @end deftypefn
 
     function L = resubLoss (this, varargin)
@@ -1185,7 +1419,7 @@ classdef ClassificationSVM
 
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} crossval (@var{obj})
-    ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} crossval (@dots{}, @var{Name}, @var{Value})
+    ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} crossval (@dots{}, @var{name}, @var{value})
     ##
     ## Cross Validate a Support Vector Machine classification object.
     ##
@@ -1392,7 +1626,7 @@ classdef ClassificationSVM
     ## @code{@var{CVMdl} = compact (@var{obj})} creates a compact version of the
     ## ClassificationSVM object, @var{obj}.
     ##
-    ## @seealso{fitcnet, ClassificationSVM, CompactClassificationSVM}
+    ## @seealso{fitcsvm, ClassificationSVM, CompactClassificationSVM}
     ## @end deftypefn
 
     function CVMdl = compact (this)
