@@ -31,7 +31,7 @@ classdef CompactClassificationGAM
 ## A @code{CompactClassificationGAM} object can only be created from a
 ## @code{ClassificationGAM} model by using the @code{compact} method.
 ##
-## @seealso{ClassificationGAM, compact, fitcgam}
+## @seealso{ClassificationGAM, fitcgam}
 ## @end deftp
 
   properties (Access = public)
