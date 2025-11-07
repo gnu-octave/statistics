@@ -38,7 +38,7 @@ classdef CompactClassificationDiscriminant
 ## Create a @code{CompactClassificationDiscriminant} object by using the
 ## @code{compact} method of a @code{ClassificationDiscriminant} object.
 ##
-## @seealso{fitcdiscr, compact, ClassificationDiscriminant}
+## @seealso{fitcdiscr, ClassificationDiscriminant}
 ## @end deftp
 
   properties (Access = public)
@@ -179,7 +179,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## Class means
     ##
-    ## A @math {KxP} numeric matrix specifying the mean of the multivariate
+    ## A @math{KxP} numeric matrix specifying the mean of the multivariate
     ## normal distribution of each corresponding class, where @math{K} is the
     ## number of classes and @math{P} is the number of predictors.  This property
     ## is read-only.
