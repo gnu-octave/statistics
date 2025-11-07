@@ -1,4 +1,5 @@
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,53 +18,265 @@
 
 classdef CompactClassificationGAM
 ## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationGAM
+## @deftp {statistics} CompactClassificationGAM
 ##
-## A @qcode{CompactClassificationGAM} object is a compact version of a
-## Generalized Additive Model, @qcode{ClassificationGAM}.
+## Compact generalized additive model classification
 ##
-## The @qcode{CompactClassificationGAM} does not include the training
-## data resulting to a smaller classifier size, which can be used for making
-## predictions from new data, but not for tasks such as cross validation.  It
-## can only be created from a @qcode{ClassificationGAM} model by using
-## the @code{compact} object method.
+## The @code{CompactClassificationGAM} class is a compact version of a
+## Generalized Additive Model classifier, @code{ClassificationGAM}.  It does
+## not include the training data, resulting in a smaller classifier size that
+## can be used for making predictions from new data, but not for tasks such as
+## cross validation.
 ##
-## The available methods for a @qcode{CompactClassificationGAM} object
-## are:
-## @itemize
-## @item
-## @code{predict}
-## @item
-## @code{savemodel}
-## @end itemize
+## A @code{CompactClassificationGAM} object can only be created from a
+## @code{ClassificationGAM} model by using the @code{compact} method.
 ##
-## @seealso{fitcgam, compact, ClassificationGAM}
-## @end deftypefn
+## @seealso{ClassificationGAM, compact, fitcgam}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the ClassificationGAM model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors   = [];
 
-    NumPredictors   = [];   # Number of predictors
-    PredictorNames  = [];   # Predictor variable names
-    ResponseName    = [];   # Response variable name
-    ClassNames      = [];   # Names of classes in Y
-    Prior           = [];   # Prior probability for each class
-    Cost            = [];   # Cost of Misclassification
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames  = [];
 
-    ScoreTransform  = [];   # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = [];
 
-    Formula         = [];   # Formula for GAM model
-    Interactions    = [];   # Number or matrix of interaction terms
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames      = [];
 
-    Knots           = [];   # Knots of spline fitting
-    Order           = [];   # Order of spline fitting
-    DoF             = [];   # Degrees of freedom for fitting spline
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A 2-element numeric vector specifying the prior probabilities for each
+    ## class.  The order of the elements in @qcode{Prior} corresponds to the
+    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
+    ##
+    ## @end deftp
+    Prior           = [];
 
-    LearningRate    = [];   # Learning rate for training
-    NumIterations   = [];   # Max number of iterations for training
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## Add or change the @qcode{Cost} property using dot notation as in:
+    ## @itemize
+    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
+    ## @end itemize
+    ##
+    ## @end deftp
+    Cost            = [];
 
-    BaseModel       = [];   # Base model parameters (no interactions)
-    ModelwInt       = [];   # Model parameters with interactions
-    IntMatrix       = [];   # Interactions matrix applied to predictor data
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Formula
+    ##
+    ## Model specification formula
+    ##
+    ## A character vector specifying the model formula in the form
+    ## @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable and
+    ## @qcode{terms} specifies the predictor variables and interaction terms.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Formula         = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Interactions
+    ##
+    ## Interaction terms specification
+    ##
+    ## A logical matrix, positive integer scalar, or character vector
+    ## @qcode{"all"} specifying the interaction terms between predictor
+    ## variables.  This property is read-only.
+    ##
+    ## @end deftp
+    Interactions    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Knots
+    ##
+    ## Knots for spline fitting
+    ##
+    ## A scalar or row vector specifying the number of knots for each predictor
+    ## variable in the spline fitting.  This property is read-only.
+    ##
+    ## @end deftp
+    Knots           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} Order
+    ##
+    ## Order of spline fitting
+    ##
+    ## A scalar or row vector specifying the order of the spline for each
+    ## predictor variable.  This property is read-only.
+    ##
+    ## @end deftp
+    Order           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} DoF
+    ##
+    ## Degrees of freedom for spline fitting
+    ##
+    ## A scalar or row vector specifying the degrees of freedom for each
+    ## predictor variable in the spline fitting.  This property is read-only.
+    ##
+    ## @end deftp
+    DoF             = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} LearningRate
+    ##
+    ## Learning rate for gradient boosting
+    ##
+    ## A scalar value between 0 and 1 specifying the learning rate used in the
+    ## gradient boosting algorithm.  This property is read-only.
+    ##
+    ## @end deftp
+    LearningRate    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} NumIterations
+    ##
+    ## Maximum number of iterations
+    ##
+    ## A positive integer specifying the maximum number of iterations for the
+    ## gradient boosting algorithm.  This property is read-only.
+    ##
+    ## @end deftp
+    NumIterations   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} BaseModel
+    ##
+    ## Base model parameters
+    ##
+    ## A structure containing the parameters of the base model without any
+    ## interaction terms.  The base model represents the generalized additive
+    ## model with only the main effects (predictor terms) included.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    BaseModel       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} ModelwInt
+    ##
+    ## Model parameters with interactions
+    ##
+    ## A structure containing the parameters of the model that includes
+    ## interaction terms.  This model extends the base model by adding
+    ## interaction terms between predictors.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelwInt       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationGAM} {property} IntMatrix
+    ##
+    ## Interaction matrix
+    ##
+    ## A logical matrix or matrix of column indices describing the interaction
+    ## terms applied to the predictor data.  This property is read-only.
+    ##
+    ## @end deftp
+    IntMatrix       = [];
 
   endproperties
 
@@ -108,8 +321,8 @@ classdef CompactClassificationGAM
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationGAM} {@var{label} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {CompactClassificationGAM} {@var{label} =} predict (@dots{}, @qcode{'IncludeInteractions'}, @var{includeInteractions})
-    ## @deftypefnx {CompactClassificationGAM} {[@var{label}, @var{score}] =} predict (@dots{})
+    ## @deftypefnx {CompactClassificationGAM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {CompactClassificationGAM} {[@var{label}, @var{score}] =} predict (@dots{}, @qcode{'IncludeInteractions'}, @var{includeInteractions})
     ##
     ## Predict labels for new data using the Generalized Additive Model (GAM)
     ## stored in a CompactClassificationGAM object.
@@ -118,13 +331,13 @@ classdef CompactClassificationGAM
     ## labels for the data in @var{XC} based on the model stored in the
     ## CompactClassificationGAM object, @var{obj}.
     ##
-    ## @code{@var{label} = predict (@var{obj}, @var{XC}, 'IncludeInteractions',
-    ## @var{includeInteractions})} allows you to specify whether interaction
-    ## terms should be included when making predictions.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each observation.
     ##
-    ## @code{[@var{label}, @var{score}] = predict (@dots{})} also returns
-    ## @var{score}, which contains the predicted class scores or posterior
-    ## probabilities for each observation.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC},
+    ## 'IncludeInteractions', @var{includeInteractions})} allows you to specify
+    ## whether interaction terms should be included when making predictions.
     ##
     ## @itemize
     ## @item
@@ -133,11 +346,11 @@ classdef CompactClassificationGAM
     ## @var{XC} must be an @math{MxP} numeric matrix where each row is an
     ## observation and each column corresponds to a predictor variable.
     ## @item
-    ## @var{includeInteractions} is a 'true' or 'false' indicating whether to
+    ## @var{includeInteractions} is a logical scalar indicating whether to
     ## include interaction terms in the predictions.
     ## @end itemize
     ##
-    ## @seealso{CompactClassificationGAM, fitcgam}
+    ## @seealso{CompactClassificationGAM, ClassificationGAM, fitcgam}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC, varargin)
@@ -245,19 +458,18 @@ classdef CompactClassificationGAM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationGAM} {} savemodel (@var{obj}, @var{filename})
+    ## @deftypefn  {CompactClassificationGAM} {} savemodel (@var{obj}, @var{filename})
     ##
-    ## Save a ClassificationGAM object.
+    ## Save a CompactClassificationGAM object.
     ##
     ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
-    ## CompactClassificationGAM object into an Octave binary file, the name
-    ## of which is specified in @var{filename}, along with an extra variable,
+    ## CompactClassificationGAM object into an Octave binary file, the name of
+    ## which is specified in @var{filename}, along with an extra variable,
     ## which defines the type classification object these variables constitute.
     ## Use @code{loadmodel} in order to load a classification object into
     ## Octave's workspace.
     ##
-    ## @seealso{loadmodel, fitcgam, ClassificationGAM, cvpartition,
-    ## ClassificationPartitionedModel}
+    ## @seealso{loadmodel, fitcgam, ClassificationGAM, CompactClassificationGAM}
     ## @end deftypefn
 
     function savemodel (this, fname)
