@@ -60,17 +60,6 @@
 ## labels, @var{Y}, used for fitting the kNN model.  @qcode{ClassNames} are of
 ## the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{"Prior"} @tab @tab A numeric vector specifying the prior
-## probabilities for each class.  The order of the elements in @qcode{Prior}
-## corresponds to the order of the classes in @qcode{ClassNames}.
-##
-## @item @qcode{"Cost"} @tab @tab A @math{NxR} numeric matrix containing
-## misclassification cost for the corresponding instances in @var{X} where
-## @math{R} is the number of unique categories in @var{Y}.  If an instance is
-## correctly classified into its category the cost is calculated to be 1,
-## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
-## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
-##
 ## @item @qcode{"SVMtype"} @tab @tab Specifies the type of SVM used for training
 ## the @code{ClassificationSVM} model.  By default, the type of SVM is defined
 ## by setting other parameters and/or by the data itself.  Setting the
