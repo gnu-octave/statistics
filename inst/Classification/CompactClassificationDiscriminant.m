@@ -1,4 +1,5 @@
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,52 +18,257 @@
 
 classdef CompactClassificationDiscriminant
 ## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationDiscriminant
+## @deftp {statistics} CompactClassificationDiscriminant
 ##
-## A @qcode{CompactClassificationDiscriminant} object is a compact version of a
-## discriminant analysis model, @qcode{ClassificationDiscriminant}.
+## Compact discriminant analysis classification
 ##
-## The @qcode{CompactClassificationDiscriminant} does not include the training
-## data resulting to a smaller classifier size, which can be used for making
-## predictions from new data, but not for tasks such as cross validation.  It
-## can only be created from a @qcode{ClassificationDiscriminant} model by using
-## the @code{compact} object method.
+## The @code{CompactClassificationDiscriminant} class implements a compact
+## version of a linear discriminant analysis classifier object, which can
+## predict responses for new data using the @code{predict} method but does not
+## store the training data.
 ##
-## The available methods for a @qcode{CompactClassificationDiscriminant} object
-## are:
-## @itemize
-## @item
-## @code{predict}
-## @item
-## @code{loss}
-## @item
-## @code{margin}
-## @item
-## @code{savemodel}
-## @end itemize
+## A @code{CompactClassificationDiscriminant} object is a compact version of a
+## discriminant analysis model, @code{ClassificationDiscriminant}.  It does not
+## include the training data resulting in a smaller classifier size, which can
+## be used for making predictions from new data, but not for tasks such as
+## cross validation.  It can only be created from a
+## @code{ClassificationDiscriminant} model by using the @code{compact} object
+## method.
 ##
-## @seealso{fitcdiscr, compact, ClassificationDiscriminant}
-## @end deftypefn
+## Create a @code{CompactClassificationDiscriminant} object by using the
+## @code{compact} method of a @code{ClassificationDiscriminant} object.
+##
+## @seealso{fitcdiscr, ClassificationDiscriminant}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the CompactClassificationDiscriminant
+    ## model.  This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors   = [];
 
-    NumPredictors   = [];     # Number of predictors
-    PredictorNames  = [];     # Predictor variables names
-    ResponseName    = [];     # Response variable name
-    ClassNames      = [];     # Names of classes in Y
-    Prior           = [];     # Prior probability for each class
-    Cost            = [];     # Cost of Misclassification
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames  = [];
 
-    ScoreTransform  = [];     # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = [];
 
-    Sigma           = [];     # Within-class covariance
-    Mu              = [];     # Class means
-    Coeffs          = [];     # Coefficient matrices
-    Delta           = [];     # Threshold for linear discriminant model
-    DiscrimType     = [];     # Discriminant type
-    Gamma           = [];     # Gamma regularization parameter
-    MinGamma        = [];     # Minimum value of Gamma
-    LogDetSigma     = [];     # Log of det of within-class covariance matrix
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A numeric vector specifying the prior probabilities for each class.  The
+    ## order of the elements in @qcode{Prior} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Prior           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Cost
+    ##
+    ## Cost of Misclassification
+    ##
+    ## A square matrix specifying the cost of misclassification of a point.
+    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
+    ## if its true class is @qcode{i} (that is, the rows correspond to the true
+    ## class and the columns correspond to the predicted class).  The order of
+    ## the rows and columns in @qcode{Cost} corresponds to the order of the
+    ## classes in @qcode{ClassNames}.  The number of rows and columns in
+    ## @qcode{Cost} is the number of unique classes in the response.  By
+    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
+    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
+    ## for correct classification and 1 for incorrect classification.
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Cost            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  This property is read-only.
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Sigma
+    ##
+    ## Within-class covariance
+    ##
+    ## A numeric array specifying the within-class covariance. For linear
+    ## discriminant type (currently supported) this is a @math{PxP} matrix,
+    ## where @math{P} is the number of predictors.  This property is read-only.
+    ##
+    ## @end deftp
+    Sigma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Mu
+    ##
+    ## Class means
+    ##
+    ## A @math{KxP} numeric matrix specifying the mean of the multivariate
+    ## normal distribution of each corresponding class, where @math{K} is the
+    ## number of classes and @math{P} is the number of predictors.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    Mu              = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Coeffs
+    ##
+    ## Coefficient matrices
+    ##
+    ## A @math {KxK} structure containing the coeeficient matrices, where
+    ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
+    ## was set to @qcode{'off'} in the original @code{ClassificationDiscriminant}
+    ## model, then @qcode{Coeffs} is empty @qcode{([])}.  This property is
+    ## read-only.
+    ##
+    ## @qcode{Coeffs(i,j)} contains the coefficients of the linear (currently
+    ## supported) boundaries between the classes @code{i} and @code{j} in the
+    ## following fields:
+    ##
+    ## @itemize
+    ## @item @qcode{DiscrimType} - A character vector
+    ## @item @qcode{Class1} - @qcode{@var{ClassNames}(i)}
+    ## @item @qcode{Class2} - @qcode{@var{ClassNames}(j)}
+    ## @item @qcode{Const} - A scalar
+    ## @item @qcode{Linear} - A vector with length as the number of predictors.
+    ## @end itemize
+    ##
+    ## @end deftp
+    Coeffs          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Delta
+    ##
+    ## Delta threshold
+    ##
+    ## A nonnegative scalar specifying the threshold for linear discriminant
+    ## model. Currently unimplemented and fixed to 0.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Delta           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} DiscrimType
+    ##
+    ## Discriminant type
+    ##
+    ## A character vector specifying the type discriminant model. Currently
+    ## only linear discriminant models are supported.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    DiscrimType     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} Gamma
+    ##
+    ## Gamma regularization parameter
+    ##
+    ## A scalar value ranging from 0 to 1, specifying the Gamma regularization
+    ## parameter.  This property is read-only.
+    ##
+    ## @end deftp
+    Gamma           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} MinGamma
+    ##
+    ## Minimum value for Gamma regularization parameter
+    ##
+    ## A scalar value ranging from 0 to 1, specifying the minimum value that the
+    ## Gamma regularization parameter can have.  This property is read-only.
+    ##
+    ## @end deftp
+    MinGamma        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationDiscriminant} {property} LogDetSigma
+    ##
+    ## Logarithm of the determinant of the within-class covariance matrix
+    ##
+    ## A scalar value specifying the logarithm of the determinant of the
+    ## within-class covariance matrix.  This property is read-only.
+    ##
+    ## @end deftp
+    LogDetSigma     = [];
 
   endproperties
 
@@ -123,7 +329,7 @@ classdef CompactClassificationDiscriminant
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
-      fprintf ("%+25s: '%s'\n", 'ClassNames', str);
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
@@ -294,8 +500,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## @itemize
     ## @item
-    ## @code{obj} is a @var{CompactClassificationDiscriminant} object trained on
-    ## @code{X} and @code{Y}.
+    ## @code{obj} is a @var{CompactClassificationDiscriminant} object.
     ## @item
     ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
@@ -303,7 +508,7 @@ classdef CompactClassificationDiscriminant
     ## @item
     ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
-    ## numbers of Rows as @var{X}.
+    ## numbers of rows as @var{X}.
     ## @end itemize
     ##
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
@@ -565,14 +770,15 @@ classdef CompactClassificationDiscriminant
     ## -*- texinfo -*-
     ## @deftypefn {CompactClassificationDiscriminant} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
+    ## Classification margins for discriminant analysis classifier.
+    ##
     ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
     ## the classification margins for @var{obj} with data @var{X} and
     ## classification @var{Y}. @var{m} is a numeric vector of length size (X,1).
     ##
     ## @itemize
     ## @item
-    ## @code{obj} is a @var{CompactClassificationDiscriminant} object trained on @code{X}
-    ## and @code{Y}.
+    ## @code{obj} is a @var{CompactClassificationDiscriminant} object.
     ## @item
     ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
@@ -580,7 +786,7 @@ classdef CompactClassificationDiscriminant
     ## @item
     ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
-    ## numbers of Rows as @var{X}.
+    ## numbers of rows as @var{X}.
     ## @end itemize
     ##
     ## The classification margin for each observation is the difference between
