@@ -143,47 +143,6 @@ classdef ClassificationSVM
     ClassNames          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property} Prior
-    ##
-    ## Prior probability for each class
-    ##
-    ## A numeric vector specifying the prior probabilities for each class.  The
-    ## order of the elements in @qcode{Prior} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.
-    ##
-    ## Add or change the @qcode{Prior} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.Prior = @var{priorVector}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    Prior               = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property} Cost
-    ##
-    ## Cost of Misclassification
-    ##
-    ## A square matrix specifying the cost of misclassification of a point.
-    ## @qcode{Cost(i,j)} is the cost of classifying a point into class @qcode{j}
-    ## if its true class is @qcode{i} (that is, the rows correspond to the true
-    ## class and the columns correspond to the predicted class).  The order of
-    ## the rows and columns in @qcode{Cost} corresponds to the order of the
-    ## classes in @qcode{ClassNames}.  The number of rows and columns in
-    ## @qcode{Cost} is the number of unique classes in the response.  By
-    ## default, @qcode{Cost(i,j) = 1} if @qcode{i != j}, and
-    ## @qcode{Cost(i,j) = 0} if @qcode{i = j}.  In other words, the cost is 0
-    ## for correct classification and 1 for incorrect classification.
-    ##
-    ## Add or change the @qcode{Cost} property using dot notation as in:
-    ## @itemize
-    ## @item @qcode{@var{obj}.Cost = @var{costMatrix}}
-    ## @end itemize
-    ##
-    ## @end deftp
-    Cost                = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
@@ -218,7 +177,7 @@ classdef ClassificationSVM
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform      = [];
+    ScoreTransform      = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} Standardize
@@ -288,8 +247,8 @@ classdef ClassificationSVM
     ##
     ## The coefficients of the trained SVM classifier specified as an @math{sx1}
     ## numeric vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained with
-    ## a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## with a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
     ## empty.  This property is read-only.
     ##
     ## @end deftp
@@ -302,8 +261,8 @@ classdef ClassificationSVM
     ##
     ## The linear predictor coefficients specified as an @math{sx1} numeric
     ## vector, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained with
-    ## a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -362,6 +321,127 @@ classdef ClassificationSVM
     SupportVectors      = [];
   endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
+  methods (Hidden)
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  ClassificationSVM\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      if (isempty (this.Alpha))
+        fprintf ("%+25s: [%dx1 double]\n", 'Beta', numel (this.Alpha));
+      else
+        fprintf ("%+25s: [%dx1 double]\n", 'Alpha', numel (this.Alpha));
+      endif
+      fprintf ("%+25s: %f\n", 'Bias', this.Bias);
+      fprintf ("%+25s: [1x1 struct]\n", 'KernelParameters');
+      if (this.Standardize))
+        if (numel (this.Mu) < 6)
+          str = repmat ({"'%0.4f'"}, 1, numel (this.Mu));
+          str = strcat ('[', strjoin (str, ' '), ']');
+          out = sprintf (str, this.Mu);
+          fprintf ("%+25s: %s\n", 'Mu', out);
+          out = sprintf (str, this.Sigma);
+          fprintf ("%+25s: %s\n", 'Sigma', out);
+        else
+          fprintf ("%+25s: [1x%d double]\n", 'Mu', numel (this.Mu));
+          fprintf ("%+25s: [1x%d double]\n", 'Sigma', numel (this.Sigma));
+        endif
+      endif
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a ClassificationSVM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a ClassificationSVM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationSVM.subsref: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("ClassificationSVM.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("ClassificationSVM.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a ClassificationSVM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a ClassificationSVM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("ClassificationSVM.subsasgn: '.' indexing", ...
+                           " argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'ScoreTransform'
+              name = "ClassificationSVM";
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
+            otherwise
+              error (strcat ("ClassificationSVM.subsasgn: unrecognized", ...
+                             " or read-only property: '%s'"), s.subs);
+          endswitch
+      endswitch
+    endfunction
+
+  endmethods
+
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -404,21 +484,6 @@ classdef ClassificationSVM
     ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
     ## labels, @var{Y}, used for fitting the SVM model. @qcode{ClassNames} are
     ## of the same type as the class labels in @var{Y}.
-    ##
-    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
-    ## misclassification cost for the corresponding instances in @var{X}, where
-    ## @math{R} is the number of unique categories in @var{Y}.  If an instance
-    ## is correctly classified into its category the cost is calculated to be 1,
-    ## otherwise 0. The cost matrix can be altered by using
-    ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
-    ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
-    ##
-    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
-    ## probabilities for each class.  The order of the elements in @qcode{Prior}
-    ## corresponds to the order of the classes in @qcode{ClassNames}.
-    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
-    ## class probabilities or @qcode{"uniform"} to assume equal class
-    ## probabilities.
     ##
     ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
@@ -471,7 +536,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{fitcsvm}
     ## @end deftypefn
-
     function this = ClassificationSVM (X, Y, varargin)
       ## Check for sufficient number of input arguments
       if (nargin < 2)
@@ -505,9 +569,6 @@ classdef ClassificationSVM
       ResponseName            = [];
       PredictorNames          = [];
       ClassNames              = [];
-      Prior                   = [];
-      Cost                    = [];
-      this.ScoreTransform     = 'none';
 
       ## Parse extra parameters
       SVMtype_override = true;
@@ -562,24 +623,10 @@ classdef ClassificationSVM
               endif
             endif
 
-          case "prior"
-            Prior = varargin{2};
-            if (! ((isnumeric (Prior) && isvector (Prior)) ||
-                  (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
-              error (strcat ("ClassificationSVM: 'Prior' must be either", ...
-                             " a numeric vector or a character vector."));
-            endif
-
-          case "cost"
-            Cost = varargin{2};
-            if (! (isnumeric (Cost) && issquare (Cost)))
-              error (strcat ("ClassificationSVM: 'Cost' must be", ...
-                             " a numeric square matrix."));
-            endif
-
           case "scoretransform"
             name = "ClassificationSVM";
-            this.ScoreTransform = parseScoreTransform (varargin{2}, name);
+            [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                 (varargin{2}, name);
 
           case "svmtype"
             SVMtype = varargin{2};
@@ -764,33 +811,6 @@ classdef ClassificationSVM
         this.Mu = [];
       endif
 
-      ## Handle Prior and Cost
-      if (strcmpi ("uniform", Prior))
-        this.Prior = ones (size (gnY)) ./ nclasses;
-      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
-        pr = [];
-        for i = 1:nclasses
-          pr = [pr; sum(gY==i)];
-        endfor
-        this.Prior = pr ./ sum (pr);
-      elseif (isnumeric (Prior))
-        if (nclasses != numel (Prior))
-          error (strcat ("ClassificationSVM: the elements in 'Prior' do", ...
-                         " not correspond to selected classes in Y."));
-        endif
-        this.Prior = Prior ./ sum (Prior);
-      endif
-      if (isempty (Cost))
-        this.Cost = cast (! eye (nclasses), "double");
-      else
-        if (nclasses != sqrt (numel (Cost)))
-          error (strcat ("ClassificationSVM: the number of rows and", ...
-                         " columns in 'Cost' must correspond to", ...
-                         " the selected classes in Y."));
-        endif
-        this.Cost = Cost;
-      endif
-
       ## Generate default predictors and response variable names (if necessary)
       if (isempty (PredictorNames))
         for i = 1:ndims_X
@@ -877,8 +897,8 @@ classdef ClassificationSVM
                        'CacheSize', CacheSize, 'KernelScale', KernelScale, ...
                        'KernelOffset', KernelOffset, 'KernelFunction', ...
                         KernelFunction, 'PolynomialOrder', PolynomialOrder, ...
-                        'Nu', Nu, 'Tolerance',Tolerance, ...
-                        'Shrinking', Shrinking);
+                       'Nu', Nu, 'Tolerance',Tolerance, ...
+                       'Shrinking', Shrinking);
       this.ModelParameters = params;
 
     endfunction
@@ -913,7 +933,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{ClassificationSVM, fitcsvm, ClassificationSVM.fitPosterior}
     ## @end deftypefn
-
     function [labels, scores] = predict (this, XC)
 
       ## Check for sufficient input arguments
@@ -960,17 +979,8 @@ classdef ClassificationSVM
         labels(out!=1) = this.ClassNames(2);
       endif
 
-      if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
-            error (strcat ("ClassificationSVM.predict: 'ScoreTransform'", ...
-                           " must be a 'function_handle' object."));
-          endif
-          scores = f (scores);
-        endif
-      endif
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
 
     endfunction
 
@@ -1000,7 +1010,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{fitcsvm, ClassificationSVM.fitPosterior}
     ## @end deftypefn
-
     function [labels, scores] = resubPredict (this)
 
       ## Get used rows (if necessary)
@@ -1043,17 +1052,8 @@ classdef ClassificationSVM
         labels(out!=1) = this.ClassNames(2);
       endif
 
-      if (nargout > 1)
-        ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
-          f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
-            error (strcat ("ClassificationSVM.resubPredict: 'Score", ...
-                           "Transform' must be a 'function_handle' object."));
-          endif
-          scores = f (scores);
-        endif
-      endif
+      ## Apply ScoreTransform
+      scores = this.ScoreTransform (scores);
 
     endfunction
 
@@ -1086,7 +1086,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{fitcsvm, ClassificationSVM}
     ## @end deftypefn
-
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -1177,7 +1176,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{ClassificationSVM}
     ## @end deftypefn
-
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
@@ -1333,7 +1331,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{ClassificationSVM}
     ## @end deftypefn
-
     function L = resubLoss (this, varargin)
 
       if (mod(nargin, 2) != 1)
@@ -1455,7 +1452,6 @@ classdef ClassificationSVM
     ## @seealso{fitcsvm, ClassificationSVM, cvpartition,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
-
     function CVMdl = crossval (this, varargin)
 
       ## Check for sufficient input arguments
@@ -1540,85 +1536,6 @@ classdef ClassificationSVM
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationSVM} {@var{Mdl} =} fitPosterior (@var{obj})
-    ## @deftypefnx {ClassificationSVM} {@var{CVMdl} =} fitPosterior (@var{obj}, @var{name}, @var{value})
-    ##
-    ## Fit posterior probabilities to a Support Vector Machine model.
-    ##
-    ## @code{@var{Mdl} = fitPosterior (@var{obj})} returns the ClassificationSVM
-    ## object, @var{Mdl}, from an already trained SVM model, @var{obj}, after
-    ## fitting a posterior probabilities ScoreTransform.
-    ##
-    ## @code{@var{CVMdl} = fitPosterior (@var{obj}, @var{name}, @var{value})}
-    ## returns the ClassificationPartitionedModel, @var{CVMdl}, from an already
-    ## trained SVM model, @var{obj}, after fitting a posterior probabilities
-    ## ScoreTransform. Use the additional name-value pair arguments to customize
-    ## the cross-validation process.
-    ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
-    ## @headitem @var{Name} @tab @tab @var{Value}
-    ##
-    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
-    ## k-fold cross-validation. @code{'kfold', @var{k}} where @var{k} is an
-    ## integer greater than 1.
-    ##
-    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
-    ## hold out for testing. @code{'holdout', @var{p}} where @var{p} is a scalar
-    ## in the range (0,1).
-    ##
-    ## @item @qcode{"CVPartition"} @tab @tab Specify the fraction of the data to
-    ## hold out for testing. @code{'holdout', @var{p}} where @var{p} is a scalar
-    ## in the range (0,1).
-    ##
-    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
-    ## leave-one-out cross-validation. @code{'leaveout', @var{Value}} where
-    ## @var{Value} is 'on' or 'off'.
-    ##
-    ## @end multitable
-    ##
-    ## @seealso{cvpartition, fitcsvm, ClassificationSVM}
-    ## @end deftypefn
-
-    function CVMdl = fitPosterior (this, varargin)
-
-      ## Check for ScoreTransform and emit reset warning
-
-
-      ## Cross-validate SVM model and get labels and scores
-      CVMdl = crossval (this, varargin{:});
-      [~, score] = kfoldPredict (CVMdl);
-
-      ## Get class labels at 0 and 1
-      Y = grp2idx (CVMdl.Y(logical (this.RowsUsed))) - 1;
-
-      ## Get prior probability for second class
-      prior = this.Prior(2);
-
-      ## Determine perfect separation or overlapping
-      ub = max (score(Y==0));
-      lb = min (score(Y==1));
-
-      if (ub <= lb)
-        warning ("ClassificationSVM.fitPosterior: PerfectSeparation.");
-        f = eval (sprintf ('@(S) ClassificationSVM.step (S, %e, %e, %e)', ...
-                           ub, lb, prior));
-      else
-        coeff = glmfit (score(:,2), Y, 'binomial', 'link', 'logit');
-        f = eval (sprintf ('@(S) ClassificationSVM.sigmoid (S, %e, %e)', ...
-                           -coeff(2), -coeff(1)));
-      endif
-
-      ## Decide returning model type
-      if (isempty (varargin))
-        this.ScoreTransform = f;
-        CVMdl = this;
-      else
-        CVMdl.ScoreTransform = f;
-      endif
-
-    endfunction
-
-    ## -*- texinfo -*-
     ## @deftypefn  {ClassificationSVM} {@var{CVMdl} =} compact (@var{obj})
     ##
     ## Create a CompactClassificationSVM object.
@@ -1628,7 +1545,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{fitcsvm, ClassificationSVM, CompactClassificationSVM}
     ## @end deftypefn
-
     function CVMdl = compact (this)
       ## Create a compact model
       CVMdl = CompactClassificationSVM (this);
@@ -1648,7 +1564,6 @@ classdef ClassificationSVM
     ##
     ## @seealso{loadmodel, fitcsvm, ClassificationSVM}
     ## @end deftypefn
-
     function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "ClassificationSVM";
@@ -1662,8 +1577,6 @@ classdef ClassificationSVM
       PredictorNames      = this.PredictorNames;
       ResponseName        = this.ResponseName;
       ClassNames          = this.ClassNames;
-      Prior               = this.Prior;
-      Cost                = this.Cost;
       ScoreTransform      = this.ScoreTransform;
       Standardize         = this.Standardize;
       Sigma               = this.Sigma;
@@ -1680,9 +1593,9 @@ classdef ClassificationSVM
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
             "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
-            "ClassNames", "Prior", "Cost", "ScoreTransform", "Standardize", ...
-            "Sigma", "Mu", "ModelParameters", "Model", "Alpha", "Beta", ...
-            "Bias", "IsSupportVector", "SupportVectorLabels", "SupportVectors");
+            "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu",  ...
+            "ModelParameters", "Model", "Alpha", "Beta", "Bias", ...
+            "IsSupportVector", "SupportVectorLabels", "SupportVectors");
     endfunction
 
   endmethods
@@ -1704,18 +1617,6 @@ classdef ClassificationSVM
       for i = 1:numel (props)
         mdl.(props{i}) = data.(props{i});
       endfor
-    endfunction
-
-    ## Helper functions for fitPosterior
-    function prob = step (score, ub, lb, prior)
-      prob = zeros (size (score));
-      prob(score > lb) = 1;
-      prob(score >= ub & score <= lb) = prior;
-    endfunction
-
-    function prob = sigmoid (score, a, b)
-      prob = zeros (size (score));
-      prob = 1 ./ (1 + exp (-a * score + b));
     endfunction
 
   endmethods
@@ -1860,16 +1761,6 @@ endclassdef
 %! ClassificationSVM (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
 %! ClassificationSVM (ones(10,2), logical (ones (10,1)), "ClassNames", [true, false])
-%!error<ClassificationSVM: 'Prior' must be either a numeric vector or a character vector.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "Prior", {"asd"})
-%!error<ClassificationSVM: 'Prior' must be either a numeric vector or a character vector.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "Prior", ones (2))
-%!error<ClassificationSVM: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "Cost", [1:4])
-%!error<ClassificationSVM: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "Cost", {0,1;1,0})
-%!error<ClassificationSVM: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), "Cost", 'a')
 %!error<ClassificationSVM: 'SVMtype' must be 'c_svc', 'nu_svc', or 'one_class_svm'.> ...
 %! ClassificationSVM (ones(10,2), ones(10,1), "svmtype", 123)
 %!error<ClassificationSVM: 'SVMtype' must be 'c_svc', 'nu_svc', or 'one_class_svm'.> ...

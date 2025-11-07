@@ -160,7 +160,7 @@ classdef CompactClassificationGAM
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform  = [];
+    ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} Formula
@@ -277,7 +277,10 @@ classdef CompactClassificationGAM
     ##
     ## @end deftp
     IntMatrix       = [];
+  endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
   endproperties
 
   methods (Hidden)
@@ -297,10 +300,11 @@ classdef CompactClassificationGAM
       this.PredictorNames  = Mdl.PredictorNames;
       this.ResponseName    = Mdl.ResponseName;
       this.ClassNames      = Mdl.ClassNames;
-      this.Prior           = Mdl.Prior;
-      this.Cost            = Mdl.Cost;
 
+      this.Cost            = Mdl.Cost;
+      this.Prior           = Mdl.Prior;
       this.ScoreTransform  = Mdl.ScoreTransform;
+      this.STname          = Mdl.STname;
 
       this.Formula         = Mdl.Formula;
       this.Interactions    = Mdl.Interactions;
@@ -313,6 +317,114 @@ classdef CompactClassificationGAM
       this.ModelwInt       = Mdl.ModelwInt;
       this.IntMatrix       = Mdl.IntMatrix;
 
+    endfunction
+
+    ## Custom display
+    function display (this)
+      in_name = inputname (1);
+      if (! isempty (in_name))
+        fprintf ('%s =\n', in_name);
+      endif
+      disp (this);
+    endfunction
+
+    ## Custom display
+    function disp (this)
+      fprintf ("\n  CompactClassificationGAM\n\n");
+      ## Print selected properties
+      fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
+      if (iscellstr (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = strcat ('{', strjoin (str, ' '), '}');
+        str = sprintf (str, this.ClassNames{:});
+      elseif (ischar (this.ClassNames))
+        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, cellstr (this.ClassNames){:});
+      else # single, double, logical
+        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = strcat ('[', strjoin (str, ' '), ']');
+        str = sprintf (str, this.ClassNames);
+      endif
+      fprintf ("%+25s: %s\n", 'ClassNames', str);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
+      fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
+      fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
+      if (! isempty (this.Formula))
+        fprintf ("%+25s: '%s'\n", 'Formula', this.Formula);
+      endif
+      if (! isempty (this.Interactions))
+        if (ischar (this.Interactions))
+          fprintf ("%+25s: '%s'\n", 'Interactions', this.Interactions);
+        else
+          fprintf ("%+25s: [%dx%d %s]\n", 'Interactions', ...
+                   size (this.Interactions, 1), size (this.Interactions, 2), ...
+                   class (this.Interactions));
+        endif
+      endif
+    endfunction
+
+    ## Class specific subscripted reference
+    function varargout = subsref (this, s)
+      chain_s = s(2:end);
+      s = s(1);
+      switch (s.type)
+        case '()'
+          error (strcat ("Invalid () indexing for referencing values", ...
+                         " in a CompactClassificationGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for referencing values", ...
+                         " in a CompactClassificationGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationGAM.subsref: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          try
+            out = this.(s.subs);
+          catch
+            error (strcat ("CompactClassificationGAM.subsref:", ...
+                           " unrecognized property: '%s'"), s.subs);
+          end_try_catch
+      endswitch
+      ## Chained references
+      if (! isempty (chain_s))
+        out = subsref (out, chain_s);
+      endif
+      varargout{1} = out;
+    endfunction
+
+    ## Class specific subscripted assignment
+    function this = subsasgn (this, s, val)
+      if (numel (s) > 1)
+        error (strcat ("CompactClassificationGAM.subsasgn:", ...
+                       " chained subscripts not allowed."));
+      endif
+      switch s.type
+        case '()'
+          error (strcat ("Invalid () indexing for assigning values", ...
+                         " to a CompactClassificationGAM object."));
+        case '{}'
+          error (strcat ("Invalid {} indexing for assigning values", ...
+                         " to a CompactClassificationGAM object."));
+        case '.'
+          if (! ischar (s.subs))
+            error (strcat ("CompactClassificationGAM.subsasgn: '.'", ...
+                           " indexing argument must be a character vector."));
+          endif
+          switch (s.subs)
+            case 'Cost'
+              this = setCost (this, val);
+            case 'ScoreTransform'
+              name = "CompactClassificationGAM";
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
+            otherwise
+              error (strcat ("CompactClassificationGAM.subsasgn:", ...
+                             " unrecognized or read-only property: '%s'"), ...
+                             s.subs);
+          endswitch
+      endswitch
     endfunction
 
   endmethods
@@ -352,7 +464,6 @@ classdef CompactClassificationGAM
     ##
     ## @seealso{CompactClassificationGAM, ClassificationGAM, fitcgam}
     ## @end deftypefn
-
     function [labels, scores] = predict (this, XC, varargin)
 
       ## Check for sufficient input arguments
@@ -471,7 +582,6 @@ classdef CompactClassificationGAM
     ##
     ## @seealso{loadmodel, fitcgam, ClassificationGAM, CompactClassificationGAM}
     ## @end deftypefn
-
     function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "CompactClassificationGAM";
@@ -484,6 +594,7 @@ classdef CompactClassificationGAM
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
+      STname          = this.STname;
       Formula         = this.Formula;
       Interactions    = this.Interactions;
       Knots           = this.Knots;
@@ -498,9 +609,9 @@ classdef CompactClassificationGAM
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "NumPredictors", ...
             "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
-            "ScoreTransform", "Formula", "Interactions", "Knots", "Order", ...
-            "DoF", "BaseModel", "ModelwInt", "IntMatrix", "LearningRate", ...
-            "NumIterations");
+            "ScoreTransform", "STname", "Formula", "Interactions", "Knots", ...
+            "Order", "DoF", "BaseModel", "ModelwInt", "IntMatrix", ...
+            "LearningRate", "NumIterations");
     endfunction
 
   endmethods
@@ -508,20 +619,42 @@ classdef CompactClassificationGAM
   methods (Static, Hidden)
 
     function mdl = load_model (filename, data)
-      ## Create a ClassificationGAM object
+      ## Create a CompactClassificationGAM object
       mdl = CompactClassificationGAM ();
 
-      ## Check that fieldnames in DATA match properties in ClassificationGAM
+      ## Check that fieldnames in DATA match properties in CompactClassificationGAM
       names = fieldnames (data);
       props = fieldnames (mdl);
       if (! isequal (sort (names), sort (props)))
-        error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
+        error ("CompactClassificationGAM.load_model: invalid model in '%s'.", ...
+               filename)
       endif
 
       ## Copy data into object
       for i = 1:numel (props)
         mdl.(props{i}) = data.(props{i});
       endfor
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    ## Set cost
+    function this = setCost (this, Cost, gnY = [])
+      if (isempty (gnY))
+        [~, gnY, gY] = unique (this.Y(this.RowsUsed));
+      endif
+      if (isempty (Cost))
+        this.Cost = cast (! eye (numel (gnY)), "double");
+      else
+        if (numel (gnY) != sqrt (numel (Cost)))
+          error (strcat ("CompactClassificationGAM: the number", ...
+                         " of rows and columns in 'Cost' must", ...
+                         " correspond to selected classes in Y."));
+        endif
+        this.Cost = Cost;
+      endif
     endfunction
 
   endmethods

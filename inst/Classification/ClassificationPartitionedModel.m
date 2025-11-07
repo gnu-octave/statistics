@@ -1,6 +1,6 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024 Pallav Purbia <pallavpurbia@gmail.com>
-## Copyright (C) 2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -251,6 +251,10 @@ classdef ClassificationPartitionedModel
     Trained                      = [];
   endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
+  endproperties
+
   methods (Access = public)
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationPartitionedModel} {@var{this} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
@@ -298,13 +302,12 @@ classdef ClassificationPartitionedModel
       this.Partition = Partition;
       this.CrossValidatedModel = class (Mdl);
       this.ScoreTransform = Mdl.ScoreTransform;
-      if (! strcmpi (class (Mdl), 'ClassificationNeuralNetwork'))
+      this.STname = Mdl.STname;
+      if (ismember (class (Mdl), validTypes(1:3)))
         this.Prior = Mdl.Prior;
         this.Cost = Mdl.Cost;
       endif
-      is_valid = {'ClassificationKNN', 'ClassificationNeuralNetwork', ...
-                  'ClassificationSVM'};
-      if (any (strcmpi (class (Mdl), is_valid)))
+      if (ismember (class (Mdl), validTypes(3:5))))
         this.Standardize = Mdl.Standardize;
       endif
 
@@ -488,8 +491,6 @@ classdef ClassificationPartitionedModel
                            'PredictorNames', Mdl.PredictorNames, ...
                            'ResponseName', Mdl.ResponseName, ...
                            'ClassNames', Mdl.ClassNames, ...
-                           'Prior', Mdl.Prior, ...
-                           'Cost', Mdl.Cost, ...
                            'SVMtype', params.SVMtype, ...
                            'KernelFunction', params.KernelFunction, ...
                            'PolynomialOrder', params.PolynomialOrder, ...
@@ -551,7 +552,6 @@ classdef ClassificationPartitionedModel
     ## @seealso{ClassificationKNN, ClassificationSVM,
     ## ClassificationPartitionedModel}
     ## @end deftypefn
-
     function [label, Score, Cost] = kfoldPredict (this)
 
       ## Input validation

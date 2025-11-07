@@ -145,18 +145,6 @@ classdef ClassificationGAM
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property} Prior
-    ##
-    ## Prior probability for each class
-    ##
-    ## A 2-element numeric vector specifying the prior probabilities for each
-    ## class.  The order of the elements in @qcode{Prior} corresponds to the
-    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
-    ##
-    ## @end deftp
-    Prior           = [];
-
-    ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} Cost
     ##
     ## Cost of Misclassification
@@ -179,6 +167,18 @@ classdef ClassificationGAM
     ##
     ## @end deftp
     Cost            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ClassificationGAM} {property} Prior
+    ##
+    ## Prior probability for each class
+    ##
+    ## A 2-element numeric vector specifying the prior probabilities for each
+    ## class.  The order of the elements in @qcode{Prior} corresponds to the
+    ## order of the classes in @qcode{ClassNames}.  This property is read-only.
+    ##
+    ## @end deftp
+    Prior           = [];
 
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} ScoreTransform
@@ -435,7 +435,7 @@ classdef ClassificationGAM
           endif
           switch (s.subs)
             case 'Cost'
-              this.Cost = val;
+              this = setCost (this, val);
             case 'ScoreTransform'
               name = "ClassificationGAM";
               [this.ScoreTransform, this.STname] = parseScoreTransform ...

@@ -50,8 +50,6 @@ classdef CompactClassificationSVM
     PredictorNames      = [];    # Predictor variables names
     ResponseName        = [];    # Response variable name
     ClassNames          = [];    # Names of classes in Y
-    Prior               = [];    # Prior probability for each class
-    Cost                = [];    # Cost of misclassification
 
     ScoreTransform      = [];    # Transformation for classification scores
 

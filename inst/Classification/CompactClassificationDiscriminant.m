@@ -160,7 +160,7 @@ classdef CompactClassificationDiscriminant
     ## @end multitable
     ##
     ## @end deftp
-    ScoreTransform  = [];
+    ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} Sigma
@@ -269,7 +269,10 @@ classdef CompactClassificationDiscriminant
     ##
     ## @end deftp
     LogDetSigma     = [];
+  endproperties
 
+  properties (Access = private, Hidden)
+    STname = 'none';
   endproperties
 
   methods (Hidden)
@@ -290,10 +293,11 @@ classdef CompactClassificationDiscriminant
       this.PredictorNames  = Mdl.PredictorNames;
       this.ResponseName    = Mdl.ResponseName;
       this.ClassNames      = Mdl.ClassNames;
-      this.Prior           = Mdl.Prior;
-      this.Cost            = Mdl.Cost;
 
+      this.Cost            = Mdl.Cost;
+      this.Prior           = Mdl.Prior;
       this.ScoreTransform  = Mdl.ScoreTransform;
+      this.STname          = Mdl.STname;
 
       this.Sigma           = Mdl.Sigma;
       this.Mu              = Mdl.Mu;
@@ -330,7 +334,7 @@ classdef CompactClassificationDiscriminant
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: %s\n", 'ClassNames', str);
-      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
+      fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
       fprintf ("%+25s: '%s'\n", 'DiscrimType', this.DiscrimType);
       fprintf ("%+25s: [%dx%d double]\n", 'Mu', size (this.Mu));
@@ -388,7 +392,8 @@ classdef CompactClassificationDiscriminant
           switch (s.subs)
             case 'ScoreTransform'
               name = "CompactClassificationDiscriminant";
-              this.ScoreTransform = parseScoreTransform (val, name);
+              [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                   (varargin{2}, name);
             otherwise
               error (strcat ("CompactClassificationDiscriminant.subsasgn:", ...
                              " unrecognized or read-only property: '%s'"), ...
@@ -439,7 +444,6 @@ classdef CompactClassificationDiscriminant
     ##
     ## @seealso{CompactClassificationDiscriminant, fitcdiscr}
     ## @end deftypefn
-
     function [label, score, cost] = predict (this, XC)
 
       ## Check for sufficient input arguments
@@ -550,7 +554,6 @@ classdef CompactClassificationDiscriminant
     ##
     ## @seealso{CompactClassificationDiscriminant}
     ## @end deftypefn
-
     function L = loss (this, X, Y, varargin)
 
       ## Check for sufficient input arguments
@@ -795,7 +798,6 @@ classdef CompactClassificationDiscriminant
     ##
     ## @seealso{fitcdiscr, CompactClassificationDiscriminant}
     ## @end deftypefn
-
     function m = margin (this, X, Y)
 
       ## Check for sufficient input arguments
@@ -890,7 +892,6 @@ classdef CompactClassificationDiscriminant
     ##
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
-
     function savemodel (this, fname)
       ## Generate variable for class name
       classdef_name = "CompactClassificationDiscriminant";
@@ -903,6 +904,7 @@ classdef CompactClassificationDiscriminant
       Prior           = this.Prior;
       Cost            = this.Cost;
       ScoreTransform  = this.ScoreTransform;
+      STname          = this.STname;
       Sigma           = this.Sigma;
       Mu              = this.Mu;
       Coeffs          = this.Coeffs;
@@ -915,8 +917,8 @@ classdef CompactClassificationDiscriminant
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "NumPredictors", ...
             "PredictorNames", "ResponseName", "ClassNames", "Prior", ...
-            "Cost", "ScoreTransform", "Sigma", "Mu", "Coeffs", "Delta", ...
-            "DiscrimType", "Gamma", "MinGamma", "LogDetSigma");
+            "Cost", "ScoreTransform", "STname", "Sigma", "Mu", "Coeffs", ...
+            "Delta", "DiscrimType", "Gamma", "MinGamma", "LogDetSigma");
     endfunction
 
   endmethods
