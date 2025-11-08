@@ -365,7 +365,7 @@ classdef ClassificationSVM
       endif
       fprintf ("%+25s: %f\n", 'Bias', this.Bias);
       fprintf ("%+25s: [1x1 struct]\n", 'KernelParameters');
-      if (this.Standardize))
+      if (this.Standardize)
         if (numel (this.Mu) < 6)
           str = repmat ({"'%0.4f'"}, 1, numel (this.Mu));
           str = strcat ('[', strjoin (str, ' '), ']');
