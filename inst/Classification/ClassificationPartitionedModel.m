@@ -307,7 +307,7 @@ classdef ClassificationPartitionedModel
         this.Prior = Mdl.Prior;
         this.Cost = Mdl.Cost;
       endif
-      if (ismember (class (Mdl), validTypes(3:5))))
+      if (ismember (class (Mdl), validTypes(3:5)))
         this.Standardize = Mdl.Standardize;
       endif
 
