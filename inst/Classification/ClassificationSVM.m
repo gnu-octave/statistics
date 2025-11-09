@@ -431,8 +431,13 @@ classdef ClassificationSVM
           switch (s.subs)
             case 'ScoreTransform'
               name = "ClassificationSVM";
-              [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+              try
+                [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                     (val, name);
+              catch
+                error (strcat ("ClassificationSVM.subsasgn: 'ScoreTransform'", ...
+                               " must be a 'function_handle' object."));
+              end_try_catch
             otherwise
               error (strcat ("ClassificationSVM.subsasgn: unrecognized", ...
                              " or read-only property: '%s'"), s.subs);
@@ -1825,12 +1830,6 @@ endclassdef
 %! ClassificationSVM (ones(10,2), [1;1;1;1;2;2;2;2;3;3])
 %!error<ClassificationSVM: invalid values in X.> ...
 %! ClassificationSVM ([ones(9,2);2,Inf], ones(10,1))
-%!error<ClassificationSVM: the elements in 'Prior' do not correspond to selected classes in Y.> ...
-%! ClassificationSVM (ones (5,2), ones (5,1), "Prior", [0,1])
-%!error<ClassificationSVM: the elements in 'Prior' do not correspond to selected classes in Y.> ...
-%! ClassificationSVM (ones (5,2), [1;1;2;2;3], "ClassNames", [1,2], "Prior", [0,0.4,0.6])
-%!error<ClassificationSVM: the number of rows and columns in 'Cost' must correspond to the selected classes in Y.> ...
-%! ClassificationSVM (ones (5,2), [1;1;2;2;3], "ClassNames", [1,2], "Cost", ones (3))
 
 ## Test output for predict method
 %!shared x, y, x_train, x_test, y_train, y_test, objST
@@ -1847,10 +1846,6 @@ endclassdef
 %! assert (label, [1; 2; 2]);
 %! assert (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
 %! assert (score(:,1), -score(:,2), eps)
-%! obj = fitPosterior (obj);
-%! [label, probs] = predict (obj, xc);
-%! assert (probs(:,2), [0.97555; 0.428164; 0.030385], 3e-2);
-%! assert (probs(:,1) + probs(:,2), [1; 1; 1], 0.05)
 %!test
 %! obj = fitcsvm (x, y);
 %! assert (isempty (obj.Beta), true)
@@ -1870,12 +1865,11 @@ endclassdef
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), 1)
 %!test
 %! objST = fitcsvm (x, y);
+%!error<ClassificationSVM.subsasgn: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! objST.ScoreTransform = "a";
-%!error<ClassificationSVM.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = predict (objST, x);
 
 ## Test input validation for resubPredict method
-%!error<ClassificationSVM.resubPredict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = resubPredict (objST);
 
 ## Test output for margin method

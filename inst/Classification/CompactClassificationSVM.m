@@ -88,8 +88,6 @@ classdef CompactClassificationSVM
       this.PredictorNames        = Mdl.PredictorNames;
       this.ResponseName          = Mdl.ResponseName;
       this.ClassNames            = Mdl.ClassNames;
-      this.Prior                 = Mdl.Prior;
-      this.Cost                  = Mdl.Cost;
 
       this.ScoreTransform        = Mdl.ScoreTransform;
 
@@ -474,8 +472,6 @@ classdef CompactClassificationSVM
       PredictorNames      = this.PredictorNames;
       ResponseName        = this.ResponseName;
       ClassNames          = this.ClassNames;
-      Prior               = this.Prior;
-      Cost                = this.Cost;
       ScoreTransform      = this.ScoreTransform;
       Standardize         = this.Standardize;
       Sigma               = this.Sigma;
@@ -491,8 +487,8 @@ classdef CompactClassificationSVM
 
       ## Save classdef name and all model properties as individual variables
       save ("-binary", fname, "classdef_name", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", "Prior", ...
-            "Cost", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
+            "PredictorNames", "ResponseName", "ClassNames", ...
+            "ScoreTransform", "Standardize", "Sigma", "Mu", ...
             "ModelParameters", "Model", "Alpha", "Beta", "Bias", ...
             "IsSupportVector", "SupportVectorLabels", "SupportVectors");
     endfunction
