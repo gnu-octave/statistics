@@ -1865,12 +1865,11 @@ endclassdef
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)), 1)
 %!test
 %! objST = fitcsvm (x, y);
+%!error<ClassificationSVM.subsasgn: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! objST.ScoreTransform = "a";
-%!error<ClassificationSVM.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = predict (objST, x);
 
 ## Test input validation for resubPredict method
-%!error<ClassificationSVM.resubPredict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = resubPredict (objST);
 
 ## Test output for margin method
