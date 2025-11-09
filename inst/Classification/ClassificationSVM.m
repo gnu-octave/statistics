@@ -431,8 +431,13 @@ classdef ClassificationSVM
           switch (s.subs)
             case 'ScoreTransform'
               name = "ClassificationSVM";
-              [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (val, name);
+              try
+                [this.ScoreTransform, this.STname] = parseScoreTransform ...
+                                                     (val, name);
+              catch
+                error (strcat ("ClassificationSVM.subsasgn: 'ScoreTransform'", ...
+                               " must be a 'function_handle' object."));
+              end_try_catch
             otherwise
               error (strcat ("ClassificationSVM.subsasgn: unrecognized", ...
                              " or read-only property: '%s'"), s.subs);
