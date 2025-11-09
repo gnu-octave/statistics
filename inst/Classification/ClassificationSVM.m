@@ -432,7 +432,7 @@ classdef ClassificationSVM
             case 'ScoreTransform'
               name = "ClassificationSVM";
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
-                                                   (varargin{2}, name);
+                                                   (val, name);
             otherwise
               error (strcat ("ClassificationSVM.subsasgn: unrecognized", ...
                              " or read-only property: '%s'"), s.subs);
