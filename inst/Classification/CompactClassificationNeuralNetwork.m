@@ -282,7 +282,7 @@ classdef CompactClassificationNeuralNetwork
     ## Solver used for training
     ##
     ## A character vector specifying the solver algorithm used to train the
-    ## neural network model.  Currently only @qcode{"Gradient Descend"} is
+    ## neural network model.  Currently only @qcode{"Gradient Descent"} is
     ## supported.  This property is read-only.
     ##
     ## @end deftp
