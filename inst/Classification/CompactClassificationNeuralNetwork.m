@@ -17,54 +17,276 @@
 
 classdef CompactClassificationNeuralNetwork
 ## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationNeuralNetwork
+## @deftp {statistics} CompactClassificationNeuralNetwork
 ##
-## A @qcode{CompactClassificationNeuralNetwork} object is a compact version of
-## the Neural Network classification model,
-## @qcode{ClassificationNeuralNetwork}.
+## Compact neural network classification
 ##
-## The @qcode{CompactClassificationNeuralNetwork} does not include the training
-## data resulting to a smaller classifier size, which can be used for making
-## predictions from new data, but not for tasks such as cross validation.  It
-## can only be created from a @qcode{ClassificationNeuralNetwork} model by using
-## the @code{compact} object method.
+## The @code{CompactClassificationNeuralNetwork} class implements a compact
+## version of the neural network classifier object, which can predict responses
+## for new data using the @code{predict} method, but does not store the training
+## data.
 ##
-## The available methods for a @qcode{CompactClassificationNeuralNetwork} object
-## are:
-## @itemize
-## @item
-## @code{predict}
-## @item
-## @code{savemodel}
-## @end itemize
+## A compact neural network classification model is a smaller version of the
+## full @code{ClassificationNeuralNetwork} model that does not include the
+## training data.  It consumes less memory than the full model, but cannot
+## perform tasks that require the training data, such as cross-validation.
 ##
-## @seealso{fitcnet, ClassificationNeuralNetwork}
-## @end deftypefn
+## Create a @code{CompactClassificationNeuralNetwork} object by using the
+## @code{compact} method on a @code{ClassificationNeuralNetwork} object.
+##
+## @seealso{ClassificationNeuralNetwork, fitcnet}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the neural network model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    NumPredictors         = [];
 
-    NumPredictors         = [];  # Number of predictors
-    PredictorNames        = [];  # Predictor variables names
-    ResponseName          = [];  # Response variable name
-    ClassNames            = [];  # Names of classes in Y
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames        = [];
 
-    ScoreTransform        = [];  # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName          = [];
 
-    Standardize           = [];  # Flag to standardize predictors
-    Sigma                 = [];  # Predictor standard deviations
-    Mu                    = [];  # Predictor means
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames            = [];
 
-    LayerSizes            = [];  # Size of fully connected layers
-    Activations           = [];  # Activation functions for hidden layers
-    OutputLayerActivation = [];  # Activation function for output layer
-    LearningRate          = [];  # Learning rate for gradient descend
-    IterationLimit        = [];  # Number of training epochs
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform        = @(x) x;
 
-    ModelParameters       = [];  # Model parameters
-    ConvergenceInfo       = [];  # Training history
-    DisplayInfo           = [];  # Display information during training
-    Solver                = [];  # Solver used
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Standardize
+    ##
+    ## Flag to standardize predictors
+    ##
+    ## A boolean flag indicating whether the predictor data has been
+    ## standardized prior to training.  When @qcode{true}, the predictors are
+    ## centered and scaled to have zero mean and unit variance.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
+    Standardize           = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Sigma
+    ##
+    ## Predictor standard deviations
+    ##
+    ## A numeric vector containing the standard deviations of the predictors
+    ## used for standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Sigma                 = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Mu
+    ##
+    ## Predictor means
+    ##
+    ## A numeric vector containing the means of the predictors used for
+    ## standardization.  Empty if @qcode{Standardize} is @qcode{false}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Mu                    = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} LayerSizes
+    ##
+    ## Sizes of fully connected layers
+    ##
+    ## A positive integer vector specifying the sizes of the fully connected
+    ## layers in the neural network model.  The i-th element of
+    ## @qcode{LayerSizes} is the number of outputs in the i-th fully connected
+    ## layer of the neural network model.  @qcode{LayerSizes} does not include
+    ## the size of the final fully connected layer.  This layer always has K
+    ## outputs, where K is the number of classes in Y.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    LayerSizes            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Activations
+    ##
+    ## Activation functions for hidden layers
+    ##
+    ## A character vector or cell array of character vectors specifying the
+    ## activation functions used in the hidden layers of the neural network.
+    ## Supported activation functions include: @qcode{"linear"},
+    ## @qcode{"sigmoid"}, @qcode{"relu"}, @qcode{"tanh"}, @qcode{"softmax"},
+    ## @qcode{"lrelu"}, @qcode{"prelu"}, @qcode{"elu"}, and @qcode{"gelu"}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Activations           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} OutputLayerActivation
+    ##
+    ## Activation function for output layer
+    ##
+    ## A character vector specifying the activation function of the output layer
+    ## of the neural network.  Supported activation functions are the same as
+    ## for the @qcode{Activations} property.  This property is read-only.
+    ##
+    ## @end deftp
+    OutputLayerActivation = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} LearningRate
+    ##
+    ## Learning rate for gradient descent
+    ##
+    ## A positive scalar value defining the learning rate used by the gradient
+    ## descent algorithm during training.  This property is read-only.
+    ##
+    ## @end deftp
+    LearningRate          = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} IterationLimit
+    ##
+    ## Maximum number of training iterations
+    ##
+    ## A positive integer value defining the maximum number of epochs for
+    ## training the model.  This property is read-only.
+    ##
+    ## @end deftp
+    IterationLimit        = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ModelParameters
+    ##
+    ## Neural network model parameters
+    ##
+    ## A structure containing the parameters used to train the neural network
+    ## classifier model, including layer weights and activations as generated by
+    ## the @code{fcnntrain} function.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} ConvergenceInfo
+    ##
+    ## Training convergence information
+    ##
+    ## A structure containing convergence information of the neural network
+    ## classifier model with the following fields:
+    ##
+    ## @itemize
+    ## @item @qcode{Accuracy} - The prediction accuracy at each iteration
+    ## during training
+    ## @item @qcode{TrainingLoss} - The loss value recorded at each iteration
+    ## during training
+    ## @item @qcode{Time} - The cumulative time taken for all iterations in
+    ## seconds
+    ## @end itemize
+    ##
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ConvergenceInfo       = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} DisplayInfo
+    ##
+    ## Display training information flag
+    ##
+    ## A boolean flag indicating whether to print information during training.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    DisplayInfo           = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationNeuralNetwork} {property} Solver
+    ##
+    ## Solver used for training
+    ##
+    ## A character vector specifying the solver algorithm used to train the
+    ## neural network model.  Currently only @qcode{"Gradient Descend"} is
+    ## supported.  This property is read-only.
+    ##
+    ## @end deftp
+    Solver                = [];
   endproperties
 
   methods (Hidden)
@@ -213,35 +435,40 @@ classdef CompactClassificationNeuralNetwork
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{labels} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {CompactClassificationNeuralNetwork} {[@var{labels}, @var{scores}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {CompactClassificationNeuralNetwork} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
     ##
-    ## Classify new data points into categories using the Neural Network
-    ## classification object.
+    ## Classify new data points into categories using the neural network
+    ## classification model from a CompactClassificationNeuralNetwork object.
     ##
-    ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## trained neural network classification compact model in @var{obj}.
+    ## neural network model stored in the CompactClassificationNeuralNetwork
+    ## model, @var{obj}.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{CompactClassificationNeuralNetwork} class
     ## object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## predictors @math{P} as the corresponding predictors of the trained neural
-    ## network compact model in @var{obj}.
+    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## features @math{P} as the corresponding predictors of the neural network
+    ## model in @var{obj}.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC})} also
-    ## returns @var{scores}, which represent the probability of each label
-    ## belonging to a specific class. For each observation in X, the predicted
-    ## class label is the one with the highest score among all classes.
-    ## Alternatively, @var{scores} can contain the posterior probabilities if
-    ## the ScoreTransform has been previously set.
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the predicted class scores or
+    ## posterior probabilities for each instance of the corresponding unique
+    ## classes.
     ##
-    ## @seealso{fitcnet, ClassificationNeuralNetwork,
-    ## CompactClassificationNeuralNetwork}
+    ## The @var{score} matrix contains the classification scores for each class.
+    ## For each observation in @var{XC}, the predicted class label is the one
+    ## with the highest score among all classes.  If the @qcode{ScoreTransform}
+    ## property is set to a transformation function, the scores are transformed
+    ## accordingly before being returned.
+    ##
+    ## @seealso{CompactClassificationNeuralNetwork,
+    ## ClassificationNeuralNetwork, fitcnet}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC)
@@ -288,19 +515,18 @@ classdef CompactClassificationNeuralNetwork
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClassificationNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
+    ## @deftypefn  {CompactClassificationNeuralNetwork} {} savemodel (@var{obj}, @var{filename})
     ##
-    ## Save a ClassificationNeuralNetwork object.
+    ## Save a CompactClassificationNeuralNetwork object.
     ##
     ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
     ## CompactClassificationNeuralNetwork object into an Octave binary file, the
     ## name of which is specified in @var{filename}, along with an extra
     ## variable, which defines the type classification object these variables
-    ## constitute. Use @code{loadmodel} in order to load a classification object
-    ## into Octave's workspace.
+    ## constitute.  Use @code{loadmodel} in order to load a classification
+    ## object into Octave's workspace.
     ##
-    ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork, cvpartition,
-    ## ClassificationPartitionedModel}
+    ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
 
     function savemodel (this, fname)
