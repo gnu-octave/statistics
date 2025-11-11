@@ -446,11 +446,11 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
     ## Calculate the Hotelling T-Square statistic for the observations
     ## formally: tsquared = sumsq (zscore (score(:, 1:r)),2);
     if (! isempty (optWeights))
-      ## probably splitting the weights, using the square roots, is not the
-      ## best solution, numerically
-      weightedScore = score .* sqrt (optWeights);
-      tsquared = mahal (weightedScore(ridcs, 1:r), weightedScore(ridcs, 1:r))...
-                 ./ optWeights;
+      tsquared = zeros (nobs, 1);
+      if (r > 0)
+        standardized_scores = score(ridcs, 1:r) ./ sqrt (latent(1:r)');
+        tsquared(ridcs) = sum (standardized_scores .^ 2, 2);
+      endif
     else
       tsquared = mahal (score(ridcs, 1:r), score(ridcs, 1:r));
     endif
@@ -522,7 +522,7 @@ endfunction
 %!assert(COEFF, [0.632455532033676 -0.632455532033676; 0.741619848709566 0.741619848709566], 10*eps);
 %!assert(SCORE, [-0.622019449426284 0.959119380657905; -0.505649896847432 -0.505649896847431; 1.633319243121148 0.052180413036957], 10*eps);
 %!assert(latent, [1.783001790889027; 0.716998209110974], 10*eps);
-%!xtest assert(tsquare, [1.5; 0.5; 1.5], 10*eps);  #currently, [4; 2; 4]/3 is actually returned; see comments above
+%!test assert(tsquare, [1.5; 0.5; 1.5], 10*eps);
 
 %!test
 %! x=x';
