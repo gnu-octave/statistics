@@ -2134,9 +2134,9 @@ Compute the confidence intervals for probability distribution parameters.
 
  ## Compute confidence intervals for parameters of a fitted Generalized Extreme Value
  ## distribution
- pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
- rand ("seed", 21);
- data = random (pd, 1000, 1);
+ pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)
+ rand ("seed", 1);
+ data = random (pd, 5000, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")
  ci = paramci (pd_fitted, "Alpha", 0.05)
 
@@ -2147,43 +2147,22 @@ pd =
   GeneralizedExtremeValueDistribution
 
   Generalized Extreme Value distribution
-        k = 0
-    sigma = 1
-       mu = 0
-
-warning: matrix singular to machine precision, rcond = 3.77481e-135
-warning: called from
-    polyfit at line 157 column 3
-    gevfit at line 176 column 3
-    fit at line 778 column 8
-    fitdist at line 377 column 9
-    build_DEMOS at line 94 column 11
-    classdef_texi2html at line 310 column 7
-    package_texi2html at line 298 column 9
+        k = -0.5
+    sigma =    1
+       mu =    2
 
 pd_fitted =
   GeneralizedExtremeValueDistribution
 
   Generalized Extreme Value distribution
-        k = -0.0179158   [-0.0600151, 0.0241835]
-    sigma =    1.01104   [0.962602, 1.06192]
-       mu =  0.0393083   [-0.0302083, 0.108825]
-
-warning: matrix singular to machine precision, rcond = 3.77481e-135
-warning: called from
-    polyfit at line 157 column 3
-    gevfit at line 176 column 3
-    mle at line 243 column 10
-    __paramci__ at line 97 column 6
-    paramci at line 508 column 9
-    build_DEMOS at line 94 column 11
-    classdef_texi2html at line 310 column 7
-    package_texi2html at line 298 column 9
+        k = -0.505978   [-0.520806, -0.491149]
+    sigma =   1.00491   [0.982564, 1.02776]
+       mu =   2.00433   [1.97453, 2.03414]
 
 ci =
 
-  -0.060015   0.962602  -0.030208
-   0.024184   1.061923   0.108825
+  -0.5208   0.9826   1.9745
+  -0.4911   1.0278   2.0341
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2593,9 +2572,9 @@ Profile likelihood function for a probability distribution object.
 
  ## Compute and plot the profile likelihood for the shape parameter of a fitted
  ## Generalized Extreme Value distribution
- pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
- rand ("seed", 21);
- data = random (pd, 1000, 1);
+ pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)
+ rand ("seed", 1);
+ data = random (pd, 5000, 1);
  pd_fitted = fitdist (data, "GeneralizedExtremeValue")
  [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
 
@@ -2606,27 +2585,17 @@ pd =
   GeneralizedExtremeValueDistribution
 
   Generalized Extreme Value distribution
-        k = 0
-    sigma = 1
-       mu = 0
-
-warning: matrix singular to machine precision, rcond = 3.77481e-135
-warning: called from
-    polyfit at line 157 column 3
-    gevfit at line 176 column 3
-    fit at line 778 column 8
-    fitdist at line 377 column 9
-    build_DEMOS at line 94 column 11
-    classdef_texi2html at line 310 column 7
-    package_texi2html at line 298 column 9
+        k = -0.5
+    sigma =    1
+       mu =    2
 
 pd_fitted =
   GeneralizedExtremeValueDistribution
 
   Generalized Extreme Value distribution
-        k = -0.0179158   [-0.0600151, 0.0241835]
-    sigma =    1.01104   [0.962602, 1.06192]
-       mu =  0.0393083   [-0.0302083, 0.108825]
+        k = -0.505978   [-0.520806, -0.491149]
+    sigma =   1.00491   [0.982564, 1.02776]
+       mu =   2.00433   [1.97453, 2.03414]
 
                     </pre></td></tr></tbody>
                   </table>

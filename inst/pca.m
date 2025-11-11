@@ -483,8 +483,8 @@ endfunction
 
 ## NIST Engineering Statistics Handbook example (6.5.5.2)
 %!test
-%! x=[7, 4, 3; 4, 1, 8; 6, 3, 5; 8, 6, 1; 8, 5, 7; ...
-%!    7, 2, 9; 5, 3, 3; 9, 5, 8; 7, 4, 5; 8, 2, 2];
+%! x = [7, 4, 3; 4, 1, 8; 6, 3, 5; 8, 6, 1; 8, 5, 7; ...
+%!      7, 2, 9; 5, 3, 3; 9, 5, 8; 7, 4, 5; 8, 2, 2];
 %! R = corrcoef (x);
 %! [V, lambda] = eig (R);
 %! [~, i] = sort (diag (lambda), "descend"); #arrange largest PC first
