@@ -446,11 +446,11 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
     ## Calculate the Hotelling T-Square statistic for the observations
     ## formally: tsquared = sumsq (zscore (score(:, 1:r)),2);
     if (! isempty (optWeights))
-      ## probably splitting the weights, using the square roots, is not the
-      ## best solution, numerically
-      weightedScore = score .* sqrt (optWeights);
-      tsquared = mahal (weightedScore(ridcs, 1:r), weightedScore(ridcs, 1:r))...
-                 ./ optWeights;
+      tsquared = zeros (nobs, 1);
+      if (r > 0)
+        standardized_scores = score(ridcs, 1:r) ./ sqrt (latent(1:r)');
+        tsquared(ridcs) = sum (standardized_scores .^ 2, 2);
+      endif
     else
       tsquared = mahal (score(ridcs, 1:r), score(ridcs, 1:r));
     endif
@@ -522,7 +522,91 @@ endfunction
 %!assert(COEFF, [0.632455532033676 -0.632455532033676; 0.741619848709566 0.741619848709566], 10*eps);
 %!assert(SCORE, [-0.622019449426284 0.959119380657905; -0.505649896847432 -0.505649896847431; 1.633319243121148 0.052180413036957], 10*eps);
 %!assert(latent, [1.783001790889027; 0.716998209110974], 10*eps);
-%!xtest assert(tsquare, [1.5; 0.5; 1.5], 10*eps);  #currently, [4; 2; 4]/3 is actually returned; see comments above
+%!test assert(tsquare, [1.5; 0.5; 1.5], 10*eps);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
+%!                                        [2 1 2], "variableweights", ...
+%!                                        "variance");
+%! COEFF_exp = [0.7906  0.7906; 0.6614 -0.6614];
+%! SCORE_exp = [-0.7836 -0.4813; -0.9071 0.9071; 1.2372 0.0277];
+%! latent_exp = [2.5562; 0.6438];
+%! tsquare_exp = [0.6000; 1.6000; 0.6000];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
+%!                                        [1 3 2], "variableweights", ...
+%!                                        "variance");
+%! COEFF_exp = [0.6216 -0.6216; 0.8118 0.8118];
+%! SCORE_exp = [-0.8358 1.0411; -0.6473 -0.3792; 1.3889 0.0482];
+%! latent_exp = [2.9067; 0.7599];
+%! tsquare_exp = [1.6667; 0.3333; 0.6667];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
+%!                                        [1 0.5 1.5], "variableweights", ...
+%!                                        "variance");
+%! COEFF_exp = [0.8118 0.8118; 0.6742 -0.6742];
+%! SCORE_exp = [-0.9657 -0.4713; -1.0915 0.8862; 1.0076 0.0188];
+%! latent_exp = [1.5257; 0.3077];
+%! tsquare_exp = [1.3333; 3.3333; 0.6667];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca(x, "Economy", true, "weights", ...
+%!                                       [2 1 2], "variableweights", ...
+%!                                       "variance");
+%! COEFF_exp = [0.7906  0.7906; 0.6614 -0.6614];
+%! SCORE_exp = [-0.7836 -0.4813; -0.9071 0.9071; 1.2372 0.0277];
+%! latent_exp = [2.5562; 0.6438];
+%! tsquare_exp = [0.6000; 1.6000; 0.6000];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", true, "weights", ...
+%!                                        [1 3 2], "variableweights", ...
+%!                                        "variance");
+%! COEFF_exp = [0.6216 -0.6216; 0.8118 0.8118];
+%! SCORE_exp = [-0.8358 1.0411; -0.6473 -0.3792; 1.3889 0.0482];
+%! latent_exp = [2.9067; 0.7599];
+%! tsquare_exp = [1.6667; 0.3333; 0.6667];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
+
+%!test
+%! x = [1,2,3;2,1,3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", true, "weights", ...
+%!                                        [1 0.5 1.5], "variableweights", ...
+%!                                        "variance");
+%! COEFF_exp = [0.8118 0.8118; 0.6742 -0.6742];
+%! SCORE_exp = [-0.9657 -0.4713; -1.0915 0.8862; 1.0076 0.0188];
+%! latent_exp = [1.5257; 0.3077];
+%! tsquare_exp = [1.3333; 3.3333; 0.6667];
+%! assert (COEFF, COEFF_exp, 1e-4);
+%! assert (SCORE, SCORE_exp, 1e-4);
+%! assert (latent, latent_exp, 1e-4);
+%! assert (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x=x';
