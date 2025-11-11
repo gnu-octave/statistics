@@ -1,7 +1,8 @@
 %!demo
 %! ## Plot the PDF of a Poisson distribution, with lambda=5, truncated at [2, 10]
-%! ## intervals. Generate 10000 random samples from this truncated distribution and
-%! ## superimpose a histogram scaled accordingly
+%! ## intervals. Generate 10000 random samples from this truncated distribution
+%! ## and superimpose a histogram scaled accordingly.
+%!
 %! rand ("seed", 21);
 %! data_all = poissrnd (5, 20000, 1);
 %! data = data_all(data_all >= 2 & data_all <= 10);
@@ -10,14 +11,13 @@
 %! pd = fitdist (data, "Poisson");
 %! t = truncate (pd, 2, 10);
 %!
-%! ## Plot histogram and truncated PDF
-%! plot (t)
-%! hold on
+%! ## Plot histogram and truncated
 %! [counts, centers] = hist (data, 20);
 %! bin_width = centers(2) - centers(1);
-%! counts_norm = counts / (sum (counts) * bin_width);
-%! bar (centers, counts_norm, 1);
-%!
+%! bar (centers, counts / (sum (counts) * bin_width), 1);
+%! hold on
+%! plot (t)
+%! hold off
 %! title ("Poisson distribution (lambda=5) truncated at [2, 10]")
 %! legend ("Truncated PDF", "Histogram")
 %!
