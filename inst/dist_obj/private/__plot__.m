@@ -147,7 +147,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     else
       h = plot (ax, x, y, ";;b-");
     endif
-    xlim (h, [0.5, max(x)+0.5]);
+    xlim (ax, [0.5, max(x)+0.5]);
     xlabel ("Data");
     ylabel ("Probability");
     return
@@ -159,7 +159,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     y = pd.ParameterValues(:,2);
     h = plot (ax, x, y, ";;b-");
     xgap = (x(end) - x(1)) * 0.1;
-    xlim (h, [x(1)-xgap, x(end)+xgap]);
+    xlim (ax, [x(1)-xgap, x(end)+xgap]);
     xlabel ("Data");
     ylabel ("Probability");
     return
@@ -174,7 +174,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
     h = plot (ax, x, y, ";;r-", "linewidth", 2);
-    xlim (h, [xmin, xmax]);
+    xlim (ax, [xmin, xmax]);
     xlabel ("Data");
     ylabel ("PDF");
     return
@@ -189,7 +189,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
     h = plot (ax, x, y, ";;r-", "linewidth", 2);
-    xlim (h, [xmin, xmax]);
+    xlim (ax, [xmin, xmax]);
     xlabel ("Data");
     ylabel ("PDF");
     return
@@ -212,13 +212,14 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
 
     ## Plot
     if (Discrete)
+      xlim (ax, [min(x)-0.5, max(x)+0.5]);
       h = stem (ax, x, y, "color", "r");
-      xlim (h, [min(x)-0.5, max(x)+0.5]);
+      #xlim (ax, [min(x)-0.5, max(x)+0.5]); # before Octave 11 this emits an error
       xlabel ("Data");
       ylabel ("Probability");
     else
       h = plot (ax, x, y, ";;r-", "linewidth", 2);
-      xlim (h, [xmin, xmax]);
+      xlim (ax, [xmin, xmax]);
       xlabel ("Data");
       ylabel ("PDF");
     endif
@@ -266,13 +267,13 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     ## Plot
     if (DistType)
       h(2) = patch (ax, bincenter, binsize, 1, "facecolor", "b");
+      xlim (ax, [xmin, xmax]);
       hold on;
       if (Discrete)
         h(1) = stem (ax, x, y, "color", "r");
       else
         h(1) = plot (ax, x, y, ";;r-");
       endif
-      xlim (h(1), [xmin, xmax]);
       xlabel ("Data");
       ylabel ("Probability");
       hold off;
@@ -280,7 +281,7 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
       h(2) = bar (ax, bincenter, binsize, 1, "facecolor", "b");
       hold on;
       h(1) = plot (ax, x, y, ";;r-", "linewidth", 2);
-      xlim (h(1), [xmin, xmax]);
+      xlim (ax, [xmin, xmax]);
       xlabel ("Data");
       ylabel ("PDF");
       hold off;
@@ -295,12 +296,12 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
   if (strcmpi (pd.DistributionCode, "mn"))
     y = pd.ParameterValues';
     x = [1:numel(y)]';
+    xlim (ax, [0.5, max(x)+0.5]);
     if (Discrete)
       h = stem (ax, x, y, "color", "b");
     else
       h = plot (ax, x, y, ";;b-");
     endif
-    xlim (h, [0.5, max(x)+0.5]);
     xlabel ("Data");
     ylabel ("Probability");
     return
@@ -312,7 +313,7 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     y = pd.ParameterValues(:,2);
     h = plot (ax, x, y, ";;b-");
     xgap = (x(end) - x(1)) * 0.1;
-    xlim (h, [x(1)-xgap, x(end)+xgap]);
+    xlim (ax, [x(1)-xgap, x(end)+xgap]);
     xlabel ("Data");
     ylabel ("Probability");
     return
@@ -327,7 +328,7 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
     h = plot (ax, x, y, ";;r-", "linewidth", 2);
-    xlim (h, [xmin, xmax]);
+    xlim (ax, [xmin, xmax]);
     xlabel ("Data");
     ylabel ("PDF");
     return
@@ -342,7 +343,7 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
     h = plot (ax, x, y, ";;r-", "linewidth", 2);
-    xlim (h, [xmin, xmax]);
+    xlim (ax, [xmin, xmax]);
     xlabel ("Data");
     ylabel ("PDF");
     return
@@ -366,14 +367,14 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     ## Plot
     if (Discrete)
       h = stairs (ax, x, p, "color", "r");
-      xlim (h, [lb-0.5, ub+0.5]);
-      ylim (h, [0, 1]);
+      xlim (ax, [lb-0.5, ub+0.5]);
+      ylim (ax, [0, 1]);
       xlabel ("Data");
       ylabel ("CDF");
     else
       h = plot (ax, x, p, ";;r-", "linewidth", 2);
-      xlim (h, [xmin, xmax]);
-      ylim (h, [0, 1]);
+      xlim (ax, [xmin, xmax]);
+      ylim (ax, [0, 1]);
       xlabel ("Data");
       ylabel ("CDF");
     endif
@@ -407,23 +408,23 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
     ## Plot
     if (DistType)
       h(2) = plot (ax, xCDF, yCDF, ";;b-");
+      xlim (ax, [xmin, xmax]);
+      ylim (ax, [0, 1]);
       hold on;
       if (Discrete)
         h(1) = stem (ax, x, p, "color", "r");
       else
         h(1) = plot (ax, x, p, ";;r-");
       endif
-      xlim (h(1), [xmin, xmax]);
-      ylim (h(1), [0, 1]);
       xlabel ("Data");
       ylabel ("CDF");
       hold off;
     else
       h(2) = plot (ax, xCDF, yCDF, ";;b-");
+      xlim (ax, [xmin, xmax]);
+      ylim (ax, [0, 1]);
       hold on;
       h(1) = plot (ax, x, p, ";;r-", "linewidth", 2);
-      xlim (h(1), [xmin, xmax]);
-      ylim (h(1), [0, 1]);
       xlabel ("Data");
       ylabel ("CDF");
       hold off;
