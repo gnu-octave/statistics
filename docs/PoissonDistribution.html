@@ -903,7 +903,7 @@ Rate parameter
  ## The rate parameter must be a positive real scalar, representing both the mean
  ## and variance, ideal for count data modeling.
 
-ans = 4.9100
+ans = 5.1700
 pd =
   PoissonDistribution
 
@@ -1604,8 +1604,8 @@ Compute the mean of a probability distribution.
  ## This shows how to compute the expected value for Poisson distributions,
  ## which equals lambda, representing the average number of events.
 
-mean1 = 2.0276
-mean2 = 5.0409
+mean1 = 1.9968
+mean2 = 5.0161
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1748,7 +1748,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a Poisson distribution to data,
  ## with lower values indicating better fit, often used in model selection.
 
-nlogL = -209.83
+nlogL = -221.78
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1840,8 +1840,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-   4.8239
-   5.1001
+   4.7993
+   5.0747
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2367,7 +2367,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which equals sqrt(lambda),
  ## measuring variability in event counts.
 
-std_value = 2.2371
+std_value = 2.2381
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2415,6 +2415,61 @@ Truncate a probability distribution.
  truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Plot the PDF of a Poisson distribution, with lambda=5, truncated at [2, 10]
+ ## intervals. Generate 10000 random samples from this truncated distribution
+ ## and superimpose a histogram scaled accordingly.
+
+ rand ("seed", 21);
+ data_all = poissrnd (5, 20000, 1);
+ data = data_all(data_all >= 2 & data_all <= 10);
+ data = data(1:10000);
+
+ pd = fitdist (data, "Poisson");
+ t = truncate (pd, 2, 10);
+
+ ## Plot histogram and truncated
+ [counts, centers] = hist (data, 20);
+ bin_width = centers(2) - centers(1);
+ bar (centers, counts / (sum (counts) * bin_width), 1);
+ hold on
+ plot (t)
+ hold off
+ title ("Poisson distribution (lambda=5) truncated at [2, 10]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Poisson distribution to a specific range
+ ## and visualizing the result with random samples, useful for bounded count data.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/PoissonDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -2475,7 +2530,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which equals lambda, quantifying the
  ## spread in count data.
 
-var_value = 4.9747
+var_value = 4.9952
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2533,7 +2588,7 @@ pd_fitted =
   PoissonDistribution
 
   Poisson distribution
-   lambda = 4.9748   [4.91298, 5.03662]
+   lambda = 5.0322   [4.97002, 5.09438]
 </pre></td></tr>
                   </table>
                   <div class="text-center">

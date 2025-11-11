@@ -902,13 +902,13 @@ Noncentrality parameter
  ## distribution. The noncentrality parameter 's' must be a non-negative real
  ## scalar, representing the magnitude of the signal in the presence of noise.
 
-ans = 0.9969
+ans = 0.9694
 pd =
   RicianDistribution
 
   Rician distribution
-        s =      1.5
-    sigma = 0.991154
+        s =     1.5
+    sigma = 1.01145
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1027,12 +1027,12 @@ Scale parameter
  ## distribution. The scale parameter 'sigma' must be a positive real scalar,
  ## controlling the spread due to Gaussian noise.
 
-ans = 0.9913
+ans = 0.9949
 pd =
   RicianDistribution
 
   Rician distribution
-        s = 1.00301
+        s = 1.00389
     sigma =     1.2
 
                     </pre></td></tr></tbody>
@@ -1554,15 +1554,6 @@ Compute the cumulative distribution function (CDF).
  ## for different Rician distributions, showing how probability accumulates
  ## for non-negative signal magnitudes, useful in signal processing.
 
-warning: ricefit: maximum number of iterations are exceeded.
-warning: called from
-    ricefit at line 171 column 7
-    fit at line 752 column 8
-    fitdist at line 652 column 9
-    build_DEMOS at line 94 column 11
-    classdef_texi2html at line 310 column 7
-    package_texi2html at line 298 column 9
-
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -1721,7 +1712,7 @@ Compute the interquartile range of a probability distribution.
  ## of the middle 50% of the distribution, helpful for understanding variability
  ## in signal magnitudes.
 
-iqr_value = 1.0924
+iqr_value = 1.0955
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1793,8 +1784,8 @@ Compute the mean of a probability distribution.
  ## This shows how to compute the expected value for Rician distributions
  ## with different scale parameters, representing the average signal magnitude.
 
-mean1 = 1.1363
-mean2 = 1.5349
+mean1 = 1.1314
+mean2 = 1.5403
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1866,8 +1857,8 @@ Compute the median of a probability distribution.
  ## Use this to find the median value, which splits the distribution into
  ## two equal probability halves, robust to skewness in signal data.
 
-median1 = 1.1198
-median2 = 1.4845
+median1 = 1.1242
+median2 = 1.4739
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1937,7 +1928,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a Rician distribution to data,
  ## with lower values indicating a better fit, often used in model comparison.
 
-nlogL = -113.17
+nlogL = -121.61
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2029,8 +2020,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-   0.7184   0.9400
-   0.9412   1.2697
+   0.9134   0.8939
+   1.0873   1.1296
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2564,7 +2555,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which measures the variability
  ## in the signal magnitudes of the distribution.
 
-std_value = 0.7810
+std_value = 0.7821
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2728,7 +2719,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which quantifies the spread of the
  ## signal magnitudes in the distribution.
 
-var_value = 0.6012
+var_value = 0.5998
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2787,8 +2778,8 @@ pd_fitted =
   RicianDistribution
 
   Rician distribution
-        s = 2.01215   [1.982, 2.04275]
-    sigma = 1.01103   [0.986101, 1.0366]
+        s = 1.98429   [1.95382, 2.01523]
+    sigma = 1.01765   [0.992131, 1.04383]
 </pre></td></tr>
                   </table>
                   <div class="text-center">

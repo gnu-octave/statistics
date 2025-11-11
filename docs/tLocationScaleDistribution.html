@@ -905,14 +905,14 @@ Location parameter
  ## distribution. The location parameter (mu) is a real scalar that shifts the
  ## distribution, useful for modeling data centered around a specific value.
 
-ans = -8.6155e-03
+ans = -0.013530
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
        mu =       1
-    sigma = 1.01003
-       nu = 5.40008
+    sigma = 1.00335
+       nu = 5.14126
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1024,14 +1024,14 @@ Scale parameter
  ## spread of the t Location-Scale distribution. Sigma must be a positive real
  ## scalar, useful for modeling variability in data like financial returns.
 
-ans = 0.9967
+ans = 0.9951
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
-       mu = -0.0162831
+       mu = -0.0152431
     sigma =          2
-       nu =    5.29942
+       nu =    5.28901
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1143,13 +1143,13 @@ Degrees of freedom
  ## tail heaviness of the t Location-Scale distribution. Nu must be a positive
  ## real scalar, useful for modeling heavy-tailed data like stock returns.
 
-ans = 4.9211
+ans = 4.7545
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
-       mu = 0.0128332
-    sigma =   1.00553
+       mu = 0.0128901
+    sigma =   1.00241
        nu =        10
 
                     </pre></td></tr></tbody>
@@ -1774,7 +1774,7 @@ Compute the interquartile range of a probability distribution.
  ## Use this to calculate the interquartile range, which measures the spread
  ## of the middle 50% of the distribution, helpful for assessing central variability.
 
-iqr_value = 1.4477
+iqr_value = 1.4401
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1846,8 +1846,8 @@ Compute the mean of a probability distribution.
  ## This shows how to compute the expected value for t Location-Scale
  ## distributions, representing the average value, useful in financial modeling or quality control.
 
-mean1 = -1.1782e-04
-mean2 = -0.015206
+mean1 = 8.3213e-04
+mean2 = -0.013797
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1919,8 +1919,8 @@ Compute the median of a probability distribution.
  ## Use this to find the median value, which splits the distribution into
  ## two equal probability halves, robust to heavy-tailed data.
 
-median1 = 4.4011e-04
-median2 = 0.018577
+median1 = 2.5676e-03
+median2 = 0.015931
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1991,7 +1991,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a t Location-Scale distribution to
  ## data, with lower values indicating a better fit, often used in model comparison.
 
-nlogL_tlslike = 171.08
+nlogL_tlslike = 174.30
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2084,8 +2084,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-  -6.0005e-02   1.0178e+00   5.1018e+00
-   8.9910e-02   1.1804e+00   1.3766e+01
+  -4.5683e-02   1.0069e+00   4.8351e+00
+   1.0411e-01   1.1609e+00   1.0897e+01
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2614,7 +2614,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which measures the variability
  ## in the distribution, useful for understanding data dispersion.
 
-std_value = 1.2839
+std_value = 1.2850
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2705,15 +2705,6 @@ Truncate a probability distribution.
  ## This demonstrates truncating a t Location-Scale distribution to a specific
  ## range and visualizing the resulting distribution with random samples.
 
-warning: tlsfit: maximum number of iterations are exceeded.
-warning: called from
-    tlsfit at line 136 column 7
-    fit at line 781 column 8
-    fitdist at line 683 column 9
-    build_DEMOS at line 94 column 11
-    classdef_texi2html at line 310 column 7
-    package_texi2html at line 298 column 9
-
                     </pre></td></tr></tbody>
                   </table>
                   <div class="text-center">
@@ -2785,7 +2776,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which quantifies the spread of the
  ## distribution, useful for statistical analysis of variability.
 
-var_value = 1.7420
+var_value = 1.7383
                     </pre></td></tr></tbody>
                   </table>
 

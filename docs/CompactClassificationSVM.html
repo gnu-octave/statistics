@@ -793,31 +793,21 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CompactClassificationSVM</h5></code></dl>
 
-<p> A <code>CompactClassificationSVM</code> object is a compact version of a support
- vectors machine model, <code>ClassificationSVM</code>.
+<p> Compact Support Vector Machine classification
 </p>
 <div class="ms-5">
-<p> The <code>CompactClassificationSVM</code> does not include the training data
- resulting to a smaller classifier size, which can be used for making
- predictions from new data, but not for tasks such as cross validation.  It
- can only be created from a <code>ClassificationSVM</code> model by using the
+<p> The <code>CompactClassificationSVM</code> class implements a compact version of a
+ Support Vector Machine classifier object for one-class or two-class problems,
+ which can predict responses for new data using the <code>predict</code> method.
+</p>
+<p> A <code>CompactClassificationSVM</code> object is a compact version of a support
+ vector machine model, <code>ClassificationSVM</code>.  It does not include the
+ training data resulting in a smaller classifier size, which can be used for
+ making predictions from new data, but not for tasks such as cross validation.
+ It can only be created from a <code>ClassificationSVM</code> model by using the
  <code>compact</code> object method.
 </p>
-<p> The available methods for a <code>CompactClassificationSVM</code> object
- are:
- </p><ul>
-<li>
- <code>predict</code>
- </li><li>
- <code>loss</code>
- </li><li>
- <code>margin</code>
- </li><li>
- <code>savemodel</code>
- </li></ul>
-
 <p> <strong>See also: </strong>
-  <a href="fitcsvm.html">fitcsvm</a>, 
   <a href="ClassificationSVM.html">ClassificationSVM</a>
 </p>
 <p><strong>Source Code: </strong>
@@ -840,13 +830,22 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.NumPredictors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of predictors in the
+ training dataset used for training the SVM model.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -863,13 +862,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.PredictorNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors specifying the names of the predictor
+ variables.  The names are in the order in which the appear in the
+ training dataset.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -886,13 +894,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Response variable name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.ResponseName</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the response variable <var>Y</var>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -909,13 +925,29 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of classes in the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.ClassNames</code></b> is not documented.
+
+
+<p> </p>
+<p> An array of unique values of the response variable <var>Y</var>, which has the
+ same data types as the data in <var>Y</var>.  This property is read-only.
+ <code>ClassNames</code> can have any of the following datatypes:
+</p>
+ <ul>
+<li> Cell array of character vectors
+ </li><li> Character array
+ </li><li> Logical vector
+ </li><li> Numeric vector
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -928,17 +960,51 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Prior</code></b>
+                    <b><code>ScoreTransform</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Transformation function for classification scores
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Prior</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
+</p>
+ <ul>
+<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
+ </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+ </li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+
+
+
             </div>
           </div>
         </div>
@@ -951,17 +1017,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Cost</code></b>
+                    <b><code>Standardize</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag to standardize predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Cost</code></b> is not documented.
+
+
+<p> </p>
+<p> A boolean flag indicating whether the data in <var>X</var> have been
+ standardized prior to training.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -974,17 +1048,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ScoreTransform</code></b>
+                    <b><code>Sigma</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor standard deviations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.ScoreTransform</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of the same length as the columns in <var>X</var> containing
+ the standard deviations of predictor variables.  If the predictor
+ variables have not been standardized, then <code>Sigma</code> is empty.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -997,17 +1081,26 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Standardize</code></b>
+                    <b><code>Mu</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor means
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Standardize</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of the same length as the columns in <var>X</var> containing
+ the means of predictor variables.  If the predictor variables have not
+ been standardized, then <code>Mu</code> is empty.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1020,17 +1113,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Sigma</code></b>
+                    <b><code>ModelParameters</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+SVM training parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing the parameters used to train the SVM model with
+ the following fields: <code>SVMtype</code>, <code>BoxConstraint</code>,
+ <code>CacheSize</code>, <code>KernelScale</code>, <code>KernelOffset</code>,
+ <code>KernelFunction</code>, <code>PolynomialOrder</code>, <code>Nu</code>,
+ <code>Tolerance</code>, and <code>Shrinking</code>.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1043,17 +1147,25 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Mu</code></b>
+                    <b><code>Model</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Trained SVM model
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Mu</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing the trained model in <code>'libsvm'</code> format.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1066,17 +1178,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>ModelParameters</code></b>
+                    <b><code>Alpha</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Trained classifier coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.ModelParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> The coefficients of the trained SVM classifier specified as an <math>s&times;1</math>
+ numeric vector, where <math>s</math> is the number of support vectors equal to
+ <code>sum (obj.IsSupportVector)</code>.  If the SVM classifier was trained
+ with a kernel function other than <code>'linear'</code>, then <code>Alpha</code> is
+ empty.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1089,17 +1212,28 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Model</code></b>
+                    <b><code>Beta</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Linear predictor coefficients
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Model</code></b> is not documented.
+
+
+<p> </p>
+<p> The linear predictor coefficients specified as an <math>s&times;1</math> numeric
+ vector, where <math>s</math> is the number of support vectors equal to
+ <code>sum (obj.IsSupportVector)</code>.  If the SVM classifier was trained
+ with a <code>'linear'</code> kernel function, then <code>Beta</code> is empty.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1112,17 +1246,24 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Alpha</code></b>
+                    <b><code>Bias</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Bias term
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Alpha</code></b> is not documented.
+
+
+<p> </p>
+<p> The bias term specified as a scalar.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1135,17 +1276,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Beta</code></b>
+                    <b><code>IsSupportVector</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Support vector indicator
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Beta</code></b> is not documented.
+
+
+<p> </p>
+<p> An <math>N&times;1</math> logical vector that flags whether a corresponding
+ observation in the predictor data matrix is a Support Vector.  <math>N</math>
+ is the number of observations in the training data.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1158,17 +1309,30 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Bias</code></b>
+                    <b><code>SupportVectorLabels</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Support vector class labels
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.Bias</code></b> is not documented.
+
+
+<p> </p>
+<p> The support vector class labels specified as an <math>s&times;1</math> numeric
+ vector, where <math>s</math> is the number of support vectors equal to
+ <code>sum (obj.IsSupportVector)</code>.  A value of +1 in
+ <code>SupportVectorLabels</code> indicates that the corresponding support
+ vector belongs to the positive class <code>(ClassNames{2})</code>.  A value
+ of -1 indicates that the corresponding support vector belongs to the
+ negative class <code>(ClassNames{1})</code>.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1181,63 +1345,27 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>IsSupportVector</code></b>
+                    <b><code>SupportVectors</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Support vectors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.IsSupportVector</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty17"
-              aria-expanded="false" aria-controls="collapseProperty17">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>SupportVectorLabels</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty17">
-            <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.SupportVectorLabels</code></b> is not documented.
-            </div>
-          </div>
-        </div>
 
-        <div class="container-xl my-1">
-          <div class="row">
-            <button class="btn btn-light btn-sm w-100 text-start" type="button"
-              data-bs-toggle="collapse" data-bs-target="#collapseProperty18"
-              aria-expanded="false" aria-controls="collapseProperty18">
-              <div class="row align-items-center">
-                <div class="col-4">
-                  <h4 class="d-inline-block mr-4">
-                    <b><code>SupportVectors</code></b>
-                  </h4>
-                </div>
-                <div class="col-8">
-undocumented
-                </div>
-              </div>
-          </div>
-          <div class="collapse multi-collapse" id="collapseProperty18">
-            <div class="border-bottom py-2">
-<b><code>CompactClassificationSVM.SupportVectors</code></b> is not documented.
+<p> </p>
+<p> The support vectors of the trained SVM classifier specified an <math>s&times;p</math>
+ numeric matrix, where <math>s</math> is the number of support vectors equal to
+ <code>sum (obj.IsSupportVector)</code>, and <math>p</math> is the number of
+ predictor variables in the predictor data.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1259,41 +1387,41 @@ undocumented
                 </div>
                 <div class="col-8">
 Classify new data points into categories using the Support Vector Machine
- classification object.
+ classification model from a CompactClassificationSVM object.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">CompactClassificationSVM: <var>labels</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationSVM: [<var>labels</var>, <var>scores</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationSVM: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationSVM: [<var>label</var>, <var>score</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
+<p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
- trained Support Vector Machine classification compact model, <var>obj</var>.
- For one-class SVM model, +1 or -1 is returned.
+ predictor data in the CompactClassificationSVM model, <var>obj</var>.  For
+ one-class SVM model, +1 or -1 is returned.
 </p>
  <ul>
 <li>
  <var>obj</var> must be a <code>CompactClassificationSVM</code> class object.
  </li><li>
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- predictors <math>P</math> as the corresponding predictors of the SVM model in
+ features <math>P</math> as the corresponding predictors of the SVM model in
  <var>obj</var>.
  </li></ul>
 
-<p> <code>[<var>labels</var>, <var>scores</var>] = predict (<var>obj</var>, <var>XC</var></code> also
- returns <var>scores</var>, which contains the decision values for each
- prediction.   Alternatively, <var>scores</var> can contain the posterior
+<p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
+ returns <var>score</var>, which contains the decision values for each each
+ prediction.  Alternatively, <var>score</var> can contain the posterior
  probabilities if the ScoreTransform has been previously set using the
  <code>fitPosterior</code> method.
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitcsvm.html">fitcsvm</a>, 
-ClassificationSVM.fitPosterior
+  <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>, 
+  <a href="ClassificationSVM.html">ClassificationSVM</a>
 </p>
 
 
@@ -1313,8 +1441,7 @@ ClassificationSVM.fitPosterior
                   </h4>
                 </div>
                 <div class="col-8">
-Determine the classification margins for a Support Vector Machine
- classification object.
+Classification margins for Support Vector Machine classifier.
                 </div>
               </div>
           </div>
@@ -1325,30 +1452,28 @@ Determine the classification margins for a Support Vector Machine
 </dl>
 
 <p> </p>
-<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the
- classification margins for the trained support vector machine (SVM)
- classifier <var>obj</var> using the sample data in <var>X</var> and the class
- labels in <var>Y</var>. It supports only binary classifier models. The
- classification margin is commonly defined as <var>m</var> = <var>y</var>f(<var>x</var>),
- where <var>f(x)</var> is the classification score and <var>y</var> is the true
- class label corresponding to <var>x</var>. A greater margin indicates a better
- model.
+<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
+ the classification margins for <var>obj</var> with data <var>X</var> and
+ classification <var>Y</var>.  <var>m</var> is a numeric vector of length size (X,1).
 </p>
  <ul>
 <li>
- <var>obj</var> must be a binary class <code>CompactClassificationSVM</code> object.
+ <var>obj</var> is a <var>CompactClassificationSVM</var> object.
  </li><li>
- <var>X</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the SVM model in
- <var>obj</var>.
+ <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ correspond to observations and columns correspond to features or
+ variables.
  </li><li>
- <var>Y</var> must be <math>M&times;1</math> numeric vector containing the class labels
- corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
- number of rows as <var>X</var>.
+ <var>Y</var> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ of corresponding predictor data in <var>X</var>.  <var>Y</var> must have same
+ numbers of Rows as <var>X</var>.
  </li></ul>
 
+<p> The classification margin for each observation is the difference between
+ the classification score for the true class and the maximal
+ classification score for the false classes.
+</p>
 <p> <strong>See also: </strong>
-  <a href="fitcsvm.html">fitcsvm</a>, 
   <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
 </p>
 
@@ -1369,8 +1494,7 @@ Determine the classification margins for a Support Vector Machine
                   </h4>
                 </div>
                 <div class="col-8">
-Determine the classification error for a Support Vector Machine
- classifier.
+Compute loss for a trained CompactClassificationSVM object.
                 </div>
               </div>
           </div>
@@ -1382,77 +1506,58 @@ Determine the classification error for a Support Vector Machine
 </dl>
 
 <p> </p>
-<p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns the
- predictive accuracy of support vector machine (SVM) classification models.
- Comparing the same type of loss across multiple models allows you to
- identify which model is more accurate, with a lower loss indicating
- superior predictive performance. It supports only binary classifier
- models.
+<p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
+ <var>L</var>, using the default loss function <code>'classiferror'</code>.
 </p>
  <ul>
 <li>
- <var>obj</var> must be a binary class <code>CompactClassificationSVM</code> object.
+ <code>obj</code> is a <var>CompactClassificationSVM</var> object.
  </li><li>
- <var>X</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- features <math>P</math> as the corresponding predictors of the SVM model in
- <var>obj</var>.
+ <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ correspond to observations and columns correspond to features or
+ variables.
  </li><li>
- <var>Y</var> must be <math>M&times;1</math> numeric vector containing the class labels
- corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
- number of rows as <var>X</var>.
+ <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
+ numbers of Rows as <var>X</var>.
  </li></ul>
 
-<p> <code><var>L</var> = loss (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns the
- aforementioned results with additional properties specified by
- <code>Name-Value</code> pair arguments listed below.
+<p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
+ additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
  <table>
-<thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="70%">Loss function, specified as a built-in
- loss function name. It accepts the following options: (Default is
- &rsquo;classiferror&rsquo;)
-
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
+ Can be a function handle with four input arguments (C, S, W, Cost)
+ which returns a scalar value or one of:
+ &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
+ &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
  <ul>
-<li> &rsquo;binodeviance&rsquo;: Binomial deviance:
- The binomial deviance loss function is used to evaluate the performance
- of a binary classifier. It is calculated as:
- <math>L = \sum_j=1^n w_j \log \1 + \e&times;p [-2m_j]\</math>
-
- </li><li> &rsquo;classiferror&rsquo;: Misclassification rate in decimal
- The classification error measures the fraction of misclassified instances
- out of the total instances. It is calculated as:
- <math>L = \frac1n \sum_j=1^n \mathbbI(m_j \leq 0)</math>
-
- </li><li> &rsquo;exponential&rsquo;: Exponential loss:
- The exponential loss function is used to penalize misclassified instances
- exponentially. It is calculated as:
- <math>L = \sum_j=1^n w_j \e&times;p [-m_j]</math>
-
- </li><li> &rsquo;hinge&rsquo;: Hinge loss:
- The hinge loss function is often used for maximum-margin classification,
- particularly for support vector machines. It is calculated as:
- <math>L = \sum_j=1^n w_j \ma&times; (0, 1 - m_j)</math>
-
- </li><li> &rsquo;logit&rsquo;: Logistic loss:
- The logistic loss function, also known as log loss, measures the
- performance of a classification model where the prediction is a
- probability value. It is calculated as:
- <math>L = \sum_j=1^n w_j \log \1 + \e&times;p [-m_j]\</math>
-
- </li><li> &rsquo;quadratic&rsquo;: Quadratic loss:
- The quadratic loss function penalizes the square of the margin.
- It is calculated as:
- <math>L = \sum_j=1^n w_j (1 - m_j)^2</math>
-
-</li></ul></td></tr>
-<tr><td width="28%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="70%">Specified as a numeric vector which
- weighs each observation (row) in X. The size of Weights must be equal
- to the number of rows in X. The default value is: ones(size(X,1),1)</td></tr>
+<li>
+ <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
+ number of observations and <math>K</math> is the number of classes.
+ The element <code>C(i,j)</code> is true if the class label of the i-th
+ observation is equal to the j-th class.
+ </li><li>
+ <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
+ represents the classification score for the corresponding class.
+ </li><li>
+ <code>W</code> is a numeric vector of length <math>N</math>, representing
+ the observation weights.
+ </li><li>
+ <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
+ costs.
+ </li></ul></td></tr>
+<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+ a numeric vector of length equal to the number of rows in X.
+ Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
+ observation weights in each class sum to the prior probability of that
+ class. When you supply Weights, loss computes the weighted
+ classification loss.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
-  <a href="fitcsvm.html">fitcsvm</a>, 
-  <a href="ClassificationSVM.html">ClassificationSVM</a>
+  <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
 </p>
 
 
@@ -1484,15 +1589,14 @@ Save a CompactClassificationSVM object.
 
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
- CompactClassificationSVM object into an Octave binary file, the name
- of which is specified in <var>filename</var>, along with an extra variable,
+ CompactClassificationSVM object into an Octave binary file, the name of
+ which is specified in <var>filename</var>, along with an extra variable,
  which defines the type classification object these variables constitute.
  Use <code>loadmodel</code> in order to load a classification object into
  Octave&rsquo;s workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 
-  <a href="fitcsvm.html">fitcsvm</a>, 
   <a href="ClassificationSVM.html">ClassificationSVM</a>, 
   <a href="CompactClassificationSVM.html">CompactClassificationSVM</a>
 </p>
@@ -1505,6 +1609,69 @@ Save a CompactClassificationSVM object.
         <h4 class="d-inline-block my-3">
           Examples
         </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#collapseDemo1"
+              aria-expanded="false" aria-controls="collapseDemo1">
+              <div class="row align-items-center">
+                <div class="col-12">
+                  <code class="description">
+ Create a support vectors machine classifier and its compact version
+                  </code>
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="collapseDemo1">
+            <div class="border-bottom py-2">
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+ # and compare their size
+
+ load fisheriris
+ X = meas;
+ Y = species;
+
+ selected_classes = unique (Y)(randperm (3, 2));
+ selected_indices = ismember (Y, selected_classes);
+ X_selected = X(selected_indices, :);
+ Y_selected = Y(selected_indices);
+ Mdl = fitcsvm (X_selected, Y_selected, 'ClassNames', selected_classes);
+ CMdl = crossval (Mdl)</pre></td></tr>
+                  </table>
+                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+CMdl =
+
+  ClassificationPartitionedModel object with properties:
+
+                   BinEdges: []
+      CategoricalPredictors: []
+                          X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]
+                          Y: [100x1 cell]
+                 ClassNames: [2x1 cell]
+                       Cost: []
+        CrossValidatedModel: 'ClassificationSVM'
+                      KFold: 10
+            ModelParameters: [1x1 struct]
+            NumObservations: 100
+                  Partition: [1x1 cvpartition]
+             PredictorNames: [1x4 cell]
+                      Prior: []
+               ResponseName: "Y"
+             ScoreTransform: [1x1 function_handle]
+                Standardize: 0
+                    Trained: [10x1 cell]
+</pre></td></tr>
+                  </table>
+
+            </div>
+          </div>
+        </div>
+
 
             </div>
           </div>

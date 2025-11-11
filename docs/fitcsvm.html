@@ -833,15 +833,6 @@
 <tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the kNN model.  <code>ClassNames</code> are of
  the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
- probabilities for each class.  The order of the elements in <code>Prior</code>
- corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
- misclassification cost for the corresponding instances in <var>X</var> where
- <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
- correctly classified into its category the cost is calculated to be 1,
- otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
- default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
 <tr><td width="18%"><code>&quot;SVMtype&quot;</code></td><td width="2%"></td><td width="80%">Specifies the type of SVM used for training
  the <code>ClassificationSVM</code> model.  By default, the type of SVM is defined
  by setting other parameters and/or by the data itself.  Setting the
@@ -1005,34 +996,19 @@
 
 SVMModel =
 
-  ClassificationSVM object with properties:
+  ClassificationSVM
 
-                        X: [4.7000, 1.4000; 4.5000, 1.5000; 4.9000, 1.5000; 4, 1.3000; 4.6000, 1.5000; ...]
-                        Y: [100x1 cell]
-          NumObservations: 100
-                 RowsUsed: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
-            NumPredictors: 2
-           PredictorNames: [1x2 cell]
-             ResponseName: "Y"
-               ClassNames: [2x1 cell]
-                    Prior: [0.5000; 0.5000]
-                     Cost: [0, 1; 1, 0]
+             ResponseName: 'Y'
+               ClassNames: {'versicolor' 'virginica'}
            ScoreTransform: 'none'
-              Standardize: 0
-                    Sigma: []
-                       Mu: []
-          ModelParameters: [1x1 struct]
-                    Model: [1x1 struct]
-                    Alpha: [0.7073; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
-                     Beta: []
-                     Bias: -14.415
-          IsSupportVector: [1; 0; 1; 0; 1; 0; 1; 0; 0; 0; ...]
-      SupportVectorLabels: [-1; 0; -1; 0; -1; 0; -1; 0; 0; 0; ...]
-           SupportVectors: [24x2 double]
-
+          NumObservations: 100
+            NumPredictors: 2
+                    Alpha: [24x1 double]
+                     Bias: -14.414868
+         KernelParameters: [1x1 struct]
 ans =
 
-  -179.36  -178.82
+  -82.359  -81.820
 
                     </pre></td></tr></tbody>
                   </table>

@@ -906,13 +906,13 @@ Number of successes
  ## Negative Binomial distribution. R must be a positive scalar, controlling
  ## the shape and often fixed based on the problem context, like successes in trials.
 
-ans = 5.2135
+ans = 5.1405
 pd =
   NegativeBinomialDistribution
 
   negative binomial distribution
         R =       10
-        P = 0.508399
+        P = 0.505124
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1032,12 +1032,12 @@ Probability of success
  ## Binomial distribution. P must be a real scalar in (0,1], influencing the
  ## mean and variance of the distribution.
 
-ans = 0.4926
+ans = 0.5115
 pd =
   NegativeBinomialDistribution
 
   negative binomial distribution
-        R = 4.87025
+        R = 5.19879
         P =     0.3
 
                     </pre></td></tr></tbody>
@@ -1742,8 +1742,8 @@ Compute the mean of a probability distribution.
  ## distributions with different success probabilities, representing average
  ## number of failures.
 
-mean1 = 11.684
-mean2 = 5.0440
+mean1 = 11.653
+mean2 = 5.0744
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1887,7 +1887,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a Negative Binomial distribution to
  ## data, with lower values indicating a better fit, often used in model comparison.
 
-nlogL_nbinlike = 246.98
+nlogL_nbinlike = 236.57
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1980,8 +1980,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-   4.2483   0.4637
-   6.2122   0.5595
+   3.5788   0.4133
+   5.0159   0.4987
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2516,7 +2516,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which measures the variability
  ## in the count values of the distribution.
 
-std_value = 3.1134
+std_value = 3.1534
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2564,6 +2564,68 @@ Truncate a probability distribution.
  truncation interval.
 </p>
 
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 1
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ ## Generate a deterministic data set mimicking 10000 samples from a truncated
+ ## Negative Binomial distribution with parameters R = 5 and P = 0.5,
+ ## truncated at [2, 10].  Fit a Negative Binomial distribution to this data
+ ## and plot a PDF of the truncated fitted distribution superimposed on a
+ ## histogram of the data.
+
+ x_vals = 2:10;
+ probs = nbinpdf (x_vals, 5, 0.5);
+ total_prob = nbincdf (10, 5, 0.5) - nbincdf (1, 5, 0.5);
+ probs = probs / total_prob;
+ N = 10000;
+ freq = round (probs * N);
+ data = [];
+ data = repelem (x_vals, freq);
+ warning ("off", "all");
+ pd = fitdist (data, "NegativeBinomial");
+ t = truncate (pd, 2, 10);
+
+ ## Plot histogram and truncated PDF
+ plot (t)
+ hold on
+
+ [counts, centers] = hist (data, 50);
+ bar (centers, counts / trapz (centers, counts), 'hist');
+
+ hold off
+ title ("Negative Binomial distribution (R=5, P=0.5) truncated at [2, 10]")
+ legend ("Truncated PDF", "Histogram")
+
+ ## This demonstrates truncating a Negative Binomial distribution to a specific
+ ## range and visualizing the resulting distribution with random samples.
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/NegativeBinomialDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
             </div>
@@ -2624,7 +2686,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which quantifies the spread of the
  ## count values in the distribution.
 
-var_value = 10.269
+var_value = 9.5457
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2683,8 +2745,8 @@ pd_fitted =
   NegativeBinomialDistribution
 
   negative binomial distribution
-        R =  5.01545   [4.60677, 5.42414]
-        P = 0.499147   [0.478312, 0.519982]
+        R =  4.72131   [4.34848, 5.09413]
+        P = 0.483052   [0.462841, 0.503263]
 </pre></td></tr>
                   </table>
                   <div class="text-center">

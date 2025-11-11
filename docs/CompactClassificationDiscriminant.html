@@ -793,32 +793,27 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CompactClassificationDiscriminant</h5></code></dl>
 
-<p> A <code>CompactClassificationDiscriminant</code> object is a compact version of a
- discriminant analysis model, <code>ClassificationDiscriminant</code>.
+<p> Compact discriminant analysis classification
 </p>
 <div class="ms-5">
-<p> The <code>CompactClassificationDiscriminant</code> does not include the training
- data resulting to a smaller classifier size, which can be used for making
- predictions from new data, but not for tasks such as cross validation.  It
- can only be created from a <code>ClassificationDiscriminant</code> model by using
- the <code>compact</code> object method.
+<p> The <code>CompactClassificationDiscriminant</code> class implements a compact
+ version of a linear discriminant analysis classifier object, which can
+ predict responses for new data using the <code>predict</code> method but does not
+ store the training data.
 </p>
-<p> The available methods for a <code>CompactClassificationDiscriminant</code> object
- are:
- </p><ul>
-<li>
- <code>predict</code>
- </li><li>
- <code>loss</code>
- </li><li>
- <code>margin</code>
- </li><li>
- <code>savemodel</code>
- </li></ul>
-
+<p> A <code>CompactClassificationDiscriminant</code> object is a compact version of a
+ discriminant analysis model, <code>ClassificationDiscriminant</code>.  It does not
+ include the training data resulting in a smaller classifier size, which can
+ be used for making predictions from new data, but not for tasks such as
+ cross validation.  It can only be created from a
+ <code>ClassificationDiscriminant</code> model by using the <code>compact</code> object
+ method.
+</p>
+<p> Create a <code>CompactClassificationDiscriminant</code> object by using the
+ <code>compact</code> method of a <code>ClassificationDiscriminant</code> object.
+</p>
 <p> <strong>See also: </strong>
   <a href="fitcdiscr.html">fitcdiscr</a>, 
-compact, 
   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
 </p>
 <p><strong>Source Code: </strong>
@@ -841,13 +836,22 @@ compact,
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.NumPredictors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of predictors in the
+ training dataset used for training the CompactClassificationDiscriminant
+ model.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -864,13 +868,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.PredictorNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors specifying the names of the predictor
+ variables.  The names are in the order in which the appear in the
+ training dataset.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -887,13 +900,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Response variable name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.ResponseName</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the response variable <var>Y</var>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -910,13 +931,29 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of classes in the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.ClassNames</code></b> is not documented.
+
+
+<p> </p>
+<p> An array of unique values of the response variable <var>Y</var>, which has the
+ same data types as the data in <var>Y</var>.  This property is read-only.
+ <code>ClassNames</code> can have any of the following datatypes:
+</p>
+ <ul>
+<li> Cell array of character vectors
+ </li><li> Character array
+ </li><li> Logical vector
+ </li><li> Numeric vector
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -933,13 +970,24 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Prior probability for each class
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Prior</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector specifying the prior probabilities for each class.  The
+ order of the elements in <code>Prior</code> corresponds to the order of the
+ classes in <code>ClassNames</code>.
+</p>
+<p> This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -956,13 +1004,31 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Cost of Misclassification
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Cost</code></b> is not documented.
+
+
+<p> </p>
+<p> A square matrix specifying the cost of misclassification of a point.
+ <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
+ if its true class is <code>i</code> (that is, the rows correspond to the true
+ class and the columns correspond to the predicted class).  The order of
+ the rows and columns in <code>Cost</code> corresponds to the order of the
+ classes in <code>ClassNames</code>.  The number of rows and columns in
+ <code>Cost</code> is the number of unique classes in the response.  By
+ default, <code>Cost(i,j) = 1</code> if <code>i != j</code>, and
+ <code>Cost(i,j) = 0</code> if <code>i = j</code>.  In other words, the cost is 0
+ for correct classification and 1 for incorrect classification.
+</p>
+<p> This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -979,13 +1045,41 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Transformation function for classification scores
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.ScoreTransform</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  This property is read-only.
+</p>
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1002,13 +1096,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Within-class covariance
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric array specifying the within-class covariance. For linear
+ discriminant type (currently supported) this is a <math>P&times;P</math> matrix,
+ where <math>P</math> is the number of predictors.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1025,13 +1128,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Class means
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Mu</code></b> is not documented.
+
+
+<p> </p>
+<p> A <math>K&times;P</math> numeric matrix specifying the mean of the multivariate
+ normal distribution of each corresponding class, where <math>K</math> is the
+ number of classes and <math>P</math> is the number of predictors.  This property
+ is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1048,13 +1161,36 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Coefficient matrices
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Coeffs</code></b> is not documented.
+
+
+<p> </p>
+<p> A @math {KxK structure containing the coeeficient matrices, where
+ <math>K</math> is the number of classes.  If the <code>'FillCoeffs'</code> parameter
+ was set to <code>'off'</code> in the original <code>ClassificationDiscriminant</code>
+ model, then <code>Coeffs</code> is empty <code>([])</code>.  This property is
+ read-only.
+</p>
+<p> <code>Coeffs(i,j)</code> contains the coefficients of the linear (currently
+ supported) boundaries between the classes <code>i</code> and <code>j</code> in the
+ following fields:
+</p>
+ <ul>
+<li> <code>DiscrimType</code> - A character vector
+ </li><li> <code>Class1</code> - <code><var>ClassNames</var>(i)</code>
+ </li><li> <code>Class2</code> - <code><var>ClassNames</var>(j)</code>
+ </li><li> <code>Const</code> - A scalar
+ </li><li> <code>Linear</code> - A vector with length as the number of predictors.
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1071,13 +1207,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Delta threshold
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Delta</code></b> is not documented.
+
+
+<p> </p>
+<p> A nonnegative scalar specifying the threshold for linear discriminant
+ model. Currently unimplemented and fixed to 0.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1094,13 +1239,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Discriminant type
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.DiscrimType</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the type discriminant model. Currently
+ only linear discriminant models are supported.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1117,13 +1271,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Gamma regularization parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.Gamma</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar value ranging from 0 to 1, specifying the Gamma regularization
+ parameter.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1140,13 +1302,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Minimum value for Gamma regularization parameter
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.MinGamma</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar value ranging from 0 to 1, specifying the minimum value that the
+ Gamma regularization parameter can have.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1163,13 +1333,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Logarithm of the determinant of the within-class covariance matrix
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationDiscriminant.LogDetSigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar value specifying the logarithm of the determinant of the
+ within-class covariance matrix.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1271,8 +1449,7 @@ Compute loss for a trained CompactClassificationDiscriminant object.
 </p>
  <ul>
 <li>
- <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object trained on
- <code>X</code> and <code>Y</code>.
+ <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object.
  </li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
@@ -1280,7 +1457,7 @@ Compute loss for a trained CompactClassificationDiscriminant object.
  </li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
- numbers of Rows as <var>X</var>.
+ numbers of rows as <var>X</var>.
  </li></ul>
 
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
@@ -1338,9 +1515,7 @@ Compute loss for a trained CompactClassificationDiscriminant object.
                   </h4>
                 </div>
                 <div class="col-8">
-<code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
- the classification margins for <var>obj</var> with data <var>X</var> and
- classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
+Classification margins for discriminant analysis classifier.
                 </div>
               </div>
           </div>
@@ -1351,10 +1526,13 @@ Compute loss for a trained CompactClassificationDiscriminant object.
 </dl>
 
 <p> </p>
+<p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
+ the classification margins for <var>obj</var> with data <var>X</var> and
+ classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
+</p>
  <ul>
 <li>
- <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object trained on <code>X</code>
- and <code>Y</code>.
+ <code>obj</code> is a <var>CompactClassificationDiscriminant</var> object.
  </li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
@@ -1362,7 +1540,7 @@ Compute loss for a trained CompactClassificationDiscriminant object.
  </li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
- numbers of Rows as <var>X</var>.
+ numbers of rows as <var>X</var>.
  </li></ul>
 
 <p> The classification margin for each observation is the difference between
@@ -1485,7 +1663,7 @@ CMdl =
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
                ResponseName: 'Y'
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: []
                     Trained: [10x1 cell]
 </pre></td></tr>

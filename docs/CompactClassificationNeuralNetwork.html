@@ -793,29 +793,25 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CompactClassificationNeuralNetwork</h5></code></dl>
 
-<p> A <code>CompactClassificationNeuralNetwork</code> object is a compact version of
- the Neural Network classification model,
- <code>ClassificationNeuralNetwork</code>.
+<p> Compact neural network classification
 </p>
 <div class="ms-5">
-<p> The <code>CompactClassificationNeuralNetwork</code> does not include the training
- data resulting to a smaller classifier size, which can be used for making
- predictions from new data, but not for tasks such as cross validation.  It
- can only be created from a <code>ClassificationNeuralNetwork</code> model by using
- the <code>compact</code> object method.
+<p> The <code>CompactClassificationNeuralNetwork</code> class implements a compact
+ version of the neural network classifier object, which can predict responses
+ for new data using the <code>predict</code> method, but does not store the training
+ data.
 </p>
-<p> The available methods for a <code>CompactClassificationNeuralNetwork</code> object
- are:
- </p><ul>
-<li>
- <code>predict</code>
- </li><li>
- <code>savemodel</code>
- </li></ul>
-
+<p> A compact neural network classification model is a smaller version of the
+ full <code>ClassificationNeuralNetwork</code> model that does not include the
+ training data.  It consumes less memory than the full model, but cannot
+ perform tasks that require the training data, such as cross-validation.
+</p>
+<p> Create a <code>CompactClassificationNeuralNetwork</code> object by using the
+ <code>compact</code> method on a <code>ClassificationNeuralNetwork</code> object.
+</p>
 <p> <strong>See also: </strong>
-  <a href="fitcnet.html">fitcnet</a>, 
-  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
+  <a href="fitcnet.html">fitcnet</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/CompactClassificationNeuralNetwork.m">CompactClassificationNeuralNetwork</a>
@@ -837,13 +833,22 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.NumPredictors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of predictors in the
+ training dataset used for training the neural network model.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -860,13 +865,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.PredictorNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors specifying the names of the predictor
+ variables.  The names are in the order in which the appear in the
+ training dataset.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -883,13 +897,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Response variable name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.ResponseName</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the response variable <var>Y</var>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -906,13 +928,29 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of classes in the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.ClassNames</code></b> is not documented.
+
+
+<p> </p>
+<p> An array of unique values of the response variable <var>Y</var>, which has the
+ same data types as the data in <var>Y</var>.  This property is read-only.
+ <code>ClassNames</code> can have any of the following datatypes:
+</p>
+ <ul>
+<li> Cell array of character vectors
+ </li><li> Character array
+ </li><li> Logical vector
+ </li><li> Numeric vector
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -929,13 +967,47 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Transformation function for classification scores
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.ScoreTransform</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
+</p>
+ <ul>
+<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
+ </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+ </li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+
+
+
             </div>
           </div>
         </div>
@@ -952,13 +1024,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag to standardize predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.Standardize</code></b> is not documented.
+
+
+<p> </p>
+<p> A boolean flag indicating whether the predictor data has been
+ standardized prior to training.  When <code>true</code>, the predictors are
+ centered and scaled to have zero mean and unit variance.  This property
+ is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -975,13 +1057,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor standard deviations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.Sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the standard deviations of the predictors
+ used for standardization.  Empty if <code>Standardize</code> is <code>false</code>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -998,13 +1089,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor means
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.Mu</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the means of the predictors used for
+ standardization.  Empty if <code>Standardize</code> is <code>false</code>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1021,13 +1121,26 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Sizes of fully connected layers
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.LayerSizes</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer vector specifying the sizes of the fully connected
+ layers in the neural network model.  The i-th element of
+ <code>LayerSizes</code> is the number of outputs in the i-th fully connected
+ layer of the neural network model.  <code>LayerSizes</code> does not include
+ the size of the final fully connected layer.  This layer always has K
+ outputs, where K is the number of classes in Y.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1044,13 +1157,25 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Activation functions for hidden layers
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.Activations</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector or cell array of character vectors specifying the
+ activation functions used in the hidden layers of the neural network.
+ Supported activation functions include: <code>&quot;linear&quot;</code>,
+ <code>&quot;sigmoid&quot;</code>, <code>&quot;relu&quot;</code>, <code>&quot;tanh&quot;</code>, <code>&quot;softmax&quot;</code>,
+ <code>&quot;lrelu&quot;</code>, <code>&quot;prelu&quot;</code>, <code>&quot;elu&quot;</code>, and <code>&quot;gelu&quot;</code>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1067,13 +1192,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Activation function for output layer
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.OutputLayerActivation</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the activation function of the output layer
+ of the neural network.  Supported activation functions are the same as
+ for the <code>Activations</code> property.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1090,13 +1224,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Learning rate for gradient descent
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.LearningRate</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive scalar value defining the learning rate used by the gradient
+ descent algorithm during training.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1113,13 +1255,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Maximum number of training iterations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.IterationLimit</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value defining the maximum number of epochs for
+ training the model.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1136,13 +1286,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Neural network model parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.ModelParameters</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing the parameters used to train the neural network
+ classifier model, including layer weights and activations as generated by
+ the <code>fcnntrain</code> function.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1159,13 +1318,32 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Training convergence information
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.ConvergenceInfo</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing convergence information of the neural network
+ classifier model with the following fields:
+</p>
+ <ul>
+<li> <code>Accuracy</code> - The prediction accuracy at each iteration
+ during training
+ </li><li> <code>TrainingLoss</code> - The loss value recorded at each iteration
+ during training
+ </li><li> <code>Time</code> - The cumulative time taken for all iterations in
+ seconds
+ </li></ul>
+
+<p> This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1182,13 +1360,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Display training information flag
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.DisplayInfo</code></b> is not documented.
+
+
+<p> </p>
+<p> A boolean flag indicating whether to print information during training.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1205,13 +1391,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Solver used for training
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationNeuralNetwork.Solver</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the solver algorithm used to train the
+ neural network model.  Currently only <code>&quot;Gradient Descent&quot;</code> is
+ supported.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1232,44 +1427,49 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-Classify new data points into categories using the Neural Network
- classification object.
+Classify new data points into categories using the neural network
+ classification model from a CompactClassificationNeuralNetwork object.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod1">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: <var>labels</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: [<var>labels</var>, <var>scores</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: [<var>label</var>, <var>score</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
-<p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
+<p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
- trained neural network classification compact model in <var>obj</var>.
+ neural network model stored in the CompactClassificationNeuralNetwork
+ model, <var>obj</var>.
 </p>
  <ul>
 <li>
  <var>obj</var> must be a <code>CompactClassificationNeuralNetwork</code> class
  object.
  </li><li>
- <var>X</var> must be an <math>M&times;P</math> numeric matrix with the same number of
- predictors <math>P</math> as the corresponding predictors of the trained neural
- network compact model in <var>obj</var>.
+ <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
+ features <math>P</math> as the corresponding predictors of the neural network
+ model in <var>obj</var>.
  </li></ul>
 
-<p> <code>[<var>labels</var>, <var>scores</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
- returns <var>scores</var>, which represent the probability of each label
- belonging to a specific class. For each observation in X, the predicted
- class label is the one with the highest score among all classes.
- Alternatively, <var>scores</var> can contain the posterior probabilities if
- the ScoreTransform has been previously set.
+<p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
+ returns <var>score</var>, which contains the predicted class scores or
+ posterior probabilities for each instance of the corresponding unique
+ classes.
+</p>
+<p> The <var>score</var> matrix contains the classification scores for each class.
+ For each observation in <var>XC</var>, the predicted class label is the one
+ with the highest score among all classes.  If the <code>ScoreTransform</code>
+ property is set to a transformation function, the scores are transformed
+ accordingly before being returned.
 </p>
 <p> <strong>See also: </strong>
-  <a href="fitcnet.html">fitcnet</a>, 
+  <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>, 
   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
-  <a href="CompactClassificationNeuralNetwork.html">CompactClassificationNeuralNetwork</a>
+  <a href="fitcnet.html">fitcnet</a>
 </p>
 
 
@@ -1289,14 +1489,14 @@ Classify new data points into categories using the Neural Network
                   </h4>
                 </div>
                 <div class="col-8">
-Save a ClassificationNeuralNetwork object.
+Save a CompactClassificationNeuralNetwork object.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">ClassificationNeuralNetwork: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationNeuralNetwork: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1304,15 +1504,13 @@ Save a ClassificationNeuralNetwork object.
  CompactClassificationNeuralNetwork object into an Octave binary file, the
  name of which is specified in <var>filename</var>, along with an extra
  variable, which defines the type classification object these variables
- constitute. Use <code>loadmodel</code> in order to load a classification object
- into Octave&rsquo;s workspace.
+ constitute.  Use <code>loadmodel</code> in order to load a classification
+ object into Octave&rsquo;s workspace.
 </p>
 <p> <strong>See also: </strong>
   <a href="loadmodel.html">loadmodel</a>, 
   <a href="fitcnet.html">fitcnet</a>, 
-  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>, 
-  <a href="cvpartition.html">cvpartition</a>, 
-  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+  <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>
 </p>
 
 
@@ -1385,7 +1583,7 @@ CMdl =
              PredictorNames: [1x4 cell]
                       Prior: []
                ResponseName: "Y"
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: 0
                     Trained: [10x1 cell]
 </pre></td></tr>

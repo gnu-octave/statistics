@@ -793,29 +793,21 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CompactClassificationGAM</h5></code></dl>
 
-<p> A <code>CompactClassificationGAM</code> object is a compact version of a
- Generalized Additive Model, <code>ClassificationGAM</code>.
+<p> Compact generalized additive model classification
 </p>
 <div class="ms-5">
-<p> The <code>CompactClassificationGAM</code> does not include the training
- data resulting to a smaller classifier size, which can be used for making
- predictions from new data, but not for tasks such as cross validation.  It
- can only be created from a <code>ClassificationGAM</code> model by using
- the <code>compact</code> object method.
+<p> The <code>CompactClassificationGAM</code> class is a compact version of a
+ Generalized Additive Model classifier, <code>ClassificationGAM</code>.  It does
+ not include the training data, resulting in a smaller classifier size that
+ can be used for making predictions from new data, but not for tasks such as
+ cross validation.
 </p>
-<p> The available methods for a <code>CompactClassificationGAM</code> object
- are:
- </p><ul>
-<li>
- <code>predict</code>
- </li><li>
- <code>savemodel</code>
- </li></ul>
-
+<p> A <code>CompactClassificationGAM</code> object can only be created from a
+ <code>ClassificationGAM</code> model by using the <code>compact</code> method.
+</p>
 <p> <strong>See also: </strong>
-  <a href="fitcgam.html">fitcgam</a>, 
-compact, 
-  <a href="ClassificationGAM.html">ClassificationGAM</a>
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
+  <a href="fitcgam.html">fitcgam</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/CompactClassificationGAM.m">CompactClassificationGAM</a>
@@ -837,13 +829,22 @@ compact,
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.NumPredictors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of predictors in the
+ training dataset used for training the ClassificationGAM model.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -860,13 +861,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.PredictorNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors specifying the names of the predictor
+ variables.  The names are in the order in which the appear in the
+ training dataset.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -883,13 +893,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Response variable name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.ResponseName</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the response variable <var>Y</var>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -906,13 +924,29 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of classes in the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.ClassNames</code></b> is not documented.
+
+
+<p> </p>
+<p> An array of unique values of the response variable <var>Y</var>, which has the
+ same data types as the data in <var>Y</var>.  This property is read-only.
+ <code>ClassNames</code> can have any of the following datatypes:
+</p>
+ <ul>
+<li> Cell array of character vectors
+ </li><li> Character array
+ </li><li> Logical vector
+ </li><li> Numeric vector
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -929,13 +963,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Prior probability for each class
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Prior</code></b> is not documented.
+
+
+<p> </p>
+<p> A 2-element numeric vector specifying the prior probabilities for each
+ class.  The order of the elements in <code>Prior</code> corresponds to the
+ order of the classes in <code>ClassNames</code>.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -952,13 +995,34 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Cost of Misclassification
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Cost</code></b> is not documented.
+
+
+<p> </p>
+<p> A square matrix specifying the cost of misclassification of a point.
+ <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
+ if its true class is <code>i</code> (that is, the rows correspond to the true
+ class and the columns correspond to the predicted class).  The order of
+ the rows and columns in <code>Cost</code> corresponds to the order of the
+ classes in <code>ClassNames</code>.  The number of rows and columns in
+ <code>Cost</code> is the number of unique classes in the response.  By
+ default, <code>Cost(i,j) = 1</code> if <code>i != j</code>, and
+ <code>Cost(i,j) = 0</code> if <code>i = j</code>.  In other words, the cost is 0
+ for correct classification and 1 for incorrect classification.
+</p>
+<p> Add or change the <code>Cost</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -975,13 +1039,47 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Transformation function for classification scores
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.ScoreTransform</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
+</p>
+ <ul>
+<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
+ </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+ </li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+
+
+
             </div>
           </div>
         </div>
@@ -998,13 +1096,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Model specification formula
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Formula</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the model formula in the form
+ <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the response variable and
+ <code>terms</code> specifies the predictor variables and interaction terms.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1021,13 +1129,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Interaction terms specification
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Interactions</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical matrix, positive integer scalar, or character vector
+ <code>&quot;all&quot;</code> specifying the interaction terms between predictor
+ variables.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1044,13 +1161,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Knots for spline fitting
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Knots</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar or row vector specifying the number of knots for each predictor
+ variable in the spline fitting.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1067,13 +1192,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Order of spline fitting
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.Order</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar or row vector specifying the order of the spline for each
+ predictor variable.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1090,13 +1223,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Degrees of freedom for spline fitting
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.DoF</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar or row vector specifying the degrees of freedom for each
+ predictor variable in the spline fitting.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1113,13 +1254,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Learning rate for gradient boosting
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.LearningRate</code></b> is not documented.
+
+
+<p> </p>
+<p> A scalar value between 0 and 1 specifying the learning rate used in the
+ gradient boosting algorithm.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1136,13 +1285,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Maximum number of iterations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.NumIterations</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer specifying the maximum number of iterations for the
+ gradient boosting algorithm.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1159,13 +1316,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Base model parameters
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.BaseModel</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing the parameters of the base model without any
+ interaction terms.  The base model represents the generalized additive
+ model with only the main effects (predictor terms) included.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1182,13 +1349,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Model parameters with interactions
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.ModelwInt</code></b> is not documented.
+
+
+<p> </p>
+<p> A structure containing the parameters of the model that includes
+ interaction terms.  This model extends the base model by adding
+ interaction terms between predictors.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1205,13 +1381,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Interaction matrix
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
-<b><code>CompactClassificationGAM.IntMatrix</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical matrix or matrix of column indices describing the interaction
+ terms applied to the predictor data.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1241,8 +1425,8 @@ Predict labels for new data using the Generalized Additive Model (GAM)
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">CompactClassificationGAM: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationGAM: <var>label</var> = <b>predict</b> (&hellip;, <code>'IncludeInteractions'</code>, <var>includeInteractions</var>)</code></h5></dt>
-<dt><code><h5 class="fs">CompactClassificationGAM: [<var>label</var>, <var>score</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: [<var>label</var>, <var>score</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: [<var>label</var>, <var>score</var>] = <b>predict</b> (&hellip;, <code>'IncludeInteractions'</code>, <var>includeInteractions</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
@@ -1250,13 +1434,13 @@ Predict labels for new data using the Generalized Additive Model (GAM)
  labels for the data in <var>XC</var> based on the model stored in the
  CompactClassificationGAM object, <var>obj</var>.
 </p>
-<p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>, 'IncludeInteractions',
- <var>includeInteractions</var>)</code> allows you to specify whether interaction
- terms should be included when making predictions.
+<p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
+ returns <var>score</var>, which contains the predicted class scores or
+ posterior probabilities for each observation.
 </p>
-<p> <code>[<var>label</var>, <var>score</var>] = predict (&hellip;)</code> also returns
- <var>score</var>, which contains the predicted class scores or posterior
- probabilities for each observation.
+<p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>,
+ 'IncludeInteractions', <var>includeInteractions</var>)</code> allows you to specify
+ whether interaction terms should be included when making predictions.
 </p>
  <ul>
 <li>
@@ -1265,12 +1449,13 @@ Predict labels for new data using the Generalized Additive Model (GAM)
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix where each row is an
  observation and each column corresponds to a predictor variable.
  </li><li>
- <var>includeInteractions</var> is a &rsquo;true&rsquo; or &rsquo;false&rsquo; indicating whether to
+ <var>includeInteractions</var> is a logical scalar indicating whether to
  include interaction terms in the predictions.
  </li></ul>
 
 <p> <strong>See also: </strong>
   <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>, 
+  <a href="ClassificationGAM.html">ClassificationGAM</a>, 
   <a href="fitcgam.html">fitcgam</a>
 </p>
 
@@ -1291,20 +1476,20 @@ Predict labels for new data using the Generalized Additive Model (GAM)
                   </h4>
                 </div>
                 <div class="col-8">
-Save a ClassificationGAM object.
+Save a CompactClassificationGAM object.
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseMethod2">
             <div class="border-bottom py-2">
 <dl>
-<dt><code><h5 class="fs">ClassificationGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
+<dt><code><h5 class="fs">CompactClassificationGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
 
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
- CompactClassificationGAM object into an Octave binary file, the name
- of which is specified in <var>filename</var>, along with an extra variable,
+ CompactClassificationGAM object into an Octave binary file, the name of
+ which is specified in <var>filename</var>, along with an extra variable,
  which defines the type classification object these variables constitute.
  Use <code>loadmodel</code> in order to load a classification object into
  Octave&rsquo;s workspace.
@@ -1313,8 +1498,7 @@ Save a ClassificationGAM object.
   <a href="loadmodel.html">loadmodel</a>, 
   <a href="fitcgam.html">fitcgam</a>, 
   <a href="ClassificationGAM.html">ClassificationGAM</a>, 
-  <a href="cvpartition.html">cvpartition</a>, 
-  <a href="ClassificationPartitionedModel.html">ClassificationPartitionedModel</a>
+  <a href="CompactClassificationGAM.html">CompactClassificationGAM</a>
 </p>
 
 
@@ -1387,7 +1571,7 @@ CMdl =
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
                ResponseName: 'Y'
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: []
                     Trained: [10x1 cell]
 </pre></td></tr>

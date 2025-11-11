@@ -793,132 +793,24 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ClassificationKNN</h5></code></dl>
 
-<p> Create a <code>ClassificationKNN</code> class object containing a k-Nearest
- Neighbor classification model.
+<p> K-nearest neighbors classification
 </p>
 <div class="ms-5">
-<p> <code><var>obj</var> = ClassificationKNN (<var>X</var>, <var>Y</var>)</code> returns a
- ClassificationKNN object, with <var>X</var> as the predictor data and <var>Y</var>
- containing the class labels of observations in <var>X</var>.
+<p> The <code>ClassificationKNN</code> class implements a K-nearest neighbor classifier
+ object, which can predict responses for new data using the <code>predict</code>
+ method.  The implemented algorithm allows you choose a range of different
+ distance metrics, the number of nearest neighbors, as well as the searching
+ algorithm.
 </p>
- <ul>
-<li>
- <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
- correspond to observations and columns correspond to features or variables.
- <var>X</var> will be used to train the kNN model.
- </li><li>
- <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
- corresponding predictor data in <var>X</var>. <var>Y</var> can contain any type of
- categorical data. <var>Y</var> must have same numbers of Rows as <var>X</var>.
- </li></ul>
-
-<p> <code><var>obj</var> = ClassificationKNN (&hellip;, <var>name</var>, <var>value</var>)</code>
- returns a ClassificationKNN object with parameters specified by
- <code>Name-Value</code> pair arguments.  Type <code>help fitcknn</code> for more info.
+<p> The K-nearest neighbors (k-NN) classifier is a simple, non-parametric machine
+ learning algorithm used for classification tasks.  It classifies a data point
+ based on the majority class of its k closest neighbors in the feature space.
 </p>
-<p> A <code>ClassificationKNN</code> object, <var>obj</var>, stores the labelled training
- data and various parameters for the k-Nearest Neighbor classification model,
- which can be accessed in the following fields:
+<p> Create a <code>ClassificationKNN</code> object by using the <code>fitcknn</code>
+ function or the class constructor.
 </p>
- <table>
-<thead><tr><th width="23%"><var>Field</var></th><th width="2%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="23%"><code>X</code></td><td width="2%"></td><td width="75%">Unstandardized predictor data, specified as a
- numeric matrix.  Each column of <var>X</var> represents one predictor (variable),
- and each row represents one observation.</td></tr>
-<tr><td width="23%"><code>Y</code></td><td width="2%"></td><td width="75%">Class labels, specified as a logical or
- numeric vector, or cell array of character vectors.  Each value in <var>Y</var> is
- the observed class label for the corresponding row in <var>X</var>.</td></tr>
-<tr><td width="23%"><code>NumObservations</code></td><td width="2%"></td><td width="75%">Number of observations used in
- training the ClassificationKNN model, specified as a positive integer scalar.
- This number can be less than the number of rows in the training data because
- rows containing <code>NaN</code> values are not part of the fit.</td></tr>
-<tr><td width="23%"><code>RowsUsed</code></td><td width="2%"></td><td width="75%">Rows of the original training data
- used in fitting the ClassificationKNN model, specified as a numerical vector.
- If you want to use this vector for indexing the training data in <var>X</var>, you
- have to convert it to a logical vector, i.e
- <code>X = obj.X(logical (obj.RowsUsed), :);</code></td></tr>
-<tr><td width="23%"><code>Standardize</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether
- the data in <var>X</var> have been standardized prior to training.</td></tr>
-<tr><td width="23%"><code>Sigma</code></td><td width="2%"></td><td width="75%">Predictor standard deviations, specified
- as a numeric vector of the same length as the columns in <var>X</var>.  If the
- predictor variables have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is
- empty.</td></tr>
-<tr><td width="23%"><code>Mu</code></td><td width="2%"></td><td width="75%">Predictor means, specified as a numeric
- vector of the same length as the columns in <var>X</var>.  If the predictor
- variables have not been standardized, then <code>&quot;obj.Mu&quot;</code> is empty.</td></tr>
-<tr><td width="23%"><code>NumPredictors</code></td><td width="2%"></td><td width="75%">The number of predictors
- (variables) in <var>X</var>.</td></tr>
-<tr><td width="23%"><code>PredictorNames</code></td><td width="2%"></td><td width="75%">Predictor variable names,
- specified as a cell array of character vectors.  The variable names are in
- the same order in which they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="23%"><code>ResponseName</code></td><td width="2%"></td><td width="75%">Response variable name, specified
- as a character vector.</td></tr>
-<tr><td width="23%"><code>ClassNames</code></td><td width="2%"></td><td width="75%">Names of the classes in the training
- data <var>Y</var> with duplicates removed, specified as a cell array of character
- vectors.</td></tr>
-<tr><td width="23%"><code>BreakTies</code></td><td width="2%"></td><td width="75%">Tie-breaking algorithm used by predict
- when multiple classes have the same smallest cost, specified as one of the
- following character arrays: <code>&quot;smallest&quot;</code> (default), which favors the
- class with the smallest index among the tied groups, i.e. the one that
- appears first in the training labelled data.  <code>&quot;nearest&quot;</code>, which favors
- the class with the nearest neighbor among the tied groups, i.e. the class
- with the closest member point according to the distance metric used.
- <code>&quot;random&quot;</code>, which randomly picks one class among the tied groups.</td></tr>
-<tr><td width="23%"><code>Prior</code></td><td width="2%"></td><td width="75%">Prior probabilities for each class,
- specified as a numeric vector.  The order of the elements in <code>Prior</code>
- corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="23%"><code>Cost</code></td><td width="2%"></td><td width="75%">Cost of the misclassification of a point,
- specified as a square matrix. <code>Cost(i,j)</code> is the cost of classifying a
- point into class <code>j</code> if its true class is <code>i</code> (that is, the rows
- correspond to the true class and the columns correspond to the predicted
- class).  The order of the rows and columns in <code>Cost</code> corresponds to the
- order of the classes in <code>ClassNames</code>.  The number of rows and columns
- in <code>Cost</code> is the number of unique classes in the response.  By default,
- <code>Cost(i,j) = 1</code> if <code>i != j</code>, and <code>Cost(i,j) = 0</code> if
- <code>i = j</code>.  In other words, the cost is 0 for correct classification and
- 1 for incorrect classification.</td></tr>
-<tr><td width="23%"><code>ScoreTransform</code></td><td width="2%"></td><td width="75%">A function_handle which is used
- for transforming the kNN prediction score into a posterior probability.  By
- default, it is <code>'none'</code>, in which case the <code>predict</code> and
- <code>resubPredict</code> methods return the prediction scores.</td></tr>
-<tr><td width="23%"><code>NumNeighbors</code></td><td width="2%"></td><td width="75%">Number of nearest neighbors in
- <var>X</var> used to classify each point during prediction, specified as a
- positive integer value.</td></tr>
-<tr><td width="23%"><code>Distance</code></td><td width="2%"></td><td width="75%">Distance metric, specified as a
- character vector.  The allowable distance metric names depend on the choice
- of the neighbor-searcher method.  See the available distance metrics in
- <code>knnseaarch</code> for more info.</td></tr>
-<tr><td width="23%"><code>DistanceWeight</code></td><td width="2%"></td><td width="75%">Distance weighting function,
- specified as a function handle, which accepts a matrix of nonnegative
- distances, and returns a matrix the same size containing nonnegative distance
- weights.</td></tr>
-<tr><td width="23%"><code>DistParameter</code></td><td width="2%"></td><td width="75%">Parameter for the distance
- metric, specified either as a positive definite covariance matrix (when the
- distance metric is <code>&quot;mahalanobis&quot;</code>, or a positive scalar as the
- Minkowski distance exponent (when the distance metric is <code>&quot;minkowski&quot;</code>,
- or a vector of positive scale values with length equal to the number of
- columns of <var>X</var> (when the distance metric is <code>&quot;seuclidean&quot;</code>.  For
- any other distance metric, the value of <code>DistParameter</code> is empty.</td></tr>
-<tr><td width="23%"><code>NSMethod</code></td><td width="2%"></td><td width="75%">Nearest neighbor search method,
- specified as either <code>&quot;kdtree&quot;</code>, which creates and uses a Kd-tree to
- find nearest neighbors, or <code>&quot;exhaustive&quot;</code>, which uses the exhaustive
- search algorithm by computing the distance values from all points in <var>X</var>
- to find nearest neighbors.</td></tr>
-<tr><td width="23%"><code>IncludeTies</code></td><td width="2%"></td><td width="75%">A boolean flag indicating whether
- prediction includes all the neighbors whose distance values are equal to the
- <math>k^th</math> smallest distance.  If <code>IncludeTies</code> is <code>true</code>,
- prediction includes all of these neighbors.  Otherwise, prediction uses
- exactly <math>k</math> neighbors.</td></tr>
-<tr><td width="23%"><code>BucketSize</code></td><td width="2%"></td><td width="75%">Maximum number of data points in the
- leaf node of the Kd-tree, specified as positive integer value. This argument
- is meaningful only when <code>NSMethod</code> is <code>&quot;kdtree&quot;</code>.</td></tr>
-</table>
-
 <p> <strong>See also: </strong>
-  <a href="fitcknn.html">fitcknn</a>, 
-  <a href="knnsearch.html">knnsearch</a>, 
-  <a href="rangesearch.html">rangesearch</a>, 
-  <a href="pdist2.html">pdist2</a>
+  <a href="fitcknn.html">fitcknn</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationKNN.m">ClassificationKNN</a>
@@ -940,13 +832,22 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor data
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.X</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric matrix containing the unstandardized predictor data.  Each
+ column of <var>X</var> represents one predictor (variable), and each row
+ represents one observation.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -963,13 +864,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Class labels
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Y</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a logical or numeric column vector, or as a character array
+ or a cell array of character vectors with the same number of rows as the
+ predictor data.  Each row in <var>Y</var> is the observed class label for
+ the corresponding row in <var>X</var>.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -986,13 +897,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of observations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.NumObservations</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of observations in the
+ training dataset used for training the ClassificationKNN model.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1009,13 +929,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Rows used for fitting
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.RowsUsed</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical column vector with the same length as the observations in the
+ original predictor data <var>X</var> specifying which rows have been used for
+ fitting the ClassificationKNN model.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1032,13 +961,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of predictors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.NumPredictors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifying the number of predictors in the
+ training dataset used for training the ClassificationKNN model.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1055,13 +993,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of predictor variables
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.PredictorNames</code></b> is not documented.
+
+
+<p> </p>
+<p> A cell array of character vectors specifying the names of the predictor
+ variables.  The names are in the order in which the appear in the
+ training dataset.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1078,13 +1025,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Response variable name
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.ResponseName</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the name of the response variable <var>Y</var>.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1101,13 +1056,29 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Names of classes in the response variable
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.ClassNames</code></b> is not documented.
+
+
+<p> </p>
+<p> An array of unique values of the response variable <var>Y</var>, which has the
+ same data types as the data in <var>Y</var>.  This property is read-only.
+ <code>ClassNames</code> can have any of the following datatypes:
+</p>
+ <ul>
+<li> Cell array of character vectors
+ </li><li> Character array
+ </li><li> Logical vector
+ </li><li> Numeric vector
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1120,17 +1091,38 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Prior</code></b>
+                    <b><code>Cost</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Cost of Misclassification
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Prior</code></b> is not documented.
+
+
+<p> </p>
+<p> A square matrix specifying the cost of misclassification of a point.
+ <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
+ if its true class is <code>i</code> (that is, the rows correspond to the true
+ class and the columns correspond to the predicted class).  The order of
+ the rows and columns in <code>Cost</code> corresponds to the order of the
+ classes in <code>ClassNames</code>.  The number of rows and columns in
+ <code>Cost</code> is the number of unique classes in the response.  By
+ default, <code>Cost(i,j) = 1</code> if <code>i != j</code>, and
+ <code>Cost(i,j) = 0</code> if <code>i = j</code>.  In other words, the cost is 0
+ for correct classification and 1 for incorrect classification.
+</p>
+<p> Add or change the <code>Cost</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1143,17 +1135,31 @@ undocumented
               <div class="row align-items-center">
                 <div class="col-4">
                   <h4 class="d-inline-block mr-4">
-                    <b><code>Cost</code></b>
+                    <b><code>Prior</code></b>
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Prior probability for each class
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Cost</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector specifying the prior probabilities for each class.  The
+ order of the elements in <code>Prior</code> corresponds to the order of the
+ classes in <code>ClassNames</code>.
+</p>
+<p> Add or change the <code>Prior</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.Prior = <var>priorVector</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1170,13 +1176,47 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Transformation function for classification scores
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.ScoreTransform</code></b> is not documented.
+
+
+<p> </p>
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
+</p>
+ <ul>
+<li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
+ </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+ </li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1193,13 +1233,21 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Standardization flag
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Standardize</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar specifying whether the predictor data in <var>X</var> have
+ been standardized prior to training.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1216,13 +1264,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor standard deviations
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Sigma</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of the same length as the columns in <var>X</var> with the
+ standard deviations corresponding to each predictor.  If the predictor
+ variables have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is empty.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1239,13 +1297,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Predictor means
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Mu</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector of the same length as the columns in <var>X</var> with the
+ mean values corresponding to each predictor.  If the predictor variables
+ have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is empty.  This
+ property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1262,13 +1330,40 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Tie-breaking algorithm
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.BreakTies</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the tie-breaking algorithm used by the
+ <code>predict</code> method, when multiple classes have the same smallest cost.
+ It can be one of the following:
+</p>
+ <ul>
+<li> <code>&quot;smallest&quot;</code> (default), which favors the class with the
+ smallest index among the tied groups, i.e. the one that appears first in
+ the training labelled data.
+ </li><li> <code>&quot;nearest&quot;</code>, which favors the class with the nearest neighbor
+ among the tied groups, i.e. the class with the closest member point
+ according to the distance metric used.
+ </li><li> <code>&quot;random&quot;</code>, which randomly picks one class among the tied
+ groups.
+ </li></ul>
+
+<p> The tie-breaking algorithm is only used when <code>IncludeTies</code> is
+ <code>false</code>.  Change the <code>BreakTies</code> property using dot notation
+ as in:
+ </p><ul>
+<li> <code><var>obj</var>.BreakTies = <var>algorithm</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1285,13 +1380,25 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of nearest neighbors
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.NumNeighbors</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer value specifyingNumber of nearest neighbors in <var>X</var>
+ used to classify each point during prediction.  Change the
+ <code>NumNeighbors</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.NumNeighbors = <var>newNumNeighbors</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1308,13 +1415,26 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distance metric
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.Distance</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the distance metric used by the
+ neighbor-searcher method.  See the available distance metrics in
+ <code>knnseaarch</code> for more info.  Change the <code>Distance</code> property
+ using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.Distance = <var>newDistance</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1331,13 +1451,36 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distance weighting function
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.DistanceWeight</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector or a function handle specifying the distance weighting
+ function, which can be any of the following values:
+</p>
+ <ul>
+<li> <code>&quot;equal&quot;</code>, which corresponds to <code>@(d) d</code>.
+ </li><li> <code>&quot;inverse&quot;</code>, which corresponds to <code>@(d) 1/d</code>.
+ </li><li> <code>&quot;squaredinverse&quot;</code>, which corresponds to <code>@(d) 1/d.^2</code>.
+ </li><li> <code>@fcn</code>, which is a function handle that accepts a matrix of
+ nonnegative distances, and returns a matrix the same size containing
+ nonnegative distance weights.
+ </li></ul>
+
+<p> Change the <code>DistanceWeight</code> property
+ using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.DistanceWeight = <var>newDistanceWeight</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1354,13 +1497,37 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Parameter for distance metric
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.DistParameter</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive definite covariance matrix, a positive scalar, or a vector of
+ positive scale values specifying the parameter for the corresponding
+ distance metric as shown below:
+</p>
+ <ul>
+<li> <code>&quot;mahalanobis&quot;</code> accepts a positive definite covariance matrix.
+ </li><li> <code>&quot;minkowski&quot;</code> accepts a positive scalar as the Minkowski
+ distance exponent.
+ </li><li> <code>&quot;seuclidean&quot;</code> accepts a vector of positive scale values of
+ equal length as the number of predictors in <var>X</var>.
+ </li></ul>
+
+<p> For any other distance metric, <code>DistParameter</code> is empty
+ <code>([])</code>.  Change the <code>DistParameter</code> property using dot
+ notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.DistParameter = <var>distParam</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1377,13 +1544,28 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Nearest neighbor search method
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty20">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.NSMethod</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specified as either <code>&quot;kdtree&quot;</code>, which creates
+ and uses a Kd-tree to find nearest neighbors, or <code>&quot;exhaustive&quot;</code>,
+ which uses the exhaustive search algorithm by computing the distance
+ values from all points in <var>X</var> to find nearest neighbors.
+</p>
+<p> Change the <code>NSMethod</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.NSMethod = <var>newNSMethod</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1400,13 +1582,28 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Flag for handling ties
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty21">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.IncludeTies</code></b> is not documented.
+
+
+<p> </p>
+<p> A logical scalar specifying whether prediction includes all the neighbors
+ whose distance values are equal to the <math>k^th</math> smallest distance.  If
+ <code>IncludeTies</code> is <code>true</code>, prediction includes all of these
+ neighbors.  Otherwise, prediction uses exactly <math>k</math> neighbors.
+</p>
+<p> Change the <code>IncludeTies</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.IncludeTies = <var>flag</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1423,13 +1620,27 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Maximum data points in each node
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty22">
             <div class="border-bottom py-2">
-<b><code>ClassificationKNN.BucketSize</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer scalar specifying the maximum number of data points in
+ the leaf node of the Kd-tree.  <code>BucketSize</code> only applies when the
+ <code>NSMethod</code> property is <code>&quot;kdtree&quot;</code>.
+</p>
+<p> Change the <code>BucketSize</code> property using dot notation as in:
+ </p><ul>
+<li> <code><var>obj</var>.BucketSize = <var>maxnum</var></code>
+ </li></ul>
+
+
+
+
             </div>
           </div>
         </div>
@@ -1437,6 +1648,144 @@ undocumented
         <h4 class="d-inline-block my-3">
           Methods
         </h4>
+
+        <div class="container-xl my-1">
+          <div class="row">
+            <button class="btn btn-light btn-sm w-100 text-start" type="button"
+              data-bs-toggle="collapse" data-bs-target="#colapsibleConstructor"
+              aria-expanded="false" aria-controls="colapsibleConstructor">
+              <div class="row align-items-center">
+                <div class="col-4">
+                  <h4 class="d-inline-block mr-4">
+                    <b><code>ClassificationKNN</code></b>
+                  </h4>
+                </div>
+                <div class="col-8">
+Create a <code>ClassificationKNN</code> class object containing a k-Nearest
+ Neighbor classification model.
+                </div>
+              </div>
+          </div>
+          <div class="collapse multi-collapse" id="colapsibleConstructor">
+            <div class="border-bottom py-2">
+<dl>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
+</dl>
+
+<p> </p>
+<p> <code><var>obj</var> = ClassificationKNN (<var>X</var>, <var>Y</var>)</code> returns a
+ ClassificationKNN object, with <var>X</var> as the predictor data and <var>Y</var>
+ containing the class labels of observations in <var>X</var>.
+</p>
+ <ul>
+<li>
+ <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
+ correspond to observations and columns correspond to features or
+ variables.  <var>X</var> will be used to train the kNN model.
+ </li><li>
+ <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
+ of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
+ of categorical data.  <var>Y</var> must have same numbers of Rows as <var>X</var>.
+ </li></ul>
+
+<p> <code><var>obj</var> = ClassificationKNN (&hellip;, <var>name</var>, <var>value</var>)</code>
+ returns a ClassificationKNN object with parameters specified by the
+ following <code><var>name</var>, <var>value</var></code> paired input arguments:
+</p>
+ <table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character
+ vectors specifying the names of the predictors. The length of this array
+ must match the number of columns in <var>X</var>.</td></tr>
+<tr><td width="18%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+ name of the response variable.</td></tr>
+<tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+ labels, <var>Y</var>, used for fitting the GAM model.
+ <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
+<tr><td width="18%"><code>'Cost'</code></td><td width="2%"></td><td width="80%">An <math>N&times;R</math> numeric matrix containing
+ misclassification cost for the corresponding instances in <var>X</var>, where
+ <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance
+ is correctly classified into its category the cost is calculated to be 1,
+ otherwise 0. The cost matrix can be altered by using
+ <code><var>Mdl</var>.cost = somecost</code>.  By default, its value is
+ <code><var>cost</var> = ones (rows (X), numel (unique (Y)))</code>.</td></tr>
+<tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+ probabilities for each class.  The order of the elements in <code>Prior</code>
+ corresponds to the order of the classes in <code>ClassNames</code>.
+ Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
+ class probabilities or <code>&quot;uniform&quot;</code> to assume equal class
+ probabilities.</td></tr>
+<tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A user-defined function handle
+ or a character vector specifying one of the following builtin functions
+ specifying the transformation applied to predicted classification scores.
+ Supported values include <code>'doublelogit'</code>, <code>'invlogit'</code>,
+ <code>'ismax'</code>, <code>'logit'</code>, <code>'none'</code>, <code>'identity'</code>,
+ <code>'sign'</code>, <code>'symmetric'</code>, <code>'symmetricismax'</code>, and
+ <code>'symmetriclogit'</code>.</td></tr>
+<tr><td width="18%"><code>&quot;BreakTies&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+ tie-breaking algorithm used by <code>predict</code> method, when multiple
+ classes have the same smallest cost.  Available options are
+ <code>&quot;smallest&quot;</code> (default), which uses the smallest index among tied
+ groups, <code>&quot;nearest&quot;</code>, which uses the class with the nearest neighbor
+ among tied groups, and <code>&quot;random&quot;</code>, which randomly selects one of
+ the tied groups.</td></tr>
+<tr><td width="18%"><code>&quot;NumNeighbors&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value that
+ specifies the number of nearest neighbors to be found in the kNN search
+ algorithm for classifying each point during prediction.  By default,
+ it is 1.</td></tr>
+<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">Any valid distance metric supported by
+ the <code>pdist2</code> function.  Note that the allowable distrance metrics
+ depend on the selected nearest neighbor search method.</td></tr>
+<tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">Either a distance weighting
+ function, specified either as a function handle, which accepts a matrix
+ of nonnegative distances and returns a matrix the same size containing
+ nonnegative distance weights, or a character vector with one of the
+ following values: <code>&quot;equal&quot;</code>, which corresponds to no weighting;
+ <code>&quot;inverse&quot;</code>, which corresponds to a weight equal to
+ <math>1/distance</math>; <code>&quot;squaredinverse&quot;</code>, which corresponds to a
+ weight equal to <math>1/distance^2</math>.</td></tr>
+<tr><td width="18%"><code>&quot;Cov&quot;</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of
+ columns <var>X</var> specifying the covariance matrix for computing the
+ mahalanobis distance.  This must be a positive definite matrix matching.
+ This argument is only valid when the selected distance metric is
+ <code>&quot;mahalanobis&quot;</code>.</td></tr>
+<tr><td width="18%"><code>&quot;Exponent&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
+ specifying the Minkowski distance exponent.  This argument is only valid
+ when the selected distance metric is <code>&quot;minkowski&quot;</code>.  By default,
+ it is 2.</td></tr>
+<tr><td width="18%"><code>&quot;Scale&quot;</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying
+ the scale parameters for the standardized Euclidean distance.  The vector
+ length must be equal to the number of columns in <var>X</var>.  This argument
+ is only valid when the selected distance metric is <code>&quot;seuclidean&quot;</code>,
+ in which case each coordinate of <var>X</var> is scaled by the corresponding
+ element of <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By
+ default, the scale parameter is the standard deviation of each coordinate
+ in <var>X</var>.  If a variable in <var>X</var> is constant, i.e. zero variance,
+ this value is forced to 1 to avoid division by zero.  This is the
+ equivalent of this variable not being standardized.</td></tr>
+<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+ nearest neighbor search method used by <code>knnsearch</code>, which can be
+ <code>&quot;kdtree&quot;</code> or <code>&quot;exhaustive&quot;</code>.  See <code>knnsearch</code> for more
+ information about default values and allowable distance metrics for each
+ search method.</td></tr>
+<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
+ the maximum number of data points in the leaf node of the Kd-tree.  This
+ argument is meaningful only when the selected nearest neighbor search
+ method is <code>&quot;kdtree&quot;</code>.  By default, it is 50.</td></tr>
+</table>
+
+<p> <strong>See also: </strong>
+  <a href="fitcknn.html">fitcknn</a>, 
+  <a href="knnsearch.html">knnsearch</a>, 
+  <a href="rangesearch.html">rangesearch</a>, 
+  <a href="pdist2.html">pdist2</a>
+</p>
+
+
+            </div>
+          </div>
+        </div>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1927,7 +2276,7 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
                ResponseName: "Y"
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: 1
                     Trained: [10x1 cell]
 </pre></td></tr>
@@ -1996,7 +2345,7 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
                ResponseName: "Y"
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: 0
                     Trained: [12x1 cell]
 
@@ -2006,7 +2355,7 @@ ans =
 
              ResponseName: 'Y'
                ClassNames: {'setosa' 'versicolor' 'virginica'}
-           ScoreTransform: 'none'
+           ScoreTransform: 'custom function handle'
           NumObservations: 137
             NumPredictors: 4
                  Distance: 'mahalanobis'

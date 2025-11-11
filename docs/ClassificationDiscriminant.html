@@ -841,7 +841,7 @@ Predictor data
 
 
 <p> </p>
-<p> A numerix matrix containing the unstandardized predictor data.  Each
+<p> A numeric matrix containing the unstandardized predictor data.  Each
  column of <var>X</var> represents one predictor (variable), and each row
  represents one observation.  This property is read-only.
 </p>
@@ -873,9 +873,10 @@ Class labels
 
 
 <p> </p>
-<p> Specified as a logical or numeric vector, or cell array of character
- vectors.  Each value in <var>Y</var> is the observed class label for the
- corresponding row in <var>X</var>.  This property is read-only.
+<p> Specified as a logical or numeric column vector, or as a character array
+ or a cell array of character vectors with the same number of rows as the
+ predictor data.  Each row in <var>Y</var> is the observed class label for
+ the corresponding row in <var>X</var>.  This property is read-only.
 </p>
 
 
@@ -1115,7 +1116,7 @@ Cost of Misclassification
  <code>Cost(i,j) = 0</code> if <code>i = j</code>.  In other words, the cost is 0
  for correct classification and 1 for incorrect classification.
 </p>
-<p> Add or change the <code>Cost</code> using dot notation as in:
+<p> Add or change the <code>Cost</code> property using dot notation as in:
  </p><ul>
 <li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
  </li></ul>
@@ -1152,7 +1153,7 @@ Prior probability for each class
  order of the elements in <code>Prior</code> corresponds to the order of the
  classes in <code>ClassNames</code>.
 </p>
-<p> Add or change the <code>Prior</code> using dot notation as in:
+<p> Add or change the <code>Prior</code> property using dot notation as in:
  </p><ul>
 <li> <code><var>obj</var>.Prior = <var>priorVector</var></code>
  </li></ul>
@@ -1185,28 +1186,34 @@ Transformation function for classification scores
 
 
 <p> </p>
-<p> Specified as a character vector representing a built-in function or as a
- function handle for transforming the classification scores.  The
- following built-in functions are supported:
+<p> Specified as a function handle for transforming the classification
+ scores.  Add or change the <code>ScoreTransform</code> property using dot
+ notation as in:
 </p>
  <ul>
-<li> <code>'doublelogit'</code>
- </li><li> <code>'invlogit'</code>
- </li><li> <code>'ismax'</code>
- </li><li> <code>'logit'</code>
- </li><li> <code>'none'</code>
- </li><li> <code>'identity'</code>
- </li><li> <code>'sign'</code>
- </li><li> <code>'symmetric'</code>
- </li><li> <code>'symmetricismax'</code>
- </li><li> <code>'symmetriclogit'</code>
- </li></ul>
-
-<p> Add or change the <code>ScoreTransform</code> using dot notation as in:
- </p><ul>
 <li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
  </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
  </li></ul>
+
+<p> When specified as a character vector, it can be any of the following
+ built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ always stores their function handle equivalent.
+</p>
+ <table>
+<thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+ largest score to 1, and for all other classes to 0</td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+ with the largest score to 1, and for all other classes to -1</td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+</table>
 
 
 
@@ -1465,8 +1472,7 @@ Minimum value for Gamma regularization parameter
                   </h4>
                 </div>
                 <div class="col-8">
-A scalar value specifying the logarithm of the determinant of the
- within-class covariance matrix.  This property is read-only.
+Logarithm of the determinant of the within-class covariance matrix
                 </div>
               </div>
           </div>
@@ -1475,6 +1481,9 @@ A scalar value specifying the logarithm of the determinant of the
 
 
 <p> </p>
+<p> A scalar value specifying the logarithm of the determinant of the
+ within-class covariance matrix.  This property is read-only.
+</p>
 
 
 
@@ -1494,8 +1503,7 @@ A scalar value specifying the logarithm of the determinant of the
                   </h4>
                 </div>
                 <div class="col-8">
-A matrix of the same size as <var>X</var> and the values in <var>X</var> with the
- corresponding class means subtracted.  This property is read-only.
+Predictor data with class means subtracted
                 </div>
               </div>
           </div>
@@ -1504,6 +1512,9 @@ A matrix of the same size as <var>X</var> and the values in <var>X</var> with th
 
 
 <p> </p>
+<p> A matrix of the same size as <var>X</var> and the values in <var>X</var> with the
+ corresponding class means subtracted.  This property is read-only.
+</p>
 
 
 
@@ -1548,18 +1559,18 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
- variables.
- <var>X</var> will be used to train the discriminant model.
+ variables.  <var>X</var> will be used to train the discriminant model.
  </li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
- of corresponding predictor data in <var>X</var>. <var>Y</var> can contain any type
+ of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
  of categorical data. <var>Y</var> must have the same number of rows as
  <var>X</var>.
  </li></ul>
 
 <p> <code><var>obj</var> = ClassificationDiscriminant (&hellip;, <var>name</var>,
  <var>value</var>)</code> returns a ClassificationDiscriminant object with parameters
- specified by the following<code><var>name</var>, <var>value</var></code> pair arguments:
+ specified by the following <code><var>name</var>, <var>value</var></code> paired input
+ arguments:
 </p>
  <table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
@@ -1571,12 +1582,6 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
 <tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the Discriminant model.
  <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
- probabilities for each class.  The order of the elements in <code>Prior</code>
- corresponds to the order of the classes in <code>ClassNames</code>.
- Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
- class probabilities or <code>&quot;uniform&quot;</code> to assume equal class
- probabilities.</td></tr>
 <tr><td width="18%"><code>'Cost'</code></td><td width="2%"></td><td width="80%">An <math>N&times;R</math> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var>, where
  <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance
@@ -1584,6 +1589,19 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
  otherwise 0. The cost matrix can be altered by using
  <code><var>Mdl</var>.cost = somecost</code>.  By default, its value is
  <code><var>cost</var> = ones (rows (X), numel (unique (Y)))</code>.</td></tr>
+<tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+ probabilities for each class.  The order of the elements in <code>Prior</code>
+ corresponds to the order of the classes in <code>ClassNames</code>.
+ Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
+ class probabilities or <code>&quot;uniform&quot;</code> to assume equal class
+ probabilities.</td></tr>
+<tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A user-defined function handle
+ or a character vector specifying one of the following builtin functions
+ specifying the transformation applied to predicted classification scores.
+ Supported values include <code>'doublelogit'</code>, <code>'invlogit'</code>,
+ <code>'ismax'</code>, <code>'logit'</code>, <code>'none'</code>, <code>'identity'</code>,
+ <code>'sign'</code>, <code>'symmetric'</code>, <code>'symmetricismax'</code>, and
+ <code>'symmetriclogit'</code>.</td></tr>
 <tr><td width="18%"><code>'DiscrimType'</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
  specifying the type of discriminant analysis to perform. The only
  supported value is <code>'linear'</code>.</td></tr>
@@ -2107,7 +2125,7 @@ CVMdl =
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
                ResponseName: 'Y'
-             ScoreTransform: 'none'
+             ScoreTransform: [1x1 function_handle]
                 Standardize: []
                     Trained: [10x1 cell]
 </pre></td></tr>
