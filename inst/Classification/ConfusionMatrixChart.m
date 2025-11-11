@@ -1,5 +1,6 @@
 ## Copyright (C) 2020-2021 Stefano Guidoni <ilguido@users.sf.net>
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,82 +20,370 @@
 classdef ConfusionMatrixChart < handle
 
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{cmc} =} ConfusionMatrixChart ()
-  ## Create object @var{cmc}, a Confusion Matrix Chart object.
+  ## @deftp {statistics} ConfusionMatrixChart
   ##
-  ## @table @asis
-  ## @item @qcode{"DiagonalColor"}
-  ## The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
+  ## Confusion matrix chart for classification results
   ##
-  ## @item @qcode{"OffDiagonalColor"}
-  ## The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
+  ## The @code{ConfusionMatrixChart} class implements a confusion matrix chart
+  ## object, which displays the classification performance of a classifier by
+  ## showing the counts of true positive, true negative, false positive, and
+  ## false negative predictions.
   ##
-  ## @item @qcode{"GridVisible"}
-  ## Available values: @qcode{on} (default), @qcode{off}.
+  ## A confusion matrix chart is a visual representation of the performance of
+  ## a classification algorithm.  The rows represent the true classes and the
+  ## columns represent the predicted classes.  The diagonal elements represent
+  ## the correctly classified observations, while the off-diagonal elements
+  ## represent the misclassified observations.
   ##
-  ## @item @qcode{"Normalization"}
-  ## Available values: @qcode{absolute} (default), @qcode{column-normalized},
-  ## @qcode{row-normalized}, @qcode{total-normalized}.
-  ##
-  ## @item @qcode{"ColumnSummary"}
-  ## Available values: @qcode{off} (default), @qcode{absolute},
-  ## @qcode{column-normalized},@qcode{total-normalized}.
-  ##
-  ## @item @qcode{"RowSummary"}
-  ## Available values: @qcode{off} (default), @qcode{absolute},
-  ## @qcode{row-normalized}, @qcode{total-normalized}.
-  ## @end table
-  ##
-  ## MATLAB compatibility -- the not implemented properties are: FontColor,
-  ## PositionConstraint, InnerPosition, Layout.
+  ## Create a @code{ConfusionMatrixChart} object by using the
+  ## @code{confusionchart} function.
   ##
   ## @seealso{confusionchart}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (Access = public)
-    ## text properties
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} XLabel
+    ##
+    ## X-axis label
+    ##
+    ## A character vector specifying the label for the x-axis.  Default is
+    ## "Predicted Class".
+    ##
+    ## @end deftp
     XLabel = "Predicted Class";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} YLabel
+    ##
+    ## Y-axis label
+    ##
+    ## A character vector specifying the label for the y-axis.  Default is
+    ## "True Class".
+    ##
+    ## @end deftp
     YLabel = "True Class";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} Title
+    ##
+    ## Chart title
+    ##
+    ## A character vector specifying the title of the confusion matrix chart.
+    ## Default is empty string.
+    ##
+    ## @end deftp
     Title  = "";
 
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} FontName
+    ##
+    ## Font name for text elements
+    ##
+    ## A character vector specifying the font name used for all text elements
+    ## in the chart.  Default is empty string, which uses the axes font name.
+    ##
+    ## @end deftp
     FontName  = "";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} FontSize
+    ##
+    ## Font size for text elements
+    ##
+    ## A numeric scalar specifying the font size used for all text elements
+    ## in the chart.  Default is 0, which uses the axes font size.
+    ##
+    ## @end deftp
     FontSize  = 0;
 
-    ## chart colours
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} DiagonalColor
+    ##
+    ## Color for diagonal elements
+    ##
+    ## A 1x3 RGB vector specifying the color for the diagonal elements of the
+    ## confusion matrix, which represent correct classifications.  Default is
+    ## [0.0, 0.4471, 0.7412].
+    ##
+    ## @end deftp
     DiagonalColor = [0 0.4471 0.7412];
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} OffDiagonalColor
+    ##
+    ## Color for off-diagonal elements
+    ##
+    ## A 1x3 RGB vector specifying the color for the off-diagonal elements of
+    ## the confusion matrix, which represent misclassifications.  Default is
+    ## [0.8510, 0.3255, 0.0980].
+    ##
+    ## @end deftp
     OffDiagonalColor = [0.8510 0.3255 0.0980];
 
-    ## data visualization
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} Normalization
+    ##
+    ## Normalization method for confusion matrix values
+    ##
+    ## A character vector specifying how to normalize the confusion matrix
+    ## values.  Supported values are:
+    ##
+    ## @itemize
+    ## @item @qcode{"absolute"} - Display absolute counts (default)
+    ## @item @qcode{"column-normalized"} - Normalize by column totals
+    ## @item @qcode{"row-normalized"} - Normalize by row totals
+    ## @item @qcode{"total-normalized"} - Normalize by total number of
+    ## observations
+    ## @end itemize
+    ##
+    ## @end deftp
     Normalization = "absolute";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} ColumnSummary
+    ##
+    ## Column summary display
+    ##
+    ## A character vector specifying whether and how to display column summaries.
+    ## Supported values are:
+    ##
+    ## @itemize
+    ## @item @qcode{"off"} - Do not display column summary (default)
+    ## @item @qcode{"absolute"} - Display absolute counts
+    ## @item @qcode{"column-normalized"} - Display normalized by column
+    ## @item @qcode{"total-normalized"} - Display normalized by total
+    ## @end itemize
+    ##
+    ## @end deftp
     ColumnSummary = "off";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} RowSummary
+    ##
+    ## Row summary display
+    ##
+    ## A character vector specifying whether and how to display row summaries.
+    ## Supported values are:
+    ##
+    ## @itemize
+    ## @item @qcode{"off"} - Do not display row summary (default)
+    ## @item @qcode{"absolute"} - Display absolute counts
+    ## @item @qcode{"row-normalized"} - Display normalized by row
+    ## @item @qcode{"total-normalized"} - Display normalized by total
+    ## @end itemize
+    ##
+    ## @end deftp
     RowSummary = "off";
 
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} GridVisible
+    ##
+    ## Grid visibility
+    ##
+    ## A character vector specifying whether to display grid lines in the
+    ## confusion matrix.  Supported values are:
+    ##
+    ## @itemize
+    ## @item @qcode{"on"} - Display grid lines (default)
+    ## @item @qcode{"off"} - Hide grid lines
+    ## @end itemize
+    ##
+    ## @end deftp
     GridVisible = "on";
 
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} HandleVisibility
+    ##
+    ## Handle visibility
+    ##
+    ## A character vector specifying the visibility of the object's handle.
+    ## Supported values are @qcode{"on"}, @qcode{"off"}, and @qcode{"callback"}.
+    ##
+    ## @end deftp
     HandleVisibility = "";
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} OuterPosition
+    ##
+    ## Outer position of the chart
+    ##
+    ## A 1x4 numeric vector specifying the outer position of the chart in the
+    ## format [left, bottom, width, height].
+    ##
+    ## @end deftp
     OuterPosition = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} Position
+    ##
+    ## Position of the chart
+    ##
+    ## A 1x4 numeric vector specifying the position of the chart in the
+    ## format [left, bottom, width, height].
+    ##
+    ## @end deftp
     Position = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} Units
+    ##
+    ## Position units
+    ##
+    ## A character vector specifying the units for the position properties.
+    ## Supported values are @qcode{"centimeters"}, @qcode{"characters"},
+    ## @qcode{"inches"}, @qcode{"normalized"}, @qcode{"pixels"}, and
+    ## @qcode{"points"}.
+    ##
+    ## @end deftp
     Units = "";
   endproperties
 
   properties (GetAccess = public, SetAccess = private)
-    ClassLabels = {}; # a string cell array of classes
-    NormalizedValues = []; # the normalized confusion matrix
-    Parent = 0; # a handle to the parent object
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} ClassLabels
+    ##
+    ## Class labels
+    ##
+    ## A cell array of character vectors containing the class labels used in
+    ## the confusion matrix.  This property is read-only.
+    ##
+    ## @end deftp
+    ClassLabels = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} NormalizedValues
+    ##
+    ## Normalized confusion matrix values
+    ##
+    ## A numeric matrix containing the normalized confusion matrix values
+    ## according to the current normalization setting.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    NormalizedValues = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {ConfusionMatrixChart} {property} Parent
+    ##
+    ## Parent object
+    ##
+    ## A handle to the parent figure or container object.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    Parent = 0;
   endproperties
 
   properties (Access = protected)
-    hax = 0.0; # a handle to the axes
-    ClassN = 0; # the number of classes
-    AbsoluteValues = []; # the original confusion matrix
-    ColumnSummaryAbsoluteValues = []; # default values of the column summary
-    RowSummaryAbsoluteValues = []; # default values of the row summary
+    ## Axes handle
+    hax = 0.0;
+
+    ## Number of classes
+    ClassN = 0;
+
+    ## Absolute confusion matrix values
+    AbsoluteValues = [];
+
+    ## Column summary absolute values
+    ColumnSummaryAbsoluteValues = [];
+
+    ## Row summary absolute values
+    RowSummaryAbsoluteValues = [];
   endproperties
 
   methods (Access = public)
-    ## class constructor
-    ## inputs: axis handle, a confusion matrix, a list of class labels,
-    ##         an array of optional property-value pairs.
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{cmc} =} ConfusionMatrixChart (@var{hax}, @var{cm}, @var{cl})
+    ## @deftypefnx {statistics} {@var{cmc} =} ConfusionMatrixChart (@dots{}, @var{name}, @var{value})
+    ##
+    ## Create a @qcode{ConfusionMatrixChart} object for visualizing
+    ## classification performance.
+    ##
+    ## @code{@var{cmc} = ConfusionMatrixChart (@var{hax}, @var{cm}, @var{cl})}
+    ## returns a ConfusionMatrixChart object with parent axes @var{hax},
+    ## confusion matrix @var{cm}, and class labels @var{cl}.
+    ##
+    ## @itemize
+    ## @item
+    ## @code{hax} must be a valid axes handle where the chart will be displayed.
+    ## @item
+    ## @code{cm} must be a square numeric matrix containing the confusion matrix
+    ## values, where rows represent true classes and columns represent predicted
+    ## classes.
+    ## @item
+    ## @code{cl} must be a cell array of character vectors containing the class
+    ## labels. The number of labels must match the size of the confusion matrix.
+    ## @end itemize
+    ##
+    ## @code{@var{cmc} = ConfusionMatrixChart (@dots{}, @var{name}, @var{value})}
+    ## returns a ConfusionMatrixChart object with additional parameters
+    ## specified by @qcode{@var{name}, @var{value}} paired arguments:
+    ##
+    ## @multitable @columnfractions 0.18 0.02 0.8
+    ## @headitem @var{Name} @tab @tab @var{Value}
+    ##
+    ## @item @qcode{"XLabel"} @tab @tab A character vector specifying the
+    ## x-axis label. Default is "Predicted Class".
+    ##
+    ## @item @qcode{"YLabel"} @tab @tab A character vector specifying the
+    ## y-axis label. Default is "True Class".
+    ##
+    ## @item @qcode{"Title"} @tab @tab A character vector specifying the chart
+    ## title. Default is empty string.
+    ##
+    ## @item @qcode{"FontName"} @tab @tab A character vector specifying the
+    ## font name for text elements. Default is the axes font name.
+    ##
+    ## @item @qcode{"FontSize"} @tab @tab A numeric scalar specifying the
+    ## font size for text elements. Default is the axes font size.
+    ##
+    ## @item @qcode{"DiagonalColor"} @tab @tab A 1x3 RGB vector specifying
+    ## the color for diagonal elements (correct classifications). Default is
+    ## [0.0, 0.4471, 0.7412].
+    ##
+    ## @item @qcode{"OffDiagonalColor"} @tab @tab A 1x3 RGB vector specifying
+    ## the color for off-diagonal elements (misclassifications). Default is
+    ## [0.8510, 0.3255, 0.0980].
+    ##
+    ## @item @qcode{"Normalization"} @tab @tab A character vector specifying
+    ## the normalization method. Supported values are @qcode{"absolute"},
+    ## @qcode{"column-normalized"}, @qcode{"row-normalized"}, and
+    ## @qcode{"total-normalized"}. Default is @qcode{"absolute"}.
+    ##
+    ## @item @qcode{"ColumnSummary"} @tab @tab A character vector specifying
+    ## whether and how to display column summaries. Supported values are
+    ## @qcode{"off"}, @qcode{"absolute"}, @qcode{"column-normalized"}, and
+    ## @qcode{"total-normalized"}. Default is @qcode{"off"}.
+    ##
+    ## @item @qcode{"RowSummary"} @tab @tab A character vector specifying
+    ## whether and how to display row summaries. Supported values are
+    ## @qcode{"off"}, @qcode{"absolute"}, @qcode{"row-normalized"}, and
+    ## @qcode{"total-normalized"}. Default is @qcode{"off"}.
+    ##
+    ## @item @qcode{"GridVisible"} @tab @tab A character vector specifying
+    ## whether to display grid lines. Supported values are @qcode{"on"} and
+    ## @qcode{"off"}. Default is @qcode{"on"}.
+    ##
+    ## @item @qcode{"HandleVisibility"} @tab @tab A character vector specifying
+    ## the handle visibility. Supported values are @qcode{"on"}, @qcode{"off"},
+    ## and @qcode{"callback"}.
+    ##
+    ## @item @qcode{"OuterPosition"} @tab @tab A 1x4 numeric vector specifying
+    ## the outer position of the chart.
+    ##
+    ## @item @qcode{"Position"} @tab @tab A 1x4 numeric vector specifying
+    ## the position of the chart.
+    ##
+    ## @item @qcode{"Units"} @tab @tab A character vector specifying the
+    ## position units. Supported values are @qcode{"centimeters"},
+    ## @qcode{"characters"}, @qcode{"inches"}, @qcode{"normalized"},
+    ## @qcode{"pixels"}, and @qcode{"points"}.
+    ## @end multitable
+    ##
+    ## @seealso{confusionchart}
+    ## @end deftypefn
     function this = ConfusionMatrixChart (hax, cm, cl, args)
       ## class initialization
       this.hax = hax;
@@ -160,7 +449,7 @@ classdef ConfusionMatrixChart < handle
       updateColorMap (this);
     endfunction
 
-    ## set functions
+    ## Set functions
     function set.XLabel (this, string)
       if (! ischar (string))
         close (this.Parent);
@@ -315,10 +604,15 @@ classdef ConfusionMatrixChart < handle
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ConfusionMatrixChart} {} disp (@var{cmc}, @var{order})
-    ## Display the properties of the @code{ConfusionMatrixChart} object
-    ## @var{cmc}.
+    ## @deftypefn  {ConfusionMatrixChart} {} disp (@var{cmc})
     ##
+    ## Display the properties of the ConfusionMatrixChart object.
+    ##
+    ## @code{disp (@var{cmc})} displays the main properties of the
+    ## ConfusionMatrixChart object @var{cmc}, including the normalized values
+    ## and class labels.
+    ##
+    ## @seealso{ConfusionMatrixChart}
     ## @end deftypefn
     function disp (this)
       nv_sizes = size (this.NormalizedValues);
@@ -333,17 +627,27 @@ classdef ConfusionMatrixChart < handle
 
     ## -*- texinfo -*-
     ## @deftypefn  {ConfusionMatrixChart} {} sortClasses (@var{cmc}, @var{order})
-    ## Sort the classes of the @code{ConfusionMatrixChart} object @var{cmc}
-    ## according to @var{order}.
     ##
-    ## Valid values for @var{order} can be an array or cell array including
-    ## the same class labels as @var{cm}, or a value like @code{"auto"},
-    ## @code{"ascending-diagonal"}, @code{"descending-diagonal"} and
-    ## @code{"cluster"}.
+    ## Sort the classes in the confusion matrix chart.
     ##
-    ## @end deftypefn
+    ## @code{sortClasses (@var{cmc}, @var{order})} sorts the classes in the
+    ## confusion matrix chart @var{cmc} according to the specified @var{order}.
+    ##
+    ## @var{order} can be:
+    ## @itemize
+    ## @item A cell array of class labels in the desired order
+    ## @item @qcode{"auto"} - Sort class labels alphabetically
+    ## @item @qcode{"ascending-diagonal"} - Sort by ascending diagonal values
+    ## @item @qcode{"descending-diagonal"} - Sort by descending diagonal values
+    ## @item @qcode{"cluster"} - Sort using hierarchical clustering
+    ## @end itemize
+    ##
+    ## When using @qcode{"cluster"}, the classes are grouped based on similarity
+    ## using hierarchical clustering, which can help identify groups of
+    ## frequently confused classes.
     ##
     ## @seealso{confusionchart, linkage, pdist}
+    ## @end deftypefn
     function sortClasses (this, order)
 
       ## check the input parameters
