@@ -568,7 +568,6 @@ classdef ClassificationNeuralNetwork
       LearningRate            = 0.01;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      this.ScoreTransform     = 'none';
       this.Solver = "Gradient Descend";
 
       ## Supported activation functions
