@@ -249,3 +249,24 @@
  ** tcdf: improve speed and fix edge case in processing small DF (#232)
 
  ** ztest2: improve input validation (#226)
+
+
+ Summary of important user-visible changes for statistics 1.7.6:
+-------------------------------------------------------------------
+
+ Important Notice: 1) `mad`, `mean`, `median`, `std`, `var` functions
+                      shadow core Octave's respective functions prior
+                      to Octave v9.1
+                   2) incompatibility with the `nan` package
+
+ Improvements:
+ =============
+
+ ** Update documentation to all classification objects. Minor bug fixes (#263)
+
+ ** Update documentation to ConfusionMatrixChart class (#285)
+
+ ** cvpartition: fix error in stratified input vector (#268)
+                 fix handling of missing observations (#269)
+
+ ** pca: fix erroneous Hotelling's T^2 statistics when applying weights (#279)
