@@ -1,4 +1,5 @@
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,57 +18,256 @@
 
 classdef CompactClassificationSVM
 ## -*- texinfo -*-
-## @deftypefn {statistics} CompactClassificationSVM
+## @deftp {statistics} CompactClassificationSVM
 ##
-## A @qcode{CompactClassificationSVM} object is a compact version of a support
-## vectors machine model, @qcode{ClassificationSVM}.
+## Compact Support Vector Machine classification
 ##
-## The @qcode{CompactClassificationSVM} does not include the training data
-## resulting to a smaller classifier size, which can be used for making
-## predictions from new data, but not for tasks such as cross validation.  It
-## can only be created from a @qcode{ClassificationSVM} model by using the
+## The @code{CompactClassificationSVM} class implements a compact version of a
+## Support Vector Machine classifier object for one-class or two-class problems,
+## which can predict responses for new data using the @code{predict} method.
+##
+## A @code{CompactClassificationSVM} object is a compact version of a support
+## vector machine model, @code{ClassificationSVM}.  It does not include the
+## training data resulting in a smaller classifier size, which can be used for
+## making predictions from new data, but not for tasks such as cross validation.
+## It can only be created from a @code{ClassificationSVM} model by using the
 ## @code{compact} object method.
 ##
-## The available methods for a @qcode{CompactClassificationSVM} object
-## are:
-## @itemize
-## @item
-## @code{predict}
-## @item
-## @code{loss}
-## @item
-## @code{margin}
-## @item
-## @code{savemodel}
-## @end itemize
-##
-## @seealso{fitcsvm, ClassificationSVM}
-## @end deftypefn
+## @seealso{ClassificationSVM}
+## @end deftp
 
   properties (Access = public)
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} NumPredictors
+    ##
+    ## Number of predictors
+    ##
+    ## A positive integer value specifying the number of predictors in the
+    ## training dataset used for training the SVM model.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    NumPredictors       = [];
 
-    NumPredictors       = [];    # Number of predictors
-    PredictorNames      = [];    # Predictor variables names
-    ResponseName        = [];    # Response variable name
-    ClassNames          = [];    # Names of classes in Y
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} PredictorNames
+    ##
+    ## Names of predictor variables
+    ##
+    ## A cell array of character vectors specifying the names of the predictor
+    ## variables.  The names are in the order in which the appear in the
+    ## training dataset.  This property is read-only.
+    ##
+    ## @end deftp
+    PredictorNames      = [];
 
-    ScoreTransform      = [];    # Transformation for classification scores
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## A character vector specifying the name of the response variable @var{Y}.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName        = [];
 
-    Standardize         = [];    # Flag to standardize predictors
-    Sigma               = [];    # Predictor standard deviations
-    Mu                  = [];    # Predictor means
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ClassNames
+    ##
+    ## Names of classes in the response variable
+    ##
+    ## An array of unique values of the response variable @var{Y}, which has the
+    ## same data types as the data in @var{Y}.  This property is read-only.
+    ## @qcode{ClassNames} can have any of the following datatypes:
+    ##
+    ## @itemize
+    ## @item Cell array of character vectors
+    ## @item Character array
+    ## @item Logical vector
+    ## @item Numeric vector
+    ## @end itemize
+    ##
+    ## @end deftp
+    ClassNames          = [];
 
-    ModelParameters     = [];    # SVM parameters
-    Model               = [];    # Stores the 'libsvm' trained model
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ScoreTransform
+    ##
+    ## Transformation function for classification scores
+    ##
+    ## Specified as a function handle for transforming the classification
+    ## scores.  Add or change the @qcode{ScoreTransform} property using dot
+    ## notation as in:
+    ##
+    ## @itemize
+    ## @item @qcode{@var{obj}.ScoreTransform = 'function_name'}
+    ## @item @qcode{@var{obj}.ScoreTransform = @@function_handle}
+    ## @end itemize
+    ##
+    ## When specified as a character vector, it can be any of the following
+    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## always stores their function handle equivalent.
+    ##
+    ## @multitable @columnfractions 0.2 0.05 0.75
+    ## @headitem @var{Value} @tab @tab @var{Description}
+    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## largest score to 1, and for all other classes to 0
+    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x + 1}
+    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## with the largest score to 1, and for all other classes to -1
+    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+    ## @end multitable
+    ##
+    ## @end deftp
+    ScoreTransform      = [];
 
-    Alpha               = [];    # Trained classifier coefficients
-    Beta                = [];    # Linear predictor coefficients
-    Bias                = [];    # Bias term
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Standardize
+    ##
+    ## Flag to standardize predictors
+    ##
+    ## A boolean flag indicating whether the data in @var{X} have been
+    ## standardized prior to training.  This property is read-only.
+    ##
+    ## @end deftp
+    Standardize         = [];
 
-    IsSupportVector     = [];    # Indices of Support vectors
-    SupportVectorLabels = [];    # Support vector class labels
-    SupportVectors      = [];    # Support vectors
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Sigma
+    ##
+    ## Predictor standard deviations
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} containing
+    ## the standard deviations of predictor variables.  If the predictor
+    ## variables have not been standardized, then @qcode{Sigma} is empty.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Sigma               = [];
 
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Mu
+    ##
+    ## Predictor means
+    ##
+    ## A numeric vector of the same length as the columns in @var{X} containing
+    ## the means of predictor variables.  If the predictor variables have not
+    ## been standardized, then @qcode{Mu} is empty.  This property is read-only.
+    ##
+    ## @end deftp
+    Mu                  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} ModelParameters
+    ##
+    ## SVM training parameters
+    ##
+    ## A structure containing the parameters used to train the SVM model with
+    ## the following fields: @code{SVMtype}, @code{BoxConstraint},
+    ## @code{CacheSize}, @code{KernelScale}, @code{KernelOffset},
+    ## @code{KernelFunction}, @code{PolynomialOrder}, @code{Nu},
+    ## @code{Tolerance}, and @code{Shrinking}.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelParameters     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Model
+    ##
+    ## Trained SVM model
+    ##
+    ## A structure containing the trained model in @qcode{'libsvm'} format.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Model               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Alpha
+    ##
+    ## Trained classifier coefficients
+    ##
+    ## The coefficients of the trained SVM classifier specified as an @math{sx1}
+    ## numeric vector, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## with a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
+    ## empty.  This property is read-only.
+    ##
+    ## @end deftp
+    Alpha               = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Beta
+    ##
+    ## Linear predictor coefficients
+    ##
+    ## The linear predictor coefficients specified as an @math{sx1} numeric
+    ## vector, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
+    ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Beta                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} Bias
+    ##
+    ## Bias term
+    ##
+    ## The bias term specified as a scalar.  This property is read-only.
+    ##
+    ## @end deftp
+    Bias                = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} IsSupportVector
+    ##
+    ## Support vector indicator
+    ##
+    ## An @math{Nx1} logical vector that flags whether a corresponding
+    ## observation in the predictor data matrix is a Support Vector.  @math{N}
+    ## is the number of observations in the training data.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    IsSupportVector     = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} SupportVectorLabels
+    ##
+    ## Support vector class labels
+    ##
+    ## The support vector class labels specified as an @math{sx1} numeric
+    ## vector, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}.  A value of +1 in
+    ## @code{SupportVectorLabels} indicates that the corresponding support
+    ## vector belongs to the positive class @qcode{(ClassNames@{2@})}.  A value
+    ## of -1 indicates that the corresponding support vector belongs to the
+    ## negative class @qcode{(ClassNames@{1@})}.  This property is read-only.
+    ##
+    ## @end deftp
+    SupportVectorLabels = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {CompactClassificationSVM} {property} SupportVectors
+    ##
+    ## Support vectors
+    ##
+    ## The support vectors of the trained SVM classifier specified an @math{sxp}
+    ## numeric matrix, where @math{s} is the number of support vectors equal to
+    ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of
+    ## predictor variables in the predictor data.  This property is read-only.
+    ##
+    ## @end deftp
+    SupportVectors      = [];
   endproperties
 
   methods (Hidden)
@@ -112,33 +312,33 @@ classdef CompactClassificationSVM
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {CompactClassificationSVM} {@var{labels} =} predict (@var{obj}, @var{XC})
-    ## @deftypefnx {CompactClassificationSVM} {[@var{labels}, @var{scores}] =} predict (@var{obj}, @var{XC})
+    ## @deftypefn  {CompactClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
+    ## @deftypefnx {CompactClassificationSVM} {[@var{label}, @var{score}] =} predict (@var{obj}, @var{XC})
     ##
     ## Classify new data points into categories using the Support Vector Machine
-    ## classification object.
+    ## classification model from a CompactClassificationSVM object.
     ##
-    ## @code{@var{labels} = predict (@var{obj}, @var{XC})} returns the vector of
+    ## @code{@var{label} = predict (@var{obj}, @var{XC})} returns the vector of
     ## labels predicted for the corresponding instances in @var{XC}, using the
-    ## trained Support Vector Machine classification compact model, @var{obj}.
-    ## For one-class SVM model, +1 or -1 is returned.
+    ## predictor data in the CompactClassificationSVM model, @var{obj}.  For
+    ## one-class SVM model, +1 or -1 is returned.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{CompactClassificationSVM} class object.
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
-    ## predictors @math{P} as the corresponding predictors of the SVM model in
+    ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ## @end itemize
     ##
-    ## @code{[@var{labels}, @var{scores}] = predict (@var{obj}, @var{XC}} also
-    ## returns @var{scores}, which contains the decision values for each
-    ## prediction.   Alternatively, @var{scores} can contain the posterior
+    ## @code{[@var{label}, @var{score}] = predict (@var{obj}, @var{XC})} also
+    ## returns @var{score}, which contains the decision values for each each
+    ## prediction.  Alternatively, @var{score} can contain the posterior
     ## probabilities if the ScoreTransform has been previously set using the
     ## @code{fitPosterior} method.
     ##
-    ## @seealso{fitcsvm, ClassificationSVM.fitPosterior}
+    ## @seealso{CompactClassificationSVM, ClassificationSVM}
     ## @end deftypefn
 
     function [labels, scores] = predict (this, XC)
@@ -204,32 +404,30 @@ classdef CompactClassificationSVM
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {@var{m} =} margin (@var{obj}, @var{X}, @var{Y})
     ##
-    ## Determine the classification margins for a Support Vector Machine
-    ## classification object.
+    ## Classification margins for Support Vector Machine classifier.
     ##
-    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns the
-    ## classification margins for the trained support vector machine (SVM)
-    ## classifier @var{obj} using the sample data in @var{X} and the class
-    ## labels in @var{Y}. It supports only binary classifier models. The
-    ## classification margin is commonly defined as @var{m} = @var{y}f(@var{x}),
-    ## where @var{f(x)} is the classification score and @var{y} is the true
-    ## class label corresponding to @var{x}. A greater margin indicates a better
-    ## model.
+    ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
+    ## the classification margins for @var{obj} with data @var{X} and
+    ## classification @var{Y}.  @var{m} is a numeric vector of length size (X,1).
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary class @qcode{CompactClassificationSVM} object.
+    ## @var{obj} is a @var{CompactClassificationSVM} object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
-    ## @var{obj}.
+    ## @var{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
     ## @item
-    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
-    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
-    ## number of rows as @var{X}.
+    ## @var{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}.  @var{Y} must have same
+    ## numbers of Rows as @var{X}.
     ## @end itemize
     ##
-    ## @seealso{fitcsvm, CompactClassificationSVM}
+    ## The classification margin for each observation is the difference between
+    ## the classification score for the true class and the maximal
+    ## classification score for the false classes.
+    ##
+    ## @seealso{CompactClassificationSVM}
     ## @end deftypefn
 
     function m = margin (this, X, Y)
@@ -265,82 +463,62 @@ classdef CompactClassificationSVM
     ## @deftypefn  {CompactClassificationSVM} {@var{L} =} loss (@var{obj}, @var{X}, @var{Y})
     ## @deftypefnx {CompactClassificationSVM} {@var{L} =} loss (@dots{}, @var{name}, @var{value})
     ##
-    ## Determine the classification error for a Support Vector Machine
-    ## classifier.
+    ## Compute loss for a trained CompactClassificationSVM object.
     ##
-    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} returns the
-    ## predictive accuracy of support vector machine (SVM) classification models.
-    ## Comparing the same type of loss across multiple models allows you to
-    ## identify which model is more accurate, with a lower loss indicating
-    ## superior predictive performance. It supports only binary classifier
-    ## models.
+    ## @code{@var{L} = loss (@var{obj}, @var{X}, @var{Y})} computes the loss,
+    ## @var{L}, using the default loss function @qcode{'classiferror'}.
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a binary class @qcode{CompactClassificationSVM} object.
+    ## @code{obj} is a @var{CompactClassificationSVM} object.
     ## @item
-    ## @var{X} must be an @math{MxP} numeric matrix with the same number of
-    ## features @math{P} as the corresponding predictors of the SVM model in
-    ## @var{obj}.
+    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## correspond to observations and columns correspond to features or
+    ## variables.
     ## @item
-    ## @var{Y} must be @math{Mx1} numeric vector containing the class labels
-    ## corresponding to the predictor data in @var{X}. @var{Y} must have same
-    ## number of rows as @var{X}.
+    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## of corresponding predictor data in @var{X}. @var{Y} must have same
+    ## numbers of Rows as @var{X}.
     ## @end itemize
     ##
-    ## @code{@var{L} = loss (@dots{}, @var{Name}, @var{Value})} returns the
-    ## aforementioned results with additional properties specified by
-    ## @qcode{Name-Value} pair arguments listed below.
+    ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
+    ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
+    ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"LossFun"} @tab @tab Loss function, specified as a built-in
-    ## loss function name. It accepts the following options: (Default is
-    ## 'classiferror')
-    ##
+    ## @item @qcode{"LossFun"} @tab @tab Specifies the loss function to use.
+    ## Can be a function handle with four input arguments (C, S, W, Cost)
+    ## which returns a scalar value or one of:
+    ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
+    ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
-    ##
-    ## @item 'binodeviance': Binomial deviance:
-    ## The binomial deviance loss function is used to evaluate the performance
-    ## of a binary classifier. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-2m_j]\}}
-    ##
-    ## @item 'classiferror': Misclassification rate in decimal
-    ## The classification error measures the fraction of misclassified instances
-    ## out of the total instances. It is calculated as:
-    ## @math{L = \frac{1}{n} \sum_{j=1}^{n} \mathbb{I}(m_j \leq 0)}
-    ##
-    ## @item 'exponential': Exponential loss:
-    ## The exponential loss function is used to penalize misclassified instances
-    ## exponentially. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \exp [-m_j]}
-    ##
-    ## @item 'hinge': Hinge loss:
-    ## The hinge loss function is often used for maximum-margin classification,
-    ## particularly for support vector machines. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \max (0, 1 - m_j)}
-    ##
-    ## @item 'logit': Logistic loss:
-    ## The logistic loss function, also known as log loss, measures the
-    ## performance of a classification model where the prediction is a
-    ## probability value. It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j \log \{1 + \exp [-m_j]\}}
-    ##
-    ## @item 'quadratic': Quadratic loss:
-    ## The quadratic loss function penalizes the square of the margin.
-    ## It is calculated as:
-    ## @math{L = \sum_{j=1}^{n} w_j (1 - m_j)^2}
-    ##
+    ## @item
+    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## number of observations and @math{K} is the number of classes.
+    ## The element @code{C(i,j)} is true if the class label of the i-th
+    ## observation is equal to the j-th class.
+    ## @item
+    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## represents the classification score for the corresponding class.
+    ## @item
+    ## @code{W} is a numeric vector of length @math{N}, representing
+    ## the observation weights.
+    ## @item
+    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{"Weights"} @tab @tab Specified as a numeric vector which
-    ## weighs each observation (row) in X. The size of Weights must be equal
-    ## to the number of rows in X. The default value is: ones(size(X,1),1)
+    ## @item @qcode{"Weights"} @tab @tab Specifies observation weights, must be
+    ## a numeric vector of length equal to the number of rows in X.
+    ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
+    ## observation weights in each class sum to the prior probability of that
+    ## class. When you supply Weights, loss computes the weighted
+    ## classification loss.
     ##
     ## @end multitable
     ##
-    ## @seealso{fitcsvm, ClassificationSVM}
+    ## @seealso{CompactClassificationSVM}
     ## @end deftypefn
 
     function L = loss (this, X, Y, varargin)
@@ -454,13 +632,13 @@ classdef CompactClassificationSVM
     ## Save a CompactClassificationSVM object.
     ##
     ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
-    ## CompactClassificationSVM object into an Octave binary file, the name
-    ## of which is specified in @var{filename}, along with an extra variable,
+    ## CompactClassificationSVM object into an Octave binary file, the name of
+    ## which is specified in @var{filename}, along with an extra variable,
     ## which defines the type classification object these variables constitute.
     ## Use @code{loadmodel} in order to load a classification object into
     ## Octave's workspace.
     ##
-    ## @seealso{loadmodel, fitcsvm, ClassificationSVM, CompactClassificationSVM}
+    ## @seealso{loadmodel, ClassificationSVM, CompactClassificationSVM}
     ## @end deftypefn
 
     function savemodel (this, fname)
