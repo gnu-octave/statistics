@@ -119,9 +119,6 @@
 ## @seealso{barttest, factoran, pcacov, pcares}
 ## @end deftypefn
 
-## BUGS:
-## - tsquared with weights (xtest below)
-
 ##FIXME
 ## -- can change isnan to ismissing once the latter is implemented in Octave
 ## -- change mystd to std and remove the helper function mystd once weighting is available in the Octave function
@@ -129,7 +126,7 @@
 function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
   if (nargin < 1)
-     print_usage ();
+    print_usage ();
   endif
 
   [nobs, nvars] = size (x);
@@ -156,16 +153,16 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
           case {"svd", "eig"}
             ;
           case "als"
-            error ("pca: alternating least square algorithm not implemented");
+            error ("pca: alternating least square algorithm not implemented.");
           otherwise
-            error ("pca: invalid algorithm %s", optAlgorithmS);
+            error ("pca: invalid algorithm '%s'.", optAlgorithmS);
         endswitch
       ## centering of the columns, around the mean
       case "centered"
         if (isbool (varargin{pair_index + 1}))
           optCenteredB = varargin{pair_index + 1};
         else
-          error ("pca: 'centered' requires a boolean value");
+          error ("pca: 'centered' requires a boolean value.");
         endif
       ## limit the size of the output to the degrees of freedom, when a smaller
       ## number than the number of variables
@@ -173,7 +170,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         if (isbool (varargin{pair_index + 1}))
           optEconomyB = varargin{pair_index + 1};
         else
-          error ("pca: 'economy' requires a boolean value");
+          error ("pca: 'economy' requires a boolean value.");
         endif
       ## choose the number of components to show
       case "numcomponents"
@@ -183,8 +180,9 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
             optNumComponentsI != floor (optNumComponentsI) ||
             optNumComponentsI <= 0 ||
             optNumComponentsI > nvars)
-          error (["pca: the number of components must be a positive integer"...
-                  "number smaller or equal to the number of variables"]);
+          error (strcat ("pca: the number of components must be a positive", ...
+                         " integernumber smaller or equal to the number of", ...
+                         " variables."));
         endif
       ## observation weights: some observations can be more accurate than others
       case "weights"
@@ -192,7 +190,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         if ((! isvector (optWeights)) ||
             length (optWeights) != nobs ||
             length (find (optWeights < 0)) > 0)
-          error ("pca: weights must be a numerical array of positive numbers");
+          error ("pca: weights must be a numerical array of positive numbers.");
         endif
 
         if (rows (optWeights) == 1 )
@@ -205,11 +203,11 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
             strcmpi (optVariableWeights, "variance"))
           optVariableWeights = "variance"; # take care of this later
         elseif ((! isvector (optVariableWeights)) ||
-            length (optVariableWeights) != nvars ||
-            (! isnumeric (optVariableWeights)) ||
-            length (find (optVariableWeights < 0)) > 0)
-          error (["pca: variable weights must be a numerical array of "...
-                  "positive numbers or the string 'variance'"]);
+                length (optVariableWeights) != nvars ||
+                (! isnumeric (optVariableWeights)) ||
+                length (find (optVariableWeights < 0)) > 0)
+          error (strcat ("pca: variable weights must be a numerical array", ...
+                         " of positive numbers or the string 'variance',"));
         else
           optVariableWeights = 1 ./ sqrt (optVariableWeights);
 
@@ -227,19 +225,19 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
             optRowsB = true;
           case "all"
             if (any (isnan (x)))
-              error (["pca: when all rows are requested the dataset cannot"...
-                      " include NaN values"]);
+              error (strcat ("pca: when all rows are requested the", ...
+                             " dataset cannot include NaN values"));
             endif
           otherwise
             error ("pca: %s is an invalid value for rows", ...
                    varargin{pair_index + 1});
         endswitch
       case {"coeff0", "score0", "options"}
-        error (strcat (["pca: parameter %s is only valid with the 'als'"], ...
-                       [" method, which is not yet implemented"]), ...
+        error (strcat ("pca: parameter %s is only valid with the 'als'", ...
+                       " method, which is not yet implemented."), ...
                varargin{pair_index});
       otherwise
-        error ("pca: unknown property %s", varargin{pair_index});
+        error ("pca: unknown property '%s'.", varargin{pair_index});
     endswitch
 
     pair_index += 2;
@@ -249,8 +247,8 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
   if (optRowsB)
     if (! strcmp (optAlgorithmS, "eig"))
       optAlgorithmS = "eig";
-      warning (["pca: setting algorithm to 'eig' because 'rows' option is "...
-                "set to 'pairwise'"]);
+      warning (strcat ("pca: setting algorithm to 'eig' because", ...
+                       " 'rows' option is set to 'pairwise'."));
     endif
 
     TF = isnan (x);
@@ -287,7 +285,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         ## weighted mean with missing data
         for iter = 1 : nvars
           mu(iter) =  sum (x(find (TF(:, iter) == 0), iter) .* ...
-                          optWeights(find (TF(:, iter) == 0))) ./ ...
+                           optWeights(find (TF(:, iter) == 0))) ./ ...
                       sum (optWeights(find (TF(:, iter) == 0)));
         endfor
       endif
@@ -483,54 +481,51 @@ endfunction
 
 %!shared COEFF,SCORE,latent,tsquare,m,x,R,V,lambda,i,S,F
 
-#NIST Engineering Statistics Handbook example (6.5.5.2)
+## NIST Engineering Statistics Handbook example (6.5.5.2)
 %!test
-%! x=[7 4 3
-%!    4 1 8
-%!    6 3 5
-%!    8 6 1
-%!    8 5 7
-%!    7 2 9
-%!    5 3 3
-%!    9 5 8
-%!    7 4 5
-%!    8 2 2];
+%! x=[7, 4, 3; 4, 1, 8; 6, 3, 5; 8, 6, 1; 8, 5, 7; ...
+%!    7, 2, 9; 5, 3, 3; 9, 5, 8; 7, 4, 5; 8, 2, 2];
 %! R = corrcoef (x);
 %! [V, lambda] = eig (R);
-%! [~, i] = sort(diag(lambda), "descend"); #arrange largest PC first
-%! S = V(:, i) * diag(sqrt(diag(lambda)(i)));
-%!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4); #contribution of first 2 PCs to each original variable
-%! B = V(:, i) * diag( 1./ sqrt(diag(lambda)(i)));
-%! F = zscore(x)*B;
-%! [COEFF,SCORE,latent,tsquare] = pca(zscore(x, 1));
-%!assert(tsquare,sumsq(F, 2),1E4*eps);
+%! [~, i] = sort (diag (lambda), "descend"); #arrange largest PC first
+%! S = V(:, i) * diag (sqrt (diag (lambda)(i)));
+%!assert (diag (S(:, 1:2) * S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
+%! B = V(:, i) * diag ( 1./ sqrt (diag (lambda)(i)));
+%! F = zscore (x) * B;
+%! [COEFF, SCORE, latent, tsquare] = pca (zscore (x, 1));
+%!assert (tsquare, sumsq (F, 2), 1E4*eps);
 
 %!test
-%! x=[1,2,3;2,1,3]';
-%! [COEFF,SCORE,latent,tsquare] = pca(x, "Economy", false);
-%! m=[sqrt(2),sqrt(2);sqrt(2),-sqrt(2);-2*sqrt(2),0]/2;
-%! m(:,1) = m(:,1)*sign(COEFF(1,1));
-%! m(:,2) = m(:,2)*sign(COEFF(1,2));
+%! x = [1, 2, 3; 2, 1, 3]';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false);
+%! m = [sqrt(2), sqrt(2); sqrt(2), -sqrt(2); -2*sqrt(2), 0] / 2;
+%! m(:,1) = m(:,1) * sign (COEFF(1,1));
+%! m(:,2) = m(:,2) * sign (COEFF(1,2));
 
-%!assert(COEFF,m(1:2,:),10*eps);
-%!assert(SCORE,-m,10*eps);
-%!assert(latent,[1.5;.5],10*eps);
-%!assert(tsquare,[4;4;4]/3,10*eps);
+%!assert (COEFF, m(1:2,:), 10*eps);
+%!assert (SCORE, -m, 10*eps);
+%!assert (latent, [1.5;.5], 10*eps);
+%!assert (tsquare, [4;4;4]/3, 10*eps);
 
-#test with observation weights (using Matlab's results for this case as a reference)
-%! [COEFF,SCORE,latent,tsquare] = pca(x, "Economy", false, "weights", [1 2 1], "variableweights", "variance");
-%!assert(COEFF, [0.632455532033676 -0.632455532033676; 0.741619848709566 0.741619848709566], 10*eps);
-%!assert(SCORE, [-0.622019449426284 0.959119380657905; -0.505649896847432 -0.505649896847431; 1.633319243121148 0.052180413036957], 10*eps);
-%!assert(latent, [1.783001790889027; 0.716998209110974], 10*eps);
-%!test assert(tsquare, [1.5; 0.5; 1.5], 10*eps);
+## Test with observation weights (using Matlab's results as a reference)
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
+%!                                        [1 2 1], "variableweights", ...
+%!                                        "variance");
+%!assert (COEFF, [0.632455532033676, -0.632455532033676; ...
+%!                0.741619848709566, 0.741619848709566], 10 * eps);
+%!assert (SCORE, [-0.622019449426284, 0.959119380657905; ...
+%!                -0.505649896847432, -0.505649896847431;
+%!                1.633319243121148, 0.052180413036957], 10 * eps);
+%!assert (latent, [1.783001790889027; 0.716998209110974], 10 * eps);
+%!test assert (tsquare, [1.5; 0.5; 1.5], 10 * eps);
 
 %!test
 %! x = [1,2,3;2,1,3]';
 %! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
 %!                                        [2 1 2], "variableweights", ...
 %!                                        "variance");
-%! COEFF_exp = [0.7906  0.7906; 0.6614 -0.6614];
-%! SCORE_exp = [-0.7836 -0.4813; -0.9071 0.9071; 1.2372 0.0277];
+%! COEFF_exp = [0.7906, 0.7906; 0.6614, -0.6614];
+%! SCORE_exp = [-0.7836, -0.4813; -0.9071, 0.9071; 1.2372, 0.0277];
 %! latent_exp = [2.5562; 0.6438];
 %! tsquare_exp = [0.6000; 1.6000; 0.6000];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -543,8 +538,8 @@ endfunction
 %! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
 %!                                        [1 3 2], "variableweights", ...
 %!                                        "variance");
-%! COEFF_exp = [0.6216 -0.6216; 0.8118 0.8118];
-%! SCORE_exp = [-0.8358 1.0411; -0.6473 -0.3792; 1.3889 0.0482];
+%! COEFF_exp = [0.6216, -0.6216; 0.8118, 0.8118];
+%! SCORE_exp = [-0.8358, 1.0411; -0.6473, -0.3792; 1.3889, 0.0482];
 %! latent_exp = [2.9067; 0.7599];
 %! tsquare_exp = [1.6667; 0.3333; 0.6667];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -557,8 +552,8 @@ endfunction
 %! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false, "weights", ...
 %!                                        [1 0.5 1.5], "variableweights", ...
 %!                                        "variance");
-%! COEFF_exp = [0.8118 0.8118; 0.6742 -0.6742];
-%! SCORE_exp = [-0.9657 -0.4713; -1.0915 0.8862; 1.0076 0.0188];
+%! COEFF_exp = [0.8118, 0.8118; 0.6742, -0.6742];
+%! SCORE_exp = [-0.9657, -0.4713; -1.0915, 0.8862; 1.0076, 0.0188];
 %! latent_exp = [1.5257; 0.3077];
 %! tsquare_exp = [1.3333; 3.3333; 0.6667];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -571,8 +566,8 @@ endfunction
 %! [COEFF, SCORE, latent, tsquare] = pca(x, "Economy", true, "weights", ...
 %!                                       [2 1 2], "variableweights", ...
 %!                                       "variance");
-%! COEFF_exp = [0.7906  0.7906; 0.6614 -0.6614];
-%! SCORE_exp = [-0.7836 -0.4813; -0.9071 0.9071; 1.2372 0.0277];
+%! COEFF_exp = [0.7906,  0.7906; 0.6614, -0.6614];
+%! SCORE_exp = [-0.7836, -0.4813; -0.9071, 0.9071; 1.2372, 0.0277];
 %! latent_exp = [2.5562; 0.6438];
 %! tsquare_exp = [0.6000; 1.6000; 0.6000];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -585,8 +580,8 @@ endfunction
 %! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", true, "weights", ...
 %!                                        [1 3 2], "variableweights", ...
 %!                                        "variance");
-%! COEFF_exp = [0.6216 -0.6216; 0.8118 0.8118];
-%! SCORE_exp = [-0.8358 1.0411; -0.6473 -0.3792; 1.3889 0.0482];
+%! COEFF_exp = [0.6216, -0.6216; 0.8118, 0.8118];
+%! SCORE_exp = [-0.8358, 1.0411; -0.6473, -0.3792; 1.3889, 0.0482];
 %! latent_exp = [2.9067; 0.7599];
 %! tsquare_exp = [1.6667; 0.3333; 0.6667];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -599,8 +594,8 @@ endfunction
 %! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", true, "weights", ...
 %!                                        [1 0.5 1.5], "variableweights", ...
 %!                                        "variance");
-%! COEFF_exp = [0.8118 0.8118; 0.6742 -0.6742];
-%! SCORE_exp = [-0.9657 -0.4713; -1.0915 0.8862; 1.0076 0.0188];
+%! COEFF_exp = [0.8118, 0.8118; 0.6742, -0.6742];
+%! SCORE_exp = [-0.9657, -0.4713; -1.0915, 0.8862; 1.0076, 0.0188];
 %! latent_exp = [1.5257; 0.3077];
 %! tsquare_exp = [1.3333; 3.3333; 0.6667];
 %! assert (COEFF, COEFF_exp, 1e-4);
@@ -609,33 +604,33 @@ endfunction
 %! assert (tsquare, tsquare_exp, 1e-4);
 
 %!test
-%! x=x';
-%! [COEFF,SCORE,latent,tsquare] = pca(x, "Economy", false);
-%! m=[sqrt(2),sqrt(2),0;-sqrt(2),sqrt(2),0;0,0,2]/2;
-%! m(:,1) = m(:,1)*sign(COEFF(1,1));
-%! m(:,2) = m(:,2)*sign(COEFF(1,2));
-%! m(:,3) = m(:,3)*sign(COEFF(3,3));
+%! x = x';
+%! [COEFF, SCORE, latent, tsquare] = pca (x, "Economy", false);
+%! m = [sqrt(2), sqrt(2), 0; -sqrt(2), sqrt(2), 0; 0, 0, 2] / 2;
+%! m(:,1) = m(:,1) * sign (COEFF(1,1));
+%! m(:,2) = m(:,2) * sign (COEFF(1,2));
+%! m(:,3) = m(:,3) * sign (COEFF(3,3));
 
-%!assert(COEFF,m,10*eps);
-%!assert(SCORE(:,1),-m(1:2,1),10*eps);
-%!assert(SCORE(:,2:3),zeros(2),10*eps);
-%!assert(latent,[1;0;0],10*eps);
-%!assert(tsquare,[0.5;0.5],10*eps)
+%!assert (COEFF, m, 10*eps);
+%!assert (SCORE(:,1), -m(1:2,1), 10*eps);
+%!assert (SCORE(:,2:3), zeros(2), 10*eps);
+%!assert (latent, [1;0;0], 10*eps);
+%!assert (tsquare, [0.5;0.5], 10*eps)
 
 %!test
-%! [COEFF,SCORE,latent,tsquare] = pca(x);
+%! [COEFF, SCORE, latent, tsquare] = pca (x);
 
-%!assert(COEFF,m(:, 1),10*eps);
-%!assert(SCORE,-m(1:2,1),10*eps);
-%!assert(latent,[1],10*eps);
-%!assert(tsquare,[0.5;0.5],10*eps)
+%!assert (COEFF, m(:, 1), 10*eps);
+%!assert (SCORE, -m(1:2,1), 10*eps);
+%!assert (latent, [1], 10*eps);
+%!assert (tsquare, [0.5;0.5], 10*eps)
 
-%!error <invalid algorithm> pca([1 2; 3 4], "Algorithm", "xxx")
-%!error <'centered' requires a boolean value> pca([1 2; 3 4], "Centered", "xxx")
-%!error <must be a positive integer> pca([1 2; 3 4], "NumComponents", -4)
-%!error <invalid value for rows> pca([1 2; 3 4], "Rows", 1)
-%!error <weights must be> pca([1 2; 3 4], "Weights", [1 2 3])
-%!error <weights must be> pca([1 2; 3 4], "Weights", [-1 2])
-%!error <variable weights must be> pca([1 2; 3 4], "VariableWeights", [-1 2])
-%!error <variable weights must be> pca([1 2; 3 4], "VariableWeights", "xxx")
-%!error <unknown property> pca([1 2; 3 4], "XXX", 1)
+%!error <invalid algorithm> pca ([1 2; 3 4], "Algorithm", "xxx")
+%!error <'centered' requires a boolean value> pca ([1 2; 3 4], "Centered", "xxx")
+%!error <must be a positive integer> pca ([1 2; 3 4], "NumComponents", -4)
+%!error <invalid value for rows> pca ([1 2; 3 4], "Rows", 1)
+%!error <weights must be> pca ([1 2; 3 4], "Weights", [1 2 3])
+%!error <weights must be> pca ([1 2; 3 4], "Weights", [-1 2])
+%!error <variable weights must be> pca ([1 2; 3 4], "VariableWeights", [-1 2])
+%!error <variable weights must be> pca ([1 2; 3 4], "VariableWeights", "xxx")
+%!error <unknown property> pca ([1 2; 3 4], "XXX", 1)
