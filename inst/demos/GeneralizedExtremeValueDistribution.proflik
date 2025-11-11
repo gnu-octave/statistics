@@ -1,9 +1,9 @@
 %!demo
 %! ## Compute and plot the profile likelihood for the shape parameter of a fitted
 %! ## Generalized Extreme Value distribution
-%! pd = makedist ("GeneralizedExtremeValue", "k", 0, "sigma", 1, "mu", 0)
-%! rand ("seed", 21);
-%! data = random (pd, 1000, 1);
+%! pd = makedist ("GeneralizedExtremeValue", "k", -0.5, "sigma", 1, "mu", 2)
+%! rand ("seed", 1);
+%! data = random (pd, 5000, 1);
 %! pd_fitted = fitdist (data, "GeneralizedExtremeValue")
 %! [nlogL, param] = proflik (pd_fitted, 1, "Display", "on");
 %!
