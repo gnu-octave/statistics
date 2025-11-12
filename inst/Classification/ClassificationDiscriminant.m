@@ -239,7 +239,7 @@ classdef ClassificationDiscriminant
     ##
     ## Class means
     ##
-    ## A @math {KxP} numeric matrix specifying the mean of the multivariate
+    ## A @math{KxP} numeric matrix specifying the mean of the multivariate
     ## normal distribution of each corresponding class, where @math{K} is the
     ## number of classes and @math{P} is the number of predictors in @var{X}.
     ## This property is read-only.
@@ -252,7 +252,7 @@ classdef ClassificationDiscriminant
     ##
     ## Coefficient matrices
     ##
-    ## A @math {KxK} structure containing the coeeficient matrices, where
+    ## A @math{KxK} structure containing the coeeficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
     ## was set to @qcode{'off'} in either the @code{fitcdiscr} function or the
     ## @code{ClassificationDiscriminant} constructor, then @qcode{Coeffs} is

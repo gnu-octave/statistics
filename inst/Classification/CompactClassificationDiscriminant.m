@@ -192,7 +192,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## Coefficient matrices
     ##
-    ## A @math {KxK} structure containing the coeeficient matrices, where
+    ## A @math{KxK} structure containing the coeeficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
     ## was set to @qcode{'off'} in the original @code{ClassificationDiscriminant}
     ## model, then @qcode{Coeffs} is empty @qcode{([])}.  This property is
