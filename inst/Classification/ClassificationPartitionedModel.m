@@ -479,7 +479,7 @@ classdef ClassificationPartitionedModel
           this.ModelParameters = params;
 
         case 'ClassificationSVM'
-          ## Get ModelParameters structure from ClassificationKNN object
+          ## Get ModelParameters structure from ClassificationSVM object
           params = Mdl.ModelParameters;
 
           ## Train model according to partition object
