@@ -186,7 +186,7 @@ classdef ClassificationPartitionedModel
     ## Names of predictor variables
     ##
     ## A cell array of character vectors specifying the names of the predictor
-    ## variables.  The names are in the order in which the appear in the
+    ## variables.  The names are in the order in which they appear in the
     ## training dataset.  This property is read-only.
     ##
     ## @end deftp

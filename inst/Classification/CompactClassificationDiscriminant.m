@@ -60,7 +60,7 @@ classdef CompactClassificationDiscriminant
     ## Names of predictor variables
     ##
     ## A cell array of character vectors specifying the names of the predictor
-    ## variables.  The names are in the order in which the appear in the
+    ## variables.  The names are in the order in which they appear in the
     ## training dataset.  This property is read-only.
     ##
     ## @end deftp
@@ -140,7 +140,7 @@ classdef CompactClassificationDiscriminant
     ## scores.  This property is read-only.
     ##
     ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
     ## always stores their function handle equivalent.
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
@@ -192,7 +192,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## Coefficient matrices
     ##
-    ## A @math{KxK} structure containing the coeeficient matrices, where
+    ## A @math{KxK} structure containing the coefficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
     ## was set to @qcode{'off'} in the original @code{ClassificationDiscriminant}
     ## model, then @qcode{Coeffs} is empty @qcode{([])}.  This property is

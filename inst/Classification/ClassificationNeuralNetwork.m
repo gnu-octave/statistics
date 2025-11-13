@@ -106,7 +106,7 @@ classdef ClassificationNeuralNetwork
     ## Names of predictor variables
     ##
     ## A cell array of character vectors specifying the names of the predictor
-    ## variables.  The names are in the order in which the appear in the
+    ## variables.  The names are in the order in which they appear in the
     ## training dataset.  This property is read-only.
     ##
     ## @end deftp
@@ -157,16 +157,16 @@ classdef ClassificationNeuralNetwork
     ## @end itemize
     ##
     ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
     ## always stores their function handle equivalent.
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
     ## @headitem @var{Value} @tab @tab @var{Description}
     ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp .^ (-2 * x))}
-    ## @item @qcode{"invlogit"} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{"invlogit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
     ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp .^ (-x))}
+    ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
