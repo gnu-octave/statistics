@@ -106,7 +106,7 @@ classdef ClassificationSVM
     ## Names of predictor variables
     ##
     ## A cell array of character vectors specifying the names of the predictor
-    ## variables.  The names are in the order in which the appear in the
+    ## variables.  The names are in the order in which they appear in the
     ## training dataset.  This property is read-only.
     ##
     ## @end deftp
@@ -157,7 +157,7 @@ classdef ClassificationSVM
     ## @end itemize
     ##
     ## When specified as a character vector, it can be any of the following
-    ## built-in functions.  Nevertherless, the @qcode{ScoreTransform} property
+    ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
     ## always stores their function handle equivalent.
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
