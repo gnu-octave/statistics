@@ -84,12 +84,8 @@
 
 function [d, Z, transform] = procrustes (X, Y, varargin)
 
-  if (nargin < 1)
-    error ("procrustes: contingency table is missing.");
-  endif
-
-  if (nargin > 5)
-    error ("procrustes: too many input parameters.");
+  if (nargin < 2 || nargin > 6)
+    print_usage ();
   endif
 
   ## Check X and Y for appropriate input
@@ -311,7 +307,8 @@ endfunction
 
 ## Test input validation
 %!error procrustes ();
-%!error procrustes (1, 2, 3, 4, 5, 6);
+%!error procrustes (1);
+%!error procrustes (1, 2, 3, 4, 5, 6, 7);
 %!error<procrustes: X and Y must be 2-dimensional matrices.> ...
 %! procrustes (ones (2, 2, 2), ones (2, 2, 2));
 %!error<procrustes: values in X and Y must be real.> ...
