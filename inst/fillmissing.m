@@ -232,8 +232,8 @@ function [A, idx_out] = fillmissing (A, varargin)
     ## Verify function handle and window.
     if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
           ! any (numel (varargin{2}) == [1, 2]))
-      error (["fillmissing: fill function handle must be followed by ", ...
-              "a numeric scalar or two-element vector window size."]);
+      error (strcat ("fillmissing: fill function handle must be followed by", ...
+                     " a numeric scalar or two-element vector window size."));
     elseif (nargin (method) < 3)
       error ("fillmissing: fill function must accept at least three inputs.");
     endif
@@ -250,14 +250,14 @@ function [A, idx_out] = fillmissing (A, varargin)
       case {"linear", "spline", "pchip", "makima"}
         next_varg = 2;
         if (! (isnumeric (A) || islogical (A)))
-          error (["fillmissing: interpolation methods only valid for ", ...
-                       "numeric input types."]);
+          error (strcat ("fillmissing: interpolation methods only", ...
+                         " valid for numeric input types."));
         endif
 
       case "constant"
         if ((nargin < 3))
-          error (["fillmissing: 'constant' method must be followed by a ", ...
-                      "numeric scalar or array."]);
+          error (strcat ("fillmissing: 'constant' method must be", ...
+                         " followed by a numeric scalar or array."));
         endif
 
         v = varargin{2};
@@ -286,14 +286,14 @@ function [A, idx_out] = fillmissing (A, varargin)
 
       case {"movmean", "movmedian"}
         if (! (isnumeric (A) || islogical (A)))
-          error (["fillmissing: 'movmean' and 'movmedian' methods only ", ...
-                             "valid for numeric input types."]);
+          error (strcat ("fillmissing: 'movmean' and 'movmedian' methods", ...
+                         " only valid for numeric input types."));
         endif
 
         if ((nargin < 3) || ! isnumeric (varargin{2}) || ...
               ! any (numel (varargin{2}) == [1, 2]))
-          error (["fillmissing: moving window method must be followed by ", ...
-                   "a numeric scalar or two-element vector."]);
+          error (strcat ("fillmissing: moving window method must be", ...
+                         " followed by a numeric scalar or two-element vector."));
         endif
         window_size = varargin{2};
         next_varg = 3;
@@ -349,9 +349,9 @@ function [A, idx_out] = fillmissing (A, varargin)
             if (! (isnumeric (propval) && isvector (propval)
                  && (numel (propval) == sz_A_dim) && issorted (propval)
                  && (numel (propval) == numel (unique (propval)))))
-              error (["fillmissing: SamplePoints must be a sorted ", ...
-                       "non-repeating, numeric vector with %d elements."], ...
-                         sz_A_dim);
+              error (strcat ("fillmissing: SamplePoints must be a sorted ", ...
+                             "non-repeating, numeric vector with %d", ...
+                             " elements."), sz_A_dim);
             endif
             samplepoints = propval(:);
             standard_samplepoints = all (diff (samplepoints, 1, 1) == 1);
@@ -372,34 +372,34 @@ function [A, idx_out] = fillmissing (A, varargin)
               endswitch
             elseif (isnumeric (propval))
               if (! (isnumeric (A) || islogical (A)))
-                error (["fillmissing: EndValues method 'constant' only ", ...
-                          "valid for numeric arrays."]);
+                error (strcat ("fillmissing: EndValues method 'constant'", ...
+                               " only valid for numeric arrays."));
               endif
               endgap_method = 'constant';
               endgap_val = propval;
 
             else
-              error (["fillmissing: EndValues must be numeric or a ", ...
-                        "valid method name."]);
+              error (strcat("fillmissing: EndValues must be numeric", ...
+                            " or a valid method name."));
             endif
 
           case "missinglocations"
 
             if (! (isnumeric (A) || islogical (A) || isinteger (A) || ...
                    ischar (A) || iscellstr (A)))
-              error (["fillmissing: MissingLocations option is not ", ...
-                        "compatible with data type '%s'."], class (A));
+              error (strcat ("fillmissing: MissingLocations option is not", ...
+                             " compatible with data type '%s'."), class (A));
             endif
 
             if (! isempty (maxgap))
-              error (["fillmissing: MissingLocations and MaxGap options ", ...
-                        "cannot be used simultaneously."]);
+              error (strcat ("fillmissing: MissingLocations and MaxGap", ...
+                             " options cannot be used simultaneously."));
             endif
 
             ## val must be logical array same size as A.
             if (! (islogical (propval) && isequal (sz_A, size (propval))))
-              error (["fillmissing: MissingLocations must be a logical ", ...
-                       "array the same size as A."]);
+              error (strcat ("fillmissing: MissingLocations must be", ...
+                             " a logical array the same size as A."));
             endif
 
             missinglocations = true;
@@ -412,8 +412,8 @@ function [A, idx_out] = fillmissing (A, varargin)
             endif
 
             if (! isempty (missing_locs))
-              error (["fillmissing: MissingLocations and MaxGap options ", ...
-                       "cannot be used simultaneously."]);
+              error (strcat ("fillmissing: MissingLocations and MaxGap", ...
+                             " options cannot be used simultaneously."));
             endif
 
             maxgap = propval;
@@ -465,13 +465,15 @@ function [A, idx_out] = fillmissing (A, varargin)
   if (isinteger (A) || islogical (A))
     if (any (ismember (method, ...
              {"linear", "spline", "pchip", "makima", "movmean", "movmedian"})))
-      error (["fillmissing: MissingLocations cannot be used ", ...
-              "with method '%s' and inputs of type '%s'."], method, class (A));
+      error (strcat ("fillmissing: MissingLocations cannot be used", ...
+                     " with method '%s' and inputs of type '%s'."), ...
+             method, class (A));
 
     elseif (any (ismember (endgap_method, ...
                       {"linear", "spline", "pchip", "makima"})))
-      error (["fillmissing: MissingLocations cannot be used with EndValues", ...
-              " method '%s' and inputs of type '%s'."], method, class (A));
+      error (strcat ("fillmissing: MissingLocations cannot be used with", ...
+                     " EndValues method '%s' and inputs of type '%s'."), ...
+             method, class (A));
     endif
   endif
 
@@ -480,8 +482,8 @@ function [A, idx_out] = fillmissing (A, varargin)
   numel_orthogonal = prod (orthogonal_size); # numel perpen. to dim.
   if (strcmp (method, "constant") && (! isscalar (v)))
     if (numel (v) != numel_orthogonal)
-      error (["fillmissing: fill value 'V' must be a scalar or a %d ", ...
-              " element array."], numel_orthogonal);
+      error (strcat ("fillmissing: fill value 'V' must be a scalar or", ...
+                     " a %d  element array."), numel_orthogonal);
     else
       v = reshape (v, orthogonal_size);
     endif
@@ -489,8 +491,8 @@ function [A, idx_out] = fillmissing (A, varargin)
 
   if (strcmp (endgap_method, "constant") && (! isscalar (endgap_val)))
     if (numel (endgap_val) != numel_orthogonal)
-      error (["fillmissing: EndValues must be a scalar or a %d element ", ...
-              "array."], numel_orthogonal);
+      error (strcat ("fillmissing: EndValues must be a scalar or a %d", ...
+                     " element array."), numel_orthogonal);
     else
       endgap_val = reshape (endgap_val, orthogonal_size);
     endif
