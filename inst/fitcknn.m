@@ -79,18 +79,18 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
-## @item @tab @qcode{"doublelogit"} @tab @math{1 ./ (1 + exp .^ (-2 * x))}
+## @item @tab @qcode{"doublelogit"} @tab @math{1 ./ (1 + exp (-2 * x))}
 ## @item @tab @qcode{"invlogit"} @tab @math{log (x ./ (1 - x))}
 ## @item @tab @qcode{"ismax"} @tab Sets the score for the class with the largest
 ## score to 1, and sets the scores for all other classes to 0
-## @item @tab @qcode{"logit"} @tab @math{1 ./ (1 + exp .^ (-x))}
+## @item @tab @qcode{"logit"} @tab @math{1 ./ (1 + exp (-x))}
 ## @item @tab @qcode{"none"} @tab @math{x} (no transformation)
 ## @item @tab @qcode{"identity"} @tab @math{x} (no transformation)
 ## @item @tab @qcode{"sign"} @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
-## @item @tab @qcode{"symmetric"} @tab @math{2 * x + 1}
+## @item @tab @qcode{"symmetric"} @tab @math{2 * x - 1}
 ## @item @tab @qcode{"symmetricismax"} @tab Sets the score for the class with
 ## the largest score to 1, and sets the scores for all other classes to -1
-## @item @tab @qcode{"symmetriclogit"} @tab @math{2 ./ (1 + exp .^ (-x)) - 1}
+## @item @tab @qcode{"symmetriclogit"} @tab @math{2 ./ (1 + exp (-x)) - 1}
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
