@@ -328,4 +328,5 @@ Regression
  stepwisefit
 Transforms
  logit
+ makima
  probit

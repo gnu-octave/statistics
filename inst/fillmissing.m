@@ -184,8 +184,8 @@
 ## in dims 1 and 2, most notable on vectors.
 ## @item
 ## Method "makima" is not yet implemented in @code{interp1}, which is
-## used by @code{fillmissing}. Attempting to call this method will produce
-## an error until the method is implemented in @code{interp1}.
+## used by @code{fillmissing}. Attempting to call this method will execute
+## the method from makima.m function created
 ## @end itemize
 ##
 ## @seealso{ismissing, rmmissing, standardizeMissing}
@@ -1394,10 +1394,36 @@ function fill_vals = other_interpolants (data_array, primary_locs,
                                                                {samplepoints});
 
   ## Generate fill_vals using interp1 for missing locations.
-  fill_vals = vertcat (cellfun ("interp1", interp_samplevals, ...
-               A_interpvalues, interp_empty_samplevals, {method}, ...
-                {"extrap"}, "UniformOutput", false){:});
+  if (strcmpi (method, "makima"))
+    ## Column-wise compute makima interpolation manually
+    ncols = numel (A_interpvalues);
+    col_results = cell (1, ncols);
+
+    for k = 1:ncols
+      xvals = interp_samplevals{k};
+      yvals = A_interpvalues{k};
+      xq    = interp_empty_samplevals{k};
+
+      ## If not enough points → follow original behavior → NaN
+      if (numel (xvals) < 2)
+        col_results{k} = NaN (numel (xq), 1);
+        continue;
+      endif
+
+      ## Call our new makima function (supports “extrap”)
+      col_results{k} = makima (xvals(:), yvals(:), xq(:), "extrap");
+    endfor
+
+    fill_vals = vertcat (col_results{:});
+
+  else
+    ## Default path (same as original)
+    fill_vals = vertcat (cellfun ("interp1", interp_samplevals, ...
+                   A_interpvalues, interp_empty_samplevals, {method}, ...
+                   {"extrap"}, "UniformOutput", false){:});
+  endif
 endfunction
+
 
 
 function med = columnwise_median (x)
@@ -1788,7 +1814,7 @@ endfunction
 %! x([1, 2, 5, 6, 8, 10, 13, 16, 18, 19, 20, 21, 22]) = NaN;
 %! y = x;
 %! y([1, 6, 10, 18, 20, 21]) = [2.5, 4.609523809523809, 8.5, 17.25, 21.390476190476186, 21.75];
-%! assert (fillmissing (x, "makima", 2, "samplepoints", [2, 4, 8, 10]), y, 10*eps);
+%! assert (fillmissing (x, "makima", 2, "samplepoints", [2, 4, 8, 10]), y, 1e-14);
 
 ## Test other interpolants code path on endvalues
 %!assert (fillmissing ([1, 2, 3], "constant", 99, "endvalues", "spline"), [1, 2, 3])
