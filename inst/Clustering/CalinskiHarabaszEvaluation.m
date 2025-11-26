@@ -18,27 +18,25 @@
 
 classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{CalinskiHarabasz})
-  ## @deftypefnx {statistics} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftp {statistics} CalinskiHarabaszEvaluation
   ##
-  ## A Calinski-Harabasz object to evaluate clustering solutions.
+  ## Calinski-Harabasz clustering evaluation.
   ##
-  ## A @code{CalinskiHarabaszEvaluation} object is a @code{ClusterCriterion}
-  ## object used to evaluate clustering solutions using the Calinski-Harabasz
-  ## criterion.
+  ## A @code{CalinskiHarabaszEvaluation} object contains the results of
+  ## evaluating clustering solutions using the Calinski-Harabasz criterion.
   ##
-  ## The Calinski-Harabasz index is based on the ratio between SSb and SSw.
-  ## SSb is the overall variance between clusters, that is the variance of the
-  ## distances between the centroids.
-  ## SSw is the overall variance within clusters, that is the sum of the
-  ## variances of the distances between each datapoint and its centroid.
+  ## The Calinski-Harabasz index (also known as the Variance Ratio Criterion) is
+  ## determined by the ratio of the between-cluster sum of squares (SSB) to the
+  ## within-cluster sum of squares (SSW).  A higher Calinski-Harabasz index
+  ## value indicates a better clustering solution, implying that clusters are
+  ## dense and well-separated.
   ##
-  ## The best solution according to the Calinski-Harabasz criterion is the one
-  ## that scores the highest value.
+  ## Create a @code{CalinskiHarabaszEvaluation} object by using the
+  ## @code{evalclusters} function with the @qcode{"CalinskiHarabasz"} criterion.
   ##
   ## @seealso{evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -61,8 +59,13 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     ## -*- texinfo -*-
     ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
     ##
-    ## Add a new cluster array to inspect the CalinskiHarabaszEvaluation object.
+    ## Add new cluster sizes for evaluation.
     ##
+    ## @code{addK (@var{obj}, @var{K})} evaluates clustering solutions for the
+    ## number of clusters specified in the vector @var{K} and adds them to the
+    ## @code{CalinskiHarabaszEvaluation} object @var{obj}.
+    ##
+    ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
     ## @end deftypefn
     function this = addK (this, K)
       addK@ClusterCriterion(this, K);
@@ -85,15 +88,19 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {CalinskiHarabaszEvaluation} {} plot (@var{obj})
+    ## @deftypefn {CalinskiHarabaszEvaluation} {} plot (@var{obj})
     ## @deftypefnx {CalinskiHarabaszEvaluation} {@var{h} =} plot (@var{obj})
     ##
-    ## Plot the evaluation results.
+    ## Plot the clustering evaluation results.
     ##
-    ## Plot the CriterionValues against InspectedK from the
-    ## CalinskiHarabaszEvaluation, @var{obj}, to the current plot. It can also
-    ## return a handle to the current plot.
+    ## @code{plot (@var{obj})} plots the Calinski-Harabasz criterion values
+    ## against the number of clusters.  The optimal number of clusters is marked
+    ## with an asterisk.
     ##
+    ## @code{@var{h} = plot (@var{obj})} additionally returns the handle to the
+    ## plot axes.
+    ##
+    ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
     ## @end deftypefn
     function h = plot (this)
       yLabel = sprintf ("%s value", this.CriterionName);
@@ -109,8 +116,12 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     ## -*- texinfo -*-
     ## @deftypefn {CalinskiHarabaszEvaluation} {@var{obj} =} compact (@var{obj})
     ##
-    ## Return a compact CalinskiHarabaszEvaluation object (not implemented yet).
+    ## Create a compact clustering evaluation object.
     ##
+    ## This method is not yet implemented for
+    ## @code{CalinskiHarabaszEvaluation} objects.
+    ##
+    ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
     ## @end deftypefn
     function this = compact (this)
       warning (["CalinskiHarabaszEvaluation.compact: this"...
