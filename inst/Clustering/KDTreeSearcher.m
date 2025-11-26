@@ -20,19 +20,19 @@ classdef KDTreeSearcher
 ## -*- texinfo -*-
 ## @deftp {statistics} KDTreeSearcher
 ##
-## KD-tree nearest neighbor searcher class.
+## KD-tree nearest neighbor searcher
 ##
 ## The @code{KDTreeSearcher} class implements a KD-tree search algorithm for
-## nearest neighbor queries.  It stores training data and supports various
-## distance metrics along with their parameter values for performing a KD-tree
-## search.  The KD-tree algorithm partitions the training data into a
+## nearest neighbor queries. It stores training data and supports various
+## distance metrics along with their parameter values for performing KD-tree
+## searches. The KD-tree algorithm partitions the training data into a
 ## hierarchical tree structure and performs search operations by traversing the
-## tree to reduce the number of distance computations.  It facilitates a nearest
-## neighborsearch using @code{knnsearch} or a radius search using
+## tree to reduce the number of distance computations. It facilitates nearest
+## neighbor queries using @code{knnsearch} and radius queries using
 ## @code{rangesearch}.
 ##
-## You can either use the @code{KDTreeSearcher} class constructor or the
-## @code{createns} function to create an @qcode{KDTreeSearcher} object.
+## Create a @code{KDTreeSearcher} object using the class constructor or the
+## @code{createns} function.
 ##
 ## @seealso{createns, ExhaustiveSearcher, hnswSearcher, knnsearch, rangesearch}
 ## @end deftp
@@ -43,24 +43,24 @@ classdef KDTreeSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {Property} X
+    ## @deftp {KDTreeSearcher} {property} X
     ##
     ## Point data
     ##
     ## Point data, specified as an @math{NxP} numeric matrix where each row is
-    ## an observation and each column is a feature.  This property is private
+    ## an observation and each column is a feature. This property is private
     ## and cannot be modified after object creation.
     ##
     ## @end deftp
     X = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} BucketSize
+    ## @deftp {KDTreeSearcher} {property} BucketSize
     ##
     ## Maximum number of data points in each leaf node
     ##
-    ## The maximum number of data points in the leaf node of the KD-tree.
-    ## Default value is 50.  This property is private and cannot be modified
+    ## The maximum number of data points stored in a leaf node of the KD-tree.
+    ## Default value is 50. This property is private and cannot be modified
     ## after object creation.
     ##
     ## @end deftp
@@ -69,20 +69,20 @@ classdef KDTreeSearcher
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {Property} Distance
+    ## @deftp {KDTreeSearcher} {property} Distance
     ##
     ## Distance metric
     ##
     ## Distance metric used for searches, specified as a character vector.
     ## Supported metrics are @qcode{"euclidean"}, @qcode{"cityblock"},
-    ## @qcode{"minkowski"}, and @qcode{"chebychev"}.  Default value is
+    ## @qcode{"minkowski"}, and @qcode{"chebychev"}. Default value is
     ## @qcode{"euclidean"}.
     ##
     ## @end deftp
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {Property} DistParameter
+    ## @deftp {KDTreeSearcher} {property} DistParameter
     ##
     ## Distance parameter
     ##
@@ -228,8 +228,8 @@ classdef KDTreeSearcher
   methods
 
     ## -*- texinfo -*-
-    ## @deftypefn  {KDTreeSearcher} {@var{obj} =} KDTreeSearcher (@var{X})
-    ## @deftypefnx {KDTreeSearcher} {@var{obj} =} KDTreeSearcher (@var{X}, @var{name}, @var{value})
+    ## @deftypefn  {statistics} {@var{obj} =} KDTreeSearcher (@var{X})
+    ## @deftypefnx {statistics} {@var{obj} =} KDTreeSearcher (@var{X}, @var{name}, @var{value})
     ##
     ## Create a @qcode{KDTreeSearcher} object for nearest neighbor searches.
     ##
@@ -247,15 +247,15 @@ classdef KDTreeSearcher
     ##
     ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
     ## character vector (@qcode{"euclidean"}, @qcode{"cityblock"},
-    ## @qcode{"minkowski"}, @qcode{"chebychev"}).  Default is
+    ## @qcode{"minkowski"}, @qcode{"chebychev"}). Default is
     ## @qcode{"euclidean"}.
     ##
     ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive
-    ## scalar.  Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
+    ## scalar. Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
     ## Default is 2.
     ##
     ## @item @qcode{"BucketSize"} @tab @tab Maximum number of data points in the
-    ## leaf node of the KD-tree, a positive integer.  Default is 50.
+    ## leaf node of the KD-tree, a positive integer. Default is 50.
     ## @end multitable
     ##
     ## You can also create a @qcode{KDTreeSearcher} object using the
@@ -333,8 +333,8 @@ classdef KDTreeSearcher
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y})
-    ## @deftypefnx {KDTreeSearcher} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})
+    ## @deftypefn  {statistics} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y})
+    ## @deftypefnx {statistics} {[@var{idx}, @var{D}] =} knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})
     ##
     ## Find the @math{K} nearest neighbors in the training data to query points.
     ##
@@ -467,8 +467,8 @@ classdef KDTreeSearcher
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {KDTreeSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r})
-    ## @deftypefnx {KDTreeSearcher} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})
+    ## @deftypefn  {statistics} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r})
+    ## @deftypefnx {statistics} {[@var{idx}, @var{D}] =} rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})
     ##
     ## Find all neighbors within a specified radius of query points.
     ##
@@ -657,6 +657,7 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
     endif
   endfunction
 endfunction
+
 
 ## Demo Examples
 
