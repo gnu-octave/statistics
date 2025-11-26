@@ -18,78 +18,180 @@
 
 classdef GapEvaluation < ClusterCriterion
   ## -*- texinfo -*-
-  ## @deftypefn  {statistics} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{gap})
-  ## @deftypefnx {statistics} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
+  ## @deftp {statistics} GapEvaluation
   ##
-  ## A gap object to evaluate clustering solutions.
+  ## Gap evaluation for clustering solutions
   ##
-  ## A @code{GapEvaluation} object is a @code{ClusterCriterion}
-  ## object used to evaluate clustering solutions using the gap criterion,
-  ## which is a mathematical formalization of the elbow method.
+  ## The @code{GapEvaluation} class implements the gap statistic criterion for
+  ## evaluating clustering solutions.  A @code{GapEvaluation} object is a
+  ## specialization of @code{ClusterCriterion} and contains fields and methods
+  ## to compute the gap statistic, its Monte-Carlo reference expectations, and
+  ## to select the optimal number of clusters according to a chosen search
+  ## method.
   ##
-  ## List of public properties specific to @code{SilhouetteEvaluation}:
-  ## @table @code
-  ## @item @qcode{B}
-  ## the number of reference datasets to generate.
-  ##
-  ## @item @qcode{Distance}
-  ## a valid distance metric name, or a function handle as accepted by the
-  ## @code{pdist} function.
-  ##
-  ## @item @qcode{ExpectedLogW}
-  ## a vector of the expected values for the logarithm of the within clusters
-  ## dispersion.
-  ##
-  ## @item @qcode{LogW}
-  ## a vector of the values of the logarithm of the within clusters dispersion.
-  ##
-  ## @item @qcode{ReferenceDistribution}
-  ## a valid name for the reference distribution, namely: @code{PCA} (default)
-  ## or @code{uniform}.
-  ##
-  ## @item @qcode{SE}
-  ## a vector of the standard error of the expected values for the logarithm
-  ## of the within clusters dispersion.
-  ##
-  ## @item @qcode{SearchMethod}
-  ## a valid name for the search method to use: @code{globalMaxSE} (default) or
-  ## @code{firstMaxSE}.
-  ##
-  ## @item @qcode{StdLogW}
-  ## a vector of the standard deviation of the expected values for the logarithm
-  ## of the within clusters dispersion.
-  ## @end table
-  ##
-  ## The best solution according to the gap criterion depends on the chosen
-  ## search method.  When the search method is @code{globalMaxSE}, the chosen
-  ## gap value is the smaller one which is inside a standard error from the
-  ## max gap value; when the search method is @code{firstMaxSE}, the chosen
-  ## gap value is the first one which is inside a standard error from the next
-  ## gap value.
+  ## Create a @code{GapEvaluation} object by using the @code{evalclusters}
+  ## function or by calling the class constructor directly.
   ##
   ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
   ## DaviesBouldinEvaluation, SilhouetteEvaluation}
-  ## @end deftypefn
+  ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} B
+    ##
+    ## Number of reference datasets
+    ##
+    ## A positive integer specifying how many reference datasets are generated
+    ## to compute the expected log within-cluster dispersion via Monte-Carlo
+    ## simulation.  This property is read-only.
+    ##
+    ## @end deftp
     B = 0;             # number of reference datasets
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} Distance
+    ##
+    ## Distance metric
+    ##
+    ## A character vector or function handle specifying the distance measure
+    ## passed to clustering routines (as accepted by @code{pdist}).  When a
+    ## numeric vector is supplied it is interpreted as a precomputed distance
+    ## vector.  This property is read-only.
+    ##
+    ## @end deftp
     Distance = "";     # pdist parameter
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} ReferenceDistribution
+    ##
+    ## Reference distribution for Monte-Carlo
+    ##
+    ## A character vector naming the reference distribution used to generate
+    ## reference datasets.  Supported values include @qcode{'pca'} and
+    ## @qcode{'uniform'}.  This property is read-only.
+    ##
+    ## @end deftp
     ReferenceDistribution = "";  # distribution to use as reference
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} SearchMethod
+    ##
+    ## Search method to select optimal K
+    ##
+    ## A character vector specifying the method used to select the optimal
+    ## number of clusters from the gap statistic.  Supported values include
+    ## @qcode{'globalMaxSE'} and @qcode{'firstMaxSE'}.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     SearchMethod = ""; # the method do identify the optimal number of clusters
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} ExpectedLogW
+    ##
+    ## Expected log within-cluster dispersion
+    ##
+    ## A numeric vector containing the Monte-Carlo estimate of the expected
+    ## values for the natural logarithm of the within-cluster dispersion,
+    ## computed across the generated reference datasets.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     ExpectedLogW = []; # expected value for the natural logarithm of W
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} LogW
+    ##
+    ## Observed log within-cluster dispersion
+    ##
+    ## A numeric vector containing the observed values of the natural
+    ## logarithm of the within-cluster dispersion computed on the actual data.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     LogW = [];         # natural logarithm of W
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} SE
+    ##
+    ## Standard error of expected logW
+    ##
+    ## A numeric vector containing the standard error of the expected values
+    ## for the natural logarithm of the within-cluster dispersion.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
     SE = [];           # standard error for the natural logarithm of W
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} StdLogW
+    ##
+    ## Standard deviation of expected logW
+    ##
+    ## A numeric vector containing the standard deviation of the Monte-Carlo
+    ## estimates of the log within-cluster dispersion.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     StdLogW = [];      # standard deviation of the natural logarithm of W
   endproperties
 
   properties (Access = protected)
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} DistanceVector
+    ##
+    ## Precomputed distance vector
+    ##
+    ## If a numeric vector is supplied as the distance metric it is stored
+    ## here and used instead of computing distances via @code{pdist}.
+    ##
+    ## @end deftp
     DistanceVector = []; # vector of pdist distances
+
+    ## -*- texinfo -*-
+    ## @deftp {GapEvaluation} {property} mExpectedLogW
+    ##
+    ## Monte-Carlo results matrix
+    ##
+    ## Internal matrix storing the log within-cluster dispersion values
+    ## computed for each Monte-Carlo run (rows) and each inspected K (columns).
+    ##
+    ## @end deftp
     mExpectedLogW = [];  # the result of the Monte-Carlo simulations
   endproperties
 
   methods (Access = public)
 
     ## constructor
+    ## -*- texinfo -*-
+    ## @deftypefn  {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefnx {statistics} {@var{obj} =} GapEvaluation (@var{x}, @var{clust}, @var{KList}, @var{B})
+    ## @deftypefnx {statistics} {@var{obj} =} GapEvaluation (@dots{}, @var{name}, @var{value})
+    ##
+    ## Construct a GapEvaluation object to evaluate clustering solutions using
+    ## the gap statistic.
+    ##
+    ## @code{@var{obj} = GapEvaluation (@var{x}, @var{clust}, @var{KList})}
+    ## returns a @code{GapEvaluation} object configured to evaluate the
+    ## clustering function specified by @var{clust} on the data matrix
+    ## @var{x} for the list of cluster counts in @var{KList}.
+    ##
+    ## Optional inputs:
+    ##
+    ## @itemize
+    ## @item @qcode{B} - Number of reference datasets to generate (default 100).
+    ## @item @qcode{'Distance'} - Distance metric name or function handle as
+    ## accepted by @code{pdist} (default @qcode{'sqeuclidean'}).
+    ## @item @qcode{'ReferenceDistribution'} - Reference distribution to use
+    ## (default @qcode{'pca'}; @qcode{'uniform'} is supported).
+    ## @item @qcode{'SearchMethod'} - Method to select the optimal K; one of
+    ## @qcode{'globalMaxSE'} or @qcode{'firstMaxSE'} (default
+    ## @qcode{'globalMaxSE'}).
+    ## @end itemize
+    ##
+    ## @seealso{evalclusters, ClusterCriterion}
+    ## @end deftypefn
     function this = GapEvaluation (x, clust, KList, b = 100, ...
                     distanceMetric = "sqeuclidean", ...
                     referenceDistribution = "pca", searchMethod = "globalmaxse")
@@ -165,7 +267,11 @@ classdef GapEvaluation < ClusterCriterion
     ## -*- texinfo -*-
     ## @deftypefn {GapEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
     ##
-    ## Add a new cluster array to inspect the GapEvaluation object.
+    ## Add new K values to inspect
+    ##
+    ## Add a new cluster array to inspect in the @code{GapEvaluation} object.
+    ## This updates internal storage for Monte-Carlo results and evaluates the
+    ## newly requested cluster counts.
     ##
     ## @end deftypefn
     function this = addK (this, K)
@@ -194,11 +300,11 @@ classdef GapEvaluation < ClusterCriterion
     ## @deftypefn  {ClusterCriterion} {} plot (@var{obj})
     ## @deftypefnx {ClusterCriterion} {@var{h} =} plot (@var{obj})
     ##
-    ## Plot the evaluation results.
+    ## Plot Gap evaluation results
     ##
-    ## Plot the CriterionValues against InspectedK from the GapEvaluation
-    ## ClusterCriterion, @var{obj}, and show the standard deviation to the
-    ## current plot. It can also return a handle to the current plot.
+    ## Plot the gap statistic (criterion values) versus the inspected numbers
+    ## of clusters and display error bars representing the Monte-Carlo
+    ## standard deviations.  Optionally returns the axes handle.
     ##
     ## @end deftypefn
     function h = plot (this)
@@ -216,7 +322,10 @@ classdef GapEvaluation < ClusterCriterion
     ## -*- texinfo -*-
     ## @deftypefn {GapEvaluation} {@var{obj} =} compact (@var{obj})
     ##
-    ## Return a compact GapEvaluation object (not implemented yet).
+    ## Return a compact GapEvaluation object
+    ##
+    ## Return a compact representation of the @code{GapEvaluation} object.
+    ## Currently not implemented; calling this method will issue a warning.
     ##
     ## @end deftypefn
     function this = compact (this)
