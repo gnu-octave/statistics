@@ -17,23 +17,23 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef hnswSearcher
-## -*- texinfo -*-
-## @deftp {statistics} hnswSearcher
-##
-## Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
-##
-## The @code{hnswSearcher} class implements the HNSW algorithm for efficient
-## nearest neighbor queries.  It stores training data and supports various
-## distance metrics for performing searches.  The HNSW algorithm builds a
-## multilayer graph structure that enables fast approximate nearest neighbor
-## searches by navigating through the graph.  It facilitates a nearest neighbor
-## search using @code{knnsearch}.
-##
-## You can either use the @code{hnswSearcher} class constructor or the
-## @code{createns} function to create an @qcode{hnswSearcher} object.
-##
-## @seealso{createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} hnswSearcher
+  ##
+  ## Hierarchical Navigable Small World (HNSW) nearest neighbor searcher class.
+  ##
+  ## The @code{hnswSearcher} class implements the HNSW algorithm for efficient
+  ## nearest neighbor queries.  It stores training data and supports various
+  ## distance metrics for performing searches.  The HNSW algorithm builds a
+  ## multilayer graph structure that enables fast approximate nearest neighbor
+  ## searches by navigating through the graph.  It facilitates nearest neighbor
+  ## queries search using @code{knnsearch}.
+  ##
+  ## You can either use the @code{hnswSearcher} class constructor or the
+  ## @code{createns} function to create an @qcode{hnswSearcher} object.
+  ##
+  ## @seealso{createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch}
+  ## @end deftp
 
   properties (SetAccess = private, Hidden)
     HNSWGraph # HNSW graph structure
@@ -41,7 +41,7 @@ classdef hnswSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {Property} Distance
+    ## @deftp {hnswSearcher} {property:} Distance
     ##
     ## Distance metric
     ##
@@ -55,7 +55,7 @@ classdef hnswSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {Property} DistParameter
+    ## @deftp {hnswSearcher} {property:} DistParameter
     ##
     ## Distance parameter
     ##
@@ -78,7 +78,7 @@ classdef hnswSearcher
     DistParameter = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} MaxNumLinksPerNode
+    ## @deftp {hnswSearcher} {property:} MaxNumLinksPerNode
     ##
     ## Number of connections created for each node
     ##
@@ -90,7 +90,7 @@ classdef hnswSearcher
     MaxNumLinksPerNode = 16
 
     ## -*- texinfo -*-
-    ## @deftp {Property} TrainSetSize
+    ## @deftp {hnswSearcher} {property:} TrainSetSize
     ##
     ## Number of potential nearest neighbors
     ##
@@ -103,7 +103,7 @@ classdef hnswSearcher
     TrainSetSize = 200
 
     ## -*- texinfo -*-
-    ## @deftp {Property} X
+    ## @deftp {hnswSearcher} {property:} X
     ##
     ## Point data
     ##

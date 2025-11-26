@@ -31,13 +31,9 @@ classdef ClusterCriterion < handle
   ## GapEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (Access = public)
-    ## public properties
-  endproperties
-
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} ClusteringFunction
+    ## @deftp {ClusterCriterion} {property:} ClusteringFunction
     ##
     ## Clustering algorithm
     ##
@@ -50,7 +46,7 @@ classdef ClusterCriterion < handle
     ClusteringFunction = "";
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} CriterionName
+    ## @deftp {ClusterCriterion} {property:} CriterionName
     ##
     ## Name of the evaluation criterion
     ##
@@ -61,7 +57,7 @@ classdef ClusterCriterion < handle
     CriterionName = "";
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} CriterionValues
+    ## @deftp {ClusterCriterion} {property:} CriterionValues
     ##
     ## Criterion values
     ##
@@ -72,7 +68,7 @@ classdef ClusterCriterion < handle
     CriterionValues = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} InspectedK
+    ## @deftp {ClusterCriterion} {property:} InspectedK
     ##
     ## List of the number of clusters
     ##
@@ -83,7 +79,7 @@ classdef ClusterCriterion < handle
     InspectedK = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} Missing
+    ## @deftp {ClusterCriterion} {property:} Missing
     ##
     ## Missing values
     ##
@@ -94,7 +90,7 @@ classdef ClusterCriterion < handle
     Missing = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} NumObservations
+    ## @deftp {ClusterCriterion} {property:} NumObservations
     ##
     ## Number of observations
     ##
@@ -105,7 +101,7 @@ classdef ClusterCriterion < handle
     NumObservations = 0;
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} OptimalK
+    ## @deftp {ClusterCriterion} {property:} OptimalK
     ##
     ## Optimal number of clusters
     ##
@@ -116,7 +112,7 @@ classdef ClusterCriterion < handle
     OptimalK = 0;
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} OptimalY
+    ## @deftp {ClusterCriterion} {property:} OptimalY
     ##
     ## Optimal clustering solution
     ##
@@ -127,7 +123,7 @@ classdef ClusterCriterion < handle
     OptimalY = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClusterCriterion} {property} X
+    ## @deftp {ClusterCriterion} {property:} X
     ##
     ## Data used for clustering
     ##
@@ -138,7 +134,7 @@ classdef ClusterCriterion < handle
     X = [];
   endproperties
 
-  properties (Access = protected)
+  properties (Access = protected, Hidden)
     N = 0; # number of observations
     P = 0; # number of variables
     ClusteringSolutions = []; #
@@ -148,7 +144,7 @@ classdef ClusterCriterion < handle
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClusterCriterion} {@var{obj} =} ClusterCriterion (@var{x}, @var{clust}, @var{KList})
+    ## @deftypefn {ClusterCriterion} {@var{obj} =} ClusterCriterion (@var{x}, @var{clust}, @var{KList})
     ##
     ## Create a @qcode{ClusterCriterion} object.
     ##
@@ -255,7 +251,7 @@ classdef ClusterCriterion < handle
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {ClusterCriterion} {@var{h} =} plot (@var{obj})
+    ## @deftypefn {ClusterCriterion} {@var{h} =} plot (@var{obj})
     ##
     ## Plot the clustering evaluation values.
     ##

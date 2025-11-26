@@ -38,7 +38,7 @@ classdef GapEvaluation < ClusterCriterion
 
   properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} B
+    ## @deftp {GapEvaluation} {property:} B
     ##
     ## Number of reference datasets
     ##
@@ -47,10 +47,10 @@ classdef GapEvaluation < ClusterCriterion
     ## simulation.  This property is read-only.
     ##
     ## @end deftp
-    B = 0;             # number of reference datasets
+    B = 0;
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} Distance
+    ## @deftp {GapEvaluation} {property:} Distance
     ##
     ## Distance metric
     ##
@@ -60,10 +60,10 @@ classdef GapEvaluation < ClusterCriterion
     ## vector.  This property is read-only.
     ##
     ## @end deftp
-    Distance = "";     # pdist parameter
+    Distance = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} ReferenceDistribution
+    ## @deftp {GapEvaluation} {property:} ReferenceDistribution
     ##
     ## Reference distribution for Monte-Carlo
     ##
@@ -72,10 +72,10 @@ classdef GapEvaluation < ClusterCriterion
     ## @qcode{'uniform'}.  This property is read-only.
     ##
     ## @end deftp
-    ReferenceDistribution = "";  # distribution to use as reference
+    ReferenceDistribution = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} SearchMethod
+    ## @deftp {GapEvaluation} {property:} SearchMethod
     ##
     ## Search method to select optimal K
     ##
@@ -85,10 +85,10 @@ classdef GapEvaluation < ClusterCriterion
     ## read-only.
     ##
     ## @end deftp
-    SearchMethod = ""; # the method do identify the optimal number of clusters
+    SearchMethod = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} ExpectedLogW
+    ## @deftp {GapEvaluation} {property:} ExpectedLogW
     ##
     ## Expected log within-cluster dispersion
     ##
@@ -98,10 +98,10 @@ classdef GapEvaluation < ClusterCriterion
     ## read-only.
     ##
     ## @end deftp
-    ExpectedLogW = []; # expected value for the natural logarithm of W
+    ExpectedLogW = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} LogW
+    ## @deftp {GapEvaluation} {property:} LogW
     ##
     ## Observed log within-cluster dispersion
     ##
@@ -110,10 +110,10 @@ classdef GapEvaluation < ClusterCriterion
     ## This property is read-only.
     ##
     ## @end deftp
-    LogW = [];         # natural logarithm of W
+    LogW = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} SE
+    ## @deftp {GapEvaluation} {property:} SE
     ##
     ## Standard error of expected logW
     ##
@@ -122,10 +122,10 @@ classdef GapEvaluation < ClusterCriterion
     ## property is read-only.
     ##
     ## @end deftp
-    SE = [];           # standard error for the natural logarithm of W
+    SE = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} StdLogW
+    ## @deftp {GapEvaluation} {property:} StdLogW
     ##
     ## Standard deviation of expected logW
     ##
@@ -134,31 +134,32 @@ classdef GapEvaluation < ClusterCriterion
     ## read-only.
     ##
     ## @end deftp
-    StdLogW = [];      # standard deviation of the natural logarithm of W
-  endproperties
+    StdLogW = [];
 
   properties (Access = protected)
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} DistanceVector
+    ## @deftp {GapEvaluation} {property:} DistanceVector
     ##
     ## Precomputed distance vector
     ##
     ## If a numeric vector is supplied as the distance metric it is stored
-    ## here and used instead of computing distances via @code{pdist}.
+    ## here and used instead of computing distances via @code{pdist}.  This
+    ## property is read-only.
     ##
     ## @end deftp
-    DistanceVector = []; # vector of pdist distances
+    DistanceVector = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property} mExpectedLogW
+    ## @deftp {GapEvaluation} {property:} mExpectedLogW
     ##
     ## Monte-Carlo results matrix
     ##
     ## Internal matrix storing the log within-cluster dispersion values
     ## computed for each Monte-Carlo run (rows) and each inspected K (columns).
+    ## This property is read-only.
     ##
     ## @end deftp
-    mExpectedLogW = [];  # the result of the Monte-Carlo simulations
+    mExpectedLogW = [];
   endproperties
 
   methods (Access = public)

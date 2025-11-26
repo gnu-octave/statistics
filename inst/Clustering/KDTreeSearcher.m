@@ -17,25 +17,26 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef KDTreeSearcher
-## -*- texinfo -*-
-## @deftp {statistics} KDTreeSearcher
-##
-## KD-tree nearest neighbor searcher class.
-##
-## The @code{KDTreeSearcher} class implements a KD-tree search algorithm for
-## nearest neighbor queries.  It stores training data and supports various
-## distance metrics along with their parameter values for performing a KD-tree
-## search.  The KD-tree algorithm partitions the training data into a
-## hierarchical tree structure and performs search operations by traversing the
-## tree to reduce the number of distance computations.  It facilitates a nearest
-## neighborsearch using @code{knnsearch} or a radius search using
-## @code{rangesearch}.
-##
-## You can either use the @code{KDTreeSearcher} class constructor or the
-## @code{createns} function to create an @qcode{KDTreeSearcher} object.
-##
-## @seealso{createns, ExhaustiveSearcher, hnswSearcher, knnsearch, rangesearch}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} KDTreeSearcher
+  ##
+  ## KD-tree nearest neighbor searcher
+  ##
+  ## The @code{KDTreeSearcher} class implements a KD-tree search algorithm for
+  ## nearest neighbor queries.  It stores training data and supports various
+  ## distance metrics along with their parameter values for performing a KD-tree
+  ## search.  The KD-tree algorithm partitions the training data into a
+  ## hierarchical tree structure and performs search operations by traversing
+  ## the tree to reduce the number of distance computations.  It facilitates
+  ## nearest neighbor queries using @code{knnsearch} and radius queries using
+  ## @code{rangesearch}.
+  ##
+  ## You can either use the @code{KDTreeSearcher} class constructor or the
+  ## @code{createns} function to create an @qcode{KDTreeSearcher} object.
+  ##
+  ## @seealso{createns, ExhaustiveSearcher, hnswSearcher, knnsearch,
+  ## rangesearch}
+  ## @end deftp
 
   properties (SetAccess = private, Hidden)
     KDTree    # KD-tree structure
@@ -43,7 +44,7 @@ classdef KDTreeSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {Property} X
+    ## @deftp {KDTreeSearcher} {property:} X
     ##
     ## Point data
     ##
@@ -55,7 +56,7 @@ classdef KDTreeSearcher
     X = []
 
     ## -*- texinfo -*-
-    ## @deftp {Property} BucketSize
+    ## @deftp {KDTreeSearcher} {property:} BucketSize
     ##
     ## Maximum number of data points in each leaf node
     ##
@@ -69,7 +70,7 @@ classdef KDTreeSearcher
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {Property} Distance
+    ## @deftp {KDTreeSearcher} {property:} Distance
     ##
     ## Distance metric
     ##
@@ -82,7 +83,7 @@ classdef KDTreeSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {Property} DistParameter
+    ## @deftp {KDTreeSearcher} {property:} DistParameter
     ##
     ## Distance parameter
     ##

@@ -58,7 +58,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
   properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property} Distance
+    ## @deftp {SilhouetteEvaluation} {property:} Distance
     ##
     ## Distance measure
     ##
@@ -67,10 +67,10 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## property is read-only.
     ##
     ## @end deftp
-    Distance = "";           # pdist parameter
+    Distance = "";
 
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property} ClusterPriors
+    ## @deftp {SilhouetteEvaluation} {property:} ClusterPriors
     ##
     ## Cluster prior handling
     ##
@@ -79,10 +79,10 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## property is read-only.
     ##
     ## @end deftp
-    ClusterPriors = "";      # evaluation of silhouette values: equal or empirical
+    ClusterPriors = "";
 
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property} ClusterSilhouettes
+    ## @deftp {SilhouetteEvaluation} {property:} ClusterSilhouettes
     ##
     ## Silhouette values
     ##
@@ -91,11 +91,21 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## This property is read-only.
     ##
     ## @end deftp
-    ClusterSilhouettes = {}; # results of the silhouette function for each K
+    ClusterSilhouettes = {};
   endproperties
 
   properties (Access = protected)
-    DistanceVector = [];     # vector of pdist distances
+    ## -*- texinfo -*-
+    ## @deftp {SilhouetteEvaluation} {property:} DistanceVector
+    ##
+    ## Precomputed distance vector
+    ##
+    ## If a numeric vector is supplied as the distance metric it is stored
+    ## here and used instead of computing distances via @code{pdist}.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    DistanceVector = [];
   endproperties
 
   methods (Access = public)
@@ -126,8 +136,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## @multitable @columnfractions 0.20 0.02 0.78
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric name, function handle, or
-    ## numeric pdist vector.  Default: @qcode{"sqeuclidean"}.
+    ## @item @qcode{"Distance"} @tab @tab Distance metric name, function handle,
+    ## or numeric pdist vector.  Default: @qcode{"sqeuclidean"}.
     ##
     ## @item @qcode{"ClusterPriors"} @tab @tab Either @qcode{"empirical"}
     ## (default) or @qcode{"equal"}.

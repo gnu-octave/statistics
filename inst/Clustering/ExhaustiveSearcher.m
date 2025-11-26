@@ -17,28 +17,28 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ExhaustiveSearcher
-## -*- texinfo -*-
-## @deftp {statistics} ExhaustiveSearcher
-##
-## Exhaustive nearest neighbor searcher class.
-##
-## The @code{ExhaustiveSearcher} class implements an exhaustive search algorithm
-## for nearest neighbor queries.  It stores training data and supports various
-## distance metrics along with their parameter values for performing an
-## exhaustive search.  The exhaustive search algorithm computes the distance
-## from each query point to all the points in the training data and facilitates
-## a nearest neighbor search using @code{knnsearch} or a radius search using
-## @code{rangesearch}.
-##
-## You can either use the @code{ExhaustiveSearcher} class constructor or the
-## @code{createns} function to create an @qcode{ExhaustiveSearcher} object.
-##
-## @seealso{createns, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ExhaustiveSearcher
+  ##
+  ## Exhaustive nearest neighbor searcher
+  ##
+  ## The @code{ExhaustiveSearcher} class implements an exhaustive search
+  ## algorithm for nearest neighbor queries.  It stores training data and
+  ## supports various distance metrics along with their parameter values for
+  ## performing an exhaustive search.  The exhaustive search algorithm computes
+  ## the distance from each query point to all the points in the training data
+  ## and facilitates a nearest neighbor search using @code{knnsearch} or a
+  ## radius search using @code{rangesearch}.
+  ##
+  ## You can either use the @code{ExhaustiveSearcher} class constructor or the
+  ## @code{createns} function to create an @qcode{ExhaustiveSearcher} object.
+  ##
+  ## @seealso{createns, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch}
+  ## @end deftp
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {Property} X
+    ## @deftp {ExhaustiveSearcher} {property:} X
     ##
     ## Point data
     ##
@@ -52,7 +52,7 @@ classdef ExhaustiveSearcher
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {Property} Distance
+    ## @deftp {ExhaustiveSearcher} {property:} Distance
     ##
     ## Distance metric
     ##
@@ -65,7 +65,7 @@ classdef ExhaustiveSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {Property} DistParameter
+    ## @deftp {ExhaustiveSearcher} {property:} DistParameter
     ##
     ## Distance parameter
     ##
