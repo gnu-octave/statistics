@@ -66,16 +66,11 @@ Descriptive Statistics
  grpstats
  harmmean
  jackknife
- mad
- mean
- median
  nanmax
  nanmean
  nanmin
  nansum
- std
  trimmean
- var
 Distribution Classes
  BetaDistribution
  BinomialDistribution
