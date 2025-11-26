@@ -124,7 +124,7 @@ classdef cvpartition
     ## Flag for stratified partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
-    ## created with a @qcode{'stratifyOption'} value of @qcode{true}.
+    ## created with a @qcode{'stratify'} value of @qcode{true}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -843,9 +843,9 @@ classdef cvpartition
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C})
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
+    ## @deftypefn  {cvpartition} {@var{Cnew} =} repartition (@var{C})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
     ##
     ## Repartition data for cross-validation.
     ##
@@ -1082,7 +1082,7 @@ classdef cvpartition
     ##
     ## @code{@var{idx} = test (@var{C})} returns a logical vector @var{idx} with
     ## @qcode{true} values indicating the elements corresponding to the test
-    ## set defined in the code{cvpartition} object @var{C}.  For K-fold and
+    ## set defined in the @qcode{cvpartition} object @var{C}.  For K-fold and
     ## leave-one-out partitions, the indices corresponding to the first test set
     ## are returned.
     ##
@@ -1209,9 +1209,9 @@ classdef cvpartition
     ##
     ## @code{@var{idx} = training (@var{C})} returns a logical vector @var{idx}
     ## with @qcode{true} values indicating the elements corresponding to the
-    ## training set defined in the code{cvpartition} object @var{C}.  For K-fold
-    ## and leave-one-out partitions, the indices corresponding to the first
-    ## training set are returned.
+    ## training set defined in the @qcode{cvpartition} object @var{C}.  For
+    ## K-fold and leave-one-out partitions, the indices corresponding to the
+    ## first training set are returned.
     ##
     ## @code{@var{idx} = training (@var{C}, @var{i})} returns a logical vector
     ## or matrix with the indices of the training set indicated by @var{i}.  If
