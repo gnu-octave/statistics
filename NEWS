@@ -1,0 +1,24 @@
+ Summary of important user-visible changes for statistics 1.8.0:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Minimum Octave version required is 9.1.0
+                   2) Add dependency to the datatypes package
+                   3) incompatibility with the `nan` package
+                   4) Using `tablicious` as a drop in replacement
+                      for `datatypes` might cause issues.  Future
+                      development of statistical functions to enable
+                      support for tables and categorical arrays will
+                      be based on the implementations in `datatypes`
+
+ Removed functions: (available in core Octave)
+ ==============
+
+ ** mad
+
+ ** mean
+
+ ** median
+
+ ** std
+
+ ** var
