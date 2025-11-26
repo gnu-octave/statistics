@@ -126,7 +126,7 @@ classdef cvpartition
     ## Flag for stratified partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
-    ## created with a @qcode{Stratify} value of @qcode{true}.  This property
+    ## created with a @qcode{'stratify'} value of @qcode{true}.  This property
     ## is read-only.
     ##
     ## @end deftp
