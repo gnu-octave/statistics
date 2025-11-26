@@ -1,4 +1,5 @@
 ## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,6 +25,8 @@ classdef cvpartition
 ## The @code{cvpartition} class generates a partitioning scheme on a dataset to
 ## facilitate cross-validation of statistical models utilizing training and
 ## testing subsets of the dataset.
+##
+## Create a @code{cvpartition} object by using the class constructor.
 ##
 ## @seealso{crossval}
 ## @end deftp
@@ -124,8 +127,8 @@ classdef cvpartition
     ## Flag for stratified partition
     ##
     ## A logical scalar specifying whether the @qcode{cvpartition} object was
-    ## created with a @qcode{'stratifyOption'} value of @qcode{true}.
-    ## This property is read-only.
+    ## created with a @qcode{Stratify} value of @qcode{true}.  This property
+    ## is read-only.
     ##
     ## @end deftp
     IsStratified    = [];
@@ -232,20 +235,20 @@ classdef cvpartition
   methods (Access = public)
 
     ## -*- texinfo -*-
-    ## @deftypefn  {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k}, @qcode{'GroupingVariables'}, @var{grpvars})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'}, @var{p})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Leaveout'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'Resubstitution'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, @var{opt})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p}, @qcode{'Stratify'}, @var{opt})
-    ## @deftypefnx {cvpartition} {@var{C} =} cvpartition (@qcode{'CustomPartition'}, @var{testSets})
+    ## @deftypefn  {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'}, @var{k}, @qcode{'GroupingVariables'}, @var{grpvars})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'Holdout'}, @var{p})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'Leaveout'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{n}, @qcode{'Resubstitution'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@var{X}, @qcode{'Holdout'}, @var{p}, @qcode{'Stratify'}, @var{opt})
+    ## @deftypefnx {statistics} {@var{C} =} cvpartition (@qcode{'CustomPartition'}, @var{testSets})
     ##
     ## Repartition data for cross-validation.
     ##
@@ -844,8 +847,8 @@ classdef cvpartition
 
     ## -*- texinfo -*-
     ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C})
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
+    ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
     ##
     ## Repartition data for cross-validation.
     ##
