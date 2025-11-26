@@ -29,6 +29,10 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <limits.h>
 #include <locale.h>
 #include "svm.h"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 int libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
 typedef signed char schar;
@@ -71,7 +75,7 @@ static void info(const char *fmt,...)
 	char buf[BUFSIZ];
 	va_list ap;
 	va_start(ap,fmt);
-	vsnprintf(buf,sizeof(buf),fmt,ap);
+	vsnprintf(buf,BUFSIZ,fmt,ap);
 	va_end(ap);
 	(*svm_print_string)(buf);
 }
@@ -88,7 +92,7 @@ static void info(const char *fmt,...) {}
 class Cache
 {
 public:
-	Cache(int l,long int size);
+	Cache(int l,size_t size);
 	~Cache();
 
 	// request data [0,len)
@@ -98,7 +102,7 @@ public:
 	void swap_index(int i, int j);
 private:
 	int l;
-	long int size;
+	size_t size;
 	struct head_t
 	{
 		head_t *prev, *next;	// a circular list
@@ -112,12 +116,12 @@ private:
 	void lru_insert(head_t *h);
 };
 
-Cache::Cache(int l_,long int size_):l(l_),size(size_)
+Cache::Cache(int l_,size_t size_):l(l_),size(size_)
 {
 	head = (head_t *)calloc(l,sizeof(head_t));	// initialized to 0
 	size /= sizeof(Qfloat);
-	size -= l * sizeof(head_t) / sizeof(Qfloat);
-	size = max(size, 2 * (long int) l);	// cache must be large enough for two columns
+	size_t header_size = l * sizeof(head_t) / sizeof(Qfloat);
+	size = max(size, 2 * (size_t) l + header_size) - header_size;  // cache must be large enough for two columns
 	lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -153,7 +157,7 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 	if(more > 0)
 	{
 		// free old space
-		while(size < more)
+		while(size < (size_t)more)
 		{
 			head_t *old = lru_head.next;
 			lru_delete(old);
@@ -165,7 +169,7 @@ int Cache::get_data(const int index, Qfloat **data, int len)
 
 		// allocate new space
 		h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
-		size -= more;
+		size -= more;  // previous while loop guarantees size >= more and subtraction of size_t variable will not underflow
 		swap(h->len,len);
 	}
 
@@ -809,7 +813,7 @@ int Solver::select_working_set(int &out_i, int &out_j)
 	// return i,j such that
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
 	// j: minimizes the decrease of obj value
-	//    (if quadratic coefficient <= 0, replace it with tau)
+	//    (if quadratic coefficeint <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
 	double Gmax = -INF;
@@ -1052,7 +1056,7 @@ int Solver_NU::select_working_set(int &out_i, int &out_j)
 	// return i,j such that y_i = y_j and
 	// i: maximizes -y_i * grad(f)_i, i in I_up(\alpha)
 	// j: minimizes the decrease of obj value
-	//    (if quadratic coefficient <= 0, replace it with tau)
+	//    (if quadratic coefficeint <= 0, replace it with tau)
 	//    -y_j*grad(f)_j < -y_i*grad(f)_i, j in I_low(\alpha)
 
 	double Gmaxp = -INF;
@@ -1291,7 +1295,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		clone(y,y_,prob.l);
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1<<20)));
+		cache = new Cache(prob.l,(size_t)(param.cache_size*(1<<20)));
 		QD = new double[prob.l];
 		for(int i=0;i<prob.l;i++)
 			QD[i] = (this->*kernel_function)(i,i);
@@ -1303,6 +1307,9 @@ public:
 		int start, j;
 		if((start = cache->get_data(i,&data,len)) < len)
 		{
+#ifdef _OPENMP
+#pragma omp parallel for private(j) schedule(guided)
+#endif
 			for(j=start;j<len;j++)
 				data[j] = (Qfloat)(y[i]*y[j]*(this->*kernel_function)(i,j));
 		}
@@ -1340,7 +1347,7 @@ public:
 	ONE_CLASS_Q(const svm_problem& prob, const svm_parameter& param)
 	:Kernel(prob.l, prob.x, param)
 	{
-		cache = new Cache(prob.l,(long int)(param.cache_size*(1<<20)));
+		cache = new Cache(prob.l,(size_t)(param.cache_size*(1<<20)));
 		QD = new double[prob.l];
 		for(int i=0;i<prob.l;i++)
 			QD[i] = (this->*kernel_function)(i,i);
@@ -1387,7 +1394,7 @@ public:
 	:Kernel(prob.l, prob.x, param)
 	{
 		l = prob.l;
-		cache = new Cache(l,(long int)(param.cache_size*(1<<20)));
+		cache = new Cache(l,(size_t)(param.cache_size*(1<<20)));
 		QD = new double[2*l];
 		sign = new schar[2*l];
 		index = new int[2*l];
@@ -1418,6 +1425,9 @@ public:
 		int j, real_i = index[i];
 		if(cache->get_data(real_i,&data,l) < l)
 		{
+#ifdef _OPENMP
+#pragma omp parallel for private(j) schedule(guided)
+#endif
 			for(j=0;j<l;j++)
 				data[j] = (Qfloat)(this->*kernel_function)(real_i,j);
 		}
@@ -1846,7 +1856,7 @@ static double sigmoid_predict(double decision_value, double A, double B)
 		return 1.0/(1+exp(fApB)) ;
 }
 
-// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng
+// Method 2 from the multiclass_prob paper by Wu, Lin, and Weng to predict probabilities
 static void multiclass_probability(int k, double **r, double *p)
 {
 	int t,j;
@@ -1910,7 +1920,7 @@ static void multiclass_probability(int k, double **r, double *p)
 	free(Qp);
 }
 
-// Cross-validation decision values for probability estimates
+// Using cross-validation decision values to get parameters for SVC probability estimates
 static void svm_binary_svc_probability(
 	const svm_problem *prob, const svm_parameter *param,
 	double Cp, double Cn, double& probA, double& probB)
@@ -1995,6 +2005,83 @@ static void svm_binary_svc_probability(
 	sigmoid_train(prob->l,dec_values,prob->y,probA,probB);
 	free(dec_values);
 	free(perm);
+}
+
+// Binning method from the oneclass_prob paper by Que and Lin to predict the probability as a normal instance (i.e., not an outlier)
+static double predict_one_class_probability(const svm_model *model, double dec_value)
+{
+	double prob_estimate = 0.0;
+	int nr_marks = 10;
+
+	if(dec_value < model->prob_density_marks[0])
+		prob_estimate = 0.001;
+	else if(dec_value > model->prob_density_marks[nr_marks-1])
+		prob_estimate = 0.999;
+	else
+	{
+		for(int i=1;i<nr_marks;i++)
+			if(dec_value < model->prob_density_marks[i])
+			{
+				prob_estimate = (double)i/nr_marks;
+				break;
+			}
+	}
+	return prob_estimate;
+}
+
+static int compare_double(const void *a, const void *b)
+{
+	if(*(double *)a > *(double *)b)
+		return 1;
+	else if(*(double *)a < *(double *)b)
+		return -1;
+	return 0;
+}
+
+// Get parameters for one-class SVM probability estimates
+static int svm_one_class_probability(const svm_problem *prob, const svm_model *model, double *prob_density_marks)
+{
+	double *dec_values = Malloc(double,prob->l);
+	double *pred_results = Malloc(double,prob->l);
+	int ret = 0;
+	int nr_marks = 10;
+
+	for(int i=0;i<prob->l;i++)
+		pred_results[i] = svm_predict_values(model,prob->x[i],&dec_values[i]);
+	qsort(dec_values,prob->l,sizeof(double),compare_double);
+
+	int neg_counter=0;
+	for(int i=0;i<prob->l;i++)
+		if(dec_values[i]>=0)
+		{
+			neg_counter = i;
+			break;
+		}
+
+	int pos_counter = prob->l-neg_counter;
+	if(neg_counter<nr_marks/2 || pos_counter<nr_marks/2)
+	{
+		fprintf(stderr,"WARNING: number of positive or negative decision values <%d; too few to do a probability estimation.\n",nr_marks/2);
+		ret = -1;
+	}
+	else
+	{
+		// Binning by density
+		double *tmp_marks = Malloc(double,nr_marks+1);
+		int mid = nr_marks/2;
+		for(int i=0;i<mid;i++)
+			tmp_marks[i] = dec_values[i*neg_counter/mid];
+		tmp_marks[mid] = 0;
+		for(int i=mid+1;i<nr_marks+1;i++)
+			tmp_marks[i] = dec_values[neg_counter-1+(i-mid)*pos_counter/mid];
+
+		for(int i=0;i<nr_marks;i++)
+			prob_density_marks[i] = (tmp_marks[i]+tmp_marks[i+1])/2;
+		free(tmp_marks);
+	}
+	free(dec_values);
+	free(pred_results);
+	return ret;
 }
 
 // Return parameter of a Laplace distribution
@@ -2125,15 +2212,8 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->label = NULL;
 		model->nSV = NULL;
 		model->probA = NULL; model->probB = NULL;
+		model->prob_density_marks = NULL;
 		model->sv_coef = Malloc(double *,1);
-
-		if(param->probability &&
-		   (param->svm_type == EPSILON_SVR ||
-		    param->svm_type == NU_SVR))
-		{
-			model->probA = Malloc(double,1);
-			model->probA[0] = svm_svr_probability(prob,param);
-		}
 
 		decision_function f = svm_train_one(prob,param,0,0);
 		model->rho = Malloc(double,1);
@@ -2156,6 +2236,24 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				model->sv_indices[j] = i+1;
 				++j;
 			}
+
+		if(param->probability &&
+		   (param->svm_type == EPSILON_SVR ||
+		    param->svm_type == NU_SVR))
+		{
+			model->probA = Malloc(double,1);
+			model->probA[0] = svm_svr_probability(prob,param);
+		}
+		else if(param->probability && param->svm_type == ONE_CLASS)
+		{
+			int nr_marks = 10;
+			double *prob_density_marks = Malloc(double,nr_marks);
+
+			if(svm_one_class_probability(prob,model,prob_density_marks) == 0)
+				model->prob_density_marks = prob_density_marks;
+			else
+				free(prob_density_marks);
+		}
 
 		free(f.alpha);
 	}
@@ -2274,6 +2372,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 			model->probA=NULL;
 			model->probB=NULL;
 		}
+		model->prob_density_marks=NULL;	// for one-class SVM probabilistic outputs only
 
 		int total_sv = 0;
 		int *nz_count = Malloc(int,nr_class);
@@ -2366,8 +2465,8 @@ void svm_cross_validation(const svm_problem *prob, const svm_parameter *param, i
 	int nr_class;
 	if (nr_fold > l)
 	{
+		fprintf(stderr,"WARNING: # folds (%d) > # data (%d). Will use # folds = # data instead (i.e., leave-one-out cross validation)\n", nr_fold, l);
 		nr_fold = l;
-		fprintf(stderr,"WARNING: # folds > # data. Will use # folds = # data instead (i.e., leave-one-out cross validation)\n");
 	}
 	fold_start = Malloc(int,nr_fold+1);
 	// stratified cv may not give leave-one-out rate
@@ -2528,6 +2627,9 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 	{
 		double *sv_coef = model->sv_coef[0];
 		double sum = 0;
+#ifdef _OPENMP
+#pragma omp parallel for private(i) reduction(+:sum) schedule(guided)
+#endif
 		for(i=0;i<model->l;i++)
 			sum += sv_coef[i] * Kernel::k_function(x,model->SV[i],model->param);
 		sum -= model->rho[0];
@@ -2544,6 +2646,9 @@ double svm_predict_values(const svm_model *model, const svm_node *x, double* dec
 		int l = model->l;
 
 		double *kvalue = Malloc(double,l);
+#ifdef _OPENMP
+#pragma omp parallel for private(i) schedule(guided)
+#endif
 		for(i=0;i<l;i++)
 			kvalue[i] = Kernel::k_function(x,model->SV[i],model->param);
 
@@ -2651,6 +2756,14 @@ double svm_predict_probability(
 		free(pairwise_prob);
 		return model->label[prob_max_idx];
 	}
+	else if(model->param.svm_type == ONE_CLASS && model->prob_density_marks!=NULL)
+	{
+		double dec_value;
+		double pred_result = svm_predict_values(model,x,&dec_value);
+		prob_estimates[0] = predict_one_class_probability(model,dec_value);
+		prob_estimates[1] = 1-prob_estimates[0];
+		return pred_result;
+	}
 	else
 		return svm_predict(model, x);
 }
@@ -2722,6 +2835,14 @@ int svm_save_model(const char *model_file_name, const svm_model *model)
 		fprintf(fp, "probB");
 		for(int i=0;i<nr_class*(nr_class-1)/2;i++)
 			fprintf(fp," %.17g",model->probB[i]);
+		fprintf(fp, "\n");
+	}
+	if(model->prob_density_marks)
+	{
+		fprintf(fp, "prob_density_marks");
+		int nr_marks=10;
+		for(int i=0;i<nr_marks;i++)
+			fprintf(fp," %.17g",model->prob_density_marks[i]);
 		fprintf(fp, "\n");
 	}
 
@@ -2878,6 +2999,13 @@ bool read_model_header(FILE *fp, svm_model* model)
 			for(int i=0;i<n;i++)
 				FSCANF(fp,"%lf",&model->probB[i]);
 		}
+		else if(strcmp(cmd,"prob_density_marks")==0)
+		{
+			int n = 10;	// nr_marks
+			model->prob_density_marks = Malloc(double,n);
+			for(int i=0;i<n;i++)
+				FSCANF(fp,"%lf",&model->prob_density_marks[i]);
+		}
 		else if(strcmp(cmd,"nr_sv")==0)
 		{
 			int n = model->nr_class;
@@ -2922,6 +3050,7 @@ svm_model *svm_load_model(const char *model_file_name)
 	model->rho = NULL;
 	model->probA = NULL;
 	model->probB = NULL;
+	model->prob_density_marks = NULL;
 	model->sv_indices = NULL;
 	model->label = NULL;
 	model->nSV = NULL;
@@ -3033,13 +3162,16 @@ void svm_free_model_content(svm_model* model_ptr)
 	model_ptr->rho = NULL;
 
 	free(model_ptr->label);
-	model_ptr->label= NULL;
+	model_ptr->label = NULL;
 
 	free(model_ptr->probA);
 	model_ptr->probA = NULL;
 
 	free(model_ptr->probB);
-	model_ptr->probB= NULL;
+	model_ptr->probB = NULL;
+
+	free(model_ptr->prob_density_marks);
+	model_ptr->prob_density_marks = NULL;
 
 	free(model_ptr->sv_indices);
 	model_ptr->sv_indices = NULL;
@@ -3125,10 +3257,6 @@ const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *pa
 	   param->probability != 1)
 		return "probability != 0 and probability != 1";
 
-	if(param->probability == 1 &&
-	   svm_type == ONE_CLASS)
-		return "one-class SVM probability output not supported yet";
-
 
 	// check whether nu-svc is feasible
 
@@ -3188,8 +3316,10 @@ const char *svm_check_parameter(const svm_problem *prob, const svm_parameter *pa
 
 int svm_check_probability_model(const svm_model *model)
 {
-	return ((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
-		model->probA!=NULL && model->probB!=NULL) ||
+	return
+		((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
+		 model->probA!=NULL && model->probB!=NULL) ||
+		(model->param.svm_type == ONE_CLASS && model->prob_density_marks!=NULL) ||
 		((model->param.svm_type == EPSILON_SVR || model->param.svm_type == NU_SVR) &&
 		 model->probA!=NULL);
 }

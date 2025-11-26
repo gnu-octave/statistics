@@ -229,7 +229,8 @@ int read_problem_dense(ColumnVector &label_vec, Matrix &instance_mat)
 
 	if(label_vector_row_num!=prob.l)
 	{
-		printf("svmtrain: length of label vector does not match # of instances.\n");
+		//must throw an error to pass the BIST test
+		error("svmtrain: label vector must have same number of elements as rows in instance matrix.");
 		return -1;
 	}
 
@@ -312,7 +313,8 @@ int read_problem_sparse(ColumnVector &label_vec, SparseMatrix &instance_mat)
 
 	if(label_vector_row_num!=prob.l)
 	{
-		printf("svmtrain: length of label vector does not match # of instances.\n");
+		// must throw an error to pass the BIST test
+		error("svmtrain: label vector must have same number of elements as rows in instance matrix.");
 		return -1;
 	}
 
@@ -591,19 +593,54 @@ accuracy for classification and mean-squared error for regression. \
 
 /*
 %!test
+%! # Test 1: Basic C-SVC Classification and Model Structure
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain(L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict(L, D, model);
+%! 
 %! assert (isstruct (model), true);
 %! assert (isfield (model, "Parameters"), true);
 %! assert (model.totalSV, 130);
 %! assert (model.nr_class, 2);
 %! assert (size (model.Label), [2, 1]);
+%! 
+%! # Check prediction output sizes
+%! assert (size (predict_label), [length(L), 1]);
+%! assert (size (dec_values), [length(L), 1]);
+%! 
+%! 
+%! # Test 2: One-Class SVM Model Structure Check
+%! # Ensures training with -s 2 is functional and the model structure is valid (accommodating 3.36 changes).
+%! model_oc = svmtrain(L, D, '-s 2 -n 0.5 -g 0.07');
+%! assert (isstruct (model_oc), true);
+%! assert (model_oc.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! assert (model_oc.nr_class, 2);
+%! assert (model_oc.totalSV > 0, true);
+%! clear model_oc
+%! 
+%! 
+%! # Test 3: Regression SVR Test
+%! # Check training of Epsilon SVR (-s 3)
+%! model_svr = svmtrain (L, D, '-s 3 -p 0.1 -c 10');
+%! assert (isstruct (model_svr), true);
+%! assert (model_svr.Parameters(1), 3); # Check svm_type is EPSILON_SVR
+%! assert (model_svr.nr_class, 2);
+%! clear model_svr
+%! 
+%! 
+%! # Test 4: Input Argument Error Checking
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! 
+%! # Check argument count errors
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
+%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");
+%! 
+%! # Check argument type errors
 %!error <svmtrain: label vector and instance matrix must be double.> ...
 %! model = svmtrain (single (L), D);
-%!error <svmtrain: wrong number of input arguments.> ...
-%! model = svmtrain (L, D, "", "");
+%! 
+%! # Check dimension mismatch error
+%!error <svmtrain: label vector must have same number of elements as rows in instance matrix.> ...
+%! model = svmtrain (L(1:end-1), D);
 */
