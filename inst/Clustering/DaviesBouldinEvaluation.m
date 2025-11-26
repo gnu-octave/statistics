@@ -17,26 +17,25 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef DaviesBouldinEvaluation < ClusterCriterion
-  ## -*- texinfo -*-
-  ## @deftypefn {Function File} {@var{obj} =} evalclusters (@var{x}, @var{clust}, @qcode{DaviesBouldin})
-  ## @deftypefnx {Function File} {@var{obj} =} evalclusters (@dots{}, @qcode{Name}, @qcode{Value})
-  ##
-  ## A Davies-Bouldin object to evaluate clustering solutions.
-  ##
-  ## A @code{DaviesBouldinEvaluation} object is a @code{ClusterCriterion}
-  ## object used to evaluate clustering solutions using the Davies-Bouldin
-  ## criterion.
-  ##
-  ## The Davies-Bouldin criterion is based on the ratio between the distances
-  ## between clusters and within clusters, that is the distances between the
-  ## centroids and the distances between each datapoint and its centroid.
-  ##
-  ## The best solution according to the Davies-Bouldin criterion is the one
-  ## that scores the lowest value.
-  ##
-  ## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
-  ## GapEvaluation, SilhouetteEvaluation}
-  ## @end deftypefn
+## -*- texinfo -*-
+## @deftp {statistics} DaviesBouldinEvaluation
+##
+## Davies-Bouldin object to evaluate clustering solutions
+##
+## A @code{DaviesBouldinEvaluation} object is a @code{ClusterCriterion}
+## object used to evaluate clustering solutions using the Davies-Bouldin
+## criterion.
+##
+## The Davies-Bouldin criterion is based on the ratio between the distances
+## between clusters and within clusters — distances between centroids and
+## distances between each datapoint and its centroid.
+##
+## The best solution according to the Davies-Bouldin criterion is the one
+## that produces the lowest Davies-Bouldin value.
+##
+## @seealso{evalclusters, ClusterCriterion, CalinskiHarabaszEvaluation,
+## GapEvaluation, SilhouetteEvaluation}
+## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
 
@@ -57,9 +56,9 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {DaviesBouldinEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
+    ## @deftypefn  {DaviesBouldinEvaluation} {@var{obj} =} addK (@var{obj}, @var{K})
     ##
-    ## Add a new cluster array to inspect the DaviesBouldinEvaluation object.
+    ## Add new cluster numbers to inspect in the DaviesBouldinEvaluation object.
     ##
     ## @end deftypefn
     function this = addK (this, K)
@@ -86,11 +85,11 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     ## @deftypefn  {DaviesBouldinEvaluation} {} plot (@var{obj})
     ## @deftypefnx {DaviesBouldinEvaluation} {@var{h} =} plot (@var{obj})
     ##
-    ## Plot the evaluation results.
+    ## Plot Davies-Bouldin evaluation results.
     ##
     ## Plot the CriterionValues against InspectedK from the
-    ## DaviesBouldinEvaluation ClusterCriterion, @var{obj}, to the current plot.
-    ## It can also return a handle to the current plot.
+    ## DaviesBouldinEvaluation ClusterCriterion to the current plot.
+    ## Returns an axes handle if requested.
     ##
     ## @end deftypefn
     function h = plot (this)
@@ -105,9 +104,9 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {DaviesBouldinEvaluation} {@var{obj} =} compact (@var{obj})
+    ## @deftypefn  {DaviesBouldinEvaluation} {@var{obj} =} compact (@var{obj})
     ##
-    ## Return a compact DaviesBouldinEvaluation object (not implemented yet).
+    ## Return a compact DaviesBouldinEvaluation object (not implemented).
     ##
     ## @end deftypefn
     function this = compact (this)
