@@ -18,30 +18,31 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationKNN
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationKNN
-##
-## K-nearest neighbors classification
-##
-## The @code{ClassificationKNN} class implements a K-nearest neighbor classifier
-## object, which can predict responses for new data using the @code{predict}
-## method.  The implemented algorithm allows you choose a range of different
-## distance metrics, the number of nearest neighbors, as well as the searching
-## algorithm.
-##
-## The K-nearest neighbors (k-NN) classifier is a simple, non-parametric machine
-## learning algorithm used for classification tasks.  It classifies a data point
-## based on the majority class of its k closest neighbors in the feature space.
-##
-## Create a @code{ClassificationKNN} object by using the @code{fitcknn}
-## function or the class constructor.
-##
-## @seealso{fitcknn}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationKNN
+  ##
+  ## K-nearest neighbors classification
+  ##
+  ## The @code{ClassificationKNN} class implements a K-nearest neighbor
+  ## classifier object, which can predict responses for new data using the
+  ## @code{predict} method.  The implemented algorithm allows you choose a range
+  ## of different distance metrics, the number of nearest neighbors, as well as
+  ## the searching algorithm.
+  ##
+  ## The K-nearest neighbors (k-NN) classifier is a simple, non-parametric
+  ## machine learning algorithm used for classification tasks.  It classifies a
+  ## data point based on the majority class of its k closest neighbors in the
+  ## feature space.
+  ##
+  ## Create a @code{ClassificationKNN} object by using the @code{fitcknn}
+  ## function or the class constructor.
+  ##
+  ## @seealso{fitcknn}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} X
+    ## @deftp {ClassificationKNN} {property:} X
     ##
     ## Predictor data
     ##
@@ -53,7 +54,7 @@ classdef ClassificationKNN
     X = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Y
+    ## @deftp {ClassificationKNN} {property:} Y
     ##
     ## Class labels
     ##
@@ -66,7 +67,7 @@ classdef ClassificationKNN
     Y = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} NumObservations
+    ## @deftp {ClassificationKNN} {property:} NumObservations
     ##
     ## Number of observations
     ##
@@ -78,7 +79,7 @@ classdef ClassificationKNN
     NumObservations = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} RowsUsed
+    ## @deftp {ClassificationKNN} {property:} RowsUsed
     ##
     ## Rows used for fitting
     ##
@@ -90,7 +91,7 @@ classdef ClassificationKNN
     RowsUsed        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} NumPredictors
+    ## @deftp {ClassificationKNN} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -102,7 +103,7 @@ classdef ClassificationKNN
     NumPredictors   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} PredictorNames
+    ## @deftp {ClassificationKNN} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -114,7 +115,7 @@ classdef ClassificationKNN
     PredictorNames  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} ResponseName
+    ## @deftp {ClassificationKNN} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -125,7 +126,7 @@ classdef ClassificationKNN
     ResponseName    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} ClassNames
+    ## @deftp {ClassificationKNN} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -144,7 +145,7 @@ classdef ClassificationKNN
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Cost
+    ## @deftp {ClassificationKNN} {property:} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -168,7 +169,7 @@ classdef ClassificationKNN
     Cost            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Prior
+    ## @deftp {ClassificationKNN} {property:} Prior
     ##
     ## Prior probability for each class
     ##
@@ -185,7 +186,7 @@ classdef ClassificationKNN
     Prior           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} ScoreTransform
+    ## @deftp {ClassificationKNN} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -222,7 +223,7 @@ classdef ClassificationKNN
     ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Standardize
+    ## @deftp {ClassificationKNN} {property:} Standardize
     ##
     ## Standardization flag
     ##
@@ -233,7 +234,7 @@ classdef ClassificationKNN
     Standardize     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Sigma
+    ## @deftp {ClassificationKNN} {property:} Sigma
     ##
     ## Predictor standard deviations
     ##
@@ -246,7 +247,7 @@ classdef ClassificationKNN
     Sigma           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Mu
+    ## @deftp {ClassificationKNN} {property:} Mu
     ##
     ## Predictor means
     ##
@@ -259,7 +260,7 @@ classdef ClassificationKNN
     Mu              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} BreakTies
+    ## @deftp {ClassificationKNN} {property:} BreakTies
     ##
     ## Tie-breaking algorithm
     ##
@@ -289,7 +290,7 @@ classdef ClassificationKNN
     BreakTies       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} NumNeighbors
+    ## @deftp {ClassificationKNN} {property:} NumNeighbors
     ##
     ## Number of nearest neighbors
     ##
@@ -304,7 +305,7 @@ classdef ClassificationKNN
     NumNeighbors    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} Distance
+    ## @deftp {ClassificationKNN} {property:} Distance
     ##
     ## Distance metric
     ##
@@ -320,7 +321,7 @@ classdef ClassificationKNN
     Distance        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} DistanceWeight
+    ## @deftp {ClassificationKNN} {property:} DistanceWeight
     ##
     ## Distance weighting function
     ##
@@ -346,7 +347,7 @@ classdef ClassificationKNN
     DistanceWeight  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} DistParameter
+    ## @deftp {ClassificationKNN} {property:} DistParameter
     ##
     ## Parameter for distance metric
     ##
@@ -373,7 +374,7 @@ classdef ClassificationKNN
     DistParameter   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} NSMethod
+    ## @deftp {ClassificationKNN} {property:} NSMethod
     ##
     ## Nearest neighbor search method
     ##
@@ -391,7 +392,7 @@ classdef ClassificationKNN
     NSMethod        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} IncludeTies
+    ## @deftp {ClassificationKNN} {property:} IncludeTies
     ##
     ## Flag for handling ties
     ##
@@ -409,7 +410,7 @@ classdef ClassificationKNN
     IncludeTies     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationKNN} {property} BucketSize
+    ## @deftp {ClassificationKNN} {property:} BucketSize
     ##
     ## Maximum data points in each node
     ##

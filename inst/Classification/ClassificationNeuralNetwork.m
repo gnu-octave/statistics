@@ -17,29 +17,29 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ClassificationNeuralNetwork
-## -*- texinfo -*-
-## @deftp {statistics} ClassificationNeuralNetwork
-##
-## Neural network classification
-##
-## The @code{ClassificationNeuralNetwork} class implements a neural network
-## classifier object, which can predict responses for new data using the
-## @code{predict} method.
-##
-## Neural network classification is a machine learning method that uses
-## interconnected nodes in multiple layers to learn complex patterns in data.
-## It processes inputs through hidden layers with activation functions to
-## produce classification outputs.
-##
-## Create a @code{ClassificationNeuralNetwork} object by using the
-## @code{fitcnet} function or the class constructor.
-##
-## @seealso{fitcnet}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} ClassificationNeuralNetwork
+  ##
+  ## Neural network classification
+  ##
+  ## The @code{ClassificationNeuralNetwork} class implements a neural network
+  ## classifier object, which can predict responses for new data using the
+  ## @code{predict} method.
+  ##
+  ## Neural network classification is a machine learning method that uses
+  ## interconnected nodes in multiple layers to learn complex patterns in data.
+  ## It processes inputs through hidden layers with activation functions to
+  ## produce classification outputs.
+  ##
+  ## Create a @code{ClassificationNeuralNetwork} object by using the
+  ## @code{fitcnet} function or the class constructor.
+  ##
+  ## @seealso{fitcnet}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} X
+    ## @deftp {ClassificationNeuralNetwork} {property:} X
     ##
     ## Predictor data
     ##
@@ -51,7 +51,7 @@ classdef ClassificationNeuralNetwork
     X                     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Y
+    ## @deftp {ClassificationNeuralNetwork} {property:} Y
     ##
     ## Class labels
     ##
@@ -64,7 +64,7 @@ classdef ClassificationNeuralNetwork
     Y                     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} NumObservations
+    ## @deftp {ClassificationNeuralNetwork} {property:} NumObservations
     ##
     ## Number of observations
     ##
@@ -76,7 +76,7 @@ classdef ClassificationNeuralNetwork
     NumObservations       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} RowsUsed
+    ## @deftp {ClassificationNeuralNetwork} {property:} RowsUsed
     ##
     ## Rows used for fitting
     ##
@@ -89,7 +89,7 @@ classdef ClassificationNeuralNetwork
     RowsUsed              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} NumPredictors
+    ## @deftp {ClassificationNeuralNetwork} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -101,7 +101,7 @@ classdef ClassificationNeuralNetwork
     NumPredictors         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} PredictorNames
+    ## @deftp {ClassificationNeuralNetwork} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -113,7 +113,7 @@ classdef ClassificationNeuralNetwork
     PredictorNames        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} ResponseName
+    ## @deftp {ClassificationNeuralNetwork} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -124,7 +124,7 @@ classdef ClassificationNeuralNetwork
     ResponseName          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} ClassNames
+    ## @deftp {ClassificationNeuralNetwork} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -143,7 +143,7 @@ classdef ClassificationNeuralNetwork
     ClassNames            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} ScoreTransform
+    ## @deftp {ClassificationNeuralNetwork} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -180,7 +180,7 @@ classdef ClassificationNeuralNetwork
     ScoreTransform        = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Standardize
+    ## @deftp {ClassificationNeuralNetwork} {property:} Standardize
     ##
     ## Flag to standardize predictors
     ##
@@ -192,7 +192,7 @@ classdef ClassificationNeuralNetwork
     Standardize           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Sigma
+    ## @deftp {ClassificationNeuralNetwork} {property:} Sigma
     ##
     ## Predictor standard deviations
     ##
@@ -204,7 +204,7 @@ classdef ClassificationNeuralNetwork
     Sigma                 = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Mu
+    ## @deftp {ClassificationNeuralNetwork} {property:} Mu
     ##
     ## Predictor means
     ##
@@ -216,7 +216,7 @@ classdef ClassificationNeuralNetwork
     Mu                    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} LayerSizes
+    ## @deftp {ClassificationNeuralNetwork} {property:} LayerSizes
     ##
     ## Sizes of fully connected layers
     ##
@@ -231,7 +231,7 @@ classdef ClassificationNeuralNetwork
     LayerSizes            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Activations
+    ## @deftp {ClassificationNeuralNetwork} {property:} Activations
     ##
     ## Activation functions for hidden layers
     ##
@@ -246,7 +246,7 @@ classdef ClassificationNeuralNetwork
     Activations           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} OutputLayerActivation
+    ## @deftp {ClassificationNeuralNetwork} {property:} OutputLayerActivation
     ##
     ## Activation function for output layer
     ##
@@ -258,7 +258,7 @@ classdef ClassificationNeuralNetwork
     OutputLayerActivation = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} LearningRate
+    ## @deftp {ClassificationNeuralNetwork} {property:} LearningRate
     ##
     ## Learning rate for gradient descent
     ##
@@ -269,7 +269,7 @@ classdef ClassificationNeuralNetwork
     LearningRate          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} IterationLimit
+    ## @deftp {ClassificationNeuralNetwork} {property:} IterationLimit
     ##
     ## Maximum number of training iterations
     ##
@@ -280,7 +280,7 @@ classdef ClassificationNeuralNetwork
     IterationLimit        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} ModelParameters
+    ## @deftp {ClassificationNeuralNetwork} {property:} ModelParameters
     ##
     ## Neural network model parameters
     ##
@@ -292,7 +292,7 @@ classdef ClassificationNeuralNetwork
     ModelParameters       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} ConvergenceInfo
+    ## @deftp {ClassificationNeuralNetwork} {property:} ConvergenceInfo
     ##
     ## Training convergence information
     ##
@@ -314,7 +314,7 @@ classdef ClassificationNeuralNetwork
     ConvergenceInfo       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} DisplayInfo
+    ## @deftp {ClassificationNeuralNetwork} {property:} DisplayInfo
     ##
     ## Display training information flag
     ##
@@ -325,7 +325,7 @@ classdef ClassificationNeuralNetwork
     DisplayInfo           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationNeuralNetwork} {property} Solver
+    ## @deftp {ClassificationNeuralNetwork} {property:} Solver
     ##
     ## Solver used for training
     ##

@@ -17,28 +17,29 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationSVM
-## -*- texinfo -*-
-## @deftp {statistics} CompactClassificationSVM
-##
-## Compact Support Vector Machine classification
-##
-## The @code{CompactClassificationSVM} class implements a compact version of a
-## Support Vector Machine classifier object for one-class or two-class problems,
-## which can predict responses for new data using the @code{predict} method.
-##
-## A @code{CompactClassificationSVM} object is a compact version of a support
-## vector machine model, @code{ClassificationSVM}.  It does not include the
-## training data resulting in a smaller classifier size, which can be used for
-## making predictions from new data, but not for tasks such as cross validation.
-## It can only be created from a @code{ClassificationSVM} model by using the
-## @code{compact} object method.
-##
-## @seealso{ClassificationSVM}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactClassificationSVM
+  ##
+  ## Compact Support Vector Machine classification
+  ##
+  ## The @code{CompactClassificationSVM} class implements a compact version of a
+  ## Support Vector Machine classifier object for one-class or two-class
+  ## problems, which can predict responses for new data using the @code{predict}
+  ## method.
+  ##
+  ## A @code{CompactClassificationSVM} object is a compact version of a support
+  ## vector machine model, @code{ClassificationSVM}.  It does not include the
+  ## training data resulting in a smaller classifier size, which can be used for
+  ## making predictions from new data, but not for tasks such as cross
+  ## validation.  It can only be created from a @code{ClassificationSVM} model
+  ## by using the @code{compact} object method.
+  ##
+  ## @seealso{ClassificationSVM}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} NumPredictors
+    ## @deftp {CompactClassificationSVM} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -50,7 +51,7 @@ classdef CompactClassificationSVM
     NumPredictors       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} PredictorNames
+    ## @deftp {CompactClassificationSVM} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -62,7 +63,7 @@ classdef CompactClassificationSVM
     PredictorNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ResponseName
+    ## @deftp {CompactClassificationSVM} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -73,7 +74,7 @@ classdef CompactClassificationSVM
     ResponseName        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ClassNames
+    ## @deftp {CompactClassificationSVM} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -92,7 +93,7 @@ classdef CompactClassificationSVM
     ClassNames          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ScoreTransform
+    ## @deftp {CompactClassificationSVM} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -129,7 +130,7 @@ classdef CompactClassificationSVM
     ScoreTransform      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Standardize
+    ## @deftp {CompactClassificationSVM} {property:} Standardize
     ##
     ## Flag to standardize predictors
     ##
@@ -140,7 +141,7 @@ classdef CompactClassificationSVM
     Standardize         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Sigma
+    ## @deftp {CompactClassificationSVM} {property:} Sigma
     ##
     ## Predictor standard deviations
     ##
@@ -153,7 +154,7 @@ classdef CompactClassificationSVM
     Sigma               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Mu
+    ## @deftp {CompactClassificationSVM} {property:} Mu
     ##
     ## Predictor means
     ##
@@ -165,7 +166,7 @@ classdef CompactClassificationSVM
     Mu                  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} ModelParameters
+    ## @deftp {CompactClassificationSVM} {property:} ModelParameters
     ##
     ## SVM training parameters
     ##
@@ -179,7 +180,7 @@ classdef CompactClassificationSVM
     ModelParameters     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Model
+    ## @deftp {CompactClassificationSVM} {property:} Model
     ##
     ## Trained SVM model
     ##
@@ -190,7 +191,7 @@ classdef CompactClassificationSVM
     Model               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Alpha
+    ## @deftp {CompactClassificationSVM} {property:} Alpha
     ##
     ## Trained classifier coefficients
     ##
@@ -204,7 +205,7 @@ classdef CompactClassificationSVM
     Alpha               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Beta
+    ## @deftp {CompactClassificationSVM} {property:} Beta
     ##
     ## Linear predictor coefficients
     ##
@@ -218,7 +219,7 @@ classdef CompactClassificationSVM
     Beta                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} Bias
+    ## @deftp {CompactClassificationSVM} {property:} Bias
     ##
     ## Bias term
     ##
@@ -228,7 +229,7 @@ classdef CompactClassificationSVM
     Bias                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} IsSupportVector
+    ## @deftp {CompactClassificationSVM} {property:} IsSupportVector
     ##
     ## Support vector indicator
     ##
@@ -241,7 +242,7 @@ classdef CompactClassificationSVM
     IsSupportVector     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} SupportVectorLabels
+    ## @deftp {CompactClassificationSVM} {property:} SupportVectorLabels
     ##
     ## Support vector class labels
     ##
@@ -257,7 +258,7 @@ classdef CompactClassificationSVM
     SupportVectorLabels = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationSVM} {property} SupportVectors
+    ## @deftp {CompactClassificationSVM} {property:} SupportVectors
     ##
     ## Support vectors
     ##

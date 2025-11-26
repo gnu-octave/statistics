@@ -17,33 +17,33 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationDiscriminant
-## -*- texinfo -*-
-## @deftp {statistics} CompactClassificationDiscriminant
-##
-## Compact discriminant analysis classification
-##
-## The @code{CompactClassificationDiscriminant} class implements a compact
-## version of a linear discriminant analysis classifier object, which can
-## predict responses for new data using the @code{predict} method but does not
-## store the training data.
-##
-## A @code{CompactClassificationDiscriminant} object is a compact version of a
-## discriminant analysis model, @code{ClassificationDiscriminant}.  It does not
-## include the training data resulting in a smaller classifier size, which can
-## be used for making predictions from new data, but not for tasks such as
-## cross validation.  It can only be created from a
-## @code{ClassificationDiscriminant} model by using the @code{compact} object
-## method.
-##
-## Create a @code{CompactClassificationDiscriminant} object by using the
-## @code{compact} method of a @code{ClassificationDiscriminant} object.
-##
-## @seealso{fitcdiscr, ClassificationDiscriminant}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactClassificationDiscriminant
+  ##
+  ## Compact discriminant analysis classification
+  ##
+  ## The @code{CompactClassificationDiscriminant} class implements a compact
+  ## version of a linear discriminant analysis classifier object, which can
+  ## predict responses for new data using the @code{predict} method but does not
+  ## store the training data.
+  ##
+  ## A @code{CompactClassificationDiscriminant} object is a compact version of a
+  ## discriminant analysis model, @code{ClassificationDiscriminant}.  It does
+  ## not include the training data resulting in a smaller classifier size, which
+  ## can be used for making predictions from new data, but not for tasks such as
+  ## cross validation.  It can only be created from a
+  ## @code{ClassificationDiscriminant} model by using the @code{compact} object
+  ## method.
+  ##
+  ## Create a @code{CompactClassificationDiscriminant} object by using the
+  ## @code{compact} method of a @code{ClassificationDiscriminant} object.
+  ##
+  ## @seealso{fitcdiscr, ClassificationDiscriminant}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} NumPredictors
+    ## @deftp {CompactClassificationDiscriminant} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -55,7 +55,7 @@ classdef CompactClassificationDiscriminant
     NumPredictors   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} PredictorNames
+    ## @deftp {CompactClassificationDiscriminant} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -67,7 +67,7 @@ classdef CompactClassificationDiscriminant
     PredictorNames  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} ResponseName
+    ## @deftp {CompactClassificationDiscriminant} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -78,7 +78,7 @@ classdef CompactClassificationDiscriminant
     ResponseName    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} ClassNames
+    ## @deftp {CompactClassificationDiscriminant} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -97,7 +97,7 @@ classdef CompactClassificationDiscriminant
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Prior
+    ## @deftp {CompactClassificationDiscriminant} {property:} Prior
     ##
     ## Prior probability for each class
     ##
@@ -111,7 +111,7 @@ classdef CompactClassificationDiscriminant
     Prior           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Cost
+    ## @deftp {CompactClassificationDiscriminant} {property:} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -132,7 +132,7 @@ classdef CompactClassificationDiscriminant
     Cost            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} ScoreTransform
+    ## @deftp {CompactClassificationDiscriminant} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -163,7 +163,7 @@ classdef CompactClassificationDiscriminant
     ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Sigma
+    ## @deftp {CompactClassificationDiscriminant} {property:} Sigma
     ##
     ## Within-class covariance
     ##
@@ -175,7 +175,7 @@ classdef CompactClassificationDiscriminant
     Sigma           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Mu
+    ## @deftp {CompactClassificationDiscriminant} {property:} Mu
     ##
     ## Class means
     ##
@@ -188,7 +188,7 @@ classdef CompactClassificationDiscriminant
     Mu              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Coeffs
+    ## @deftp {CompactClassificationDiscriminant} {property:} Coeffs
     ##
     ## Coefficient matrices
     ##
@@ -214,7 +214,7 @@ classdef CompactClassificationDiscriminant
     Coeffs          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Delta
+    ## @deftp {CompactClassificationDiscriminant} {property:} Delta
     ##
     ## Delta threshold
     ##
@@ -226,7 +226,7 @@ classdef CompactClassificationDiscriminant
     Delta           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} DiscrimType
+    ## @deftp {CompactClassificationDiscriminant} {property:} DiscrimType
     ##
     ## Discriminant type
     ##
@@ -238,7 +238,7 @@ classdef CompactClassificationDiscriminant
     DiscrimType     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} Gamma
+    ## @deftp {CompactClassificationDiscriminant} {property:} Gamma
     ##
     ## Gamma regularization parameter
     ##
@@ -249,7 +249,7 @@ classdef CompactClassificationDiscriminant
     Gamma           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} MinGamma
+    ## @deftp {CompactClassificationDiscriminant} {property:} MinGamma
     ##
     ## Minimum value for Gamma regularization parameter
     ##
@@ -260,7 +260,7 @@ classdef CompactClassificationDiscriminant
     MinGamma        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationDiscriminant} {property} LogDetSigma
+    ## @deftp {CompactClassificationDiscriminant} {property:} LogDetSigma
     ##
     ## Logarithm of the determinant of the within-class covariance matrix
     ##

@@ -17,26 +17,26 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationGAM
-## -*- texinfo -*-
-## @deftp {statistics} CompactClassificationGAM
-##
-## Compact generalized additive model classification
-##
-## The @code{CompactClassificationGAM} class is a compact version of a
-## Generalized Additive Model classifier, @code{ClassificationGAM}.  It does
-## not include the training data, resulting in a smaller classifier size that
-## can be used for making predictions from new data, but not for tasks such as
-## cross validation.
-##
-## A @code{CompactClassificationGAM} object can only be created from a
-## @code{ClassificationGAM} model by using the @code{compact} method.
-##
-## @seealso{ClassificationGAM, fitcgam}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactClassificationGAM
+  ##
+  ## Compact generalized additive model classification
+  ##
+  ## The @code{CompactClassificationGAM} class is a compact version of a
+  ## Generalized Additive Model classifier, @code{ClassificationGAM}.  It does
+  ## not include the training data, resulting in a smaller classifier size that
+  ## can be used for making predictions from new data, but not for tasks such as
+  ## cross validation.
+  ##
+  ## A @code{CompactClassificationGAM} object can only be created from a
+  ## @code{ClassificationGAM} model by using the @code{compact} method.
+  ##
+  ## @seealso{ClassificationGAM, fitcgam}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} NumPredictors
+    ## @deftp {CompactClassificationGAM} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -48,7 +48,7 @@ classdef CompactClassificationGAM
     NumPredictors   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} PredictorNames
+    ## @deftp {CompactClassificationGAM} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -60,7 +60,7 @@ classdef CompactClassificationGAM
     PredictorNames  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ResponseName
+    ## @deftp {CompactClassificationGAM} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -71,7 +71,7 @@ classdef CompactClassificationGAM
     ResponseName    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ClassNames
+    ## @deftp {CompactClassificationGAM} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -90,7 +90,7 @@ classdef CompactClassificationGAM
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Prior
+    ## @deftp {CompactClassificationGAM} {property:} Prior
     ##
     ## Prior probability for each class
     ##
@@ -102,7 +102,7 @@ classdef CompactClassificationGAM
     Prior           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Cost
+    ## @deftp {CompactClassificationGAM} {property:} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -126,7 +126,7 @@ classdef CompactClassificationGAM
     Cost            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ScoreTransform
+    ## @deftp {CompactClassificationGAM} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -163,7 +163,7 @@ classdef CompactClassificationGAM
     ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Formula
+    ## @deftp {CompactClassificationGAM} {property:} Formula
     ##
     ## Model specification formula
     ##
@@ -176,7 +176,7 @@ classdef CompactClassificationGAM
     Formula         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Interactions
+    ## @deftp {CompactClassificationGAM} {property:} Interactions
     ##
     ## Interaction terms specification
     ##
@@ -188,7 +188,7 @@ classdef CompactClassificationGAM
     Interactions    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Knots
+    ## @deftp {CompactClassificationGAM} {property:} Knots
     ##
     ## Knots for spline fitting
     ##
@@ -199,7 +199,7 @@ classdef CompactClassificationGAM
     Knots           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} Order
+    ## @deftp {CompactClassificationGAM} {property:} Order
     ##
     ## Order of spline fitting
     ##
@@ -210,7 +210,7 @@ classdef CompactClassificationGAM
     Order           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} DoF
+    ## @deftp {CompactClassificationGAM} {property:} DoF
     ##
     ## Degrees of freedom for spline fitting
     ##
@@ -221,7 +221,7 @@ classdef CompactClassificationGAM
     DoF             = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} LearningRate
+    ## @deftp {CompactClassificationGAM} {property:} LearningRate
     ##
     ## Learning rate for gradient boosting
     ##
@@ -232,7 +232,7 @@ classdef CompactClassificationGAM
     LearningRate    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} NumIterations
+    ## @deftp {CompactClassificationGAM} {property:} NumIterations
     ##
     ## Maximum number of iterations
     ##
@@ -243,7 +243,7 @@ classdef CompactClassificationGAM
     NumIterations   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} BaseModel
+    ## @deftp {CompactClassificationGAM} {property:} BaseModel
     ##
     ## Base model parameters
     ##
@@ -256,7 +256,7 @@ classdef CompactClassificationGAM
     BaseModel       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} ModelwInt
+    ## @deftp {CompactClassificationGAM} {property:} ModelwInt
     ##
     ## Model parameters with interactions
     ##
@@ -268,7 +268,7 @@ classdef CompactClassificationGAM
     ModelwInt       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationGAM} {property} IntMatrix
+    ## @deftp {CompactClassificationGAM} {property:} IntMatrix
     ##
     ## Interaction matrix
     ##

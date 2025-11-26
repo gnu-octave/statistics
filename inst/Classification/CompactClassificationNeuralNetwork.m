@@ -17,30 +17,30 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef CompactClassificationNeuralNetwork
-## -*- texinfo -*-
-## @deftp {statistics} CompactClassificationNeuralNetwork
-##
-## Compact neural network classification
-##
-## The @code{CompactClassificationNeuralNetwork} class implements a compact
-## version of the neural network classifier object, which can predict responses
-## for new data using the @code{predict} method, but does not store the training
-## data.
-##
-## A compact neural network classification model is a smaller version of the
-## full @code{ClassificationNeuralNetwork} model that does not include the
-## training data.  It consumes less memory than the full model, but cannot
-## perform tasks that require the training data, such as cross-validation.
-##
-## Create a @code{CompactClassificationNeuralNetwork} object by using the
-## @code{compact} method on a @code{ClassificationNeuralNetwork} object.
-##
-## @seealso{ClassificationNeuralNetwork, fitcnet}
-## @end deftp
+  ## -*- texinfo -*-
+  ## @deftp {statistics} CompactClassificationNeuralNetwork
+  ##
+  ## Compact neural network classification
+  ##
+  ## The @code{CompactClassificationNeuralNetwork} class implements a compact
+  ## version of the neural network classifier object, which can predict
+  ## responses for new data using the @code{predict} method, but does not store
+  ## the training data.
+  ##
+  ## A compact neural network classification model is a smaller version of the
+  ## full @code{ClassificationNeuralNetwork} model that does not include the
+  ## training data.  It consumes less memory than the full model, but cannot
+  ## perform tasks that require the training data, such as cross-validation.
+  ##
+  ## Create a @code{CompactClassificationNeuralNetwork} object by using the
+  ## @code{compact} method on a @code{ClassificationNeuralNetwork} object.
+  ##
+  ## @seealso{ClassificationNeuralNetwork, fitcnet}
+  ## @end deftp
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} NumPredictors
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -52,7 +52,7 @@ classdef CompactClassificationNeuralNetwork
     NumPredictors         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} PredictorNames
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -64,7 +64,7 @@ classdef CompactClassificationNeuralNetwork
     PredictorNames        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} ResponseName
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} ResponseName
     ##
     ## Response variable name
     ##
@@ -75,7 +75,7 @@ classdef CompactClassificationNeuralNetwork
     ResponseName          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} ClassNames
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -94,7 +94,7 @@ classdef CompactClassificationNeuralNetwork
     ClassNames            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} ScoreTransform
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -131,7 +131,7 @@ classdef CompactClassificationNeuralNetwork
     ScoreTransform        = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Standardize
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} Standardize
     ##
     ## Flag to standardize predictors
     ##
@@ -144,7 +144,7 @@ classdef CompactClassificationNeuralNetwork
     Standardize           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Sigma
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} Sigma
     ##
     ## Predictor standard deviations
     ##
@@ -156,7 +156,7 @@ classdef CompactClassificationNeuralNetwork
     Sigma                 = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Mu
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} Mu
     ##
     ## Predictor means
     ##
@@ -168,7 +168,7 @@ classdef CompactClassificationNeuralNetwork
     Mu                    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} LayerSizes
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} LayerSizes
     ##
     ## Sizes of fully connected layers
     ##
@@ -184,7 +184,7 @@ classdef CompactClassificationNeuralNetwork
     LayerSizes            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Activations
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} Activations
     ##
     ## Activation functions for hidden layers
     ##
@@ -199,7 +199,7 @@ classdef CompactClassificationNeuralNetwork
     Activations           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} OutputLayerActivation
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} OutputLayerActivation
     ##
     ## Activation function for output layer
     ##
@@ -211,7 +211,7 @@ classdef CompactClassificationNeuralNetwork
     OutputLayerActivation = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} LearningRate
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} LearningRate
     ##
     ## Learning rate for gradient descent
     ##
@@ -222,7 +222,7 @@ classdef CompactClassificationNeuralNetwork
     LearningRate          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} IterationLimit
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} IterationLimit
     ##
     ## Maximum number of training iterations
     ##
@@ -233,7 +233,7 @@ classdef CompactClassificationNeuralNetwork
     IterationLimit        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} ModelParameters
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} ModelParameters
     ##
     ## Neural network model parameters
     ##
@@ -245,7 +245,7 @@ classdef CompactClassificationNeuralNetwork
     ModelParameters       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} ConvergenceInfo
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} ConvergenceInfo
     ##
     ## Training convergence information
     ##
@@ -267,7 +267,7 @@ classdef CompactClassificationNeuralNetwork
     ConvergenceInfo       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} DisplayInfo
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} DisplayInfo
     ##
     ## Display training information flag
     ##
@@ -278,7 +278,7 @@ classdef CompactClassificationNeuralNetwork
     DisplayInfo           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {CompactClassificationNeuralNetwork} {property} Solver
+    ## @deftp {CompactClassificationNeuralNetwork} {property:} Solver
     ##
     ## Solver used for training
     ##

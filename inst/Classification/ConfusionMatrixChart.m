@@ -18,7 +18,6 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 classdef ConfusionMatrixChart < handle
-
   ## -*- texinfo -*-
   ## @deftp {statistics} ConfusionMatrixChart
   ##
@@ -43,7 +42,7 @@ classdef ConfusionMatrixChart < handle
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} XLabel
+    ## @deftp {ConfusionMatrixChart} {property:} XLabel
     ##
     ## X-axis label
     ##
@@ -54,7 +53,7 @@ classdef ConfusionMatrixChart < handle
     XLabel = "Predicted Class";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} YLabel
+    ## @deftp {ConfusionMatrixChart} {property:} YLabel
     ##
     ## Y-axis label
     ##
@@ -65,7 +64,7 @@ classdef ConfusionMatrixChart < handle
     YLabel = "True Class";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} Title
+    ## @deftp {ConfusionMatrixChart} {property:} Title
     ##
     ## Chart title
     ##
@@ -76,7 +75,7 @@ classdef ConfusionMatrixChart < handle
     Title  = "";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} FontName
+    ## @deftp {ConfusionMatrixChart} {property:} FontName
     ##
     ## Font name for text elements
     ##
@@ -87,7 +86,7 @@ classdef ConfusionMatrixChart < handle
     FontName  = "";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} FontSize
+    ## @deftp {ConfusionMatrixChart} {property:} FontSize
     ##
     ## Font size for text elements
     ##
@@ -98,7 +97,7 @@ classdef ConfusionMatrixChart < handle
     FontSize  = 0;
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} DiagonalColor
+    ## @deftp {ConfusionMatrixChart} {property:} DiagonalColor
     ##
     ## Color for diagonal elements
     ##
@@ -110,7 +109,7 @@ classdef ConfusionMatrixChart < handle
     DiagonalColor = [0 0.4471 0.7412];
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} OffDiagonalColor
+    ## @deftp {ConfusionMatrixChart} {property:} OffDiagonalColor
     ##
     ## Color for off-diagonal elements
     ##
@@ -122,7 +121,7 @@ classdef ConfusionMatrixChart < handle
     OffDiagonalColor = [0.8510 0.3255 0.0980];
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} Normalization
+    ## @deftp {ConfusionMatrixChart} {property:} Normalization
     ##
     ## Normalization method for confusion matrix values
     ##
@@ -141,7 +140,7 @@ classdef ConfusionMatrixChart < handle
     Normalization = "absolute";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} ColumnSummary
+    ## @deftp {ConfusionMatrixChart} {property:} ColumnSummary
     ##
     ## Column summary display
     ##
@@ -159,7 +158,7 @@ classdef ConfusionMatrixChart < handle
     ColumnSummary = "off";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} RowSummary
+    ## @deftp {ConfusionMatrixChart} {property:} RowSummary
     ##
     ## Row summary display
     ##
@@ -177,7 +176,7 @@ classdef ConfusionMatrixChart < handle
     RowSummary = "off";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} GridVisible
+    ## @deftp {ConfusionMatrixChart} {property:} GridVisible
     ##
     ## Grid visibility
     ##
@@ -193,7 +192,7 @@ classdef ConfusionMatrixChart < handle
     GridVisible = "on";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} HandleVisibility
+    ## @deftp {ConfusionMatrixChart} {property:} HandleVisibility
     ##
     ## Handle visibility
     ##
@@ -204,7 +203,7 @@ classdef ConfusionMatrixChart < handle
     HandleVisibility = "";
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} OuterPosition
+    ## @deftp {ConfusionMatrixChart} {property:} OuterPosition
     ##
     ## Outer position of the chart
     ##
@@ -215,7 +214,7 @@ classdef ConfusionMatrixChart < handle
     OuterPosition = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} Position
+    ## @deftp {ConfusionMatrixChart} {property:} Position
     ##
     ## Position of the chart
     ##
@@ -226,7 +225,7 @@ classdef ConfusionMatrixChart < handle
     Position = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} Units
+    ## @deftp {ConfusionMatrixChart} {property:} Units
     ##
     ## Position units
     ##
@@ -241,7 +240,7 @@ classdef ConfusionMatrixChart < handle
 
   properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} ClassLabels
+    ## @deftp {ConfusionMatrixChart} {property:} ClassLabels
     ##
     ## Class labels
     ##
@@ -252,7 +251,7 @@ classdef ConfusionMatrixChart < handle
     ClassLabels = {};
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} NormalizedValues
+    ## @deftp {ConfusionMatrixChart} {property:} NormalizedValues
     ##
     ## Normalized confusion matrix values
     ##
@@ -264,7 +263,7 @@ classdef ConfusionMatrixChart < handle
     NormalizedValues = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ConfusionMatrixChart} {property} Parent
+    ## @deftp {ConfusionMatrixChart} {property:} Parent
     ##
     ## Parent object
     ##
@@ -275,7 +274,7 @@ classdef ConfusionMatrixChart < handle
     Parent = 0;
   endproperties
 
-  properties (Access = protected)
+  properties (Access = protected, Hidden)
     ## Axes handle
     hax = 0.0;
 
