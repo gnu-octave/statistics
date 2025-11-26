@@ -845,7 +845,7 @@ classdef cvpartition
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn {cvpartition} {@var{Cnew} =} repartition (@var{C})
+    ## @deftypefn  {cvpartition} {@var{Cnew} =} repartition (@var{C})
     ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @var{sval})
     ## @deftypefnx {cvpartition} {@var{Cnew} =} repartition (@var{C}, @qcode{'legacy'})
     ##
