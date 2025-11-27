@@ -255,6 +255,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 	model->probA = NULL;
 	model->probB = NULL;
 	model->label = NULL;
+	model->prob_density_marks = NULL;
 	model->sv_indices = NULL;
 	model->nSV = NULL;
 	model->free_sv = 1; // XXX
