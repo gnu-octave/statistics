@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2021 Chih-Chung Chang and Chih-Jen Lin
+Copyright (C) 2025 Chih-Chung Chang and Chih-Jen Lin
 
 This file is part of the statistics package for GNU Octave.
 Permission granted by Chih-Jen Lin to the package maintainer to include this

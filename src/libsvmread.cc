@@ -1,6 +1,6 @@
 /*
-Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-Adapted from MATLAB libsvmwrite.c file from the LIBSVM 3.25 (2021) library
+Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Adapted from MATLAB libsvmwrite.c file from the LIBSVM 3.36 (2025) library
 by Chih-Chung Chang and Chih-Jen Lin.
 
 This file is part of the statistics package for GNU Octave.

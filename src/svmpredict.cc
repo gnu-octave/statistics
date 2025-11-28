@@ -1,8 +1,10 @@
 /*
 Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
+
 Based on the Octave LIBSVM wrapper adapted by Alan Meeson (2014) based on an
 earlier version of the LIBSVM (3.18) library for MATLAB. Current implementation
-is based on LIBSVM 3.25 (2021) by Chih-Chung Chang and Chih-Jen Lin.
+is based on LIBSVM 3.36 (2025) by Chih-Chung Chang and Chih-Jen Lin.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
