@@ -135,6 +135,7 @@ classdef GapEvaluation < ClusterCriterion
     ##
     ## @end deftp
     StdLogW = [];
+  endproperties
 
   properties (Access = protected)
     ## -*- texinfo -*-
