@@ -357,8 +357,8 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 
 DEFUN_DLD (svmtrain, args, nargout,
-           "-*- texinfo -*- \n\n\
- @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
+           "-*- texinfo -*- \n\n\
+ @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\")\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -421,29 +421,29 @@ as that of LIBSVM. \
 @itemize \n\
 @item @code{-d} : degree; set degree in kernel function (default 3) \n\
 \n\
-@item @code{-g} : gamma; set gamma in kernel function (default 1/num_features) \
+@item @code{-g} : gamma; set gamma in kernel function (default 1/num_features) \n\
 \n\
-@item @code{-r} : coef0; set coef0 in kernel function (default 0) \
+@item @code{-r} : coef0; set coef0 in kernel function (default 0) \n\
 \n\
-@item @code{-c} : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \
+@item @code{-c} : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \n\
 \n\
-@item @code{-n} : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \
+@item @code{-n} : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \n\
 \n\
-@item @code{-p} : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) \
+@item @code{-p} : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) \n\
 \n\
-@item @code{-m} : cachesize; set cache memory size in MB (default 100) \
+@item @code{-m} : cachesize; set cache memory size in MB (default 100) \n\
 \n\
-@item @code{-e} : epsilon; set tolerance of termination criterion (default 0.001) \
+@item @code{-e} : epsilon; set tolerance of termination criterion (default 0.001) \n\
 \n\
-@item @code{-h} : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) \
+@item @code{-h} : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) \n\
 \n\
-@item @code{-b} : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \
+@item @code{-b} : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \n\
 \n\
-@item @code{-w} : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) \
+@item @code{-w} : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) \n\
 \n\
-@item @code{-v} : n; n-fold cross validation mode \
+@item @code{-v} : n; n-fold cross validation mode \n\
 \n\
-@item @code{-q} : quiet mode (no outputs) \
+@item @code{-q} : quiet mode (no outputs) \n\
 \n\
 @end itemize \
 \n\
@@ -493,7 +493,7 @@ in the training set \
 \n\
 \n\
 If you do not use the option @code{-b 1}, ProbA and ProbB are empty \
-matrices. If the '@code{-v}' option is specified, cross validation is \
+matrices. If the '-v' option is specified, cross validation is \
 conducted and the returned model is just a scalar: cross-validation \
 accuracy for classification and mean-squared error for regression. \
 \n\
@@ -650,4 +650,17 @@ accuracy for classification and mean-squared error for regression. \
 %! # Check dimension mismatch error
 %!error <svmtrain: label vector must have same number of elements as rows in instance matrix.> ...
 %! model = svmtrain (L(1:end-1), D);
+%!
+%! # Test 5: One-Class Probability Training (New LIBSVM 3.36 Feature)
+%! # This ensures svmtrain DOES NOT reject -s 2 combined with -b 1
+%! # and correctly populates the new ProbDensityMarks field.
+%!test
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! model = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
+%! 
+%! assert (isstruct (model), true);
+%! assert (model.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! # CRITICAL CHECK: Verify the new field exists (Specific to upgrade)
+%! assert (isfield (model, "ProbDensityMarks"), true); 
+%! clear model
 */
