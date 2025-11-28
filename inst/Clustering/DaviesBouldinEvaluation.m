@@ -37,7 +37,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
 ## GapEvaluation, SilhouetteEvaluation}
 ## @end deftp
 
-  properties (Access = private, Hidden)
+  properties (Access = protected, Hidden)
     Centroids = {}; # a list of the centroids for every solution
   endproperties
 

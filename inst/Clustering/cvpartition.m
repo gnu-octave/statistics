@@ -28,7 +28,7 @@ classdef cvpartition
   ## @seealso{crossval}
   ## @end deftp
 
-  properties (SetAccess = private)
+  properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property:} NumObservations
     ##
@@ -132,7 +132,7 @@ classdef cvpartition
 
   endproperties
 
-  properties (SetAccess = private, Hidden)
+  properties (Access = private, Hidden)
     missidx = [];
     indices = [];
     cvptype = '';

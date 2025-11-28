@@ -38,7 +38,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## GapEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (Access = private, Hidden)
+  properties (Access = protected)
     Centroids = {}; # a list of the centroids for every solution
   endproperties
 

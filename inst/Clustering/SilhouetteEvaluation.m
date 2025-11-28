@@ -56,7 +56,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
   ## DaviesBouldinEvaluation, GapEvaluation}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = private)
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {SilhouetteEvaluation} {property:} Distance
     ##
@@ -94,7 +94,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ClusterSilhouettes = {};
   endproperties
 
-  properties (Access = private)
+  properties (Access = protected)
     ## -*- texinfo -*-
     ## @deftp {SilhouetteEvaluation} {property:} DistanceVector
     ##

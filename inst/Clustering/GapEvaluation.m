@@ -36,7 +36,7 @@ classdef GapEvaluation < ClusterCriterion
   ## DaviesBouldinEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = private)
+  properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property:} B
     ##
@@ -136,7 +136,7 @@ classdef GapEvaluation < ClusterCriterion
     ## @end deftp
     StdLogW = [];
 
-  properties (Access = private)
+  properties (Access = protected)
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property:} DistanceVector
     ##
