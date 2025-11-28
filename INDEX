@@ -283,6 +283,8 @@ I/O
  libsvmread
  libsvmwrite
  loadmodel
+Interpolation
+ makima
 Plotting
  bar3
  bar3h
@@ -323,5 +325,4 @@ Regression
  stepwisefit
 Transforms
  logit
- makima
  probit
