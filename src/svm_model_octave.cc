@@ -1,8 +1,10 @@
 /*
 Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
+
 Based on the Octave LIBSVM wrapper created by Alan Meeson (2014) based on an
 earlier version of the LIBSVM (3.18) library for MATLAB. Current implementation
-is based on LIBSVM 3.25 (2021) by Chih-Chung Chang and Chih-Jen Lin.
+is based on LIBSVM 3.36 (2025) by Chih-Chung Chang and Chih-Jen Lin.
 
 This file is part of the statistics package for GNU Octave.
 
@@ -27,7 +29,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include "svm.h"
 
-#define NUM_OF_RETURN_FIELD 11
+#define NUM_OF_RETURN_FIELD 12
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
@@ -42,7 +44,8 @@ static const char *field_names[] = {
 	"ProbB",
 	"nSV",
 	"sv_coef",
-	"SVs"
+	"SVs",
+	"ProbDensityMarks"
 };
 
 const char *model_to_octave_structure(octave_value_list &plhs, int num_of_feature, struct svm_model *model)
@@ -220,6 +223,22 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 		osm_model.assign("SVs", sm_rhs);
 	}
 
+	// changes from libsvm 3.36
+	if(model->prob_density_marks)
+    {
+        int nr_marks = 10; 
+        Matrix m_marks(nr_marks, 1);
+        for(int i = 0; i < nr_marks; i++)
+        {
+            m_marks(i) = model->prob_density_marks[i];
+        }
+        osm_model.setfield("ProbDensityMarks", m_marks);
+    }
+    else
+    {
+        osm_model.setfield("ProbDensityMarks", Matrix(0, 0));
+    }
+
 	/* return */
 	plhs(0) = osm_model;
 	return NULL;
@@ -238,6 +257,7 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 	model->probA = NULL;
 	model->probB = NULL;
 	model->label = NULL;
+	model->prob_density_marks = NULL;
 	model->sv_indices = NULL;
 	model->nSV = NULL;
 	model->free_sv = 1; // XXX
@@ -376,6 +396,29 @@ struct svm_model *octave_matrix_to_model(octave_scalar_map &octave_model, const 
 		}
 
 		id++;
+	}
+
+	// changes from libsvm 3.36
+	if (octave_model.isfield("ProbDensityMarks"))
+	{
+		Matrix m_marks = octave_model.getfield("ProbDensityMarks").matrix_value();
+		if (m_marks.numel() > 0)
+		{
+			int nr_marks = 10;
+			model->prob_density_marks = (double*) malloc(nr_marks * sizeof(double));
+			for(int i = 0; i < nr_marks; i++)
+			{
+				model->prob_density_marks[i] = m_marks(i);
+			}
+		}
+		else
+		{
+			model->prob_density_marks = NULL;
+		}
+	}
+	else
+	{
+		model->prob_density_marks = NULL;
 	}
 	return model;
 }

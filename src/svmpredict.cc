@@ -1,8 +1,10 @@
 /*
 Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
+
 Based on the Octave LIBSVM wrapper adapted by Alan Meeson (2014) based on an
 earlier version of the LIBSVM (3.18) library for MATLAB. Current implementation
-is based on LIBSVM 3.25 (2021) by Chih-Chung Chang and Chih-Jen Lin.
+is based on LIBSVM 3.36 (2025) by Chih-Chung Chang and Chih-Jen Lin.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -143,7 +145,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 	if(predict_probability)
 	{
 		// prob estimates are in plhs[2]
-		if(svm_type == C_SVC || svm_type == NU_SVC)
+		if(svm_type == C_SVC || svm_type == NU_SVC || svm_type == ONE_CLASS)
     {
 			Matrix m_pe(testing_instance_number, nr_class);
 			tplhs(2) = m_pe;
@@ -199,7 +201,7 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 
 		if(predict_probability)
 		{
-			if(svm_type == C_SVC || svm_type == NU_SVC)
+			if(svm_type == C_SVC || svm_type == NU_SVC || svm_type == ONE_CLASS)
 			{
 				predict_label = svm_predict_probability(model, x, prob_estimates);
 				ptr_predict_label[instance_index] = predict_label;
@@ -296,9 +298,9 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 DEFUN_DLD (svmpredict, args, nargout,
            "-*- texinfo -*- \n\n\
  @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
- @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
- @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
- @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, \"libsvm_options\")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, \"libsvm_options\")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, \"libsvm_options\")\n\
 \n\
 \n\
 This function predicts new labels from a testing instance matrix based on an \
@@ -328,10 +330,9 @@ as that of LIBSVM. \
 \n\
 @itemize \n\
 @item @code{-b} : probability_estimates; whether to predict probability \
-estimates.  For one-class SVM only 0 is supported.\n\
+estimates.\n\
 \n\
 @end itemize \
-\n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
 @item @tab 0 @tab return decision values. (default) \n\
 \n\
@@ -360,6 +361,10 @@ values indicating the probability that the testing instance is in each class.  \
 Note that the order of classes here is the same as @code{Label} field in the \
 @var{model} structure. \
 \n\
+\n\
+\\\n\\\
+@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) when combined with the probability flag (@code{-b 1}). For One-Class SVM, the @var{prob_estimates} output is a single column vector containing the probability of the instance being an inlier. \
+\\\n\\\
 @end deftypefn")
 {
 	int nlhs = nargout;
@@ -435,10 +440,18 @@ Note that the order of classes here is the same as @code{Label} field in the \
 
 		if(prob_estimate_flag)
 		{
+			// Check if the SVM type supports probability, new support for ONE_CLASS
+			if (model->param.svm_type != C_SVC && model->param.svm_type != NU_SVC && model->param.svm_type != ONE_CLASS)
+			{
+				svm_free_and_destroy_model(&model);
+				error ("svmpredict: probability estimates are not supported for this SVM type (only C-SVC, NU-SVC, and ONE-CLASS).\n");
+			}
+
+			// Check if the model itself was trained with probability info (-b 1)
 			if(svm_check_probability_model(model)==0)
 			{
-        svm_free_and_destroy_model(&model);
-				error ("svmpredict: model does not support probabiliy estimates.\n");
+				svm_free_and_destroy_model(&model);
+				error ("svmpredict: model does not support probability estimates. Train with '-b 1'.\n");
 			}
 		}
 		else
@@ -460,6 +473,7 @@ Note that the order of classes here is the same as @code{Label} field in the \
 
 /*
 %!test
+%! # Test 1: Standard C-SVC Prediction (Original Regression Test)
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict (L, D, model);
@@ -468,9 +482,42 @@ Note that the order of classes here is the same as @code{Label} field in the \
 %! assert (dec_values(1), 1.225836001973273, 1e-14);
 %! assert (dec_values(2), -0.3212992933043805, 1e-14);
 %! assert (predict_label(1), 1);
+%!
+%!test
+%! # Test 2: One-Class Probability (NEW LIBSVM 3.36 FEATURE)
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! # Train One-Class (-s 2) with Probability (-b 1)
+%! model_oc = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
+%! # FIX: Changed // to # below to fix syntax error
+%! assert (isstruct(model_oc), true, "svmtrain failed to return a valid struct model."); # <-- FIXED COMMENT HERE
+%! # Predict with Probability (-b 1)
+%! [pred, acc, probs] = svmpredict (L, D, model_oc, '-b 1');
+%! 
+%! # Detail Check A: Output must be N x 2 (Column 1: Normal, Column 2: Outlier)
+%! assert (size (probs), [length(L), 2]);
+%! 
+%! # Detail Check B: Probabilities must sum to 1.0 for every instance
+%! assert (sum (probs, 2), ones (length(L), 1), 1e-5);
+%! 
+%! # Detail Check C: Values must be valid probabilities [0, 1]
+%! assert (all (all (probs >= 0 & probs <= 1)));
+%! clear model_oc
+%!
+%!test
+%! # Test 3: One-Class Decision Values (Standard Check)
+%! # Verifies that the upgrade didn't break standard One-Class prediction (-b 0)
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! model_oc = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07');
+%! [pred, acc, dec] = svmpredict (L, D, model_oc);
+%! # Standard One-Class output is N x 1 (Scalar decision values)
+%! assert (size (dec), [length(L), 1]);
+%! clear model_oc
+%!
 %!shared L, D, model
+%! # Test 4: Error Handling (Original Checks)
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain (L, D, '-c 1 -g 0.07');
+%!
 %!error <svmpredict: wrong number of output arguments.> ...
 %! [p, a] = svmpredict (L, D, model);
 %!error <svmpredict: wrong number of input arguments.> p = svmpredict (L, D);

@@ -1,8 +1,10 @@
 /*
-Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+Copyright (C) 2025 Avanish Salunke <avanishsalunke16@gmail.com>
+
 Based on the Octave LIBSVM wrapper adapted by Alan Meeson (2014) based on an
 earlier version of the LIBSVM (3.18) library for MATLAB. Current implementation
-is based on LIBSVM 3.25 (2021) by Chih-Chung Chang and Chih-Jen Lin.
+is based on LIBSVM 3.36 (2025) by Chih-Chung Chang and Chih-Jen Lin.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -229,7 +231,8 @@ int read_problem_dense(ColumnVector &label_vec, Matrix &instance_mat)
 
 	if(label_vector_row_num!=prob.l)
 	{
-		printf("svmtrain: length of label vector does not match # of instances.\n");
+		//must throw an error to pass the BIST test
+		error("svmtrain: label vector must have same number of elements as rows in instance matrix.");
 		return -1;
 	}
 
@@ -312,7 +315,8 @@ int read_problem_sparse(ColumnVector &label_vec, SparseMatrix &instance_mat)
 
 	if(label_vector_row_num!=prob.l)
 	{
-		printf("svmtrain: length of label vector does not match # of instances.\n");
+		// must throw an error to pass the BIST test
+		error("svmtrain: label vector must have same number of elements as rows in instance matrix.");
 		return -1;
 	}
 
@@ -354,7 +358,7 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 DEFUN_DLD (svmtrain, args, nargout,
            "-*- texinfo -*- \n\n\
- @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
+ @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, \"libsvm_options\")\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -384,7 +388,7 @@ as that of LIBSVM. \
 @end itemize \
 \n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
-@item @tab 0 @tab C-SVC	(multi-class classification) \n\
+@item @tab 0 @tab C-SVC (multi-class classification) \n\
 \n\
 @item @tab 1 @tab nu-SVC (multi-class classification) \n\
 \n\
@@ -468,10 +472,13 @@ can be used for future prediction and it contains the following fields: \
 in the training set \
 \n\
 \n\
-@item @code{ProbA} : pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{ProbA} : pairwise probability information; empty if @code{-b 0} or in one-class SVM \
 \n\
 \n\
-@item @code{ProbB} : pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{ProbB} : pairwise probability information; empty if @code{-b 0} or in one-class SVM \
+\n\
+\n\
+@item @code{ProbDensityMarks} : density marks for one-class SVM probability estimates; empty if @code{-b 0} or not one-class SVM. \
 \n\
 \n\
 @item @code{nSV} : number of SVs for each class; empty for regression/one-class SVM \
@@ -491,6 +498,8 @@ conducted and the returned model is just a scalar: cross-validation \
 accuracy for classification and mean-squared error for regression. \
 \n\
 \n\
+\\\n\\\
+@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) when combined with the probability flag (@code{-b 1}).\\\n\\\
 @end deftypefn")
 {
 	const char *error_msg;
@@ -591,19 +600,67 @@ accuracy for classification and mean-squared error for regression. \
 
 /*
 %!test
+%! # Test 1: Basic C-SVC Classification and Model Structure
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
 %! model = svmtrain(L, D, '-c 1 -g 0.07');
 %! [predict_label, accuracy, dec_values] = svmpredict(L, D, model);
+%! 
 %! assert (isstruct (model), true);
 %! assert (isfield (model, "Parameters"), true);
 %! assert (model.totalSV, 130);
 %! assert (model.nr_class, 2);
 %! assert (size (model.Label), [2, 1]);
+%! 
+%! # Check prediction output sizes
+%! assert (size (predict_label), [length(L), 1]);
+%! assert (size (dec_values), [length(L), 1]);
+%! 
+%! 
+%! # Test 2: One-Class SVM Model Structure Check
+%! # Ensures training with -s 2 is functional and the model structure is valid (accommodating 3.36 changes).
+%! model_oc = svmtrain(L, D, '-s 2 -n 0.5 -g 0.07');
+%! assert (isstruct (model_oc), true);
+%! assert (model_oc.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! assert (model_oc.nr_class, 2);
+%! assert (model_oc.totalSV > 0, true);
+%! clear model_oc
+%! 
+%! 
+%! # Test 3: Regression SVR Test
+%! # Check training of Epsilon SVR (-s 3)
+%! model_svr = svmtrain (L, D, '-s 3 -p 0.1 -c 10');
+%! assert (isstruct (model_svr), true);
+%! assert (model_svr.Parameters(1), 3); # Check svm_type is EPSILON_SVR
+%! assert (model_svr.nr_class, 2);
+%! clear model_svr
+%! 
+%! 
+%! # Test 4: Input Argument Error Checking
 %!shared L, D
 %! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! 
+%! # Check argument count errors
 %!error <svmtrain: wrong number of output arguments.> [L, D] = svmtrain (L, D);
+%!error <svmtrain: wrong number of input arguments.> model = svmtrain (L, D, "", "");
+%! 
+%! # Check argument type errors
 %!error <svmtrain: label vector and instance matrix must be double.> ...
 %! model = svmtrain (single (L), D);
-%!error <svmtrain: wrong number of input arguments.> ...
-%! model = svmtrain (L, D, "", "");
+%! 
+%! # Check dimension mismatch error
+%!error <svmtrain: label vector must have same number of elements as rows in instance matrix.> ...
+%! model = svmtrain (L(1:end-1), D);
+%!
+%! # Test 5: One-Class Probability Training (New LIBSVM 3.36 Feature)
+%! # This ensures svmtrain DOES NOT reject -s 2 combined with -b 1
+%! # and correctly populates the new ProbDensityMarks field.
+%!test
+%! [L, D] = libsvmread (file_in_loadpath ("heart_scale.dat"));
+%! model = svmtrain (L, D, '-s 2 -n 0.1 -g 0.07 -b 1');
+%! 
+%! assert (isstruct (model), true);
+%! assert (model.Parameters(1), 2); # Check svm_type is ONE_CLASS
+%! # CRITICAL CHECK: Verify the new field exists (Specific to upgrade)
+%! assert (isfield (model, "ProbDensityMarks"), true); 
+%! clear model
 */

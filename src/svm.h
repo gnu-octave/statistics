@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2021 Chih-Chung Chang and Chih-Jen Lin
+Copyright (C) 2025 Chih-Chung Chang and Chih-Jen Lin
 
 This file is part of the statistics package for GNU Octave.
 Permission granted by Chih-Jen Lin to the package maintainer to include this
@@ -22,7 +22,7 @@ this program; if not, see <http://www.gnu.org/licenses/>.
 #ifndef _LIBSVM_H
 #define _LIBSVM_H
 
-#define LIBSVM_VERSION 325
+#define LIBSVM_VERSION 336
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,9 +78,10 @@ struct svm_model
 	struct svm_node **SV;		/* SVs (SV[l]) */
 	double **sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
 	double *rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
-	double *probA;		/* pairwise probability information */
+	double *probA;		/* pariwise probability information */
 	double *probB;
-	int *sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_training_data] to indicate SVs in the training set */
+	double *prob_density_marks;	/* probability information for ONE_CLASS */
+	int *sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_traning_data] to indicate SVs in the training set */
 
 	/* for classification only */
 
