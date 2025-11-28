@@ -42,7 +42,7 @@ classdef ClassificationGAM
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} X
+    ## @deftp {ClassificationGAM} {property} X
     ##
     ## Predictor data
     ##
@@ -54,7 +54,7 @@ classdef ClassificationGAM
     X = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Y
+    ## @deftp {ClassificationGAM} {property} Y
     ##
     ## Class labels
     ##
@@ -67,7 +67,7 @@ classdef ClassificationGAM
     Y = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} NumObservations
+    ## @deftp {ClassificationGAM} {property} NumObservations
     ##
     ## Number of observations
     ##
@@ -79,7 +79,7 @@ classdef ClassificationGAM
     NumObservations = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} RowsUsed
+    ## @deftp {ClassificationGAM} {property} RowsUsed
     ##
     ## Rows used for fitting
     ##
@@ -91,7 +91,7 @@ classdef ClassificationGAM
     RowsUsed        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} NumPredictors
+    ## @deftp {ClassificationGAM} {property} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -103,7 +103,7 @@ classdef ClassificationGAM
     NumPredictors   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} PredictorNames
+    ## @deftp {ClassificationGAM} {property} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -115,7 +115,7 @@ classdef ClassificationGAM
     PredictorNames  = {};
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} ResponseName
+    ## @deftp {ClassificationGAM} {property} ResponseName
     ##
     ## Response variable name
     ##
@@ -126,7 +126,7 @@ classdef ClassificationGAM
     ResponseName    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} ClassNames
+    ## @deftp {ClassificationGAM} {property} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -145,7 +145,7 @@ classdef ClassificationGAM
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Cost
+    ## @deftp {ClassificationGAM} {property} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -169,7 +169,7 @@ classdef ClassificationGAM
     Cost            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Prior
+    ## @deftp {ClassificationGAM} {property} Prior
     ##
     ## Prior probability for each class
     ##
@@ -181,7 +181,7 @@ classdef ClassificationGAM
     Prior           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} ScoreTransform
+    ## @deftp {ClassificationGAM} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -218,7 +218,7 @@ classdef ClassificationGAM
     ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Formula
+    ## @deftp {ClassificationGAM} {property} Formula
     ##
     ## Model specification formula
     ##
@@ -231,7 +231,7 @@ classdef ClassificationGAM
     Formula         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Interactions
+    ## @deftp {ClassificationGAM} {property} Interactions
     ##
     ## Interaction terms specification
     ##
@@ -243,7 +243,7 @@ classdef ClassificationGAM
     Interactions    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Knots
+    ## @deftp {ClassificationGAM} {property} Knots
     ##
     ## Knots for spline fitting
     ##
@@ -254,7 +254,7 @@ classdef ClassificationGAM
     Knots           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} Order
+    ## @deftp {ClassificationGAM} {property} Order
     ##
     ## Order of spline fitting
     ##
@@ -265,7 +265,7 @@ classdef ClassificationGAM
     Order           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} DoF
+    ## @deftp {ClassificationGAM} {property} DoF
     ##
     ## Degrees of freedom for spline fitting
     ##
@@ -276,7 +276,7 @@ classdef ClassificationGAM
     DoF             = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} LearningRate
+    ## @deftp {ClassificationGAM} {property} LearningRate
     ##
     ## Learning rate for gradient boosting
     ##
@@ -287,7 +287,7 @@ classdef ClassificationGAM
     LearningRate    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} NumIterations
+    ## @deftp {ClassificationGAM} {property} NumIterations
     ##
     ## Maximum number of iterations
     ##
@@ -298,7 +298,7 @@ classdef ClassificationGAM
     NumIterations   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} BaseModel
+    ## @deftp {ClassificationGAM} {property} BaseModel
     ##
     ## Base model parameters
     ##
@@ -311,7 +311,7 @@ classdef ClassificationGAM
     BaseModel = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} ModelwInt
+    ## @deftp {ClassificationGAM} {property} ModelwInt
     ##
     ## Model parameters with interactions
     ##
@@ -323,7 +323,7 @@ classdef ClassificationGAM
     ModelwInt = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationGAM} {property:} IntMatrix
+    ## @deftp {ClassificationGAM} {property} IntMatrix
     ##
     ## Interaction matrix
     ##

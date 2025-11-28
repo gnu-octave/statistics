@@ -44,7 +44,7 @@ classdef KDTreeSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {KDTreeSearcher} {property:} X
+    ## @deftp {KDTreeSearcher} {property} X
     ##
     ## Point data
     ##
@@ -56,7 +56,7 @@ classdef KDTreeSearcher
     X = []
 
     ## -*- texinfo -*-
-    ## @deftp {KDTreeSearcher} {property:} BucketSize
+    ## @deftp {KDTreeSearcher} {property} BucketSize
     ##
     ## Maximum number of data points in each leaf node
     ##
@@ -70,7 +70,7 @@ classdef KDTreeSearcher
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {KDTreeSearcher} {property:} Distance
+    ## @deftp {KDTreeSearcher} {property} Distance
     ##
     ## Distance metric
     ##
@@ -83,7 +83,7 @@ classdef KDTreeSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {KDTreeSearcher} {property:} DistParameter
+    ## @deftp {KDTreeSearcher} {property} DistParameter
     ##
     ## Distance parameter
     ##

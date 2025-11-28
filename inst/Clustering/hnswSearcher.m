@@ -41,7 +41,7 @@ classdef hnswSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {hnswSearcher} {property:} Distance
+    ## @deftp {hnswSearcher} {property} Distance
     ##
     ## Distance metric
     ##
@@ -55,7 +55,7 @@ classdef hnswSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {hnswSearcher} {property:} DistParameter
+    ## @deftp {hnswSearcher} {property} DistParameter
     ##
     ## Distance parameter
     ##
@@ -78,7 +78,7 @@ classdef hnswSearcher
     DistParameter = []
 
     ## -*- texinfo -*-
-    ## @deftp {hnswSearcher} {property:} MaxNumLinksPerNode
+    ## @deftp {hnswSearcher} {property} MaxNumLinksPerNode
     ##
     ## Number of connections created for each node
     ##
@@ -90,7 +90,7 @@ classdef hnswSearcher
     MaxNumLinksPerNode = 16
 
     ## -*- texinfo -*-
-    ## @deftp {hnswSearcher} {property:} TrainSetSize
+    ## @deftp {hnswSearcher} {property} TrainSetSize
     ##
     ## Number of potential nearest neighbors
     ##
@@ -103,7 +103,7 @@ classdef hnswSearcher
     TrainSetSize = 200
 
     ## -*- texinfo -*-
-    ## @deftp {hnswSearcher} {property:} X
+    ## @deftp {hnswSearcher} {property} X
     ##
     ## Point data
     ##

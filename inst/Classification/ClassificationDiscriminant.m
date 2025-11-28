@@ -40,7 +40,7 @@ classdef ClassificationDiscriminant
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} X
+    ## @deftp {ClassificationDiscriminant} {property} X
     ##
     ## Predictor data
     ##
@@ -52,7 +52,7 @@ classdef ClassificationDiscriminant
     X = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Y
+    ## @deftp {ClassificationDiscriminant} {property} Y
     ##
     ## Class labels
     ##
@@ -65,7 +65,7 @@ classdef ClassificationDiscriminant
     Y = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} NumObservations
+    ## @deftp {ClassificationDiscriminant} {property} NumObservations
     ##
     ## Number of observations
     ##
@@ -77,7 +77,7 @@ classdef ClassificationDiscriminant
     NumObservations = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} RowsUsed
+    ## @deftp {ClassificationDiscriminant} {property} RowsUsed
     ##
     ## Rows used for fitting
     ##
@@ -90,7 +90,7 @@ classdef ClassificationDiscriminant
     RowsUsed        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} NumPredictors
+    ## @deftp {ClassificationDiscriminant} {property} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -102,7 +102,7 @@ classdef ClassificationDiscriminant
     NumPredictors   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} PredictorNames
+    ## @deftp {ClassificationDiscriminant} {property} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -114,7 +114,7 @@ classdef ClassificationDiscriminant
     PredictorNames  = {};
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} ResponseName
+    ## @deftp {ClassificationDiscriminant} {property} ResponseName
     ##
     ## Response variable name
     ##
@@ -125,7 +125,7 @@ classdef ClassificationDiscriminant
     ResponseName    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} ClassNames
+    ## @deftp {ClassificationDiscriminant} {property} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -144,7 +144,7 @@ classdef ClassificationDiscriminant
     ClassNames      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Cost
+    ## @deftp {ClassificationDiscriminant} {property} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -168,7 +168,7 @@ classdef ClassificationDiscriminant
     Cost            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Prior
+    ## @deftp {ClassificationDiscriminant} {property} Prior
     ##
     ## Prior probability for each class
     ##
@@ -185,7 +185,7 @@ classdef ClassificationDiscriminant
     Prior           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} ScoreTransform
+    ## @deftp {ClassificationDiscriminant} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -222,7 +222,7 @@ classdef ClassificationDiscriminant
     ScoreTransform  = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Sigma
+    ## @deftp {ClassificationDiscriminant} {property} Sigma
     ##
     ## Within-class covariance
     ##
@@ -235,7 +235,7 @@ classdef ClassificationDiscriminant
     Sigma           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Mu
+    ## @deftp {ClassificationDiscriminant} {property} Mu
     ##
     ## Class means
     ##
@@ -248,7 +248,7 @@ classdef ClassificationDiscriminant
     Mu              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Coeffs
+    ## @deftp {ClassificationDiscriminant} {property} Coeffs
     ##
     ## Coefficient matrices
     ##
@@ -274,7 +274,7 @@ classdef ClassificationDiscriminant
     Coeffs          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Delta
+    ## @deftp {ClassificationDiscriminant} {property} Delta
     ##
     ## Delta threshold
     ##
@@ -286,7 +286,7 @@ classdef ClassificationDiscriminant
     Delta           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} DiscrimType
+    ## @deftp {ClassificationDiscriminant} {property} DiscrimType
     ##
     ## Discriminant type
     ##
@@ -298,7 +298,7 @@ classdef ClassificationDiscriminant
     DiscrimType     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} Gamma
+    ## @deftp {ClassificationDiscriminant} {property} Gamma
     ##
     ## Gamma regularization parameter
     ##
@@ -309,7 +309,7 @@ classdef ClassificationDiscriminant
     Gamma           = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} MinGamma
+    ## @deftp {ClassificationDiscriminant} {property} MinGamma
     ##
     ## Minimum value for Gamma regularization parameter
     ##
@@ -320,7 +320,7 @@ classdef ClassificationDiscriminant
     MinGamma        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} LogDetSigma
+    ## @deftp {ClassificationDiscriminant} {property} LogDetSigma
     ##
     ## Logarithm of the determinant of the within-class covariance matrix
     ##
@@ -331,7 +331,7 @@ classdef ClassificationDiscriminant
     LogDetSigma     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationDiscriminant} {property:} XCentered
+    ## @deftp {ClassificationDiscriminant} {property} XCentered
     ##
     ## Predictor data with class means subtracted
     ##

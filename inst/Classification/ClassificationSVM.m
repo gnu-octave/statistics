@@ -40,7 +40,7 @@ classdef ClassificationSVM
 
   properties (Access = public)
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} X
+    ## @deftp {ClassificationSVM} {property} X
     ##
     ## Predictor data
     ##
@@ -52,7 +52,7 @@ classdef ClassificationSVM
     X                   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Y
+    ## @deftp {ClassificationSVM} {property} Y
     ##
     ## Class labels
     ##
@@ -65,7 +65,7 @@ classdef ClassificationSVM
     Y                   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} NumObservations
+    ## @deftp {ClassificationSVM} {property} NumObservations
     ##
     ## Number of observations
     ##
@@ -77,7 +77,7 @@ classdef ClassificationSVM
     NumObservations     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} RowsUsed
+    ## @deftp {ClassificationSVM} {property} RowsUsed
     ##
     ## Rows used for fitting
     ##
@@ -89,7 +89,7 @@ classdef ClassificationSVM
     RowsUsed            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} NumPredictors
+    ## @deftp {ClassificationSVM} {property} NumPredictors
     ##
     ## Number of predictors
     ##
@@ -101,7 +101,7 @@ classdef ClassificationSVM
     NumPredictors       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} PredictorNames
+    ## @deftp {ClassificationSVM} {property} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -113,7 +113,7 @@ classdef ClassificationSVM
     PredictorNames      = {};
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} ResponseName
+    ## @deftp {ClassificationSVM} {property} ResponseName
     ##
     ## Response variable name
     ##
@@ -124,7 +124,7 @@ classdef ClassificationSVM
     ResponseName        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} ClassNames
+    ## @deftp {ClassificationSVM} {property} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -143,7 +143,7 @@ classdef ClassificationSVM
     ClassNames          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} ScoreTransform
+    ## @deftp {ClassificationSVM} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -180,7 +180,7 @@ classdef ClassificationSVM
     ScoreTransform      = @(x) x;
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Standardize
+    ## @deftp {ClassificationSVM} {property} Standardize
     ##
     ## Flag to standardize predictors
     ##
@@ -191,7 +191,7 @@ classdef ClassificationSVM
     Standardize         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Sigma
+    ## @deftp {ClassificationSVM} {property} Sigma
     ##
     ## Predictor standard deviations
     ##
@@ -204,7 +204,7 @@ classdef ClassificationSVM
     Sigma               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Mu
+    ## @deftp {ClassificationSVM} {property} Mu
     ##
     ## Predictor means
     ##
@@ -216,7 +216,7 @@ classdef ClassificationSVM
     Mu                  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} ModelParameters
+    ## @deftp {ClassificationSVM} {property} ModelParameters
     ##
     ## SVM training parameters
     ##
@@ -230,7 +230,7 @@ classdef ClassificationSVM
     ModelParameters     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Model
+    ## @deftp {ClassificationSVM} {property} Model
     ##
     ## Trained SVM model
     ##
@@ -241,7 +241,7 @@ classdef ClassificationSVM
     Model               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Alpha
+    ## @deftp {ClassificationSVM} {property} Alpha
     ##
     ## Trained classifier coefficients
     ##
@@ -255,7 +255,7 @@ classdef ClassificationSVM
     Alpha               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Beta
+    ## @deftp {ClassificationSVM} {property} Beta
     ##
     ## Linear predictor coefficients
     ##
@@ -269,7 +269,7 @@ classdef ClassificationSVM
     Beta                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} Bias
+    ## @deftp {ClassificationSVM} {property} Bias
     ##
     ## Bias term
     ##
@@ -279,7 +279,7 @@ classdef ClassificationSVM
     Bias                = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} IsSupportVector
+    ## @deftp {ClassificationSVM} {property} IsSupportVector
     ##
     ## Support vector indicator
     ##
@@ -292,7 +292,7 @@ classdef ClassificationSVM
     IsSupportVector     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} SupportVectorLabels
+    ## @deftp {ClassificationSVM} {property} SupportVectorLabels
     ##
     ## Support vector class labels
     ##
@@ -308,7 +308,7 @@ classdef ClassificationSVM
     SupportVectorLabels = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationSVM} {property:} SupportVectors
+    ## @deftp {ClassificationSVM} {property} SupportVectors
     ##
     ## Support vectors
     ##

@@ -38,7 +38,7 @@ classdef ExhaustiveSearcher
 
   properties (SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {ExhaustiveSearcher} {property:} X
+    ## @deftp {ExhaustiveSearcher} {property} X
     ##
     ## Point data
     ##
@@ -52,7 +52,7 @@ classdef ExhaustiveSearcher
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {ExhaustiveSearcher} {property:} Distance
+    ## @deftp {ExhaustiveSearcher} {property} Distance
     ##
     ## Distance metric
     ##
@@ -65,7 +65,7 @@ classdef ExhaustiveSearcher
     Distance = 'euclidean'
 
     ## -*- texinfo -*-
-    ## @deftp {ExhaustiveSearcher} {property:} DistParameter
+    ## @deftp {ExhaustiveSearcher} {property} DistParameter
     ##
     ## Distance parameter
     ##

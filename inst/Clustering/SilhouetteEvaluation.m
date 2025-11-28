@@ -58,7 +58,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property:} Distance
+    ## @deftp {SilhouetteEvaluation} {property} Distance
     ##
     ## Distance measure
     ##
@@ -70,7 +70,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     Distance = "";
 
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property:} ClusterPriors
+    ## @deftp {SilhouetteEvaluation} {property} ClusterPriors
     ##
     ## Cluster prior handling
     ##
@@ -82,7 +82,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ClusterPriors = "";
 
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property:} ClusterSilhouettes
+    ## @deftp {SilhouetteEvaluation} {property} ClusterSilhouettes
     ##
     ## Silhouette values
     ##
@@ -96,7 +96,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
   properties (Access = protected)
     ## -*- texinfo -*-
-    ## @deftp {SilhouetteEvaluation} {property:} DistanceVector
+    ## @deftp {SilhouetteEvaluation} {property} DistanceVector
     ##
     ## Precomputed distance vector
     ##

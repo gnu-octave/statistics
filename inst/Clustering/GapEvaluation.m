@@ -38,7 +38,7 @@ classdef GapEvaluation < ClusterCriterion
 
   properties (GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} B
+    ## @deftp {GapEvaluation} {property} B
     ##
     ## Number of reference datasets
     ##
@@ -50,7 +50,7 @@ classdef GapEvaluation < ClusterCriterion
     B = 0;
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} Distance
+    ## @deftp {GapEvaluation} {property} Distance
     ##
     ## Distance metric
     ##
@@ -63,7 +63,7 @@ classdef GapEvaluation < ClusterCriterion
     Distance = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} ReferenceDistribution
+    ## @deftp {GapEvaluation} {property} ReferenceDistribution
     ##
     ## Reference distribution for Monte-Carlo
     ##
@@ -75,7 +75,7 @@ classdef GapEvaluation < ClusterCriterion
     ReferenceDistribution = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} SearchMethod
+    ## @deftp {GapEvaluation} {property} SearchMethod
     ##
     ## Search method to select optimal K
     ##
@@ -88,7 +88,7 @@ classdef GapEvaluation < ClusterCriterion
     SearchMethod = "";
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} ExpectedLogW
+    ## @deftp {GapEvaluation} {property} ExpectedLogW
     ##
     ## Expected log within-cluster dispersion
     ##
@@ -101,7 +101,7 @@ classdef GapEvaluation < ClusterCriterion
     ExpectedLogW = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} LogW
+    ## @deftp {GapEvaluation} {property} LogW
     ##
     ## Observed log within-cluster dispersion
     ##
@@ -113,7 +113,7 @@ classdef GapEvaluation < ClusterCriterion
     LogW = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} SE
+    ## @deftp {GapEvaluation} {property} SE
     ##
     ## Standard error of expected logW
     ##
@@ -125,7 +125,7 @@ classdef GapEvaluation < ClusterCriterion
     SE = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} StdLogW
+    ## @deftp {GapEvaluation} {property} StdLogW
     ##
     ## Standard deviation of expected logW
     ##
@@ -138,7 +138,7 @@ classdef GapEvaluation < ClusterCriterion
 
   properties (Access = protected)
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} DistanceVector
+    ## @deftp {GapEvaluation} {property} DistanceVector
     ##
     ## Precomputed distance vector
     ##
@@ -150,7 +150,7 @@ classdef GapEvaluation < ClusterCriterion
     DistanceVector = [];
 
     ## -*- texinfo -*-
-    ## @deftp {GapEvaluation} {property:} mExpectedLogW
+    ## @deftp {GapEvaluation} {property} mExpectedLogW
     ##
     ## Monte-Carlo results matrix
     ##

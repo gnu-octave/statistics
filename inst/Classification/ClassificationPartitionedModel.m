@@ -36,7 +36,7 @@ classdef ClassificationPartitionedModel
 
   properties
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} BinEdges
+    ## @deftp {ClassificationPartitionedModel} {property} BinEdges
     ##
     ## Bin edges
     ##
@@ -47,7 +47,7 @@ classdef ClassificationPartitionedModel
     BinEdges                     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} CategoricalPredictors
+    ## @deftp {ClassificationPartitionedModel} {property} CategoricalPredictors
     ##
     ## Indices of categorical predictors
     ##
@@ -58,7 +58,7 @@ classdef ClassificationPartitionedModel
     CategoricalPredictors        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} X
+    ## @deftp {ClassificationPartitionedModel} {property} X
     ##
     ## Predictor data
     ##
@@ -70,7 +70,7 @@ classdef ClassificationPartitionedModel
     X                            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Y
+    ## @deftp {ClassificationPartitionedModel} {property} Y
     ##
     ## Class labels
     ##
@@ -83,7 +83,7 @@ classdef ClassificationPartitionedModel
     Y                            = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} ClassNames
+    ## @deftp {ClassificationPartitionedModel} {property} ClassNames
     ##
     ## Names of classes in the response variable
     ##
@@ -102,7 +102,7 @@ classdef ClassificationPartitionedModel
     ClassNames                   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Cost
+    ## @deftp {ClassificationPartitionedModel} {property} Cost
     ##
     ## Cost of Misclassification
     ##
@@ -121,7 +121,7 @@ classdef ClassificationPartitionedModel
     Cost                         = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} CrossValidatedModel
+    ## @deftp {ClassificationPartitionedModel} {property} CrossValidatedModel
     ##
     ## Cross-validated model class
     ##
@@ -133,7 +133,7 @@ classdef ClassificationPartitionedModel
     CrossValidatedModel          = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} KFold
+    ## @deftp {ClassificationPartitionedModel} {property} KFold
     ##
     ## Number of cross-validated folds
     ##
@@ -144,7 +144,7 @@ classdef ClassificationPartitionedModel
     KFold                        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} ModelParameters
+    ## @deftp {ClassificationPartitionedModel} {property} ModelParameters
     ##
     ## Model parameters
     ##
@@ -156,7 +156,7 @@ classdef ClassificationPartitionedModel
     ModelParameters              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} NumObservations
+    ## @deftp {ClassificationPartitionedModel} {property} NumObservations
     ##
     ## Number of observations
     ##
@@ -168,7 +168,7 @@ classdef ClassificationPartitionedModel
     NumObservations              = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Partition
+    ## @deftp {ClassificationPartitionedModel} {property} Partition
     ##
     ## Partition configuration
     ##
@@ -181,7 +181,7 @@ classdef ClassificationPartitionedModel
     Partition                    = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} PredictorNames
+    ## @deftp {ClassificationPartitionedModel} {property} PredictorNames
     ##
     ## Names of predictor variables
     ##
@@ -193,7 +193,7 @@ classdef ClassificationPartitionedModel
     PredictorNames               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Prior
+    ## @deftp {ClassificationPartitionedModel} {property} Prior
     ##
     ## Prior probability for each class
     ##
@@ -205,7 +205,7 @@ classdef ClassificationPartitionedModel
     Prior                        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} ResponseName
+    ## @deftp {ClassificationPartitionedModel} {property} ResponseName
     ##
     ## Response variable name
     ##
@@ -216,7 +216,7 @@ classdef ClassificationPartitionedModel
     ResponseName                 = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} ScoreTransform
+    ## @deftp {ClassificationPartitionedModel} {property} ScoreTransform
     ##
     ## Transformation function for classification scores
     ##
@@ -227,7 +227,7 @@ classdef ClassificationPartitionedModel
     ScoreTransform               = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Standardize
+    ## @deftp {ClassificationPartitionedModel} {property} Standardize
     ##
     ## Standardize predictors flag
     ##
@@ -238,7 +238,7 @@ classdef ClassificationPartitionedModel
     Standardize                  = [];
 
     ## -*- texinfo -*-
-    ## @deftp {ClassificationPartitionedModel} {property:} Trained
+    ## @deftp {ClassificationPartitionedModel} {property} Trained
     ##
     ## Models trained on each fold
     ##

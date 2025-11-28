@@ -30,7 +30,7 @@ classdef cvpartition
 
   properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} NumObservations
+    ## @deftp {cvpartition} {property} NumObservations
     ##
     ## Number of observations
     ##
@@ -42,7 +42,7 @@ classdef cvpartition
     NumObservations = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} NumTestSets
+    ## @deftp {cvpartition} {property} NumTestSets
     ##
     ## Number of test sets
     ##
@@ -55,7 +55,7 @@ classdef cvpartition
     NumTestSets     = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} TrainSize
+    ## @deftp {cvpartition} {property} TrainSize
     ##
     ## Size of each train set
     ##
@@ -69,7 +69,7 @@ classdef cvpartition
     TrainSize       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} TestSize
+    ## @deftp {cvpartition} {property} TestSize
     ##
     ## Size of each test set
     ##
@@ -83,7 +83,7 @@ classdef cvpartition
     TestSize        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} Type
+    ## @deftp {cvpartition} {property} Type
     ##
     ## Type of validation partition
     ##
@@ -95,7 +95,7 @@ classdef cvpartition
     Type            = '';
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} IsCustom
+    ## @deftp {cvpartition} {property} IsCustom
     ##
     ## Flag for custom partition
     ##
@@ -107,7 +107,7 @@ classdef cvpartition
     IsCustom        = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} IsGrouped
+    ## @deftp {cvpartition} {property} IsGrouped
     ##
     ## Flag for grouped partition
     ##
@@ -119,7 +119,7 @@ classdef cvpartition
     IsGrouped       = [];
 
     ## -*- texinfo -*-
-    ## @deftp {cvpartition} {property:} IsStratified
+    ## @deftp {cvpartition} {property} IsStratified
     ##
     ## Flag for stratified partition
     ##
