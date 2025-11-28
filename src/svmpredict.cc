@@ -332,19 +332,19 @@ as that of LIBSVM. \
 @item @code{-b} : probability_estimates; whether to predict probability \
 estimates.\n\
 \n\
-@end itemize \
+@end itemize \n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
 @item @tab 0 @tab return decision values. (default) \n\
 \n\
-@item @tab 1 @tab return probability estimates. \
+@item @tab 1 @tab return probability estimates. \n\
 \n\
-@end multitable \
+@end multitable \n\
 \n\
 \n\
 @itemize \n\
-@item @code{-q} : quiet mode. (no outputs) \
+@item @code{-q} : quiet mode. (no outputs) \n\
 \n\
-@end itemize \
+@end itemize \n\
 \n\
 \n\
 The @code{svmpredict} function has three outputs.  The first one, \
@@ -362,9 +362,13 @@ Note that the order of classes here is the same as @code{Label} field in the \
 @var{model} structure. \
 \n\
 \n\
-\\\n\\\
-@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) when combined with the probability flag (@code{-b 1}). For One-Class SVM, the @var{prob_estimates} output is a single column vector containing the probability of the instance being an inlier. \
-\\\n\\\
+\n\
+@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 \
+(2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) \
+when combined with the probability flag (@code{-b 1}).  For One-Class SVM, \
+the  @var{prob_estimates} output is a single column vector containing the \
+probability of the instance being an inlier. \n\
+\n\
 @end deftypefn")
 {
 	int nlhs = nargout;
@@ -492,13 +496,13 @@ Note that the order of classes here is the same as @code{Label} field in the \
 %! assert (isstruct(model_oc), true, "svmtrain failed to return a valid struct model."); # <-- FIXED COMMENT HERE
 %! # Predict with Probability (-b 1)
 %! [pred, acc, probs] = svmpredict (L, D, model_oc, '-b 1');
-%! 
+%!
 %! # Detail Check A: Output must be N x 2 (Column 1: Normal, Column 2: Outlier)
 %! assert (size (probs), [length(L), 2]);
-%! 
+%!
 %! # Detail Check B: Probabilities must sum to 1.0 for every instance
 %! assert (sum (probs, 2), ones (length(L), 1), 1e-5);
-%! 
+%!
 %! # Detail Check C: Values must be valid probabilities [0, 1]
 %! assert (all (all (probs >= 0 & probs <= 1)));
 %! clear model_oc
