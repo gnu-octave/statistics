@@ -17,9 +17,9 @@
 ## see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {@var{yi} =} makima (@var{x}, @var{y}, @var{xq})
-## @deftypefnx {Function File} {@var{yi} =} makima (@var{y}, @var{xq})
-## @deftypefnx {Function File} {@var{yi} =} makima (@dots{}, @qcode{"extrap"})
+## @deftypefn  {statistics} {@var{yi} =} makima (@var{x}, @var{y}, @var{xq})
+## @deftypefnx {statistics} {@var{yi} =} makima (@var{y}, @var{xq})
+## @deftypefnx {statistics} {@var{yi} =} makima (@dots{}, @qcode{"extrap"})
 ##
 ## Compute the 1-D Modified Akima (MAKIMA) interpolant of sample data
 ## @var{x}, @var{y} evaluated at query points @var{xq}.
@@ -31,10 +31,11 @@
 ## values @var{y}, the function returns the interpolated values @var{yi} at the
 ## query points @var{xq}.
 ##
-## If only two inputs are given, @var{x} is assumed to be $1:\text{length}(\var{y})$.
+## If only two inputs are given, @var{x} is assumed to be
+## @code{[1:length(@var{y})]}.
 ##
-## The optional string $\qcode{"extrap"}$ enables extrapolation for query points
-## outside the range of @var{x}. By default, extrapolation returns $\text{NaN}$.
+## The optional string @qcode{"extrap"} enables extrapolation for query points
+## outside the range of @var{x}. By default, extrapolation returns @qcode{NaN}.
 ##
 ## @seealso{interp1, pchip, spline}
 ## @end deftypefn
@@ -268,7 +269,7 @@ endfunction
 %! y = [4 5 6];
 %! xi = [1.5 2.5];
 %! yi = makima (x, y, xi);
-%! assert (yi, [4.5 5.5], 1e-12); 
+%! assert (yi, [4.5 5.5], 1e-12);
 
 %!test
 %! % 12. Step function (Overshoot Check)
