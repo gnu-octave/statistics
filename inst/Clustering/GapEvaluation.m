@@ -208,8 +208,8 @@ classdef GapEvaluation < ClusterCriterion
           ## kmeans can use only a subset
           if (strcmpi (clust, "kmeans") && any (strcmpi (this.Distance, ...
               {"euclidean", "jaccard"})))
-            error (["GapEvaluation: invalid distance criterion '%s' "...
-                    "for 'kmeans'"], distanceMetric);
+            error (strcat ("GapEvaluation: invalid distance criterion"...
+                           " '%s' for 'kmeans'"), distanceMetric);
           endif
         else
           error ("GapEvaluation: unknown distance criterion '%s'", ...
@@ -228,8 +228,7 @@ classdef GapEvaluation < ClusterCriterion
 
         ## kmeans cannot use a distance vector
         if (strcmpi (clust, "kmeans"))
-          error (["GapEvaluation: invalid distance criterion for "...
-                  "'kmeans'"]);
+          error ("GapEvaluation: invalid distance criterion for 'kmeans'.");
         endif
       else
         error ("GapEvaluation: invalid distance metric");
@@ -244,18 +243,18 @@ classdef GapEvaluation < ClusterCriterion
       ## reference distribution
       if (! ischar (referenceDistribution) || ! any (strcmpi ...
           (referenceDistribution, {"pca", "uniform"})))
-        error (["GapEvaluation: the reference distribution must be either" ...
-                "'PCA' or 'uniform'"]);
+        error (strcat ("GapEvaluation: the reference distribution", ...
+                       " must be either 'PCA' or 'uniform'."));
       elseif (strcmpi (referenceDistribution, "pca"))
-        warning (["GapEvaluation: 'PCA' distribution not implemented, " ...
-                  "using 'uniform'"]);
+        warning (strcat ("GapEvaluation: 'PCA' distribution not", ...
+                         " implemented, defaulting to 'uniform'."));
       endif
       this.ReferenceDistribution = lower (referenceDistribution);
 
       if (! ischar (searchMethod) || ! any (strcmpi (searchMethod, ...
           {"globalmaxse", "firstmaxse"})))
-        error (["evalclusters: the search method must be either" ...
-                "'globalMaxSE' or 'firstMaxSE'"]);
+        error (strcat ("evalclusters: the search method must be", ...
+                       " either 'globalMaxSE' or 'firstMaxSE'"]);
       endif
       this.SearchMethod = lower (searchMethod);
 
@@ -380,8 +379,8 @@ classdef GapEvaluation < ClusterCriterion
                         length (ClusteringSolution) == this.NumObservations)
                   this.ClusteringSolutions(:, iter) = ClusteringSolution';
                 else
-                  error (["GapEvaluation: invalid return value from " ...
-                          "custom clustering function"]);
+                  error (strcat ("GapEvaluation: invalid return value", ...
+                                 " from custom clustering function"));
                 endif
                 this.ClusteringSolutions(:, iter) = ...
                   this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -421,8 +420,7 @@ classdef GapEvaluation < ClusterCriterion
 
                   otherwise
                     ## this should not happen
-                    error (["GapEvaluation: unexpected error, " ...
-                           "report this bug"]);
+                    error ("GapEvaluation: unexpected error, report this bug.");
                 endswitch
               endif
             endif
@@ -487,7 +485,7 @@ classdef GapEvaluation < ClusterCriterion
         endfor
       else
         ## this should not happen
-        error (["GapEvaluation: unexpected error, please report this bug"]);
+        error ("GapEvaluation: unexpected error, please report this bug.");
       endif
     endfunction
   endmethods

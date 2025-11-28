@@ -134,8 +134,8 @@ function [T, STATS] = fitlm (X, y, varargin)
 
     ## Check input and output arguments
     if (nargin < 2)
-      error (strcat (["fitlm usage: ""fitlm (X, y, varargin)""; "], ...
-                      [" atleast 2 input arguments required"]));
+      error (strcat ("fitlm usage: ""fitlm (X, y, varargin)""; ", ...
+                     " atleast 2 input arguments required"));
     endif
     if (nargout > 3)
       error ("fitlm: invalid number of output arguments requested");
@@ -143,8 +143,8 @@ function [T, STATS] = fitlm (X, y, varargin)
 
     ## Evaluate input data
     [n, N] = size (X);
-    msg = strcat (["fitlm: do not include the intercept column in X"], ...
-                  [" - it will be added automatically"]);
+    msg = strcat ("fitlm: do not include the intercept column", ...
+                  " in X - it will be added automatically");
     if (iscell (X))
       if (~ iscell (X{:,1}))
         if (all (X{:,1} == 1))
@@ -166,8 +166,8 @@ function [T, STATS] = fitlm (X, y, varargin)
     ## Check if MODELSPEC was provided. If not create it.
     if (ischar (options{1}))
       if (! ismember (lower (options{1}), {"sstype", "varnames", "contrasts", ...
-                    "weights", "alpha", "display", "continuous", ...
-                    "categorical", "categoricalvars", "random", "model"}))
+                      "weights", "alpha", "display", "continuous", ...
+                      "categorical", "categoricalvars", "random", "model"}))
         MODELSPEC = options{1};
         options(1) = [];
         CONTINUOUS = [];
@@ -204,21 +204,21 @@ function [T, STATS] = fitlm (X, y, varargin)
         error ("fitlm: number of columns in MODELSPEC must = 1 + number of columns in X");
       endif
       if (! all (ismember (MODELSPEC(:), [0,1])))
-        error (strcat (["fitlm: elements of the model terms matrix must be "], ...
-                       [" either 0 or 1. Higher order terms are not supported"]));
+        error (strcat ("fitlm: elements of the model terms matrix must be ", ...
+                       " either 0 or 1. Higher order terms are not supported"));
       endif
       MODELSPEC = logical (MODELSPEC(2:N+1,1:N));
     endif
 
     ## Check for unsupported options used by anovan
     if (any (strcmpi ("MODEL", options)))
-      error (strcat(["fitlm: modelspec should be specified in the third"], ...
-                    [" input argument of fitlm (if at all)"]));
+      error (strcat("fitlm: modelspec should be specified in the", ...
+                    " third input argument of fitlm (if at all)"));
     endif
 
     ## Check and set variable types
     idx = find (any (cat (1, strcmpi ("categorical", options), ...
-                     strcmpi ("categoricalvars", options))));
+                          strcmpi ("categoricalvars", options))));
     if (! isempty (idx))
       CONTINUOUS = [1:N];
       CONTINUOUS(ismember(CONTINUOUS,options{idx+1})) = [];
@@ -252,8 +252,8 @@ function [T, STATS] = fitlm (X, y, varargin)
           if (! isempty (CONTRASTS{i}))
             if (! ismember (CONTRASTS{i}, ...
                             {"simple","poly","helmert","effect","treatment"}))
-              error (strcat(["fitlm: the choices for built-in contrasts are"], ...
-                     [" ""simple"", ""poly"", ""helmert"", ""effect"", or ""treatment"""]));
+              error (strcat("fitlm: the choices for built-in contrasts are", ...
+                     " 'simple', 'poly', 'helmert', 'effect', or 'treatment'"));
             endif
           endif
         endif
@@ -269,7 +269,7 @@ function [T, STATS] = fitlm (X, y, varargin)
     endif
 
     ## Perform model fit and ANOVA
-    [jnk, jnk, STATS] = anovan (y, X, options{:}, ...
+    [~, ~, STATS] = anovan (y, X, options{:}, ...
                             "model", MODELSPEC, ...
                             "contrasts", CONTRASTS, ...
                             "continuous", CONTINUOUS, ...
@@ -278,7 +278,8 @@ function [T, STATS] = fitlm (X, y, varargin)
     ## Create table of regression coefficients
     ncoeff = sum (STATS.df);
     T = cell (2 + ncoeff, 7);
-    T(1,:) = {"Parameter", "Estimate", "SE", "Lower.CI", "Upper.CI", "t", "Prob>|t|"};
+    T(1,:) = {"Parameter", "Estimate", "SE", ...
+              "Lower.CI", "Upper.CI", "t", "Prob>|t|"};
     T(2:end,1) = STATS.coeffnames;
     T(2:end,2:7) = num2cell (STATS.coeffs);
 
