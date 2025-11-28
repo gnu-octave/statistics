@@ -159,8 +159,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
           ## kmeans can use only a subset
           if (strcmpi (clust, "kmeans") && any (strcmpi (this.Distance, ...
               {"euclidean", "jaccard"})))
-            error (["SilhouetteEvaluation: invalid distance criterion '%s' "...
-                    "for 'kmeans'"], distanceMetric);
+            error (strcat ("SilhouetteEvaluation: invalid distance", ...
+                           " criterion '%s' for 'kmeans'."), distanceMetric);
           endif
         else
           error ("SilhouetteEvaluation: unknown distance criterion '%s'", ...
@@ -171,8 +171,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
         ## kmeans cannot use a function handle
         if (strcmpi (clust, "kmeans"))
-          error (["SilhouetteEvaluation: invalid distance criterion for "...
-                  "'kmeans'"]);
+          error (strcat ("SilhouetteEvaluation: invalid distance", ...
+                         " criterion for 'kmeans'."));
         endif
       elseif (isvector (distanceMetric) && isnumeric (distanceMetric))
         this.Distance = "";
@@ -180,8 +180,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
 
         ## kmeans cannot use a distance vector
         if (strcmpi (clust, "kmeans"))
-          error (["SilhouetteEvaluation: invalid distance criterion for "...
-                  "'kmeans'"]);
+          error (strcat ("SilhouetteEvaluation: invalid", ...
+                         " distance criterion for 'kmeans'."));
         endif
       else
         error ("SilhouetteEvaluation: invalid distance metric");
@@ -192,11 +192,11 @@ classdef SilhouetteEvaluation < ClusterCriterion
         if (any (strcmpi (clusterPriors, {"empirical", "equal"})))
           this.ClusterPriors = lower (clusterPriors);
         else
-          error (["SilhouetteEvaluation: unknown prior probability criterion"...
-                 " '%s'"], clusterPriors);
+          error (strcat ("SilhouetteEvaluation: unknown prior", ...
+                         " probability criterion '%s'"), clusterPriors);
         endif
       else
-        error ("SilhouetteEvaluation: invalid prior probabilities");
+        error ("SilhouetteEvaluation: invalid prior probabilities.");
       endif
 
       this.CriterionName = "silhouette";
@@ -260,8 +260,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ##
     ## @end deftypefn
     function this = compact (this)
-      warning (["SilhouetteEvaluation.compact: this"...
-                " method is not yet implemented."]);
+      warning (strcat ("SilhouetteEvaluation.compact: this", ...
+                       " method is not yet implemented."));
     endfunction
 
   endmethods
@@ -295,8 +295,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
                       length (ClusteringSolution) == this.NumObservations)
                 this.ClusteringSolutions(:, iter) = ClusteringSolution';
               else
-                error (["SilhouetteEvaluation: invalid return value from " ...
-                        "custom clustering function"]);
+                error (strcat ("SilhouetteEvaluation: invalid return", ...
+                               " value from custom clustering function."));
               endif
               this.ClusteringSolutions(:, iter) = ...
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -335,8 +335,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
                   this.ClusteringSolutions(:, iter) = cluster (gmm, UsableX);
 
                 otherwise
-                  error (["SilhouetteEvaluation: unexpected error, " ...
-                         "report this bug"]);
+                  error (strcat ("SilhouetteEvaluation: unexpected", ...
+                                 " error, report this bug."));
               endswitch
             endif
           endif

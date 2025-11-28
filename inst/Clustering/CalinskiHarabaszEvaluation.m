@@ -120,8 +120,8 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
     ## @end deftypefn
     function this = compact (this)
-      warning (["CalinskiHarabaszEvaluation.compact: this"...
-                " method is not yet implemented."]);
+      warning (strcat ("CalinskiHarabaszEvaluation.compact:",...
+                       " this method is not yet implemented."));
     endfunction
 
   endmethods
@@ -155,8 +155,8 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
                       length (ClusteringSolution) == this.NumObservations)
                 this.ClusteringSolutions(:, iter) = ClusteringSolution';
               else
-                error (["CalinskiHarabaszEvaluation: invalid return value "...
-                        "from custom clustering function"]);
+                error (strcat ("CalinskiHarabaszEvaluation: invalid return", ...
+                               " value from custom clustering function."));
               endif
               this.ClusteringSolutions(:, iter) = ...
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -182,8 +182,8 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
                   this.Centroids{iter} = gmm.mu;
 
                 otherwise
-                  error (["CalinskiHarabaszEvaluation: unexpected error, " ...
-                          "report this bug"]);
+                  error (strcat ("CalinskiHarabaszEvaluation:" ...
+                                 " unexpected error, report this bug."));
               endswitch
             endif
           endif

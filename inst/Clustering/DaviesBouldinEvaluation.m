@@ -106,8 +106,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     ##
     ## @end deftypefn
     function this = compact (this)
-      warning (["DaviesBouldinEvaluation.compact: this"...
-                " method is not yet implemented."]);
+      warning (strcat ("DaviesBouldinEvaluation.compact:", ...
+                       " this method is not yet implemented."));
     endfunction
 
   endmethods
@@ -141,8 +141,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
                       length (ClusteringSolution) == this.NumObservations)
                 this.ClusteringSolutions(:, iter) = ClusteringSolution';
               else
-                error (["DaviesBouldinEvaluation: invalid return value "...
-                        "from custom clustering function"]);
+                error (strcat ("DaviesBouldinEvaluation: invalid return", ...
+                               " value from custom clustering function."));
               endif
               this.ClusteringSolutions(:, iter) = ...
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -168,8 +168,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
                   this.Centroids{iter} = gmm.mu;
 
                 otherwise
-                  error (["DaviesBouldinEvaluation: unexpected error, " ...
-                          "report this bug"]);
+                  error (strcat ("DaviesBouldinEvaluation: unexpected", ...
+                                 " error, report this bug."));
               endswitch
             endif
           endif
