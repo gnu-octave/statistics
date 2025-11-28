@@ -136,7 +136,7 @@ classdef GapEvaluation < ClusterCriterion
     ## @end deftp
     StdLogW = [];
 
-  properties (Access = protected)
+  properties (Access = private)
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property:} DistanceVector
     ##

@@ -31,7 +31,7 @@ classdef ClusterCriterion < handle
   ## GapEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties (GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {ClusterCriterion} {property:} ClusteringFunction
     ##
@@ -134,7 +134,7 @@ classdef ClusterCriterion < handle
     X = [];
   endproperties
 
-  properties (Access = protected, Hidden)
+  properties (Access = private, Hidden)
     N = 0; # number of observations
     P = 0; # number of variables
     ClusteringSolutions = []; #

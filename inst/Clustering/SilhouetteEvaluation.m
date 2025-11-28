@@ -94,7 +94,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ClusterSilhouettes = {};
   endproperties
 
-  properties (Access = protected)
+  properties (Access = private)
     ## -*- texinfo -*-
     ## @deftp {SilhouetteEvaluation} {property:} DistanceVector
     ##
