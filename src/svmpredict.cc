@@ -296,11 +296,11 @@ void predict(int nlhs, octave_value_list &plhs, const octave_value_list &args,
 
 
 DEFUN_DLD (svmpredict, args, nargout,
-           "-*- texinfo -*- \n\n\
- @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
- @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
- @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
- @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+           "-*- texinfo -*- \n\n\
+ @deftypefn  {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model})\n\
+ @deftypefnx {statistics} {@var{predicted_label} =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{decision_values}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
+ @deftypefnx {statistics} {[@var{predicted_label}, @var{accuracy}, @var{prob_estimates}] =} svmpredict (@var{labels}, @var{data}, @var{model}, ""libsvm_options"")\n\
 \n\
 \n\
 This function predicts new labels from a testing instance matrix based on an \
@@ -330,10 +330,9 @@ as that of LIBSVM. \
 \n\
 @itemize \n\
 @item @code{-b} : probability_estimates; whether to predict probability \
-estimates.  For one-class SVM only 0 is supported.\n\
+estimates.\n\
 \n\
 @end itemize \
-\n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
 @item @tab 0 @tab return decision values. (default) \n\
 \n\
@@ -348,21 +347,26 @@ estimates.  For one-class SVM only 0 is supported.\n\
 @end itemize \
 \n\
 \n\
-The @code{svmpredict} function has three outputs.  The first one, \
-@var{predicted_label}, is a vector of predicted labels.  The second output, \
+The @code{svmpredict} function has three outputs.  The first one, \
+@var{predicted_label}, is a vector of predicted labels.  The second output, \
 @var{accuracy}, is a vector including accuracy (for classification), mean \
-squared error, and squared correlation coefficient (for regression).  The \
+squared error, and squared correlation coefficient (for regression).  The \
 third is a matrix containing decision values or probability estimates \
-(if @code{-b 1}' is specified).  If @math{k} is the number of classes in \
+(if @code{-b 1}' is specified).  If @math{k} is the number of classes in \
 training data, for decision values, each row includes results of predicting \
-@math{k(k-1)/2} binary-class SVMs.  For classification, @math{k = 1} is a \
-special case.  Decision value +1 is returned for each testing instance, \
-instead of an empty vector.  For probabilities, each row contains @math{k} \
-values indicating the probability that the testing instance is in each class.  \
+@math{k(k-1)/2} binary-class SVMs.  For classification, @math{k = 1} is a \
+special case.  Decision value +1 is returned for each testing instance, \
+instead of an empty vector.  For probabilities, each row contains @math{k} \
+values indicating the probability that the testing instance is in each class.  \
 Note that the order of classes here is the same as @code{Label} field in the \
 @var{model} structure. \
 \n\
+\n\
+\\\n\\\
+@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) when combined with the probability flag (@code{-b 1}). For One-Class SVM, the @var{prob_estimates} output is a single column vector containing the probability of the instance being an inlier. \
+\\\n\\\
 @end deftypefn")
+{
 {
 	int nlhs = nargout;
 	int nrhs = args.length();

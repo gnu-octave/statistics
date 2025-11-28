@@ -357,8 +357,8 @@ static void fake_answer(int nlhs, octave_value_list &plhs)
 
 
 DEFUN_DLD (svmtrain, args, nargout,
-           "-*- texinfo -*- \n\n\
- @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
+           "-*- texinfo -*- \n\n\
+ @deftypefn  {statistics} {@var{model} =} svmtrain (@var{labels}, @var{data}, ""libsvm_options"")\n\
 \n\
 \n\
 This function trains an SVM @var{model} based on known @var{labels} and their \
@@ -388,7 +388,7 @@ as that of LIBSVM. \
 @end itemize \
 \n\
 @multitable @columnfractions 0.1 0.1 0.8 \n\
-@item @tab 0 @tab C-SVC	(multi-class classification) \n\
+@item @tab 0 @tab C-SVC (multi-class classification) \n\
 \n\
 @item @tab 1 @tab nu-SVC (multi-class classification) \n\
 \n\
@@ -421,29 +421,29 @@ as that of LIBSVM. \
 @itemize \n\
 @item @code{-d} : degree; set degree in kernel function (default 3) \n\
 \n\
-@item @code{-g} : gamma; set gamma in kernel function (default 1/num_features) \n\
+@item @code{-g} : gamma; set gamma in kernel function (default 1/num_features) \
 \n\
-@item @code{-r} : coef0; set coef0 in kernel function (default 0) \n\
+@item @code{-r} : coef0; set coef0 in kernel function (default 0) \
 \n\
-@item @code{-c} : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \n\
+@item @code{-c} : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) \
 \n\
-@item @code{-n} : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \n\
+@item @code{-n} : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) \
 \n\
-@item @code{-p} : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) \n\
+@item @code{-p} : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) \
 \n\
-@item @code{-m} : cachesize; set cache memory size in MB (default 100) \n\
+@item @code{-m} : cachesize; set cache memory size in MB (default 100) \
 \n\
-@item @code{-e} : epsilon; set tolerance of termination criterion (default 0.001) \n\
+@item @code{-e} : epsilon; set tolerance of termination criterion (default 0.001) \
 \n\
-@item @code{-h} : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) \n\
+@item @code{-h} : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) \
 \n\
-@item @code{-b} : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \n\
+@item @code{-b} : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) \
 \n\
-@item @code{-w} : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) \n\
+@item @code{-w} : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) \
 \n\
-@item @code{-v} : n; n-fold cross validation mode \n\
+@item @code{-v} : n; n-fold cross validation mode \
 \n\
-@item @code{-q} : quiet mode (no outputs) \n\
+@item @code{-q} : quiet mode (no outputs) \
 \n\
 @end itemize \
 \n\
@@ -472,10 +472,13 @@ can be used for future prediction and it contains the following fields: \
 in the training set \
 \n\
 \n\
-@item @code{ProbA} : pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{ProbA} : pairwise probability information; empty if @code{-b 0} or in one-class SVM \
 \n\
 \n\
-@item @code{ProbB} : pairwise probability information; empty if -b 0 or in one-class SVM \
+@item @code{ProbB} : pairwise probability information; empty if @code{-b 0} or in one-class SVM \
+\n\
+\n\
+@item @code{ProbDensityMarks} : density marks for one-class SVM probability estimates; empty if @code{-b 0} or not one-class SVM. \
 \n\
 \n\
 @item @code{nSV} : number of SVs for each class; empty for regression/one-class SVM \
@@ -490,11 +493,13 @@ in the training set \
 \n\
 \n\
 If you do not use the option @code{-b 1}, ProbA and ProbB are empty \
-matrices. If the '-v' option is specified, cross validation is \
+matrices. If the '@code{-v}' option is specified, cross validation is \
 conducted and the returned model is just a scalar: cross-validation \
 accuracy for classification and mean-squared error for regression. \
 \n\
 \n\
+\\\n\\\
+@emph{Note on LIBSVM 3.36 Update}: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (@code{-s 2}) when combined with the probability flag (@code{-b 1}).\\\n\\\
 @end deftypefn")
 {
 	const char *error_msg;
