@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Statistics: evrnd</title>
+    <title>Statistics: makima</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -82,9 +82,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Distribution Functions">
+                  <a class="nav-link" href="index.html#Interpolation">
                     <i class="fas fa-list-alt"></i>
-                    Distribution Functions
+                    Interpolation
                   </a>
                 </li>
                 <li class="nav-item">
@@ -344,7 +344,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList9" type="checkbox" checked>
+				<input id="togList9" type="checkbox">
 				<label for="togList9">
 					<span><h6>Distribution Functions</h6></span>
 					<span><h6>Distribution Functions</h6></span>
@@ -383,7 +383,7 @@
 					<li><a href="evcdf.html" class="text-decoration-none font-monospace"><small>evcdf</small></a></li>
 					<li><a href="evinv.html" class="text-decoration-none font-monospace"><small>evinv</small></a></li>
 					<li><a href="evpdf.html" class="text-decoration-none font-monospace"><small>evpdf</small></a></li>
-					<li><a href="evrnd.html" class="text-decoration-none font-monospace fw-bolder"><small>evrnd</small></a></li>
+					<li><a href="evrnd.html" class="text-decoration-none font-monospace"><small>evrnd</small></a></li>
 					<li><a href="expcdf.html" class="text-decoration-none font-monospace"><small>expcdf</small></a></li>
 					<li><a href="expinv.html" class="text-decoration-none font-monospace"><small>expinv</small></a></li>
 					<li><a href="exppdf.html" class="text-decoration-none font-monospace"><small>exppdf</small></a></li>
@@ -704,14 +704,14 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList17" type="checkbox">
+				<input id="togList17" type="checkbox" checked>
 				<label for="togList17">
 					<span><h6>Interpolation</h6></span>
 					<span><h6>Interpolation</h6></span>
 				</label>
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
-					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+					<li><a href="makima.html" class="text-decoration-none font-monospace fw-bolder"><small>makima</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -793,52 +793,41 @@
             <div class="card-header card-header-mod">
               <div class="row d-flex flex-wrap align-items-center">
                 <h3 class="d-inline-block mr-2">
-                Function&nbsp;Reference: <b><code>evrnd</code></b>
+                Function&nbsp;Reference: <b><code>makima</code></b>
                 </h3>
               </div>
             </div>
             <div class="card-body">
 <dl>
-<dt><code><h5 class="fs">statistics: <var>r</var> = <b>evrnd</b> (<var>mu</var>, <var>sigma</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>r</var> = <b>evrnd</b> (<var>mu</var>, <var>sigma</var>, <var>rows</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>r</var> = <b>evrnd</b> (<var>mu</var>, <var>sigma</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>r</var> = <b>evrnd</b> (<var>mu</var>, <var>sigma</var>, [<var>sz</var>])</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>yi</var> = <b>makima</b> (<var>x</var>, <var>y</var>, <var>xq</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>yi</var> = <b>makima</b> (<var>y</var>, <var>xq</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>yi</var> = <b>makima</b> (&hellip;, <code>&quot;extrap&quot;</code>)</code></h5></dt>
 </dl>
 
-<p> Random arrays from the extreme value distribution.
+<p> Compute the 1-D Modified Akima (MAKIMA) interpolant of sample data
+ <var>x</var>, <var>y</var> evaluated at query points <var>xq</var>.
 </p>
 <div class="ms-5">
-<p> <code><var>r</var> = evrnd (<var>mu</var>, <var>sigma</var>)</code> returns an array of random
- numbers chosen from the extreme value distribution (also known as the Gumbel
- or the type I generalized extreme value distribution) with location
- parameter <var>mu</var> and scale parameter <var>sigma</var>.  The size of <var>r</var> is
- the common size of <var>mu</var> and <var>sigma</var>.  A scalar input functions as a
- constant matrix of the same size as the other inputs.
+<p> The MAKIMA method generates a **shape-preserving piecewise cubic Hermite**
+ interpolant using a modified Akima derivative estimation method.
 </p>
-<p> When called with a single size argument, <code>evrnd</code> returns a square
- matrix with the dimension specified.  When called with more than one scalar
- argument, the first two arguments are taken as the number of rows and columns
- and any further arguments specify additional matrix dimensions.  The size may
- also be specified with a row vector of dimensions, <var>sz</var>.
+<p> For a strictly increasing vector of sample points <var>x</var> and corresponding
+ values <var>y</var>, the function returns the interpolated values <var>yi</var> at the
+ query points <var>xq</var>.
 </p>
-<p> The Gumbel distribution is used to model the distribution of the maximum (or
- the minimum) of a number of samples of various distributions.  This version
- is suitable for modeling minima.  For modeling maxima, use the alternative
- Gumbel iCDF, <code>gumbelinv</code>.
+<p> If only two inputs are given, <var>x</var> is assumed to be
+ <code>[1:length(<var>y</var>)]</code>.
 </p>
-<p> Further information about the Gumbel distribution can be found at
- <a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a>
+<p> The optional string <code>&quot;extrap&quot;</code> enables extrapolation for query points
+ outside the range of <var>x</var>. By default, extrapolation returns <code>NaN</code>.
 </p>
 <p> <strong>See also: </strong>
-  <a href="evcdf.html">evcdf</a>, 
-  <a href="evinv.html">evinv</a>, 
-  <a href="evpdf.html">evpdf</a>, 
-  <a href="evfit.html">evfit</a>, 
-  <a href="evlike.html">evlike</a>, 
-  <a href="evstat.html">evstat</a>
+interp1, 
+pchip, 
+spline
 </p>
 <p><strong>Source Code: </strong>
-  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/evrnd.m">evrnd</a>
+  <a href="https://github.com/gnu-octave/statistics/tree/main/inst/makima.m">makima</a>
 </div>
 
             </div>

@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -793,16 +800,16 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ExhaustiveSearcher</h5></code></dl>
 
-<p> Exhaustive nearest neighbor searcher class.
+<p> Exhaustive nearest neighbor searcher
 </p>
 <div class="ms-5">
-<p> The <code>ExhaustiveSearcher</code> class implements an exhaustive search algorithm
- for nearest neighbor queries.  It stores training data and supports various
- distance metrics along with their parameter values for performing an
- exhaustive search.  The exhaustive search algorithm computes the distance
- from each query point to all the points in the training data and facilitates
- a nearest neighbor search using <code>knnsearch</code> or a radius search using
- <code>rangesearch</code>.
+<p> The <code>ExhaustiveSearcher</code> class implements an exhaustive search
+ algorithm for nearest neighbor queries.  It stores training data and
+ supports various distance metrics along with their parameter values for
+ performing an exhaustive search.  The exhaustive search algorithm computes
+ the distance from each query point to all the points in the training data
+ and facilitates a nearest neighbor search using <code>knnsearch</code> or a
+ radius search using <code>rangesearch</code>.
 </p>
 <p> You can either use the <code>ExhaustiveSearcher</code> class constructor or the
  <code>createns</code> function to create an <code>ExhaustiveSearcher</code> object.
@@ -1181,11 +1188,11 @@ neighborsInRange =
 
 Columns 1 through 1:
 
-    {[  5 6 21 46 48 44 37 22 1 8 11 27 26 33 18 12 39 7 40 49 32 47 19 3 28 29 17 20 43 23 42 16 30 4 56 34 ... ]}    
-    {[ 98 95 83 88 78 89 55 63 69 91 94 90 82 92 59 80 100 138 131 57 66 67 81 61 125 102 115 145 134 96 110 ... ]}    
-    {[  104 128 127 106 117 123 58 52 76 50 107 86 74 101 65 75 77 131 96 72 54 73 115 129 51 63 67 91 71 87 ... ]}    
-    {[135 65 75 101 111 117 77 54 50 86 137 52 76 119 141 128 74 71 121 142 143 136 58 124 51 109 110 104 68 ... ]}    
-    {[ 102 115 91 94 63 56 145 83 88 95 55 131 66 85 122 78 70 103 125 73 98 84 134 123 51 90 126 67 100 138 ... ]}    
+    {[  5 6 21 46 48 44 37 22 1 8 11 27 26 33 18 12 39 7 40 49 32 47 19 3 28 29 17 20 43 23 42 16 30 4 56 34 85 24 10 51 38 61 13 88 14 ... ]}    
+    {[98 95 83 88 78 89 55 63 69 91 94 90 82 92 59 80 100 138 131 57 66 67 81 61 125 102 115 145 134 96 110 118 126 93 4 53 64 29 30 72 ... ]}    
+    {[                 104 128 127 106 117 123 58 52 76 50 107 86 74 101 65 75 77 131 96 72 54 73 115 129 51 63 67 91 71 87 110 92 62 118 82]}    
+    {[                135 65 75 101 111 117 77 54 50 86 137 52 76 119 141 128 74 71 121 142 143 136 58 124 51 109 110 104 68 87 96 31 36 139]}    
+    {[102 115 91 94 63 56 145 83 88 95 55 131 66 85 122 78 70 103 125 73 98 84 134 123 51 90 126 67 100 138 61 96 139 110 107 24 44 101 ... ]}    
 </pre></td></tr>
                   </table>
 
@@ -1391,29 +1398,25 @@ Distances:
 For the first query point in rangesearch:
 Query point: 0.3         0.3
 Indices of points within radius:
- Columns 1 through 23:
+ Columns 1 through 28:
 
-   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39
+   49   19   14   46   34   23   12   41    1    3   42   48   24    2   11   37   10   27   32   20   44   40   39   21    7   31   45   30
 
- Columns 24 through 34:
+ Columns 29 through 34:
 
-   21    7   31   45   30    4   16   47    9   29    8
+    4   16   47    9   29    8
 Distances:
- Columns 1 through 10:
+ Columns 1 through 12:
 
-   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991
+   0.029932   0.040026   0.046845   0.051107   0.054789   0.063517   0.067855   0.071365   0.073769   0.075991   0.082686   0.084066
 
- Columns 11 through 20:
+ Columns 13 through 24:
 
-   0.082686   0.084066   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780
+   0.090008   0.095171   0.096337   0.096836   0.097593   0.098255   0.098948   0.101780   0.108652   0.108983   0.114272   0.116760
 
- Columns 21 through 30:
+ Columns 25 through 34:
 
-   0.108652   0.108983   0.114272   0.116760   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687
-
- Columns 31 through 34:
-
-   0.130208   0.136007   0.142870   0.143009</pre></td></tr>
+   0.120198   0.121721   0.122560   0.127342   0.128062   0.128687   0.130208   0.136007   0.142870   0.143009</pre></td></tr>
                   </table>
                   <div class="text-center">
                     <img src="assets/ExhaustiveSearcher_402.png" class="rounded img-thumbnail" alt="plotted figure">

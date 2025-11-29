@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -796,8 +803,8 @@
 <p> Partition data for cross-validation
 </p>
 <div class="ms-5">
-<p> The <code>cvpartition</code> class generates a partitioning scheme on a dataset to
- facilitate cross-validation of statistical models utilizing training and
+<p> The <code>cvpartition</code> class generates a partitioning scheme on a dataset
+ to facilitate cross-validation of statistical models utilizing training and
  testing subsets of the dataset.
 </p>
 <p> <strong>See also: </strong>
@@ -1062,7 +1069,7 @@ Flag for stratified partition
 
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object was
- created with a <code>'stratifyOption'</code> value of <code>true</code>.
+ created with a <code>'stratify'</code> value of <code>true</code>.
  This property is read-only.
 </p>
 
@@ -1251,11 +1258,7 @@ Repartition data for cross-validation.
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>)</code></h5></dt>
-</dl>
- <dl>
 <dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <var>sval</var>)</code></h5></dt>
-</dl>
- <dl>
 <dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <code>'legacy'</code>)</code></h5></dt>
 </dl>
 
@@ -1359,7 +1362,7 @@ Test indices for cross-validation.
 <p> </p>
 <p> <code><var>idx</var> = test (<var>C</var>)</code> returns a logical vector <var>idx</var> with
  <code>true</code> values indicating the elements corresponding to the test
- set defined in the code{cvpartition object <var>C</var>.  For K-fold and
+ set defined in the <code>cvpartition</code> object <var>C</var>.  For K-fold and
  leave-one-out partitions, the indices corresponding to the first test set
  are returned.
 </p>
@@ -1415,9 +1418,9 @@ Training indices for cross-validation.
 <p> </p>
 <p> <code><var>idx</var> = training (<var>C</var>)</code> returns a logical vector <var>idx</var>
  with <code>true</code> values indicating the elements corresponding to the
- training set defined in the code{cvpartition object <var>C</var>.  For K-fold
- and leave-one-out partitions, the indices corresponding to the first
- training set are returned.
+ training set defined in the <code>cvpartition</code> object <var>C</var>.  For
+ K-fold and leave-one-out partitions, the indices corresponding to the
+ first training set are returned.
 </p>
 <p> <code><var>idx</var> = training (<var>C</var>, <var>i</var>)</code> returns a logical vector
  or matrix with the indices of the training set indicated by <var>i</var>.  If

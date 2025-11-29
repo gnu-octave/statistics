@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -905,14 +912,14 @@ Location parameter
  ## distribution. The location parameter (mu) is a real scalar that shifts the
  ## distribution, useful for modeling data centered around a specific value.
 
-ans = -0.011826
+ans = -7.7258e-03
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
        mu =       1
-    sigma = 1.01095
-       nu = 5.38707
+    sigma = 1.00063
+       nu = 5.15961
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1024,14 +1031,14 @@ Scale parameter
  ## spread of the t Location-Scale distribution. Sigma must be a positive real
  ## scalar, useful for modeling variability in data like financial returns.
 
-ans = 0.9771
+ans = 0.9893
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
-       mu = -0.0114288
+       mu = -0.0166193
     sigma =          2
-       nu =    4.82483
+       nu =    5.13493
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1143,14 +1150,14 @@ Degrees of freedom
  ## tail heaviness of the t Location-Scale distribution. Nu must be a positive
  ## real scalar, useful for modeling heavy-tailed data like stock returns.
 
-ans = 4.9769
+ans = 5.1040
 pd =
   tLocationScaleDistribution
 
   t Location-Scale distribution
-       mu = 0.0181775
-    sigma =   1.01022
-       nu =        10
+       mu = 0.013445
+    sigma =  1.01416
+       nu =       10
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1774,7 +1781,7 @@ Compute the interquartile range of a probability distribution.
  ## Use this to calculate the interquartile range, which measures the spread
  ## of the middle 50% of the distribution, helpful for assessing central variability.
 
-iqr_value = 1.4538
+iqr_value = 1.4519
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1846,8 +1853,8 @@ Compute the mean of a probability distribution.
  ## This shows how to compute the expected value for t Location-Scale
  ## distributions, representing the average value, useful in financial modeling or quality control.
 
-mean1 = 1.2659e-03
-mean2 = -0.014093
+mean1 = 2.2857e-03
+mean2 = -0.014156
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1919,8 +1926,8 @@ Compute the median of a probability distribution.
  ## Use this to find the median value, which splits the distribution into
  ## two equal probability halves, robust to heavy-tailed data.
 
-median1 = 3.2283e-03
-median2 = 0.018594
+median1 = 7.1934e-04
+median2 = 0.018431
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1991,7 +1998,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a t Location-Scale distribution to
  ## data, with lower values indicating a better fit, often used in model comparison.
 
-nlogL_tlslike = 172.82
+nlogL_tlslike = 176.05
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2084,8 +2091,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-  -4.4552e-02   1.0450e+00   5.9548e+00
-   1.0628e-01   1.1974e+00   1.6992e+01
+  -0.048512   0.954464   3.797941
+   0.098725   1.104246   6.927224
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2614,7 +2621,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which measures the variability
  ## in the distribution, useful for understanding data dispersion.
 
-std_value = 1.2951
+std_value = 1.2955
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2776,7 +2783,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which quantifies the spread of the
  ## distribution, useful for statistical analysis of variability.
 
-var_value = 1.6967
+var_value = 1.6098
                     </pre></td></tr></tbody>
                   </table>
 

@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -792,7 +799,7 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><code><h5 class="fs">statistics: <var>model</var> = <b>svmtrain</b> (<var>labels</var>, <var>data</var>, libsvm_options)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>model</var> = <b>svmtrain</b> (<var>labels</var>, <var>data</var>, &quot;libsvm_options&quot;)</code></h5></dt>
 </dl>
 
 
@@ -817,7 +824,7 @@
 </li></ul>
 
 <table>
-<tr><td width="10%"></td><td width="10%">0</td><td width="80%">C-SVC	(multi-class classification)</td></tr>
+<tr><td width="10%"></td><td width="10%">0</td><td width="80%">C-SVC (multi-class classification)</td></tr>
 <tr><td width="10%"></td><td width="10%">1</td><td width="80%">nu-SVC (multi-class classification)</td></tr>
 <tr><td width="10%"></td><td width="10%">2</td><td width="80%">one-class SVM</td></tr>
 <tr><td width="10%"></td><td width="10%">3</td><td width="80%">epsilon-SVR (regression)</td></tr>
@@ -882,9 +889,11 @@
 
 </li><li> <code>sv_indices</code> : values in [1,...,num_training_data] to indicate SVs in the training set 
 
-</li><li> <code>ProbA</code> : pairwise probability information; empty if -b 0 or in one-class SVM 
+</li><li> <code>ProbA</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM 
 
-</li><li> <code>ProbB</code> : pairwise probability information; empty if -b 0 or in one-class SVM 
+</li><li> <code>ProbB</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM 
+
+</li><li> <code>ProbDensityMarks</code> : density marks for one-class SVM probability estimates; empty if <code>-b 0</code> or not one-class SVM. 
 
 </li><li> <code>nSV</code> : number of SVs for each class; empty for regression/one-class SVM 
 
@@ -895,6 +904,8 @@
 
 
 <p>If you do not use the option <code>-b 1</code>, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression. 
+</p>
+<p><math>Note on LIBSVM 3.36 Update</math>: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (<code>-s 2</code>) when combined with the probability flag (<code>-b 1</code>).  For One-Class SVM, the  <var>prob_estimates</var> output is a single column vector containing the probability of the instance being an inlier. 
 </p>
 
 <p><strong>Source Code: </strong>

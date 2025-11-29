@@ -108,7 +108,7 @@
             </div>
             <div class="col-sm-9 col-md-10">
               <h3 class="d-inline-block mr-2">statistics</h3>
-              <b>1.7.7&nbsp;2025-11-11</b>
+              <b>1.8.0&nbsp;2025-11-30</b>
               <p class="indent">
                 The Statistics package for GNU Octave.
               </p>
@@ -134,6 +134,7 @@
              <option value="#Model Fitting">Model Fitting</option>
              <option value="#Hypothesis Testing">Hypothesis Testing</option>
              <option value="#I/O">I/O</option>
+             <option value="#Interpolation">Interpolation</option>
              <option value="#Plotting">Plotting</option>
              <option value="#Regression">Regression</option>
              <option value="#Transforms">Transforms</option>
@@ -433,7 +434,7 @@ slice sampling of Radford M.</td>
                    <a href="CalinskiHarabaszEvaluation.html">CalinskiHarabaszEvaluation</a>
                    </code></b>
                  </td>
-                 <td>A Calinski-Harabasz object to evaluate clustering solutions.</td>
+                 <td>Calinski-Harabasz clustering evaluation.</td>
                </tr>
                <tr>
                  <td>
@@ -441,7 +442,7 @@ slice sampling of Radford M.</td>
                    <a href="ClusterCriterion.html">ClusterCriterion</a>
                    </code></b>
                  </td>
-                 <td>A clustering evaluation object as created by ‘evalclusters’.</td>
+                 <td>A clustering evaluation object.</td>
                </tr>
                <tr>
                  <td>
@@ -457,7 +458,7 @@ slice sampling of Radford M.</td>
                    <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>
                    </code></b>
                  </td>
-                 <td>A Davies-Bouldin object to evaluate clustering solutions.</td>
+                 <td>Davies-Bouldin object to evaluate clustering solutions</td>
                </tr>
                <tr>
                  <td>
@@ -465,7 +466,7 @@ slice sampling of Radford M.</td>
                    <a href="ExhaustiveSearcher.html">ExhaustiveSearcher</a>
                    </code></b>
                  </td>
-                 <td>Exhaustive nearest neighbor searcher class.</td>
+                 <td>Exhaustive nearest neighbor searcher</td>
                </tr>
                <tr>
                  <td>
@@ -473,7 +474,7 @@ slice sampling of Radford M.</td>
                    <a href="GapEvaluation.html">GapEvaluation</a>
                    </code></b>
                  </td>
-                 <td>A gap object to evaluate clustering solutions.</td>
+                 <td>Gap evaluation for clustering solutions</td>
                </tr>
                <tr>
                  <td>
@@ -490,7 +491,7 @@ class.</td>
                    <a href="KDTreeSearcher.html">KDTreeSearcher</a>
                    </code></b>
                  </td>
-                 <td>KD-tree nearest neighbor searcher class.</td>
+                 <td>KD-tree nearest neighbor searcher</td>
                </tr>
                <tr>
                  <td>
@@ -498,7 +499,7 @@ class.</td>
                    <a href="SilhouetteEvaluation.html">SilhouetteEvaluation</a>
                    </code></b>
                  </td>
-                 <td>A silhouette object to evaluate clustering solutions.</td>
+                 <td>Silhouette evaluation for clustering</td>
                </tr>
              </tbody>
            </table>
@@ -685,31 +686,6 @@ samples as parameters.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="mad.html">mad</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the mean or median absolute deviation (MAD) of the elements of
-X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="mean.html">mean</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the mean of the elements of X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="median.html">median</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the median value of the elements of X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="nanmax.html">nanmax</a>
                    </code></b>
                  </td>
@@ -742,26 +718,10 @@ X.</td>
                <tr>
                  <td>
                    <b><code>
-                   <a href="std.html">std</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the standard deviation of the elements of the vector X.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
                    <a href="trimmean.html">trimmean</a>
                    </code></b>
                  </td>
                  <td>Compute the trimmed mean.</td>
-               </tr>
-               <tr>
-                 <td>
-                   <b><code>
-                   <a href="var.html">var</a>
-                   </code></b>
-                 </td>
-                 <td>Compute the variance of the elements of the vector X.</td>
                </tr>
              </tbody>
            </table>
@@ -3680,6 +3640,22 @@ a file specified by FILENAME.</td>
                    </code></b>
                  </td>
                  <td>Load a Classification or Regression model from a file.</td>
+               </tr>
+             </tbody>
+           </table>
+           <h3 class="category">
+             <a name="Interpolation">Interpolation</a>
+           </h3>
+           <table class="table table-striped">
+             <tbody>
+               <tr>
+                 <td>
+                   <b><code>
+                   <a href="makima.html">makima</a>
+                   </code></b>
+                 </td>
+                 <td>Compute the 1-D Modified Akima (MAKIMA) interpolant of sample data X, Y
+evaluated at query points XQ.</td>
                </tr>
              </tbody>
            </table>

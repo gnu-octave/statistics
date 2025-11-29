@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -902,13 +909,13 @@ Noncentrality parameter
  ## distribution. The noncentrality parameter 's' must be a non-negative real
  ## scalar, representing the magnitude of the signal in the presence of noise.
 
-ans = 1.0228
+ans = 0.9841
 pd =
   RicianDistribution
 
   Rician distribution
-        s =      1.5
-    sigma = 0.978367
+        s =   1.5
+    sigma = 1.002
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1027,12 +1034,12 @@ Scale parameter
  ## distribution. The scale parameter 'sigma' must be a positive real scalar,
  ## controlling the spread due to Gaussian noise.
 
-ans = 0.9813
+ans = 0.9945
 pd =
   RicianDistribution
 
   Rician distribution
-        s = 1.03713
+        s = 1.00739
     sigma =     1.2
 
                     </pre></td></tr></tbody>
@@ -1712,7 +1719,7 @@ Compute the interquartile range of a probability distribution.
  ## of the middle 50% of the distribution, helpful for understanding variability
  ## in signal magnitudes.
 
-iqr_value = 1.0928
+iqr_value = 1.0986
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1784,8 +1791,8 @@ Compute the mean of a probability distribution.
  ## This shows how to compute the expected value for Rician distributions
  ## with different scale parameters, representing the average signal magnitude.
 
-mean1 = 1.1359
-mean2 = 1.5391
+mean1 = 1.1348
+mean2 = 1.5403
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1857,8 +1864,8 @@ Compute the median of a probability distribution.
  ## Use this to find the median value, which splits the distribution into
  ## two equal probability halves, robust to skewness in signal data.
 
-median1 = 1.1204
-median2 = 1.4710
+median1 = 1.1188
+median2 = 1.4889
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1928,7 +1935,7 @@ Compute the negative loglikelihood of a probability distribution.
  ## This is useful for assessing the fit of a Rician distribution to data,
  ## with lower values indicating a better fit, often used in model comparison.
 
-nlogL = -119.39
+nlogL = -110.90
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2020,8 +2027,8 @@ Compute the confidence intervals for probability distribution parameters.
 
 ci =
 
-        0   1.0449
-      Inf   1.4948
+   0.8895   0.8994
+   1.0691   1.1522
 
                     </pre></td></tr></tbody>
                   </table>
@@ -2555,7 +2562,7 @@ Compute the standard deviation of a probability distribution.
  ## Use this to calculate the standard deviation, which measures the variability
  ## in the signal magnitudes of the distribution.
 
-std_value = 0.7808
+std_value = 0.7825
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2719,7 +2726,7 @@ Compute the variance of a probability distribution.
  ## Use this to calculate the variance, which quantifies the spread of the
  ## signal magnitudes in the distribution.
 
-var_value = 0.5923
+var_value = 0.5936
                     </pre></td></tr></tbody>
                   </table>
 
@@ -2778,8 +2785,8 @@ pd_fitted =
   RicianDistribution
 
   Rician distribution
-        s = 2.00405   [1.97323, 2.03535]
-    sigma =  1.0293   [1.00355, 1.05572]
+        s = 1.98993   [1.95935, 2.02099]
+    sigma = 1.02155   [0.995995, 1.04775]
 </pre></td></tr>
                   </table>
                   <div class="text-center">

@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -793,68 +800,18 @@
             <div class="card-body">
 <dl><code><h5 class="description">statistics: GapEvaluation</h5></code></dl>
 
-<p> A gap object to evaluate clustering solutions.
+<p> Gap evaluation for clustering solutions
 </p>
 <div class="ms-5">
-<p> A <code>GapEvaluation</code> object is a <code>ClusterCriterion</code>
- object used to evaluate clustering solutions using the gap criterion,
- which is a mathematical formalization of the elbow method.
+<p> The <code>GapEvaluation</code> class implements the gap statistic criterion for
+ evaluating clustering solutions.  A <code>GapEvaluation</code> object is a
+ specialization of <code>ClusterCriterion</code> and contains fields and methods
+ to compute the gap statistic, its Monte-Carlo reference expectations, and
+ to select the optimal number of clusters according to a chosen search
+ method.
 </p>
-<p> List of public properties specific to <code>SilhouetteEvaluation</code>:
- </p><dl compact="compact">
-<dt> <code><code>B</code></code></dt>
-</dl>
-<p> the number of reference datasets to generate.
-</p>
- </dd>
-<dt> <code><code>Distance</code></code></dt>
-</dl>
-<p> a valid distance metric name, or a function handle as accepted by the
- <code>pdist</code> function.
-</p>
- </dd>
-<dt> <code><code>ExpectedLogW</code></code></dt>
-</dl>
-<p> a vector of the expected values for the logarithm of the within clusters
- dispersion.
-</p>
- </dd>
-<dt> <code><code>LogW</code></code></dt>
-</dl>
-<p> a vector of the values of the logarithm of the within clusters dispersion.
-</p>
- </dd>
-<dt> <code><code>ReferenceDistribution</code></code></dt>
-</dl>
-<p> a valid name for the reference distribution, namely: <code>PCA</code> (default)
- or <code>uniform</code>.
-</p>
- </dd>
-<dt> <code><code>SE</code></code></dt>
-</dl>
-<p> a vector of the standard error of the expected values for the logarithm
- of the within clusters dispersion.
-</p>
- </dd>
-<dt> <code><code>SearchMethod</code></code></dt>
-</dl>
-<p> a valid name for the search method to use: <code>globalMaxSE</code> (default) or
- <code>firstMaxSE</code>.
-</p>
- </dd>
-<dt> <code><code>StdLogW</code></code></dt>
-</dl>
-<p> a vector of the standard deviation of the expected values for the logarithm
- of the within clusters dispersion.
- </p></dd>
-</dl>
-
-<p> The best solution according to the gap criterion depends on the chosen
- search method.  When the search method is <code>globalMaxSE</code>, the chosen
- gap value is the smaller one which is inside a standard error from the
- max gap value; when the search method is <code>firstMaxSE</code>, the chosen
- gap value is the first one which is inside a standard error from the next
- gap value.
+<p> Create a <code>GapEvaluation</code> object by using the <code>evalclusters</code>
+ function or by calling the class constructor directly.
 </p>
 <p> <strong>See also: </strong>
   <a href="evalclusters.html">evalclusters</a>, 
@@ -883,13 +840,22 @@
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Number of reference datasets
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.B</code></b> is not documented.
+
+
+<p> </p>
+<p> A positive integer specifying how many reference datasets are generated
+ to compute the expected log within-cluster dispersion via Monte-Carlo
+ simulation.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -906,13 +872,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Distance metric
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.Distance</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector or function handle specifying the distance measure
+ passed to clustering routines (as accepted by <code>pdist</code>).  When a
+ numeric vector is supplied it is interpreted as a precomputed distance
+ vector.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -929,13 +905,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Reference distribution for Monte-Carlo
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.ReferenceDistribution</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector naming the reference distribution used to generate
+ reference datasets.  Supported values include <code>'pca'</code> and
+ <code>'uniform'</code>.  This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -952,13 +937,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Search method to select optimal K
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.SearchMethod</code></b> is not documented.
+
+
+<p> </p>
+<p> A character vector specifying the method used to select the optimal
+ number of clusters from the gap statistic.  Supported values include
+ <code>'globalMaxSE'</code> and <code>'firstMaxSE'</code>.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -975,13 +970,23 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Expected log within-cluster dispersion
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.ExpectedLogW</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the Monte-Carlo estimate of the expected
+ values for the natural logarithm of the within-cluster dispersion,
+ computed across the generated reference datasets.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -998,13 +1003,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Observed log within-cluster dispersion
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.LogW</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the observed values of the natural
+ logarithm of the within-cluster dispersion computed on the actual data.
+ This property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1021,13 +1035,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Standard error of expected logW
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.SE</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the standard error of the expected values
+ for the natural logarithm of the within-cluster dispersion.  This
+ property is read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1044,13 +1067,22 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-undocumented
+Standard deviation of expected logW
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
-<b><code>GapEvaluation.StdLogW</code></b> is not documented.
+
+
+<p> </p>
+<p> A numeric vector containing the standard deviation of the Monte-Carlo
+ estimates of the log within-cluster dispersion.  This property is
+ read-only.
+</p>
+
+
+
             </div>
           </div>
         </div>
@@ -1071,7 +1103,7 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-Add a new cluster array to inspect the GapEvaluation object.
+Add new K values to inspect
                 </div>
               </div>
           </div>
@@ -1082,6 +1114,10 @@ Add a new cluster array to inspect the GapEvaluation object.
 </dl>
 
 <p> </p>
+<p> Add a new cluster array to inspect in the <code>GapEvaluation</code> object.
+ This updates internal storage for Monte-Carlo results and evaluates the
+ newly requested cluster counts.
+</p>
 
 
 
@@ -1101,7 +1137,7 @@ Add a new cluster array to inspect the GapEvaluation object.
                   </h4>
                 </div>
                 <div class="col-8">
-Plot the evaluation results.
+Plot Gap evaluation results
                 </div>
               </div>
           </div>
@@ -1113,9 +1149,9 @@ Plot the evaluation results.
 </dl>
 
 <p> </p>
-<p> Plot the CriterionValues against InspectedK from the GapEvaluation
- ClusterCriterion, <var>obj</var>, and show the standard deviation to the
- current plot. It can also return a handle to the current plot.
+<p> Plot the gap statistic (criterion values) versus the inspected numbers
+ of clusters and display error bars representing the Monte-Carlo
+ standard deviations.  Optionally returns the axes handle.
 </p>
 
 
@@ -1136,7 +1172,7 @@ Plot the evaluation results.
                   </h4>
                 </div>
                 <div class="col-8">
-Return a compact GapEvaluation object (not implemented yet).
+Return a compact GapEvaluation object
                 </div>
               </div>
           </div>
@@ -1147,6 +1183,9 @@ Return a compact GapEvaluation object (not implemented yet).
 </dl>
 
 <p> </p>
+<p> Return a compact representation of the <code>GapEvaluation</code> object.
+ Currently not implemented; calling this method will issue a warning.
+</p>
 
 
 

@@ -236,16 +236,11 @@
 					<li><a href="grpstats.html" class="text-decoration-none font-monospace"><small>grpstats</small></a></li>
 					<li><a href="harmmean.html" class="text-decoration-none font-monospace"><small>harmmean</small></a></li>
 					<li><a href="jackknife.html" class="text-decoration-none font-monospace"><small>jackknife</small></a></li>
-					<li><a href="mad.html" class="text-decoration-none font-monospace"><small>mad</small></a></li>
-					<li><a href="mean.html" class="text-decoration-none font-monospace"><small>mean</small></a></li>
-					<li><a href="median.html" class="text-decoration-none font-monospace"><small>median</small></a></li>
 					<li><a href="nanmax.html" class="text-decoration-none font-monospace"><small>nanmax</small></a></li>
 					<li><a href="nanmean.html" class="text-decoration-none font-monospace"><small>nanmean</small></a></li>
 					<li><a href="nanmin.html" class="text-decoration-none font-monospace"><small>nanmin</small></a></li>
 					<li><a href="nansum.html" class="text-decoration-none font-monospace"><small>nansum</small></a></li>
-					<li><a href="std.html" class="text-decoration-none font-monospace"><small>std</small></a></li>
 					<li><a href="trimmean.html" class="text-decoration-none font-monospace"><small>trimmean</small></a></li>
-					<li><a href="var.html" class="text-decoration-none font-monospace"><small>var</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -711,6 +706,18 @@
 			<div class="row">
 				<input id="togList17" type="checkbox">
 				<label for="togList17">
+					<span><h6>Interpolation</h6></span>
+					<span><h6>Interpolation</h6></span>
+				</label>
+				<div class="list">
+				<ul style="list-style-type: none; padding-left: 20px;">
+					<li><a href="makima.html" class="text-decoration-none font-monospace"><small>makima</small></a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="row">
+				<input id="togList18" type="checkbox">
+				<label for="togList18">
 					<span><h6>Plotting</h6></span>
 					<span><h6>Plotting</h6></span>
 				</label>
@@ -738,8 +745,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList18" type="checkbox">
-				<label for="togList18">
+				<input id="togList19" type="checkbox">
+				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
 				</label>
@@ -767,8 +774,8 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox">
-				<label for="togList19">
+				<input id="togList20" type="checkbox">
+				<label for="togList20">
 					<span><h6>Transforms</h6></span>
 					<span><h6>Transforms</h6></span>
 				</label>
@@ -796,15 +803,16 @@
 <p> K-nearest neighbors classification
 </p>
 <div class="ms-5">
-<p> The <code>ClassificationKNN</code> class implements a K-nearest neighbor classifier
- object, which can predict responses for new data using the <code>predict</code>
- method.  The implemented algorithm allows you choose a range of different
- distance metrics, the number of nearest neighbors, as well as the searching
- algorithm.
+<p> The <code>ClassificationKNN</code> class implements a K-nearest neighbor
+ classifier object, which can predict responses for new data using the
+ <code>predict</code> method.  The implemented algorithm allows you choose a range
+ of different distance metrics, the number of nearest neighbors, as well as
+ the searching algorithm.
 </p>
-<p> The K-nearest neighbors (k-NN) classifier is a simple, non-parametric machine
- learning algorithm used for classification tasks.  It classifies a data point
- based on the majority class of its k closest neighbors in the feature space.
+<p> The K-nearest neighbors (k-NN) classifier is a simple, non-parametric
+ machine learning algorithm used for classification tasks.  It classifies a
+ data point based on the majority class of its k closest neighbors in the
+ feature space.
 </p>
 <p> Create a <code>ClassificationKNN</code> object by using the <code>fitcknn</code>
  function or the class constructor.
@@ -1003,7 +1011,7 @@ Names of predictor variables
 
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
- variables.  The names are in the order in which the appear in the
+ variables.  The names are in the order in which they appear in the
  training dataset.  This property is read-only.
 </p>
 
@@ -1195,23 +1203,23 @@ Transformation function for classification scores
  </li></ul>
 
 <p> When specified as a character vector, it can be any of the following
- built-in functions.  Nevertherless, the <code>ScoreTransform</code> property
+ built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
  always stores their function handle equivalent.
 </p>
  <table>
 <thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-2&times;&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
 <tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p .^ (-&times;))</math></td></tr>
+<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
 <tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
 <tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
 <tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; + 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
 <tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p .^ (-&times;)) - 1</math></td></tr>
+<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
 
 
@@ -1308,7 +1316,7 @@ Predictor means
 <p> </p>
 <p> A numeric vector of the same length as the columns in <var>X</var> with the
  mean values corresponding to each predictor.  If the predictor variables
- have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is empty.  This
+ have not been standardized, then <code>&quot;obj.Mu&quot;</code> is empty.  This
  property is read-only.
 </p>
 
