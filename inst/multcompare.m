@@ -177,8 +177,7 @@
 function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     if (nargin < 1)
-      error (strcat (["multcompare usage: ""multcompare (ARG)""; "], ...
-                      [" atleast 1 input argument required"]));
+      print_usage;
     endif
 
     ## Check supplied parameters
@@ -216,16 +215,16 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           randn ('seed', SEED);
           randg ('seed', SEED);
         otherwise
-          error (sprintf ("multcompare: parameter %s is not supported", name));
+          error ("multcompare: parameter %s is not supported.", name);
       endswitch
     endfor
 
     ## Evaluate ALPHA input argument
     if (! isa (ALPHA,"numeric") || numel (ALPHA) != 1)
-      error("multcompare:alpha must be a numeric scalar value");
+      error("multcompare:alpha must be a numeric scalar value.");
     endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
-      error("multcompare: alpha must be a value between 0 and 1");
+      error("multcompare: alpha must be a value between 0 and 1.");
     endif
 
     ## Evaluate CTYPE input argument
@@ -242,7 +241,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
     if (! ismember (CTYPE, ...
                     {"bonferroni","scheffe","mvt","holm","hochberg","fdr","lsd"}))
-      error ("multcompare: '%s' is not a supported value for CTYPE", CTYPE)
+      error ("multcompare: '%s' is not a supported value for CTYPE.", CTYPE)
     endif
 
     ## Evaluate DFE input argument
@@ -258,22 +257,23 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## If STATS is numeric, assume it is a vector of p-values
     if (isnumeric (STATS))
       if (nargout > 1)
-        error (strcat (["multcompare: invalid number of output arguments"], ...
-                       [" if only used to adjust p-values"]))
+        error (strcat ("multcompare: invalid number of output", ...
+                       " arguments if only used to adjust p-values."))
       endif
       if (!isempty (varargin))
         if (!any (strcmpi (varargin{1}, {"ctype","criticalvaluetype"})) ...
             || (nargin > 3) )
-          error (strcat(["multcompare: invalid input arguments if only"], ...
-                        [" used to adjust p-values"]))
+          error (strcat("multcompare: invalid input arguments", ...
+                        " if only used to adjust p-values."));
         endif
       endif
       if (! ismember (CTYPE, {"bonferroni","holm","hochberg","fdr"}))
-        error ("multcompare: '%s' is not a supported p-adjustment method", CTYPE)
+        error ("multcompare: '%s' is not a supported p-adjustment method.", ...
+               CTYPE)
       endif
       p = STATS;
       if (all (size (p) > 1))
-        error ("multcompare: p-values must be a vector")
+        error ("multcompare: p-values must be a vector.")
       endif
       padj = feval (CTYPE, p);
       if (size (p, 1) > 1)
@@ -323,8 +323,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
             ## Error checking
             if (strcmp (CTYPE, "scheffe"))
-              error (strcat (["multcompare: the CTYPE value 'scheffe'"], ...
-                 [" does not support tests with varying degrees of freedom "]));
+              error (strcat ("multcompare: the CTYPE value 'scheffe'", ...
+                             " does not support tests with varying", ...
+                             " degrees of freedom "));
             endif
 
             ## Calculate estimated marginal means and their standard errors
@@ -363,8 +364,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             n = STATS.coln;
           case {"row","rows"}
             if (ismember (STATS.model, {"linear","nested"}))
-              error (strcat (["multcompare: no support for the row factor"],...
-                             [" (random effect) in a 'nested' or 'linear' anova2 model"]));
+              error (strcat ("multcompare: no support for the row factor",...
+                             " (random effect) in a 'nested' or 'linear'",...
+                             " anova2 model."));
             endif
             gmeans = STATS.rowmeans(:);
             Ng = numel (gmeans);
@@ -403,19 +405,19 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         ## Our calculations treat all effects as fixed
         if (ismember (STATS.random, DIM))
-          warning (strcat (["multcompare: ignoring random effects"], ...
-                           [" (all effects treated as fixed)"]));
+          warning (strcat ("multcompare: ignoring random effects", ...
+                           " (all effects treated as fixed)."));
         endif
 
         ## Check what type of factor is requested in DIM
         if (any (STATS.nlevels(DIM) < 2))
-          error (strcat (["multcompare: DIM must specify only categorical"], ...
-                         [" factors with 2 or more degrees of freedom."]));
+          error (strcat ("multcompare: DIM must specify only categorical", ...
+                         " factors with 2 or more degrees of freedom."));
         endif
 
         ## Check that all continuous variables were centered
-        msg = strcat (["multcompare: use a STATS structure from a model"], ...
-                      [" refit with a sum-to-zero contrast coding"]);
+        msg = strcat ("multcompare: use a STATS structure from a model", ...
+                      " refit with a sum-to-zero contrast coding.");
         if (any (STATS.continuous - STATS.center_continuous))
           error (msg)
         endif
@@ -567,8 +569,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
       otherwise
 
-        error (strcat (sprintf ("multcompare: the STATS structure from %s", ...
-               STATS.source), [" is not currently supported"]))
+        error (strcat ("multcompare: the STATS structure from %s", ...
+                       " is not currently supported"), STATS.source);
 
     endswitch
 
@@ -843,7 +845,7 @@ function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [jnk, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, "ascend");
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
@@ -875,7 +877,7 @@ function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [jnk, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, "ascend");
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
@@ -912,7 +914,7 @@ function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [jnk, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, "ascend");
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
