@@ -182,7 +182,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
                   this.Centroids{iter} = gmm.mu;
 
                 otherwise
-                  error (strcat ("CalinskiHarabaszEvaluation:" ...
+                  error (strcat ("CalinskiHarabaszEvaluation:", ...
                                  " unexpected error, report this bug."));
               endswitch
             endif

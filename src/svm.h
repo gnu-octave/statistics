@@ -78,7 +78,7 @@ struct svm_model
 	struct svm_node **SV;		/* SVs (SV[l]) */
 	double **sv_coef;	/* coefficients for SVs in decision functions (sv_coef[k-1][l]) */
 	double *rho;		/* constants in decision functions (rho[k*(k-1)/2]) */
-	double *probA;		/* pariwise probability information */
+	double *probA;		/* pairwise probability information */
 	double *probB;
 	double *prob_density_marks;	/* probability information for ONE_CLASS */
 	int *sv_indices;        /* sv_indices[0,...,nSV-1] are values in [1,...,num_traning_data] to indicate SVs in the training set */

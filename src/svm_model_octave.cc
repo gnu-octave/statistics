@@ -225,19 +225,19 @@ const char *model_to_octave_structure(octave_value_list &plhs, int num_of_featur
 
 	// changes from libsvm 3.36
 	if(model->prob_density_marks)
+  {
+    int nr_marks = 10;
+    Matrix m_marks(nr_marks, 1);
+    for(int i = 0; i < nr_marks; i++)
     {
-        int nr_marks = 10; 
-        Matrix m_marks(nr_marks, 1);
-        for(int i = 0; i < nr_marks; i++)
-        {
-            m_marks(i) = model->prob_density_marks[i];
-        }
-        osm_model.setfield("ProbDensityMarks", m_marks);
+      m_marks(i) = model->prob_density_marks[i];
     }
-    else
-    {
-        osm_model.setfield("ProbDensityMarks", Matrix(0, 0));
-    }
+    osm_model.setfield("ProbDensityMarks", m_marks);
+  }
+  else
+  {
+    osm_model.setfield("ProbDensityMarks", Matrix(0, 0));
+  }
 
 	/* return */
 	plhs(0) = osm_model;
