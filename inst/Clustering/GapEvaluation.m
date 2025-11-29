@@ -208,7 +208,7 @@ classdef GapEvaluation < ClusterCriterion
           ## kmeans can use only a subset
           if (strcmpi (clust, "kmeans") && any (strcmpi (this.Distance, ...
               {"euclidean", "jaccard"})))
-            error (strcat ("GapEvaluation: invalid distance criterion"...
+            error (strcat ("GapEvaluation: invalid distance criterion", ...
                            " '%s' for 'kmeans'"), distanceMetric);
           endif
         else
@@ -220,7 +220,7 @@ classdef GapEvaluation < ClusterCriterion
 
         ## kmeans cannot use a function handle
         if (strcmpi (clust, "kmeans"))
-          error ("GapEvaluation: invalid distance criterion for 'kmeans'");
+          error ("GapEvaluation: invalid distance criterion for 'kmeans'.");
         endif
       elseif (isvector (distanceMetric) && isnumeric (distanceMetric))
         this.Distance = "";
@@ -231,7 +231,7 @@ classdef GapEvaluation < ClusterCriterion
           error ("GapEvaluation: invalid distance criterion for 'kmeans'.");
         endif
       else
-        error ("GapEvaluation: invalid distance metric");
+        error ("GapEvaluation: invalid distance metric.");
       endif
 
       ## B: number of Monte-Carlo iterations
@@ -254,7 +254,7 @@ classdef GapEvaluation < ClusterCriterion
       if (! ischar (searchMethod) || ! any (strcmpi (searchMethod, ...
           {"globalmaxse", "firstmaxse"})))
         error (strcat ("evalclusters: the search method must be", ...
-                       " either 'globalMaxSE' or 'firstMaxSE'"]);
+                       " either 'globalMaxSE' or 'firstMaxSE'."));
       endif
       this.SearchMethod = lower (searchMethod);
 

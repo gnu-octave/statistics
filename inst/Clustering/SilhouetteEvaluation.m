@@ -163,7 +163,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
                            " criterion '%s' for 'kmeans'."), distanceMetric);
           endif
         else
-          error ("SilhouetteEvaluation: unknown distance criterion '%s'", ...
+          error ("SilhouetteEvaluation: unknown distance criterion '%s'.", ...
                  distanceMetric);
         endif
       elseif (isa (distanceMetric, "function_handle"))
@@ -184,7 +184,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
                          " distance criterion for 'kmeans'."));
         endif
       else
-        error ("SilhouetteEvaluation: invalid distance metric");
+        error ("SilhouetteEvaluation: invalid distance metric.");
       endif
 
       ## parsing the prior probabilities of each cluster
