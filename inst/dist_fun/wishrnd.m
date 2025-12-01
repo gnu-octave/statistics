@@ -66,7 +66,11 @@ function [W, D] = wishrnd (Sigma, df, D, n=1)
 
   p = size(D, 1);
 
-  if df < p
+  if df <= p - 1
+    if df != floor(df)
+      warning(["Undefined for non-integer df < p - 1;", ...
+              " truncating df to floor(df)"]);
+    endif
     df = floor(df); #distribution not defined for small noninteger df
     df_isint = 1;
   else
