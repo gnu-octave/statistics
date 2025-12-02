@@ -46,8 +46,8 @@ function x = bisainv (p, beta, gamma)
   if (! isscalar (p) || ! isscalar (beta) || ! isscalar (gamma))
     [retval, p, beta, gamma] = common_size (p, beta, gamma);
     if (retval > 0)
-      error (strcat (["bisainv: P, BETA, and GAMMA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("bisainv: P, BETA, and GAMMA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 
