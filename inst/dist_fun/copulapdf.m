@@ -84,8 +84,8 @@ function y = copulapdf (family, x, theta)
   endif
 
   if (! ischar (family))
-    error (strcat (["copulapdf: family must be one of 'Clayton',"], ...
-                   [" 'Gumbel', 'Frank', and 'AMH'."]));
+    error (strcat ("copulapdf: family must be one of 'Clayton',", ...
+                   " 'Gumbel', 'Frank', and 'AMH'."));
   endif
 
   if (! isempty (x) && ! ismatrix (x))
@@ -95,8 +95,8 @@ function y = copulapdf (family, x, theta)
   [n, d] = size (x);
 
   if (! isvector (theta) || (! isscalar (theta) && size (theta, 1) != n))
-    error (strcat (["copulapdf: THETA must be a column vector with the"], ...
-                   [" same number of rows as X or be scalar."]));
+    error (strcat ("copulapdf: THETA must be a column vector with the", ...
+                   " same number of rows as X or be scalar."));
   endif
 
   if (n == 0)
@@ -158,8 +158,8 @@ function y = copulapdf (family, x, theta)
     elseif (strcmp (lowerarg, "amh"))
       ## The Ali-Mikhail-Haq family
       if (d != 2)
-        error (strcat (["copulapdf: Ali-Mikhail-Haq copula PDF"], ...
-                       [" implemented as bivariate only."]));
+        error (strcat ("copulapdf: Ali-Mikhail-Haq copula PDF", ...
+                       " implemented as bivariate only."));
       endif
       z = theta .* prod (x - 1, 2) - 1;
       y = (theta .* (1 - sum (x, 2) - prod (x, 2) - z) - 1) ./ (z .^ 3);
