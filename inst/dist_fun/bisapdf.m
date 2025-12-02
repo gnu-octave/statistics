@@ -46,8 +46,8 @@ function y = bisapdf (x, beta, gamma)
   if (! isscalar (x) || ! isscalar (beta) || ! isscalar (gamma))
     [retval, x, beta, gamma] = common_size (x, beta, gamma);
     if (retval > 0)
-      error (strcat (["bisapdf: X, BETA, and GAMMA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("bisapdf: X, BETA, and GAMMA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 
