@@ -25,7 +25,7 @@
 ## lower-triangular Cholesky factor @var{D} of @var{Sigma}) and scalar degrees
 ## of freedom parameter @var{df}.
 ##
-## @var{df} can be non-integer as long as @math{@var{df} > p}
+## @var{df} can be non-integer as long as @math{@var{df} > p - 1}
 ##
 ## Output: a random @math{p x p}  matrix @var{W} from the
 ## Wishart(@var{Sigma}, @var{df}) distribution. If @var{n} > 1, then @var{W} is
@@ -49,7 +49,7 @@
 ## @seealso{wishpdf, iwishpdf, iwishrnd}
 ## @end deftypefn
 
-function [W, D] = wishrnd (Sigma, df, D, n=1)
+function [W, D] = wishrnd (Sigma, df, D, n = 1)
 
   if (nargin < 2)
     print_usage ();
@@ -57,54 +57,67 @@ function [W, D] = wishrnd (Sigma, df, D, n=1)
 
   if nargin < 3 || isempty(D)
     try
-      D = chol(Sigma, 'lower');
+      D = chol (Sigma, 'lower');
     catch
       error (strcat (["iwishrnd: Cholesky decomposition failed;"], ...
                      [" SIGMA probably not positive definite."]));
     end_try_catch
   endif
 
-  p = size(D, 1);
+  p = size (D, 1);
 
-  if df < p
-    df = floor(df); #distribution not defined for small noninteger df
-    df_isint = 1;
-  else
-  #check for integer degrees of freedom
-   df_isint = (df == floor(df));
+  ## Check for integer degrees of freedom.
+  df_isint = (df == floor (df));
+
+  if (df < p)
+    ## Truncate and warn only if the distribution is undefined.
+    if (! df_isint && (df < (p - 1)))
+      warning (strcat (["wishrnd: Wishart distribution undefined for non-integral df < p-1;"], ...
+                       [" truncating to floor(df)."]));
+      df = floor (df);
+      df_isint = 1; ## Now it is an integer
+    endif
   endif
 
-  if ~df_isint
-    [ii, jj] = ind2sub([p, p], 1:(p*p));
+  if (! df_isint)
+    [ii, jj] = ind2sub ([p, p], 1:(p * p));
   endif
 
-  if n > 1
-    W = nan(p, p, n);
+  if (n > 1)
+    W = nan (p, p, n);
   endif
 
   for i = 1:n
-    if df_isint
-      Z = D * randn(p, df);
+    if (df_isint)
+      Z = D * randn (p, df);
     else
-      Z = diag(sqrt(chi2rnd(df - (0:(p-1))))); #fill diagonal
+      Z = diag (sqrt(chi2rnd (df - (0:(p - 1))))); ##fill diagonal
       ##note: chi2rnd(x) is equivalent to 2*randg(x/2), but the latter seems to
       ## offer no performance advantage
-      Z(ii > jj) = randn(p*(p-1)/2, 1); #fill lower triangle
+      Z(ii > jj) = randn (p * (p - 1) / 2, 1); #fill lower triangle
       Z = D * Z;
     endif
-    W(:, :, i) = Z*Z';
+    W(:, :, i) = Z * Z';
   endfor
 endfunction
 
 
-%!assert(size (wishrnd (1,2)), [1, 1]);
-%!assert(size (wishrnd (1,2,[])), [1, 1]);
-%!assert(size (wishrnd (1,2,1)), [1, 1]);
-%!assert(size (wishrnd ([],2,1)), [1, 1]);
-%!assert(size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
-%!assert(size (wishrnd (eye(2), 2, [], 3)), [2, 2, 3]);
+%!assert (size (wishrnd (1,2)), [1, 1]);
+%!assert (size (wishrnd (1,2,[])), [1, 1]);
+%!assert (size (wishrnd (1,2,1)), [1, 1]);
+%!assert (size (wishrnd ([],2,1)), [1, 1]);
+%!assert (size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
+%!assert (size (wishrnd (eye(2), 2, [], 3)), [2, 2, 3]);
 
 %% Test input validation
 %!error wishrnd ()
 %!error wishrnd (1)
 %!error wishrnd ([1; 1], 2)
+
+%% Test for non-integer df where p-1 < df < p (should not warn or truncate)
+%!test
+%! W = wishrnd (eye (3), 2.5);
+%! assert (size (W), [3, 3]);
+
+%% Test that invalid non-integer df < p-1 triggers a warning
+%!warning <Wishart distribution undefined> wishrnd (eye (3), 1.5);
