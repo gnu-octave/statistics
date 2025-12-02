@@ -45,8 +45,8 @@ function x = cauchyinv (p, x0, gamma)
   if (! isscalar (p) || ! isscalar (x0) || ! isscalar (gamma))
     [retval, p, x0, gamma] = common_size (p, x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchyinv: P, X0, and GAMMA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("cauchyinv: P, X0, and GAMMA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 

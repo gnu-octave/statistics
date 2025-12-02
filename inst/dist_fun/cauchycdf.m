@@ -61,8 +61,8 @@ function p = cauchycdf (x, x0, gamma, uflag)
   if (! isscalar (x) || ! isscalar (x0) || ! isscalar (gamma))
     [retval, x, x0, gamma] = common_size (x, x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchycdf: X, X0, and GAMMA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("cauchycdf: X, X0, and GAMMA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 
