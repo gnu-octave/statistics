@@ -97,8 +97,8 @@ function p = copulacdf (family, x, theta, df)
   endif
 
   if (! ischar (family))
-    error (strcat (["copulacdf: family must be one of 'Gaussian',"], ...
-                   [" 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."]));
+    error (strcat ("copulacdf: family must be one of 'Gaussian',", ...
+                   " 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."));
   endif
 
   if (! isempty (x) && ! ismatrix (x))
@@ -125,8 +125,8 @@ function p = copulacdf (family, x, theta, df)
       if (nargin == 4)
         ## Student's t family
         if (! isscalar (df) && (! isvector (df) || length (df) != n))
-          error (strcat (["copulacdf: DF must be a vector with the same"], ...
-                         [" number of rows as X or be scalar."]));
+          error (strcat ("copulacdf: DF must be a vector with the same", ...
+                         " number of rows as X or be scalar."));
         endif
         df = df(:);
       endif
@@ -134,8 +134,8 @@ function p = copulacdf (family, x, theta, df)
     case {"clayton", "gumbel", "frank", "amh"}
       ## Archimedian one parameter family
       if (! isvector (theta) || (! isscalar (theta) && length (theta) != n))
-        error (strcat (["copulacdf: THETA must be a vector with the same"], ...
-                       [" number of rows as X or be scalar."]));
+        error (strcat ("copulacdf: THETA must be a vector with the same", ...
+                       " number of rows as X or be scalar."));
       endif
       theta = theta(:);
       if (n > 1 && isscalar (theta))
@@ -146,8 +146,8 @@ function p = copulacdf (family, x, theta, df)
       ## Exponential number of parameters
       if (! ismatrix (theta) || size (theta, 2) != (2 .^ d - d - 1) || ...
           (size (theta, 1) != 1 && size (theta, 1) != n))
-        error (strcat (["copulacdf: THETA must be a row vector of length"], ...
-                       [" 2^d-d-1 or a matrix of size N x (2^d-d-1)."]));
+        error (strcat ("copulacdf: THETA must be a row vector of length", ...
+                       " 2^d-d-1 or a matrix of size N x (2^d-d-1)."));
       endif
       if (n > 1 && size (theta, 1) == 1)
         theta = repmat (theta, n, 1);
