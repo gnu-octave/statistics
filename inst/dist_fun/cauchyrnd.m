@@ -54,8 +54,8 @@ function r = cauchyrnd (x0, gamma, varargin)
   if (! isscalar (x0) || ! isscalar (gamma))
     [retval, x0, gamma] = common_size (x0, gamma);
     if (retval > 0)
-      error (strcat (["cauchyrnd: X0 and GAMMA must be of common"], ...
-                     [" size or scalars."]));
+      error (strcat ("cauchyrnd: X0 and GAMMA must be of common", ...
+                     " size or scalars."));
     endif
   endif
 
@@ -75,8 +75,8 @@ function r = cauchyrnd (x0, gamma, varargin)
                                 && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
-      error (strcat (["cauchyrnd: SZ must be a scalar or a row vector"], ...
-                     [" of non-negative integers."]));
+      error (strcat ("cauchyrnd: SZ must be a scalar or a row vector", ...
+                     " of non-negative integers."));
     endif
   elseif (nargin > 3)
     posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
