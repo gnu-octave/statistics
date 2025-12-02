@@ -147,8 +147,8 @@ function r = copularnd (family, theta, df, n)
         error ("copularnd: THETA must be a correlation matrix.");
       endif
       if (! isscalar (df) && (! isvector (df) || length (df) != n))
-        error (strcat (["copularnd: DF must be a vector with the same"], ...
-                       [" number of rows as r or be scalar."]));
+        error (strcat ("copularnd: DF must be a vector with the same", ...
+                       " number of rows as r or be scalar."));
       endif
       df = df(:);
       if (nargin < 4)
@@ -180,8 +180,8 @@ function r = copularnd (family, theta, df, n)
         endif
       endif
       if (! isvector (theta) || (! isscalar (theta) && size (theta, 1) != n))
-        error (strcaty (["copularnd: THETA must be a column vector with"], ...
-                        [" the number of rows equal to N or be scalar."]));
+        error (strcat ("copularnd: THETA must be a column vector with", ...
+                       " the number of rows equal to N or be scalar."));
       endif
       if (n > 1 && isscalar (theta))
         theta = repmat (theta, n, 1);
