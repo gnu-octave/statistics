@@ -59,8 +59,8 @@ function [W, D] = wishrnd (Sigma, df, D, n = 1)
     try
       D = chol (Sigma, 'lower');
     catch
-      error (strcat (["iwishrnd: Cholesky decomposition failed;"], ...
-                     [" SIGMA probably not positive definite."]));
+      error (strcat ("iwishrnd: Cholesky decomposition failed;", ...
+                     " SIGMA probably not positive definite."));
     end_try_catch
   endif
 
@@ -72,8 +72,8 @@ function [W, D] = wishrnd (Sigma, df, D, n = 1)
   if (df < p)
     ## Truncate and warn only if the distribution is undefined.
     if (! df_isint && (df < (p - 1)))
-      warning (strcat (["wishrnd: Wishart distribution undefined for non-integral df < p-1;"], ...
-                       [" truncating to floor(df)."]));
+      warning (strcat ("wishrnd: Wishart distribution undefined for non-integral df < p-1;", ...
+                       " truncating to floor(df)."));
       df = floor (df);
       df_isint = 1; ## Now it is an integer
     endif
