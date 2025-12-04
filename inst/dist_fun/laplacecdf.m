@@ -64,8 +64,8 @@ function p = laplacecdf (x, mu, beta, uflag)
   if (! isscalar (x) || ! isscalar (mu) || ! isscalar(beta))
     [retval, x, mu, beta] = common_size (x, mu, beta);
     if (retval > 0)
-      error (strcat (["laplacecdf: X, MU, and BETA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("laplacecdf: X, MU, and BETA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 

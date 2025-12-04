@@ -1311,8 +1311,8 @@ classdef ClassificationGAM
           endfor
           ## Check that all predictors have been identified
           if (sum (iterms) != t)
-            error (strcat (["ClassificationGAM: some predictors"], ...
-                           [" have not been identified."]));
+            error (strcat ("ClassificationGAM: some predictors", ...
+                           " have not been identified."));
           endif
           ## Append to interactions matrix
           intMat = [intMat; iterms];

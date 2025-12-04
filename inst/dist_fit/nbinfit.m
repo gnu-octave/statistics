@@ -134,9 +134,9 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["nbinfit: 'options' argument must be a"], ...
-                     [" structure with 'Display', 'MaxFunEvals',"], ...
-                     [" 'MaxIter', and 'TolX' fields present."]));
+      error (strcat ("nbinfit: 'options' argument must be a", ...
+                     " structure with 'Display', 'MaxFunEvals',", ...
+                     " 'MaxIter', and 'TolX' fields present."));
     endif
   endif
 
@@ -170,8 +170,8 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
   ## Handle errors
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
-      warning (strcat (["nbinfit: maximum number of function"], ...
-                       [" evaluations are exceeded."]));
+      warning (strcat ("nbinfit: maximum number of function", ...
+                       " evaluations are exceeded."));
     elseif (output.iterations >= options.MaxIter)
       warning ("nbinfit: maximum number of iterations are exceeded.");
     endif

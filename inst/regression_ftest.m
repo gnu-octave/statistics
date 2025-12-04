@@ -115,8 +115,8 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
 
   ## Check the full model
   if (! (isvector (fm) && (length (fm) == v || length (fm) == v + 1)))
-    error (strcat (["regression_ftest: full model, FM, must be a vector"], ...
-                   [" of length equal to 'rows (X)' or 'rows (X) + 1'."]));
+    error (strcat ("regression_ftest: full model, FM, must be a vector", ...
+                   " of length equal to 'rows (X)' or 'rows (X) + 1'."));
   endif
   ## Make it row vector and add a constant = 0 if necessary
   fm_len = length (fm);
@@ -133,13 +133,13 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
       rm_len = 1;
     else
       if (! isvector (rm) || ! isnumeric (rm))
-        error (strcat (["regression_ftest: reduced model, RM, must be a"], ...
-                       [" numeric vector or a scalar."]));
+        error (strcat ("regression_ftest: reduced model, RM, must be a", ...
+                       " numeric vector or a scalar."));
       endif
       rm_len = length (rm);
       if (rm_len >= fm_len - 1)
-        error (strcat (["regression_ftest: reduced model, RM, must have"], ...
-                       [" smaller length than the full model, FM."]));
+        error (strcat ("regression_ftest: reduced model, RM, must have", ...
+                       " smaller length than the full model, FM."));
       endif
       rm = reshape (rm, 1, rm_len);
       rm = [rm, zeros(1, fm_len - rm_len)];

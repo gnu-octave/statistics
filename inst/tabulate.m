@@ -46,8 +46,8 @@ function table = tabulate (x)
   if (! (isnumeric (x) && isvector (x)) &&
       ! (iscellstr (x) && isvector (x)) &&
       ! ischar (x))
-    error (strcat (["tabulate: X must be either a numeric vector, a"], ...
-                   [" vector cell array of strings, or a character matrix."]));
+    error (strcat ("tabulate: X must be either a numeric vector, a", ...
+                   " vector cell array of strings, or a character matrix."));
   endif
 
   ## Remove missing values (NaNs) if numeric

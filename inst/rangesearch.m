@@ -200,8 +200,8 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   endif
   if (! isempty (C))
     if (! strcmp (Distance, "mahalanobis") || ! ismatrix (C) || ! isnumeric (C))
-      error (strcat (["rangesearch: invalid value in Cov, Cov can only"], ...
-                     [" be given for mahalanobis distance."]));
+      error (strcat ("rangesearch: invalid value in Cov, Cov can only", ...
+                     " be given for mahalanobis distance."));
     endif
   endif
   if (! isscalar (BS) || BS < 0)
@@ -232,8 +232,8 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
     if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))
-      error (strcat (["rangesearch: 'kdtree' cannot be used with"], ...
-                     [" the given distance metric."]));
+      error (strcat ("rangesearch: 'kdtree' cannot be used with", ...
+                     " the given distance metric."));
     endif
   endif
 

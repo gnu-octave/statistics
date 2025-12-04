@@ -299,8 +299,8 @@ classdef CompactClassificationNeuralNetwork
       if (isempty (Mdl))
         return;
       elseif (! strcmpi (class (Mdl), "ClassificationNeuralNetwork"))
-        error (strcat (["CompactClassificationNeuralNetwork: invalid"], ...
-                       [" classification object."]));
+        error (strcat ("CompactClassificationNeuralNetwork: invalid", ...
+                       " classification object."));
       endif
 
       ## Save properties to compact model
@@ -476,17 +476,17 @@ classdef CompactClassificationNeuralNetwork
 
       ## Check for sufficient input arguments
       if (nargin < 2)
-        error (strcat (["CompactClassificationNeuralNetwork.predict:"], ...
-                       [" too few input arguments."]));
+        error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
+                       " too few input arguments."));
       endif
 
       ## Check for valid XC
       if (isempty (XC))
         error ("CompactClassificationNeuralNetwork.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["CompactClassificationNeuralNetwork.predict:"], ...
-                       [" XC must have the same number of predictors"], ...
-                       [" as the trained neural network model."]));
+        error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
+                       " XC must have the same number of predictors", ...
+                       " as the trained neural network model."));
       endif
 
       ## Standardize (if necessary)
@@ -505,9 +505,9 @@ classdef CompactClassificationNeuralNetwork
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["CompactClassificationNeuralNetwork.predict:"], ...
-                           [" 'ScoreTransform' must be a"], ...
-                           [" 'function_handle' object."]));
+            error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
+                           " 'ScoreTransform' must be a", ...
+                           " 'function_handle' object."));
           endif
           scores = f (scores);
         endif

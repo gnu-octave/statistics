@@ -60,8 +60,8 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
    endif
 
    if (nargin == 2 && ! strcmpi (varargin{:}, "econ"))
-      error (strcat (["princomp: if a second input argument is present,"], ...
-                     [" it must be the string  'econ'."]));
+      error (strcat ("princomp: if a second input argument is present,", ...
+                     " it must be the string  'econ'."));
    endif
 
    [nobs nvars] = size(X);

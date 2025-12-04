@@ -475,8 +475,8 @@ classdef CompactClassificationGAM
       if (isempty (XC))
         error ("CompactClassificationGAM.predict: XC is empty.");
       elseif (this.NumPredictors != columns (XC))
-        error (strcat (["CompactClassificationGAM.predict: XC must have"], ...
-                       [" the same number of features as the trained model."]));
+        error (strcat ("CompactClassificationGAM.predict: XC must have", ...
+                       " the same number of features as the trained model."));
       endif
 
       ## Clean XC data
@@ -494,19 +494,19 @@ classdef CompactClassificationGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat (["CompactClassificationGAM.predict:"], ...
-                     [" includeinteractions must be a logical value."]));
+              error (strcat ("CompactClassificationGAM.predict:", ...
+                     " includeinteractions must be a logical value."));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMatrix))
-              error (strcat (["CompactClassificationGAM.predict: trained"], ...
-                             [" model does not include any interactions."]));
+              error (strcat ("CompactClassificationGAM.predict: trained", ...
+                             " model does not include any interactions."));
             endif
             incInt = tmpInt;
 
           otherwise
-            error (strcat (["CompactClassificationGAM.predict: invalid"], ...
-                           [" NAME in optional pairs of arguments."]));
+            error (strcat ("CompactClassificationGAM.predict: invalid", ...
+                           " NAME in optional pairs of arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile

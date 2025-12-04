@@ -121,9 +121,9 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["gamfit: 'options' 5th argument must be a"], ...
-                     [" structure with 'Display', 'MaxFunEvals',"], ...
-                     [" 'MaxIter', and 'TolX' fields present."]));
+      error (strcat ("gamfit: 'options' 5th argument must be a", ...
+                     " structure with 'Display', 'MaxFunEvals',", ...
+                     " 'MaxIter', and 'TolX' fields present."));
     endif
   endif
 
@@ -181,8 +181,8 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     ## Handle errors
     if (err == 0)
       if (output.funcCount >= options.MaxFunEvals)
-        warning (strcat (["gamfit: maximum number of function"], ...
-                         [" evaluations are exceeded."]));
+        warning (strcat ("gamfit: maximum number of function", ...
+                         " evaluations are exceeded."));
       elseif (output.iterations >= options.MaxIter)
         warning ("gamfit: maximum number of iterations are exceeded.");
       endif
@@ -301,8 +301,8 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     ## Handle errors
     if (err == 0)
       if (output.funcCount >= options.MaxFunEvals)
-        warning (strcat (["gamfit: maximum number of function"], ...
-                         [" evaluations are exceeded."]));
+        warning (strcat ("gamfit: maximum number of function", ...
+                         " evaluations are exceeded."));
       elseif (output.iterations >= options.MaxIter)
         warning ("gamfit: maximum number of iterations are exceeded.");
       endif

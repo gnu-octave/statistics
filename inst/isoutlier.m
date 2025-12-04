@@ -232,8 +232,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
-            error (strcat (["isoutlier: WINDOW must be a positive scalar"], ...
-                           [" or a two-element vector of positive values"]));
+            error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
+                           " or a two-element vector of positive values"));
           endif
           varargin([1:2]) = [];
 
@@ -242,8 +242,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
-            error (strcat (["isoutlier: WINDOW must be a positive scalar"], ...
-                           [" or a two-element vector of positive values"]));
+            error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
+                           " or a two-element vector of positive values"));
           endif
           varargin([1:2]) = [];
 
@@ -251,15 +251,15 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           method = "percentiles";
           threshold = varargin{2};
           if (! isnumeric (threshold) || ! (numel (threshold) == 2))
-            error (strcat (["isoutlier: THRESHOLD must be a two-element"], ...
-                           [" vector whose elements are in the interval"], ...
-                           [" [0, 100]."]));
+            error (strcat ("isoutlier: THRESHOLD must be a two-element", ...
+                           " vector whose elements are in the interval", ...
+                           " [0, 100]."));
           endif
           if (! (threshold(1) < threshold(2)) || threshold(1) < 0 ||
               threshold(2) > 100)
-            error (strcat (["isoutlier: THRESHOLD must be a two-element"], ...
-                           [" vector whose elements are in the interval"], ...
-                           [" [0, 100]."]));
+            error (strcat ("isoutlier: THRESHOLD must be a two-element", ...
+                           " vector whose elements are in the interval", ...
+                           " [0, 100]."));
           endif
           varargin([1:2]) = [];
 
@@ -287,8 +287,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           MaxNumOutliers = varargin{2};
           if (! isscalar (MaxNumOutliers) || MaxNumOutliers <= 0 ||
               ! (fix (MaxNumOutliers) == MaxNumOutliers))
-            error (strcat (["isoutlier: maximum outlier count must be a"], ...
-                           [" positive integer scalar."]));
+            error (strcat ("isoutlier: maximum outlier count must be a", ...
+                           " positive integer scalar."));
           endif
           varargin([1:2]) = [];
 
@@ -317,16 +317,16 @@ function [TF, L, U, C] = isoutlier (x, varargin)
   ## Check for valid WINDOW unless Sample Points are given
   if (isempty (SamplePoints) && ! isempty (window))
     if (! all (fix (window) == window))
-      error (strcat (["isoutlier: WINDOW must be a positive integer"], ...
-                     [" scalar or a two-element vector of positive"], ...
-                     [" integers, unless SamplePoints are defined."]));
+      error (strcat ("isoutlier: WINDOW must be a positive integer", ...
+                     " scalar or a two-element vector of positive", ...
+                     " integers, unless SamplePoints are defined."));
     endif
   endif
 
   ## Check for valid value of ThresholdFactor for 'grubbs' and 'geds' methods
   if (any (strcmpi (method, {"grubbs", "gesd"})) && ThresholdFactor > 1)
-    error (strcat (["isoutlier: threshold factor must must be in [0 1]"], ...
-                   [" range for 'grubbs' and 'gesd' methods."]));
+    error (strcat ("isoutlier: threshold factor must must be in [0 1]", ...
+                   " range for 'grubbs' and 'gesd' methods."));
   endif
 
   ## Switch methods
@@ -524,8 +524,8 @@ function [L, U, C] = movmedian_method (x, dim, ThresholdFactor, c, window, sp);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
-      error (strcat (["isoutlier: sample points must have the same size"], ...
-                     [" as the operating dimension."]));
+      error (strcat ("isoutlier: sample points must have the same size", ...
+                     " as the operating dimension."));
     endif
     ## Move the desired dim to be the 1st dimension (rows)
     nd    = length (szx);                 # number of dimensions
@@ -587,8 +587,8 @@ function [L, U, M] = movmean_method (x, dim, ThresholdFactor, window, sp);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
-      error (strcat (["isoutlier: sample points must have the same size"], ...
-                     [" as the operating dimension."]));
+      error (strcat ("isoutlier: sample points must have the same size", ...
+                     " as the operating dimension."));
     endif
     ## Move the desired dim to be the 1st dimension (rows)
     nd    = length (szx);                 # number of dimensions

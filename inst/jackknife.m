@@ -91,8 +91,8 @@ function jackstat = jackknife (anEstimator, varargin)
 		if (isascii (anEstimator))
 			anEstimator = str2func (anEstimator);
 		else
-			error (strcat (["jackknife: estimators must be passed as function"], ...
-                     [" names or handles."]));
+			error (strcat ("jackknife: estimators must be passed as function", ...
+                     " names or handles."));
 		endif
 	endif
 

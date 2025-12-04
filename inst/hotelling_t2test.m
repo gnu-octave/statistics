@@ -132,8 +132,8 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
     if (isvector (my) && length (my) == p)
       my = reshape (my, 1, p);
     else
-      error (strcat (["hotelling_t2test: if X is a matrix, M must be a"], ...
-                     [" vector of length equal to the columns of X."]));
+      error (strcat ("hotelling_t2test: if X is a matrix, M must be a", ...
+                     " vector of length equal to the columns of X."));
     endif
   endif
 

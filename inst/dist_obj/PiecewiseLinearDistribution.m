@@ -546,16 +546,16 @@ function checkparams (x, Fx)
     error ("PiecewiseLinearDistribution: Fx must be a real vector.")
   endif
   if (! isvector (x) || ! isvector (Fx) || ! isequal (size (x), size (Fx)))
-    error (strcat (["PiecewiseLinearDistribution: X and FX must"], ...
-                   [" be vectors of equal size."]));
+    error (strcat ("PiecewiseLinearDistribution: X and FX must", ...
+                   " be vectors of equal size."));
   endif
   if (length (x) < 2 || length (Fx) < 2)
-    error (strcat (["PiecewiseLinearDistribution: X and FX must"], ...
-                   [" be at least two-elements long."]));
+    error (strcat ("PiecewiseLinearDistribution: X and FX must", ...
+                   " be at least two-elements long."));
   endif
   if (any (Fx < 0) || any (Fx > 1))
-    error (strcat (["PiecewiseLinearDistribution: FX must be"], ...
-                   [" bounded in the range [0, 1]."]));
+    error (strcat ("PiecewiseLinearDistribution: FX must be", ...
+                   " bounded in the range [0, 1]."));
   endif
 endfunction
 

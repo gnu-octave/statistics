@@ -186,11 +186,11 @@ classdef RegressionGAM
             PredictorNames = varargin{2};
             if (! isempty (PredictorNames))
               if (! iscellstr (PredictorNames))
-                error (strcat (["RegressionGAM: PredictorNames must"], ...
-                               [" be a cellstring array."]));
+                error (strcat ("RegressionGAM: PredictorNames must", ...
+                               " be a cellstring array."));
               elseif (columns (PredictorNames) != columns (X))
-                error (strcat (["RegressionGAM: PredictorNames must"], ...
-                               [" have same number of columns as X."]));
+                error (strcat ("RegressionGAM: PredictorNames must", ...
+                               " have same number of columns as X."));
               endif
             endif
 
@@ -278,8 +278,8 @@ classdef RegressionGAM
             endif
 
           otherwise
-            error (strcat (["RegressionGAM: invalid parameter name"],...
-                           [" in optional pair arguments."]));
+            error (strcat ("RegressionGAM: invalid parameter name", ...
+                           " in optional pair arguments."));
 
         endswitch
         varargin (1:2) = [];
@@ -451,8 +451,8 @@ classdef RegressionGAM
       if (isempty (Xfit))
         error ("RegressionGAM.predict: Xfit is empty.");
       elseif (columns (this.X) != columns (Xfit))
-        error (strcat (["@RegressionGAM/predict: Xfit must have the same"], ...
-                       [" number of features (columns) as in the GAM model."]));
+        error (strcat ("@RegressionGAM/predict: Xfit must have the same", ...
+                       " number of features (columns) as in the GAM model."));
       endif
 
       ## Clean Xfit data
@@ -474,13 +474,13 @@ classdef RegressionGAM
           case "includeinteractions"
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
-              error (strcat (["RegressionGAM.predict: includeinteractions"], ...
-                             [" must be a logical value."]));
+              error (strcat ("RegressionGAM.predict: includeinteractions", ...
+                             " must be a logical value."));
             endif
             ## Check model for interactions
             if (tmpInt && isempty (this.IntMat))
-              error (strcat (["RegressionGAM.predict: trained model"], ...
-                             [" does not include any interactions."]));
+              error (strcat ("RegressionGAM.predict: trained model", ...
+                             " does not include any interactions."));
             endif
             incInt = tmpInt;
 
@@ -488,13 +488,13 @@ classdef RegressionGAM
             alpha = varargin{2};
             if (! (isnumeric (alpha) && isscalar (alpha)
                                       && alpha > 0 && alpha < 1))
-              error (strcat (["RegressionGAM.predict: alpha must be a"], ...
-                             [" scalar value between 0 and 1."]));
+              error (strcat ("RegressionGAM.predict: alpha must be a", ...
+                             " scalar value between 0 and 1."));
             endif
 
           otherwise
-            error (strcat(["RegressionGAM.predict: invalid NAME in"], ...
-                          [" optional pairs of arguments."]));
+            error (strcat ("RegressionGAM.predict: invalid NAME in", ...
+                          " optional pairs of arguments."));
         endswitch
         varargin (1:2) = [];
       endwhile
@@ -628,8 +628,8 @@ classdef RegressionGAM
       if (islogical (this.Interactions))
         ## Check that interaction matrix corresponds to predictors
         if (numel (this.PredictorNames) != columns (this.Interactions))
-          error (strcat (["RegressionGAM: columns in Interactions logical"], ...
-                         [" matrix must equal to the number of predictors."]));
+          error (strcat ("RegressionGAM: columns in Interactions logical", ...
+                         " matrix must equal to the number of predictors."));
         endif
         intMat = this.Interactions
       elseif (isnumeric (this.Interactions))
@@ -638,9 +638,9 @@ classdef RegressionGAM
         ## p*(p-1)/2, where p is the number of predictors.
         p = this.NumPredictors;
         if (this.Interactions > p * (p - 1) / 2)
-          error (strcat (["RegressionGAM: number of interaction terms"], ...
-                         [" requested is larger than all possible"], ...
-                         [" combinations of predictors in X."]));
+          error (strcat ("RegressionGAM: number of interaction terms", ...
+                         " requested is larger than all possible", ...
+                         " combinations of predictors in X."));
         endif
         ## Get all combinations except all zeros
         allMat = flip (fullfact(p)([2:end],:), 2);

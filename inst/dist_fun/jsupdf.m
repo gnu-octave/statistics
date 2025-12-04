@@ -50,8 +50,8 @@ function y = jsupdf (x, alpha1, alpha2)
   if (! isscalar (x) || ! isscalar (alpha1) || ! isscalar(alpha2))
     [retval, x, alpha1, alpha2] = common_size (x, alpha1, alpha2);
     if (retval > 0)
-      error (strcat (["jsupdf: X, ALPHA1, and ALPHA2 must be of common"], ...
-                     [" size or scalars."]));
+      error (strcat ("jsupdf: X, ALPHA1, and ALPHA2 must be of common", ...
+                     " size or scalars."));
     endif
   endif
 

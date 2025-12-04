@@ -220,8 +220,8 @@ function obj = fitgmdist (data, k, varargin)
         Sigma(:,:,i) = cov (data(idx,:)) + Regularizer * eye (nCols);
       endfor
       if (validIndices < nRows)
-        error (strcat (["fitgmdist: Start is numeric, but is not"], ...
-                       [" integers between 1 and k."]));
+        error (strcat ("fitgmdist: Start is numeric, but is not", ...
+                       " integers between 1 and k."));
       endif
     endif
     start = [];                # so that variance isn't recalculated later
@@ -265,12 +265,12 @@ function obj = fitgmdist (data, k, varargin)
   try
     if (! isempty (weights))
       if (columns (weights) > 2 || any (weights(:) < 0))
-        error (strcat (["fitgmdist: weights must be a nonnegative"], ...
-                       [" numeric dx1 or dx2 matrix."]));
+        error (strcat ("fitgmdist: weights must be a nonnegative", ...
+                       " numeric dx1 or dx2 matrix."));
       endif
       if (rows (weights) != nRows)
-        error (strcat (["fitgmdist: number of weights %d must match"], ...
-                       [" number of samples %d."]), rows (weights), nRows);
+        error (strcat ("fitgmdist: number of weights %d must match", ...
+                       " number of samples %d."), rows (weights), nRows);
       endif
       non_zero = (weights(:,1) > 0);
       weights = weights(non_zero,:);
@@ -291,17 +291,17 @@ function obj = fitgmdist (data, k, varargin)
       error ("fitgmdist: first input argument must be a DxN real data matrix.");
     elseif (k > nRows || k < 0)
       if (exists ("non_zero", "var") && k <= length (non_zero))
-        error (strcat (["fitgmdist: The number of non-zero weights (%d)"], ...
-                       [" must be at least the number of components"], ...
-                       [" (%d)."]), nRows, k);
+        error (strcat ("fitgmdist: The number of non-zero weights (%d)", ...
+                       " must be at least the number of components", ...
+                       " (%d)."), nRows, k);
       else
-        error (strcat (["fitgmdist: The number of components (%d) must be"], ...
-                       [" a positive number less than the number of data"], ...
-                       [" rows (%d)."]), k, nRows);
+        error (strcat ("fitgmdist: The number of components (%d) must be", ...
+                       " a positive number less than the number of data", ...
+                       " rows (%d)."), k, nRows);
       endif
     elseif (! ismatrix (weights) || ! isnumeric (weights))
-      error (strcat (["fitgmdist: weights must be a nonnegative numeric"], ...
-                     [" dx1 or dx2 matrix."]));
+      error (strcat ("fitgmdist: weights must be a nonnegative numeric", ...
+                     " dx1 or dx2 matrix."));
     else
       rethrow (ME)
     endif
@@ -400,8 +400,8 @@ function obj = fitgmdist (data, k, varargin)
             p_x_l (:, i) = mvnpdf (data, mu(i, :), sig);
           catch ME
             if (strfind (ME.message, "positive definite"))
-              error (strcat (["fitgmdist: Covariance is not positive"], ...
-                             [" definite.  Increase RegularizationValue."]));
+              error (strcat ("fitgmdist: Covariance is not positive", ...
+                             " definite.  Increase RegularizationValue."));
             else
               rethrow (ME)
             endif

@@ -78,8 +78,8 @@ function r = invgrnd (mu, lambda, varargin)
                                 && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
-      error (strcat (["invgrnd: SZ must be a scalar or a row vector"], ...
-                     [" of non-negative integers."]));
+      error (strcat ("invgrnd: SZ must be a scalar or a row vector", ...
+                     " of non-negative integers."));
     endif
   elseif (nargin > 3)
     posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);

@@ -181,8 +181,8 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 
   ## Check MCREPS = 1 when "resubstitution" is set for cross validation
   if (! CV && mcreps != 1)
-    error (strcat (["plsregress: 'mcreps' must be 1 when 'resubstitution'"], ...
-                   [" is specified for cross validation."]));
+    error (strcat ("plsregress: 'mcreps' must be 1 when 'resubstitution'", ...
+                   " is specified for cross validation."));
   endif
 
 
@@ -236,8 +236,8 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
         ts = nobs;
       endif
       if (NCOMP > NCOMPmax)
-        warning (strcat (["plsregress: NCOMP exceeds maximum components"], ...
-                         [" for cross validation."]));
+        warning (strcat ("plsregress: NCOMP exceeds maximum components", ...
+                         " for cross validation."));
         NCOMP = NCOMPmax;
       endif
       ## Create function handle with NCOMP extra argument

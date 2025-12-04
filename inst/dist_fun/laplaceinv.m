@@ -48,8 +48,8 @@ function x = laplaceinv (p, mu, beta)
   if (! isscalar (p) || ! isscalar (mu) || ! isscalar(beta))
     [retval, p, mu, beta] = common_size (p, mu, beta);
     if (retval > 0)
-      error (strcat (["laplaceinv: P, MU, and BETA must be of"], ...
-                     [" common size or scalars."]));
+      error (strcat ("laplaceinv: P, MU, and BETA must be of", ...
+                     " common size or scalars."));
     endif
   endif
 

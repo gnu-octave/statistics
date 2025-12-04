@@ -51,8 +51,8 @@ function y = randsample (v, k, replacement=false ,w=[])
   endif
 
   if k < 0 || ( k > n && !replacement )
-    error (strcat (["randsample: The input k must be a non-negative "], ...
-                   ["integer. Sampling without replacement needs k <= n."]));
+    error (strcat ("randsample: The input k must be a non-negative ", ...
+                   "integer. Sampling without replacement needs k <= n."));
   endif
 
   if (all (length (w) != [0, n]))

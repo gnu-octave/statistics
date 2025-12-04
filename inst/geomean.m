@@ -189,8 +189,8 @@ function m = geomean (x, varargin)
       else
         vecdim = sort (vecdim);
         if (! all (diff (vecdim)))
-           error (strcat (["geomean: VECDIM must contain non-repeating"], ...
-                          [" positive integers."]));
+           error (strcat ("geomean: VECDIM must contain non-repeating", ...
+                          " positive integers."));
         endif
         ## Ignore exceeding dimensions in VECDIM
         vecdim(find (vecdim > ndims (x))) = [];

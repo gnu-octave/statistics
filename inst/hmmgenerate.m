@@ -131,8 +131,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     error ("hmmgenerate: transprob must be a square matrix.");
   endif
   if (rows (outprob) != nstate)
-    error (strcat (["hmmgenerate: outprob must have the same number"], ...
-                   [" of rows as transprob."]));
+    error (strcat ("hmmgenerate: outprob must have the same number", ...
+                   " of rows as transprob."));
   endif
 
   # Flag for symbols
@@ -150,8 +150,8 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     lowerarg = lower (varargin{i});
     if (strcmp (lowerarg, 'symbols'))
       if (length (varargin{i + 1}) != noutput)
-        error (strcat (["hmmgenerate: number of symbols does not match"], ...
-                       [" number of possible outputs."]));
+        error (strcat ("hmmgenerate: number of symbols does not match", ...
+                       " number of possible outputs."));
       endif
       usesym = true;
       # Use the following argument as symbols
@@ -159,14 +159,14 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
     # The same for statenames
     elseif (strcmp (lowerarg, 'statenames'))
       if (length (varargin{i + 1}) != nstate)
-        error (strcat (["hmmgenerate: number of statenames does not"], ...
-                       [" match number of states."]));
+        error (strcat ("hmmgenerate: number of statenames does not", ...
+                       " match number of states."));
       endif
       usesn = true;
       # Use the following argument as statenames
       statenames = varargin{i + 1};
     else
-      error (strcat (["hmmgenerate: expected 'symbols' or 'statenames'"], ...
+      error (strcat ("hmmgenerate: expected 'symbols' or 'statenames'", ...
                      sprintf (" but found '%s'.", varargin{i})));
     endif
   endfor

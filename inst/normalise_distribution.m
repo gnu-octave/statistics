@@ -71,8 +71,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
   if (nargin < 1 || nargin > 3)
     print_usage;
   elseif (! ismatrix (data) || length (size (data)) > 2)
-    error (strcat (["normalise_distribution: first argument"], ...
-                   [" must be a vector or matrix."]));
+    error (strcat ("normalise_distribution: first argument", ...
+                   " must be a vector or matrix."));
   endif
 
   if (nargin >= 2)
@@ -90,9 +90,9 @@ function normalised = normalise_distribution (data, distribution, dimension)
           temp = str2func ([distribution]);
           distribution = {temp};
         else
-          error (strcat (["normalise_distribution: second argument cannot"], ...
-                         [" contain more than one string unless in a cell"], ...
-                         [" array."]));
+          error (strcat ("normalise_distribution: second argument cannot", ...
+                         " contain more than one string unless in a cell", ...
+                         " array."));
         endif
 
       ## Do we have a cell array of distributions instead?
@@ -108,10 +108,10 @@ function normalised = normalise_distribution (data, distribution, dimension)
         if (! all (cellfun (@(h) (strcmp (typeinfo (h), typeinfo ...
                            (@(x)(x)))), distribution)))
 
-          error (strcat (["normalise_distribution: second argument must"], ...
-                         [" contain either a single function name or"], ...
-                         [" handle or a cell array of either all function"], ...
-                         [" names or handles!"]));
+          error (strcat ("normalise_distribution: second argument must", ...
+                         " contain either a single function name or", ...
+                         " handle or a cell array of either all function", ...
+                         " names or handles!"));
         endif
       else
         error ( "Illegal second argument: ", typeinfo ( distribution ) );
@@ -186,8 +186,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
         normalised (:, k) = norminv (distribution{k}(data)(:, k));
       endfor
     else
-      error (strcat (["normalise_distribution: number of distributions"], ...
-                     [" does not match data size!"]));
+      error (strcat ("normalise_distribution: number of distributions", ...
+                     " does not match data size!"));
     endif
   endif
 

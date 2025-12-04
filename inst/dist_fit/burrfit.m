@@ -113,9 +113,9 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["burrfit: 'options' 5th argument must be a"], ...
-                     [" structure with 'Display', 'MaxFunEvals',"], ...
-                     [" 'MaxIter', and 'TolX' fields present."]));
+      error (strcat ("burrfit: 'options' 5th argument must be a", ...
+                     " structure with 'Display', 'MaxFunEvals',", ...
+                     " 'MaxIter', and 'TolX' fields present."));
     endif
   endif
 
@@ -203,8 +203,8 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     ## Handle errors
     if (err == 0)
       if (output.funcCount >= options.MaxFunEvals)
-        warning (strcat (["burrfit: maximum number of function"], ...
-                         [" evaluations are exceeded."]));
+        warning (strcat ("burrfit: maximum number of function", ...
+                         " evaluations are exceeded."));
       elseif (output.iterations >= options.MaxIter)
         warning ("burrfit: maximum number of iterations are exceeded.");
       endif

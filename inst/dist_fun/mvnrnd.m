@@ -173,8 +173,8 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
           for i = 1:rm
             [R, err] = cholcov (sigma(:,:,i));
             if (err != 0)
-              error (strcat (["mvnrnd: multiple covariance matrix"], ...
-                             [" is not positive definite."]));
+              error (strcat ("mvnrnd: multiple covariance matrix", ...
+                             " is not positive definite."));
             endif
             Rrows = size (R,1);
             r(i,:) = randn (1, Rrows, is_class) * R + mu(i,:);

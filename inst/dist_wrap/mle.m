@@ -96,18 +96,18 @@ function [phat, pci] = mle (x, varargin)
       case "censoring"
         censor = varargin{2};
         if (! isequal (size (x), size (censor)) && ! isempty (censor))
-          error (strcat (["mle: 'censoring' argument must have the same"], ...
-                         [" size as the input data in X."]));
+          error (strcat ("mle: 'censoring' argument must have the same", ...
+                         " size as the input data in X."));
         endif
       case "frequency"
         freq = varargin{2};
         if (! isequal (size (x), size (freq)))
-          error (strcat (["mle: 'frequency' argument must have the same"], ...
-                         [" size as the input data in X."]));
+          error (strcat ("mle: 'frequency' argument must have the same", ...
+                         " size as the input data in X."));
         endif
         if (any (freq != round (freq)) || any (freq < 0))
-          error (strcat (["mle: 'frequency' argument must contain"], ...
-                         [" non-negative integer values."]));
+          error (strcat ("mle: 'frequency' argument must contain", ...
+                         " non-negative integer values."));
         endif
       case "alpha"
         alpha = varargin{2};
@@ -118,8 +118,8 @@ function [phat, pci] = mle (x, varargin)
         ntrials = varargin{2};
         if (! (isscalar (ntrials) && isreal (ntrials) && ntrials > 0
                                   && fix (ntrials) == ntrials))
-          error (strcat (["mle: 'ntrials' argument must be a positive"], ...
-                         [" integer scalar value."]));
+          error (strcat ("mle: 'ntrials' argument must be a positive", ...
+                         " integer scalar value."));
         endif
       case {"mu"}
         mu = varargin{2};
@@ -130,8 +130,8 @@ function [phat, pci] = mle (x, varargin)
         if (! isstruct (options) || ! isfield (options, "Display") ||
             ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                                || ! isfield (options, "TolX"))
-          error (strcat (["mle: 'options' argument must be a structure"], ...
-                         [" compatible for 'fminsearch'."]));
+          error (strcat ("mle: 'options' argument must be a structure", ...
+                         " compatible for 'fminsearch'."));
         endif
 
       case {"pdf", "cdf", "logpdf", "logsf", "nloglf", "truncationbounds", ...
@@ -148,8 +148,8 @@ function [phat, pci] = mle (x, varargin)
 
     case "bernoulli"
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Bernoulli distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Bernoulli distribution."));
       elseif (any (x != 0 & x != 1))
         error ("mle: invalid data for the Bernoulli distribution.");
       endif
@@ -174,11 +174,11 @@ function [phat, pci] = mle (x, varargin)
 
     case {"binomial", "bino"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Binomial distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Binomial distribution."));
       elseif (isempty (ntrials))
-        error (strcat (["mle: 'Ntrials' parameter is required"], ...
-                       [" for the Binomial distribution."]));
+        error (strcat ("mle: 'Ntrials' parameter is required", ...
+                       " for the Binomial distribution."));
       endif
       if (nargout < 2)
         phat = binofit (sum (x .* freq), sum (freq) .* ntrials);
@@ -223,8 +223,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"geo", "geometric"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for the"], ...
-                       [" Geometric distribution."]));
+        error (strcat ("mle: censoring is not supported for the", ...
+                       " Geometric distribution."));
       endif
       if (nargout < 2)
         phat = geofit (x, alpha, freq);
@@ -234,8 +234,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"gev", "generalized extreme value"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for the"], ...
-                       [" Generalized Extreme Value distribution."]));
+        error (strcat ("mle: censoring is not supported for the", ...
+                       " Generalized Extreme Value distribution."));
       endif
       if (nargout < 2)
         phat = gevfit (x, alpha, freq, options);
@@ -245,12 +245,12 @@ function [phat, pci] = mle (x, varargin)
 
     case {"gp", "generalized pareto"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Generalized Pareto distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Generalized Pareto distribution."));
       endif
       if (any (x < theta))
-        error (strcat (["mle: invalid 'theta' location parameter"], ...
-                       [" for the Generalized Pareto distribution."]));
+        error (strcat ("mle: invalid 'theta' location parameter", ...
+                       " for the Generalized Pareto distribution."));
       endif
       if (nargout < 2)
         phat = gpfit (x, theta, alpha, freq, options);
@@ -267,12 +267,12 @@ function [phat, pci] = mle (x, varargin)
 
     case {"hn", "half normal", "halfnormal"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Half Normal distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Half Normal distribution."));
       endif
       if (any (x < mu))
-        error (strcat (["mle: invalid 'mu' location parameter"], ...
-                       [" for the Half Normal distribution."]));
+        error (strcat ("mle: invalid 'mu' location parameter", ...
+                       " for the Half Normal distribution."));
       endif
       if (nargout < 2)
         phat = hnfit (x, mu, alpha, freq);
@@ -317,8 +317,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"nbin", "negativebinomial", "negative binomial"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Negative Binomial distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Negative Binomial distribution."));
       endif
       if (nargout < 2)
         phat = nbinfit (x, alpha, freq, options);
@@ -339,8 +339,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"poiss", "poisson"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Poisson distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Poisson distribution."));
       endif
       if (nargout < 2)
         phat = poissfit (x, alpha, freq);
@@ -371,8 +371,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"unid", "uniform discrete", "discrete uniform", "discrete"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Discrete Uniform distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Discrete Uniform distribution."));
       endif
       if (nargout < 2)
         phat = unidfit (x, alpha, freq);
@@ -382,8 +382,8 @@ function [phat, pci] = mle (x, varargin)
 
     case {"unif", "uniform", "continuous uniform"}
       if (! isempty (censor))
-        error (strcat (["mle: censoring is not supported for"], ...
-                       [" the Continuous Uniform distribution."]));
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Continuous Uniform distribution."));
       endif
       if (nargout < 2)
         phat = uniffit (x, alpha, freq);

@@ -821,8 +821,8 @@ endfunction
 %! data = random (pd, 5000, 1);
 %! pd = fitdist (data, "Burr")
 %! plot (pd)
-%! msg = strcat (["Fitted Burr type XII distribution with"], ...
-%!                [" alpha = %0.2f, c =  %0.2f, and k = %0.2f"]);
+%! msg = strcat ("Fitted Burr type XII distribution with", ...
+%!               " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
 %! title (sprintf (msg, pd.alpha, pd.c, pd.k))
 
 ## Test output

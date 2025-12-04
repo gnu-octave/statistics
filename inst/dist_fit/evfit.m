@@ -122,9 +122,9 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     if (! isstruct (options) || ! isfield (options, "Display") ||
         ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
                                            || ! isfield (options, "TolX"))
-      error (strcat (["evfit: 'options' 5th argument must be a"], ...
-                     [" structure with 'Display', 'MaxFunEvals',"], ...
-                     [" 'MaxIter', and 'TolX' fields present."]));
+      error (strcat ("evfit: 'options' 5th argument must be a", ...
+                     " structure with 'Display', 'MaxFunEvals',", ...
+                     " 'MaxIter', and 'TolX' fields present."));
     endif
   endif
 
@@ -266,8 +266,8 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Check for maximum number of iterations
   if (cur_iter == max_iter)
-    warning (strcat (["evfit: maximum number of function "], ...
-                     [" evaluations (1e+4) has been reached."]));
+    warning (strcat ("evfit: maximum number of function ", ...
+                     " evaluations (1e+4) has been reached."));
   endif
 
   ## Compute MU

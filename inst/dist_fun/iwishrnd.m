@@ -59,8 +59,8 @@ function [W, DI] = iwishrnd (Tau, df, DI, n = 1)
     try
       D = chol (inv (Tau));
     catch
-      error (strcat (["iwishrnd: Cholesky decomposition failed;"], ...
-                     [" TAU probably not positive definite."]));
+      error (strcat ("iwishrnd: Cholesky decomposition failed;", ...
+                     " TAU probably not positive definite."));
     end_try_catch
     DI = D';
   else

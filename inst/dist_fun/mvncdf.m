@@ -239,15 +239,15 @@ function [p, err] = mvncdf (varargin)
     if (! sigmaIsDiag && (size (sigma, 1) != size (sigma, 2)))
       error ("mvncdf: covariance matrix SIGMA is not square.");
     elseif (! sigmaIsDiag && (! all (size (sigma) == [d_x, d_x])))
-      error (strcat (["mvncdf: covariance matrix SIGMA does"], ...
-                     [" not match dimensions in data."]));
+      error (strcat ("mvncdf: covariance matrix SIGMA does", ...
+                     " not match dimensions in data."));
     else
       ## If sigma is a covariance matrix check that it is positive semi-definite
       if (! sigmaIsDiag)
         [~, err] = chol (sigma);
         if (err != 0)
-          error (strcat (["mvncdf: covariance matrix SIGMA must be"], ...
-                         [" positive semi-definite."]));
+          error (strcat ("mvncdf: covariance matrix SIGMA must be", ...
+                         " positive semi-definite."));
         endif
       else
         if (any (sigma <= 0))

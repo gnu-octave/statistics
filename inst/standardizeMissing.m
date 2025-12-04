@@ -118,8 +118,8 @@ function A = standardizeMissing (A, indicator)
     if ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
         (ischar (A) && ! ischar (indicator)) ||
         (iscellstr (A) && ! (iscellstr (indicator))))
-      error (strcat (["standardizeMissing: 'indicator' and 'A' must"], ...
-                     [" have the same data type."]));
+      error (strcat ("standardizeMissing: 'indicator' and 'A' must", ...
+                     " have the same data type."));
     endif
 
     A(ismember (A, indicator)) = missing_val;

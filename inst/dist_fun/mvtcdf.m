@@ -189,8 +189,8 @@ function [p, err] = mvtcdf (varargin)
   if (sz(1) != sz(2))
     error ("mvtcdf: correlation matrix RHO is not square.");
   elseif (! isequal (sz, [d_x, d_x]))
-    error (strcat (["mvtcdf: correlation matrix RHO does not"], ...
-                   [" match dimensions in data."]));
+    error (strcat ("mvtcdf: correlation matrix RHO does not", ...
+                   " match dimensions in data."));
   endif
 
   ## Standardize rho to correlation if necessary (not the data)
@@ -202,14 +202,14 @@ function [p, err] = mvtcdf (varargin)
   ## Continue checking rho for being a valid correlation matrix
   [~, err] = cholcov (rho, 0);
   if (err != 0)
-    error (strcat (["mvtcdf: correlation matrix RHO must be"], ...
-                   [" positive semi-definite."]));
+    error (strcat ("mvtcdf: correlation matrix RHO must be", ...
+                   " positive semi-definite."));
   endif
 
   ## Check df
   if (! isscalar (df) && ! (isvector (df) && length (df) == n_x))
-    error (strcat (["mvtcdf: DF must be a scalar or a vector with"], ...
-                   [" the same samples as in data."]));
+    error (strcat ("mvtcdf: DF must be a scalar or a vector with", ...
+                   " the same samples as in data."));
   endif
   if (any (df <= 0) || ! isreal (df))
     error ("mvtcdf: DF must contain only positive real numbers.");

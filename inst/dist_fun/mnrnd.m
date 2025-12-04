@@ -114,8 +114,8 @@ function r = mnrnd (n, pk, s)
       error ("mnrnd: N must be a non-negative integer column vector.");
     endif
     if (! ismatrix (pk) || isempty (pk) || any (pk < 0 | pk > 1))
-      error (strcat (["mnrnd: PK must be a non-empty matrix with"], ...
-                     [" rows of probabilities."]));
+      error (strcat ("mnrnd: PK must be a non-empty matrix with", ...
+                     " rows of probabilities."));
     endif
     if (! isscalar (n) && size (pk, 1) > 1 && length (n) != size (pk, 1))
       error ("mnrnd: the length of N must match the number of rows of PK.");

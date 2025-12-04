@@ -44,8 +44,8 @@
 function p = bvncdf (x, mu, sigma)
   ## Check input arguments and add defaults
   if (size (x, 2) != 2)
-    error (strcat (["bvncdf: X must be an Nx2 matrix with each variable"], ...
-                   [" as a column vector."]));
+    error (strcat ("bvncdf: X must be an Nx2 matrix with each variable", ...
+                   " as a column vector."));
   endif
   if (isempty (mu))
     mu = [0, 0];
@@ -61,14 +61,14 @@ function p = bvncdf (x, mu, sigma)
     sigma(1,1) = 1;
     sigma(2,2) = 1;
   elseif (numel (sigma) != 4)
-    error (strcat (["bvncdf: the covariance matrix must be either a"], ...
-                   [" scalar or a 2x2 matrix."]));
+    error (strcat ("bvncdf: the covariance matrix must be either a", ...
+                   " scalar or a 2x2 matrix."));
   endif
   ## Test for symmetric positive definite covariance matrix
   [~, err] = chol (sigma);
   if (err != 0)
-    error (strcat (["bvncdf: the covariance matrix is not positive"], ...
-                   [" definite and/or symmetric."]));
+    error (strcat ("bvncdf: the covariance matrix is not positive", ...
+                   " definite and/or symmetric."));
   endif
   dh = (x(:,1) - mu(:,1)) / sqrt (sigma(1,1));
   dk = (x(:,2) - mu(:,2)) / sqrt (sigma(2,2));
