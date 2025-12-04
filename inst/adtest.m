@@ -302,12 +302,12 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
 
       if (ADStat > CVs(1))
         ## P value is smaller than smallest tabulated value
-        warning (strcat (["adtest: out of range min p-value:"], ...
+        warning (strcat ("adtest: out of range min p-value:", ...
                          sprintf (" %g", alphas(1))));
         pVal = alphas(1);
       elseif (ADStat < CVs(end))
         ## P value is larger than largest tabulated value
-        warning (strcat (["adtest: out of range max p-value:"], ...
+        warning (strcat ("adtest: out of range max p-value:", ...
                          sprintf (" %g", alphas(end))));
         pVal = alphas(end);
       elseif (isnan (ADStat))
@@ -630,7 +630,7 @@ endfunction
 ## Make sure alpha is within the lookup table
 function validateAlpha (alpha, alphas)
   if (alpha < alphas(1) || alpha > alphas(end))
-    error (strcat (["adtest: out of range invalid alpha -"], ...
+    error (strcat ("adtest: out of range invalid alpha -", ...
                    sprintf (" lower limit: %g", alphas(1)),...
                    sprintf (" upper limit: %g", alphas(end))));
   endif

@@ -803,8 +803,8 @@ function checkparams (k, sigma, mu)
   endif
   if (! (isscalar (sigma) && isnumeric (sigma) && isreal (sigma)
                           && isfinite (sigma) && sigma > 0))
-    error (strcat (["GeneralizedExtremeValueDistribution: SIGMA must be"], ...
-                   [" a positive real scalar."]))
+    error (strcat ("GeneralizedExtremeValueDistribution: SIGMA must be", ...
+                   " a positive real scalar."))
   endif
   if (! (isscalar (mu) && isnumeric (mu) && isreal (mu)
                           && isfinite (mu)))

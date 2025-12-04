@@ -269,8 +269,8 @@ function obj = fitgmdist (data, k, varargin)
                        " numeric dx1 or dx2 matrix."));
       endif
       if (rows (weights) != nRows)
-        error (strcat (["fitgmdist: number of weights %d must match"], ...
-                       [" number of samples %d."]), rows (weights), nRows);
+        error (strcat ("fitgmdist: number of weights %d must match", ...
+                       " number of samples %d."), rows (weights), nRows);
       endif
       non_zero = (weights(:,1) > 0);
       weights = weights(non_zero,:);

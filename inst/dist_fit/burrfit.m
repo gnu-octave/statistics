@@ -203,8 +203,8 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     ## Handle errors
     if (err == 0)
       if (output.funcCount >= options.MaxFunEvals)
-        warning (strcat (["burrfit: maximum number of function"], ...
-                         [" evaluations are exceeded."]));
+        warning (strcat ("burrfit: maximum number of function", ...
+                         " evaluations are exceeded."));
       elseif (output.iterations >= options.MaxIter)
         warning ("burrfit: maximum number of iterations are exceeded.");
       endif

@@ -166,7 +166,7 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
       # Use the following argument as statenames
       statenames = varargin{i + 1};
     else
-      error (strcat (["hmmgenerate: expected 'symbols' or 'statenames'"], ...
+      error (strcat ("hmmgenerate: expected 'symbols' or 'statenames'", ...
                      sprintf (" but found '%s'.", varargin{i})));
     endif
   endfor

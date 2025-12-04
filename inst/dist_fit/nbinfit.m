@@ -170,8 +170,8 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
   ## Handle errors
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
-      warning (strcat (["nbinfit: maximum number of function"], ...
-                       [" evaluations are exceeded."]));
+      warning (strcat ("nbinfit: maximum number of function", ...
+                       " evaluations are exceeded."));
     elseif (output.iterations >= options.MaxIter)
       warning ("nbinfit: maximum number of iterations are exceeded.");
     endif

@@ -808,8 +808,8 @@ function checkparams (R, P)
   endif
   if (! (isscalar (P) && isnumeric (P) && isreal (P) && isfinite (P)
                       && P > 0 && P <= 1))
-    error (strcat (["NegativeBinomialDistribution: P must be a real"], ...
-                   [" scalar bounded in the range (0, 1]."]))
+    error (strcat ("NegativeBinomialDistribution: P must be a real", ...
+                   " scalar bounded in the range (0, 1]."))
   endif
 endfunction
 

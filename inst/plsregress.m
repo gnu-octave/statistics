@@ -236,8 +236,8 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
         ts = nobs;
       endif
       if (NCOMP > NCOMPmax)
-        warning (strcat (["plsregress: NCOMP exceeds maximum components"], ...
-                         [" for cross validation."]));
+        warning (strcat ("plsregress: NCOMP exceeds maximum components", ...
+                         " for cross validation."));
         NCOMP = NCOMPmax;
       endif
       ## Create function handle with NCOMP extra argument

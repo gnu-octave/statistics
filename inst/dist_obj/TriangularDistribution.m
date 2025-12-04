@@ -567,12 +567,12 @@ function checkparams (A, B, C)
     error ("TriangularDistribution: upper limit C must be a real scalar.")
   endif
   if (! (A < C))
-    error (strcat (["TriangularDistribution: lower limit A must"], ...
-                   [" be less than upper limit C."]))
+    error (strcat ("TriangularDistribution: lower limit A must", ...
+                   " be less than upper limit C."))
   endif
   if (! (A <= B && B <= C))
-    error (strcat (["TriangularDistribution: mode B must be within"], ...
-                   [" lower limit A and upper limit C."]))
+    error (strcat ("TriangularDistribution: mode B must be within", ...
+                   " lower limit A and upper limit C."))
   endif
 endfunction
 

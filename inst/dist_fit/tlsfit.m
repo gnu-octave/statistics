@@ -130,8 +130,8 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
   ## Handle errors
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
-      warning (strcat (["tlsfit: maximum number of function"], ...
-                       [" evaluations are exceeded."]));
+      warning (strcat ("tlsfit: maximum number of function", ...
+                       " evaluations are exceeded."));
     elseif (output.iterations >= options.MaxIter)
       warning ("tlsfit: maximum number of iterations are exceeded.");
     endif

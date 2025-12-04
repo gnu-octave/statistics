@@ -266,8 +266,8 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Check for maximum number of iterations
   if (cur_iter == max_iter)
-    warning (strcat (["evfit: maximum number of function "], ...
-                     [" evaluations (1e+4) has been reached."]));
+    warning (strcat ("evfit: maximum number of function ", ...
+                     " evaluations (1e+4) has been reached."));
   endif
 
   ## Compute MU

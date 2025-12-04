@@ -139,8 +139,8 @@ function x = invginv (p, mu, lambda)
   ## Issue a warning for exceeding iterations or not converging to tolerance
   notconv = (abs(dF./F) > tol.^(2/3));
   if (it > mit || any (notconv(:)))
-    warning (strcat (["invginv: Newton's Method did not converge"], ...
-                     [" or exceeded maximum iterations."]));
+    warning (strcat ("invginv: Newton's Method did not converge", ...
+                     " or exceeded maximum iterations."));
   endif
 
   ## Apply the scale factor
