@@ -328,8 +328,8 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
                       dfN_GG, dfD_GG);
     endif
     if (strcmpi (model, "nested"))
-      printf (strcat (["Note: Rows are a random factor nested within the columns.\n"], ...
-                      ["The Column F statistic uses the Row MS instead of the MSE.\n\n"]));
+      printf (strcat ("Note: Rows are a random factor nested within the columns.\n", ...
+                      "The Column F statistic uses the Row MS instead of the MSE.\n\n"));
     endif
   endif
 endfunction
