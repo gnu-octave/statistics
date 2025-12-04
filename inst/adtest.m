@@ -212,11 +212,11 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
 
   ## Check conflicts with asymptotic option
   if (asymptotic && isCompositeTest)
-    error (strcat (["adtest: asymptotic option is not valid"], ...
-                   [" for the composite distribution test."]));
+    error (strcat ("adtest: asymptotic option is not valid", ...
+                   " for the composite distribution test."));
   elseif (asymptotic && ! isempty (MCTol))
-    error (strcat (["adtest: asymptotic option is not valid"], ...
-                   [" for the Monte Carlo simulation test."]));
+    error (strcat ("adtest: asymptotic option is not valid", ...
+                   " for the Monte Carlo simulation test."));
   endif
 
   ## Remove missing values.

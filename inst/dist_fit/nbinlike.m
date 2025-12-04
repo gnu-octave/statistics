@@ -89,13 +89,13 @@ function [nlogL, avar] = nbinlike (params, x, freq)
   endif
 
   if (params(1) <= 0)
-    error (strcat (["nbinlike: number of successes, PARAMS(1), must be"], ...
-                   [" a real positive value."]));
+    error (strcat ("nbinlike: number of successes, PARAMS(1), must be", ...
+                   " a real positive value."));
   endif
 
   if (params(2) < 0 || params(2) > 1)
-    error (strcat (["nbinlike: probability of success, PARAMS(2), must be"], ...
-                   [" in the range [0,1]."]));
+    error (strcat ("nbinlike: probability of success, PARAMS(2), must be", ...
+                   " in the range [0,1]."));
   endif
 
   if (nargin < 3 || isempty (freq))

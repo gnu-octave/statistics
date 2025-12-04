@@ -81,8 +81,8 @@ function [H, T, perm] = dendrogram (tree, varargin)
 
   [m, d] = size (tree);
   if ((d != 3) || (! isnumeric (tree)) || (! (max (tree(end, 1:2)) == m * 2)))
-    error (strcat (["dendrogram: tree must be a matrix as generated"], ...
-                   [" by the linkage function."]));
+    error (strcat ("dendrogram: tree must be a matrix as generated", ...
+                   " by the linkage function."));
   endif
 
   pair_index = 1;
@@ -112,8 +112,8 @@ function [H, T, perm] = dendrogram (tree, varargin)
               length (varargin{pair_index + 1}) == n )
             vReorder = varargin{pair_index + 1};
           else
-            error (strcat (["dendrogram: 'reorder' must be a numeric"], ...
-                           [" vector of size n, the number of leaves."]));
+            error (strcat ("dendrogram: 'reorder' must be a numeric", ...
+                           " vector of size n, the number of leaves."));
           endif
         case "checkcrossing"
           if (ischar (varargin{pair_index + 1}))
@@ -127,8 +127,8 @@ function [H, T, perm] = dendrogram (tree, varargin)
                        varargin{pair_index + 1});
             endswitch
           else
-            error (strcat (["dendrogram: 'CheckCrossing' must be"], ...
-                           [" either 'true' or 'false'."]));
+            error (strcat ("dendrogram: 'CheckCrossing' must be", ...
+                           " either 'true' or 'false'."));
           endif
         case "colorthreshold"
           warning ("dendrogram: property '%s' not implemented.",...
@@ -146,8 +146,8 @@ function [H, T, perm] = dendrogram (tree, varargin)
                   length (varargin{pair_index + 1}) == n)
             csLabels = varargin{pair_index + 1};
           else
-            error (strcat (["dendrogram: labels must be a char or"], ...
-                           [" string or cellstr array of size n."]));
+            error (strcat ("dendrogram: labels must be a char or", ...
+                           " string or cellstr array of size n."));
           endif
         otherwise
           error ("dendrogram: unknown property '%s'.", varargin{pair_index});
@@ -211,8 +211,8 @@ function [H, T, perm] = dendrogram (tree, varargin)
         idcs = find (checkT == i);
         if (length (idcs) > 1)
           if (max (idcs) - min (idcs) >= length (idcs))
-            error (strcat (["dendrogram: invalid reordering that"], ...
-                           [" redefines the 'P' groups of leaves"]));
+            error (strcat ("dendrogram: invalid reordering that", ...
+                           " redefines the 'P' groups of leaves"));
           endif
         endif
       endfor

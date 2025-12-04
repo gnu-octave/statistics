@@ -220,8 +220,8 @@ function obj = fitgmdist (data, k, varargin)
         Sigma(:,:,i) = cov (data(idx,:)) + Regularizer * eye (nCols);
       endfor
       if (validIndices < nRows)
-        error (strcat (["fitgmdist: Start is numeric, but is not"], ...
-                       [" integers between 1 and k."]));
+        error (strcat ("fitgmdist: Start is numeric, but is not", ...
+                       " integers between 1 and k."));
       endif
     endif
     start = [];                # so that variance isn't recalculated later
@@ -265,8 +265,8 @@ function obj = fitgmdist (data, k, varargin)
   try
     if (! isempty (weights))
       if (columns (weights) > 2 || any (weights(:) < 0))
-        error (strcat (["fitgmdist: weights must be a nonnegative"], ...
-                       [" numeric dx1 or dx2 matrix."]));
+        error (strcat ("fitgmdist: weights must be a nonnegative", ...
+                       " numeric dx1 or dx2 matrix."));
       endif
       if (rows (weights) != nRows)
         error (strcat (["fitgmdist: number of weights %d must match"], ...
@@ -300,8 +300,8 @@ function obj = fitgmdist (data, k, varargin)
                        [" rows (%d)."]), k, nRows);
       endif
     elseif (! ismatrix (weights) || ! isnumeric (weights))
-      error (strcat (["fitgmdist: weights must be a nonnegative numeric"], ...
-                     [" dx1 or dx2 matrix."]));
+      error (strcat ("fitgmdist: weights must be a nonnegative numeric", ...
+                     " dx1 or dx2 matrix."));
     else
       rethrow (ME)
     endif
@@ -400,8 +400,8 @@ function obj = fitgmdist (data, k, varargin)
             p_x_l (:, i) = mvnpdf (data, mu(i, :), sig);
           catch ME
             if (strfind (ME.message, "positive definite"))
-              error (strcat (["fitgmdist: Covariance is not positive"], ...
-                             [" definite.  Increase RegularizationValue."]));
+              error (strcat ("fitgmdist: Covariance is not positive", ...
+                             " definite.  Increase RegularizationValue."));
             else
               rethrow (ME)
             endif

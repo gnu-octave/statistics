@@ -299,8 +299,8 @@ classdef CompactClassificationNeuralNetwork
       if (isempty (Mdl))
         return;
       elseif (! strcmpi (class (Mdl), "ClassificationNeuralNetwork"))
-        error (strcat (["CompactClassificationNeuralNetwork: invalid"], ...
-                       [" classification object."]));
+        error (strcat ("CompactClassificationNeuralNetwork: invalid", ...
+                       " classification object."));
       endif
 
       ## Save properties to compact model
@@ -476,8 +476,8 @@ classdef CompactClassificationNeuralNetwork
 
       ## Check for sufficient input arguments
       if (nargin < 2)
-        error (strcat (["CompactClassificationNeuralNetwork.predict:"], ...
-                       [" too few input arguments."]));
+        error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
+                       " too few input arguments."));
       endif
 
       ## Check for valid XC

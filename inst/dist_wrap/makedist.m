@@ -116,8 +116,8 @@ function pd = makedist (varargin)
           case "gamma"
             gamma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'BirnbaumSaunders' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'BirnbaumSaunders' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -149,8 +149,8 @@ function pd = makedist (varargin)
           case "mu"
             mu = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Exponential' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Exponential' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -166,8 +166,8 @@ function pd = makedist (varargin)
           case "sigma"
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'ExtremeValue' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'ExtremeValue' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -202,8 +202,8 @@ function pd = makedist (varargin)
           case "mu"
             mu = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'GeneralizedExtremeValue' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'GeneralizedExtremeValue' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -222,8 +222,8 @@ function pd = makedist (varargin)
           case "theta"
             theta = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'GeneralizedPareto' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'GeneralizedPareto' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -239,8 +239,8 @@ function pd = makedist (varargin)
           case "sigma"
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'HalfNormal' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'HalfNormal' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -256,8 +256,8 @@ function pd = makedist (varargin)
           case "lambda"
             lambda = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'InverseGaussian' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'InverseGaussian' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -273,8 +273,8 @@ function pd = makedist (varargin)
           case "sigma"
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Logistic' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Logistic' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -290,8 +290,8 @@ function pd = makedist (varargin)
           case "sigma"
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Loglogistic' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Loglogistic' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -307,8 +307,8 @@ function pd = makedist (varargin)
           case "sigma"
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Lognormal' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Lognormal' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -324,8 +324,8 @@ function pd = makedist (varargin)
           case "upper"
             upper = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Loguniform' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Loguniform' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -338,8 +338,8 @@ function pd = makedist (varargin)
           case "probabilities"
             probs = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Multinomial' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Multinomial' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -355,8 +355,8 @@ function pd = makedist (varargin)
           case "omega"
             omega = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Nakagami' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Nakagami' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -372,8 +372,8 @@ function pd = makedist (varargin)
           case {"ps", "p"}
             P = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'NegativeBinomial' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'NegativeBinomial' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -405,8 +405,8 @@ function pd = makedist (varargin)
           case "fx"
             Fx = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'PiecewiseLinear' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'PiecewiseLinear' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -432,8 +432,8 @@ function pd = makedist (varargin)
           case {"sigma", "b"}
             sigma = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Rayleigh' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Rayleigh' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -491,8 +491,8 @@ function pd = makedist (varargin)
           case {"df", "nu"}
             df = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'tLocationScale' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'tLocationScale' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile
@@ -511,8 +511,8 @@ function pd = makedist (varargin)
           case "c"
             C = varargin{2};
           otherwise
-            error (strcat (["makedist: unknown parameter for"], ...
-                           [" 'Triangular' distribution."]));
+            error (strcat ("makedist: unknown parameter for", ...
+                           " 'Triangular' distribution."));
         endswitch
         varargin([1:2]) = [];
       endwhile

@@ -85,8 +85,8 @@ function T = clusterdata (X, varargin)
   endif
 
   if (isempty (clustering_method))
-    error (strcat (["clusterdata: you must specify either 'MaxClust'"], ...
-                   [" or 'Cutoff' when using name-value arguments."]));
+    error (strcat ("clusterdata: you must specify either 'MaxClust'", ...
+                   " or 'Cutoff' when using name-value arguments."));
   endif
 
   ## main body

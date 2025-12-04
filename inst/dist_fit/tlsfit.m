@@ -108,8 +108,8 @@ function [paramhat, paramci] = tlsfit (x, alpha, censor, freq, options)
   else
     if (! isstruct (options) || ! isfield (options, "Display") || ...
                                 ! isfield (options, "TolX"))
-      error (strcat (["tlsfit: 'options' 5th argument must be a structure"], ...
-                     [" with 'Display' and 'TolX' fields present."]));
+      error (strcat ("tlsfit: 'options' 5th argument must be a structure", ...
+                     " with 'Display' and 'TolX' fields present."));
     endif
   endif
 

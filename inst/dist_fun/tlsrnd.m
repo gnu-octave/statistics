@@ -79,8 +79,8 @@ function r = tlsrnd (mu, sigma, nu, varargin)
                                 && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
-      error (strcat (["tlsrnd: SZ must be a scalar or a row vector"], ...
-                     [" of non-negative integers."]));
+      error (strcat ("tlsrnd: SZ must be a scalar or a row vector", ...
+                     " of non-negative integers."));
     endif
   elseif (nargin > 4)
     posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);

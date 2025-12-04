@@ -71,8 +71,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
   if (nargin < 1 || nargin > 3)
     print_usage;
   elseif (! ismatrix (data) || length (size (data)) > 2)
-    error (strcat (["normalise_distribution: first argument"], ...
-                   [" must be a vector or matrix."]));
+    error (strcat ("normalise_distribution: first argument", ...
+                   " must be a vector or matrix."));
   endif
 
   if (nargin >= 2)
@@ -186,8 +186,8 @@ function normalised = normalise_distribution (data, distribution, dimension)
         normalised (:, k) = norminv (distribution{k}(data)(:, k));
       endfor
     else
-      error (strcat (["normalise_distribution: number of distributions"], ...
-                     [" does not match data size!"]));
+      error (strcat ("normalise_distribution: number of distributions", ...
+                     " does not match data size!"));
     endif
   endif
 

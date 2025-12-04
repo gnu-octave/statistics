@@ -116,12 +116,12 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
     error ("chi2test: optional arguments must be in pairs.");
   endif
   if (dim == 3 && nargin > 1 && ! isnumeric (varargin{2}))
-    error (strcat (["chi2test: value must be numeric in optional argument"], ...
-                   [" name/value pair, for 3-way tables."]));
+    error (strcat ("chi2test: value must be numeric in optional argument", ...
+                   " name/value pair, for 3-way tables."));
   endif
   if (dim == 3 && nargin > 1 && numel (varargin{2}) > 1)
-    error (strcat (["chi2test: value must be empty or scalar in optional"], ...
-                   [" argument name/value pair, for 3-way tables."]));
+    error (strcat ("chi2test: value must be empty or scalar in optional", ...
+                   " argument name/value pair, for 3-way tables."));
   endif
   if (dim >= 4 && nargin > 1)
     error ("chi2test: optional arguments are not supported for k>3.");

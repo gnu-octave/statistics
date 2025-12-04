@@ -172,8 +172,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
       # Use the following argument as an initial count for transitions
       transprobest = varargin{i + 1};
       if (! ismatrix (transprobest))
-        error (strcat (["hmmestimate: pseudotransitions must be a"], ...
-                       [" non-empty numeric matrix"]));
+        error (strcat ("hmmestimate: pseudotransitions must be a", ...
+                       " non-empty numeric matrix"));
       endif
       if (rows (transprobest) != columns (transprobest))
         error ("hmmestimate: pseudotransitions must be a square matrix");
@@ -182,8 +182,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
       # Use the following argument as an initial count for outputs
       outprobest = varargin{i + 1};
       if (! ismatrix (outprobest))
-        error (strcat (["hmmestimate: pseudoemissions must be a non-empty"], ...
-                       [" numeric matrix"]));
+        error (strcat ("hmmestimate: pseudoemissions must be a non-empty", ...
+                       " numeric matrix"));
       endif
     else
       error (strcat (["hmmestimate: expected 'symbols', 'statenames',"], ...
@@ -286,8 +286,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     # Number of outputs is specified by pseudoemissions
     noutput = columns (outprobest);
     if (rows (outprobest) != nstate)
-      error (strcat (["hmmestimate: pseudoemissions must have the same"], ...
-                     [" number of rows as pseudotransitions"]));
+      error (strcat ("hmmestimate: pseudoemissions must have the same", ...
+                     " number of rows as pseudotransitions"));
     endif
   endif
 

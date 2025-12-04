@@ -181,8 +181,8 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 
   ## Check MCREPS = 1 when "resubstitution" is set for cross validation
   if (! CV && mcreps != 1)
-    error (strcat (["plsregress: 'mcreps' must be 1 when 'resubstitution'"], ...
-                   [" is specified for cross validation."]));
+    error (strcat ("plsregress: 'mcreps' must be 1 when 'resubstitution'", ...
+                   " is specified for cross validation."));
   endif
 
 

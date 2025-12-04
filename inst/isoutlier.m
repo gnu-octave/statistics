@@ -232,8 +232,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
-            error (strcat (["isoutlier: WINDOW must be a positive scalar"], ...
-                           [" or a two-element vector of positive values"]));
+            error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
+                           " or a two-element vector of positive values"));
           endif
           varargin([1:2]) = [];
 
@@ -242,8 +242,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
-            error (strcat (["isoutlier: WINDOW must be a positive scalar"], ...
-                           [" or a two-element vector of positive values"]));
+            error (strcat ("isoutlier: WINDOW must be a positive scalar", ...
+                           " or a two-element vector of positive values"));
           endif
           varargin([1:2]) = [];
 
@@ -287,8 +287,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           MaxNumOutliers = varargin{2};
           if (! isscalar (MaxNumOutliers) || MaxNumOutliers <= 0 ||
               ! (fix (MaxNumOutliers) == MaxNumOutliers))
-            error (strcat (["isoutlier: maximum outlier count must be a"], ...
-                           [" positive integer scalar."]));
+            error (strcat ("isoutlier: maximum outlier count must be a", ...
+                           " positive integer scalar."));
           endif
           varargin([1:2]) = [];
 
@@ -325,8 +325,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
 
   ## Check for valid value of ThresholdFactor for 'grubbs' and 'geds' methods
   if (any (strcmpi (method, {"grubbs", "gesd"})) && ThresholdFactor > 1)
-    error (strcat (["isoutlier: threshold factor must must be in [0 1]"], ...
-                   [" range for 'grubbs' and 'gesd' methods."]));
+    error (strcat ("isoutlier: threshold factor must must be in [0 1]", ...
+                   " range for 'grubbs' and 'gesd' methods."));
   endif
 
   ## Switch methods
@@ -524,8 +524,8 @@ function [L, U, C] = movmedian_method (x, dim, ThresholdFactor, c, window, sp);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
-      error (strcat (["isoutlier: sample points must have the same size"], ...
-                     [" as the operating dimension."]));
+      error (strcat ("isoutlier: sample points must have the same size", ...
+                     " as the operating dimension."));
     endif
     ## Move the desired dim to be the 1st dimension (rows)
     nd    = length (szx);                 # number of dimensions
@@ -587,8 +587,8 @@ function [L, U, M] = movmean_method (x, dim, ThresholdFactor, window, sp);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
-      error (strcat (["isoutlier: sample points must have the same size"], ...
-                     [" as the operating dimension."]));
+      error (strcat ("isoutlier: sample points must have the same size", ...
+                     " as the operating dimension."));
     endif
     ## Move the desired dim to be the 1st dimension (rows)
     nd    = length (szx);                 # number of dimensions

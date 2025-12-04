@@ -193,8 +193,8 @@ function m = harmmean (x, varargin)
       else
         vecdim = sort (vecdim);
         if (! all (diff (vecdim)))
-           error (strcat (["harmmean: VECDIM must contain non-repeating"], ...
-                          [" positive integers."]));
+           error (strcat ("harmmean: VECDIM must contain non-repeating", ...
+                          " positive integers."));
         endif
         ## Ignore exceeding dimensions in VECDIM
         vecdim(find (vecdim > ndims (x))) = [];

@@ -118,8 +118,8 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
     [n_x, p] = size (x);
     [n_y, q] = size (y);
     if (p != q)
-      error (strcat (["hotelling_t2test2: X and Y must have the same"], ...
-                     [" number of columns."]));
+      error (strcat ("hotelling_t2test2: X and Y must have the same", ...
+                     " number of columns."));
     endif
   endif
 

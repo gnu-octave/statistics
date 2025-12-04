@@ -280,8 +280,8 @@ classdef CompactClassificationSVM
       if (isempty (Mdl))
         return;
       elseif (! strcmpi (class (Mdl), "ClassificationSVM"))
-        error (strcat (["CompactClassificationSVM: invalid"], ...
-                       [" classification object."]));
+        error (strcat ("CompactClassificationSVM: invalid", ...
+                       " classification object."));
       endif
 
       ## Save properties to compact model
@@ -393,8 +393,8 @@ classdef CompactClassificationSVM
         if (! strcmp (this.ScoreTransform, "none"))
           f = this.ScoreTransform;
           if (! strcmp (class (f), "function_handle"))
-            error (strcat (["CompactClassificationSVM.predict: 'Score"], ...
-                           ["Transform' must be a 'function_handle' object."]));
+            error (strcat ("CompactClassificationSVM.predict: 'Score", ...
+                           "Transform' must be a 'function_handle' object."));
           endif
           scores = f (scores);
         endif
@@ -451,8 +451,8 @@ classdef CompactClassificationSVM
       if (isempty (Y))
         error ("CompactClassificationSVM.margin: Y is empty.");
       elseif (rows (X) != rows (Y))
-        error (strcat (["CompactClassificationSVM.margin: Y must have"], ...
-                       [" the same number of rows as X."]));
+        error (strcat ("CompactClassificationSVM.margin: Y must have", ...
+                       " the same number of rows as X."));
       endif
 
       [~, ~, dec_values_L] = svmpredict (Y, X, this.Model, '-q');
@@ -530,8 +530,8 @@ classdef CompactClassificationSVM
       endif
 
       if (mod (nargin, 2) == 0)
-        error (strcat (["CompactClassificationSVM.loss: Name-Value"], ...
-                       [" arguments must be in pairs."]));
+        error (strcat ("CompactClassificationSVM.loss: Name-Value", ...
+                       " arguments must be in pairs."));
       endif
 
       ## Check for valid X
@@ -547,8 +547,8 @@ classdef CompactClassificationSVM
       if (isempty (Y))
         error ("CompactClassificationSVM.loss: Y is empty.");
       elseif (rows (X)!= rows (Y))
-        error (strcat (["CompactClassificationSVM.loss: Y must have"], ...
-                       [" the same number of rows as X."]));
+        error (strcat ("CompactClassificationSVM.loss: Y must have", ...
+                       " the same number of rows as X."));
       endif
 
       ## Set default values before parsing optional parameters
@@ -562,23 +562,23 @@ classdef CompactClassificationSVM
           case "lossfun"
             LossFun = varargin{2};
             if (! (ischar (LossFun)))
-              error (strcat (["CompactClassificationSVM.loss: 'LossFun'"], ...
-                             [" must be a character vector."]));
+              error (strcat ("CompactClassificationSVM.loss: 'LossFun'", ...
+                             " must be a character vector."));
             endif
             LossFun = tolower (LossFun);
             if (! any (strcmpi (LossFun, {"binodeviance", "classiferror", ...
                                           "exponential", "hinge", "logit", ...
                                           "quadratic"})))
-              error (strcat (["CompactClassificationSVM.loss:"], ...
-                             [" unsupported Loss function."]));
+              error (strcat ("CompactClassificationSVM.loss:", ...
+                             " unsupported Loss function."));
             endif
 
           case "weights"
             Weights = varargin{2};
             ## Validate if weights is a numeric vector
             if(! (isnumeric (Weights) && isvector (Weights)))
-              error (strcat (["CompactClassificationSVM.loss: 'Weights'"], ...
-                             [" must be a numeric vector."]));
+              error (strcat ("CompactClassificationSVM.loss: 'Weights'", ...
+                             " must be a numeric vector."));
             endif
 
             ## Check if the size of weights matches the number of rows in X
@@ -589,8 +589,8 @@ classdef CompactClassificationSVM
             endif
 
           otherwise
-            error (strcat (["CompactClassificationSVM.loss: invalid"], ...
-                           [" parameter name in optional pair arguments."]));
+            error (strcat ("CompactClassificationSVM.loss: invalid", ...
+                           " parameter name in optional pair arguments."));
           endswitch
         varargin (1:2) = [];
       endwhile

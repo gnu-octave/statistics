@@ -85,8 +85,8 @@ function y = mvtpdf (x, rho, df)
     error ("mvtpdf: x must have the same number of columns as rho.");
   endif
   if (! isscalar (df) && (! isvector (df) || numel (df) != n))
-    error (strcat (["mvtpdf: DF must be a scalar or a vector with the"], ...
-                   [" same number of rows as X."]));
+    error (strcat ("mvtpdf: DF must be a scalar or a vector with the", ...
+                   " same number of rows as X."));
   endif
   if (d < 1 || size (rho, 2) != d || ! issymmetric (rho))
     error ("mvtpdf: SIGMA must be nonempty and symmetric.");

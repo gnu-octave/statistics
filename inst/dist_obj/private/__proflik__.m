@@ -29,8 +29,8 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
   ## Check for non-fixed pnum
   npvec = find (pd.ParameterIsFixed == false);
   if (! (isnumeric (pnum) && isscalar (pnum) && ismember (pnum, npvec)))
-    error (strcat (["proflik: PNUM must be a scalar number"], ...
-                   [" indexing a non-fixed parameter."]));
+    error (strcat ("proflik: PNUM must be a scalar number", ...
+                   " indexing a non-fixed parameter."));
   endif
 
   ## Add defaults and parse optional arguments

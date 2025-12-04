@@ -64,13 +64,13 @@ function [nlogL, acov] = binolike (params, x, freq)
   endif
 
   if (params(1) < 0 || params(1) != round (params(1)) || isinf (params(1)))
-    error (strcat (["binolike: number of trials, PARAMS(1), must be a"], ...
-                   [" finite non-negative integer."]));
+    error (strcat ("binolike: number of trials, PARAMS(1), must be a", ...
+                   " finite non-negative integer."));
   endif
 
   if (params(2) < 0 || params(2) > 1)
-    error (strcat (["binolike: probability of success, PARAMS(2), must be"], ...
-                   [" in the range [0,1]."]));
+    error (strcat ("binolike: probability of success, PARAMS(2), must be", ...
+                   " in the range [0,1]."));
   endif
 
   ## Parse FREQ argument or add default
@@ -100,8 +100,8 @@ function [nlogL, acov] = binolike (params, x, freq)
   endif
 
   if (any (x > params(1)))
-    error (strcat (["binolike: number of successes, X, must be at least"], ...
-                   [" as large as the number of trials, N."]));
+    error (strcat ("binolike: number of successes, X, must be at least", ...
+                   " as large as the number of trials, N."));
   endif
 
   ## Compute negative log-likelihood and asymptotic covariance

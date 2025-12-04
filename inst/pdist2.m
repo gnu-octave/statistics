@@ -174,8 +174,8 @@ function [D, I] = pdist2 (X, Y, varargin)
     error ("pdist2: you can only use either Smallest or Largest.");
   endif
   if (isempty (SortOrder) && nargout > 1)
-    error (strcat (["pdist2: Smallest or Largest must be specified"], ...
-                   [" to compute second output."]));
+    error (strcat ("pdist2: Smallest or Largest must be specified", ...
+                   " to compute second output."));
   endif
 
   ## Calculate selected distance
@@ -200,8 +200,8 @@ function [D, I] = pdist2 (X, Y, varargin)
                            [" to the number of columns in X."]));
           endif
           if (any (DistParameter < 0))
-            error (strcat (["pdist2: DistParameter for standardized"], ...
-                           [" euclidean must be a nonnegative vector."]));
+            error (strcat ("pdist2: DistParameter for standardized", ...
+                           " euclidean must be a nonnegative vector."));
           endif
         endif
         DistParameter(DistParameter == 0) = 1;  # fix constant variable
@@ -243,8 +243,8 @@ function [D, I] = pdist2 (X, Y, varargin)
         else
           if (! (isnumeric (DistParameter) && isscalar (DistParameter)
                                            && DistParameter > 0))
-            error (strcat (["pdist2: DistParameter for minkowski distance"],...
-                           [" must be a positive scalar."]));
+            error (strcat ("pdist2: DistParameter for minkowski distance", ...
+                           " must be a positive scalar."));
           endif
         endif
         D = sum (abs (X(ix(:),:) - Y(iy(:),:)) .^ DistParameter, 2) .^ ...
