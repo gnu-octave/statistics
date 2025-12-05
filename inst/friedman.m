@@ -97,28 +97,28 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   endif
   ## Check for displayopt
   if (nargin < 3)
-    displayopt = "off";
-  elseif ! (strcmp (displayopt, "off") || strcmp (displayopt, "on"))
+    displayopt = 'off';
+  elseif ! (strcmp (displayopt, 'off') || strcmp (displayopt, 'on'))
     error ("friedman: displayopt must be either 'on' or 'off'.");
   endif
-  plotdata = ~(strcmp (displayopt, "off"));
+  plotdata = ! (strcmp (displayopt, 'off'));
 
   ## Prepare a matrix of ranks. Replicates are ranked together.
   m = x;
   sum_R = 0;
   for j = 1:r
     jrows = reps * (j - 1) + (1:reps);
-    v = x(jrows, :);
+    v = x(jrows,:);
     [R, tieadj] = tiedrank (v(:));
-    m(jrows, :) = reshape (R, reps, c);
+    m(jrows,:) = reshape (R, reps, c);
     sum_R = sum_R + 2 * tieadj;
   endfor
 
   ## Perform 2-way anova silently
-  [p0, anova_table] = anova2 (m, reps, "off");
+  [p0, anova_table] = anova2 (m, reps, 'off');
 
   ## Compute Friedman test statistic and p-value
-  chi_r = anova_table{2, 2};
+  chi_r = anova_table{2,2};
   sigmasq = c * reps * (reps * c + 1) / 12;
   if (sum_R > 0)
     sigmasq = sigmasq - sum_R / (12 * r * (reps * c - 1));
@@ -132,20 +132,20 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   if (reps > 1)
     ## When there are replicates, include interaction row
     source_list = {"Columns"; "Interaction"; "Error"; "Total"};
-    ss_list = [anova_table{2, 2}; anova_table{3, 2}; ...
-               anova_table{end - 1, 2}; anova_table{end, 2}];
-    df_list = [anova_table{2, 3}; anova_table{3, 3}; ...
-               anova_table{end - 1, 3}; anova_table{end, 3}];
-    ms_list = [anova_table{2, 4}; anova_table{3, 4}; ...
-               anova_table{end - 1, 4}; 0];
-    chi_sq_list = [chi_r; anova_table{3, 5}; 0; 0];
-    prob_list = [p; anova_table{3, 6}; 0; 0];
+    ss_list = [anova_table{2,2}; anova_table{3,2}; ...
+               anova_table{end - 1,2}; anova_table{end,2}];
+    df_list = [anova_table{2,3}; anova_table{3,3}; ...
+               anova_table{end - 1,3}; anova_table{end,3}];
+    ms_list = [anova_table{2,4}; anova_table{3,4}; ...
+               anova_table{end - 1,4}; 0];
+    chi_sq_list = [chi_r; anova_table{3,5}; 0; 0];
+    prob_list = [p; anova_table{3,6}; 0; 0];
   else
     ## When there are no replicates (reps = 1), exclude interaction row
     source_list = {"Columns"; "Error"; "Total"};
-    ss_list = [anova_table{2, 2}; anova_table{end - 1, 2}; anova_table{end, 2}];
-    df_list = [anova_table{2, 3}; anova_table{end - 1, 3}; anova_table{end, 3}];
-    ms_list = [anova_table{2, 4}; anova_table{end - 1, 4}; 0];
+    ss_list = [anova_table{2,2}; anova_table{end - 1,2}; anova_table{end,2}];
+    df_list = [anova_table{2,3}; anova_table{end - 1,3}; anova_table{end,3}];
+    ms_list = [anova_table{2,4}; anova_table{end - 1,4}; 0];
     chi_sq_list = [chi_r; 0; 0];
     prob_list = [p; 0; 0];
   endif
@@ -157,7 +157,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
-    stats.source = "friedman";
+    stats.source = 'friedman';
     stats.n = r;
     stats.meanranks = mean (m);
     stats.sigma = sqrt (sigmasq);
@@ -196,7 +196,7 @@ endfunction
 %! [p, atab, stats] = friedman (popcorn, 3);
 %! assert (atab.SS(end), 116, 0);
 %! assert (atab.df(end), 17, 0);
-%! assert (stats.source, "friedman");
+%! assert (stats.source, 'friedman');
 %! assert (stats.n, 2);
 %! assert (stats.meanranks, [8, 4.75, 2.25], 0);
 %! assert (stats.sigma, 2.692582403567252, 1e-14);
@@ -224,7 +224,7 @@ endfunction
 
 %!error<friedman: displayopt must be either 'on' or 'off'.> ...
 %! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...
-%!            7.0, 5.5, 5.0; 7.0, 5.0, 4.5], 3, "invalid_displayopt");
+%!            7.0, 5.5, 5.0; 7.0, 5.0, 4.5], 3, 'invalid_displayopt');
 %!error<friedman: NaN values in input are not allowed.> ...
 %! friedman ([1, 2; NaN, 4]);
 %!error<friedman: repetitions and observations do not match.> ...
