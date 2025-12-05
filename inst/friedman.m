@@ -72,7 +72,7 @@
 ## @seealso{anova2, kruskalwallis, multcompare}
 ## @end deftypefn
 
-function [p, table, stats] = friedman (x, reps, displayopt)
+function [p, table_out, stats] = friedman (x, reps, displayopt)
 
   ## Check for valid number of input arguments
   narginchk (1, 3);
@@ -151,7 +151,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   endif
 
   ## Create output table using datatypes package
-  table = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
+  table_out = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
                  prob_list, "VariableNames", {"Source", "SS", "df", "MS", ...
                  "Chi_sq", "Prob_Chi_sq"});
 
@@ -165,7 +165,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    disp (table);
+    disp (table_out);
   endif
 endfunction
 
