@@ -134,12 +134,6 @@
 
 function [T, STATS] = fitlm (X, y, varargin)
 
-    ## Check if datatypes package is loaded for table support
-    if (! exist ("table", "file"))
-      error ("fitlm: the datatypes package is required for table output. ", ...
-             "Load it with 'pkg load datatypes'");
-    endif
-
     ## Check input and output arguments
     if (nargin < 2)
       error (strcat ("fitlm usage: ""fitlm (X, y, varargin)""; ", ...
