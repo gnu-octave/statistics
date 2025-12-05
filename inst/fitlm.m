@@ -453,8 +453,8 @@ endfunction
 ## Table input for predictors and response
 %!test
 %! pkg load datatypes
-%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], 'VariableNames', {'A', 'B'});
-%! ytab = table ([100; 200; 300; 400; 500], 'VariableNames', {'Y'});
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], 'VariableNames', {'A', 'B'});
+%! ytab = table ([102; 198; 305; 398; 512], 'VariableNames', {'Y'});
 %! [TAB, STATS] = fitlm (Xtab, ytab.Y, 'linear', 'display', 'off');
 %! assert (istable (TAB));
 %! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
@@ -462,7 +462,7 @@ endfunction
 
 %!test
 %! pkg load datatypes
-%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], [100; 200; 300; 400; 500], 'VariableNames', {'A', 'B', 'Y'});
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], [102; 198; 305; 398; 512], 'VariableNames', {'A', 'B', 'Y'});
 %! [TAB, STATS] = fitlm (Xtab, 'Y', 'linear', 'display', 'off');
 %! assert (istable (TAB));
 %! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
@@ -470,8 +470,8 @@ endfunction
 
 %!test
 %! pkg load datatypes
-%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], 'VariableNames', {'A', 'B'});
-%! y = [100; 200; 300; 400; 500];
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], 'VariableNames', {'A', 'B'});
+%! y = [102; 198; 305; 398; 512];
 %! [TAB, STATS] = fitlm (Xtab, y, 'linear', 'display', 'off');
 %! assert (istable (TAB));
 %! assert (isfield (STATS, 'coeffs'));
@@ -479,6 +479,6 @@ endfunction
 
 %!test
 %! X = [1; 2; 3; 4; 5];
-%! y = [100; 200; 300; 400; 500];
+%! y = [102; 198; 305; 398; 512];
 %! [TAB, STATS] = fitlm (X, y, 'linear', 'display', 'off');
 %! assert (istable (TAB));
