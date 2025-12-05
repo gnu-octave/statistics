@@ -176,14 +176,14 @@ endfunction
 
 %!demo
 %! load popcorn;
-%! [p, atab] = friedman (popcorn, 3, "off");
+%! [p, atab] = friedman (popcorn, 3);
 %! disp (p);
 
 ## testing against popcorn data and results from Matlab
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab] = friedman (popcorn, 3, "off");
+%! [p, atab] = friedman (popcorn, 3);
 %! assert (p, 0.001028853354594794, 1e-14);
 %! assert (atab.SS(1), 99.75, 1e-14);
 %! assert (atab.df(1), 2, 0);
@@ -193,7 +193,7 @@ endfunction
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [p, atab, stats] = friedman (popcorn, 3, "off");
+%! [p, atab, stats] = friedman (popcorn, 3);
 %! assert (atab.SS(end), 116, 0);
 %! assert (atab.df(end), 17, 0);
 %! assert (stats.source, "friedman");
