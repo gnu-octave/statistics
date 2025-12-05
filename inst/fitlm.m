@@ -144,19 +144,44 @@ function [T, STATS] = fitlm (X, y, varargin)
       error ("fitlm: invalid number of output arguments requested");
     endif
 
-    ## Evaluate input data
-    [n, N] = size (X);
-    msg = strcat ("fitlm: do not include the intercept column", ...
-                  " in X - it will be added automatically");
-    if (iscell (X))
-      if (~ iscell (X{:,1}))
-        if (all (X{:,1} == 1))
-          error (msg)
+    ## Accept table input for X (predictors) and optionally y (response)
+    if (istable (X))
+      ## If X is a table, extract predictor matrix and variable names
+      predictorVars = X.Properties.VariableNames;
+      Xmat = table2array (X);
+      [n, N] = size (Xmat);
+      msg = strcat ("fitlm: do not include the intercept column", ...
+                    " in X - it will be added automatically");
+      if (all (Xmat(:,1) == 1))
+        error (msg)
+      endif
+      ## If y is a string or char, treat as column name in X
+      if (ischar (y) && isstring (y))
+        yname = char (y);
+        if (any (strcmp (predictorVars, yname)))
+          y = X.(yname);
+          Xmat(:, strcmp (predictorVars, yname)) = [];
+          predictorVars(strcmp (predictorVars, yname)) = [];
+          N = N - 1;
+        else
+          error ("fitlm: specified response variable not found in table X");
         endif
       endif
+      X = Xmat;
     else
-      if (all (X(:,1) == 1))
-        error (msg)
+      [n, N] = size (X);
+      msg = strcat ("fitlm: do not include the intercept column", ...
+                    " in X - it will be added automatically");
+      if (iscell (X))
+        if (~ iscell (X{:,1}))
+          if (all (X{:,1} == 1))
+            error (msg)
+          endif
+        endif
+      else
+        if (all (X(:,1) == 1))
+          error (msg)
+        endif
       endif
     endif
 
@@ -423,3 +448,36 @@ endfunction
 %! assert (TAB{2, "Prob>|t|"}, 9.87424814144e-08, 1e-09);
 %! assert (TAB{3, "Prob>|t|"}, 0.0807803098213114, 1e-09);
 %! assert (TAB{4, "Prob>|t|"}, 0.952359384151778, 1e-09);
+
+## Table input for predictors and response
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], 'VariableNames', {'A', 'B'});
+%! ytab = table ([100; 200; 300; 400; 500], 'VariableNames', {'Y'});
+%! [TAB, STATS] = fitlm (Xtab, ytab.Y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
+%! assert (any (strcmp (TAB.Properties.RowNames, '(Intercept)')));
+
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], [100; 200; 300; 400; 500], 'VariableNames', {'A', 'B', 'Y'});
+%! [TAB, STATS] = fitlm (Xtab, 'Y', 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
+%! assert (any (strcmp (TAB.Properties.RowNames, '(Intercept)')));
+
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 20; 30; 40; 50], 'VariableNames', {'A', 'B'});
+%! y = [100; 200; 300; 400; 500];
+%! [TAB, STATS] = fitlm (Xtab, y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (isfield (STATS, 'coeffs'));
+%! assert (size (TAB,2) == 6);
+
+%!test
+%! X = [1; 2; 3; 4; 5];
+%! y = [100; 200; 300; 400; 500];
+%! [TAB, STATS] = fitlm (X, y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
