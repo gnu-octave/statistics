@@ -1,4 +1,5 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
