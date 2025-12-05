@@ -36,7 +36,7 @@
 ## If not provided, no replicates are assumed.
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the Friedman's ANOVA
-## table, when it is 'on' (default) and suppressing the display when it is 'off'.
+## table, when it is 'on' and suppressing the display when it is 'off' (default).
 ## @end itemize
 ##
 ## @qcode{friedman} returns up to three output arguments:
@@ -45,15 +45,16 @@
 ## @item
 ## @var{p} is the p-value of the null hypothesis that all group means are equal.
 ## @item
-## @var{atab} is a cell array containing the results in a Friedman's ANOVA table.
+## @var{atab} is a table array containing the results of the Friedman's test in
+## ANOVA table format.  The table includes columns for Source, SS, df, MS,
+## Chi-sq, and Prob>Chi-sq with rows for Columns, [Interaction], Error, and Total.
 ## @item
 ## @var{stats} is a structure containing statistics useful for performing
 ## a multiple comparison of medians with the MULTCOMPARE function.
 ## @end itemize
 ##
 ## If friedman is called without any output arguments, then it prints the results
-## in a one-way ANOVA table to the standard output as if @var{displayopt} is
-## 'on'.
+## in a Friedman's ANOVA table to the standard output.
 ##
 ## Examples:
 ##
@@ -76,8 +77,8 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   ## Check for valid number of input arguments
   narginchk (1, 3);
   ## Check for NaN values in X
-  if (any (isnan( x(:))))
-    error ("NaN values in input are not allowed.");
+  if (any (isnan (x(:))))
+    error ("friedman: NaN values in input are not allowed.");
   endif
   ## Add defaults
   if (nargin == 1)
@@ -86,19 +87,19 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   ## Check for correct size of input matrix
   [r, c] = size (x);
   if (r <= 1 || c <= 1)
-    error ("Bad size of input matrix.");
+    error ("friedman: bad size of input matrix.");
   endif
   if (reps > 1)
     r = r / reps;
     if (floor (r) != r)
-      error ("Repetitions and observations do not match.");
+      error ("friedman: repetitions and observations do not match.");
     endif
   endif
   ## Check for displayopt
   if (nargin < 3)
-    displayopt = 'on';
+    displayopt = "off";
   elseif ! (strcmp (displayopt, "off") || strcmp (displayopt, "on"))
-    error ("displayopt must be either 'on' (default) or 'off'.");
+    error ("friedman: displayopt must be either 'on' or 'off' (default).");
   endif
   plotdata = ~(strcmp (displayopt, "off"));
 
@@ -106,44 +107,57 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   m = x;
   sum_R = 0;
   for j = 1:r
-    jrows = reps * (j-1) + (1:reps);
-    v = x(jrows,:);
+    jrows = reps * (j - 1) + (1:reps);
+    v = x(jrows, :);
     [R, tieadj] = tiedrank (v(:));
-    m(jrows,:) = reshape (R, reps, c);
+    m(jrows, :) = reshape (R, reps, c);
     sum_R = sum_R + 2 * tieadj;
   endfor
 
   ## Perform 2-way anova silently
-  [p0, table] = anova2 (m, reps, 'off');
+  [p0, anova_table] = anova2 (m, reps, "off");
 
   ## Compute Friedman test statistic and p-value
-  chi_r = table{2,2};
+  chi_r = anova_table{2, 2};
   sigmasq = c * reps * (reps * c + 1) / 12;
   if (sum_R > 0)
-     sigmasq = sigmasq - sum_R / (12 * r * (reps * c - 1));
+    sigmasq = sigmasq - sum_R / (12 * r * (reps * c - 1));
   endif
   if (chi_r > 0)
-     chi_r = chi_r / sigmasq;
+    chi_r = chi_r / sigmasq;
   endif
   p = 1 - chi2cdf (chi_r, c - 1);
 
-  ## Remove row info from ANOVA2 table
-  table(3,:) = [];
-  ## Remove interaction chi-sq and p-value, if there are repetitive measurements
+  ## Create ANOVA table data for output
   if (reps > 1)
-    table{3,5} = [];
-    table{3,6} = [];
+    ## When there are replicates, include interaction row
+    source_list = {"Columns"; "Interaction"; "Error"; "Total"};
+    ss_list = [anova_table{2, 2}; anova_table{3, 2}; ...
+               anova_table{end - 1, 2}; anova_table{end, 2}];
+    df_list = [anova_table{2, 3}; anova_table{3, 3}; ...
+               anova_table{end - 1, 3}; anova_table{end, 3}];
+    ms_list = [anova_table{2, 4}; anova_table{3, 4}; ...
+               anova_table{end - 1, 4}; 0];
+    chi_sq_list = [chi_r; anova_table{3, 5}; 0; 0];
+    prob_list = [p; anova_table{3, 6}; 0; 0];
+  else
+    ## When there are no replicates (reps = 1), exclude interaction row
+    source_list = {"Columns"; "Error"; "Total"};
+    ss_list = [anova_table{2, 2}; anova_table{end - 1, 2}; anova_table{end, 2}];
+    df_list = [anova_table{2, 3}; anova_table{end - 1, 3}; anova_table{end, 3}];
+    ms_list = [anova_table{2, 4}; anova_table{end - 1, 4}; 0];
+    chi_sq_list = [chi_r; 0; 0];
+    prob_list = [p; 0; 0];
   endif
-  ## Fix test statistic names
-  table{1,5} = "Chi-sq";
-  table{1,6} = "Prob>Chi-sq\n";
-  ## Fix test statistic values
-  table{2,5} = chi_r;
-  table{2,6} = p;
+
+  ## Create output table using datatypes package
+  table = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
+                 prob_list, "VariableNames", {"Source", "SS", "df", "MS", ...
+                 "Chi_sq", "Prob_Chi_sq"});
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
-    stats.source = 'friedman';
+    stats.source = "friedman";
     stats.n = r;
     stats.meanranks = mean (m);
     stats.sigma = sqrt (sigmasq);
@@ -151,18 +165,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("              Friedman's ANOVA Table\n");
-    printf("Source            SS      df        MS    Chi-sq    Prob>Chi-sq\n");
-    printf("---------------------------------------------------------------\n");
-    printf("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
-            table{2,2}, table{2,3}, table{2,4}, table{2,5}, table{2,6});
-    if reps > 1
-      printf("Interaction  %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
-              table{3,2}, table{3,3}, table{3,4}, table{3,5}, table{3,6});
-    endif
-    printf("Error        %10.4f %5.0f %10.4f\n", ...
-            table{end-1,2}, table{end-1,3}, table{end-1,4});
-    printf("Total        %10.4f %5.0f\n", table{end,2}, table{end,3});
+    disp (table);
   endif
 endfunction
 
@@ -182,20 +185,17 @@ endfunction
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab] = friedman (popcorn, 3, "off");
 %! assert (p, 0.001028853354594794, 1e-14);
-%! assert (atab{2,2}, 99.75, 1e-14);
-%! assert (atab{2,3}, 2, 0);
-%! assert (atab{2,4}, 49.875, 1e-14);
-%! assert (atab{2,5}, 13.75862068965517, 1e-14);
-%! assert (atab{2,6}, 0.001028853354594794, 1e-14);
-%! assert (atab{3,2}, 0.08333333333333215, 1e-14);
-%! assert (atab{3,4}, 0.04166666666666607, 1e-14);
-%! assert (atab{4,3}, 12, 0);
+%! assert (atab.SS(1), 99.75, 1e-14);
+%! assert (atab.df(1), 2, 0);
+%! assert (atab.MS(1), 49.875, 1e-14);
+%! assert (atab.Chi_sq(1), 13.75862068965517, 1e-14);
+%! assert (atab.Prob_Chi_sq(1), 0.001028853354594794, 1e-14);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab, stats] = friedman (popcorn, 3, "off");
-%! assert (atab{5,2}, 116, 0);
-%! assert (atab{5,3}, 17, 0);
+%! assert (atab.SS(end), 116, 0);
+%! assert (atab.df(end), 17, 0);
 %! assert (stats.source, "friedman");
 %! assert (stats.n, 2);
 %! assert (stats.meanranks, [8, 4.75, 2.25], 0);
