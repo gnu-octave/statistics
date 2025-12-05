@@ -65,7 +65,7 @@
 ##
 ##
 ## @example
-## [p, anovatab, stats] = friedman (popcorn, 3, "off");
+## [p, anovatab, stats] = friedman (popcorn, 3);
 ## disp (p);
 ## @end example
 ##
