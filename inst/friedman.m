@@ -99,7 +99,7 @@ function [p, table, stats] = friedman (x, reps, displayopt)
   if (nargin < 3)
     displayopt = "off";
   elseif ! (strcmp (displayopt, "off") || strcmp (displayopt, "on"))
-    error ("friedman: displayopt must be either 'on' or 'off' (default).");
+    error ("friedman: displayopt must be either 'on' or 'off'.");
   endif
   plotdata = ~(strcmp (displayopt, "off"));
 
@@ -200,3 +200,32 @@ endfunction
 %! assert (stats.n, 2);
 %! assert (stats.meanranks, [8, 4.75, 2.25], 0);
 %! assert (stats.sigma, 2.692582403567252, 1e-14);
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! s = evalc ('[p, atab] = friedman (popcorn, 3);');
+%! assert (isempty (strtrim (s)));
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! s = evalc ('[p, atab] = friedman (popcorn, 3, "on");');
+%! assert (! isempty (strtrim (s)));
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! [p, atab] = friedman (popcorn, 3);
+%! assert (size (atab, 1), 4, 0);
+%! assert (numel (atab.SS), size (atab, 1), 0);
+%!test
+%! x = [1, 2, 3; 2, 1, 3; 3, 2, 1];
+%! [p, atab] = friedman (x);
+%! assert (size (atab, 1), 3, 0);
+%! assert (numel (atab.SS), size (atab, 1), 0);
+
+%!error<friedman: displayopt must be either 'on' or 'off'.> ...
+%! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...
+%!            7.0, 5.5, 5.0; 7.0, 5.0, 4.5], 3, "invalid_displayopt");
+%!error<friedman: NaN values in input are not allowed.> ...
+%! friedman ([1, 2; NaN, 4]);
+%!error<friedman: repetitions and observations do not match.> ...
+%! friedman ([1,2; 3,4; 5,6], 2);
