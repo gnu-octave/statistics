@@ -156,12 +156,13 @@ function [T, STATS] = fitlm (X, y, varargin)
         error (msg)
       endif
       ## If y is a string or char, treat as column name in X
-      if (ischar (y) && isstring (y))
+      if (ischar (y) || isstring (y))
         yname = char (y);
-        if (any (strcmp (predictorVars, yname)))
-          y = X.(yname);
-          Xmat(:, strcmp (predictorVars, yname)) = [];
-          predictorVars(strcmp (predictorVars, yname)) = [];
+        idx = find (strcmp (predictorVars, yname));
+        if (! isempty (idx))
+          y = Xmat(:, idx);
+          Xmat(:, idx) = [];
+          predictorVars(idx) = [];
           N = N - 1;
         else
           error ("fitlm: specified response variable not found in table X");
