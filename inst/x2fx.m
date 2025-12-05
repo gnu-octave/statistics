@@ -25,7 +25,9 @@
 ##
 ## @code{@var{d} = x2fx (@var{x}, @var{model})} converts a matrix of predictors
 ## @var{x} to a design matrix @var{d} for regression analysis.  Distinct
-## predictor variables should appear in different columns of @var{x}.
+## predictor variables should appear in different columns of @var{x}.  The input
+## @var{x} can be a numeric matrix, or a mixed-type array including categorical,
+## string, character, and numeric columns.
 ##
 ## The optional input @var{model} controls the regression model.  By default,
 ## @code{x2fx} returns the design matrix for a linear additive model with a
@@ -57,11 +59,14 @@
 ##
 ## Alternatively, MODEL can be a matrix specifying polynomial terms of arbitrary
 ## order.  In this case, MODEL should have one column for each column in X and
-## one r for each term in the model.  The entries in any r of MODEL are powers
+## one row for each term in the model.  The entries in any row of MODEL are powers
 ## for the corresponding columns of @var{x}.  For example, if @var{x} has
 ## columns X1, X2, and X3, then a row [0 1 2] in @var{model} would specify the
 ## term (X1.^0).*(X2.^1).*(X3.^2).  A row of all zeros in @var{model} specifies
 ## a constant term, which you can omit.
+##
+## MODEL can also be a function handle or a string naming a function that
+## will be applied to @var{x} to generate the design matrix.
 ##
 ## @code{@var{d} = x2fx (@var{x}, @var{model}, @var{categ})} treats columns with
 ## numbers listed in the vector @var{categ} as categorical variables.  Terms
@@ -80,14 +85,48 @@
 ## @end deftypefn
 
 function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
-  ## Get matrix size
-  [m, n]  = size (x);
-  ## Get data class
-  if (isa (x, "single"))
+  original_x = x;
+  [m, n] = size (x);
+  ## Determine data class for output
+  if (isa (x, 'single'))
     data_class = 'single';
   else
     data_class = 'double';
   endif
+
+  auto_detected_categ = [];
+  x_converted = zeros (m, n, data_class);
+  for col_idx = 1:n
+    col = x(:, col_idx);
+    ## Check for categorical type
+    if (isa (col, 'categorical'))
+      x_converted(:, col_idx) = double (col);
+      auto_detected_categ = [auto_detected_categ, col_idx];
+    ## Check for string type
+    elseif (isa (col, 'string'))
+      [~, ~, idx] = unique (col);
+      x_converted(:, col_idx) = double (idx);
+      auto_detected_categ = [auto_detected_categ, col_idx];
+    ## Check for cellstr
+    elseif (iscellstr (col))
+      [~, ~, idx] = unique (col);
+      x_converted(:, col_idx) = double (idx);
+      auto_detected_categ = [auto_detected_categ, col_idx];
+    ## Check for char matrix
+    elseif (ischar (col) && ndims (col) == 2)
+      col_cellstr = cellstr (col);
+      [~, ~, idx] = unique (col_cellstr);
+      x_converted(:, col_idx) = double (idx);
+      auto_detected_categ = [auto_detected_categ, col_idx];
+    ## Numeric or logical columns
+    elseif (isnumeric (col) || islogical (col))
+      x_converted(:, col_idx) = double (col);
+    else
+      error ("x2fx: unsupported data type in column %d.", col_idx);
+    endif
+  endfor
+  x = x_converted;
+
   ## Check for input arguments
   if (nargin < 2 || isempty (model))
     model = 'linear';
@@ -99,12 +138,26 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
       error ("x2fx: category index exceeds number of columns in X.");
     endif
   endif
+
+  if (! isempty (auto_detected_categ))
+    categ = unique ([categ(:)', auto_detected_categ]);
+  endif
+
   if (nargin < 4)
     catlevels = [];
   endif
 
-  ## Convert models parsed as strings to numerical matrix
-  if (ischar (model))
+  ## Handle function handles or string function names
+  if (isa (model, 'function_handle'))
+    D = feval (model, original_x);
+    termstart = [];
+    termend = [];
+    return
+  endif
+
+  ## Convert model string to model matrix
+  if (ischar (model) || isstring (model))
+    model = char (model);
     if (strcmpi (model, "linear") || strcmpi (model, "additive"))
       interactions = false;
       quadratic = false;
@@ -119,7 +172,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
       quadratic = true;
     else
       try
-        D = feval (model, x);
+        D = feval (model, original_x);
       catch
         error ("x2fx: unrecognized function '%s'.", model);
       end_try_catch
@@ -127,41 +180,41 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
       termend = [];
       return
     endif
-    I = eye(n);
+    I = eye (n);
     ## Construct interactions part
     if (interactions && n > 1)
-      [r, c] = find (tril (ones (n) ,-1));
-      nt = length(r);
-      intpart = zeros(nt,n);
-      intpart(sub2ind (size (intpart),(1:nt)', r)) = 1;
-      intpart(sub2ind (size (intpart),(1:nt)', c)) = 1;
+      [r, c] = find (tril (ones (n), -1));
+      nt = length (r);
+      intpart = zeros (nt, n);
+      intpart(sub2ind (size (intpart), (1:nt)', r)) = 1;
+      intpart(sub2ind (size (intpart), (1:nt)', c)) = 1;
     else
-        intpart = zeros(0,n);
+      intpart = zeros (0, n);
     endif
     ## Construct quadratic part
     if (quadratic)
       quadpart = 2 * I;
       quadpart(categ,:) = [];
     else
-      quadpart = zeros(0,n);
+      quadpart = zeros (0, n);
     endif
-    model = [zeros(1,n); I];
+    model = [zeros(1, n); I];
     model = [model; intpart; quadpart];
   endif
 
-  ## Process each categorical variable
+  ## Process categorical variables and convert to numeric indices
   catmember = ismember (1:n, categ);
-  var_DF = ones(1,n);
+  var_DF = ones (1, n);
   if (isempty (catlevels))
-    ## Get values of each categorical variable and replace them with integers
-    for idx=1:length(categ)
+    ## Get unique values for each categorical variable
+    for idx = 1:length (categ)
       categ_idx = categ(idx);
-      [Y, I, J] = unique (x(:,categ_idx));
-      var_DF(categ_idx) = length (Y) - 1;
+      [unique_vals, ~, J] = unique (x(:,categ_idx), 'rows');
+      var_DF(categ_idx) = length (unique_vals) - 1;
       x(:,categ_idx) = J;
     endfor
   else
-    ## Ensure all categorical variables take valid values
+    ## Use specified category levels
     var_DF(categ) = catlevels - 1;
     for idx = 1:length (categ)
       categ_idx = categ(idx);
@@ -179,7 +232,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     error ("x2fx: wrong number of columns between X and MODEL.");
   endif
 
-  ## Allocate space for the dummy variables for all terms
+  ## Allocate space for the design matrix
   termdf = prod (max (1, (model > 0) .* repmat (var_DF, r, 1)), 2);
   termend = cumsum (termdf);
   termstart = termend - termdf + 1;
@@ -192,12 +245,12 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
     C = 1;
     if (any (t))
       if (any (pwrs(! catmember)))
-        pwrs_cat = pwrs .* (! catmember);
+        pwrs_cont = pwrs .* (! catmember);
         C = ones (size (x, 1), 1);
-        collist = find (pwrs_cat > 0);
+        collist = find (pwrs_cont > 0);
         for j = 1:length (collist)
-          categ_idx = collist(j);
-          C = C .* x(:,categ_idx) .^ pwrs_cat(categ_idx);
+          col_idx = collist(j);
+          C = C .* (x(:,col_idx) .^ pwrs_cont(col_idx));
         endfor
       endif
       if (any (pwrs(catmember) > 0))
@@ -216,7 +269,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
         if (length (C) > 1)
           C = C(keep);
         endif
-        Z(sub2ind(size(Z),allrows(keep),colnum(keep))) = C;
+        Z(sub2ind(size(Z), allrows(keep), colnum(keep))) = C;
         C = Z;
       endif
     endif
@@ -278,6 +331,70 @@ endfunction
 %! assert (D(1,:), [0.5403, -0.4161, -0.9900], 1e-4);
 %! assert (D(2,:), [-0.4161, -0.9900, -0.6536], 1e-4);
 %! assert (D(3,:), [-0.9900, -0.6536, 0.2837], 1e-4);
+
+## Tests for auto-detection of categorical data
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'linear');
+%! assert (size (D, 1), 3);
+%! assert (isnumeric (D));
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'linear');
+%! assert (size (D), [3, 4]);
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'linear', [3]);
+%! assert (size (D, 1), 3);
+%! assert (size (D, 2), 4);
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'interaction', [3]);
+%! assert (size (D, 1), 3);
+%! assert (size (D, 2) > 5);
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D1 = x2fx (x, 'linear', [3]);
+%! assert (size (D1, 1), 3);
+%! assert (size (D1, 2), 4);
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'quadratic', [3]);
+%! assert (size (D, 1), 3);
+%! assert (size (D, 2) > 5);
+
+%!test
+%! x = [1, 2, 1; 2, 3, 2; 3, 4, 1];
+%! D = x2fx (x, 'purequadratic', [3]);
+%! assert (size (D, 1), 3);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, 'linear');
+%! assert (size (D), [3, 4]);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! D = x2fx (x, @cos);
+%! assert (size (D), [3, 3]);
+
+%!test
+%! x = [1, 2; 2, 3; 3, 4];
+%! D = x2fx (x, [0 0; 1 0; 0 1]);
+%! assert (size (D, 1), 3);
+
+%!test
+%! x = [1, 2, 3; 2, 3, 4; 3, 4, 5];
+%! [D, model, termstart, termend] = x2fx (x, 'linear');
+%! assert (!isempty (model));
+%! assert (!isempty (termstart));
+%! assert (!isempty (termend));
+%! assert (length (termstart) == length (termend));
 
 %!error <x2fx: category index exceeds number of columns in X.> ...
 %! x2fx ([1, 2, 3; 2, 3, 4], 'quadratic', [1, 4])
