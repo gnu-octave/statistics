@@ -1124,28 +1124,28 @@ classdef cvpartition
 
       ## 1. Validation Checks
       if (! (this.IsStratified || this.IsGrouped))
-        error ("cvpartition.summary: partition must be stratified or grouped.");
+        error ('cvpartition.summary: partition must be stratified or grouped.');
       endif
 
-      if (! (strcmpi (this.Type, "kfold") || strcmpi (this.Type, "holdout")))
-        error ("cvpartition.summary: partition type must be 'kfold' or 'holdout'.");
+      if (! (strcmpi (this.Type, 'kfold') || strcmpi (this.Type, 'holdout')))
+        error ('cvpartition.summary: partition type must be ''kfold'' or ''holdout''.');
       endif
 
       ## 2. Prepare Labels and Data Map
       if (this.IsStratified)
-        LabelVarName = "StratificationLabel";
-        CountVarName = "StratificationCount";
+        LabelVarName = 'StratificationLabel';
+        CountVarName = 'StratificationCount';
         UniqueLabels = this.classID;
         DataMap = this.classes;
       else
         ## Grouped
-        LabelVarName = "GroupLabel";
-        CountVarName = "GroupCount";
+        LabelVarName = 'GroupLabel';
+        CountVarName = 'GroupCount';
         ## Use __unique__ internal helper to ensure stable rows
-        if (isa (this.grpvars, "categorical"))
-          [UniqueLabels, ~, DataMap] = unique (this.grpvars, "rows", "stable");
+        if (isa (this.grpvars, 'categorical'))
+          [UniqueLabels, ~, DataMap] = unique (this.grpvars, 'rows', 'stable');
         else
-          [UniqueLabels, ~, DataMap] = __unique__ (this.grpvars, "rows", "stable");
+          [UniqueLabels, ~, DataMap] = __unique__ (this.grpvars, 'rows', 'stable');
         endif
       endif
 
@@ -1155,8 +1155,6 @@ classdef cvpartition
       TotalRows = NumLabels * NumSets;
 
       ## 3. Preallocate Columns
-      ## We use CELL ARRAYS for text to ensure compatibility with Octave's
-      ## table implementation and avoid issues with missing string functions.
       col_Set = cell (TotalRows, 1);
       col_SetSize = zeros (TotalRows, 1);
       col_Count = zeros (TotalRows, 1);
@@ -1214,25 +1212,25 @@ classdef cvpartition
       ## --- Set: "all" ---
       all_mask = true (size (DataMap));
       [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
-          fill_rows ("all", all_mask, DataMap, UniqueLabels, NumLabels, ...
+          fill_rows ('all', all_mask, DataMap, UniqueLabels, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
                      curr_idx, is_text_label);
 
       ## --- Set: Folds ---
       for k = 1:this.NumTestSets
-        if (strcmpi (this.Type, "holdout"))
+        if (strcmpi (this.Type, 'holdout'))
           test_mask = this.indices;
         else
           test_mask = (this.indices == k);
         endif
 
-        train_name = sprintf ("train%d", k);
+        train_name = sprintf ('train%d', k);
         [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
           fill_rows (train_name, !test_mask, DataMap, UniqueLabels, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
                      curr_idx, is_text_label);
 
-        test_name = sprintf ("test%d", k);
+        test_name = sprintf ('test%d', k);
         [col_Set, col_SetSize, col_Label, col_Count, col_Percent, curr_idx] = ...
           fill_rows (test_name, test_mask, DataMap, UniqueLabels, NumLabels, ...
                      col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
@@ -1242,8 +1240,8 @@ classdef cvpartition
       ## 6. Construct Table
       ## Use Cell Arrays directly for maximum Octave compatibility
       tbl = table (col_Set, col_SetSize, col_Label, col_Count, col_Percent, ...
-                   "VariableNames", ...
-                   {"Set", "SetSize", LabelVarName, CountVarName, "PercentInSet"});
+                   'VariableNames', ...
+                   {'Set', 'SetSize', LabelVarName, CountVarName, 'PercentInSet'});
 
     endfunction
 
