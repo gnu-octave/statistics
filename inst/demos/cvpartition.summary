@@ -1,0 +1,33 @@
+%!demo
+%! ## Setup Data (N=70)
+%! Region = [repmat({"North"}, 20, 1); repmat({"South"}, 15, 1); repmat({"East"}, 15, 1); repmat({"West"}, 20, 1)];
+%! 
+%! Success = [repmat({"Success"}, 49, 1); repmat({"Fail"}, 21, 1)];
+%! Success = Success(randperm(70));
+%! 
+%! Tbl = table(Region, Success);
+%! 
+%! ## Grouped K-Fold Partition (GroupingVariables = Region)
+%! c_group = cvpartition(height(Tbl), 'KFold', 4, 'GroupingVariables', Tbl.Region);
+%! summaryGroup = summary(c_group)
+
+%!demo
+%! ## Stratified K-Fold Partition (Stratification Variable = Success)
+%! c_strat = cvpartition(Tbl.Success, 'KFold', 5);
+%! summaryStrat = summary(c_strat)
+
+%!demo
+%! ## Filtering by Exact Set Name ('test1')
+%! ## (Uses summaryStrat from the previous block)
+%! summaryTest1 = summaryStrat(strcmp(cellstr(summaryStrat.Set), "test1"), :)
+
+%!demo
+%! ## Filtering by Partial Match (equivalent to 'contains("test")')
+%! is_test = ~cellfun('isempty', strfind(cellstr(summaryStrat.Set), "test"));
+%! testSummaryTbl = summaryStrat(is_test, :)
+
+%!demo
+%! ## Unstacking (Pivoting) the Stratified Table
+%! 
+%! ## Unstack: Pivot 'StratificationLabel' (Success/Fail) into new columns, 
+%! speciesSummaryTbl = unstack(summaryStrat(:,1:4), "StratificationCount", "StratificationLabel")
