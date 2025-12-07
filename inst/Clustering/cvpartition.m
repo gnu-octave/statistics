@@ -2122,7 +2122,6 @@ endclassdef
 %!   mask = strcmp (T.Set, "all") & strcmp (T.StratificationLabel, "Setosa");
 %! endif
 %! assert (T.StratificationCount(mask), 10);
-
 %!test
 %! ## 2. Grouped K-Fold: Basic Numeric Labels
 %! groups = [1; 1; 1; 2; 2; 3; 3; 3; 3; 3];
@@ -2147,7 +2146,6 @@ endclassdef
 %!
 %! count_g3 = T.GroupCount(mask_g3 & mask_t1);
 %! assert (count_g3 == 5 || count_g3 == 0);
-
 %!test
 %! ## 3. Grouped K-Fold: Matrix Grouping
 %! g1 = [1; 1; 1; 2; 2; 2];
@@ -2157,7 +2155,6 @@ endclassdef
 %! T = summary (c);
 %! ## 4 unique groups * 5 sets (all + 2 train + 2 test)
 %! assert (height (T), 20);
-
 %!test
 %! ## 4. Stratified Holdout: Basic
 %! species = [repmat({"A"}, 10, 1); repmat({"B"}, 10, 1)];
@@ -2165,7 +2162,6 @@ endclassdef
 %! T = summary (c);
 %! sets = unique (T.Set);
 %! assert (numel (sets), 3); ## all, train1, test1
-
 %!test
 %! ## 5. Mathematical Consistency: Percentages
 %! classes = [1; 1; 2; 2; 3; 3];
@@ -2182,7 +2178,6 @@ endclassdef
 %!
 %! assert (sum (T.PercentInSet(mask_all)), 100, 1e-10);
 %! assert (sum (T.PercentInSet(mask_tr1)), 100, 1e-10);
-
 %!test
 %! ## 6. Mathematical Consistency: Set Sizes
 %! N = 20;
@@ -2200,7 +2195,6 @@ endclassdef
 %! size_tr1 = T.SetSize(find (mask_tr1, 1));
 %! size_ts1 = T.SetSize(find (mask_ts1, 1));
 %! assert (size_tr1 + size_ts1, N);
-
 %!test
 %! ## 7. Logical Grouping Variables
 %! groups = [true; true; true; false; false];
@@ -2213,7 +2207,6 @@ endclassdef
 %!   u_labels = unique (T.GroupLabel);
 %! endif
 %! assert (numel (u_labels), 2);
-
 %!test
 %! ## 8. Char Array Grouping Variables
 %! groups = ['A'; 'A'; 'B'; 'B'; 'C'];
@@ -2221,7 +2214,6 @@ endclassdef
 %! T = summary (c);
 %! assert (height (T), 3 * 5);
 %! assert (any (strcmp ("GroupLabel", T.Properties.VariableNames)));
-
 %!test
 %! ## 9. Floating Point Grouping Variables
 %! groups = [1.1; 1.1; 2.2; 2.2];
@@ -2234,14 +2226,12 @@ endclassdef
 %! endif
 %! assert (any (abs (vals - 1.1) < 1e-10));
 %! assert (any (abs (vals - 2.2) < 1e-10));
-
 %!test
 %! ## 10. Negative Numeric Grouping
 %! groups = [-5; -5; -10; -10];
 %! c = cvpartition (4, "KFold", 2, "GroupingVariables", groups);
 %! T = summary (c);
 %! assert (height (T), 2 * 5);
-
 %!test
 %! ## 11. Missing Values in Stratification (NaN)
 %! classes = [1; 1; 2; 2; NaN; NaN];
@@ -2254,7 +2244,6 @@ endclassdef
 %! endif
 %! total_obs = T.SetSize(find (mask_all, 1));
 %! assert (total_obs, 4);
-
 %!test
 %! ## 12. Missing Values in Grouping (NaN)
 %! groups = [1; 1; 2; 2; NaN];
@@ -2266,7 +2255,6 @@ endclassdef
 %!   mask_all = strcmp (T.Set, "all");
 %! endif
 %! assert (T.SetSize(find (mask_all, 1)), 4);
-
 %!test
 %! ## 13. Unbalanced Stratification
 %! species = [repmat({"C1"}, 90, 1); repmat({"C2"}, 10, 1)];
@@ -2285,7 +2273,6 @@ endclassdef
 %! endif
 %! assert (c1_count == 45);
 %! assert (c2_count == 5);
-
 %!test
 %! ## 14. Single Observation per Group (Edge Case)
 %! groups = [1; 2; 3; 4];
@@ -2299,7 +2286,6 @@ endclassdef
 %! counts = T.GroupCount(mask_ts1);
 %! assert (sum (counts == 1), 2);
 %! assert (sum (counts == 0), 2);
-
 %!test
 %! ## 15. Set Name Generation Verification
 %! species = [1; 1; 2; 2];
@@ -2313,7 +2299,6 @@ endclassdef
 %! else
 %!   assert (sort (set_names), sort (expected));
 %! endif
-
 %!test
 %! ## 16. Label Column Consistency
 %! groups = ['A'; 'B'];
@@ -2324,7 +2309,6 @@ endclassdef
 %! else
 %!   assert (iscellstr (T.GroupLabel));
 %! endif
-
 %!test
 %! ## 17. Valid "Blank" Labels (Space) - FIX APPLIED
 %! species = {"A"; "A"; " "; " "};
@@ -2342,7 +2326,6 @@ endclassdef
 %!   mask_all = strcmp (T.Set, "all");
 %! endif
 %! assert (sum (T.StratificationCount(mask_space & mask_all)), 2);
-
 %!test
 %! ## 18. Large K (Leave-One-Out Simulation) - FIX APPLIED
 %! species = [1; 1; 2; 2];
@@ -2357,7 +2340,6 @@ endclassdef
 %!   mask_test = strncmp (T.Set, "test", 4);
 %! endif
 %! assert (all (T.SetSize(mask_test) == 1));
-
 %!test
 %! ## 19. Repeated Holdout Integrity
 %! species = [1; 1; 2; 2];
@@ -2371,7 +2353,6 @@ endclassdef
 %! endif
 %! size_ts1 = T.SetSize(find (mask_ts1, 1));
 %! assert (size_ts1, 2);
-
 %!test
 %! ## 20. Empty String Handling (Missing Data)
 %! species = {"A"; "A"; ""; ""};
@@ -2386,11 +2367,94 @@ endclassdef
 %! endif
 %! total_rows = T.SetSize(find (mask_all, 1));
 %! assert (total_rows, 2);
-
+%!test
+%! ## 21. Basic Unstacking (Stratified K-Fold)
+%! species = [repmat({"Alpha"}, 10, 1); repmat({"Beta"}, 10, 1)];
+%! c = cvpartition (species, "KFold", 2);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! ## Check dimensions: 3 sets (all, train1, test1, etc) x (Set+SetSize + 2 Labels)
+%! assert (height (T_wide), 5);
+%! assert (width (T_wide), 4);
+%! assert (all (ismember ({"Alpha", "Beta"}, T_wide.Properties.VariableNames)));
+%!test
+%! ## 22. Data Integrity Check (Row Sums)
+%! species = [repmat({"Control"}, 20, 1); repmat({"Treatment"}, 80, 1)];
+%! c = cvpartition (species, "Holdout", 0.25);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! row_sums = T_wide.Control + T_wide.Treatment;
+%! assert (all (row_sums == T_wide.SetSize));
+%!test
+%! ## 23. Unstacking Grouped Data (Numeric Labels)
+%! groups = [1; 1; 2; 2; 2];
+%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "GroupCount", "GroupLabel");
+%! ## Check if numeric columns were created successfully
+%! col_names = T_wide.Properties.VariableNames;
+%! assert (any (cellfun (@(x) ~isempty (strfind (x, "1")), col_names)));
+%! assert (any (cellfun (@(x) ~isempty (strfind (x, "2")), col_names)));
+%!test
+%! ## 24. Unstacking with Missing/NaN Groups
+%! groups = [1; 1; 2; 2; NaN];
+%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "GroupCount", "GroupLabel");
+%! ## Should only have columns for 1 and 2, not NaN or 'undefined'
+%! assert (width (T_wide), 4); ## Set, SetSize, x1, x2
+%!test
+%! ## 25. Unstacking String Array Inputs
+%! species = {"Red"; "Blue"; "Red"; "Blue"};
+%! c = cvpartition (species, "KFold", 2);
+%! T = summary (c);
+%! ## Verify input is actually string before unstacking checks
+%! if (exist ("string", "class"))
+%!   assert (isa (T.Set, "string"));
+%! endif
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! ## Check the 'all' row count for Red
+%! assert (T_wide.Red(strcmp(cellstr(T_wide.Set), "all")) == 2);
+%!test
+%! ## 26. Large K Unstacking (Many Rows)
+%! species = [repmat({"High"}, 10, 1); repmat({"Low"}, 10, 1)];
+%! c = cvpartition (species, "KFold", 10);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! ## 10 folds * 2 (train/test) + 1 (all) = 21 rows
+%! assert (height (T_wide), 21);
+%!test
+%! ## 27. Unstacking with Special Characters in Labels
+%! species = {"Type A"; "Type A"; "Type-B"; "Type-B"};
+%! c = cvpartition (species, "KFold", 2);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! vnames = T_wide.Properties.VariableNames;
+%! ## Check if spaces/dashes were handled/preserved in some valid form
+%! assert (numel (vnames), 4);
+%!test
+%! ## 28. Verification of 'all' row logic after Unstacking
+%! species = [repmat({"Yes"}, 50, 1); repmat({"No"}, 50, 1)];
+%! c = cvpartition (species, "Holdout", 0.2);
+%! T = summary (c);
+%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! mask = strcmp (cellstr (T_wide.Set), "all");
+%! assert (T_wide.Yes(mask) == 50);
+%! assert (T_wide.No(mask) == 50);
+%!test
+%! ## 29. Robustness against re-ordering
+%! species = {"Left"; "Left"; "Right"; "Right"};
+%! c = cvpartition (species, "Holdout", 0.5);
+%! T = summary (c);
+%! T_shuffled = T([3, 1, 2], :);
+%! T_wide = unstack (T_shuffled(:, 1:4), "StratificationCount", "StratificationLabel");
+%! mask = strcmp (cellstr (T_wide.Set), "all");
+%! assert (T_wide.Left(mask) == 2);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, "KFold", 5);
 %! summary (c);
-
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (10, "LeaveOut");
 %! summary (c);
+
+
