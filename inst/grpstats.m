@@ -1,4 +1,5 @@
 ## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 jayantchauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -32,6 +33,14 @@
 ## @var{group} is a grouping variable defined as a categorical variable,
 ## numeric, string array, or cell array of strings.  @var{group} can be [] or
 ## omitted to compute the mean of the entire sample without grouping.
+##
+## When the first input @var{x} is a table created by the @code{datatypes}
+## package, @code{grpstats} computes groupwise summary statistics for the
+## numeric variables in the table and returns the results in a new table.  In
+## this case, the grouping variable @var{group} must be given as the name of a
+## table variable, which is typically categorical.  Currently table input
+## supports a subset of the statistics available for matrix input, such as
+## @qcode{"mean"} and @qcode{"numel"}.
 ##
 ## @code{[@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group},
 ## @var{whichstats})}, for a numeric matrix X, returns the statistics specified
@@ -78,6 +87,16 @@
 function [varargout] = grpstats (x, group, whichstats, varargin)
   ## Check input arguments
   narginchk (1, 5)
+  ## Table input (datatypes integration)
+  if (exist ("istable", "file") && istable (x))
+    if (nargout > 1)
+      error ("grpstats: table input currently supports a single output argument.");
+    endif
+    varargout{1} = __grpstats_table__ (x, group, whichstats, varargin{:});
+    return;
+  endif
+
+  ## Numeric matrix input (existing behaviour)
   ## Check X being a vector or 2d matrix of real values
   if (ndims (x) > 2 || ! isnumeric (x) || islogical (x))
     error ("grpstats: X must be a vector or 2d matrix.");
@@ -236,6 +255,127 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
       endswitch
     endfor
   endif
+
+endfunction
+
+function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
+
+  if (! istable (tbl))
+    error ("grpstats: internal error, expected table input.");
+  endif
+
+  ## GROUP must be a variable name (char or string scalar)
+  if (ischar (group))
+    group_name = group;
+  elseif (isstring (group) && isscalar (group))
+    group_name = char (group);
+  else
+    error ("grpstats: for table input, GROUP must be a variable name.");
+  endif
+
+  ## Get grouping column
+  try
+    gcol = tbl.(group_name);
+  catch
+    error ("grpstats: grouping variable '%s' not found in table.", group_name);
+  end_try_catch
+
+  ## Currently only support categorical grouping variable
+  if (! iscategorical (gcol))
+    error ("grpstats: for table input, grouping variable must be categorical.");
+  endif
+
+  ## Normalise whichstats for table input
+  if (nargin < 3 || isempty (whichstats))
+    func_names = {"mean"};
+  elseif (ischar (whichstats))
+    func_names = {whichstats};
+  elseif (isstring (whichstats) && isscalar (whichstats))
+    func_names = {char (whichstats)};
+  elseif (iscell (whichstats))
+    func_names = whichstats;
+  else
+    error ("grpstats: invalid WHICHSTATS for table input.");
+  endif
+
+  ## Only support a subset initially for table input
+  n_funcs = numel (func_names);
+  for k = 1:n_funcs
+    fname = func_names{k};
+    if (! any (strcmp (fname, {"mean", "numel"})))
+      error ("grpstats: table input currently supports only 'mean' and 'numel'.");
+    endif
+  endfor
+
+  ## Group indices and names from categorical column
+  group_names = categories (gcol);
+  group_idx   = double (gcol(:));
+  ngroups     = numel (group_names);
+
+  ## Collect numeric data columns (excluding the grouping variable)
+  vnames = tbl.Properties.VariableNames;
+  data_var_names = {};
+  data_mat = [];
+
+  for k = 1:numel (vnames)
+    vname = vnames{k};
+    if (strcmp (vname, group_name))
+      continue;
+    endif
+    col = tbl.(vname);
+    if (isnumeric (col))
+      data_mat = [data_mat, col(:)];
+      data_var_names{end+1} = vname;
+    endif
+  endfor
+
+  if (isempty (data_mat))
+    error ("grpstats: no numeric variables found in table (apart from grouping).");
+  endif
+
+  nvars = columns (data_mat);
+
+  do_mean  = any (strcmp ("mean",  func_names));
+  do_numel = any (strcmp ("numel", func_names));
+
+  if (do_mean)
+    mean_vals = NaN (ngroups, nvars);
+  endif
+  if (do_numel)
+    group_count = accumarray (group_idx(:), 1, [ngroups, 1]);
+  endif
+
+  ## Compute statistics per group
+  for g = 1:ngroups
+    idx = (group_idx == g);
+    group_data = data_mat(idx, :);
+    if (do_mean)
+      mean_vals(g,:) = mean (group_data, 1, "omitnan");
+    endif
+  endfor
+
+  ## Build output table
+  ## Group column as categorical using group names
+  gcat = categorical (group_names);
+
+  varnames_out = {"Group"};
+  data_out = {gcat};
+
+  if (do_numel)
+    varnames_out{end+1} = "GroupCount";
+    data_out{end+1} = group_count;
+  endif
+
+  if (do_mean)
+    for k = 1:nvars
+      newname = ["mean_" data_var_names{k}];
+      varnames_out{end+1} = newname;
+      data_out{end+1} = mean_vals(:, k);
+    endfor
+  endif
+
+  stats_tbl = table (data_out{:}, "VariableNames", varnames_out);
+
 endfunction
 
 %!demo
@@ -279,6 +419,34 @@ endfunction
 %! assert (isempty (mC), true);
 %! assert (isempty (g), true);
 
+## Table input tests (datatypes integration)
+%!test
+%! pkg load datatypes;
+%! Y     = [5; 6; 7; 4; 9; 8];
+%! X     = [1; 2; 3; 4; 5; 6];
+%! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
+%! tbl = table (Y, X, Group, "VariableNames", {"Y","X","Group"});
+%! stats_tbl = grpstats (tbl, "Group", {"mean","numel"});
+%! assert (istable (stats_tbl));
+%! assert (isequal (stats_tbl.Properties.VariableNames, ...
+%!                  {"Group", "GroupCount", "mean_Y", "mean_X"}));
+%! assert (isequal (stats_tbl.GroupCount, [2; 2; 2]));
+%!test
+%! pkg load datatypes;
+%! Y     = [5; 6; 7; 4; 9; 8];
+%! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
+%! tbl = table (Y, Group, "VariableNames", {"Y","Group"});
+%! stats_tbl = grpstats (tbl, "Group", "mean");
+%! assert (istable (stats_tbl));
+%! assert (isequal (stats_tbl.Properties.VariableNames, ...
+%!                  {"Group", "mean_Y"}));
+
+%!error<grpstats: for table input, grouping variable must be categorical.> ...
+%! pkg load datatypes;
+%! Y = [1; 2; 3];
+%! G = [1; 1; 2];
+%! tbl = table (Y, G, "VariableNames", {"Y","G"});
+%! grpstats (tbl, "G", {"mean","numel"});
 %!error<grpstats: X must be a vector or 2d matrix.> ...
 %! grpstats (ones (3, 3, 3));
 %!error<grpstats: samples in X and GROUPS mismatch.> ...
