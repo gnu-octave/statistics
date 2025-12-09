@@ -302,12 +302,6 @@ endfunction
 %! assert (table(end-2,:), [70, 11, 11]);
 %! assert (table(end-1,:), [71, 10, 10]);
 %! assert (table(end,:), [72, 4, 4]);
-
-%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
-%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
-%!error<tabulate: X must be either a numeric vector> ...
-%! tabulate ({"a", "b"; "a", "c"})
-
 %!test
 %! ## Test numeric vector including NaNs
 %! x = [1; 1; 2; 3; 1; NaN; 2];
@@ -317,7 +311,6 @@ endfunction
 %! assert (tbl(:,1), [1; 2; 3]);
 %! assert (tbl(:,2), [3; 2; 1]);
 %! assert (tbl(:,3), [50; 33.3333; 16.6667], 3e-4);
-
 %!test
 %! ## Test positive integers with gaps
 %! x = [1; 3; 3];
@@ -327,7 +320,6 @@ endfunction
 %! assert (tbl(:,1), [1; 2; 3]);
 %! assert (tbl(:,2), [1; 0; 2]);
 %! assert (tbl(:,3), [33.3333; 0; 66.6667], 3e-4);
-
 %!test
 %! ## Test logical inputs (should return cell array with '0'/'1')
 %! x = [true; false; true; true];
@@ -337,7 +329,6 @@ endfunction
 %! assert (tbl(:,1), {'0'; '1'});
 %! assert ([tbl{:,2}]', [1; 3]);
 %! assert ([tbl{:,3}]', [25; 75]);
-
 %!test
 %! ## Test character array
 %! x = ['a'; 'b'; 'a'];
@@ -346,7 +337,6 @@ endfunction
 %! assert (size (tbl), [2, 3]);
 %! assert (tbl(:,1), {'a'; 'b'});
 %! assert ([tbl{:,2}]', [2; 1]);
-
 %!test
 %! ## Test cell array of strings
 %! x = {'a', 'b', 'a'};
@@ -355,7 +345,6 @@ endfunction
 %! assert (size (tbl), [2, 3]);
 %! assert (tbl(:,1), {'a'; 'b'});
 %! assert ([tbl{:,2}]', [2; 1]);
-
 %!test
 %! ## Test string array with missing values
 %! x = string ({"a", "b", "a"});
@@ -365,7 +354,6 @@ endfunction
 %! assert (size (tbl), [2, 3]);
 %! assert (tbl(:,1), {'a'; 'b'});
 %! assert ([tbl{:,2}]', [2; 1]);
-
 %!test
 %! ## Test categorical array with undefined values and vacuous levels
 %! x = categorical ({'a', 'a', 'b'}, {'a', 'b', 'c'});
@@ -375,11 +363,50 @@ endfunction
 %! assert (tbl(:,1), {'a'; 'b'; 'c'});
 %! assert ([tbl{:,2}]', [2; 1; 0]);
 %! assert ([tbl{:,3}]', [66.6667; 33.3333; 0], 1e-3);
-
 %!test
 %! ## Test empty input
 %! tbl = tabulate ([]);
 %! assert (isempty (tbl));
+%!test
+%! ## fisheriris (Categorical/CellStr)
+%! load fisheriris;
+%! tbl = tabulate (species);
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), {'setosa'; 'versicolor'; 'virginica'});
+%! assert ([tbl{:,2}]', [50; 50; 50]);
+%! assert ([tbl{:,3}]', [33.3333; 33.3333; 33.3333], 1e-4);
+%!test
+%! ## carsmall (Char/CellStr)
+%! load carsmall;
+%! tbl = tabulate (Origin);
+%! origins = tbl(:,1);
+%! counts = [tbl{:,2}];
+%! assert (counts(strcmp (origins, 'USA')), 69);
+%! assert (counts(strcmp (origins, 'Japan')), 15);
+%! assert (counts(strcmp (origins, 'Germany')), 9);
+%! assert (counts(strcmp (origins, 'France')), 4);
+%! assert (counts(strcmp (origins, 'Sweden')), 2);
+%! assert (counts(strcmp (origins, 'Italy')), 1);
+%!test
+%! ## patients (Logical)
+%! load patients;
+%! tbl = tabulate (Smoker);
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'0'; '1'});
+%! assert ([tbl{:,2}]', [66; 34]);
+%!test
+%! ## patients (String)
+%! load patients;
+%! tbl = tabulate (Gender);
+%! vals = tbl(:,1);
+%! counts = [tbl{:,2}];
+%! assert (counts(strcmp (vals, 'Male')), 47);
+%! assert (counts(strcmp (vals, 'Female')), 53);
 
 %!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
 %!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
+%!error<tabulate: X must be either a numeric vector> ...
+%! tabulate ({"a", "b"; "a", "c"})
+%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
+%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
+
