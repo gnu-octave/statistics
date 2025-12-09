@@ -43,8 +43,8 @@
 function tbl = tabulate (x)
 
   ## Check input for being numeric, string, categorical, cell array or logical
-  if (! (isnumeric (x) && isvector (x)) && ! (iscellstr (x) && isvector (x))
-                       && ! ischar (x) && ! iscategorical (x)
+  if (! (isnumeric (x) && (isvector (x) || isempty (x))) && ! (iscellstr (x)
+                       && isvector (x)) && ! ischar (x) && ! iscategorical (x)
                        && ! isa (x, "string") && ! islogical (x))
     error (strcat ("tabulate: X must be either a numeric vector, a", ...
                    " vector cell array of strings, a character matrix,", ...
@@ -87,6 +87,43 @@ function tbl = tabulate (x)
     ## Handle string arrays
     x(ismissing (x)) = [];
     
+    ## Convert to cellstr and use grp2idx which is robust
+    [idx, vals] = grp2idx (cellstr (x));
+    
+    if (isempty (idx))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    ## Output format: Cell array
+    vals_cell = vals;
+    out = cell (length (vals_cell), 3);
+    out(:,1) = vals_cell;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+    
+    if (isempty (idx))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    ## Output format: Cell array
+    vals_cell = vals;
+    out = cell (length (vals_cell), 3);
+    out(:,1) = vals_cell;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+
+  elseif (islogical (x))
+    ## Handle logical arrays    
     [vals, ~, idx] = unique (x);
     if (isempty (x))
       counts = [];
@@ -97,19 +134,15 @@ function tbl = tabulate (x)
       percents = 100 * counts ./ total;
     endif
     
-    ## Output format: Cell array
-    vals_cell = cellstr (vals);
-    out = cell (length (vals_cell), 3);
-    out(:,1) = vals_cell;
-    out(:,2) = num2cell (counts);
-    out(:,3) = num2cell (percents);
-
-  elseif (isnumeric (x) || islogical (x))
-    ## Handle numeric and logical
-    if (islogical (x))
-       x = double (x);
-    endif
+    vals_cell = cellstr (num2str (double (vals)));
     
+    out = cell (length (vals), 3);
+    out(:, 1) = vals_cell;
+    out(:, 2) = num2cell (counts);
+    out(:, 3) = num2cell (percents);
+
+  elseif (isnumeric (x))
+    ## Handle numeric
     ## Remove missing values (NaNs) if numeric
     x(isnan (x)) = [];
 
@@ -265,3 +298,79 @@ endfunction
 %!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
 %!error<tabulate: X must be either a numeric vector> ...
 %! tabulate ({"a", "b"; "a", "c"})
+
+%!test
+%! ## Test numeric vector including NaNs
+%! x = [1; 1; 2; 3; 1; NaN; 2];
+%! tbl = tabulate (x);
+%! assert (isnumeric (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), [1; 2; 3]);
+%! assert (tbl(:,2), [3; 2; 1]);
+%! assert (tbl(:,3), [50; 33.3333; 16.6667], 3e-4);
+
+%!test
+%! ## Test positive integers with gaps
+%! x = [1; 3; 3];
+%! tbl = tabulate (x);
+%! assert (isnumeric (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), [1; 2; 3]);
+%! assert (tbl(:,2), [1; 0; 2]);
+%! assert (tbl(:,3), [33.3333; 0; 66.6667], 3e-4);
+
+%!test
+%! ## Test logical inputs (should return cell array with '0'/'1')
+%! x = [true; false; true; true];
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'0'; '1'});
+%! assert ([tbl{:,2}]', [1; 3]);
+%! assert ([tbl{:,3}]', [25; 75]);
+
+%!test
+%! ## Test character array
+%! x = ['a'; 'b'; 'a'];
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+
+%!test
+%! ## Test cell array of strings
+%! x = {'a', 'b', 'a'};
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+
+%!test
+%! ## Test string array with missing values
+%! x = string ({"a", "b", "a"});
+%! x(4) = missing;
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+
+%!test
+%! ## Test categorical array with undefined values and vacuous levels
+%! x = categorical ({'a', 'a', 'b'}, {'a', 'b', 'c'});
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), {'a'; 'b'; 'c'});
+%! assert ([tbl{:,2}]', [2; 1; 0]);
+%! assert ([tbl{:,3}]', [66.6667; 33.3333; 0], 1e-3);
+
+%!test
+%! ## Test empty input
+%! tbl = tabulate ([]);
+%! assert (isempty (tbl));
+
+%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
+%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
