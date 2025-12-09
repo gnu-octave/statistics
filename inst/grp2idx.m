@@ -39,16 +39,23 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   s_was_char = false;
+  s_was_categorical = false;
   if (ischar (s))
     s_was_char = true;
     s = cellstr (s);
+  elseif(iscategorical (s))
+    s_was_categorical = true;
+    undef = isundefined (s);
+    cats = categories (s);
+    s = cellstr (string (s));
+    s(undef) = {""};
   elseif (! isvector (s))
     error ("grp2idx: S must be a vector, cell array of strings, or char matrix");
   endif
 
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s))
+  if (iscellstr (s) && ! s_was_categorical)
     I = sort(I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -93,7 +100,9 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   if (nargout > 1)
-    if (iscellstr (gl))
+    if (s_was_categorical)
+      gn = categories (categorical (s));
+    elseif (iscellstr (gl))
       gn = gl;
     elseif (iscell (gl))
       gn = cellfun (@num2str, gl, "UniformOutput", false);
@@ -104,6 +113,8 @@ function [g, gn, gl] = grp2idx (s)
 
   if (nargout > 2 && s_was_char)
     gl = char (gl);
+  elseif (nargout > 2 && s_was_categorical)
+    gl = categorical (gn);
   endif
 
 endfunction
