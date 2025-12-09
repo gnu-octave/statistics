@@ -18,24 +18,33 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} tabulate (@var{x})
-## @deftypefnx {statistics} {@var{table} =} tabulate (@var{x})
+## @deftypefnx {statistics} {@var{tbl} =} tabulate (@var{x})
 ##
-## Calculate a frequency table.
+## Create a frequency table of unique values in vector @var{x}.
 ##
 ## @code{tabulate (x)} displays a frequency table of the data in the vector
-## @var{x}.  For each unique value in @var{x}, the tabulate function shows the
-## number of instances and percentage of that value in @var{x}.
+## @var{x}.  The input @var{x} can be a numeric vector, a logical vector,
+## a character array, a cell array of strings, a categorical array, or a
+## string array.
 ##
-## @code{@var{table} = tabulate (@var{x})} returns the frequency table,
-## @var{table}, as a numeric matrix when @var{x} is numeric and as a cell array
-## otherwise.  When an output argument is requested, @code{tabulate} does not
-## print the frequency table in the command window.
+## The table displays the value, the number of instances (count), and the
+## percentage of that value in @var{x}.  If no output argument is requested,
+## the table is displayed in the command window.
+##
+## @code{@var{tbl} = tabulate (@var{x})} returns the frequency table,
+## @var{tbl}, as a numeric matrix when @var{x} is numeric and as a cell array
+## otherwise.
 ##
 ## If @var{x} is numeric, any missing values (@qcode{NaNs}) are ignored.
+## Similarly, undefined elements in categorical arrays and missing elements in
+## string arrays are ignored.
 ##
 ## If all the elements of @var{x} are positive integers, then the frequency
 ## table includes 0 counts for the integers between 1 and @qcode{max (@var{x})}
 ## that do not appear in @var{x}.
+##
+## For categorical arrays, the frequency table includes 0 counts for any
+## categories that are defined but do not appear in @var{x}.
 ##
 ## @seealso{bar, pareto}
 ## @end deftypefn
