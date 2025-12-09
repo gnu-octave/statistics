@@ -40,58 +40,156 @@
 ## @seealso{bar, pareto}
 ## @end deftypefn
 
-function table = tabulate (x)
+function tbl = tabulate (x)
 
-  ## Check input for being either numeric or a cell array
-  if (! (isnumeric (x) && isvector (x)) &&
-      ! (iscellstr (x) && isvector (x)) &&
-      ! ischar (x))
+  ## Check input for being numeric, string, categorical, cell array or logical
+  if (! (isnumeric (x) && isvector (x)) && ! (iscellstr (x) && isvector (x))
+                       && ! ischar (x) && ! iscategorical (x)
+                       && ! isa (x, "string") && ! islogical (x))
     error (strcat ("tabulate: X must be either a numeric vector, a", ...
-                   " vector cell array of strings, or a character matrix."));
+                   " vector cell array of strings, a character matrix,", ...
+                   " a categorical array, or a string array."));
   endif
 
-  ## Remove missing values (NaNs) if numeric
-  if (isnumeric (x))
+  ## Ensure vector input
+  if (! ischar (x))
+      x = x(:);
+  endif
+
+  if (iscategorical (x))
+    ## For categorical, we report ALL categories, even if count is 0
+    vals = categories (x);
+    nc = length (vals);
+    
+    ## Count occurrences
+    xi = double (x);
+    
+    ## Filter out undefined
+    valid_mask = ! isnan (xi) & (xi >= 1) & (xi <= nc);
+    xi = xi(valid_mask);
+    
+    if (isempty (xi))
+      counts = zeros (nc, 1);
+    else
+      counts = accumarray (xi, 1, [nc, 1]);
+    endif
+    
+    total = sum (counts);
+    percents = 100 * counts ./ total;
+    
+    ## Output format: Cell array
+    out = cell (length (vals), 3);
+    out(:,1) = vals;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+    
+  elseif (isa (x, "string"))
+    ## Handle string arrays
+    x(ismissing (x)) = [];
+    
+    [vals, ~, idx] = unique (x);
+    if (isempty (x))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    ## Output format: Cell array
+    vals_cell = cellstr (vals);
+    out = cell (length (vals_cell), 3);
+    out(:,1) = vals_cell;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+
+  elseif (isnumeric (x) || islogical (x))
+    ## Handle numeric and logical
+    if (islogical (x))
+       x = double (x);
+    endif
+    
+    ## Remove missing values (NaNs) if numeric
     x(isnan (x)) = [];
-  endif
 
-  ## Handle positive integers separately
-  if (isnumeric (x) && all (x == fix (x)) && all (x > 0))
-    [count, value] = hist (x, (1:max (x)));
-    posint = true;
+    ## Handle positive integers separately
+    if (! isempty (x) && all (x == fix (x)) && all (x > 0))
+      max_val = max (x);
+      vals = (1:max_val)';
+      [counts, ~] = hist (x, vals);
+      counts = counts(:);
+    else
+      [vals, ~, idx] = unique (x);
+      if (isempty (x))
+          counts = [];
+      else
+          counts = accumarray (idx, 1);
+      end
+    endif
+    
+    if (isempty (counts))
+        percents = [];
+    else
+        percents = 100 * counts ./ sum (counts);
+    endif
+    
+    ## Output format: Numeric Matrix
+    out = [vals, counts, percents];
+    
   else
-    [g, gn, gl] = grp2idx (x);
-    [count, value] = hist (g, (1:length (gn)));
-    posint = false;
+    ## Handle char and cellstr
+    if (ischar (x))
+        x = cellstr (x);
+    endif
+
+    [idx, vals] = grp2idx (x);
+    
+    if (isempty (idx))
+        counts = [];
+    else
+        counts = accumarray (idx, 1);
+    endif 
+    
+    if (isempty (counts))
+        percents = [];
+    else
+        percents = 100 * counts ./ sum (counts);
+    endif
+    
+    out = cell (length (vals), 3);
+    out(:,1) = vals;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
   endif
 
-  ## Calculate percentages
-  percent = 100 * count ./ sum (count);
-
-  ## Display results is no output argument
   if (nargout == 0)
-    if (posint)
-      fprintf ("   Value    Count    Percent\n");
-      fprintf ("   %5d    %5d     %6.2f%%\n", value', count', percent');
-    else
-      valw = max (cellfun ("length", gn));
-      valw = max ([5, min([50, valw])]);
-      header = sprintf ("  %%%ds    %%5s    %%6s\n", valw);
-      result = sprintf ("  %%%ds    %%5d     %%6.2f%%%%\n", valw);
-      fprintf (header, "Value", "Count", "Percent");
-      for i = 1:length (gn)
-        fprintf (result, gn{i}, count(i), percent(i));
-      endfor
+    ## Use table for display if no output requested
+    
+    if (isempty (out))
+       ## Handle empty case
+       disp ("   Value    Count    Percent");
+       return;
     endif
-  ## Create output table
+
+    if (isnumeric (out))
+       ## Numeric matrix case
+       Value = out(:,1);
+       Count = out(:,2);
+       Percent = out(:,3);
+    else
+       ## Cell array case
+       Value = out(:,1);
+       Count = cell2mat (out(:,2));
+       Percent = cell2mat (out(:,3));
+    endif
+    
+    t = table (Value, Count, Percent, "VariableNames", {"Value", "Count", ...
+                                                        "Percent"});
+    
+    disp (t);
   else
-    if (posint)
-      table = [value', count', percent'];
-    elseif (isnumeric (x))
-      table = [gl, count', percent'];
-    else
-      table = [gn, num2cell([count', percent'])];
-    endif
+    tbl = out;
   endif
 
 endfunction
