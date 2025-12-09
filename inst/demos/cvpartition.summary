@@ -1,5 +1,5 @@
 %!demo
-%! ## 1. Basic Usage 
+%! ## 1. Basic Usage
 %! rng (1, "twister");
 %!
 %! ## Create simple numeric labels
@@ -11,8 +11,8 @@
 %! ## 2. Grouped K-Fold Partition
 %! rng (101, "twister");
 %!
-%! Region = [repmat({"North"}, 20, 1); repmat({"South"}, 15, 1); repmat({"East"}, 15, 1); repmat({"West"}, 20, 1)];
-%! Success = [repmat({"Success"}, 49, 1); repmat({"Fail"}, 21, 1)];
+%! Region = repelem ({'North'; 'South'; 'East'; 'West'}, [20; 15; 15; 20]);
+%! Success = repelem ({'Success'; 'Fail'}, [49;  21]);
 %! Success = Success(randperm (70));
 %! Tbl = table (Region, Success);
 %!
@@ -26,7 +26,7 @@
 %! ## 3. Stratified K-Fold Partition
 %! rng (202, "twister");
 %!
-%! Success = [repmat({"ClassA"}, 25, 1); repmat({"ClassB"}, 25, 1)];
+%! Success = repelem ({'ClassA'; 'ClassB'}, [25; 25]);
 %! Success = Success(randperm (50));
 %! Tbl = table (Success);
 %!
@@ -53,7 +53,7 @@
 %! ## 5. Filtering Summary
 %! rng (303, "twister");
 %!
-%! Success = [repmat({"Yes"}, 20, 1); repmat({"No"}, 10, 1)];
+%! Success = repelem ({'Yes'; 'No'}, [20; 10]);
 %! Success = Success(randperm (30));
 %!
 %! ## Create Partition and Summary
@@ -61,17 +61,17 @@
 %! summaryStrat = summary (c_strat);
 %!
 %! ## A. Filtering by Exact Set Name
-%! summaryTest1 = summaryStrat (strcmp (summaryStrat.Set, "test1"), :)
+%! summaryTest1 = summaryStrat (strcmp (summaryStrat.Set, 'test1'), :)
 %!
 %! ## B. Filtering by Partial Match
-%! is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), "test"));
+%! is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), 'test'));
 %! testSummaryTbl = summaryStrat (is_test, :)
 
 %!demo
 %! ## 6. Unstacking
 %! rng (505, "twister");
 %!
-%! Success = [repmat({"Yes"}, 20, 1); repmat({"No"}, 10, 1)];
+%! Success = repelem ({'Yes'; 'No'}, [20; 10]);
 %! Success = Success(randperm (30));
 %!
 %! ## Create Partition and Summary
@@ -79,4 +79,4 @@
 %! summaryStrat = summary (c_strat);
 %!
 %! ## Pivot 'StratificationLabel' (Yes/No) into new columns
-%! speciesSummaryTbl = unstack (summaryStrat (:, 1:4), "StratificationCount", "StratificationLabel")
+%! speciesSummaryTbl = unstack (summaryStrat(:,1:4), 'StratificationCount', 'StratificationLabel')
