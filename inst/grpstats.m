@@ -34,13 +34,12 @@
 ## numeric, string array, or cell array of strings.  @var{group} can be [] or
 ## omitted to compute the mean of the entire sample without grouping.
 ##
-## When the first input @var{x} is a table created by the @code{datatypes}
-## package, @code{grpstats} computes groupwise summary statistics for the
-## numeric variables in the table and returns the results in a new table.  In
-## this case, the grouping variable @var{group} must be given as the name of a
-## table variable, which is typically categorical.  Currently table input
-## supports a subset of the statistics available for matrix input, such as
-## @qcode{"mean"} and @qcode{"numel"}.
+## When the first input @var{x} is a table, @code{grpstats} computes groupwise
+## summary statistics for the numeric variables in the table and returns the
+## results in a new table.  In this case, the grouping variable @var{group}
+## must be given as the name of a table variable, which is typically
+## categorical.  Currently table input supports a subset of the statistics
+## available for matrix input, such as @qcode{"mean"} and @qcode{"numel"}.
 ##
 ## @code{[@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group},
 ## @var{whichstats})}, for a numeric matrix X, returns the statistics specified
