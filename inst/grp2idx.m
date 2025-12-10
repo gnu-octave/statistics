@@ -25,7 +25,8 @@
 ## For variable @var{s}, returns the indices @var{g}, into the variable
 ## groups @var{gn} and @var{gl}.  The first has a string representation of
 ## the groups while the later has its actual values. The group indices are
-## allocated in order of appearance in @var{s}.
+## allocated in order of appearance in @var{s}, in most cases. The exceptions
+## are when TODO: ADD DOCS HERE
 ##
 ## NaNs and empty strings in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
@@ -56,17 +57,6 @@ function [g, gn, gl] = grp2idx (s)
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
   if (iscellstr (s) && ! s_was_categorical)
-    I = sort(I);
-    for i = 1:length (gl)
-      gl_s(i) = gl(g(I(i)));
-      idx(i,:) = (g == g(I(i)));
-    endfor
-    for i = 1:length (gl)
-      g(idx(i,:)) = i;
-    endfor
-    gl = gl_s;
-    gl = gl';
-  else
     I = sort(I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -119,10 +109,11 @@ function [g, gn, gl] = grp2idx (s)
 
 endfunction
 
+## TODO: ADD TESTS FOR CATEGORICAL INPUT
 ## test boolean input and note that row or column vector makes no difference
 %!test
 %! in = [true false false true];
-%! out = {[1; 2; 2; 1] {"1"; "0"} [true; false]};
+%! out = {[2; 1; 1; 2] {"0"; "1"} [false; true]};
 %! assert (nthargout (1:3, @grp2idx, in), out)
 %! assert (nthargout (1:3, @grp2idx, in), nthargout (1:3, @grp2idx, in'))
 
@@ -131,7 +122,7 @@ endfunction
 %! assert (nthargout (1:3, @grp2idx, [false, true]),
 %!         {[1; 2] {"0"; "1"} [false; true]});
 %! assert (nthargout (1:3, @grp2idx, [true, false]),
-%!         {[1; 2] {"1"; "0"} [true; false]});
+%!         {[2; 1] {"0"; "1"} [false; true]});
 
 ## test char matrix and cell array of strings
 %!assert (nthargout (1:3, @grp2idx, ["oct"; "sci"; "oct"; "oct"; "sci"]),
@@ -142,8 +133,8 @@ endfunction
 
 ## test numeric arrays
 %!assert (nthargout (1:3, @grp2idx, [ 1 -3 -2 -3 -3  2  1 -1  3 -3]),
-%!        {[1; 2; 3; 2; 2; 4; 1; 5; 6; 2], {"1"; "-3"; "-2"; "2"; "-1"; "3"}, ...
-%!         [1; -3; -2; 2; -1; 3]});
+%!        {[4; 1; 2; 1; 1; 5; 4; 3; 6; 1], {"-3"; "-2"; "-1"; "1"; "2"; "3"}, ...
+%!         [-3; -2; -1; 1; 2; 3]});
 
 ## test for NaN and empty strings
 %!assert (nthargout (1:3, @grp2idx, [2 2 3 NaN 2 3]),
