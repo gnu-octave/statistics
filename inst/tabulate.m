@@ -69,36 +69,36 @@ function tbl = tabulate (x)
     ## For categorical, we report ALL categories, even if count is 0
     vals = categories (x);
     nc = length (vals);
-    
+
     ## Count occurrences
     xi = double (x);
-    
+
     ## Filter out undefined
     valid_mask = ! isnan (xi) & (xi >= 1) & (xi <= nc);
     xi = xi(valid_mask);
-    
+
     if (isempty (xi))
       counts = zeros (nc, 1);
     else
       counts = accumarray (xi, 1, [nc, 1]);
     endif
-    
+
     total = sum (counts);
     percents = 100 * counts ./ total;
-    
+
     ## Output format: Cell array
     out = cell (length (vals), 3);
     out(:,1) = vals;
     out(:,2) = num2cell (counts);
     out(:,3) = num2cell (percents);
-    
+
   elseif (isa (x, "string"))
     ## Handle string arrays
     x(ismissing (x)) = [];
-    
+
     ## Convert to cellstr and use grp2idx which is robust
     [idx, vals] = grp2idx (cellstr (x));
-    
+
     if (isempty (idx))
       counts = [];
       percents = [];
@@ -107,14 +107,14 @@ function tbl = tabulate (x)
       total = sum (counts);
       percents = 100 * counts ./ total;
     endif
-    
+
     ## Output format: Cell array
     vals_cell = vals;
     out = cell (length (vals_cell), 3);
     out(:,1) = vals_cell;
     out(:,2) = num2cell (counts);
     out(:,3) = num2cell (percents);
-    
+
     if (isempty (idx))
       counts = [];
       percents = [];
@@ -123,7 +123,7 @@ function tbl = tabulate (x)
       total = sum (counts);
       percents = 100 * counts ./ total;
     endif
-    
+
     ## Output format: Cell array
     vals_cell = vals;
     out = cell (length (vals_cell), 3);
@@ -132,7 +132,7 @@ function tbl = tabulate (x)
     out(:,3) = num2cell (percents);
 
   elseif (islogical (x))
-    ## Handle logical arrays    
+    ## Handle logical arrays
     [vals, ~, idx] = unique (x);
     if (isempty (x))
       counts = [];
@@ -142,9 +142,9 @@ function tbl = tabulate (x)
       total = sum (counts);
       percents = 100 * counts ./ total;
     endif
-    
+
     vals_cell = cellstr (num2str (double (vals)));
-    
+
     out = cell (length (vals), 3);
     out(:, 1) = vals_cell;
     out(:, 2) = num2cell (counts);
@@ -169,16 +169,16 @@ function tbl = tabulate (x)
           counts = accumarray (idx, 1);
       end
     endif
-    
+
     if (isempty (counts))
         percents = [];
     else
         percents = 100 * counts ./ sum (counts);
     endif
-    
+
     ## Output format: Numeric Matrix
     out = [vals, counts, percents];
-    
+
   else
     ## Handle char and cellstr
     if (ischar (x))
@@ -186,19 +186,19 @@ function tbl = tabulate (x)
     endif
 
     [idx, vals] = grp2idx (x);
-    
+
     if (isempty (idx))
         counts = [];
     else
         counts = accumarray (idx, 1);
-    endif 
-    
+    endif
+
     if (isempty (counts))
         percents = [];
     else
         percents = 100 * counts ./ sum (counts);
     endif
-    
+
     out = cell (length (vals), 3);
     out(:,1) = vals;
     out(:,2) = num2cell (counts);
@@ -207,7 +207,7 @@ function tbl = tabulate (x)
 
   if (nargout == 0)
     ## Use table for display if no output requested
-    
+
     if (isempty (out))
        ## Handle empty case
        disp ("   Value    Count    Percent");
@@ -225,10 +225,10 @@ function tbl = tabulate (x)
        Count = cell2mat (out(:,2));
        Percent = cell2mat (out(:,3));
     endif
-    
+
     t = table (Value, Count, Percent, "VariableNames", {"Value", "Count", ...
                                                         "Percent"});
-    
+
     disp (t);
   else
     tbl = out;
@@ -338,7 +338,7 @@ endfunction
 %! assert (tbl(:,1), {'a'; 'b'});
 %! assert ([tbl{:,2}]', [2; 1]);
 %!test
-%! ## Test cell array of strings
+%! ## Test cell array of character vectors
 %! x = {'a', 'b', 'a'};
 %! tbl = tabulate (x);
 %! assert (iscell (tbl));
@@ -347,7 +347,7 @@ endfunction
 %! assert ([tbl{:,2}]', [2; 1]);
 %!test
 %! ## Test string array with missing values
-%! x = string ({"a", "b", "a"});
+%! x = string ({'a", 'b', 'a'});
 %! x(4) = missing;
 %! tbl = tabulate (x);
 %! assert (iscell (tbl));
@@ -407,6 +407,3 @@ endfunction
 %!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
 %!error<tabulate: X must be either a numeric vector> ...
 %! tabulate ({"a", "b"; "a", "c"})
-%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
-%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
-
