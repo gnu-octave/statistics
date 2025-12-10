@@ -18,8 +18,8 @@
 ## @deftypefn  {statistics} {@var{p} =} friedman (@var{x})
 ## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps})
 ## @deftypefnx {statistics} {@var{p} =} friedman (@var{x}, @var{reps}, @var{displayopt})
-## @deftypefnx {statistics} {[@var{p}, @var{atab}] =} friedman (@dots{})
-## @deftypefnx {statistics} {[@var{p}, @var{atab}, @var{stats}] =} friedman (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{tbl}] =} friedman (@dots{})
+## @deftypefnx {statistics} {[@var{p}, @var{tbl}, @var{stats}] =} friedman (@dots{})
 ##
 ## Performs the nonparametric Friedman's test to compare column effects in a
 ## two-way layout.  @qcode{friedman} tests the null hypothesis that the column
@@ -46,16 +46,16 @@
 ## @item
 ## @var{p} is the p-value of the null hypothesis that all group means are equal.
 ## @item
-## @var{atab} is a table array containing the results of the Friedman's test in
-## ANOVA table format.  The table includes columns for Source, SS, df, MS,
-## Chi-sq, and Prob>Chi-sq with rows for Columns, [Interaction], Error, and Total.
+## @var{tbl} is a table containing the results of the Friedman's test in ANOVA
+## table format.  The table includes columns for Source, SS, df, MS, Chi-sq, and
+## Prob>Chi-sq with rows for Columns, [Interaction], Error, and Total.
 ## @item
-## @var{stats} is a structure containing statistics useful for performing
-## a multiple comparison of medians with the MULTCOMPARE function.
+## @var{stats} is a structure containing statistics useful for performing a
+## multiple comparison of medians with the MULTCOMPARE function.
 ## @end itemize
 ##
-## If friedman is called without any output arguments, then it prints the results
-## in a Friedman's ANOVA table to the standard output.
+## If friedman is called without any output arguments, then it prints the
+## results in a Friedman's ANOVA table to the standard output.
 ##
 ## Examples:
 ##
@@ -73,7 +73,7 @@
 ## @seealso{anova2, kruskalwallis, multcompare}
 ## @end deftypefn
 
-function [p, table_out, stats] = friedman (x, reps, displayopt)
+function [p, tbl, stats] = friedman (x, reps, displayopt)
 
   ## Check for valid number of input arguments
   narginchk (1, 3);
@@ -81,10 +81,12 @@ function [p, table_out, stats] = friedman (x, reps, displayopt)
   if (any (isnan (x(:))))
     error ("friedman: NaN values in input are not allowed.");
   endif
+
   ## Add defaults
   if (nargin == 1)
     reps = 1;
   endif
+
   ## Check for correct size of input matrix
   [r, c] = size (x);
   if (r <= 1 || c <= 1)
@@ -96,13 +98,16 @@ function [p, table_out, stats] = friedman (x, reps, displayopt)
       error ("friedman: repetitions and observations do not match.");
     endif
   endif
+
   ## Check for displayopt
-  if (nargin < 3)
-    displayopt = 'off';
-  elseif ! (strcmp (displayopt, 'off') || strcmp (displayopt, 'on'))
-    error ("friedman: displayopt must be either 'on' or 'off'.");
+  disp_table = false;
+  if (nargin == 3)
+    if (! any (strcmp (displayopt, {'on', 'off'})))
+      error ("friedman: displayopt must be either 'on' or 'off'.");
+    elseif (strcmp (displayopt, 'on'))
+      disp_table = true;
+    endif
   endif
-  plotdata = ! (strcmp (displayopt, 'off'));
 
   ## Prepare a matrix of ranks. Replicates are ranked together.
   m = x;
@@ -152,9 +157,9 @@ function [p, table_out, stats] = friedman (x, reps, displayopt)
   endif
 
   ## Create output table using datatypes package
-  table_out = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
-                 prob_list, "VariableNames", {"Source", "SS", "df", "MS", ...
-                 "Chi_sq", "Prob_Chi_sq"});
+  tbl = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
+               prob_list, "VariableNames", {"Source", "SS", "df", "MS", ...
+               "Chi_sq", "Prob_Chi_sq"});
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
@@ -164,10 +169,11 @@ function [p, table_out, stats] = friedman (x, reps, displayopt)
     stats.sigma = sqrt (sigmasq);
   endif
 
-  ## Print results table on screen if no output argument was requested
-  if (nargout == 0 || plotdata)
-    disp (table_out);
+  ## Display ANOVA table if opted or no output argument is requested
+  if (nargout == 0 || disp_table)
+    disp (tbl);
   endif
+
 endfunction
 
 
