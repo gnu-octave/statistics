@@ -347,7 +347,7 @@ endfunction
 %! assert ([tbl{:,2}]', [2; 1]);
 %!test
 %! ## Test string array with missing values
-%! x = string ({'a", 'b', 'a'});
+%! x = string ({'a', 'b', 'a'});
 %! x(4) = missing;
 %! tbl = tabulate (x);
 %! assert (iscell (tbl));
