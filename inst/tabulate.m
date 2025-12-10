@@ -18,80 +18,220 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {} tabulate (@var{x})
-## @deftypefnx {statistics} {@var{table} =} tabulate (@var{x})
+## @deftypefnx {statistics} {@var{tbl} =} tabulate (@var{x})
 ##
-## Calculate a frequency table.
+## Create a frequency table of unique values in vector @var{x}.
 ##
 ## @code{tabulate (x)} displays a frequency table of the data in the vector
-## @var{x}.  For each unique value in @var{x}, the tabulate function shows the
-## number of instances and percentage of that value in @var{x}.
+## @var{x}.  The input @var{x} can be a numeric vector, a logical vector,
+## a character array, a cell array of strings, a categorical array, or a
+## string array.
 ##
-## @code{@var{table} = tabulate (@var{x})} returns the frequency table,
-## @var{table}, as a numeric matrix when @var{x} is numeric and as a cell array
-## otherwise.  When an output argument is requested, @code{tabulate} does not
-## print the frequency table in the command window.
+## The table displays the value, the number of instances (count), and the
+## percentage of that value in @var{x}.  If no output argument is requested,
+## the table is displayed in the command window.
+##
+## @code{@var{tbl} = tabulate (@var{x})} returns the frequency table,
+## @var{tbl}, as a numeric matrix when @var{x} is numeric and as a cell array
+## otherwise.
 ##
 ## If @var{x} is numeric, any missing values (@qcode{NaNs}) are ignored.
+## Similarly, undefined elements in categorical arrays and missing elements in
+## string arrays are ignored.
 ##
 ## If all the elements of @var{x} are positive integers, then the frequency
 ## table includes 0 counts for the integers between 1 and @qcode{max (@var{x})}
 ## that do not appear in @var{x}.
 ##
+## For categorical arrays, the frequency table includes 0 counts for any
+## categories that are defined but do not appear in @var{x}.
+##
 ## @seealso{bar, pareto}
 ## @end deftypefn
 
-function table = tabulate (x)
+function tbl = tabulate (x)
 
-  ## Check input for being either numeric or a cell array
-  if (! (isnumeric (x) && isvector (x)) &&
-      ! (iscellstr (x) && isvector (x)) &&
-      ! ischar (x))
+  ## Check input for being numeric, string, categorical, cell array or logical
+  if (! (isnumeric (x) && (isvector (x) || isempty (x))) && ! (iscellstr (x)
+                       && isvector (x)) && ! ischar (x) && ! iscategorical (x)
+                       && ! isa (x, "string") && ! islogical (x))
     error (strcat ("tabulate: X must be either a numeric vector, a", ...
-                   " vector cell array of strings, or a character matrix."));
+                   " vector cell array of strings, a character matrix,", ...
+                   " a categorical array, or a string array."));
   endif
 
-  ## Remove missing values (NaNs) if numeric
-  if (isnumeric (x))
+  ## Ensure vector input
+  if (! ischar (x))
+      x = x(:);
+  endif
+
+  if (iscategorical (x))
+    ## For categorical, we report ALL categories, even if count is 0
+    vals = categories (x);
+    nc = length (vals);
+    
+    ## Count occurrences
+    xi = double (x);
+    
+    ## Filter out undefined
+    valid_mask = ! isnan (xi) & (xi >= 1) & (xi <= nc);
+    xi = xi(valid_mask);
+    
+    if (isempty (xi))
+      counts = zeros (nc, 1);
+    else
+      counts = accumarray (xi, 1, [nc, 1]);
+    endif
+    
+    total = sum (counts);
+    percents = 100 * counts ./ total;
+    
+    ## Output format: Cell array
+    out = cell (length (vals), 3);
+    out(:,1) = vals;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+    
+  elseif (isa (x, "string"))
+    ## Handle string arrays
+    x(ismissing (x)) = [];
+    
+    ## Convert to cellstr and use grp2idx which is robust
+    [idx, vals] = grp2idx (cellstr (x));
+    
+    if (isempty (idx))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    ## Output format: Cell array
+    vals_cell = vals;
+    out = cell (length (vals_cell), 3);
+    out(:,1) = vals_cell;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+    
+    if (isempty (idx))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    ## Output format: Cell array
+    vals_cell = vals;
+    out = cell (length (vals_cell), 3);
+    out(:,1) = vals_cell;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
+
+  elseif (islogical (x))
+    ## Handle logical arrays    
+    [vals, ~, idx] = unique (x);
+    if (isempty (x))
+      counts = [];
+      percents = [];
+    else
+      counts = accumarray (idx, 1);
+      total = sum (counts);
+      percents = 100 * counts ./ total;
+    endif
+    
+    vals_cell = cellstr (num2str (double (vals)));
+    
+    out = cell (length (vals), 3);
+    out(:, 1) = vals_cell;
+    out(:, 2) = num2cell (counts);
+    out(:, 3) = num2cell (percents);
+
+  elseif (isnumeric (x))
+    ## Handle numeric
+    ## Remove missing values (NaNs) if numeric
     x(isnan (x)) = [];
-  endif
 
-  ## Handle positive integers separately
-  if (isnumeric (x) && all (x == fix (x)) && all (x > 0))
-    [count, value] = hist (x, (1:max (x)));
-    posint = true;
+    ## Handle positive integers separately
+    if (! isempty (x) && all (x == fix (x)) && all (x > 0))
+      max_val = max (x);
+      vals = (1:max_val)';
+      [counts, ~] = hist (x, vals);
+      counts = counts(:);
+    else
+      [vals, ~, idx] = unique (x);
+      if (isempty (x))
+          counts = [];
+      else
+          counts = accumarray (idx, 1);
+      end
+    endif
+    
+    if (isempty (counts))
+        percents = [];
+    else
+        percents = 100 * counts ./ sum (counts);
+    endif
+    
+    ## Output format: Numeric Matrix
+    out = [vals, counts, percents];
+    
   else
-    [g, gn, gl] = grp2idx (x);
-    [count, value] = hist (g, (1:length (gn)));
-    posint = false;
+    ## Handle char and cellstr
+    if (ischar (x))
+        x = cellstr (x);
+    endif
+
+    [idx, vals] = grp2idx (x);
+    
+    if (isempty (idx))
+        counts = [];
+    else
+        counts = accumarray (idx, 1);
+    endif 
+    
+    if (isempty (counts))
+        percents = [];
+    else
+        percents = 100 * counts ./ sum (counts);
+    endif
+    
+    out = cell (length (vals), 3);
+    out(:,1) = vals;
+    out(:,2) = num2cell (counts);
+    out(:,3) = num2cell (percents);
   endif
 
-  ## Calculate percentages
-  percent = 100 * count ./ sum (count);
-
-  ## Display results is no output argument
   if (nargout == 0)
-    if (posint)
-      fprintf ("   Value    Count    Percent\n");
-      fprintf ("   %5d    %5d     %6.2f%%\n", value', count', percent');
-    else
-      valw = max (cellfun ("length", gn));
-      valw = max ([5, min([50, valw])]);
-      header = sprintf ("  %%%ds    %%5s    %%6s\n", valw);
-      result = sprintf ("  %%%ds    %%5d     %%6.2f%%%%\n", valw);
-      fprintf (header, "Value", "Count", "Percent");
-      for i = 1:length (gn)
-        fprintf (result, gn{i}, count(i), percent(i));
-      endfor
+    ## Use table for display if no output requested
+    
+    if (isempty (out))
+       ## Handle empty case
+       disp ("   Value    Count    Percent");
+       return;
     endif
-  ## Create output table
+
+    if (isnumeric (out))
+       ## Numeric matrix case
+       Value = out(:,1);
+       Count = out(:,2);
+       Percent = out(:,3);
+    else
+       ## Cell array case
+       Value = out(:,1);
+       Count = cell2mat (out(:,2));
+       Percent = cell2mat (out(:,3));
+    endif
+    
+    t = table (Value, Count, Percent, "VariableNames", {"Value", "Count", ...
+                                                        "Percent"});
+    
+    disp (t);
   else
-    if (posint)
-      table = [value', count', percent'];
-    elseif (isnumeric (x))
-      table = [gl, count', percent'];
-    else
-      table = [gn, num2cell([count', percent'])];
-    endif
+    tbl = out;
   endif
 
 endfunction
@@ -162,8 +302,111 @@ endfunction
 %! assert (table(end-2,:), [70, 11, 11]);
 %! assert (table(end-1,:), [71, 10, 10]);
 %! assert (table(end,:), [72, 4, 4]);
+%!test
+%! ## Test numeric vector including NaNs
+%! x = [1; 1; 2; 3; 1; NaN; 2];
+%! tbl = tabulate (x);
+%! assert (isnumeric (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), [1; 2; 3]);
+%! assert (tbl(:,2), [3; 2; 1]);
+%! assert (tbl(:,3), [50; 33.3333; 16.6667], 3e-4);
+%!test
+%! ## Test positive integers with gaps
+%! x = [1; 3; 3];
+%! tbl = tabulate (x);
+%! assert (isnumeric (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), [1; 2; 3]);
+%! assert (tbl(:,2), [1; 0; 2]);
+%! assert (tbl(:,3), [33.3333; 0; 66.6667], 3e-4);
+%!test
+%! ## Test logical inputs (should return cell array with '0'/'1')
+%! x = [true; false; true; true];
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'0'; '1'});
+%! assert ([tbl{:,2}]', [1; 3]);
+%! assert ([tbl{:,3}]', [25; 75]);
+%!test
+%! ## Test character array
+%! x = ['a'; 'b'; 'a'];
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+%!test
+%! ## Test cell array of strings
+%! x = {'a', 'b', 'a'};
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+%!test
+%! ## Test string array with missing values
+%! x = string ({"a", "b", "a"});
+%! x(4) = missing;
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'a'; 'b'});
+%! assert ([tbl{:,2}]', [2; 1]);
+%!test
+%! ## Test categorical array with undefined values and vacuous levels
+%! x = categorical ({'a', 'a', 'b'}, {'a', 'b', 'c'});
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), {'a'; 'b'; 'c'});
+%! assert ([tbl{:,2}]', [2; 1; 0]);
+%! assert ([tbl{:,3}]', [66.6667; 33.3333; 0], 1e-3);
+%!test
+%! ## Test empty input
+%! tbl = tabulate ([]);
+%! assert (isempty (tbl));
+%!test
+%! ## fisheriris (Categorical/CellStr)
+%! load fisheriris;
+%! tbl = tabulate (species);
+%! assert (size (tbl), [3, 3]);
+%! assert (tbl(:,1), {'setosa'; 'versicolor'; 'virginica'});
+%! assert ([tbl{:,2}]', [50; 50; 50]);
+%! assert ([tbl{:,3}]', [33.3333; 33.3333; 33.3333], 1e-4);
+%!test
+%! ## carsmall (Char/CellStr)
+%! load carsmall;
+%! tbl = tabulate (Origin);
+%! origins = tbl(:,1);
+%! counts = [tbl{:,2}];
+%! assert (counts(strcmp (origins, 'USA')), 69);
+%! assert (counts(strcmp (origins, 'Japan')), 15);
+%! assert (counts(strcmp (origins, 'Germany')), 9);
+%! assert (counts(strcmp (origins, 'France')), 4);
+%! assert (counts(strcmp (origins, 'Sweden')), 2);
+%! assert (counts(strcmp (origins, 'Italy')), 1);
+%!test
+%! ## patients (Logical)
+%! load patients;
+%! tbl = tabulate (Smoker);
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'0'; '1'});
+%! assert ([tbl{:,2}]', [66; 34]);
+%!test
+%! ## patients (String)
+%! load patients;
+%! tbl = tabulate (Gender);
+%! vals = tbl(:,1);
+%! counts = [tbl{:,2}];
+%! assert (counts(strcmp (vals, 'Male')), 47);
+%! assert (counts(strcmp (vals, 'Female')), 53);
 
 %!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
 %!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
 %!error<tabulate: X must be either a numeric vector> ...
 %! tabulate ({"a", "b"; "a", "c"})
+%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
+%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
+
