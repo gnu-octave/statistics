@@ -1,4 +1,4 @@
-## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -74,10 +74,11 @@ function p = bvncdf (x, mu, sigma)
   dk = (x(:,2) - mu(:,2)) / sqrt (sigma(2,2));
   r = sigma(1,2) / sqrt (sigma(1,1) * sigma(2,2));
   p = NaN (size (dh));
-  p(dh == Inf & dk == Inf)   = 1;
-  p(dk == Inf) = 0.5 * erfc (- dh(dk == Inf) / sqrt (2));
-  p(dh == Inf) = 0.5 * erfc (- dh(dk == Inf) / sqrt (2));
-  p(dh == -Inf | dk == -Inf) = 0;
+  ## Handle special cases for infinite integration limits
+  p(dh == Inf & dk == Inf) = 1; ## Both limits are infinite: P(X1 ≤ ∞, X2 ≤ ∞) = 1
+  p(dk == Inf & dh != Inf) = 0.5 * erfc (- dh(dk == Inf & dh != Inf) / sqrt (2)); ## x2 → +∞ (finite x1): P(X1 ≤ x1, X2 ≤ ∞) = P(X1 ≤ x1) = Φ(dh)
+  p(dh == Inf & dk != Inf) = 0.5 * erfc (- dk(dh == Inf & dk != Inf) / sqrt (2)); ## x1 → +∞ (finite x2): P(X1 ≤ ∞, X2 ≤ x2) = P(X2 ≤ x2) = Φ(dk)
+  p(dh == -Inf | dk == -Inf) = 0; ## x1 → -∞ or x2 → -∞: P(X1 ≤ -∞, X2 ≤ x2) = P(X1 ≤ x1, X2 ≤ -∞) = 0
   ind = (dh > -Inf & dh < Inf & dk > -Inf & dk < Inf);
   ## For p(x1 < dh, x2 < dk, r)
   if (sum (ind) > 0)
@@ -214,6 +215,15 @@ endfunction
 %!          0.9813597788804785, 0.9821977956568989, ...
 %!          0.9824283794464095, 0.9824809345614861]';
 %! assert (p([616:625]), p_out, 3e-16);
+%!test
+%! ## Test infinite limits
+%! mu = [0, 0];
+%! sigma = [1 0.5; 0.5 1];
+%! assert (bvncdf ([Inf, Inf], mu, sigma), 1);
+%! assert (bvncdf ([-Inf, 2], mu, sigma), 0);
+%! assert (bvncdf ([1, -Inf], mu, sigma), 0);
+%! assert (bvncdf ([0.5, Inf], mu, sigma), normcdf (0.5), eps);
+%! assert (bvncdf ([Inf, 0.5], mu, sigma), normcdf (0.5), eps);
 %!error bvncdf (randn (25,3), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], ones (3, 2));
