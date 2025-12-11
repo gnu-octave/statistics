@@ -24,9 +24,11 @@
 ##
 ## For variable @var{s}, returns the indices @var{g}, into the variable
 ## groups @var{gn} and @var{gl}.  The first has a string representation of
-## the groups while the later has its actual values. The group indices are
-## allocated in order of appearance in @var{s}, in most cases. The exceptions
-## are when TODO: ADD DOCS HERE
+## the groups while the later has its actual values. In the case of numerical
+## and logical data types, the group indices are ordered in sorted order of @var{s}.
+## In the case of categorical arrays, the group indices are allocated by the order of
+## the categories in @var{s}. For the rest of the data types, the group indices are
+## allocated by order of first appearance in @var{s}.
 ##
 ## NaNs and empty strings in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
@@ -41,22 +43,25 @@ function [g, gn, gl] = grp2idx (s)
 
   s_was_char = false;
   s_was_categorical = false;
+  s_was_duration = false;
   if (ischar (s))
     s_was_char = true;
     s = cellstr (s);
-  elseif(iscategorical (s))
+  elseif (iscategorical (s))
     s_was_categorical = true;
     undef = isundefined (s);
     cats = categories (s);
     s = cellstr (string (s));
     s(undef) = {""};
+  elseif (isduration (s))
+    s_was_duration = true
   elseif (! isvector (s))
     error ("grp2idx: S must be a vector, cell array of strings, or char matrix");
   endif
 
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s) && ! s_was_categorical)
+  if (iscellstr (s) && ! s_was_categorical )
     I = sort(I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -92,6 +97,8 @@ function [g, gn, gl] = grp2idx (s)
   if (nargout > 1)
     if (s_was_categorical)
       gn = categories (categorical (s));
+    elseif (s_was_duration)
+      gn = cellstr(gl)
     elseif (iscellstr (gl))
       gn = gl;
     elseif (iscell (gl))
@@ -149,3 +156,20 @@ endfunction
 %!        {[1; 2; 1; 2; 2] {"sci"; "oct"} {"sci"; "oct"}});
 %!test assert (nthargout (1:3, @grp2idx, {"sa" "et" "et" "" "sa"}),
 %!        {[1; 2; 2; NaN; 1] {"sa"; "et"} {"sa"; "et"}})
+
+## test for duration arrays
+%!test
+%assert (nthargout (1:3, @grp2idx, [duration(1,20,0); duration(0,45,30); ...
+%         duration(1,20,0); duration(2,5,10)]), [2; 1; 2; 3], {'00:45:30'; ...
+%         '01:20:00'; '02:05:10'}, [duration(0,45,30); duration(1,20,0); ...
+%         duration(2,5,10)]});
+
+%!test
+%assert (nthargout (1:3, @grp2idx, seconds([1.234, 1.234, 2.5, 3.000])), {[1; 1; 2; 3],
+%         {'1.234 sec'; '2.5 sec'; '3 sec'}, [seconds(1.234); seconds(2.5); seconds(3.0)]});
+
+%!test
+%assert (nthargout (1:3, @grp2idx, [hours(1); hours(2); hours(1); hours(3)]), {[1; 2; 1; 3],
+%         {'1 hr'; '2 hr'; '3 hr'}, [hours(1); hours(2); hours(3)]});
+
+## TODO: categorical, datetime and string tests
