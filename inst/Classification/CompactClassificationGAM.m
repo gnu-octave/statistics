@@ -748,7 +748,7 @@ endfunction
 %! [labels, scores] = predict (CMdl, x);
 %! assert (class (CMdl), "CompactClassificationGAM");
 %! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {2, "Y"})
-%! assert (CMdl.ClassNames, {'1'; '0'})
+%! assert (CMdl.ClassNames, {'0'; '1'})
 %! assert (CMdl.PredictorNames, {'x1', 'x2'})
 %! assert (CMdl.ModelwInt.Intercept, 0.4055, 1e-1)
 %! assert (labels, l)

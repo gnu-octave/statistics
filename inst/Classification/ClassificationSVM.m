@@ -1718,7 +1718,7 @@ endclassdef
 %! assert (class (a), "ClassificationSVM");
 %! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
 %! assert (a.ModelParameters.BoxConstraint, 1)
-%! assert (a.ClassNames, [1; -1])
+%! assert (a.ClassNames, [-1; 1])
 %! assert (a.ModelParameters.KernelOffset, 0)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
