@@ -44,6 +44,7 @@ function [g, gn, gl] = grp2idx (s)
   s_was_char = false;
   s_was_categorical = false;
   s_was_duration = false;
+  s_was_string = false;
   if (ischar (s))
     s_was_char = true;
     s = cellstr (s);
@@ -79,9 +80,9 @@ function [g, gn, gl] = grp2idx (s)
     empties = cellfun (@isempty, s);
     if (any (empties))
       g(empties) = NaN;
-      while (min (g) > 1)
-        g--;
-      endwhile
+      rm = find (cellfun (@isempty, gl));
+      to_decrement = ! isnan (g) & g > rm;
+      g(to_decrement) -= 1;
     endif
     empties = cellfun (@isempty, gl);
     if (any (empties))
