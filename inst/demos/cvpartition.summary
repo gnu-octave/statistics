@@ -1,0 +1,82 @@
+%!demo
+%! ## 1. Basic Usage
+%! rng (1, "twister");
+%!
+%! ## Create simple numeric labels
+%! labels = [ones(10, 1); 2 * ones(10, 1)];
+%! c = cvpartition (labels, 'KFold', 2);
+%! summary (c)
+
+%!demo
+%! ## 2. Grouped K-Fold Partition
+%! rng (101, "twister");
+%!
+%! Region = repelem ({'North'; 'South'; 'East'; 'West'}, [20; 15; 15; 20]);
+%! Success = repelem ({'Success'; 'Fail'}, [49;  21]);
+%! Success = Success(randperm (70));
+%! Tbl = table (Region, Success);
+%!
+%! ## Create Grouped Partition using the 'Region' variable
+%! c_group = cvpartition (height (Tbl), 'KFold', 4, 'GroupingVariables', Tbl.Region);
+%!
+%! ## Generate Summary
+%! summary (c_group)
+
+%!demo
+%! ## 3. Stratified K-Fold Partition
+%! rng (202, "twister");
+%!
+%! Success = repelem ({'ClassA'; 'ClassB'}, [25; 25]);
+%! Success = Success(randperm (50));
+%! Tbl = table (Success);
+%!
+%! ## Create Stratified Partition
+%! c_strat = cvpartition (Tbl.Success, 'KFold', 5);
+%!
+%! ## Generate Summary
+%! summary (c_strat)
+
+%!demo
+%! ## 4. Handling Missing Values (NaN) in Stratification
+%! rng (404, "twister");
+%!
+%! ## Create data with missing values (NaN)
+%! labels = [ones(10, 1); 2 * ones(10, 1); NaN(5, 1)];
+%!
+%! ## Create partition
+%! c_missing = cvpartition (labels, 'KFold', 2);
+%!
+%! ## Generate Summary
+%! summary (c_missing)
+
+%!demo
+%! ## 5. Filtering Summary
+%! rng (303, "twister");
+%!
+%! Success = repelem ({'Yes'; 'No'}, [20; 10]);
+%! Success = Success(randperm (30));
+%!
+%! ## Create Partition and Summary
+%! c_strat = cvpartition (Success, 'KFold', 3);
+%! summaryStrat = summary (c_strat);
+%!
+%! ## A. Filtering by Exact Set Name
+%! summaryTest1 = summaryStrat (strcmp (summaryStrat.Set, 'test1'), :)
+%!
+%! ## B. Filtering by Partial Match
+%! is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), 'test'));
+%! testSummaryTbl = summaryStrat (is_test, :)
+
+%!demo
+%! ## 6. Unstacking
+%! rng (505, "twister");
+%!
+%! Success = repelem ({'Yes'; 'No'}, [20; 10]);
+%! Success = Success(randperm (30));
+%!
+%! ## Create Partition and Summary
+%! c_strat = cvpartition (Success, 'KFold', 3);
+%! summaryStrat = summary (c_strat);
+%!
+%! ## Pivot 'StratificationLabel' (Yes/No) into new columns
+%! speciesSummaryTbl = unstack (summaryStrat(:,1:4), 'StratificationCount', 'StratificationLabel')

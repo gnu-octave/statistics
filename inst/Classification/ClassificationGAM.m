@@ -1549,14 +1549,14 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
 %! a = ClassificationGAM (x, y, "interactions", "all");
-%! l = {'0'; '0'; '0'; '0'; '0'};
+%! l = {'1'; '1'; '1'; '1'; '1'};
 %! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
 %!      0.4259, 0.5741; 0.3760, 0.6240];
 %! [labels, scores] = predict (a, x);
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
 %! assert ({a.NumPredictors, a.ResponseName}, {2, "Y"})
-%! assert (a.ClassNames, {'1'; '0'})
+%! assert (a.ClassNames, {'0'; '1'})
 %! assert (a.PredictorNames, {'x1', 'x2'})
 %! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
 %! assert (labels, l)

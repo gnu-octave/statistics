@@ -24,8 +24,11 @@
 ##
 ## For variable @var{s}, returns the indices @var{g}, into the variable
 ## groups @var{gn} and @var{gl}.  The first has a string representation of
-## the groups while the later has its actual values. The group indices are
-## allocated in order of appearance in @var{s}.
+## the groups while the later has its actual values.  In the case of numerical
+## and logical data types, the group indices are ordered in sorted order of
+## @var{s}.  In the case of categorical arrays, the group indices are allocated
+## by the order of the categories in @var{s}.  For the rest of the data types,
+## the group indices are allocated by order of first appearance in @var{s}.
 ##
 ## NaNs and empty strings in @var{s} appear as NaN in @var{g} and are
 ## not present on either @var{gn} and @var{gl}.
@@ -39,27 +42,30 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   s_was_char = false;
+  s_was_categorical = false;
+  s_was_duration = false;
+  s_was_string = false;
   if (ischar (s))
     s_was_char = true;
     s = cellstr (s);
+  elseif (isstring (s))
+    s_was_string = true;
+    s = cellstr (s);
+  elseif (iscategorical (s))
+    s_was_categorical = true;
+    undef = isundefined (s);
+    cats = categories (s);
+    s = cellstr (string (s));
+    s(undef) = {""};
+  elseif (isduration (s))
+    s_was_duration = true;
   elseif (! isvector (s))
     error ("grp2idx: S must be a vector, cell array of strings, or char matrix");
   endif
 
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s))
-    I = sort(I);
-    for i = 1:length (gl)
-      gl_s(i) = gl(g(I(i)));
-      idx(i,:) = (g == g(I(i)));
-    endfor
-    for i = 1:length (gl)
-      g(idx(i,:)) = i;
-    endfor
-    gl = gl_s;
-    gl = gl';
-  else
+  if (iscellstr (s) && ! s_was_categorical)
     I = sort(I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -77,9 +83,9 @@ function [g, gn, gl] = grp2idx (s)
     empties = cellfun (@isempty, s);
     if (any (empties))
       g(empties) = NaN;
-      while (min (g) > 1)
-        g--;
-      endwhile
+      rm = find (cellfun (@isempty, gl));
+      to_decrement = ! isnan (g) & g > rm;
+      g(to_decrement) -= 1;
     endif
     empties = cellfun (@isempty, gl);
     if (any (empties))
@@ -93,7 +99,11 @@ function [g, gn, gl] = grp2idx (s)
   endif
 
   if (nargout > 1)
-    if (iscellstr (gl))
+    if (s_was_categorical)
+      gn = categories (categorical (s));
+    elseif (s_was_duration)
+      gn = cellstr(gl);
+    elseif (iscellstr (gl))
       gn = gl;
     elseif (iscell (gl))
       gn = cellfun (@num2str, gl, "UniformOutput", false);
@@ -104,6 +114,10 @@ function [g, gn, gl] = grp2idx (s)
 
   if (nargout > 2 && s_was_char)
     gl = char (gl);
+  elseif (nargout > 2 && s_was_categorical)
+    gl = categorical (gn);
+  elseif (nargout > 2 && s_was_string)
+    gl = string (gl);
   endif
 
 endfunction
@@ -111,7 +125,7 @@ endfunction
 ## test boolean input and note that row or column vector makes no difference
 %!test
 %! in = [true false false true];
-%! out = {[1; 2; 2; 1] {"1"; "0"} [true; false]};
+%! out = {[2; 1; 1; 2] {"0"; "1"} [false; true]};
 %! assert (nthargout (1:3, @grp2idx, in), out)
 %! assert (nthargout (1:3, @grp2idx, in), nthargout (1:3, @grp2idx, in'))
 
@@ -120,7 +134,7 @@ endfunction
 %! assert (nthargout (1:3, @grp2idx, [false, true]),
 %!         {[1; 2] {"0"; "1"} [false; true]});
 %! assert (nthargout (1:3, @grp2idx, [true, false]),
-%!         {[1; 2] {"1"; "0"} [true; false]});
+%!         {[2; 1] {"0"; "1"} [false; true]});
 
 ## test char matrix and cell array of strings
 %!assert (nthargout (1:3, @grp2idx, ["oct"; "sci"; "oct"; "oct"; "sci"]),
@@ -131,8 +145,8 @@ endfunction
 
 ## test numeric arrays
 %!assert (nthargout (1:3, @grp2idx, [ 1 -3 -2 -3 -3  2  1 -1  3 -3]),
-%!        {[1; 2; 3; 2; 2; 4; 1; 5; 6; 2], {"1"; "-3"; "-2"; "2"; "-1"; "3"}, ...
-%!         [1; -3; -2; 2; -1; 3]});
+%!        {[4; 1; 2; 1; 1; 5; 4; 3; 6; 1], {"-3"; "-2"; "-1"; "1"; "2"; "3"}, ...
+%!         [-3; -2; -1; 1; 2; 3]});
 
 ## test for NaN and empty strings
 %!assert (nthargout (1:3, @grp2idx, [2 2 3 NaN 2 3]),
@@ -147,3 +161,75 @@ endfunction
 %!        {[1; 2; 1; 2; 2] {"sci"; "oct"} {"sci"; "oct"}});
 %!test assert (nthargout (1:3, @grp2idx, {"sa" "et" "et" "" "sa"}),
 %!        {[1; 2; 2; NaN; 1] {"sa"; "et"} {"sa"; "et"}})
+
+## test for categorical arrays
+%!test
+%! [g, gn, gl] = grp2idx(categorical({'low', 'med', 'high', 'low'}));
+%! assert(isequal(g, [2; 3; 1; 2]));
+%! assert(isequal(gn, {'high'; 'low'; 'med'}));
+%! assert(isequal(gl, categorical({'high'; 'low'; 'med'})));
+
+%!test
+%! [g, gn, gl] = grp2idx(categorical([10, 20, 10, 30, 20]));
+%! assert(isequal(g, [1; 2; 1; 3; 2]));
+%! assert(isequal(gn, {'10'; '20'; '30'}));
+%! assert(isequal(gl, categorical([10; 20; 30])));
+
+%!test
+%! cats = categorical({'high', '<undefined>', 'low', '<undefined>'});
+%! [g, gn, gl] = grp2idx(cats);
+%! assert(isequal(g, [2; 1; 3; 1]));
+%! assert(isequal(gn, {'<undefined>'; 'high'; 'low'}));
+%! assert(isequal(gl, categorical({'<undefined>'; 'high'; 'low'})));
+
+## test for duration arrays
+%!test
+%! g = gn = gl = [];
+%! [g, gn, gl] = grp2idx(seconds([1.234, 1.234, 2.5, 3.000]));
+%! assert(isequal(g, [1; 1; 2; 3]));
+%! assert(isequal(gn, {'1.234 sec'; '2.5 sec'; '3 sec'}));
+%! assert(isequal(gl, seconds([1.234; 2.5; 3.000])));
+
+%!test
+%! [g, gn, gl] = grp2idx([hours(1); hours(2); hours(1); hours(3)]);
+%! assert(isequal(g, [1; 2; 1; 3]));
+%! assert(isequal(gn, {'1 hr'; '2 hr'; '3 hr'}));
+%! assert(isequal(gl, [hours(1); hours(2); hours(3)]));
+
+%!test
+%! in = [duration(1, 30, 0); duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)];
+%! [g, gn, gl] = grp2idx(in);
+%! assert(isequal(g, [2; 1; 2; 3]));
+%! assert(isequal(gn, {'00:45:30'; '01:30:00'; '02:15:15'}));
+%! assert(isequal(gl, [duration(0,45,30); duration(1,30,0); duration(2,15,15)]));
+
+## Inconsistency Note: following test is inconsistent with MATLAB due to a
+## probable bug in their implementation, where they include multiple NaNs
+## in the output group labels for duration array inputs.
+%!test
+%! in = [hours(1); NaN; minutes(30); hours(1); NaN; seconds(90)];
+%! [g, gn, gl] = grp2idx(in);
+%! assert(isequaln(g, [3; NaN; 2; 3; NaN; 1]));
+%! assert(isequal(gn, {'0.025 hr'; '0.5 hr'; '1 hr'}));
+%! assert(isequal(gl, [seconds(90); minutes(30);  hours(1)]));
+
+
+## test for string arrays
+
+%!test
+%! [g, gn, gl] = grp2idx(string({'123', 'erw', missing, '', '234'}));
+%! assert(isequaln(g, [1; 2; NaN; NaN; 3]));
+%! assert(isequal(gn, {'123'; 'erw'; '234'}));
+%! assert(isequal(gl, string({"123"; "erw"; "234"})));
+
+%!test
+%! [g, gn, gl] = grp2idx(string({'medium', 'low', 'high', 'medium', 'medium'}));
+%! assert(isequaln(g, [1; 2; 3; 1; 1]));
+%! assert(isequal(gn, {'medium'; 'low'; 'high'}));
+%! assert(isequal(gl, string({"medium"; "low"; "high"})));
+
+%!test
+%! [g, gn, gl] = grp2idx(string({'', 'high', 'low', ''}));
+%! assert(isequaln(g, [NaN; 1; 2; NaN]));
+%! assert(isequal(gn, {'high'; 'low'}));
+%! assert(isequal(gl, string({"high"; "low"})));

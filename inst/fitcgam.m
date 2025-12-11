@@ -198,7 +198,7 @@ endfunction
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
 %! assert ({a.NumPredictors, a.ResponseName}, {2, "Y"})
-%! assert (a.ClassNames, {'1'; '0'})
+%! assert (a.ClassNames, {'0'; '1'})
 %! assert (a.PredictorNames, {'x1', 'x2'})
 %! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
 %!test
