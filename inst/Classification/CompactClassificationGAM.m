@@ -742,13 +742,13 @@ endfunction
 %! y = [1; 0; 1; 0; 1];
 %! Mdl = fitcgam (x, y, "interactions", "all");
 %! CMdl = compact (Mdl);
-%! l = {'0'; '0'; '0'; '0'; '0'};
+%! l = {'1'; '1'; '1'; '1'; '1'};
 %! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
 %!      0.4259, 0.5741; 0.3760, 0.6240];
 %! [labels, scores] = predict (CMdl, x);
 %! assert (class (CMdl), "CompactClassificationGAM");
 %! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {2, "Y"})
-%! assert (CMdl.ClassNames, {'1'; '0'})
+%! assert (CMdl.ClassNames, {'0'; '1'})
 %! assert (CMdl.PredictorNames, {'x1', 'x2'})
 %! assert (CMdl.ModelwInt.Intercept, 0.4055, 1e-1)
 %! assert (labels, l)
