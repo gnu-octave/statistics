@@ -73,7 +73,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
     Display = varargin{3};
     DispOptions = {"off", "final", "iter"};
     if (sum (any (strcmpi (Display, DispOptions))) == 0)
-      error ("mvncdf: invalid value for 'Display' argument.");
+      error ("mvtcdfqmc: invalid value for 'Display' argument.");
     endif
   endif
   ## Check if input is single or double class
