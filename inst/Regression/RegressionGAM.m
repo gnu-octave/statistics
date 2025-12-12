@@ -866,9 +866,9 @@ endfunction
 %! formula = "Y ~ A + B + C + D + A:C";
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = RegressionGAM (x, y, "predictors", pnames, "formula", formula);
-%! assert ({a.IntMatrix}, {intMat})
+%! assert (a.IntMatrix, double (intMat))
 %! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
-%! assert ({a.Formula}, {formula})
+%! assert (a.Formula, formula)
 
 ## Test input validation for constructor
 %!error<RegressionGAM: too few input arguments.> RegressionGAM ()

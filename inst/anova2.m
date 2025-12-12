@@ -385,7 +385,7 @@ endfunction
 %! assert (atab{6,2}, 22);
 %! assert (stats.source, "anova2");
 %! assert (stats.colmeans, [6.25, 4.75, 4]);
-%! assert (stats.inter, 1, 0);
+%! assert (stats.inter, true);
 %! assert (stats.pval, 0.7462153966366274, 1e-14);
 %! assert (stats.df, 12);
 
