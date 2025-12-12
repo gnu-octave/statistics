@@ -241,8 +241,8 @@ function [s_o, hs_o] = boxplot (data, varargin)
           case 5
             maxwhisker = dummy;
           otherwise
-            error("boxplot: no positional argument allowed at position %d", ...
-                  --indopt);
+            error ("boxplot: no positional argument allowed at position %d", ...
+                   --indopt);
         endswitch
       endif
       numarg--;
@@ -288,7 +288,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
                 orientation = 0;
               else
               msg = ["boxplot: 'Orientation' input argument accepts only", ...
-                    " 'vertical' (or 1) or 'horizontal' (or 0) as value"];
+                     " 'vertical' (or 1) or 'horizontal' (or 0) as value"];
               error (msg);
               endif
             elseif (! (isnumeric (orientation) && isreal (orientation)))
@@ -297,11 +297,11 @@ function [s_o, hs_o] = boxplot (data, varargin)
 
           case "whisker"
             maxwhisker = varargin{indopt};
-            if (! isscalar (maxwhisker) || ...
+            if (! isscalar (maxwhisker) ||
                 ! (isnumeric (maxwhisker) && isreal (maxwhisker)))
               msg = ["boxplot: 'Whisker' input argument accepts only", ...
-                    " a real scalar value as input parameter"];
-              error(msg);
+                     " a real scalar value as input parameter"];
+              error (msg);
             endif
 
           case "outliertags"
@@ -314,7 +314,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
                 outlier_tags = 0;
               else
               msg = ["boxplot: 'OutlierTags' input argument accepts only", ...
-                    " 'on' (or 1) or 'off' (or 0) as value"];
+                     " 'on' (or 1) or 'off' (or 0) as value"];
               error (msg);
               endif
             elseif (! (isnumeric (outlier_tags) && isreal (outlier_tags)))
@@ -325,7 +325,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
             sample_IDs = varargin{indopt};
             if (! iscell (sample_IDs))
               msg = ["boxplot: 'Sample_IDs' input argument accepts only", ...
-                    " a cell array as value"];
+                     " a cell array as value"];
               error (msg);
             endif
             outlier_tags = 1;
@@ -333,10 +333,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
           case "boxwidth"
             box_width = varargin{indopt};
             ## Check for string input: "fixed" or "proportional"
-            if (! ischar (box_width) || ...
+            if (! ischar (box_width) ||
                 ! ismember (lower (box_width), {"fixed", "proportional"}))
               msg = ["boxplot: 'BoxWidth' input argument accepts only", ...
-                    " 'fixed' or 'proportional' as value"];
+                     " 'fixed' or 'proportional' as value"];
               error (msg);
             endif
             box_width = lower (box_width);
@@ -345,7 +345,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
             widths = varargin{indopt};
             if (! isscalar (widths) || ! (isnumeric (widths) && isreal (widths)))
               msg = ["boxplot: 'Widths' input argument accepts only", ...
-                    " a real scalar value as value"];
+                     " a real scalar value as value"];
               error (msg);
             endif
 
@@ -353,17 +353,17 @@ function [s_o, hs_o] = boxplot (data, varargin)
             capwid = varargin{indopt};
             if (! isscalar (capwid) || ! (isnumeric (capwid) && isreal (capwid)))
               msg = ["boxplot: 'CapWidths' input argument accepts only", ...
-                    " a real scalar value as value"];
+                     " a real scalar value as value"];
               error (msg);
             endif
 
           case "boxstyle"
             box_style = varargin{indopt};
             ## Check for string input: "outline" or "filled"
-            if (! ischar (box_style) || ...
+            if (! ischar (box_style) ||
                 ! ismember (lower (box_style), {"outline", "filled"}))
               msg = ["boxplot: 'BoxStyle' input argument accepts only", ...
-                    " 'outline' or 'filled' as value"];
+                     " 'outline' or 'filled' as value"];
               error (msg);
             endif
             box_style = lower (box_style);
@@ -372,7 +372,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
             positions = varargin{indopt};
             if (! isvector (positions) || ! isnumeric (positions))
               msg = ["boxplot: 'Positions' input argument accepts only", ...
-                    " a numeric vector as value"];
+                     " a numeric vector as value"];
               error (msg);
             endif
 
@@ -380,16 +380,16 @@ function [s_o, hs_o] = boxplot (data, varargin)
             labels = varargin{indopt};
             if (! iscellstr (labels))
               msg = ["boxplot: 'Labels' input argument accepts only", ...
-                    " a cellstr array as value"];
+                     " a cellstr array as value"];
               error (msg);
             endif
 
           case "colors"
             bcolor = varargin{indopt};
-            if (! (ischar (bcolor) || ...
+            if (! (ischar (bcolor) ||
                 (isnumeric (bcolor) && size (bcolor, 2) == 3)))
               msg = ["boxplot: 'Colors' input argument accepts only", ...
-                    " a character (string) or Nx3 numeric array as value"];
+                     " a character (string) or Nx3 numeric array as value"];
               error (msg);
             endif
 
@@ -563,14 +563,14 @@ function [s_o, hs_o] = boxplot (data, varargin)
     ## Get the next data set from the array or cell array
     if (iscell (data))
       col = data{indi}(:);
-      if (!isempty (sample_IDs))
+      if (! isempty (sample_IDs))
         sIDs = sample_IDs{indi};
       else
-        sIDs = num2cell([1:length(col)]);
+        sIDs = num2cell ([1:length(col)]);
       endif
     else
       col = data(:, indi);
-      sIDs = num2cell([1:length(col)]);
+      sIDs = num2cell ([1:length(col)]);
     endif
     ## Skip missing data (NaN, NA) and remove respective sample IDs.
     ## Do this only on nonempty data
@@ -824,10 +824,10 @@ function f = fillbox (quartile_y, quartile_x, bcolor)
   for icol = 1 : columns (quartile_x)
     if (ischar (bcolor))
       f = [ f; fill(quartile_y(:, icol), quartile_x(:, icol), ...
-                    bcolor(mod (icol-1, numel (bcolor))+1)) ];
+                    bcolor(mod (icol - 1, numel (bcolor)) + 1)) ];
     else
       f = [ f; fill(quartile_y(:, icol), quartile_x(:, icol), ...
-                    bcolor(mod (icol-1, size (bcolor, 1))+1, :)) ];
+                    bcolor(mod (icol - 1, size (bcolor, 1)) + 1, :)) ];
     endif
     hold on;
   endfor
