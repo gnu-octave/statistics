@@ -45,7 +45,6 @@ function [g, gn, gl] = grp2idx (s)
   s_was_categorical = false;
   s_was_duration = false;
   s_was_string = false;
-  s_class = class (s);
   if (ischar (s))
     s_was_char = true;
     s = cellstr (s);
@@ -111,10 +110,9 @@ function [g, gn, gl] = grp2idx (s)
     else
       gn = arrayfun (@num2str, gl, "UniformOutput", false);
     endif
-  endif
-
-  if (isempty (gn))
-    gn = cell (0,1);
+    if (isempty (gn))
+      gn = cell (0,1);
+    endif
   endif
 
   if (nargout > 2 && s_was_char)
@@ -124,12 +122,12 @@ function [g, gn, gl] = grp2idx (s)
       gl = char (gn);
     endif
   elseif (nargout > 2 && s_was_categorical)
-      gl = categorical (gn);
+    gl = categorical (gn);
   elseif (nargout > 2 && s_was_string)
-      gl = string (gn);
+    gl = string (gn);
   elseif (nargout > 2 && s_was_duration)
     if (isempty (gl))
-      gl = duration (cell (0,1));
+      gl = duration (NaN (0,3));
     endif
   elseif (nargout > 2 && iscell (gl))
     if (isempty (gl))
@@ -139,7 +137,17 @@ function [g, gn, gl] = grp2idx (s)
 
 endfunction
 
-## TODO: add full null test for each indivudal data type
+# test for one output argument
+%!test
+%! g = grp2idx ([3 2 1 2 3 1]);
+%! assert (isequal (g, [3; 2; 1; 2; 3; 1]));
+
+# test for two output arguments
+%!test
+%! [g, gn] = grp2idx (['b'; 'a'; 'c'; 'a']);
+%! assert (isequal (g, [1; 2; 3; 2]));
+%! assert (isequal (gn, {'b'; 'a'; 'c'}));
+
 ## test boolean input and note that row or column vector makes no difference
 %!test
 %! in = [true false false true];
@@ -232,13 +240,19 @@ endfunction
 %! assert (isequaln (gn, cell (0,1)));
 %! assert (isequaln (gl, categorical (cell (0,1))));
 
-## Note: seems to be an
 %!test
 %! s = string ({missing, missing, missing});
 %! out = string (cell (0,1));
 %! [g, gn, gl] = grp2idx (s);
 %! assert (isequaln (g, [NaN; NaN; NaN]), true);
 %! assert (isequal (gn, cell (0,1)));
+
+%!test
+%! s = [duration(NaN,0,0), duration(NaN,0,0), duration(NaN,0,0)];
+%! [g, gn, gl] = grp2idx (s);
+%! assert (isequaln (g, [NaN; NaN; NaN]));
+%! assert (isequal (gn, cell (0,1)));
+%! assert (isequal (gl, duration (NaN (0,3))));
 
 ## Test that order when handling strings is by order of appearance
 %!test assert (nthargout (1:3, @grp2idx, ['sci'; 'oct'; 'sci'; 'oct'; 'oct']),
