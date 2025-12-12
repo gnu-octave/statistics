@@ -229,7 +229,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
           groups = dummy;
           group_exists = 1;
         else
-          error ("boxplot: grouping vector must be numerical");
+          error ("boxplot: grouping vector must be numerical.");
         endif
       elseif (length (dummy) == 1)
         ## Old way: positional argument
@@ -264,12 +264,11 @@ function [s_o, hs_o] = boxplot (data, varargin)
               elseif (strcmpi (notched, "off"))
                 notched = 0;
               else
-                msg = ["boxplot: 'Notch' input argument accepts only 'on',", ...
-                       " 'off' or a numeric scalar as value"];
-                error (msg);
+                error (strcat ("boxplot: 'Notch' input argument accepts", ...
+                               " only 'on', 'off' or a numeric scalar value."));
               endif
             elseif (! (isnumeric (notched) && isreal (notched)))
-              error ("boxplot: illegal Notch value");
+              error ("boxplot: invalid 'Notch' value.");
             endif
 
           case "symbol"
@@ -287,21 +286,20 @@ function [s_o, hs_o] = boxplot (data, varargin)
               elseif (strcmpi (orientation, "horizontal"))
                 orientation = 0;
               else
-              msg = ["boxplot: 'Orientation' input argument accepts only", ...
-                     " 'vertical' (or 1) or 'horizontal' (or 0) as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Orientation' input argument", ...
+                             " accepts only 'vertical' (or 1) or", ...
+                             " 'horizontal' (or 0) as value."));
               endif
             elseif (! (isnumeric (orientation) && isreal (orientation)))
-              error ("boxplot: illegal Orientation value");
+              error ("boxplot: invalid 'Orientation' value.");
             endif
 
           case "whisker"
             maxwhisker = varargin{indopt};
             if (! isscalar (maxwhisker) ||
                 ! (isnumeric (maxwhisker) && isreal (maxwhisker)))
-              msg = ["boxplot: 'Whisker' input argument accepts only", ...
-                     " a real scalar value as input parameter"];
-              error (msg);
+              error (strcat ("boxplot: 'Whisker' input argument accepts", ...
+                             " only a real scalar value as input parameter."));
             endif
 
           case "outliertags"
@@ -313,20 +311,18 @@ function [s_o, hs_o] = boxplot (data, varargin)
               elseif (strcmpi (outlier_tags, "off"))
                 outlier_tags = 0;
               else
-              msg = ["boxplot: 'OutlierTags' input argument accepts only", ...
-                     " 'on' (or 1) or 'off' (or 0) as value"];
-              error (msg);
+              error (strcat ("boxplot: 'OutlierTags' input argument accepts", ...
+                             " only 'on' (or 1) or 'off' (or 0) as value."));
               endif
             elseif (! (isnumeric (outlier_tags) && isreal (outlier_tags)))
-              error ("boxplot: illegal OutlierTags value");
+              error ("boxplot: invalid 'OutlierTags' value.");
             endif
 
           case "sample_ids"
             sample_IDs = varargin{indopt};
             if (! iscell (sample_IDs))
-              msg = ["boxplot: 'Sample_IDs' input argument accepts only", ...
-                     " a cell array as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Sample_IDs' input argument", ...
+                             " accepts only a cell array as value."));
             endif
             outlier_tags = 1;
 
@@ -335,26 +331,23 @@ function [s_o, hs_o] = boxplot (data, varargin)
             ## Check for string input: "fixed" or "proportional"
             if (! ischar (box_width) ||
                 ! ismember (lower (box_width), {"fixed", "proportional"}))
-              msg = ["boxplot: 'BoxWidth' input argument accepts only", ...
-                     " 'fixed' or 'proportional' as value"];
-              error (msg);
+              error (strcat ("boxplot: 'BoxWidth' input argument accepts", ...
+                             " only 'fixed' or 'proportional' as value."));
             endif
             box_width = lower (box_width);
 
           case "widths"
             widths = varargin{indopt};
             if (! isscalar (widths) || ! (isnumeric (widths) && isreal (widths)))
-              msg = ["boxplot: 'Widths' input argument accepts only", ...
-                     " a real scalar value as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Widths' input argument accepts", ...
+                             " only a real scalar value as value."));
             endif
 
           case "capwidths"
             capwid = varargin{indopt};
             if (! isscalar (capwid) || ! (isnumeric (capwid) && isreal (capwid)))
-              msg = ["boxplot: 'CapWidths' input argument accepts only", ...
-                     " a real scalar value as value"];
-              error (msg);
+              error (strcat ("boxplot: 'CapWidths' input argument accepts", ...
+                             " only a real scalar value as value."));
             endif
 
           case "boxstyle"
@@ -362,35 +355,32 @@ function [s_o, hs_o] = boxplot (data, varargin)
             ## Check for string input: "outline" or "filled"
             if (! ischar (box_style) ||
                 ! ismember (lower (box_style), {"outline", "filled"}))
-              msg = ["boxplot: 'BoxStyle' input argument accepts only", ...
-                     " 'outline' or 'filled' as value"];
-              error (msg);
+              error (strcat ("boxplot: 'BoxStyle' input argument accepts", ...
+                             " only 'outline' or 'filled' as value."));
             endif
             box_style = lower (box_style);
 
           case "positions"
             positions = varargin{indopt};
             if (! isvector (positions) || ! isnumeric (positions))
-              msg = ["boxplot: 'Positions' input argument accepts only", ...
-                     " a numeric vector as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Positions' input argument accepts", ...
+                             " only a numeric vector as value."));
             endif
 
           case "labels"
             labels = varargin{indopt};
             if (! iscellstr (labels))
-              msg = ["boxplot: 'Labels' input argument accepts only", ...
-                     " a cellstr array as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Labels' input argument accepts", ...
+                             " only a cellstr array as value."));
             endif
 
           case "colors"
             bcolor = varargin{indopt};
             if (! (ischar (bcolor) ||
                 (isnumeric (bcolor) && size (bcolor, 2) == 3)))
-              msg = ["boxplot: 'Colors' input argument accepts only", ...
-                     " a character (string) or Nx3 numeric array as value"];
-              error (msg);
+              error (strcat ("boxplot: 'Colors' input argument accepts", ...
+                             " only a character vector or Nx3 numeric", ...
+                             " array as value."));
             endif
 
           otherwise
@@ -431,17 +421,17 @@ function [s_o, hs_o] = boxplot (data, varargin)
     if (! isempty (sample_IDs) && length (sample_IDs) == 1)
       for ind_c = (1:nc)
         if (lc(ind_c) != length (sample_IDs))
-          error ("boxplot: Sample_IDs must match the data");
+          error ("boxplot: Sample_IDs must match the data.");
         endif
       endfor
     elseif (! isempty (sample_IDs) && length (sample_IDs) == nc)
       for ind_c = (1:nc)
         if (lc(ind_c) != length (sample_IDs{ind_c}))
-          error ("boxplot: Sample_IDs must match the data");
+          error ("boxplot: Sample_IDs must match the data.");
         endif
       endfor
     elseif (! isempty (sample_IDs) && length (sample_IDs) != nc)
-      error ("boxplot: Sample_IDs must match the data");
+      error ("boxplot: Sample_IDs must match the data.");
     endif
     ## Create labels according to number of datasets as ordered in data
     ## in case they are not provided by the user as optional argument
@@ -453,7 +443,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     endif
   else
     if (! isvector (data))
-      error ("boxplot: with the formalism (data, group), both must be vectors");
+      error ("boxplot: with the formalism (data, group), both must be vectors.");
     endif
     ## If sample IDs given, check that their size matches the data
     if (! isempty (sample_IDs))
@@ -489,7 +479,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
           labels = nug;
         endif
       else
-        error ("boxplot: group argument must be numeric or cell string vector");
+        error ("boxplot: group argument must be numeric or cell string vector.");
       endif
       data = dummy_data;
       groups = nug(:).';
@@ -522,7 +512,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
           labels = nug;
         endif
       else
-        error ("boxplot: group argument must be numeric vector or cell string");
+        error ("boxplot: group argument must be numeric vector or cell string.");
       endif
       data = dummy_data;
       nc = length (nug);
@@ -887,15 +877,15 @@ endfunction
 %!error <grouping vector may only be passed> boxplot ([1 2 3], 1, {2, 3})
 %!error <grouping vector must be numerical> boxplot ([1 2 3], {"a", "b"})
 %!error <'Notch' input argument accepts> boxplot ([1:10], "notch", "any")
-%!error <illegal Notch value> boxplot ([1:10], "notch", i)
-%!error <illegal Notch value> boxplot ([1:10], "notch", {})
+%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", i)
+%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", {})
 %!error <must be character> boxplot (1, "symbol", 1)
 %!error <'Orientation' input argument accepts only> boxplot (1, "orientation", "diagonal")
-%!error <illegal Orientation value> boxplot (1, "orientation", {})
+%!error <boxplot: invalid 'Orientation' value.> boxplot (1, "orientation", {})
 %!error <'Whisker' input argument accepts only> boxplot (1, "whisker", "a")
 %!error <'Whisker' input argument accepts only> boxplot (1, "whisker", [1 3])
 %!error <'OutlierTags' input argument accepts only> boxplot (3, "OutlierTags", "maybe")
-%!error <illegal OutlierTags value> boxplot (3, "OutlierTags", {})
+%!error <boxplot: invalid 'OutlierTags' value.> boxplot (3, "OutlierTags", {})
 %!error <'Sample_IDs' input argument accepts only> boxplot (1, "sample_IDs", 1)
 %!error <'BoxWidth' input argument accepts only> boxplot (1, "boxwidth", 2)
 %!error <'BoxWidth' input argument accepts only> boxplot (1, "boxwidth", "anything")
