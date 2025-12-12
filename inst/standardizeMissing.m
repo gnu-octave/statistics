@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2023 The Octave Project Developers
+## Copyright (C) 1995-2025 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -63,10 +63,10 @@
 function A = standardizeMissing (A, indicator)
 
   if (nargin != 2)
-     print_usage ();
+    print_usage ();
   endif
 
-  input_class = class(A);
+  input_class = class (A);
   do_nothing_flag = false;
 
   ## Set missing_val.
@@ -100,10 +100,19 @@ function A = standardizeMissing (A, indicator)
         if iscellstr(A)
           missing_val = {""};
         else
-          error ("standardizeMissing: only cells of strings are supported.");
+          error (strcat ("standardizeMissing: only cell arrays", ...
+                         " of character vectors are supported."));
         endif
+      case "categorical"
+        missing_val = categorical (NaN);
+      case "datetime"
+        missing_val = NaT;
+      case "duration"
+        missing_val = days (NaN);
+      case "string"
+        missing_val = missing;
     otherwise
-      error ("standardizeMissing: unsupported data type %s.", input_class);
+      error ("standardizeMissing: unsupported data type '%s'.", input_class);
     endswitch
   endif
 
@@ -117,14 +126,16 @@ function A = standardizeMissing (A, indicator)
 
     if ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
         (ischar (A) && ! ischar (indicator)) ||
-        (iscellstr (A) && ! (iscellstr (indicator))))
+        (iscellstr (A) && ! iscellstr (indicator)) ||
+        (isa (A, 'categorical') && ! isa (indicator, 'categorical')) ||
+        (isa (A, 'duration') && ! isa (indicator, 'duration')))
       error (strcat ("standardizeMissing: 'indicator' and 'A' must", ...
                      " have the same data type."));
     endif
 
     A(ismember (A, indicator)) = missing_val;
-
   endif
+
 endfunction
 
 ## numeric tests
@@ -174,19 +185,46 @@ endfunction
 %!assert (standardizeMissing (uint32 (1), uint32 (1)), uint32 (1))
 %!assert (standardizeMissing (uint32 (1), 1), uint32 (1))
 
+## categorical array tests
+%!assert (double (standardizeMissing (categorical (1), categorical (1))), NaN)
+%!assert (double (standardizeMissing (categorical (1), categorical (2))), 1)
+
+## datetime array tests
+%!assert (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
+%!assert (isnat (standardizeMissing (datetime ('today'), datetime ('yesterday'))), false)
+
+## duration array tests
+%!assert (days (standardizeMissing (days (1), days (1))), NaN)
+%!assert (days (standardizeMissing (days (1), days (2))), 1)
+
+## string array tests
+%!assert (cellstr (standardizeMissing (string (1), string (1))), {''})
+%!assert (cellstr (standardizeMissing (string (1), string (2))), {'1'})
+
 ## Test input validation
-%!error standardizeMissing ();
-%!error standardizeMissing (1);
-%!error standardizeMissing (1,2,3);
-%!error <only cells of strings> standardizeMissing ({'abc', 1}, 1);
-%!error <unsupported data type> standardizeMissing (struct ('a','b'), 1);
-%!error <'indicator' and 'A' must have > standardizeMissing ([1 2 3], {1});
-%!error <'indicator' and 'A' must have > standardizeMissing ([1 2 3], 'a');
-%!error <'indicator' and 'A' must have > standardizeMissing ([1 2 3], struct ('a', 1));
-%!error <'indicator' and 'A' must have > standardizeMissing ('foo', 1);
-%!error <'indicator' and 'A' must have > standardizeMissing ('foo', {1});
-%!error <'indicator' and 'A' must have > standardizeMissing ('foo', {'f'});
-%!error <'indicator' and 'A' must have > standardizeMissing ('foo', struct ('a', 1));
-%!error <'indicator' and 'A' must have > standardizeMissing ({'foo'}, 1);
-%!error <'indicator' and 'A' must have > standardizeMissing ({'foo'}, 1);
+%!error <Invalid call> standardizeMissing ();
+%!error <Invalid call> standardizeMissing (1);
+%!error <standardizeMissing: function called with too many inputs> standardizeMissing (1, 2, 3);
+%!error <standardizeMissing: only cell arrays of character vectors are supported.> ...
+%!       standardizeMissing ({'abc', 1}, 1);
+%!error <standardizeMissing: unsupported data type 'struct'.> ...
+%!       standardizeMissing (struct ('a','b'), 1);
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ([1 2 3], {1});
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ([1 2 3], 'a');
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ([1 2 3], struct ('a', 1));
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ('foo', 1);
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ('foo', {1});
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ('foo', {'f'});
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ('foo', struct ('a', 1));
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ({'foo'}, 1);
+%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
+%!       standardizeMissing ({'foo'}, 1);
 
