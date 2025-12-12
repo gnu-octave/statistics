@@ -228,50 +228,55 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
           endfor
           varargout{l} = group_numel;
         case "meanci"
-          ## allocate as 3-D: [ngroups x nvars x 2] (lower, upper)
+          ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_meanci = NaN(ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            for col = 1:c
-              col_data = group_x(:, col);
-              m = mean (col_data, "omitnan");
-              n = sum (! isnan (col_data));    % explicit per-column count
-              if (n <= 1)
-                % degenerate: CI degenerates to mean
-                group_meanci(j, col, 1) = m;
-                group_meanci(j, col, 2) = m;
-                continue;
-              endif
-              s = std (col_data, 0, "omitnan") / sqrt (n);
-              tval = -tinv (alpha / 2, n - 1); % scalar
-              d = s * tval;
-              group_meanci(j, col, 1) = m - d;
-              group_meanci(j, col, 2) = m + d;
-            endfor
+            m = mean (group_x, 1, "omitnan");
+            n = size (group_x, 1) - sum (isnan (group_x), 1);
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt(max(n,1));
+            ## avoid invalid tinv calls for degenerate df
+            df = max(n - 1, 0);
+            tval = zeros(1, size (group_x, 2));
+            pos = (df > 0);
+            if (any (pos))
+              tval(pos) = -tinv (alpha / 2, df(pos));
+            endif
+            d = s .* tval;
+            group_meanci(j, :, 1) = m - d;
+            group_meanci(j, :, 2) = m + d;
           endfor
-          varargout{l} = group_meanci;
+          ## MATLAB returns [ngroups x 2] when nvars == 1; Octave used canonical 3-D.
+          if (c == 1)
+            ## reshape to [ngroups x 2]
+            varargout{l} = reshape (group_meanci, ngroups, 2);
+          else
+            varargout{l} = group_meanci;
+          endif
+
         case "predci"
-          ## allocate as 3-D: [ngroups x nvars x 2] (lower, upper)
+          ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_predci = NaN(ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
-            for col = 1:c
-              col_data = group_x(:, col);
-              m = mean (col_data, "omitnan");
-              n = sum (! isnan (col_data));
-              if (n <= 1)
-                group_predci(j, col, 1) = m;
-                group_predci(j, col, 2) = m;
-                continue;
-              endif
-              s = std (col_data, 0, "omitnan") * sqrt (1 + 1 / n);
-              tval = -tinv (alpha / 2, n - 1);
-              d = s * tval;
-              group_predci(j, col, 1) = m - d;
-              group_predci(j, col, 2) = m + d;
-            endfor
+            m = mean (group_x, 1, "omitnan");
+            n = size (group_x, 1) - sum (isnan (group_x), 1);
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt(1 + (1 ./ max(n,1)));
+            df = max(n - 1, 0);
+            tval = zeros(1, size (group_x, 2));
+            pos = (df > 0);
+            if (any (pos))
+              tval(pos) = -tinv (alpha / 2, df(pos));
+            endif
+            d = s .* tval;
+            group_predci(j, :, 1) = m - d;
+            group_predci(j, :, 2) = m + d;
           endfor
-          varargout{l} = group_predci;
+          if (c == 1)
+            varargout{l} = reshape (group_predci, ngroups, 2);
+          else
+            varargout{l} = group_predci;
+          endif
         case "gname"
           varargout{l} = group_names;
         otherwise
