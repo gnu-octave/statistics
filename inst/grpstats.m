@@ -85,154 +85,401 @@
 ## @seealso{grp2idx}
 ## @end deftypefn
 
-function [varargout] = grpstats (x, group, whichstats, varargin)
-  ## Check input arguments
-  narginchk (1, 5)
-  ## Table input (datatypes integration)
-  if (istable (x))
-    if (nargout > 1)
-      error ("grpstats: table input supports a single output argument.");
-    endif
-    varargout{1} = __grpstats_table__ (x, group, whichstats, varargin{:});
+function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
+
+  ## Check data input
+  if (nargin < 1)
+    print_usage ();
+  endif
+  if (ndims (x) != 2)
+     error ("grpstats: X must be a matrix or a table.");
+  endif
+  if (isempty (x))
+    [varargout] = repmat ({[]}, nargout, 1);
     return;
   endif
-
-  ## Numeric matrix input (existing behaviour)
-  ## Check X being a vector or 2d matrix of real values
-  if (ndims (x) > 2 || ! isnumeric (x) || islogical (x))
-    error ("grpstats: X must be a vector or 2d matrix.");
-  endif
-  ## If X is a vector, make it a column vector
-  if (isvector (x))
+  if (! istable (x) && isvector (x))
     x = x(:);
   endif
-  ## Check groups and if empty make a single group for all X
   [r, c] = size (x);
-  if (nargin < 2 || isempty (group))
-    if (isempty (x))
-      [varargout] = repmat ({[]}, nargout, 1);
-      return
-    endif
-    group = ones (r, 1);
-  endif
-  ## Get group names and indices
-  [group_idx, group_names] = grp2idx (group);
-  ngroups = length (group_names);
-  if (length (group_idx) != r)
-    error ("grpstats: samples in X and GROUPS mismatch.");
-  endif
-  ## Add default for whichstats and check for 3rd input argument
-  func_names = {};
-  if (nargin > 2 && ischar (whichstats))
-    func_names = {whichstats};
-  elseif (nargin > 2 && iscell (whichstats))
-    func_names = whichstats;
-  endif
-  ## Add default for alpha and check for 4th input argument
-  if (nargin > 3)
-    if (ischar (varargin{1}))
-      if (strcmpi (varargin{1}, "alpha"))
-        if (nargin > 4)
-          alpha = varargin{2};
-        else
-          error ("grpstats: missing VALUE for optional 'alpha' parameter.");
-        endif
-      else
-        error ("grpstats: invalid NAME for optional 'alpha' parameter.");
-      endif
-    elseif (isnumeric (varargin{1}))
-      alpha = varargin{1};
-    else
-      error ("grpstats: invalid fourth input argument.");
-    endif
-    if (! (isnumeric (alpha) && isscalar (alpha) && alpha > 0 && alpha < 1))
-      error ("grpstats: 'alpha' must be a real scalar in the range (0,1).");
-    endif
-  else
-    alpha = 0.05;
+
+  ## For table input no more than 1 output argument is allowed
+  if (istable (x) && nargout > 1)
+    error ("grpstats: only one output argument in allowed when X is a table.");
   endif
 
-  ## Calculate functions
-  if (isempty (func_names))
-    ## Check consistent number of output arguments
-    if (nargout == 1 || nargout == 0)
-      for j = 1:ngroups
-        group_x = x(find (group_idx == j), :);
-        group_mean(j,:) = mean (group_x, 1, "omitnan") ;
-      endfor
-      varargout{1} = group_mean;
-    else
-      error ("grpstats: inconsistent number of output arguments.");
+  ## Add default grouping variable
+  no_group = true;
+  if (isempty (group))
+    grp_idx = ones (r, 1);
+    r_names = {'All'};
+    ngroups = 1;
+    no_group = false;
+  endif
+
+  ## Check for plotting functional form with three input arguments
+  if (nargin == 3 && isscalar (whichstats) && whichstats > 0 && whichstats < 1)
+    do_plot = true;
+    alpha = whichstats;
+    whichstats = [];
+    fcn_names = {'mean', 'meanci'};
+    if (! (isnumeric (x)))
+      error ("grpstats: X must be numeric to plot mean and CI for each group.");
     endif
   else
-    func_num = length (func_names);
+    do_plot = false;
+  endif
+
+  ## Parse statistical functions
+  if (isempty (whichstats))
+    fcn_names = {'mean'};
+  else
+    if (ischar (whichstats) || isstring (whichstats))
+      fcn_names = cellstr (whichstats);
+    elseif (iscellstr (whichstats))
+      fcn_names = whichstats;
+    elseif (is_function_handle (whichstats))
+      fcn_names = {whichstats};
+    elseif (iscell (whichstats))
+      TF = cellfun (@(x) ischar (x) || is_function_handle (x), whichstats);
+      if (all (TF))
+        fcn_names = whichstats;
+      else
+        error ("grpstats: invalid WHICHSTATS specification in cell array.");
+      endif
+    else #if (! (isscalar (whichstats) && whichstats > 0 && whichstats < 1))
+      error ("grpstats: invalid WHICHSTATS data type.");
+    endif
+    ## At this point we have cell array with either function names or
+    ## function handles which need to be tested before going any further
+    valid_fcn = {'mean', 'median', 'sem', 'std', 'var', 'min', 'max', ...
+                 'range', 'numel', 'meanci', 'predci', 'gname'};
+    is_char = cellfun ('ischar', fcn_names);
+    if (any (is_char))
+      isvalid = cellfun (@(x) ismember (x, valid_fcn), fcn_names(is_char));
+      if (! all (isvalid))
+        error ("grpstats: unrecognized function names in WHICHSTATS.");
+      endif
+    endif
+    ## Function handles need to be tested on the actual data with try..catch
+    ## blocks, because there are numerous combination in I/O size which does
+    ## not worth to test preemptively.
+  endif
+
+  ## Parse optional Name-Value paired arguments
+  optNames = {'Alpha', 'DataVars', 'VarNames'};
+  dfValues = {0.05, [], {}};
+  [alpha, DataVars, VarNames, args] = pairedArgs (optNames, dfValues, ...
+                                                  varargin(:));
+  if (! isempty (args))
+    tmp = args{1};
+    if (isscalar (tmp) && tmp > 0 && tmp < 1)
+      alpha = tmp;
+    else
+      error ("grpstats: unrecognized input arguments.");
+    endif
+  endif
+  ## Check alpha value
+  if (! (isscalar (alpha) && alpha > 0 && alpha < 1))
+    error ("grpstats: 'alpha' must be a real scalar in the range (0,1).");
+  endif
+  ## Force VarNames to cell array of character vectors
+  if (! isempty (VarNames))
+    if (ischar (VarNames) || isstring (VarNames))
+      VarNames = cellstr (VarNames);
+    endif
+    if (! iscellstr (VarNames))
+      error ("grpstats: invalid data types for 'VarNames'.");
+    endif
+  endif
+
+  ## Handle group and whichstats for matrices and tables
+  if (istable (x))
+    ## Get grouping variables for table input data
+    if (no_group)
+      try
+        grp_vars = x(:, group);  # () returns groupvars as a table
+      catch
+        error ("grpstats: cannot resolve GROUPVARS in input table.");
+      end_try_catch
+      ## Get unique groups and their indices to table data
+      [g_names, ~, grp_idx] = unique (grp_vars);
+      ## Get number of groups
+      ngroups = rows (g_names);
+      ## Convert logical to double
+      c_names = convertvars (g_names, @islogical, 'double');
+      ## Create unique names for each group
+      cstrtbl = cellstr (string (table2cell (c_names)));
+      r_names = cstrtbl(:,1);
+      [cr, cc] = size (cstrtbl);
+      tmp_tmp = repmat ({'_'}, cr, 1);
+      for idx = 2:cc
+        r_names = strcat (r_names, tmp_tmp, cstrtbl(:,idx));
+      endfor
+    endif
+
+    ## Compute group count by default in tables
+    for idx = 1:ngroups
+      GroupCount(idx,:) = sum (grp_idx == idx);
+    endfor
+
+    ## Add group count and row names
+    if (no_group)
+      g_names = addvars (g_names, GroupCount);
+      g_names.Properties.RowNames = r_names;
+    else
+      g_names = table (GroupCount, 'RowNames', r_names);
+    endif
+
+    ## Check that DataVars exist (if given)
+    if (! isempty (DataVars))
+      ## Octave extension allows DataVars to be specified as a vartype object
+      ## or a function handle to select variables based on their data types.
+      ## To avoid multiple checking for all possible referencing schemes,
+      ## let's add another try...catch blocks
+      try
+        work_tbl = x(:, DataVars);
+      catch
+        error ("grpstats: invalid 'DataVars' reference to table X.");
+      end_try_catch
+    else
+      ## No specified DataVars, all table except grouping variables gets used
+      work_tbl = removevars (x, group);
+    endif
+
+    ## From this point we can start applying functions on table variables
+
+    ## We have to apply each function to every working variable
+    ## We name the variable accordingly and append the output of the
+    ## function at the g_names table.
+    ## The function is applied on each group of each variable
+    ## Handle functions need try..catch block to ensure they are compatible
+    for var_idx = 1:columns (work_tbl)
+      vname = work_tbl.Properties.VariableNames(var_idx);
+      vdata = work_tbl{:,var_idx};
+      ncols = columns (vdata);
+      for fcn_idx = 1:numel (fcn_names)
+        new_vdata = [];
+        fcn_op = fcn_names{fcn_idx};
+        if (is_function_handle (fcn_op))
+          fname = cellstr (fcn_op);
+          new_vname = strcat (fname, '_', vname);
+          try
+            for idx = 1:ngroups
+              new_vdata(idx,:) = fcn_op (vdata(grp_idx == idx, :));
+            endfor
+          catch
+            # no-op
+          end_try_catch
+          if (! isempty (new_vdata))
+            g_names = addvars (g_names, new_vdata, 'NewVariableNames', new_vname);
+          endif
+        else  # it must be a function name
+          switch (fcn_op)
+            case "mean"
+              new_vname = strcat ('mean_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = mean (gdata, 1, "omitnan");
+              endfor
+            case "median"
+              new_vname = strcat ('median_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = median (gdata, 1, "omitnan");
+              endfor
+            case "sem"
+              new_vname = strcat ('sem_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = std (gdata, 0, 1, "omitnan") ./ ...
+                                   sqrt (size (gdata, 1) - sum (isnan (gdata), 1));
+              endfor
+            case "std"
+              new_vname = strcat ('std_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = std (gdata, 0, 1, "omitnan");
+              endfor
+            case "var"
+              new_vname = strcat ('var_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = var (gdata, 0, 1, "omitnan");
+              endfor
+            case "min"
+              new_vname = strcat ('min_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = min (gdata, [], 1);
+              endfor
+            case "max"
+              new_vname = strcat ('max_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = max (gdata, [], 1);
+              endfor
+            case "range"
+              new_vname = strcat ('range_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = range (gdata, 1);
+              endfor
+            case "numel"
+              new_vname = strcat ('numel_', vname);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                new_vdata(idx,:) = size (gdata, 1) - sum (isnan (gdata), 1);
+              endfor
+            case "meanci"
+              new_vname = strcat ('meanci_', vname);
+              ## Preallocate twice the columns in variable (lower, upper)
+              new_vdata = NaN (ngroups, ncols * 2);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                m = mean (gdata, 1, "omitnan");
+                n = size (gdata, 1) - sum (isnan (gdata), 1);
+                s = std (gdata, 0, 1, "omitnan") ./ sqrt (max (n,1));
+                ## Avoid invalid tinv calls for degenerate df
+                df = max (n - 1, 0);
+                tval = zeros (1, size (gdata, 2));
+                pos = (df > 0);
+                if (any (pos))
+                  tval(pos) = - tinv (alpha / 2, df(pos));
+                endif
+                d = s .* tval;
+                new_vdata(idx,[1:2:end]) = m - d;
+                new_vdata(idx,[2:2:end]) = m + d;
+              endfor
+
+            case "predci"
+              new_vname = strcat ('predci_', vname);
+              ## Preallocate twice the columns in variable (lower, upper)
+              new_vdata = NaN (ngroups, ncols * 2);
+              for idx = 1:ngroups
+                gdata = vdata(grp_idx == idx, :);
+                m = mean (gdata, 1, "omitnan");
+                n = size (gdata, 1) - sum (isnan (gdata), 1);
+                s = std (gdata, 0, 1, "omitnan") .* sqrt (1 + (1 ./ max (n,1)));
+                df = max (n - 1, 0);
+                tval = zeros (1, size (gdata, 2));
+                pos = (df > 0);
+                if (any (pos))
+                  tval(pos) = - tinv (alpha / 2, df(pos));
+                endif
+                d = s .* tval;
+                new_vdata(idx,[1:2:end]) = m - d;
+                new_vdata(idx,[2:2:end]) = m + d;
+              endfor
+          endswitch
+          if (! isempty (new_vdata))
+            g_names = addvars (g_names, new_vdata, 'NewVariableNames', new_vname);
+          endif
+        endif
+      endfor
+    endfor
+
+    ## Last check. VarNames must equal the number of expected variables
+    if (! isempty (VarNames))
+      if (numel (VarNames) != columns (g_names))
+        error ("grpstats: 'VarNames' do not match expected variables.");
+      endif
+      g_names - renamevars (g_names, VarNames);
+    endif
+
+    varargout{1} = g_names;
+    return;
+  else
+    ## Get groups for array input data
+    if (no_group)
+      [grp_idx, g_names] = grp2idx (group);
+      ngroups = numel (g_names);
+      if (numel (grp_idx) != r)
+        error ("grpstats: samples in X and GROUPS mismatch.");
+      endif
+    endif
+
+    ## Check for plot option
+    if (do_plot)
+      ## MATLAB functional form does not return an output.  In Octave,
+      ## if output is requested, we return an axes handle to the plot.
+
+
+
+
+      return;
+    endif
+
     ## Check consistent number of output arguments
-    if (! (nargout == 0 && func_num == 1) && nargout != func_num)
+    fcn_num = numel (fcn_names);
+    if (! (nargout == 0 && fcn_num == 1) && nargout != fcn_num)
       error ("grpstats: inconsistent number of output arguments.");
     endif
-    for l = 1:func_num
-      switch (func_names{l})
+
+    ## From this point we can start applying functions on the entire array
+    for fcn_idx = 1:fcn_num
+      switch (fcn_names{fcn_idx})
         case "mean"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_mean(j,:) = mean (group_x, 1, "omitnan");
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_mean(idx,:) = mean (group_x, 1, "omitnan");
           endfor
-          varargout{l} = group_mean;
+          varargout{fcn_idx} = group_mean;
         case "median"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_mean(j,:) = median (group_x, 1, "omitnan");
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_mean(idx,:) = median (group_x, 1, "omitnan");
           endfor
-          varargout{l} = group_mean;
+          varargout{fcn_idx} = group_mean;
         case "sem"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_sem(j,:) = std (group_x, 0, 1, "omitnan") / ...
-                            sqrt (size (group_x, 1) - sum (isnan (group_x), 1));
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_sem(idx,:) = std (group_x, 0, 1, "omitnan") / ...
+                             sqrt (size (group_x, 1) - sum (isnan (group_x), 1));
           endfor
-          varargout{l} = group_sem;
+          varargout{fcn_idx} = group_sem;
         case "std"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_std(j,:) = std (group_x, 0, 1, "omitnan");
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_std(idx,:) = std (group_x, 0, 1, "omitnan");
           endfor
-          varargout{l} = group_std;
+          varargout{fcn_idx} = group_std;
         case "var"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_var(j,:) = var (group_x, 0, 1, "omitnan");
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_var(idx,:) = var (group_x, 0, 1, "omitnan");
           endfor
-          varargout{l} = group_var;
+          varargout{fcn_idx} = group_var;
         case "min"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_min(j,:) = nanmin (group_x);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_min(idx,:) = nanmin (group_x);
           endfor
-          varargout{l} = group_min;
+          varargout{fcn_idx} = group_min;
         case "max"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_max(j,:) = nanmax (group_x);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_max(idx,:) = nanmax (group_x);
           endfor
-          varargout{l} = group_max;
+          varargout{fcn_idx} = group_max;
         case "range"
           func_handle = @(x) range (x, 1);
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_range(j,:) = range (group_x, 1);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_range(idx,:) = range (group_x, 1);
           endfor
-          varargout{l} = group_range;
+          varargout{fcn_idx} = group_range;
         case "numel"
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
-            group_numel(j,:) = size (group_x, 1) - sum (isnan (group_x), 1);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
+            group_numel(idx,:) = size (group_x, 1) - sum (isnan (group_x), 1);
           endfor
-          varargout{l} = group_numel;
+          varargout{fcn_idx} = group_numel;
         case "meanci"
           ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_meanci = NaN (ngroups, c, 2);
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
             m = mean (group_x, 1, "omitnan");
             n = size (group_x, 1) - sum (isnan (group_x), 1);
             s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
@@ -244,23 +491,23 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
               tval(pos) = - tinv (alpha / 2, df(pos));
             endif
             d = s .* tval;
-            group_meanci(j, :, 1) = m - d;
-            group_meanci(j, :, 2) = m + d;
+            group_meanci(idx, :, 1) = m - d;
+            group_meanci(idx, :, 2) = m + d;
           endfor
           ## MATLAB returns [ngroups x 2] when nvars == 1
           ## Octave used canonical 3-D.
           if (c == 1)
             ## Reshape to [ngroups x 2]
-            varargout{l} = reshape (group_meanci, ngroups, 2);
+            varargout{fcn_idx} = reshape (group_meanci, ngroups, 2);
           else
-            varargout{l} = group_meanci;
+            varargout{fcn_idx} = group_meanci;
           endif
 
         case "predci"
           ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_predci = NaN (ngroups, c, 2);
-          for j = 1:ngroups
-            group_x = x(find (group_idx == j), :);
+          for idx = 1:ngroups
+            group_x = x(find (grp_idx == idx), :);
             m = mean (group_x, 1, "omitnan");
             n = size (group_x, 1) - sum (isnan (group_x), 1);
             s = std (group_x, 0, 1, "omitnan") .* sqrt (1 + (1 ./ max (n,1)));
@@ -271,158 +518,19 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
               tval(pos) = - tinv (alpha / 2, df(pos));
             endif
             d = s .* tval;
-            group_predci(j, :, 1) = m - d;
-            group_predci(j, :, 2) = m + d;
+            group_predci(idx, :, 1) = m - d;
+            group_predci(idx, :, 2) = m + d;
           endfor
           if (c == 1)
-            varargout{l} = reshape (group_predci, ngroups, 2);
+            varargout{fcn_idx} = reshape (group_predci, ngroups, 2);
           else
-            varargout{l} = group_predci;
+            varargout{fcn_idx} = group_predci;
           endif
         case "gname"
-          varargout{l} = group_names;
-        otherwise
-          error ("grpstats: wrong whichstats option.");
+          varargout{fcn_idx} = g_names;
       endswitch
     endfor
   endif
-
-endfunction
-
-function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
-
-  if (! istable (tbl))
-    error ("grpstats: internal error, expected table input.");
-  endif
-
-  ## GROUP must be a variable name (char or string scalar)
-  if (ischar (group))
-    group_name = group;
-  elseif (isstring (group) && isscalar (group))
-    group_name = char (group);
-  else
-    error ("grpstats: for table input, GROUP must be a variable name.");
-  endif
-
-  ## Get grouping column
-  try
-    gcol = tbl.(group_name);
-  catch
-    error ("grpstats: grouping variable '%s' not found in table.", group_name);
-  end_try_catch
-
-  ## Currently only support categorical grouping variable
-  if (! iscategorical (gcol))
-    error ("grpstats: for table input, grouping variable must be categorical.");
-  endif
-
-  ## Normalise whichstats for table input
-  is_empty_whichstats = (nargin < 3 || isempty (whichstats));
-  if (is_empty_whichstats)
-    func_names = {"mean"};
-  elseif (ischar (whichstats))
-    func_names = {whichstats};
-  elseif (isstring (whichstats) && isscalar (whichstats))
-    func_names = {char (whichstats)};
-  elseif (iscell (whichstats))
-    func_names = whichstats;
-  else
-    error ("grpstats: invalid WHICHSTATS for table input.");
-  endif
-
-  ## Only support a subset initially for table input
-  n_funcs = numel (func_names);
-  for k = 1:n_funcs
-    fname = func_names{k};
-    if (! any (strcmp (fname, {"mean", "numel"})))
-      error ("grpstats: table input currently supports only 'mean' and 'numel'.");
-    endif
-  endfor
-
-  ## Group indices and names from categorical column
-  group_names = categories (gcol);
-  group_idx   = double (gcol(:));
-  ngroups     = numel (group_names);
-
-  ## Collect numeric data columns (excluding the grouping variable)
-  vnames = tbl.Properties.VariableNames;
-  data_var_names = {};
-  data_mat = [];
-
-  for k = 1:numel (vnames)
-    vname = vnames{k};
-    if (strcmp (vname, group_name))
-      continue;
-    endif
-    col = tbl.(vname);
-    if (isnumeric (col))
-      data_mat = [data_mat, col(:)];
-      data_var_names{end+1} = vname;
-    endif
-  endfor
-
-  if (isempty (data_mat))
-    error ("grpstats: no numeric variables found in table (other than grouping).");
-  endif
-
-  nvars = columns (data_mat);
-
-  do_mean  = any (strcmp ("mean",  func_names));
-  do_numel = any (strcmp ("numel", func_names));
-  do_groupcount = true;
-
-  if (do_mean)
-    mean_vals = NaN (ngroups, nvars);
-  endif
-  if (do_numel)
-    numel_vals = NaN (ngroups, nvars);
-  endif
-  if (do_groupcount)
-    group_count = accumarray (group_idx(:), 1, [ngroups, 1]);
-  endif
-
-  ## Compute statistics per group
-  for g = 1:ngroups
-    idx = (group_idx == g);
-    group_data = data_mat(idx, :);
-    if (do_mean)
-      mean_vals(g,:) = mean (group_data, 1, "omitnan");
-    endif
-    if (do_numel)
-      numel_vals(g, :) = sum (!isnan (group_data), 1);
-    endif
-  endfor
-
-  ## Build output table
-  ## Group column as categorical using group names
-  gcat = categorical (group_names);
-
-  varnames_out = {group_name};
-  data_out = {gcat};
-
-  if (do_groupcount)
-    varnames_out{end+1} = "GroupCount";
-    data_out{end+1} = group_count;
-  endif
-
-  for k = 1:nvars
-    var_name = data_var_names{k};
-    for f = 1:n_funcs
-      func_name = func_names{f};
-      if (strcmp (func_name, "mean"))
-        newname = sprintf ("mean_%s", var_name);
-        varnames_out{end+1} = newname;
-        data_out{end+1} = mean_vals(:, k);
-      elseif (strcmp (func_name, "numel"))
-        newname = sprintf ("numel_%s", var_name);
-        varnames_out{end+1} = newname;
-        data_out{end+1} = numel_vals(:, k);
-      endif
-    endfor
-  endfor
-
-  stats_tbl = table (data_out{:}, "VariableNames", varnames_out, "RowNames", ...
-                     group_names);
 
 endfunction
 
@@ -1196,28 +1304,32 @@ endfunction
 %! assert (stats_tbl.numel_C, [2; 2; 2]);
 
 ## Test input validation
-%!error<grpstats: table input supports a single output argument.> ...
-%! [a, b] = grpstats (table (1));
-%!error<grpstats: for table input, grouping variable must be categorical.> ...
-%! Y = [1; 2; 3];
-%! G = [1; 1; 2];
-%! tbl = table (Y, G, "VariableNames", {"Y","G"});
-%! grpstats (tbl, "G", {"mean","numel"});
-%!error<grpstats: X must be a vector or 2d matrix.> ...
-%! grpstats (ones (3, 3, 3));
-%!error<grpstats: samples in X and GROUPS mismatch.> ...
-%! grpstats ([], {'A'; 'B'; 'A'; 'B'})
-%!error<grpstats: missing VALUE for optional 'alpha' parameter.> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha");
-%!error<grpstats: invalid NAME for optional 'alpha' parameter.> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "somename", -0.1);
-%!error<grpstats: invalid fourth input argument.> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", {2, 3}, -0.1);
-%!error<grpstats: 'alpha' must be a real scalar in the range \(0,1\).> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha", -0.1);
-%!error<grpstats: inconsistent number of output arguments.> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, {'mean', 'sum'});
-%!error<grpstats: inconsistent number of output arguments.> ...
-%! [q, w] = grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'});
-%!error<grpstats: wrong whichstats option.> ...
-%! grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "whatever");
+%!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))
+%!error <grpstats: only one output argument in allowed when X is a table.> ...
+%!       [a, b] = grpstats (table (1))
+%!error <grpstats: invalid WHICHSTATS specification in cell array.> ...
+%!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], {'mean', 1.5})
+%!error <grpstats: invalid WHICHSTATS data type.> ...
+%!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 1.5)
+%!error <grpstats: unrecognized function names in WHICHSTATS.> ...
+%!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 'some_function')
+%!error <grpstats: unrecognized input arguments.> ...
+%!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 'mean', 35)
+%!error <grpstats: unrecognized input arguments.> ...
+%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "somename", -0.1);
+%!error <grpstats: invalid data types for 'VarNames'.> ...
+%!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 'mean', 'VarNames', 3)
+%!error <grpstats: X must be numeric to plot mean and CI for each group.> ...
+%!       grpstats ({ones(6, 2)}, [], 0.05)
+%!error <grpstats: 'alpha' must be a real scalar in the range \(0,1\).> ...
+%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha", -0.1);
+%!error <grpstats: cannot resolve GROUPVARS in input table.> ...
+%!       grpstats (table ([1:5]'), {'Var_5'})
+%!error <grpstats: invalid 'DataVars' reference to table X.> ...
+%!       grpstats (table ([1:5]'), {'Var1'}, [], 'DataVars', 'Var5')
+%!error <grpstats: 'VarNames' do not match expected variables.> ...
+%!       grpstats (table ([1:5]', [1:5]'), {'Var1'}, [], 'VarNames', {'A', 'B'})
+%!error <grpstats: samples in X and GROUPS mismatch.> ...
+%!       grpstats ([1:5]', {'A'; 'B'; 'A'; 'B'})
+%!error <grpstats: inconsistent number of output arguments.> ...
+%!       m = grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, {'mean', 'std'})
