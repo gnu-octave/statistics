@@ -456,21 +456,21 @@ endfunction
 %!test
 %! Y = [5; 6; 7; 4; 9; 8];
 %! X = [1; 2; 3; 4; 5; 6];
-%! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
-%! tbl = table (Y, X, Group, "VariableNames", {"Y","X","Group"});
-%! stats_tbl = grpstats (tbl, "Group", {"mean","numel"});
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, X, Group, 'VariableNames', {'Y', 'X', 'Group'});
+%! stats_tbl = grpstats (tbl, 'Group', {'mean','numel'});
 %! assert (istable (stats_tbl));
 %! assert (isequal (stats_tbl.Properties.VariableNames, ...
-%!                  {"Group", "GroupCount", "mean_Y", "mean_X"}));
+%!                  {'Group', 'GroupCount', 'mean_Y', 'mean_X'}));
 %! assert (isequal (stats_tbl.GroupCount, [2; 2; 2]));
 %!test
 %! Y     = [5; 6; 7; 4; 9; 8];
-%! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
-%! tbl = table (Y, Group, "VariableNames", {"Y","Group"});
-%! stats_tbl = grpstats (tbl, "Group", "mean");
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, Group, 'VariableNames', {'Y','Group'});
+%! stats_tbl = grpstats (tbl, 'Group', 'mean');
 %! assert (istable (stats_tbl));
 %! assert (isequal (stats_tbl.Properties.VariableNames, ...
-%!                  {"Group", "mean_Y"}));
+%!                  {'Group', 'mean_Y'}));
 
 %!test
 %! ## column vector, no group
@@ -529,77 +529,77 @@ endfunction
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! m = grpstats (x, g, "mean");
+%! m = grpstats (x, g, 'mean');
 %! expected = [15; 35; 55];
 %! assert (m, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! m = grpstats (x, g, "median");
+%! m = grpstats (x, g, 'median');
 %! expected = [15; 35; 55];
 %! assert (m, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! s = grpstats (x, g, "std");
+%! s = grpstats (x, g, 'std');
 %! expected = [7.07106781186548; 7.07106781186548; 7.07106781186548];
 %! assert (s, expected, 1e-14);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! v = grpstats (x, g, "var");
+%! v = grpstats (x, g, 'var');
 %! expected = [50; 50; 50];
 %! assert (v, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! s = grpstats (x, g, "sem");
+%! s = grpstats (x, g, 'sem');
 %! expected = [5; 5; 5];
 %! assert (s, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! mn = grpstats (x, g, "min");
+%! mn = grpstats (x, g, 'min');
 %! expected = [10; 30; 50];
 %! assert (mn, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! mx = grpstats (x, g, "max");
+%! mx = grpstats (x, g, 'max');
 %! expected = [20; 40; 60];
 %! assert (mx, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! r = grpstats (x, g, "range");
+%! r = grpstats (x, g, 'range');
 %! expected = [10; 10; 10];
 %! assert (r, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! n = grpstats (x, g, "numel");
+%! n = grpstats (x, g, 'numel');
 %! expected = [2; 2; 2];
 %! assert (n, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = {"A"; "A"; "B"; "B"; "C"; "C"};
-%! names = grpstats (x, g, "gname");
+%! names = grpstats (x, g, 'gname');
 %! expected = {"A"; "B"; "C"};
 %! assert (names, expected);
 %!test
 %! ## single statistic (default alpha)
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "meanci");
+%! ci = grpstats (x, g, 'meanci');
 %! expected = [-48.5310236808735 78.5310236808735; -28.5310236808735 ...
 %!             98.5310236808735; -8.53102368087348 118.531023680873];
 %! assert (ci, expected, 1e-12);
@@ -607,7 +607,7 @@ endfunction
 %! ## single statistic (default alpha)
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "predci");
+%! ci = grpstats (x, g, 'predci');
 %! expected = [-95.0389608721344 125.038960872134; -75.0389608721344 ...
 %!             145.038960872134; -55.0389608721344 165.038960872134];
 %! assert (ci, expected, 1e-12);
@@ -615,7 +615,7 @@ endfunction
 %! ## mean + std
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [m, s] = grpstats (x, g, {"mean", "std"});
+%! [m, s] = grpstats (x, g, {'mean', 'std'});
 %! expected_m = [15; 35; 55];
 %! expected_s = [7.07106781186548; 7.07106781186548; 7.07106781186548];
 %! assert (m, expected_m, 1e-14);
@@ -624,7 +624,7 @@ endfunction
 %! ## min + max + range
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [mn, mx, r] = grpstats (x, g, {"min", "max", "range"});
+%! [mn, mx, r] = grpstats (x, g, {'min', 'max', 'range'});
 %! expected_mn = [10; 30; 50];
 %! expected_mx = [20; 40; 60];
 %! expected_r  = [10; 10; 10];
@@ -634,12 +634,12 @@ endfunction
 %!test
 %! ## mean + median + numel + gname
 %! x = [10; 20; 30; 40; 50; 60];
-%! g = {"A"; "A"; "B"; "B"; "C"; "C"};
-%! [m, med, n, names] = grpstats (x, g, {"mean", "median", "numel", "gname"});
+%! g = {'A'; 'A'; 'B'; 'B'; 'C'; 'C'};
+%! [m, med, n, names] = grpstats (x, g, {'mean', 'median', 'numel', 'gname'});
 %! expected_m   = [15; 35; 55];
 %! expected_med = [15; 35; 55];
 %! expected_n   = [2; 2; 2];
-%! expected_names = {"A"; "B"; "C"};
+%! expected_names = {'A'; 'B'; 'C'};
 %! assert (m, expected_m);
 %! assert (med, expected_med);
 %! assert (n, expected_n);
@@ -648,10 +648,10 @@ endfunction
 %! ## all basic statistics
 %! x = [10; 20; 30; 40; 50; 60; 70; 80];
 %! g = [1; 1; 2; 2; 2; 2; 3; 3];
-%! [m, med, s, v, se, mn, mx, r, n] = grpstats (x, g, {"mean", "median", ...
-%!                                                     "std", "var", "sem", ...
-%!                                                     "min", "max", "range", ...
-%!                                                     "numel"});
+%! [m, med, s, v, se, mn, mx, r, n] = grpstats (x, g, {'mean', 'median', ...
+%!                                                     'std', 'var', 'sem', ...
+%!                                                     'min', 'max', 'range', ...
+%!                                                     'numel'});
 %! expected_m   = [15; 45; 75];
 %! expected_med = [15; 45; 75];
 %! expected_s   = [7.07106781186548; 12.9099444873581; 7.07106781186548];
@@ -674,7 +674,7 @@ endfunction
 %! ## meanci-alpha-0.1
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "meanci", 0.1);
+%! ci = grpstats (x, g, 'meanci', 0.1);
 %! expected = [-16.5687575733752 46.5687575733752; 3.4312424266248 ...
 %!             66.5687575733752; 23.4312424266248 86.5687575733752];
 %! assert (ci, expected, 1e-13);
@@ -682,7 +682,7 @@ endfunction
 %! ## predci-alpha-0.1
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "predci", 0.1);
+%! ci = grpstats (x, g, 'predci', 0.1);
 %! expected = [-39.6786920489106 69.6786920489106; -19.6786920489106 ...
 %!             89.6786920489106; 0.321307951089366 109.678692048911];
 %! assert (ci, expected, 1e-12);
@@ -690,7 +690,7 @@ endfunction
 %! ## meanci-alpha-0.01
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "meanci", 0.01);
+%! ci = grpstats (x, g, 'meanci', 0.01);
 %! expected = [-303.283705814358 333.283705814358; -283.283705814358 ...
 %!             353.283705814358; -263.283705814358 373.283705814358];
 %! assert (ci, expected, 3e-8);
@@ -698,7 +698,7 @@ endfunction
 %! ## predci-alpha-0.01
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "predci", 0.01);
+%! ci = grpstats (x, g, 'predci', 0.01);
 %! expected = [-536.283549691775 566.283549691775; -516.283549691775 ...
 %!             586.283549691775; -496.283549691775 606.283549691775];
 %! assert (ci, expected, 3e-8);
@@ -706,7 +706,7 @@ endfunction
 %! ## meanci-alpha-0.2
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "meanci", 0.2);
+%! ci = grpstats (x, g, 'meanci', 0.2);
 %! expected = [-0.388417685876263 30.3884176858763; 19.6115823141237 ...
 %!             50.3884176858763; 39.6115823141237 70.3884176858763];
 %! assert (ci, expected, 1e-13);
@@ -714,7 +714,7 @@ endfunction
 %! ## predci-alpha-0.2
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "predci", 0.2);
+%! ci = grpstats (x, g, 'predci', 0.2);
 %! expected = [-11.6535212800292 41.6535212800292; 8.34647871997083 ...
 %!             61.6535212800292; 28.3464787199708 81.6535212800292];
 %! assert (ci, expected, 1e-13);
@@ -722,7 +722,7 @@ endfunction
 %! ## meanci, name-value alpha=0.2
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! ci = grpstats (x, g, "meanci", "alpha", 0.2);
+%! ci = grpstats (x, g, 'meanci', 'alpha', 0.2);
 %! expected = [-0.388417685876263 30.3884176858763; 19.6115823141237 ...
 %!             50.3884176858763; 39.6115823141237 70.3884176858763];
 %! assert (ci, expected, 1e-13);
@@ -730,7 +730,7 @@ endfunction
 %! ## meanci + predci, alpha=0.01
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [ci_m, ci_p] = grpstats (x, g, {"meanci", "predci"}, 0.01);
+%! [ci_m, ci_p] = grpstats (x, g, {'meanci', 'predci'}, 0.01);
 %! expected_m = [-303.283705814358 333.283705814358; -283.283705814358 ...
 %!               353.283705814358; -263.283705814358 373.283705814358];
 %! expected_p = [-536.283549691775 566.283549691775; -516.283549691775 ...
@@ -741,7 +741,7 @@ endfunction
 %! ## matrix, mean+std+numel
 %! x = [1 10; 2 20; 3 30; 4 40; 5 50; 6 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [m, s, n] = grpstats (x, g, {"mean", "std", "numel"});
+%! [m, s, n] = grpstats (x, g, {'mean', 'std', 'numel'});
 %! expected_m = [1.5 15; 3.5 35; 5.5 55];
 %! expected_s = [0.707106781186548 7.07106781186548; 0.707106781186548 ...
 %!               7.07106781186548; 0.707106781186548 7.07106781186548];
@@ -753,7 +753,7 @@ endfunction
 %! ## matrix with NaN, mean+numel
 %! x = [1 10; NaN 20; 3 NaN; 4 40; 5 50; 6 60];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [m, n] = grpstats (x, g, {"mean", "numel"});
+%! [m, n] = grpstats (x, g, {'mean', 'numel'});
 %! expected_m = [1   15; 3.5 40; 5.5 55];
 %! expected_n = [1 2; 2 1; 2 2];
 %! assert (m, expected_m);
@@ -762,7 +762,7 @@ endfunction
 %! ## 3-column matrix, mean+min+max
 %! x = [1 100 1000; 2 200 2000; 3 300 3000; 4 400 4000];
 %! g = [1; 1; 2; 2];
-%! [m, mn, mx] = grpstats (x, g, {"mean", "min", "max"});
+%! [m, mn, mx] = grpstats (x, g, {'mean', 'min', 'max'});
 %! expected_m  = [1.5 150 1500; 3.5 350 3500];
 %! expected_mn = [1 100 1000; 3 300 3000];
 %! expected_mx = [2 200 2000; 4 400 4000];
@@ -773,7 +773,7 @@ endfunction
 %! ## one element per group
 %! x = [1; 2; 3];
 %! g = [1; 2; 3];
-%! [m, s, n] = grpstats (x, g, {"mean", "std", "numel"});
+%! [m, s, n] = grpstats (x, g, {'mean', 'std', 'numel'});
 %! expected_m = [1; 2; 3];
 %! expected_s = [0; 0; 0];
 %! expected_n = [1; 1; 1];
@@ -784,7 +784,7 @@ endfunction
 %! ## group with all NaN
 %! x = [1; 2; NaN; NaN; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
-%! [m, s, n] = grpstats (x, g, {"mean", "std", "numel"});
+%! [m, s, n] = grpstats (x, g, {'mean', 'std', 'numel'});
 %! expected_m = [1.5; NaN; 5.5];
 %! expected_s = [0.707106781186548; NaN; 0.707106781186548];
 %! expected_n = [2; 0; 2];
@@ -795,7 +795,7 @@ endfunction
 %! ## unequal group sizes
 %! x = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
 %! g = [1; 1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! [m, v, n] = grpstats (x, g, {"mean", "var", "numel"});
+%! [m, v, n] = grpstats (x, g, {'mean', 'var', "numel"});
 %! expected_m = [2.5; 6; 9];
 %! expected_v = [1.66666666666667; 1; 1];
 %! expected_n = [4; 3; 3];
@@ -806,25 +806,25 @@ endfunction
 %! ## non-consecutive numeric groups
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 5; 5; 10; 10];
-%! [m, names] = grpstats (x, g, {"mean", "gname"});
+%! [m, names] = grpstats (x, g, {'mean', 'gname'});
 %! expected_m = [15; 35; 55];
-%! expected_names = {"1"; "5"; "10"};
+%! expected_names = {'1'; '5'; '10'};
 %! assert (m, expected_m);
 %! assert (names, expected_names);
 %!test
 %! ## unsorted string groups
 %! x = [30; 10; 40; 20; 60; 50];
-%! g = {"C"; "A"; "C"; "A"; "B"; "B"};
+%! g = {'C'; 'A'; 'C'; 'A'; 'B'; 'B'};
 %! [m, names] = grpstats (x, g, {"mean", "gname"});
 %! expected_m = [35; 15; 55];
-%! expected_names = {"C"; "A"; "B"};
+%! expected_names = {'C'; 'A'; 'B'};
 %! assert (m, expected_m);
 %! assert (names, expected_names);
 %!test
 %! ## 20 groups, one element each
 %! x = (1:20)';
 %! g = (1:20)';
-%! [m, n] = grpstats (x, g, {"mean", "numel"});
+%! [m, n] = grpstats (x, g, {'mean', 'numel'});
 %! expected_m = (1:20)';
 %! expected_n = ones (20, 1);
 %! assert (m, expected_m);
@@ -833,7 +833,7 @@ endfunction
 %! ## large sample meanci
 %! x = (1:50)';
 %! g = [ones(25, 1); 2 * ones(25, 1)];
-%! ci = grpstats (x, g, "meanci");
+%! ci = grpstats (x, g, 'meanci');
 %! expected = [9.96202357522388 16.0379764247761; 34.9620235752239 ...
 %!             41.0379764247761];
 %! assert (ci, expected, 1e-13);
@@ -841,7 +841,7 @@ endfunction
 %! ## large sample predci
 %! x = (1:50)';
 %! g = [ones(25, 1); 2 * ones(25, 1)];
-%! ci = grpstats (x, g, "predci");
+%! ci = grpstats (x, g, 'predci');
 %! expected = [-2.49070107176829 28.4907010717683; 22.5092989282317 ...
 %!             53.4907010717683];
 %! assert (ci, expected, 1e-14);
