@@ -429,12 +429,14 @@ endfunction
 %! assert (means, [14.4377; 18.0500; 15.8867; 16.3778; 16.6000; 15.5000], 0.001);
 %!test
 %! load carsmall
-%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', 'gname'});
+%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', ...
+%!                                                          'gname'});
 %! assert (grpMin, [8.0; 15.3; 13.9; 12.2; 15.7; 15.5]);
 %! assert (grpMax, [22.2; 21.9; 18.2; 24.6; 17.5; 15.5]);
 %!test
 %! load carsmall
-%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', 'gname'});
+%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', ...
+%!                                                          'gname'});
 %! assert (grp', {'USA', 'France', 'Japan', 'Germany', 'Sweden', 'Italy'});
 %!test
 %! load carsmall
