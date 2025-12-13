@@ -87,7 +87,7 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
   ## Check input arguments
   narginchk (1, 5)
   ## Table input (datatypes integration)
-  if (exist ("istable", "file") && istable (x))
+  if (istable (x))
     if (nargout > 1)
       error ("grpstats: table input currently supports a single output argument.");
     endif
@@ -143,8 +143,7 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
     else
       error ("grpstats: invalid fourth input argument.");
     endif
-    if (! (isnumeric (alpha) && isscalar (alpha) ...
-          && alpha > 0 && alpha < 1))
+    if (! (isnumeric (alpha) && isscalar (alpha) && alpha > 0 && alpha < 1))
       error ("grpstats: 'alpha' must be a real scalar in the range (0,1).");
     endif
   else
@@ -229,18 +228,18 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
           varargout{l} = group_numel;
         case "meanci"
           ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
-          group_meanci = NaN(ngroups, c, 2);
+          group_meanci = NaN (ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
             m = mean (group_x, 1, "omitnan");
             n = size (group_x, 1) - sum (isnan (group_x), 1);
-            s = std (group_x, 0, 1, "omitnan") ./ sqrt(max(n,1));
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
             ## avoid invalid tinv calls for degenerate df
-            df = max(n - 1, 0);
-            tval = zeros(1, size (group_x, 2));
+            df = max (n - 1, 0);
+            tval = zeros (1, size (group_x, 2));
             pos = (df > 0);
             if (any (pos))
-              tval(pos) = -tinv (alpha / 2, df(pos));
+              tval(pos) = - tinv (alpha / 2, df(pos));
             endif
             d = s .* tval;
             group_meanci(j, :, 1) = m - d;
@@ -256,17 +255,17 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
 
         case "predci"
           ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
-          group_predci = NaN(ngroups, c, 2);
+          group_predci = NaN (ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
             m = mean (group_x, 1, "omitnan");
             n = size (group_x, 1) - sum (isnan (group_x), 1);
-            s = std (group_x, 0, 1, "omitnan") ./ sqrt(1 + (1 ./ max(n,1)));
-            df = max(n - 1, 0);
-            tval = zeros(1, size (group_x, 2));
+            s = std (group_x, 0, 1, "omitnan") ./ sqrt (1 + (1 ./ max (n,1)));
+            df = max (n - 1, 0);
+            tval = zeros (1, size (group_x, 2));
             pos = (df > 0);
             if (any (pos))
-              tval(pos) = -tinv (alpha / 2, df(pos));
+              tval(pos) = - tinv (alpha / 2, df(pos));
             endif
             d = s .* tval;
             group_predci(j, :, 1) = m - d;
@@ -441,11 +440,11 @@ endfunction
 %! load carsmall
 %! [m,p,g] = grpstats ([Acceleration,Weight/1000], Cylinders, ...
 %!                     {"mean", "meanci", "gname"}, 0.05);
-%! % check meanci lower bounds (first slice) with tolerance
+%! ## check meanci lower bounds (first slice) with tolerance
 %! expected_lower = [15.9163; 15.6622; 10.7968]; 
 %! expected_upper = [17.4249; 17.2907; 12.4845]; 
-%! assert (abs(p(:,1,1) - expected_lower) < 1e-3);   % tolerance 1e-3 or tighter if desired
-%! assert (abs(p(:,1,2) - expected_upper) < 1e-3);
+%! assert (abs (p(:,1,1) - expected_lower) < 1e-3);
+%! assert (abs (p(:,1,2) - expected_upper) < 1e-3);
 %!test
 %! [mC, g] = grpstats ([], []);
 %! assert (isempty (mC), true);
@@ -453,9 +452,8 @@ endfunction
 
 ## Table input tests (datatypes integration)
 %!test
-%! pkg load datatypes;
-%! Y     = [5; 6; 7; 4; 9; 8];
-%! X     = [1; 2; 3; 4; 5; 6];
+%! Y = [5; 6; 7; 4; 9; 8];
+%! X = [1; 2; 3; 4; 5; 6];
 %! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
 %! tbl = table (Y, X, Group, "VariableNames", {"Y","X","Group"});
 %! stats_tbl = grpstats (tbl, "Group", {"mean","numel"});
@@ -464,7 +462,6 @@ endfunction
 %!                  {"Group", "GroupCount", "mean_Y", "mean_X"}));
 %! assert (isequal (stats_tbl.GroupCount, [2; 2; 2]));
 %!test
-%! pkg load datatypes;
 %! Y     = [5; 6; 7; 4; 9; 8];
 %! Group = categorical ({"A"; "A"; "B"; "B"; "C"; "C"});
 %! tbl = table (Y, Group, "VariableNames", {"Y","Group"});
@@ -474,7 +471,6 @@ endfunction
 %!                  {"Group", "mean_Y"}));
 
 %!error<grpstats: for table input, grouping variable must be categorical.> ...
-%! pkg load datatypes;
 %! Y = [1; 2; 3];
 %! G = [1; 1; 2];
 %! tbl = table (Y, G, "VariableNames", {"Y","G"});
