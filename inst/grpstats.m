@@ -314,7 +314,8 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
   endif
 
   ## Normalise whichstats for table input
-  if (nargin < 3 || isempty (whichstats))
+  is_empty_whichstats = (nargin < 3 || isempty (whichstats));
+  if (is_empty_whichstats)
     func_names = {"mean"};
   elseif (ischar (whichstats))
     func_names = {whichstats};
@@ -365,12 +366,15 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
 
   do_mean  = any (strcmp ("mean",  func_names));
   do_numel = any (strcmp ("numel", func_names));
+  do_groupcount = do_numel || is_empty_whichstats;
 
   if (do_mean)
     mean_vals = NaN (ngroups, nvars);
   endif
   if (do_numel)
     numel_vals = NaN (ngroups, nvars);
+  endif
+  if (do_groupcount)
     group_count = accumarray (group_idx(:), 1, [ngroups, 1]);
   endif
 
@@ -382,7 +386,7 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
       mean_vals(g,:) = mean (group_data, 1, "omitnan");
     endif
     if (do_numel)
-      numel_vals(g, :) = sum (! isnan (group_data), 1);
+      numel_vals(g, :) = sum (!isnan (group_data), 1);
     endif
   endfor
 
@@ -393,7 +397,7 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
   varnames_out = {"Group"};
   data_out = {gcat};
 
-  if (do_numel)
+  if (do_groupcount)
     varnames_out{end+1} = "GroupCount";
     data_out{end+1} = group_count;
   endif
@@ -414,7 +418,8 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
     endfor
   endfor
 
-  stats_tbl = table (data_out{:}, "VariableNames", varnames_out);
+  stats_tbl = table (data_out{:}, "VariableNames", varnames_out, "RowNames", ...
+                     group_names);
 
 endfunction
 
@@ -836,6 +841,33 @@ endfunction
 %! expected = [-2.49070107176829 28.4907010717683; 22.5092989282317 ...
 %!             53.4907010717683];
 %! assert (ci, expected, 1e-14);
+%!test
+%! Y = [5; 6; 7; 4; 9; 8];
+%! X = [1; 2; 3; 4; 5; 6];
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, X, Group);
+%! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%!                                              'mean_Y', 'numel_Y', ...
+%!                                              'mean_X', 'numel_X'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
+%! assert (stats_tbl.numel_Y, [2; 2; 2]);
+%! assert (stats_tbl.mean_X, [1.5; 3.5; 5.5]);
+%! assert (stats_tbl.numel_X, [2; 2; 2]);
+%!test
+%! Y = [5; 6; 7; 4; 9; 8];
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, Group);
+%! stats_tbl = grpstats (tbl, 'Group', 'mean');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%!                                              'mean_Y'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
 
 ## Test input validation
 %!error<grpstats: table input supports a single output argument.> ...
