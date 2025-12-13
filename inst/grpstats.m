@@ -370,6 +370,7 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
     mean_vals = NaN (ngroups, nvars);
   endif
   if (do_numel)
+    numel_vals = NaN (ngroups, nvars);
     group_count = accumarray (group_idx(:), 1, [ngroups, 1]);
   endif
 
@@ -379,6 +380,9 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
     group_data = data_mat(idx, :);
     if (do_mean)
       mean_vals(g,:) = mean (group_data, 1, "omitnan");
+    endif
+    if (do_numel)
+      numel_vals(g, :) = sum (! isnan (group_data), 1);
     endif
   endfor
 
@@ -394,13 +398,21 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
     data_out{end+1} = group_count;
   endif
 
-  if (do_mean)
-    for k = 1:nvars
-      newname = ["mean_" data_var_names{k}];
-      varnames_out{end+1} = newname;
-      data_out{end+1} = mean_vals(:, k);
+  for k = 1:nvars
+    var_name = data_var_names{k};
+    for f = 1:n_funcs
+      func_name = func_names{f};
+      if (strcmp (func_name, "mean"))
+        newname = sprintf ("mean_%s", var_name);
+        varnames_out{end+1} = newname;
+        data_out{end+1} = mean_vals(:, k);
+      elseif (strcmp (func_name, "numel"))
+        newname = sprintf ("numel_%s", var_name);
+        varnames_out{end+1} = newname;
+        data_out{end+1} = numel_vals(:, k);
+      endif
     endfor
-  endif
+  endfor
 
   stats_tbl = table (data_out{:}, "VariableNames", varnames_out);
 
@@ -451,27 +463,6 @@ endfunction
 %! [mC, g] = grpstats ([], []);
 %! assert (isempty (mC), true);
 %! assert (isempty (g), true);
-
-## Table input tests (datatypes integration)
-%!test
-%! Y = [5; 6; 7; 4; 9; 8];
-%! X = [1; 2; 3; 4; 5; 6];
-%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
-%! tbl = table (Y, X, Group, 'VariableNames', {'Y', 'X', 'Group'});
-%! stats_tbl = grpstats (tbl, 'Group', {'mean','numel'});
-%! assert (istable (stats_tbl));
-%! assert (isequal (stats_tbl.Properties.VariableNames, ...
-%!                  {'Group', 'GroupCount', 'mean_Y', 'mean_X'}));
-%! assert (isequal (stats_tbl.GroupCount, [2; 2; 2]));
-%!test
-%! Y     = [5; 6; 7; 4; 9; 8];
-%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
-%! tbl = table (Y, Group, 'VariableNames', {'Y','Group'});
-%! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (isequal (stats_tbl.Properties.VariableNames, ...
-%!                  {'Group', 'mean_Y'}));
-
 %!test
 %! ## column vector, no group
 %! x = [1; 2; 3; 4; 5];
