@@ -89,7 +89,7 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
   ## Table input (datatypes integration)
   if (istable (x))
     if (nargout > 1)
-      error ("grpstats: table input currently supports a single output argument.");
+      error ("grpstats: table input supports a single output argument.");
     endif
     varargout{1} = __grpstats_table__ (x, group, whichstats, varargin{:});
     return;
@@ -408,18 +408,18 @@ endfunction
 
 %!demo
 %! load carsmall;
-%! [m,p,g] = grpstats (Weight, Model_Year, {"mean", "predci", "gname"})
-%! n = length(m);
-%! errorbar((1:n)',m,p(:,2)-m);
+%! [m, p, g] = grpstats (Weight, Model_Year, {'mean', 'predci', 'gname'})
+%! n = length (m);
+%! errorbar ((1:n)',m,p(:,2)-m);
 %! set (gca, "xtick", 1:n, "xticklabel", g);
 %! title ("95% prediction intervals for mean weight by year");
 
 %!demo
 %! load carsmall;
-%! [m,p,g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
-%!                     {"mean", "meanci", "gname"}, 0.05)
-%! [c,r] = size (m);
-%! errorbar((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
+%! [m, p, g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
+%!                       {'mean', 'meanci', 'gname'}, 0.05)
+%! [c, r] = size (m);
+%! errorbar ((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
 %! set (gca, "xtick", 1:c, "xticklabel", g);
 %! title ("95% prediction intervals for mean weight by year");
 
@@ -429,22 +429,22 @@ endfunction
 %! assert (means, [14.4377; 18.0500; 15.8867; 16.3778; 16.6000; 15.5000], 0.001);
 %!test
 %! load carsmall
-%! [grpMin,grpMax,grp] = grpstats (Acceleration, Origin, {"min","max","gname"});
+%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', 'gname'});
 %! assert (grpMin, [8.0; 15.3; 13.9; 12.2; 15.7; 15.5]);
 %! assert (grpMax, [22.2; 21.9; 18.2; 24.6; 17.5; 15.5]);
 %!test
 %! load carsmall
-%! [grpMin,grpMax,grp] = grpstats (Acceleration, Origin, {"min","max","gname"});
-%! assert (grp', {"USA", "France", "Japan", "Germany", "Sweden", "Italy"});
+%! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', 'gname'});
+%! assert (grp', {'USA', 'France', 'Japan', 'Germany', 'Sweden', 'Italy'});
 %!test
 %! load carsmall
-%! [m,p,g] = grpstats ([Acceleration,Weight/1000], Cylinders, ...
-%!                     {"mean", "meanci", "gname"}, 0.05);
+%! [m, p, g] = grpstats ([Acceleration, Weight/1000], Cylinders, ...
+%!                       {'mean', 'meanci', 'gname'}, 0.05);
 %! ## check meanci lower bounds (first slice) with tolerance
-%! expected_lower = [15.9163; 15.6622; 10.7968]; 
-%! expected_upper = [17.4249; 17.2907; 12.4845]; 
-%! assert (abs (p(:,1,1) - expected_lower) < 1e-3);
-%! assert (abs (p(:,1,2) - expected_upper) < 1e-3);
+%! expected_lower = [15.9163; 15.6622; 10.7968];
+%! expected_upper = [17.4249; 17.2907; 12.4845];
+%! assert (abs (p(:,1,1)), expected_lower, 1e-3);
+%! assert (abs (p(:,1,2)), expected_upper, 1e-3);
 %!test
 %! [mC, g] = grpstats ([], []);
 %! assert (isempty (mC), true);
@@ -470,6 +470,9 @@ endfunction
 %! assert (isequal (stats_tbl.Properties.VariableNames, ...
 %!                  {"Group", "mean_Y"}));
 
+## Test input validation
+%!error<grpstats: table input supports a single output argument.> ...
+%! [a, b] = grpstats (table (1));
 %!error<grpstats: for table input, grouping variable must be categorical.> ...
 %! Y = [1; 2; 3];
 %! G = [1; 1; 2];
