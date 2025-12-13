@@ -1,5 +1,6 @@
 ## Copyright (C) 2022-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 jayantchauhan <0001jayant@gmail.com>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,9 +25,10 @@
 ## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @
 ## @var{whichstats}, @qcode{"alpha"}, @var{a})
 ##
-## Summary statistics by group.  @code{grpstats} computes groupwise summary
-## statistics, for data in a matrix @var{x}.  @code{grpstats} treats NaNs as
-## missing values, and removes them.
+## Summary statistics by group.
+##
+## @code{grpstats} computes groupwise summary statistics for the input data in
+## @var{x}.  @code{grpstats} treats NaNs as missing values, and removes them.
 ##
 ## @code{@var{means} = grpstats (@var{x}, @var{group})}, when X is a matrix of
 ## observations, returns the means of each column of @var{x} by @var{group}.
@@ -227,14 +229,14 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
           endfor
           varargout{l} = group_numel;
         case "meanci"
-          ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
+          ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_meanci = NaN (ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
             m = mean (group_x, 1, "omitnan");
             n = size (group_x, 1) - sum (isnan (group_x), 1);
             s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
-            ## avoid invalid tinv calls for degenerate df
+            ## Avoid invalid tinv calls for degenerate df
             df = max (n - 1, 0);
             tval = zeros (1, size (group_x, 2));
             pos = (df > 0);
@@ -245,16 +247,17 @@ function [varargout] = grpstats (x, group, whichstats, varargin)
             group_meanci(j, :, 1) = m - d;
             group_meanci(j, :, 2) = m + d;
           endfor
-          ## MATLAB returns [ngroups x 2] when nvars == 1; Octave used canonical 3-D.
+          ## MATLAB returns [ngroups x 2] when nvars == 1
+          ## Octave used canonical 3-D.
           if (c == 1)
-            ## reshape to [ngroups x 2]
+            ## Reshape to [ngroups x 2]
             varargout{l} = reshape (group_meanci, ngroups, 2);
           else
             varargout{l} = group_meanci;
           endif
 
         case "predci"
-          ## allocate as 3-D: [ngroups x c x 2] (lower, upper)
+          ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_predci = NaN (ngroups, c, 2);
           for j = 1:ngroups
             group_x = x(find (group_idx == j), :);
@@ -359,7 +362,7 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
   endfor
 
   if (isempty (data_mat))
-    error ("grpstats: no numeric variables found in table (apart from grouping).");
+    error ("grpstats: no numeric variables found in table (other than grouping).");
   endif
 
   nvars = columns (data_mat);
