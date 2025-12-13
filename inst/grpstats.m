@@ -394,7 +394,7 @@ function stats_tbl = __grpstats_table__ (tbl, group, whichstats, varargin)
   ## Group column as categorical using group names
   gcat = categorical (group_names);
 
-  varnames_out = {"Group"};
+  varnames_out = {group_name};
   data_out = {gcat};
 
   if (do_groupcount)
@@ -1081,7 +1081,7 @@ endfunction
 %! Weight = [70; 75; 65; 80; 60; 85];
 %! Category = categorical ({'M'; 'M'; 'F'; 'F'; 'M'; 'M'});
 %! tbl = table (Height, Weight, Category);
-%! stats_tbl = grpstats (tbl, 'Category', {'mean', 'numel'})
+%! stats_tbl = grpstats (tbl, 'Category', {'mean', 'numel'});
 %! assert (istable (stats_tbl));
 %! assert (stats_tbl.Properties.VariableNames, {'Category', 'GroupCount', ...
 %!         'mean_Height', 'numel_Height', 'mean_Weight', 'numel_Weight'});
