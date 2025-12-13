@@ -1091,6 +1091,106 @@ endfunction
 %! assert (stats_tbl.numel_Height, [2; 4]);
 %! assert (stats_tbl.mean_Weight, [72.5; 72.5]);
 %! assert (stats_tbl.numel_Weight, [2; 4]);
+%!test
+%! Value = [10.5; 11.2; 9.8; 10.1; 11.5; 10.8];
+%! Type = categorical ({'A'; 'A'; 'A'; 'B'; 'B'; 'B'});
+%! tbl = table (Value, Type);
+%! stats_tbl = grpstats (tbl, 'Type', 'numel');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Type', 'GroupCount', ...
+%!                                              'numel_Value'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert (stats_tbl.GroupCount, [3; 3]);
+%! assert (stats_tbl.numel_Value, [3; 3]);
+%!test
+%! Data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
+%! Label = categorical ({'A'; 'A'; 'A'; 'A'; 'A'; 'B'; 'B'; 'B'; 'B'; 'B'});
+%! tbl = table (Data, Label);
+%! stats_tbl = grpstats (tbl, 'Label', {'mean', 'numel'});
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Label', 'GroupCount', ...
+%!                                              'mean_Data', 'numel_Data'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert (stats_tbl.GroupCount, [5; 5]);
+%! assert (stats_tbl.mean_Data, [3; 8]);
+%! assert (stats_tbl.numel_Data, [5; 5]);
+%!test
+%! X1 = [1; 2; 3; 4];
+%! X2 = [5; 6; 7; 8];
+%! G = categorical ({'A'; 'A'; 'B'; 'B'});
+%! tbl = table (X1, X2, G);
+%! stats_tbl = grpstats (tbl, 'G', 'mean');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'G', 'GroupCount', ...
+%!                                              'mean_X1', 'mean_X2'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert (stats_tbl.GroupCount, [2; 2]);
+%! assert (stats_tbl.mean_X1, [1.5; 3.5]);
+%! assert (stats_tbl.mean_X2, [5.5; 7.5]);
+%!test
+%! Measurement = [100; 150; 200; 250; 300; 350];
+%! GroupVar = categorical ({'Control'; 'Control'; 'Treatment'; 'Treatment'; ...
+%!                          'Placebo'; 'Placebo'});
+%! tbl = table (Measurement, GroupVar);
+%! stats_tbl = grpstats (tbl, 'GroupVar', 'mean');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'GroupVar', 'GroupCount', ...
+%!                                              'mean_Measurement'});
+%! assert (stats_tbl.Properties.RowNames, {'Control'; 'Placebo'; 'Treatment'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (stats_tbl.mean_Measurement, [125; 325; 225]);
+%!test
+%! Y = [NaN; NaN; 3; 4; 5; 6];
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, Group);
+%! stats_tbl = grpstats (tbl, 'Group', 'mean');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%!                                              'mean_Y'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (isequaln (stats_tbl.mean_Y, [NaN; 3.5; 5.5]));
+%!test
+%! Y = [1; 2; NaN; NaN; NaN; NaN];
+%! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
+%! tbl = table (Y, Group);
+%! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%!                                              'mean_Y', 'numel_Y'});
+%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (isequaln (stats_tbl.mean_Y, [1.5; NaN; NaN]));
+%! assert (stats_tbl.numel_Y, [2; 0; 0]);
+%!test
+%! Val = [5.5; 6.5; 7.5; 8.5];
+%! Cat = categorical ({'X'; 'X'; 'Y'; 'Y'});
+%! tbl = table (Val, Cat);
+%! stats_tbl = grpstats (tbl, 'Cat', 'numel');
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Cat', 'GroupCount', ...
+%!                                              'numel_Val'});
+%! assert (stats_tbl.Properties.RowNames, {'X'; 'Y'});
+%! assert (stats_tbl.GroupCount, [2; 2]);
+%! assert (stats_tbl.numel_Val, [2; 2]);
+%!test
+%! A = [1; 2; 3; 4; 5; 6];
+%! B = [10; 20; 30; 40; 50; 60];
+%! C = [100; 200; 300; 400; 500; 600];
+%! Grp = categorical ({'G1'; 'G1'; 'G2'; 'G2'; 'G3'; 'G3'});
+%! tbl = table (A, B, C, Grp);
+%! stats_tbl = grpstats (tbl, 'Grp', {'mean', 'numel'});
+%! assert (istable (stats_tbl));
+%! assert (stats_tbl.Properties.VariableNames, {'Grp', 'GroupCount', ...
+%!         'mean_A', 'numel_A', 'mean_B', 'numel_B', 'mean_C', 'numel_C'});
+%! assert (stats_tbl.Properties.RowNames, {'G1'; 'G2'; 'G3'});
+%! assert (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert (stats_tbl.mean_A, [1.5; 3.5; 5.5]);
+%! assert (stats_tbl.numel_A, [2; 2; 2]);
+%! assert (stats_tbl.mean_B, [15; 35; 55]);
+%! assert (stats_tbl.numel_B, [2; 2; 2]);
+%! assert (stats_tbl.mean_C, [150; 350; 550]);
+%! assert (stats_tbl.numel_C, [2; 2; 2]);
 
 ## Test input validation
 %!error<grpstats: table input supports a single output argument.> ...
