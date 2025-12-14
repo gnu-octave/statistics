@@ -449,9 +449,18 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
 
       ## Plot the eror bars
       h = errorbar ([1:ngroups]', mu, ci);
-      xticks (g_names);
+      xticks ([1:ngroups]);
+      xlim ([0, ngroups+1]);
 
-
+      ## For multiple grouping variables, the ticklabels need some work
+      labels = g_names(:,1);
+      if (columns (g_names) > 1)
+        newlines = repmat ("\n", ngroups, 1);
+        for ic = 2:columns (g_names)
+          labels = strcat (labels, newlines, g_names(:,ic));
+        endfor
+      endif
+      xticklabels (labels);
       return;
     endif
 
