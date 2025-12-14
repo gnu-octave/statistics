@@ -409,10 +409,14 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
             g_names = [g_names, tmp_g_names];
           endfor
         endif
-        ## Get combination of unique groups and thei common index to X
+        ## Get combination of unique groups and their common index to X
         [g_names_idx, ~, grp_idx] = unique (grp_idx, 'rows');
-        g_names = g_names(g_names_idx);
-        ngroups = rows (g_names);
+        ngroups = rows (g_names_idx);
+        c_names = {};
+        for gvar_idx = 1:grp_vars
+          c_names = [c_names, g_names(g_names_idx(:,gvar_idx),gvar_idx)];
+        endfor
+        g_names = c_names;
       else
         [grp_idx, g_names] = grp2idx (group);
         ngroups = numel (g_names);
@@ -443,6 +447,9 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
         ci(idx,:) = s .* tval;
       endfor
 
+      ## Plot the eror bars
+      h = errorbar ([1:ngroups]', mu, ci);
+      xticks (g_names);
 
 
       return;
