@@ -428,9 +428,6 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
 
     ## Check for plot option
     if (do_plot)
-      ## MATLAB functional form does not return an output.  In Octave,
-      ## if output is requested, we return an axes handle to the plot.
-
       ## Calculate mean and ci
       for idx = 1:ngroups
         group_x = x(find (grp_idx == idx), :);
@@ -461,6 +458,12 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
         endfor
       endif
       xticklabels (labels);
+
+      ## MATLAB functional form does not return an output.  In Octave,
+      ## if output is requested, we return an axes handle to the plot.
+      if (nargout > 0)
+        varargout{1} = h;
+      endif
       return;
     endif
 
