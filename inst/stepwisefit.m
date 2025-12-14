@@ -73,6 +73,9 @@ if nargin >= 4 && isempty(premove)
   premove = 0.1;
 endif
 
+if (! isempty (penter) && ! isscalar (penter))
+  error ("stepwisefit: penter must be a scalar value");
+endif
 
 #remove any rows with missing entries
 notnans = !any (isnan ([y X]) , 2);
@@ -216,4 +219,44 @@ endfunction
 %!   assert (isnumeric (X_use));
 %! catch
 %!   error ("stepwisefit crashed when requesting documented outputs");
+%! end_try_catch
+
+%!test
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   [X_use, b, bint, r, rint, stats] = stepwisefit (y, X);
+%!   assert (isnumeric (X_use));
+%! catch err
+%!   error ("regress alpha forwarding failed: %s", err.message);
+%! end_try_catch
+
+%!test
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   [X_use, b] = stepwisefit (y, X, []);
+%!   assert (isnumeric (X_use));
+%! catch err
+%!   error ("empty penter broke regress: %s", err.message);
+%! end_try_catch
+
+%!test
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   stepwisefit (y, X, NaN);
+%!   assert (true);
+%! catch err
+%!   error ("NaN penter broke regress: %s", err.message);
+%! end_try_catch
+
+%!test
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   stepwisefit (y, X, [0.05 0.1]);
+%!   error ("Expected error not thrown for non-scalar penter");
+%! catch
+%!   assert (true);
 %! end_try_catch
