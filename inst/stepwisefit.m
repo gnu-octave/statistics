@@ -1,5 +1,6 @@
 ## Copyright (C) 2013-2021 Nir Krakauer <nkrakauer@ccny.cuny.edu>
 ## Copyright (C) 2014 Mikael Kurula <mkurula@abo.fi>
+## Copyright (C) 2025 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -56,6 +57,13 @@
 ## @end deftypefn
 
 function [X_use, b, bint, r, rint, stats] = stepwisefit(y, X, penter = 0.05, premove = 0.1, method = "corr")
+  % Phase-1.1: initialize all documented outputs to avoid undefined returns
+  X_use = [];
+  b     = [];
+  bint  = [];
+  r     = [];
+  rint  = [];
+  stats = struct ();
 
 if nargin >= 3 && isempty(penter)
   penter = 0.05;
@@ -197,4 +205,15 @@ endfunction
 %!   error ("Expected error not thrown");
 %! catch
 %!   assert (true);
+%! end_try_catch
+
+%!test
+%! % Phase-1.1: requesting all documented outputs must not crash
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   [X_use, b, bint, r, rint, stats] = stepwisefit (y, X);
+%!   assert (isnumeric (X_use));
+%! catch
+%!   error ("stepwisefit crashed when requesting documented outputs");
 %! end_try_catch
