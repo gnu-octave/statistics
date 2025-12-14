@@ -392,10 +392,33 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
   else
     ## Get groups for array input data
     if (no_group)
-      [grp_idx, g_names] = grp2idx (group);
-      ngroups = numel (g_names);
-      if (numel (grp_idx) != r)
-        error ("grpstats: samples in X and GROUPS mismatch.");
+      if (iscell (group) && ! iscellstr (group))
+        ## Multilple grouping variables in cell array
+        [grp_idx, g_names] = grp2idx (group{1});
+        if (numel (grp_idx) != r)
+          error ("grpstats: samples in X and GROUPS mismatch.");
+        endif
+        grp_vars = numel (group);
+        if (grp_vars > 1)
+          for g_idx = 2:grp_vars
+            [tmp_grp_idx, tmp_g_names] = grp2idx (group{g_idx});
+            if (numel (tmp_grp_idx) != r)
+              error ("grpstats: samples in X and GROUPS mismatch.");
+            endif
+            grp_idx = [grp_idx, tmp_grp_idx];
+            g_names = [g_names, tmp_g_names];
+          endfor
+        endif
+        ## Get combination of unique groups and thei common index to X
+        [g_names_idx, ~, grp_idx] = unique (grp_idx, 'rows');
+        g_names = g_names(g_names_idx);
+        ngroups = rows (g_names);
+      else
+        [grp_idx, g_names] = grp2idx (group);
+        ngroups = numel (g_names);
+        if (numel (grp_idx) != r)
+          error ("grpstats: samples in X and GROUPS mismatch.");
+        endif
       endif
     endif
 
@@ -404,6 +427,21 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       ## MATLAB functional form does not return an output.  In Octave,
       ## if output is requested, we return an axes handle to the plot.
 
+      ## Calculate mean and ci
+      for idx = 1:ngroups
+        group_x = x(find (grp_idx == idx), :);
+        mu(idx,:) = mean (group_x, 1, "omitnan");
+        n = size (group_x, 1) - sum (isnan (group_x), 1);
+        s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
+        ## Avoid invalid tinv calls for degenerate df
+        df = max (n - 1, 0);
+        tval = zeros (1, size (group_x, 2));
+        pos = (df > 0);
+        if (any (pos))
+          tval(pos) = - tinv (alpha / 2, df(pos));
+        endif
+        ci(idx,:) = s .* tval;
+      endfor
 
 
 
