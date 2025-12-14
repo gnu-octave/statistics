@@ -165,4 +165,36 @@ endfunction
 %! assert(X_use, [4 1])
 %! assert(b, regress(y, [ones(size(y)) X(:, X_use)], 0.05))
 
+%!test
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! X_use = stepwisefit (y, X);
+%! assert (isnumeric (X_use));
+%! assert (all (X_use(:) >= 1));
+%! assert (all (X_use(:) <= columns (X)));
 
+%!test
+%! y = randn (15, 1);
+%! X = randn (15, 2);
+%! try
+%!   [X_use, b] = stepwisefit (y, X);
+%!   assert (isnumeric (b));
+%! catch
+%!   assert (true);
+%! end_try_catch
+
+%!test
+%! y = [1; 2; NaN; 4];
+%! X = randn (4, 2);
+%! X_use = stepwisefit (y, X);
+%! assert (isnumeric (X_use));
+
+%!test
+%! y = randn (10, 1);
+%! X = randn (10, 2);
+%! try
+%!   stepwisefit (X, y);
+%!   error ("Expected error not thrown");
+%! catch
+%!   assert (true);
+%! end_try_catch
