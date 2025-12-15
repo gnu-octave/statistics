@@ -30,7 +30,7 @@
 ## @code{grpstats} treats NaNs as missing values and removes them from
 ## calculations.
 ##
-## @heading Syntax for Numeric Input
+## Syntax for Numeric Input
 ##
 ## @code{[@var{s1}, @var{s2}, @dots{}] = grpstats (@var{X}, @var{group}, @var{whichstats})}
 ## computes summary statistics for the numeric matrix @var{X} grouped by
@@ -73,7 +73,7 @@
 ## @qcode{"predci"}) as @code{100 * (1-@var{alpha})@@%}. @var{alpha} is a scalar
 ## between 0 and 1. The default is 0.05.
 ##
-## @heading Syntax for Table Input
+## Syntax for Table Input
 ##
 ## @code{@var{T_out} = grpstats (@var{T_in}, @var{groupvar})} computes summary
 ## statistics for the data in table @var{T_in}, grouped by the variables
@@ -96,7 +96,7 @@
 ## variables in @var{T_in} to analyze.  @var{dv} can be a variable name, a cell
 ## array of names, or a logical/numeric vector of indices.
 ##
-## @heading Plotting Syntax
+## Plotting Syntax
 ##
 ## @code{@var{h} = grpstats (@var{x}, @var{group}, @var{alpha})} generates a plot
 ## of the group means with confidence intervals.  @var{x} must be a numeric
