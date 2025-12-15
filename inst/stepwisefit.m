@@ -260,3 +260,28 @@ endfunction
 %! catch
 %!   assert (true);
 %! end_try_catch
+
+
+%!test
+%! % Phase-1.3: non-scalar premove must error early
+%! y = randn (20, 1);
+%! X = randn (20, 3);
+%! try
+%!   stepwisefit (y, X, 0.05, [0.1 0.2]);
+%!   error ("Expected error not thrown for non-scalar premove");
+%! catch
+%!   assert (true);
+%! end_try_catch
+
+%!test
+%! % Phase-1.3: premove used in drop logic must not crash
+%! rand ("seed", 1);  % make behavior deterministic
+%! y = randn (30, 1);
+%! X = randn (30, 3);
+%! try
+%!   % encourage add then drop by making premove very permissive
+%!   stepwisefit (y, X, 0.05, [0.5 0.6], "corr");
+%!   assert (true);
+%! catch err
+%!   error ("non-scalar premove broke drop logic: %s", err.message);
+%! end_try_catch
