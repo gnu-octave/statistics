@@ -631,6 +631,18 @@ endfunction
 %! set (gca, "xtick", 1:c, "xticklabel", g);
 %! title ("95% prediction intervals for mean weight by year");
 
+%!demo
+%! ## Plot mean and 95% CI for a single grouping variable
+%! load carsmall;
+%! grpstats (Weight, Model_Year, 0.05);
+%! title ("Mean Weight by Model Year");
+
+%!demo
+%! ## Plot mean and 95% CI for two grouping variables
+%! load carsmall;
+%! grpstats (Weight, {Origin, Cylinders}, 0.05);
+%! title ("Mean Weight by Origin and Number of Cylinders");
+
 %!test
 %! load carsmall
 %! means = grpstats (Acceleration, Origin);
