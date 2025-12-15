@@ -416,12 +416,13 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
     ## Get groups for array input data
     if (no_group)
       if (iscell (group) && ! iscellstr (group))
-        ## Multilple grouping variables in cell array
-        [grp_idx, g_names] = grp2idx (group{1});
+        ## Multiple grouping variables in cell array
+        grp_vars = numel (group);
+        [grp_idx, g_names1] = grp2idx (group{1});
         if (numel (grp_idx) != r)
           error ("grpstats: samples in X and GROUPS mismatch.");
         endif
-        grp_vars = numel (group);
+        all_g_names = {g_names1};
         if (grp_vars > 1)
           for g_idx = 2:grp_vars
             [tmp_grp_idx, tmp_g_names] = grp2idx (group{g_idx});
@@ -429,15 +430,16 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
               error ("grpstats: samples in X and GROUPS mismatch.");
             endif
             grp_idx = [grp_idx, tmp_grp_idx];
-            g_names = [g_names, tmp_g_names];
+            all_g_names{g_idx} = tmp_g_names;
           endfor
         endif
         ## Get combination of unique groups and their common index to X
         [g_names_idx, ~, grp_idx] = unique (grp_idx, 'rows');
         ngroups = rows (g_names_idx);
-        c_names = {};
+        c_names = cell (ngroups, grp_vars);
         for gvar_idx = 1:grp_vars
-          c_names = [c_names, g_names(g_names_idx(:,gvar_idx),gvar_idx)];
+          gn = all_g_names{gvar_idx};
+          c_names(:, gvar_idx) = gn(g_names_idx(:,gvar_idx));
         endfor
         g_names = c_names;
       else
