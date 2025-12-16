@@ -91,9 +91,10 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     name  = varargin{k};
     value = varargin{k+1};
 
-    if (! ischar (name))
+    if (! (ischar (name) || isstring (name)))
       error ("stepwisefit1: Name–Value keys must be strings");
     endif
+    name = char (name);
 
     switch lower (name)
       case "inmodel"
