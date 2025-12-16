@@ -65,17 +65,51 @@
 ## @end deftypefn
 
 function [b, se, pval, finalmodel, stats, nextstep, history] = ...
-         stepwisefit1 (X, y)
+         stepwisefit1 (X, y, varargin)
 
-  if (nargin != 2)
-    error ("stepwisefit1: exactly two input arguments required");
+  ## Input validation (positional)
+
+  if (nargin < 2)
+    error ("stepwisefit1: at least two input arguments required");
   endif
 
   if (! ismatrix (X) || ! isvector (y))
-    error ("stepwisefit1: invalid input dimensions");
+    error ("stepwisefit1: X must be a matrix and y a vector");
   endif
 
   y = y(:);
+
+  ## Parse Name–Value pairs
+  InModel  = [];
+  Display  = "on";
+
+  if (mod (numel (varargin), 2) != 0)
+    error ("stepwisefit1: Name–Value arguments must come in pairs");
+  endif
+
+  for k = 1:2:numel (varargin)
+    name  = varargin{k};
+    value = varargin{k+1};
+
+    if (! ischar (name))
+      error ("stepwisefit1: Name–Value keys must be strings");
+    endif
+
+    switch lower (name)
+      case "inmodel"
+        if (! islogical (value))
+          error ("stepwisefit1: InModel must be a logical vector");
+        endif
+        InModel = value(:).';
+      case "display"
+        if (! any (strcmpi (value, {"on", "off"})))
+          error ("stepwisefit1: Display must be 'on' or 'off'");
+        endif
+        Display = lower (value);
+      otherwise
+        error ("stepwisefit1: Name–Value option '%s' not supported", name);
+    endswitch
+  endfor
 
   ## Handle missing values
   wasnan = any (isnan ([X y]), 2);
@@ -85,8 +119,28 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
-  ## Stepwise selection (legacy implementation)
+  %% ----------------------------
+  %% Validate InModel
+  %% ----------------------------
+  if (! isempty (InModel))
+    if (numel (InModel) != p)
+      error ("stepwisefit1: InModel length must match number of predictors");
+    endif
+  endif
+
+  ## Stepwise variable selection
+  if (isempty (InModel))
   X_use = stepwisefit (yc, Xc);
+  else
+    % Force initial model, then allow expansion
+    X_init = find (InModel);
+    X_use  = X_init;
+
+    % Run legacy stepwisefit to allow expansion
+    X_more = stepwisefit (yc, Xc(:, !InModel));
+    X_use  = unique ([X_init, find (!InModel)(X_more)]);
+  endif
+
 
   ## Final regression on selected predictors
   Xfinal = [ones(n,1), Xc(:, X_use)];
@@ -170,3 +224,29 @@ endfunction
 %! assert (stats.dfe, 10);
 %! assert (stats.intercept, 103.0974, 1e-4);
 
+%!test
+%! % S3.1 (numeric kernel only): forced baseline selection
+%! X = [
+%!   12.0 4 120 95 2600;
+%!   11.5 6 200 110 3000;
+%!   10.5 8 300 150 3600;
+%!   13.0 4 140 100 2800;
+%!   12.5 6 180 120 3200;
+%!   11.0 8 250 140 3500;
+%!   14.0 4 130 98 2700;
+%!   13.5 6 210 115 3100;
+%!   12.2 8 320 160 3800;
+%!   11.8 4 150 105 2900
+%! ];
+%! y = [28; 22; 18; 27; 23; 19; 29; 21; 17; 26];
+%!
+%! [b,se,pval,finalmodel,stats] = stepwisefit1 (X,y);
+%!
+%! assert (islogical (finalmodel));
+%! assert (numel (finalmodel) == 5);
+%! assert (sum (finalmodel) >= 1);
+%! assert (isnumeric (b));
+%! assert (isnumeric (se));
+%! assert (isnumeric (pval));
+%! assert (stats.rmse > 0);
+%! assert (isfinite (stats.intercept));
