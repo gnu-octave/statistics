@@ -57,7 +57,7 @@
 ## @end deftypefn
 
 function [X_use, b, bint, r, rint, stats] = stepwisefit(y, X, penter = 0.05, premove = 0.1, method = "corr")
-  % Phase-1.1: initialize all documented outputs to avoid undefined returns
+  %initialize all documented outputs to avoid undefined returns
   X_use = [];
   b     = [];
   bint  = [];
