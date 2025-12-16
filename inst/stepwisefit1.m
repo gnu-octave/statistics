@@ -15,7 +15,54 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-
+# -*- texinfo -*-
+## @deftypefn {statistics} {@var{b}, @var{se}, @var{pval}, @var{finalmodel}, @var{stats}, @var{nextstep}, @var{history}} = stepwisefit1 (@var{X}, @var{y})
+##
+## Stepwise linear regression with expanded diagnostic outputs.
+##
+## This function performs stepwise variable selection using linear regression
+## and returns coefficient estimates, standard errors, p-values, and model
+## diagnostics in a consolidated form.
+##
+## Predictor selection is performed using an internal stepwise procedure.
+## After selection, the final regression model is fit explicitly to compute
+## inferential statistics for both included and excluded predictors.
+##
+## @subheading Arguments
+##
+## @itemize @bullet
+## @item
+## @var{X} is an @var{n}-by-@var{p} matrix of predictor variables.
+## @item
+## @var{y} is an @var{n}-by-1 response vector.
+## @end itemize
+##
+## @subheading Return values
+##
+## @itemize @bullet
+## @item
+## @var{b} is a @var{p}-by-1 vector of regression coefficients.
+## @item
+## @var{se} is a @var{p}-by-1 vector of standard errors.
+## @item
+## @var{pval} is a @var{p}-by-1 vector of two-sided p-values.
+## @item
+## @var{finalmodel} is a logical row vector indicating which predictors are
+## included in the final model.
+## @item
+## @var{stats} is a structure containing regression diagnostics, including
+## degrees of freedom, sums of squares, root mean squared error, and the
+## intercept term.
+## @item
+## @var{nextstep} is a scalar indicating whether an additional step is
+## recommended.
+## @item
+## @var{history} is a structure recording intermediate model states during
+## the stepwise procedure.
+## @end itemize
+##
+## @seealso{stepwisefit, regress}
+## @end deftypefn
 
 function [b, se, pval, finalmodel, stats, nextstep, history] = ...
          stepwisefit1 (X, y)
