@@ -18,69 +18,92 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{mean} =} grpstats (@var{x})
-## @deftypefnx {statistics} {@var{mean} =} grpstats (@var{x}, @var{group})
-## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @var{whichstats})
-## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @var{whichstats}, @var{alpha})
-## @deftypefnx {statistics} {[@var{a}, @var{b}, @dots{}] =} grpstats (@var{x}, @var{group}, @
-## @var{whichstats}, @qcode{"alpha"}, @var{a})
+## @deftypefn  {statistics} {[@var{s1}, @dots{}] =} grpstats (@var{X}, @var{group}, @var{whichstats}, @dots{})
+## @deftypefnx {statistics} {@var{T_out} =} grpstats (@var{T_in}, @var{groupvar}, @dots{})
+## @deftypefnx {statistics} {@var{h} =} grpstats (@var{x}, @var{group}, @var{alpha})
 ##
 ## Summary statistics by group.
 ##
-## @code{grpstats} computes groupwise summary statistics for the input data in
-## @var{x}.  @code{grpstats} treats NaNs as missing values, and removes them.
+## @code{grpstats} computes groupwise summary statistics for the data in
+## @var{X}, which can be a numeric vector or matrix, or a table.
 ##
-## @code{@var{means} = grpstats (@var{x}, @var{group})}, when X is a matrix of
-## observations, returns the means of each column of @var{x} by @var{group}.
-## @var{group} is a grouping variable defined as a categorical variable,
-## numeric, string array, or cell array of strings.  @var{group} can be [] or
-## omitted to compute the mean of the entire sample without grouping.
+## @code{grpstats} treats NaNs as missing values and removes them from
+## calculations.
 ##
-## When the first input @var{x} is a table, @code{grpstats} computes groupwise
-## summary statistics for the numeric variables in the table and returns the
-## results in a new table.  In this case, the grouping variable @var{group}
-## must be given as the name of a table variable, which is typically
-## categorical.  Currently table input supports a subset of the statistics
-## available for matrix input, such as @qcode{"mean"} and @qcode{"numel"}.
+## Syntax for Numeric Input
 ##
-## @code{[@var{a}, @var{b}, @dots{}] = grpstats (@var{x}, @var{group},
-## @var{whichstats})}, for a numeric matrix X, returns the statistics specified
-## by @var{whichstats}, as separate arrays @var{a}, @var{b}, @dots{}.
-## @var{whichstats} can be a single function name, or a cell array containing
-## multiple function names.  The number of output arguments must match the
-## number of function names in @var{whichstats}.
-## Names in @var{whichstats} can be chosen from among the following:
+## @code{[@var{s1}, @var{s2}, @dots{}] = grpstats (@var{X}, @var{group}, @var{whichstats})}
+## computes summary statistics for the numeric matrix @var{X} grouped by
+## @var{group}.
 ##
+## @var{X} must be a numeric vector or a 2-D matrix.  Vectors are treated as
+## a single-column matrix.
+##
+## @var{group} is a grouping variable that defines the groups for the rows of
+## @var{X}.  It can be a categorical variable, numeric vector, string array, or
+## cell array of strings.  @var{group} can also be a cell array containing
+## multiple grouping variables.  If @var{group} is empty (@code{[]}) or omitted,
+## all of @var{X} is treated as a single group.
+##
+## @var{whichstats} specifies the statistics to compute. It can be a character
+## string or a cell array of strings.  If omitted, the default is @qcode{"mean"}.
+## The number of output arguments (@var{s1}, @var{s2}, @dots{}) must match the
+## number of statistics requested.  @var{whichstats} can also contain function
+## handles for custom statistics.
+##
+## The available statistics are:
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "mean" @tab mean
-## @item @tab "median" @tab median
-## @item @tab "sem" @tab standard error of the mean
-## @item @tab "std" @tab standard deviation
-## @item @tab "var" @tab variance
-## @item @tab "min" @tab minimum value
-## @item @tab "max" @tab maximum value
-## @item @tab "range" @tab maximum - minimum
-## @item @tab "numel" @tab count, or number of elements
-## @item @tab "meanci" @tab 95% confidence interval for the mean
-## @item @tab "predci" @tab 95% prediction interval for a new observation
-## @item @tab "gname" @tab group name
+## @item @tab @qcode{"mean"}   @tab Mean of each group.
+## @item @tab @qcode{"median"} @tab Median of each group.
+## @item @tab @qcode{"sem"}    @tab Standard error of the mean for each group.
+## @item @tab @qcode{"std"}    @tab Standard deviation of each group.
+## @item @tab @qcode{"var"}    @tab Variance of each group.
+## @item @tab @qcode{"min"}    @tab Minimum value in each group.
+## @item @tab @qcode{"max"}    @tab Maximum value in each group.
+## @item @tab @qcode{"range"}  @tab Difference between max and min in each group.
+## @item @tab @qcode{"numel"}  @tab Number of elements (count) in each group.
+## @item @tab @qcode{"meanci"} @tab Confidence interval for the mean.
+## @item @tab @qcode{"predci"} @tab Prediction interval for a new observation.
+## @item @tab @qcode{"gname"}  @tab Group names.
 ## @end multitable
 ##
-## @code{[@dots{}] = grpstats (@var{x}, @var{group}, @var{whichstats},
-## @var{alpha})} specifies the confidence level as 100(1-ALPHA)% for the "meanci"
-## and "predci" options.  Default value for @var{alpha} is 0.05.  The
-## significance can also be specified using the Name-Value pair argument syntax.
+## @code{[@dots{}] = grpstats (@dots{}, @var{alpha})} or
+## @code{[@dots{}] = grpstats (@dots{}, "alpha", @var{alpha})} specifies the
+## significance level for the confidence intervals (@qcode{"meanci"} and
+## @qcode{"predci"}) as @code{100 * (1-@var{alpha})@@%}. @var{alpha} is a scalar
+## between 0 and 1. The default is 0.05.
 ##
-## Examples:
+## Syntax for Table Input
 ##
-## @example
-## load carsmall;
-## [m,p,g] = grpstats (Weight, Model_Year, @{"mean", "predci", "gname"@})
-## n = length(m);
-## errorbar((1:n)',m,p(:,2)-m)
-## set (gca, "xtick", 1:n, "xticklabel", g);
-## title ("95% prediction intervals for mean weight by year")
-## @end example
+## @code{@var{T_out} = grpstats (@var{T_in}, @var{groupvar})} computes summary
+## statistics for the data in table @var{T_in}, grouped by the variables
+## specified in @var{groupvar}.
+##
+## @var{groupvar} is a character string or cell array of strings specifying one
+## or more variable names in @var{T_in} to use for grouping.
+##
+## The output @var{T_out} is a table with one row for each group. It contains
+## the grouping variables, a @qcode{"GroupCount"} variable, and summary
+## statistics for the other numeric variables in @var{T_in}.  By default, only
+## the mean is computed.  The statistic columns are named using the convention
+## @qcode{stat_VarName}, for example, @qcode{mean_MyVar}.
+##
+## @code{@var{T_out} = grpstats (@var{T_in}, @var{groupvar}, @var{whichstats})}
+## specifies which statistics to compute.  For table input, @var{whichstats}
+## can be @qcode{"mean"}, @qcode{"numel"}, or a cell array of these.
+##
+## @code{@var{T_out} = grpstats (@dots{}, 'DataVars', @var{dv})} specifies which
+## variables in @var{T_in} to analyze.  @var{dv} can be a variable name, a cell
+## array of names, or a logical/numeric vector of indices.
+##
+## Plotting Syntax
+##
+## @code{@var{h} = grpstats (@var{x}, @var{group}, @var{alpha})} generates a plot
+## of the group means with confidence intervals.  @var{x} must be a numeric
+## vector or matrix.  @var{alpha} is a scalar between 0 and 1 that determines
+## the confidence level.  This syntax is an alternative to calling @code{errorbar}
+## after computing @qcode{"mean"} and @qcode{"meanci"}.  The optional output
+## @var{h} is a handle to the plotted lines.
 ##
 ## @seealso{grp2idx}
 ## @end deftypefn
@@ -393,12 +416,13 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
     ## Get groups for array input data
     if (no_group)
       if (iscell (group) && ! iscellstr (group))
-        ## Multilple grouping variables in cell array
-        [grp_idx, g_names] = grp2idx (group{1});
+        ## Multiple grouping variables in cell array
+        grp_vars = numel (group);
+        [grp_idx, g_names1] = grp2idx (group{1});
         if (numel (grp_idx) != r)
           error ("grpstats: samples in X and GROUPS mismatch.");
         endif
-        grp_vars = numel (group);
+        all_g_names = {g_names1};
         if (grp_vars > 1)
           for g_idx = 2:grp_vars
             [tmp_grp_idx, tmp_g_names] = grp2idx (group{g_idx});
@@ -406,15 +430,16 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
               error ("grpstats: samples in X and GROUPS mismatch.");
             endif
             grp_idx = [grp_idx, tmp_grp_idx];
-            g_names = [g_names, tmp_g_names];
+            all_g_names{g_idx} = tmp_g_names;
           endfor
         endif
         ## Get combination of unique groups and their common index to X
         [g_names_idx, ~, grp_idx] = unique (grp_idx, 'rows');
         ngroups = rows (g_names_idx);
-        c_names = {};
+        c_names = cell (ngroups, grp_vars);
         for gvar_idx = 1:grp_vars
-          c_names = [c_names, g_names(g_names_idx(:,gvar_idx),gvar_idx)];
+          gn = all_g_names{gvar_idx};
+          c_names(:, gvar_idx) = gn(g_names_idx(:,gvar_idx));
         endfor
         g_names = c_names;
       else
@@ -607,6 +632,18 @@ endfunction
 %! errorbar ((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
 %! set (gca, "xtick", 1:c, "xticklabel", g);
 %! title ("95% prediction intervals for mean weight by year");
+
+%!demo
+%! ## Plot mean and 95% CI for a single grouping variable
+%! load carsmall;
+%! grpstats (Weight, Model_Year, 0.05);
+%! title ("Mean Weight by Model Year");
+
+%!demo
+%! ## Plot mean and 95% CI for two grouping variables
+%! load carsmall;
+%! grpstats (Weight, {Origin, Cylinders}, 0.05);
+%! title ("Mean Weight by Origin and Number of Cylinders");
 
 %!test
 %! load carsmall
