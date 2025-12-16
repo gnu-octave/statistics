@@ -189,6 +189,33 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   stats.intercept = B(1);
   stats.wasnan    = wasnan;
 
+  stats.yr = R;
+  stats.B     = b;
+  stats.SE    = se;
+  stats.TSTAT = b ./ se;
+  stats.PVAL  = pval;
+  stats.TSTAT (!isfinite (stats.TSTAT)) = NaN;
+  excluded = setdiff (1:p, X_use);
+  xr = zeros (n, numel (excluded));
+
+  for k = 1:numel (excluded)
+    j = excluded(k);
+    Xproj = [ones(n,1), Xc(:, X_use)];
+    bj = regress (Xc(:,j), Xproj);
+    xr(:,k) = Xc(:,j) - Xproj * bj;
+  endfor
+
+  stats.xr = xr;
+  covB = (stats.rmse^2) * inv (Xfinal' * Xfinal);
+  covb = NaN (p+1, p+1);
+  covb(1:rows (covB), 1:columns (covB)) = covB;
+  stats.covb = covb;
+
+  stats.fstat = ((stats.SStotal - stats.SSresid) / stats.df0) ...
+                / (stats.SSresid / stats.dfe);
+
+  stats.pval = 1 - fcdf (stats.fstat, stats.df0, stats.dfe);
+
   ## Placeholders for future phases
   nextstep = 0;
   history  = struct ();
@@ -251,3 +278,87 @@ endfunction
 %! assert (isnumeric (pval));
 %! assert (stats.rmse > 0);
 %! assert (isfinite (stats.intercept));
+
+%!test
+%! X = randn (30, 4);
+%! y = randn (30, 1);
+%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%!
+%! required_fields = {
+%!   "source", "df0", "dfe", "SStotal", "SSresid", "fstat", "pval", ...
+%!   "rmse", "xr", "yr", "B", "SE", "TSTAT", "PVAL", "covb", ...
+%!   "intercept", "wasnan"
+%! };
+%!
+%! for k = 1:numel (required_fields)
+%!   assert (isfield (stats, required_fields{k}));
+%! endfor
+
+%!test
+%! X = randn (40, 5);
+%! y = randn (40, 1);
+%! [b,se,pval,finalmodel,stats] = stepwisefit1 (X, y);
+%!
+%! p = columns (X);
+%! n = rows (X(~stats.wasnan, :));
+%!
+%! assert (size (stats.yr), [n, 1]);
+%! assert (rows (stats.B) == p);
+%! assert (rows (stats.SE) == p);
+%! assert (rows (stats.TSTAT) == p);
+%! assert (rows (stats.PVAL) == p);
+%! assert (size (stats.covb), [p+1, p+1]);
+
+%!test
+%! X = randn (25, 3);
+%! y = randn (25, 1);
+%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%!
+%! SSresid_calc = sum (stats.yr .^ 2);
+%! assert (SSresid_calc, stats.SSresid, 1e-10);
+%!
+%! rmse_calc = sqrt (stats.SSresid / stats.dfe);
+%! assert (rmse_calc, stats.rmse, 1e-10);
+
+%!test
+%! X = randn (50, 6);
+%! y = randn (50, 1);
+%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%!
+%! if (stats.df0 > 0)
+%!   F_calc = ((stats.SStotal - stats.SSresid) / stats.df0) ...
+%!            / (stats.SSresid / stats.dfe);
+%!
+%!   assert (F_calc, stats.fstat, 1e-10);
+%!   assert (stats.pval >= 0 && stats.pval <= 1);
+%! else
+%!   assert (isnan (stats.fstat));
+%!   assert (isnan (stats.pval));
+%! endif
+
+
+%!test
+%! X = randn (35, 4);
+%! y = randn (35, 1);
+%! [~,~,~,finalmodel,stats] = stepwisefit1 (X, y);
+%!
+%! Xc = X(~stats.wasnan, :);
+%! Xfinal = [ones(rows (Xc),1), Xc(:, finalmodel)];
+%!
+%! for j = 1:columns (stats.xr)
+%!   corrval = corr (stats.xr(:,j), Xfinal(:,2:end));
+%!   assert (max (abs (corrval(:))) < 1e-10);
+%! endfor
+
+%!test
+%! X = randn (35, 4);
+%! y = randn (35, 1);
+%! [~,~,~,finalmodel,stats] = stepwisefit1 (X, y);
+%!
+%! Xc = X(~stats.wasnan, :);
+%! Xfinal = [ones(rows (Xc),1), Xc(:, finalmodel)];
+%!
+%! for j = 1:columns (stats.xr)
+%!   ortho = Xfinal' * stats.xr(:,j);
+%!   assert (max (abs (ortho(:))) < 1e-8);
+%! endfor
