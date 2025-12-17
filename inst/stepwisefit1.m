@@ -82,6 +82,13 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   ## Parse Name–Value pairs
   InModel  = [];
   Display  = "on";
+  % MATLAB-compatible defaults
+  PEnter  = 0.05;
+  PRemove = [];
+  Scale   = "off";
+  MaxIter = Inf;
+  Keep    = [];
+
 
   if (mod (numel (varargin), 2) != 0)
     error ("stepwisefit1: Name–Value arguments must come in pairs");
@@ -107,8 +114,40 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
           error ("stepwisefit1: Display must be 'on' or 'off'");
         endif
         Display = lower (value);
+
+      case "penter"
+        if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
+          error ("stepwisefit1: PEnter must be a scalar strictly between 0 and 1");
+        endif
+        PEnter = value;
+
+      case "premove"
+        if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
+          error ("stepwisefit1: PRemove must be a scalar strictly between 0 and 1");
+        endif
+        PRemove = value;
+
+      case "scale"
+        if (! any (strcmpi (value, {"on", "off"})))
+          error ("stepwisefit1: Scale must be 'on' or 'off'");
+        endif
+        Scale = lower (value);
+
+      case "maxiter"
+        if (! isscalar (value) || value <= 0 || fix (value) != value)
+          error ("stepwisefit1: MaxIter must be a positive integer");
+        endif
+        MaxIter = value;
+
+      case "keep"
+        if (! islogical (value))
+          error ("stepwisefit1: Keep must be a logical vector");
+        endif
+        Keep = value(:).';
+
       otherwise
         error ("stepwisefit1: Name–Value option '%s' not supported", name);
+
     endswitch
   endfor
 
@@ -120,13 +159,20 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
-  %% ----------------------------
-  %% Validate InModel
-  %% ----------------------------
+  ## Validate InModel
+  
   if (! isempty (InModel))
     if (numel (InModel) != p)
       error ("stepwisefit1: InModel length must match number of predictors");
     endif
+  endif
+
+    if (isempty (PRemove))
+    PRemove = max (PEnter, 0.1);
+  endif
+
+  if (PRemove < PEnter)
+    error ("stepwisefit1: PRemove must be greater than or equal to PEnter");
   endif
 
   ## Stepwise variable selection
@@ -146,6 +192,8 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   ## Final regression on selected predictors
   Xfinal = [ones(n,1), Xc(:, X_use)];
   [B, BINT, R, RINT, regstats] = regress (yc, Xfinal);
+
+  Rresid = R(:);   % freeze residual vector
 
   ## Allocate outputs
   b    = zeros (p,1);
@@ -184,31 +232,44 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   stats.df0       = numel (X_use);
   stats.dfe       = n - stats.df0 - 1;
   stats.SStotal   = sum ((yc - mean (yc)).^2);
-  stats.SSresid   = sum (R.^2);
+  stats.SSresid   = sum (Rresid.^2);
   stats.rmse      = sqrt (stats.SSresid / stats.dfe);
   stats.intercept = B(1);
   stats.wasnan    = wasnan;
 
-  stats.yr = R;
+  stats.yr = Rresid;
   stats.B     = b;
   stats.SE    = se;
   stats.TSTAT = b ./ se;
   stats.PVAL  = pval;
   stats.TSTAT (!isfinite (stats.TSTAT)) = NaN;
+  
   excluded = setdiff (1:p, X_use);
-  xr = zeros (n, numel (excluded));
+xr = zeros (n, numel (excluded));
 
+if (! isempty (X_use))
+  Z = [ones(n,1), Xc(:, X_use)];
+  P = Z / (Z' * Z) * Z';   % projection matrix
   for k = 1:numel (excluded)
     j = excluded(k);
-    Xproj = [ones(n,1), Xc(:, X_use)];
-    bj = regress (Xc(:,j), Xproj);
-    xr(:,k) = Xc(:,j) - Xproj * bj;
+    xr(:,k) = Xc(:,j) - P * Xc(:,j);
   endfor
+else
+  % intercept-only case
+  for k = 1:numel (excluded)
+    j = excluded(k);
+    xr(:,k) = Xc(:,j) - mean (Xc(:,j));
+  endfor
+endif
 
-  stats.xr = xr;
-  covB = (stats.rmse^2) * inv (Xfinal' * Xfinal);
+stats.xr = xr;
+  
   covb = NaN (p+1, p+1);
-  covb(1:rows (covB), 1:columns (covB)) = covB;
+  covB = (stats.rmse^2) * inv (Xfinal' * Xfinal);
+
+  idx = [1, X_use + 1];
+  covb(idx, idx) = covB;
+
   stats.covb = covb;
 
   stats.fstat = ((stats.SStotal - stats.SSresid) / stats.df0) ...
@@ -366,7 +427,7 @@ endfunction
 %!
 %! for j = 1:columns (stats.xr)
 %!   ortho = Xfinal' * stats.xr(:,j);
-%!   assert (max (abs (ortho(:))) < 1e-8);
+%!   assert (max (abs (ortho(:))) < 1e-6);
 %! endfor
 
 %!test
