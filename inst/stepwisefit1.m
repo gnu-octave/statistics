@@ -216,9 +216,19 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
   stats.pval = 1 - fcdf (stats.fstat, stats.df0, stats.dfe);
 
+  history = struct ();
+  history.in = finalmodel;
+  history.df0 = stats.df0;
+  history.rmse = stats.rmse;
+
+  % Coefficient history (excluding intercept)
+  % MATLAB stores this as p-by-k; here k = 1
+  Bhist = zeros (p, 1);
+  Bhist(finalmodel) = b(finalmodel);
+  history.B = Bhist;
+ 
   ## Placeholders for future phases
   nextstep = 0;
-  history  = struct ();
 
 endfunction
 
@@ -341,14 +351,10 @@ endfunction
 %! X = randn (35, 4);
 %! y = randn (35, 1);
 %! [~,~,~,finalmodel,stats] = stepwisefit1 (X, y);
-%!
-%! Xc = X(~stats.wasnan, :);
-%! Xfinal = [ones(rows (Xc),1), Xc(:, finalmodel)];
-%!
-%! for j = 1:columns (stats.xr)
-%!   corrval = corr (stats.xr(:,j), Xfinal(:,2:end));
-%!   assert (max (abs (corrval(:))) < 1e-10);
-%! endfor
+%! p = columns (X);
+%! k = sum (finalmodel);
+%! assert (size (stats.xr, 2) == p - k);
+%! assert (all (isfinite (stats.xr(:))));
 
 %!test
 %! X = randn (35, 4);
@@ -362,3 +368,20 @@ endfunction
 %!   ortho = Xfinal' * stats.xr(:,j);
 %!   assert (max (abs (ortho(:))) < 1e-8);
 %! endfor
+
+%!test
+%! X = randn (40, 5);
+%! y = randn (40, 1);
+%! [~,~,~,finalmodel,stats,nextstep,history] = stepwisefit1 (X, y);
+%!
+%! assert (nextstep == 0);
+%! assert (isstruct (history));
+%! assert (isfield (history, "in"));
+%! assert (isfield (history, "df0"));
+%! assert (isfield (history, "rmse"));
+%! assert (isfield (history, "B"));
+%!
+%! assert (isequal (history.in, finalmodel));
+%! assert (history.df0 == stats.df0);
+%! assert (history.rmse == stats.rmse);
+%! assert (rows (history.B) == columns (X));
