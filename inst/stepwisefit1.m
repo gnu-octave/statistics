@@ -14,51 +14,100 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
-
 # -*- texinfo -*-
-## @deftypefn {statistics} {@var{b}, @var{se}, @var{pval}, @var{finalmodel}, @var{stats}, @var{nextstep}, @var{history}} = stepwisefit1 (@var{X}, @var{y})
+## @deftypefn {statistics} {@var{b}, @var{se}, @var{pval}, @var{finalmodel}, @var{stats}, @var{nextstep}, @var{history}} = stepwisefit1 (@var{X}, @var{y}, @var{varargin})
 ##
-## Stepwise linear regression with expanded diagnostic outputs.
+## Perform stepwise linear regression with extended diagnostic outputs.
 ##
-## This function performs stepwise variable selection using linear regression
-## and returns coefficient estimates, standard errors, p-values, and model
-## diagnostics in a consolidated form.
+## @code{stepwisefit1} is a wrapper around the legacy @code{stepwisefit}
+## function that provides additional regression diagnostics, structured
+## outputs, and partial MATLAB-compatible Name–Value argument handling.
 ##
-## Predictor selection is performed using an internal stepwise procedure.
-## After selection, the final regression model is fit explicitly to compute
-## inferential statistics for both included and excluded predictors.
+## Predictor selection is performed using the existing @code{stepwisefit}
+## algorithm. After variable selection, the final regression model is
+## explicitly refit using @code{regress} to compute coefficient estimates
+## and inferential statistics for both included and excluded predictors.
+##
+## This function does not replace @code{stepwisefit}. It is intended as a
+## forward-compatible interface that exposes richer outputs while preserving
+## the stability of the legacy implementation.
 ##
 ## @subheading Arguments
 ##
 ## @itemize @bullet
 ## @item
-## @var{X} is an @var{n}-by-@var{p} matrix of predictor variables.
+## @var{X} is an @var{n}-by-@var{p} numeric matrix of predictor variables.
+##
 ## @item
-## @var{y} is an @var{n}-by-1 response vector.
+## @var{y} is an @var{n}-by-1 numeric response vector.
+##
+## @item
+## Optional Name–Value pairs may be provided to control model selection.
 ## @end itemize
 ##
-## @subheading Return values
+## @subheading Name–Value Arguments
+##
+## @table @asis
+## @item @qcode{"InModel"}
+## Logical row vector of length @var{p} specifying an initial model.
+## Predictors marked @code{true} are treated as initially included.
+##
+## @item @qcode{"Keep"}
+## Logical row vector of length @var{p} specifying predictors that must
+## always be included in the final model.
+##
+## @item @qcode{"PEnter"}
+## Scalar significance level in the open interval (0,1) specifying the
+## entry threshold for stepwise selection.  Default is @code{0.05}.
+##
+## @item @qcode{"PRemove"}
+## Scalar significance level in the open interval (0,1) specifying the
+## removal threshold for stepwise selection.  If not specified, a default
+## value greater than or equal to @qcode{"PEnter"} is used.
+##
+## @item @qcode{"MaxIter"}
+## Positive integer specifying the maximum number of stepwise iterations.
+## Default is @code{Inf}.
+##
+## @item @qcode{"Scale"}
+## Either @qcode{"on"} or @qcode{"off"}.  When enabled, predictors are
+## standardized prior to stepwise selection only.  Final coefficients
+## are always reported on the original data scale.
+##
+## @item @qcode{"Display"}
+## Either @qcode{"on"} or @qcode{"off"}.  Currently accepted for interface
+## compatibility but does not affect output.
+## @end table
+##
+## @subheading Return Values
 ##
 ## @itemize @bullet
 ## @item
-## @var{b} is a @var{p}-by-1 vector of regression coefficients.
+## @var{b} is a @var{p}-by-1 vector of regression coefficients.  Coefficients
+## corresponding to excluded predictors are estimated conditionally.
+##
 ## @item
 ## @var{se} is a @var{p}-by-1 vector of standard errors.
+##
 ## @item
 ## @var{pval} is a @var{p}-by-1 vector of two-sided p-values.
+##
 ## @item
-## @var{finalmodel} is a logical row vector indicating which predictors are
-## included in the final model.
+## @var{finalmodel} is a logical row vector indicating predictors selected
+## in the final model.
+##
 ## @item
 ## @var{stats} is a structure containing regression diagnostics, including
-## degrees of freedom, sums of squares, root mean squared error, and the
-## intercept term.
+## sums of squares, degrees of freedom, residuals, covariance estimates,
+## F-statistic, and related quantities.
+##
 ## @item
-## @var{nextstep} is a scalar indicating whether an additional step is
-## recommended.
+## @var{nextstep} is a scalar placeholder indicating whether an additional
+## stepwise iteration is recommended.  Currently always zero.
+##
 ## @item
-## @var{history} is a structure recording intermediate model states during
-## the stepwise procedure.
+## @var{history} is a structure summarizing the final model state, including
+## selected predictors and coefficient history.
 ## @end itemize
 ##
 ## @seealso{stepwisefit, regress}
