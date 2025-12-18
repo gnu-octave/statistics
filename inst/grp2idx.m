@@ -59,7 +59,7 @@ function [g, gn, gl] = grp2idx (s)
     s(undef) = {''};
   elseif (isduration (s) && isvector (s))
     s_was_duration = true;
-  elseif (! isvector (s))
+  elseif (! isvector (s) || isstruct (s) || istable (s))
     error ("grp2idx: S must be a vector, cell array of strings, or char matrix");
   endif
 
@@ -268,24 +268,25 @@ endfunction
 %! assert (isequal (gl, seconds ([1.234; 2.5; 3.000])));
 %!test
 %! [g, gn, gl] = grp2idx ([hours(1); hours(2); hours(1); hours(3)]);
-%! assert(isequal (g, [1; 2; 1; 3]));
-%! assert(isequal (gn, {'1 hr'; '2 hr'; '3 hr'}));
-%! assert(isequal (gl, [hours(1); hours(2); hours(3)]));
+%! assert (isequal (g, [1; 2; 1; 3]));
+%! assert (isequal (gn, {'1 hr'; '2 hr'; '3 hr'}));
+%! assert (isequal (gl, [hours(1); hours(2); hours(3)]));
 %!test
-%! in = [duration(1, 30, 0); duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)];
+%! in = [duration(1, 30, 0); duration(0, 45, 30); duration(1, 30, 0); ...
+%!       duration(2, 15, 15)];
 %! [g, gn, gl] = grp2idx (in);
-%! assert(isequal (g, [2; 1; 2; 3]));
-%! assert(isequal (gn, {'00:45:30'; '01:30:00'; '02:15:15'}));
-%! assert(isequal (gl, [duration(0,45,30); duration(1,30,0); duration(2,15,15)]));
+%! assert (isequal (g, [2; 1; 2; 3]));
+%! assert (isequal (gn, {'00:45:30'; '01:30:00'; '02:15:15'}));
+%! assert (isequal (gl, [duration(0,45,30); duration(1,30,0); duration(2,15,15)]));
 ## Inconsistency Note: following test is inconsistent with MATLAB due to a
 ## probable bug in their implementation, where they include multiple NaNs
 ## in the output group labels for duration array inputs.
 %!test
 %! in = [hours(1); NaN; minutes(30); hours(1); NaN; seconds(90)];
 %! [g, gn, gl] = grp2idx (in);
-%! assert(isequaln (g, [3; NaN; 2; 3; NaN; 1]));
-%! assert(isequal (gn, {'0.025 hr'; '0.5 hr'; '1 hr'}));
-%! assert(isequal (gl, [seconds(90); minutes(30);  hours(1)]));
+%! assert (isequaln (g, [3; NaN; 2; 3; NaN; 1]));
+%! assert (isequal (gn, {'0.025 hr'; '0.5 hr'; '1 hr'}));
+%! assert (isequal (gl, [seconds(90); minutes(30);  hours(1)]));
 ## test for string arrays
 %!test
 %! [g, gn, gl] = grp2idx (string ({'123', 'erw', missing, '', '234'}));
@@ -611,3 +612,10 @@ endfunction
 %! assert (g, [1; 2; 3; 1; 2]);
 %! assert (gn, {'0.1'; '0.2'; '0.3'});
 %! assert (gl, [0.1; 0.2; 0.3]);
+
+%!error<grp2idx: S must be a vector, cell array of strings, or char matrix> ...
+%! grp2idx (ones (2, 2))
+%!error<grp2idx: S must be a vector, cell array of strings, or char matrix> ...
+%! grp2idx (struct ("a", 1))
+%!error<grp2idx: S must be a vector, cell array of strings, or char matrix> ...
+%! grp2idx (table ([1 2]))
