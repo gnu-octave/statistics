@@ -159,6 +159,44 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
+  if (! isempty (Keep))
+    X_forced = find (Keep);
+  else
+    X_forced = [];
+  endif
+
+  free_idx = setdiff (1:p, X_forced);
+
+  if (strcmp (Scale, "on"))
+    muX = mean (Xc, 1);
+    sigX = std (Xc, 0, 1);
+    sigX(sigX == 0) = 1;   % prevent division by zero
+    Xs = (Xc - muX) ./ sigX;
+  else
+    Xs = Xc;
+  endif
+
+  if (isempty (free_idx))
+    X_use = X_forced;
+  else
+    X_step_prev = [];
+    X_step = [];
+
+    iter = 0;
+    while (iter < MaxIter)
+      iter++;
+      X_step = stepwisefit (yc, Xs(:, free_idx), PEnter, PRemove);
+
+      if (isequal (X_step, X_step_prev))
+        break;
+      endif
+
+      X_step_prev = X_step;
+    endwhile
+
+    X_use = sort ([X_forced, free_idx(X_step)]);
+  endif
+
   ## Validate InModel
   
   if (! isempty (InModel))
@@ -173,19 +211,6 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
   if (PRemove < PEnter)
     error ("stepwisefit1: PRemove must be greater than or equal to PEnter");
-  endif
-
-  ## Stepwise variable selection
-  if (isempty (InModel))
-  X_use = stepwisefit (yc, Xc);
-  else
-    % Force initial model, then allow expansion
-    X_init = find (InModel);
-    X_use  = X_init;
-
-    % Run legacy stepwisefit to allow expansion
-    X_more = stepwisefit (yc, Xc(:, !InModel));
-    X_use  = unique ([X_init, find (!InModel)(X_more)]);
   endif
 
 
@@ -446,3 +471,38 @@ endfunction
 %! assert (history.df0 == stats.df0);
 %! assert (history.rmse == stats.rmse);
 %! assert (rows (history.B) == columns (X));
+
+%!test
+%! X = randn (20,4);
+%! y = randn (20,1);
+%! stepwisefit1 (X,y,'Keep',[true false true false]);
+
+%!test
+%! X = randn (20,4);
+%! y = randn (20,1);
+%! try
+%!   stepwisefit1 (X,y,'Keep',[true false]);
+%!   error ("Expected error not thrown");
+%! catch
+%!   assert (true);
+%! end_try_catch
+
+%!test
+%! X = randn (30, 4);
+%! y = randn (30, 1);
+%! keep = [true false false false];
+%! [~,~,~,finalmodel] = stepwisefit1 (X, y, "Keep", keep);
+%! assert (finalmodel(1) == true);
+
+%!test
+%! X = randn (40, 6);
+%! y = randn (40, 1);
+%! [~,~,~,finalmodel] = stepwisefit1 (X, y, "MaxIter", 1);
+%! assert (islogical (finalmodel));
+
+%!test
+%! X = randn (50, 5);
+%! y = randn (50, 1);
+%! [b1] = stepwisefit1 (X, y);
+%! [b2] = stepwisefit1 (X, y, "Scale", "on");
+%! assert (rows (b1) == rows (b2));
