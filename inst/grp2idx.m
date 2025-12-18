@@ -1,5 +1,6 @@
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -22,10 +23,14 @@
 ##
 ## Get index for group variables.
 ##
-## For variable @var{s}, returns the indices @var{g}, into the variable
-## groups @var{gn} and @var{gl}.  The first has a string representation of
-## the groups while the later has its actual values.  In the case of numerical
-## and logical data types, the group indices are ordered in sorted order of
+## For the grouping variable @var{s}, return the indices @var{g}, into the
+## variable groups @var{gn} and @var{gl}.  The input @var{s} may be a
+## numeric vector, logical vector, char array, cell array of strings, string
+## vector, categorical vector, or duration vector.
+##
+## The first output @var{gn} has a string representation of the groups while
+## the later @var{gl} has its actual values.  In the case of numerical and
+## logical data types, the group indices are ordered in sorted order of
 ## @var{s}.  In the case of categorical arrays, the group indices are allocated
 ## by the order of the categories in @var{s}.  For the rest of the data types,
 ## the group indices are allocated by order of first appearance in @var{s}.
