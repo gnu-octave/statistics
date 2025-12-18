@@ -68,7 +68,7 @@ function [g, gn, gl] = grp2idx (s)
     s(undef) = {''};
   elseif (isduration (s) && isvector (s))
     s_was_duration = true;
-  elseif (! isvector (s) || isstruct (s) || istable (s))
+  elseif (istable (s) || ! isvector (s) || isstruct (s))
     error ("grp2idx: S must be a vector, cell array of strings, or char matrix");
   endif
 
