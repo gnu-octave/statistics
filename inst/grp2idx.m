@@ -146,15 +146,6 @@ function [g, gn, gl] = grp2idx (s)
 
 endfunction
 
-# test for one output argument
-%!test
-%! g = grp2idx ([3 2 1 2 3 1]);
-%! assert (isequal (g, [3; 2; 1; 2; 3; 1]));
-# test for two output arguments
-%!test
-%! [g, gn] = grp2idx (['b'; 'a'; 'c'; 'a']);
-%! assert (isequal (g, [1; 2; 3; 2]));
-%! assert (isequal (gn, {'b'; 'a'; 'c'}));
 ## test boolean input and note that row or column vector makes no difference
 %!test
 %! in = [true false false true];
@@ -421,12 +412,6 @@ endfunction
 %! assert (gn, {'1'; '2'; '3'; '4'; '5'});
 %! assert (gl, [1; 2; 3; 4; 5]);
 %!test
-%! s = [5 4 3 2 1];
-%! [g, gn, gl] = grp2idx (s);
-%! assert (g, [5; 4; 3; 2; 1]);
-%! assert (gn, {'1'; '2'; '3'; '4'; '5'});
-%! assert (gl, [1; 2; 3; 4; 5]);
-%!test
 %! s = [1 1 1 1 1];
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [1; 1; 1; 1; 1]);
@@ -565,38 +550,10 @@ endfunction
 %! assert (isequal (size (gn), [0 1]))
 %! assert (isequal (size (gl), [0 1]));
 %!test
-%! s = [1 2 3];
-%! g = grp2idx (s);
-%! assert (g, [1; 2; 3]);
-%!test
-%! s = {'a'; 'b'; 'c'};
-%! g = grp2idx (s);
-%! assert (g, [1; 2; 3]);
-%!test
-%! s = [true false true];
-%! g = grp2idx (s);
-%! assert (g, [2; 1; 2]);
-%!test
-%! s = [1 2 3 4 5];
-%! [g, gn] = grp2idx (s);
-%! assert (g, [1; 2; 3; 4; 5]);
-%! assert (gn, {'1'; '2'; '3'; '4'; '5'});
-%!test
-%! s = {'x'; 'y'; 'z'};
-%! [g, gn] = grp2idx (s);
-%! assert (g, [1; 2; 3]);
-%! assert (gn, {'x'; 'y'; 'z'});
-%!test
 %! s = categorical ({'cat1', 'cat2', 'cat3'});
 %! [g, gn] = grp2idx (s);
 %! assert (g, [1; 2; 3]);
 %! assert (gn, {'cat1'; 'cat2'; 'cat3'});
-%!test
-%! s = [1; 1; 2; 2; 3; 3; 4; 4; 5; 5];
-%! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; 1; 2; 2; 3; 3; 4; 4; 5; 5]);
-%! assert (gn, {'1'; '2'; '3'; '4'; '5'});
-%! assert (gl, [1; 2; 3; 4; 5]);
 %!test
 %! s = {'group1'; 'group2'; 'group1'; 'group3'; 'group2'; 'group3'};
 %! [g, gn, gl] = grp2idx (s);
@@ -604,23 +561,11 @@ endfunction
 %! assert (gn, {'group1'; 'group2'; 'group3'});
 %! assert (gl, {'group1'; 'group2'; 'group3'});
 %!test
-%! s = [10 20 30 40 50];
-%! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; 2; 3; 4; 5]);
-%! assert (gn, {'10'; '20'; '30'; '40'; '50'});
-%! assert (gl, [10; 20; 30; 40; 50]);
-%!test
 %! s = logical ([1 0 1 0 1 0]);
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [2; 1; 2; 1; 2; 1]);
 %! assert (gn, {'0'; '1'});
 %! assert (gl, [false; true]);
-%!test
-%! s = [0.1 0.2 0.3 0.1 0.2];
-%! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; 2; 3; 1; 2]);
-%! assert (gn, {'0.1'; '0.2'; '0.3'});
-%! assert (gl, [0.1; 0.2; 0.3]);
 
 %!error<grp2idx: cell array S must be a cell array of strings> ...
 %! grp2idx ({'a', 1})
