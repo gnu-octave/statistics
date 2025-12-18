@@ -41,6 +41,10 @@ function [g, gn, gl] = grp2idx (s)
     print_usage ();
   endif
 
+  if (iscell (s) && ! iscellstr (s))
+    error ("grp2idx: cell array S must be a cell array of strings");
+  endif
+
   s_was_char = false;
   s_was_categorical = false;
   s_was_duration = false;
@@ -65,7 +69,7 @@ function [g, gn, gl] = grp2idx (s)
 
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
-  if (iscellstr (s) && ! s_was_categorical)
+  if (iscellstr (s) && ! s_was_categorical && ! isempty (gl))
     I = sort (I);
     for i = 1:length (gl)
       gl_s(i) = gl(g(I(i)));
@@ -613,6 +617,12 @@ endfunction
 %! assert (gn, {'0.1'; '0.2'; '0.3'});
 %! assert (gl, [0.1; 0.2; 0.3]);
 
+%!error<grp2idx: cell array S must be a cell array of strings> ...
+%! grp2idx ({'a', 1})
+%!error<grp2idx: cell array S must be a cell array of strings> ...
+%! grp2idx ({1, 2})
+%!error<grp2idx: cell array S must be a cell array of strings> ...
+%! grp2idx ({'a', {}})
 %!error<grp2idx: S must be a vector, cell array of strings, or char matrix> ...
 %! grp2idx (ones (2, 2))
 %!error<grp2idx: S must be a vector, cell array of strings, or char matrix> ...
