@@ -86,12 +86,20 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   endif
 endfunction
 
-%!shared X,Y,A,B,r,U,V,k
+%!shared X, Y, A, B, r, U, V, k, A_exp
 %! k = 10;
-%! X = [1:k; sin(1:k); cos(1:k)]'; Y = [tan(1:k); tanh((1:k)/k)]';
-%! [A,B,r,U,V,stats] = canoncorr (X,Y);
-%!assert (A, [-0.329229   0.072908; 0.074870   1.389318; -0.069302  -0.024109], 1E-6);
-%!assert (B, [-0.017086  -0.398402; -4.475049  -0.824538], 1E-6);
+%! X = [1:k; sin(1:k); cos(1:k)]';
+%! Y = [tan(1:k); tanh((1:k)/k)]';
+%! [A, B, r, U, V, stats] = canoncorr (X, Y);
+%! ## Adjust sign because some BLAS implementations (e.g. Intel MKL)
+%! ## return opposite signs to OpenBLAS/Netlib (see GitHub issue #335)
+%! A_exp = [-0.329229, 0.072908; 0.074870, 1.389318; -0.069302, -0.024109];
+%! s = sign (sum (A .* A_exp, 1));
+%! s(s==0) = 1;
+%! A = A .* s;
+%! B = B .* s;
+%!assert (A, A_exp, 1e-6);
+%!assert (B, [-0.017086  -0.398402; -4.475049  -0.824538], 1e-6);
 %!assert (r, [0.99590   0.26754], 1E-5);
 %!assert (U, center(X) * A, 10*eps);
 %!assert (V, center(Y) * B, 10*eps);
