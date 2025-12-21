@@ -18,12 +18,11 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {statistics} {@var{b}, @var{se}, @var{pval}, @var{finalmodel}, @var{stats}, @var{nextstep}, @var{history}} = stepwisefit1 (@var{X}, @var{y}, @var{varargin})
+## @deftypefn {statistics} {@var{b}, @var{se}, @var{pval}, @var{finalmodel}, @var{stats}, @var{nextstep}, @var{history}} = stepwisefit (@var{X}, @var{y}, @var{varargin})
 ##
 ## Perform stepwise linear regression with extended diagnostic outputs.
 ##
-## @code{stepwisefit1} is a wrapper around the legacy @code{stepwisefit}
-## function that provides additional regression diagnostics, structured
+## @code{stepwisefit} provides additional regression diagnostics, structured
 ## outputs, and partial MATLAB-compatible Name–Value argument handling.
 ##
 ## Predictor selection is performed using the existing @code{stepwisefit}
@@ -114,16 +113,16 @@
 ## @end deftypefn
 
 function [b, se, pval, finalmodel, stats, nextstep, history] = ...
-         stepwisefit1 (X, y, varargin)
+         stepwisefit (X, y, varargin)
 
   ## Input validation (positional)
 
   if (nargin < 2)
-    error ("stepwisefit1: at least two input arguments required");
+    error ("stepwisefit: at least two input arguments required");
   endif
 
   if (! ismatrix (X) || ! isvector (y))
-    error ("stepwisefit1: X must be a matrix and y a vector");
+    error ("stepwisefit: X must be a matrix and y a vector");
   endif
 
   y = y(:);
@@ -140,7 +139,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
 
   if (mod (numel (varargin), 2) != 0)
-    error ("stepwisefit1: Name–Value arguments must come in pairs");
+    error ("stepwisefit: Name–Value arguments must come in pairs");
   endif
 
   for k = 1:2:numel (varargin)
@@ -148,54 +147,54 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     value = varargin{k+1};
 
     if (! (ischar (name) || isstring (name)))
-      error ("stepwisefit1: Name–Value keys must be strings");
+      error ("stepwisefit: Name–Value keys must be strings");
     endif
     name = char (name);
 
     switch lower (name)
       case "inmodel"
         if (! islogical (value))
-          error ("stepwisefit1: InModel must be a logical vector");
+          error ("stepwisefit: InModel must be a logical vector");
         endif
         InModel = value(:).';
       case "display"
         if (! any (strcmpi (value, {"on", "off"})))
-          error ("stepwisefit1: Display must be 'on' or 'off'");
+          error ("stepwisefit: Display must be 'on' or 'off'");
         endif
         Display = lower (value);
 
       case "penter"
         if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
-          error ("stepwisefit1: PEnter must be a scalar strictly between 0 and 1");
+          error ("stepwisefit: PEnter must be a scalar strictly between 0 and 1");
         endif
         PEnter = value;
 
       case "premove"
         if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
-          error ("stepwisefit1: PRemove must be a scalar strictly between 0 and 1");
+          error ("stepwisefit: PRemove must be a scalar strictly between 0 and 1");
         endif
         PRemove = value;
 
       case "scale"
         if (! any (strcmpi (value, {"on", "off"})))
-          error ("stepwisefit1: Scale must be 'on' or 'off'");
+          error ("stepwisefit: Scale must be 'on' or 'off'");
         endif
         Scale = lower (value);
 
       case "maxiter"
         if (! isscalar (value) || value <= 0 || fix (value) != value)
-          error ("stepwisefit1: MaxIter must be a positive integer");
+          error ("stepwisefit: MaxIter must be a positive integer");
         endif
         MaxIter = value;
 
       case "keep"
         if (! islogical (value))
-          error ("stepwisefit1: Keep must be a logical vector");
+          error ("stepwisefit: Keep must be a logical vector");
         endif
         Keep = value(:).';
 
       otherwise
-        error ("stepwisefit1: Name–Value option '%s' not supported", name);
+        error ("stepwisefit: Name–Value option '%s' not supported", name);
 
     endswitch
   endfor
@@ -250,7 +249,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   
   if (! isempty (InModel))
     if (numel (InModel) != p)
-      error ("stepwisefit1: InModel length must match number of predictors");
+      error ("stepwisefit: InModel length must match number of predictors");
     endif
   endif
 
@@ -259,7 +258,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   endif
 
   if (PRemove < PEnter)
-    error ("stepwisefit1: PRemove must be greater than or equal to PEnter");
+    error ("stepwisefit: PRemove must be greater than or equal to PEnter");
   endif
 
 
@@ -385,7 +384,7 @@ endfunction
 %!      10 68 8 12];
 %! y = [78.5; 74.3; 104.3; 87.6; 95.9; 109.2;
 %!      102.7; 72.5; 93.1; 115.9; 83.8; 113.3; 109.4];
-%! [b,se,pval,finalmodel,stats] = stepwisefit1 (X,y);
+%! [b,se,pval,finalmodel,stats] = stepwisefit (X,y);
 %! assert (finalmodel, [true false false true]);
 %! assert (b, [1.4400; 0.4161; -0.4100; -0.6140], 1e-4);
 %! assert (se, [0.1384; 0.1856; 0.1992; 0.0486], 1e-4);
@@ -413,7 +412,7 @@ endfunction
 %! ];
 %! y = [28; 22; 18; 27; 23; 19; 29; 21; 17; 26];
 %!
-%! [b,se,pval,finalmodel,stats] = stepwisefit1 (X,y);
+%! [b,se,pval,finalmodel,stats] = stepwisefit (X,y);
 %!
 %! assert (islogical (finalmodel));
 %! assert (numel (finalmodel) == 5);
@@ -427,7 +426,7 @@ endfunction
 %!test
 %! X = randn (30, 4);
 %! y = randn (30, 1);
-%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%! [~,~,~,~,stats] = stepwisefit (X, y);
 %!
 %! required_fields = {
 %!   "source", "df0", "dfe", "SStotal", "SSresid", "fstat", "pval", ...
@@ -442,7 +441,7 @@ endfunction
 %!test
 %! X = randn (40, 5);
 %! y = randn (40, 1);
-%! [b,se,pval,finalmodel,stats] = stepwisefit1 (X, y);
+%! [b,se,pval,finalmodel,stats] = stepwisefit (X, y);
 %!
 %! p = columns (X);
 %! n = rows (X(~stats.wasnan, :));
@@ -457,7 +456,7 @@ endfunction
 %!test
 %! X = randn (25, 3);
 %! y = randn (25, 1);
-%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%! [~,~,~,~,stats] = stepwisefit (X, y);
 %!
 %! SSresid_calc = sum (stats.yr .^ 2);
 %! assert (SSresid_calc, stats.SSresid, 1e-10);
@@ -468,7 +467,7 @@ endfunction
 %!test
 %! X = randn (50, 6);
 %! y = randn (50, 1);
-%! [~,~,~,~,stats] = stepwisefit1 (X, y);
+%! [~,~,~,~,stats] = stepwisefit (X, y);
 %!
 %! if (stats.df0 > 0)
 %!   F_calc = ((stats.SStotal - stats.SSresid) / stats.df0) ...
@@ -485,7 +484,7 @@ endfunction
 %!test
 %! X = randn (35, 4);
 %! y = randn (35, 1);
-%! [~,~,~,finalmodel,stats] = stepwisefit1 (X, y);
+%! [~,~,~,finalmodel,stats] = stepwisefit (X, y);
 %! p = columns (X);
 %! k = sum (finalmodel);
 %! assert (size (stats.xr, 2) == p - k);
@@ -494,7 +493,7 @@ endfunction
 %!test
 %! X = randn (35, 4);
 %! y = randn (35, 1);
-%! [~,~,~,finalmodel,stats] = stepwisefit1 (X, y);
+%! [~,~,~,finalmodel,stats] = stepwisefit (X, y);
 %!
 %! Xc = X(~stats.wasnan, :);
 %! Xfinal = [ones(rows (Xc),1), Xc(:, finalmodel)];
@@ -507,7 +506,7 @@ endfunction
 %!test
 %! X = randn (40, 5);
 %! y = randn (40, 1);
-%! [~,~,~,finalmodel,stats,nextstep,history] = stepwisefit1 (X, y);
+%! [~,~,~,finalmodel,stats,nextstep,history] = stepwisefit (X, y);
 %!
 %! assert (nextstep == 0);
 %! assert (isstruct (history));
@@ -524,13 +523,13 @@ endfunction
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
-%! stepwisefit1 (X,y,'Keep',[true false true false]);
+%! stepwisefit (X,y,'Keep',[true false true false]);
 
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
 %! try
-%!   stepwisefit1 (X,y,'Keep',[true false]);
+%!   stepwisefit (X,y,'Keep',[true false]);
 %!   error ("Expected error not thrown");
 %! catch
 %!   assert (true);
@@ -540,18 +539,18 @@ endfunction
 %! X = randn (30, 4);
 %! y = randn (30, 1);
 %! keep = [true false false false];
-%! [~,~,~,finalmodel] = stepwisefit1 (X, y, "Keep", keep);
+%! [~,~,~,finalmodel] = stepwisefit (X, y, "Keep", keep);
 %! assert (finalmodel(1) == true);
 
 %!test
 %! X = randn (40, 6);
 %! y = randn (40, 1);
-%! [~,~,~,finalmodel] = stepwisefit1 (X, y, "MaxIter", 1);
+%! [~,~,~,finalmodel] = stepwisefit (X, y, "MaxIter", 1);
 %! assert (islogical (finalmodel));
 
 %!test
 %! X = randn (50, 5);
 %! y = randn (50, 1);
-%! [b1] = stepwisefit1 (X, y);
-%! [b2] = stepwisefit1 (X, y, "Scale", "on");
+%! [b1] = stepwisefit (X, y);
+%! [b2] = stepwisefit (X, y, "Scale", "on");
 %! assert (rows (b1) == rows (b2));
