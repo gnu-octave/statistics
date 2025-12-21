@@ -25,8 +25,9 @@
 ## @code{stepwisefit} provides additional regression diagnostics, structured
 ## outputs, and partial MATLAB-compatible Name–Value argument handling.
 ##
-## Predictor selection is performed using the existing @code{stepwisefit}
-## algorithm. After variable selection, the final regression model is
+## Predictor selection is performed internally using a MATLAB-compatible stepwise 
+## procedure based on conditional p-values.
+## After variable selection, the final regression model is
 ## explicitly refit using @code{regress} to compute coefficient estimates
 ## and inferential statistics for both included and excluded predictors.
 ##
@@ -114,6 +115,14 @@
 
 function [b, se, pval, finalmodel, stats, nextstep, history] = ...
          stepwisefit (X, y, varargin)
+
+  b = [];
+  se = [];
+  pval = [];
+  finalmodel = [];
+  stats = struct ();
+  nextstep = 0;
+  history = struct ();
 
   ## Input validation (positional)
 
@@ -207,13 +216,26 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
-  if (! isempty (Keep))
-    X_forced = find (Keep);
-  else
-    X_forced = [];
+  % Validate Keep and InModel lengths if provided
+  if (! isempty (Keep) && numel (Keep) != p)
+    error ("stepwisefit: Keep length must match number of predictors");
+  endif
+  if (! isempty (InModel) && numel (InModel) != p)
+    error ("stepwisefit: InModel length must match number of predictors");
   endif
 
-  free_idx = setdiff (1:p, X_forced);
+  if (isempty (Keep))
+    Keep = false(1, p);
+  endif
+
+  % Default PRemove if unset
+  if (isempty (PRemove))
+    PRemove = max (PEnter, 0.1);
+  endif
+
+  if (PRemove < PEnter)
+    error ("stepwisefit: PRemove must be greater than or equal to PEnter");
+  endif
 
   if (strcmp (Scale, "on"))
     muX = mean (Xc, 1);
@@ -224,43 +246,132 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     Xs = Xc;
   endif
 
-  if (isempty (free_idx))
-    X_use = X_forced;
-  else
-    X_step_prev = [];
-    X_step = [];
-
-    iter = 0;
-    while (iter < MaxIter)
-      iter++;
-      X_step = stepwisefit (yc, Xs(:, free_idx), PEnter, PRemove);
-
-      if (isequal (X_step, X_step_prev))
-        break;
-      endif
-
-      X_step_prev = X_step;
-    endwhile
-
-    X_use = sort ([X_forced, free_idx(X_step)]);
-  endif
-
   ## Validate InModel
-  
+
   if (! isempty (InModel))
-    if (numel (InModel) != p)
-      error ("stepwisefit: InModel length must match number of predictors");
+    cur = logical (InModel(:).');
+  else
+    cur = false (1, p);
+  endif
+
+    % Ensure Keep predictors are always in model (already set)
+  cur(Keep) = true;
+  prev = cur;
+  iter = 0;
+
+  % Iterative selection: each iteration attempts ADD then REMOVE.
+  while (iter < MaxIter)
+    iter = iter + 1;
+
+    % -----------------------
+    % ADD phase: evaluate candidates by conditional p-value
+    % -----------------------
+    candidates = find (~cur);
+    if (! isempty (candidates))
+      best_p = Inf;
+      best_j = -1;
+      cols = find (cur);    % current included predictors (may be empty)
+
+      for idx = 1:numel (candidates)
+        j = candidates(idx);
+
+        % Build trial design: intercept, current included (if any), candidate j
+        if (isempty (cols))
+          Xtry = [ones(n,1), Xs(:, j)];
+        else
+          Xtry = [ones(n,1), Xs(:, cols), Xs(:, j)];
+        endif
+
+        % Regress and compute candidate p-value; skip singular/failed fits
+        try
+          [btry, binttry] = regress (yc, Xtry);
+        catch
+          continue;
+        end_try_catch
+
+        df_try = n - columns (Xtry);
+        if (df_try <= 0)
+          continue;
+        endif
+
+        se_try = (binttry(end,2) - btry(end)) / tinv (0.975, df_try);
+        if (se_try <= 0 || ! isfinite (se_try))
+          continue;
+        endif
+
+        tstat = btry(end) / se_try;
+        p_candidate = 2 * (1 - tcdf (abs (tstat), df_try));
+
+        % Deterministic tie-break: first encountered when nearly equal
+        if (p_candidate < best_p - eps)
+          best_p = p_candidate;
+          best_j = j;
+        endif
+      endfor
+
+      % Add best candidate only if it meets the PEnter threshold
+      if (best_j > 0 && best_p < PEnter)
+        cur(best_j) = true;
+      endif
     endif
-  endif
 
-    if (isempty (PRemove))
-    PRemove = max (PEnter, 0.1);
-  endif
+    % -----------------------
+    % REMOVE phase: compute conditional p-values for included predictors,
+    %                 remove worst (largest p) among removable predictors
+    % -----------------------
+    included = find (cur);
+    removable = setdiff (included, find (Keep));  % never remove Keep
 
-  if (PRemove < PEnter)
-    error ("stepwisefit: PRemove must be greater than or equal to PEnter");
-  endif
+    if (! isempty (removable))
+      Xfull = [ones(n,1), Xs(:, included)];
 
+      % Regress current full model; guard against singular / failed fits
+      try
+        [bfull, bintfull] = regress (yc, Xfull);
+      catch
+        bfull = NaN (columns (Xfull), 1);
+        bintfull = NaN (columns (Xfull), 2);
+      end_try_catch
+
+      df_full = n - columns (Xfull);
+      pvals_included = Inf (1, numel (included));
+
+      for ii = 1:numel (included)
+        if (df_full <= 0)
+          pvals_included(ii) = Inf;
+        else
+          se_i = (bintfull(ii+1,2) - bfull(ii+1)) / tinv (0.975, df_full);
+          if (se_i > 0 && isfinite (se_i))
+            t_i = bfull(ii+1) / se_i;
+            pvals_included(ii) = 2 * (1 - tcdf (abs (t_i), df_full));
+          else
+            pvals_included(ii) = Inf;
+          endif
+        endif
+      endfor
+
+      % Map removable predictors to positions within 'included'
+      removable_positions = arrayfun (@(x) find (included == x, 1), removable);
+      [maxp, pos] = max (pvals_included(removable_positions));
+
+      if (maxp > PRemove)
+        cur(removable(pos)) = false;
+      endif
+    endif
+
+    % -----------------------
+    % Convergence: structural (model unchanged)
+    % -----------------------
+    if (isequal (cur, prev))
+      break;
+    endif
+
+    prev = cur;
+  endwhile
+
+
+  % Final set of selected predictors
+  X_use = find (cur);
 
   ## Final regression on selected predictors
   Xfinal = [ones(n,1), Xc(:, X_use)];
@@ -274,6 +385,12 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   pval = zeros (p,1);
 
   df = n - columns (Xfinal);
+
+  if (df <= 0)
+    % Not enough residual degrees of freedom to estimate SE reliably.
+    se(:) = NaN;
+    pval(:) = NaN;
+  endif
 
   ## Included predictors
   b(X_use) = B(2:end);
@@ -338,17 +455,21 @@ endif
 stats.xr = xr;
   
   covb = NaN (p+1, p+1);
-  covB = (stats.rmse^2) * inv (Xfinal' * Xfinal);
+  covB = (stats.rmse^2) * pinv (Xfinal' * Xfinal);
 
   idx = [1, X_use + 1];
   covb(idx, idx) = covB;
 
   stats.covb = covb;
-
-  stats.fstat = ((stats.SStotal - stats.SSresid) / stats.df0) ...
-                / (stats.SSresid / stats.dfe);
-
-  stats.pval = 1 - fcdf (stats.fstat, stats.df0, stats.dfe);
+  
+  if (stats.df0 > 0)
+    stats.fstat = ((stats.SStotal - stats.SSresid) / stats.df0) ...
+                  / (stats.SSresid / stats.dfe);
+    stats.pval = 1 - fcdf (stats.fstat, stats.df0, stats.dfe);
+  else
+    stats.fstat = NaN;
+    stats.pval = NaN;
+  endif
 
   history = struct ();
   history.in = finalmodel;
