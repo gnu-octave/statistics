@@ -91,8 +91,6 @@ endfunction
 %! X = [1:k; sin(1:k); cos(1:k)]';
 %! Y = [tan(1:k); tanh((1:k)/k)]';
 %! [A, B, r, U, V, stats] = canoncorr (X, Y);
-%! ## Adjust sign because some BLAS implementations (e.g. Intel MKL)
-%! ## return opposite signs to OpenBLAS/Netlib (see GitHub issue #335)
 %! Cuv = (U' * V) / (k - 1);
 %!assert (diag (Cuv)', r, 10 * eps);
 %!assert (diag (diag (Cuv)), Cuv, eps);
