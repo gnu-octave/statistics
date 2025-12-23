@@ -148,74 +148,30 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   ## Parse Name–Value pairs
   InModel  = [];
   Display  = "on";
-  % MATLAB-compatible defaults
+  ## MATLAB-compatible defaults
   PEnter  = 0.05;
   PRemove = [];
   Scale   = "off";
   MaxIter = Inf;
   Keep    = [];
 
+  ## Parse Name-Value paired arguments using pairedArgs
+  optNames = {"InModel", "Display", "PEnter", "PRemove", ...
+              "Scale", "MaxIter", "Keep"};
+  dfValues = {[], "on", 0.05, [], "off", Inf, []};
 
-  if (mod (numel (varargin), 2) != 0)
-    error ("stepwisefit: Name–Value arguments must come in pairs");
+  [InModel, Display, PEnter, PRemove, Scale, MaxIter, Keep, args] = ...
+    pairedArgs (optNames, dfValues, varargin(:));
+
+  ## Validate Display
+  if (! any (strcmpi (Display, {"on", "off"})))
+    error ("stepwisefit: Display must be 'on' or 'off'");
   endif
+  Display = lower (Display);
 
-  for k = 1:2:numel (varargin)
-    name  = varargin{k};
-    value = varargin{k+1};
-
-    if (! (ischar (name) || isstring (name)))
-      error ("stepwisefit: Name–Value keys must be strings");
-    endif
-    name = char (name);
-
-    switch lower (name)
-      case "inmodel"
-        if (! islogical (value))
-          error ("stepwisefit: InModel must be a logical vector");
-        endif
-        InModel = value(:).';
-      case "display"
-        if (! any (strcmpi (value, {"on", "off"})))
-          error ("stepwisefit: Display must be 'on' or 'off'");
-        endif
-        Display = lower (value);
-
-      case "penter"
-        if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
-          error ("stepwisefit: PEnter must be a scalar strictly between 0 and 1");
-        endif
-        PEnter = value;
-
-      case "premove"
-        if (! isscalar (value) || ! isnumeric (value) || value <= 0 || value >= 1)
-          error ("stepwisefit: PRemove must be a scalar strictly between 0 and 1");
-        endif
-        PRemove = value;
-
-      case "scale"
-        if (! any (strcmpi (value, {"on", "off"})))
-          error ("stepwisefit: Scale must be 'on' or 'off'");
-        endif
-        Scale = lower (value);
-
-      case "maxiter"
-        if (! isscalar (value) || value <= 0 || fix (value) != value)
-          error ("stepwisefit: MaxIter must be a positive integer");
-        endif
-        MaxIter = value;
-
-      case "keep"
-        if (! islogical (value))
-          error ("stepwisefit: Keep must be a logical vector");
-        endif
-        Keep = value(:).';
-
-      otherwise
-        error ("stepwisefit: Name–Value option '%s' not supported", name);
-
-    endswitch
-  endfor
+  if (! isempty (args))
+    error ("stepwisefit: unrecognized input arguments");
+  endif
 
   ## Handle missing values
   wasnan = any (isnan ([X y]), 2);
@@ -225,7 +181,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
-  % Validate Keep and InModel lengths if provided
+  ## Validate Keep and InModel lengths if provided
   if (! isempty (Keep) && numel (Keep) != p)
     error ("stepwisefit: Keep length must match number of predictors");
   endif
@@ -237,7 +193,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     Keep = false(1, p);
   endif
 
-  % Default PRemove if unset
+  ## Default PRemove if unset
   if (isempty (PRemove))
     PRemove = max (PEnter, 0.1);
   endif
@@ -246,10 +202,16 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     error ("stepwisefit: PRemove must be greater than or equal to PEnter");
   endif
 
+  ## Validate Scale
+  if (! any (strcmpi (Scale, {"on", "off"})))
+    error ("stepwisefit: Scale must be 'on' or 'off'");
+  endif
+  Scale = lower (Scale);
+
   if (strcmp (Scale, "on"))
     muX = mean (Xc, 1);
     sigX = std (Xc, 0, 1);
-    sigX(sigX == 0) = 1;   % prevent division by zero
+    sigX(sigX == 0) = 1;   ## prevent division by zero
     Xs = (Xc - muX) ./ sigX;
   else
     Xs = Xc;
@@ -263,35 +225,33 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     cur = false (1, p);
   endif
 
-    % Ensure Keep predictors are always in model (already set)
+  ## Ensure Keep predictors are always in model (already set)
   cur(Keep) = true;
   prev = cur;
   iter = 0;
 
-  % Iterative selection: each iteration attempts ADD then REMOVE.
+  ## Iterative selection: each iteration attempts ADD then REMOVE.
   while (iter < MaxIter)
     iter = iter + 1;
 
-    % -----------------------
-    % ADD phase: evaluate candidates by conditional p-value
-    % -----------------------
+    ## ADD phase: evaluate candidates by conditional p-value
     candidates = find (~cur);
     if (! isempty (candidates))
       best_p = Inf;
       best_j = -1;
-      cols = find (cur);    % current included predictors (may be empty)
+      cols = find (cur);    ## current included predictors (may be empty)
 
       for idx = 1:numel (candidates)
         j = candidates(idx);
 
-        % Build trial design: intercept, current included (if any), candidate j
+        ## Build trial design: intercept, current included (if any), candidate j
         if (isempty (cols))
           Xtry = [ones(n,1), Xs(:, j)];
         else
           Xtry = [ones(n,1), Xs(:, cols), Xs(:, j)];
         endif
 
-        % Regress and compute candidate p-value; skip singular/failed fits
+        ## Regress and compute candidate p-value; skip singular/failed fits
         try
           [btry, binttry] = regress (yc, Xtry);
         catch
@@ -311,30 +271,28 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
         tstat = btry(end) / se_try;
         p_candidate = 2 * (1 - tcdf (abs (tstat), df_try));
 
-        % Deterministic tie-break: first encountered when nearly equal
+        ## Deterministic tie-break: first encountered when nearly equal
         if (p_candidate < best_p - eps)
           best_p = p_candidate;
           best_j = j;
         endif
       endfor
 
-      % Add best candidate only if it meets the PEnter threshold
+      ## Add best candidate only if it meets the PEnter threshold
       if (best_j > 0 && best_p < PEnter)
         cur(best_j) = true;
       endif
     endif
 
-    % -----------------------
-    % REMOVE phase: compute conditional p-values for included predictors,
-    %                 remove worst (largest p) among removable predictors
-    % -----------------------
+    ## REMOVE phase: compute conditional p-values for included predictors,
+    ##                 remove worst (largest p) among removable predictors
     included = find (cur);
-    removable = setdiff (included, find (Keep));  % never remove Keep
+    removable = setdiff (included, find (Keep));  ## never remove Keep
 
     if (! isempty (removable))
       Xfull = [ones(n,1), Xs(:, included)];
 
-      % Regress current full model; guard against singular / failed fits
+      ## Regress current full model; guard against singular / failed fits
       try
         [bfull, bintfull] = regress (yc, Xfull);
       catch
@@ -359,7 +317,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
         endif
       endfor
 
-      % Map removable predictors to positions within 'included'
+      ## Map removable predictors to positions within 'included'
       removable_positions = arrayfun (@(x) find (included == x, 1), removable);
       [maxp, pos] = max (pvals_included(removable_positions));
 
@@ -368,9 +326,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
       endif
     endif
 
-    % -----------------------
-    % Convergence: structural (model unchanged)
-    % -----------------------
+    ## Convergence: structural (model unchanged)
     if (isequal (cur, prev))
       break;
     endif
@@ -379,14 +335,15 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   endwhile
 
 
-  % Final set of selected predictors
+  ## Final set of selected predictors
   X_use = find (cur);
 
   ## Final regression on selected predictors
   Xfinal = [ones(n,1), Xc(:, X_use)];
-  [B, BINT, R, RINT, regstats] = regress (yc, Xfinal);
+  ## regstats intentionally unused; retained for MATLAB parity
+  [B, BINT, R, RINT, regstats] = regress (yc, Xfinal); 
 
-  Rresid = R(:);   % freeze residual vector
+  Rresid = R(:);   ## freeze residual vector
 
   ## Allocate outputs
   b    = zeros (p,1);
@@ -396,7 +353,7 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   df = n - columns (Xfinal);
 
   if (df <= 0)
-    % Not enough residual degrees of freedom to estimate SE reliably.
+    ## Not enough residual degrees of freedom to estimate SE reliably.
     se(:) = NaN;
     pval(:) = NaN;
   endif
@@ -448,13 +405,13 @@ xr = zeros (n, numel (excluded));
 
 if (! isempty (X_use))
   Z = [ones(n,1), Xc(:, X_use)];
-  P = Z / (Z' * Z) * Z';   % projection matrix
+  P = Z / (Z' * Z) * Z';   ## projection matrix
   for k = 1:numel (excluded)
     j = excluded(k);
     xr(:,k) = Xc(:,j) - P * Xc(:,j);
   endfor
 else
-  % intercept-only case
+  ## intercept-only case
   for k = 1:numel (excluded)
     j = excluded(k);
     xr(:,k) = Xc(:,j) - mean (Xc(:,j));
@@ -485,8 +442,8 @@ stats.xr = xr;
   history.df0 = stats.df0;
   history.rmse = stats.rmse;
 
-  % Coefficient history (excluding intercept)
-  % MATLAB stores this as p-by-k; here k = 1
+  ## Coefficient history (excluding intercept)
+  ## MATLAB stores this as p-by-k; here k = 1
   Bhist = zeros (p, 1);
   Bhist(finalmodel) = b(finalmodel);
   history.B = Bhist;
@@ -496,9 +453,7 @@ stats.xr = xr;
 
 endfunction
 
-
 %!test
-%! % S1.2: default full outputs (numeric contract)
 %! X = [7 26 6 60;
 %!      1 29 15 52;
 %!      11 56 8 20;
@@ -525,9 +480,7 @@ endfunction
 %! assert (stats.df0, 2);
 %! assert (stats.dfe, 10);
 %! assert (stats.intercept, 103.0974, 1e-4);
-
 %!test
-%! % S3.1 (numeric kernel only): forced baseline selection
 %! X = [
 %!   12.0 4 120 95 2600;
 %!   11.5 6 200 110 3000;
@@ -552,7 +505,6 @@ endfunction
 %! assert (isnumeric (pval));
 %! assert (stats.rmse > 0);
 %! assert (isfinite (stats.intercept));
-
 %!test
 %! X = randn (30, 4);
 %! y = randn (30, 1);
@@ -567,7 +519,6 @@ endfunction
 %! for k = 1:numel (required_fields)
 %!   assert (isfield (stats, required_fields{k}));
 %! endfor
-
 %!test
 %! X = randn (40, 5);
 %! y = randn (40, 1);
@@ -582,7 +533,6 @@ endfunction
 %! assert (rows (stats.TSTAT) == p);
 %! assert (rows (stats.PVAL) == p);
 %! assert (size (stats.covb), [p+1, p+1]);
-
 %!test
 %! X = randn (25, 3);
 %! y = randn (25, 1);
@@ -593,7 +543,6 @@ endfunction
 %!
 %! rmse_calc = sqrt (stats.SSresid / stats.dfe);
 %! assert (rmse_calc, stats.rmse, 1e-10);
-
 %!test
 %! X = randn (50, 6);
 %! y = randn (50, 1);
@@ -609,8 +558,6 @@ endfunction
 %!   assert (isnan (stats.fstat));
 %!   assert (isnan (stats.pval));
 %! endif
-
-
 %!test
 %! X = randn (35, 4);
 %! y = randn (35, 1);
@@ -619,7 +566,6 @@ endfunction
 %! k = sum (finalmodel);
 %! assert (size (stats.xr, 2) == p - k);
 %! assert (all (isfinite (stats.xr(:))));
-
 %!test
 %! X = randn (35, 4);
 %! y = randn (35, 1);
@@ -632,7 +578,6 @@ endfunction
 %!   ortho = Xfinal' * stats.xr(:,j);
 %!   assert (max (abs (ortho(:))) < 1e-6);
 %! endfor
-
 %!test
 %! X = randn (40, 5);
 %! y = randn (40, 1);
@@ -644,43 +589,32 @@ endfunction
 %! assert (isfield (history, "df0"));
 %! assert (isfield (history, "rmse"));
 %! assert (isfield (history, "B"));
-%!
 %! assert (isequal (history.in, finalmodel));
 %! assert (history.df0 == stats.df0);
 %! assert (history.rmse == stats.rmse);
 %! assert (rows (history.B) == columns (X));
-
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
 %! stepwisefit (X,y,'Keep',[true false true false]);
-
-%!test
-%! X = randn (20,4);
-%! y = randn (20,1);
-%! try
-%!   stepwisefit (X,y,'Keep',[true false]);
-%!   error ("Expected error not thrown");
-%! catch
-%!   assert (true);
-%! end_try_catch
-
 %!test
 %! X = randn (30, 4);
 %! y = randn (30, 1);
 %! keep = [true false false false];
 %! [~,~,~,finalmodel] = stepwisefit (X, y, "Keep", keep);
 %! assert (finalmodel(1) == true);
-
 %!test
 %! X = randn (40, 6);
 %! y = randn (40, 1);
 %! [~,~,~,finalmodel] = stepwisefit (X, y, "MaxIter", 1);
 %! assert (islogical (finalmodel));
-
 %!test
 %! X = randn (50, 5);
 %! y = randn (50, 1);
 %! [b1] = stepwisefit (X, y);
 %! [b2] = stepwisefit (X, y, "Scale", "on");
 %! assert (rows (b1) == rows (b2));
+%!test
+%! X = randn (20,4);
+%! y = randn (20,1);
+%! fail ("stepwisefit (X,y,'Keep',[true false])");
