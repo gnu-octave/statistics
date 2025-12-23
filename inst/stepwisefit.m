@@ -163,11 +163,55 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   [InModel, Display, PEnter, PRemove, Scale, MaxIter, Keep, args] = ...
     pairedArgs (optNames, dfValues, varargin(:));
 
+  ## Semantic validation for Name-Value options 
+
   ## Validate Display
   if (! any (strcmpi (Display, {"on", "off"})))
     error ("stepwisefit: Display must be 'on' or 'off'");
   endif
   Display = lower (Display);
+
+  ## Validate Scale
+  if (! any (strcmpi (Scale, {"on", "off"})))
+    error ("stepwisefit: Scale must be 'on' or 'off'");
+  endif
+  Scale = lower (Scale);
+
+  ## Validate PEnter
+  if (! (isscalar (PEnter) && isnumeric (PEnter) && PEnter > 0 && PEnter < 1))
+    error ("stepwisefit: PEnter must be a scalar strictly between 0 and 1");
+  endif
+
+  ## Validate PRemove (if provided)
+  if (! isempty (PRemove))
+    if (! (isscalar (PRemove) && isnumeric (PRemove) && PRemove > 0 && PRemove < 1))
+      error ("stepwisefit: PRemove must be a scalar strictly between 0 and 1");
+    endif
+    if (PRemove < PEnter)
+      error ("stepwisefit: PRemove must be greater than or equal to PEnter");
+    endif
+  endif
+
+  ## Validate MaxIter
+  if (! (isscalar (MaxIter) && isnumeric (MaxIter) && MaxIter > 0 && fix (MaxIter) == MaxIter))
+    error ("stepwisefit: MaxIter must be a positive integer");
+  endif
+
+  ## Validate Keep and InModel type (if provided)
+  if (! isempty (Keep) && ! islogical (Keep))
+    error ("stepwisefit: Keep must be a logical vector");
+  endif
+  if (! isempty (InModel) && ! islogical (InModel))
+    error ("stepwisefit: InModel must be a logical vector");
+  endif
+
+  ## Validate lengths (these already exist in your file, but keep them here for order)
+  if (! isempty (Keep) && numel (Keep) != p)
+    error ("stepwisefit: Keep length must match number of predictors");
+  endif
+  if (! isempty (InModel) && numel (InModel) != p)
+    error ("stepwisefit: InModel length must match number of predictors");
+  endif
 
   if (! isempty (args))
     error ("stepwisefit: unrecognized input arguments");
@@ -181,14 +225,6 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   n = rows (Xc);
   p = columns (Xc);
 
-  ## Validate Keep and InModel lengths if provided
-  if (! isempty (Keep) && numel (Keep) != p)
-    error ("stepwisefit: Keep length must match number of predictors");
-  endif
-  if (! isempty (InModel) && numel (InModel) != p)
-    error ("stepwisefit: InModel length must match number of predictors");
-  endif
-
   if (isempty (Keep))
     Keep = false(1, p);
   endif
@@ -201,12 +237,6 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   if (PRemove < PEnter)
     error ("stepwisefit: PRemove must be greater than or equal to PEnter");
   endif
-
-  ## Validate Scale
-  if (! any (strcmpi (Scale, {"on", "off"})))
-    error ("stepwisefit: Scale must be 'on' or 'off'");
-  endif
-  Scale = lower (Scale);
 
   if (strcmp (Scale, "on"))
     muX = mean (Xc, 1);
@@ -618,3 +648,36 @@ endfunction
 %! X = randn (20,4);
 %! y = randn (20,1);
 %! fail ("stepwisefit (X,y,'Keep',[true false])");
+
+## Test input validation
+%!error <stepwisefit: at least two input arguments required> ...
+%!       stepwisefit ()
+%!error <stepwisefit: X must be a matrix and y a vector> ...
+%!       stepwisefit (ones (2,2,2), [1;2])
+%!error <stepwisefit: X must be a matrix and y a vector> ...
+%!       stepwisefit (ones (3,2), ones (2,1))
+%!error <stepwisefit: unrecognized input arguments> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "UnknownOpt", 5)
+%!error <stepwisefit: Display must be 'on' or 'off'> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "Display", "maybe")
+%!error <stepwisefit: Scale must be 'on' or 'off'> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "Scale", 123)
+%!error <stepwisefit: PEnter must be a scalar strictly between 0 and 1> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "PEnter", -0.1)
+%!error <stepwisefit: PRemove must be a scalar strictly between 0 and 1> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "PRemove", 1.5)
+%!error <stepwisefit: PRemove must be greater than or equal to PEnter> ...
+%!       stepwisefit (randn (10,2), randn (10,1), ...
+%!                     "PEnter", 0.05, "PRemove", 0.01)
+%!error <stepwisefit: MaxIter must be a positive integer> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "MaxIter", -2)
+%!error <stepwisefit: MaxIter must be a positive integer> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "MaxIter", 2.5)
+%!error <stepwisefit: Keep must be a logical vector> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "Keep", [1 0])
+%!error <stepwisefit: InModel must be a logical vector> ...
+%!       stepwisefit (randn (10,2), randn (10,1), "InModel", [1 0])
+%!error <stepwisefit: Keep length must match number of predictors> ...
+%!       stepwisefit (randn (10,4), randn (10,1), "Keep", [true false])
+%!error <stepwisefit: InModel length must match number of predictors> ...
+%!       stepwisefit (randn (10,4), randn (10,1), "InModel", true)
