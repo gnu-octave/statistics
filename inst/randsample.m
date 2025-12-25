@@ -1,5 +1,5 @@
 ## Copyright (C) 2014 - Nir Krakauer
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,7 +24,7 @@
 ## Sample elements from a vector.
 ##
 ## Returns @var{k} random elements from a vector @var{v} with @var{n} elements,
-## sampled without or with @var{replacement}.
+## sampled without or with @var{replacement}, with an optional weight vector.
 ##
 ## If @var{v} is a scalar, samples from 1:@var{v}.
 ##
@@ -38,26 +38,26 @@
 ## @seealso{datasample, randperm}
 ## @end deftypefn
 
-function y = randsample (v, k, replacement=false ,w=[])
+function y = randsample (v, k, replacement=false, w=[])
 
   if (isscalar (v) && isreal (v))
     n = v;
     vector_v = false;
   elseif (isvector (v))
-    n = numel (v);
+    n = length (v);
     vector_v = true;
   else
     error ("randsample: The input v must be a vector or positive integer.");
   endif
 
   if k < 0 || ( k > n && !replacement )
-    error (strcat ("randsample: The input k must be a non-negative ", ...
-                   "integer. Sampling without replacement needs k <= n."));
+    error (strcat ("randsample: The input k must be a non-negative", ...
+                   " integer. Sampling without replacement needs k <= n."));
   endif
 
   if (all (length (w) != [0, n]))
     error ("randsample: the size w (%d) must match the first argument (%d)", ...
-           length(w), n);
+           length (w), n);
   endif
 
 
@@ -78,8 +78,8 @@ function y = randsample (v, k, replacement=false ,w=[])
          if (! any (Idup))
            break
          else
-           Idup(idx) = Idup;     # find duplicates in original vector
-           w(y) = 0;             # don't permit resampling
+           Idup (idx) = Idup;     # find duplicates in original vector
+           w (y) = 0;             # don't permit resampling
            ## remove duplicates, then sample again
            y = [y(! Idup), (weighted_replacement (sum (Idup), w))];
          endif
@@ -95,7 +95,7 @@ endfunction
 
 function y = weighted_replacement (k, w)
   w = w / sum (w);
-  w = [0, cumsum(w(:))'];
+  w = [0, (cumsum (w(:))')];
   ## distribute k uniform random deviates based on the given weighting
   y = arrayfun (@(x) find (w <= x, 1, "last"), rand (1, k));
 endfunction
@@ -135,3 +135,75 @@ endfunction
 %! assert (size(x), [k 1]);
 %! x = randsample(k, k, false, 1:k);
 %! assert (size(x), [1 k]);
+
+%!test
+%! n = 20;
+%! k = 5;
+%! p = 1:n;
+%! x = randsample(p, k);
+%! assert (isnumeric(x));
+%! assert (size(x), [1 k]);
+%! x = randsample(p, k, true);
+%! assert (isnumeric(x));
+%! assert (size(x), [1 k]);
+%! x = randsample(p, k, false);
+%! assert (isnumeric(x));
+%! assert (size(x), [1 k]);
+%! k = 30;
+%! x = randsample(p, k, true);
+%! assert (isnumeric(x));
+%! assert (size(x), [1 k]);
+
+%!test
+%! p = categorical({'a', 'b', 'c', 'd', 'a'});
+%! k = 3;
+%! x = randsample(p, k, true);
+%! assert (iscategorical(x));
+%! assert (size(x), [1 k]);
+%! x = randsample(p, k, false);
+%! assert (iscategorical(x));
+%! assert (size(x), [1 k]);
+%! k = 30;
+%! x = randsample(p, k, true, ones(length(p),1));
+%! assert (iscategorical(x));
+%! assert (size(x), [1 k]);
+
+%!test
+%! p = {'a', 'b', 'c', 'd', 'a'};
+%! k = 2;
+%! x = randsample(p, k, true);
+%! assert (iscell(x));
+%! assert (size(x), [1 k]);
+%! x = randsample(p, k, false);
+%! assert (iscell(x));
+%! assert (size(x), [1 k]);
+%! k = 30;
+%! x = randsample(p, k, true, ones(length(p),1));
+%! assert (iscell(x));
+%! assert (size(x), [1 k]);
+
+%!test
+%! p = string({'a', 'b', 'c', 'd', 'a'});
+%! k = 2;
+%! x = randsample(p, k, true);
+%! assert (isstring(x));
+%! assert (size(x), [1 k]);
+%! x = randsample(p, k, false);
+%! assert (isstring(x));
+%! assert (size(x), [1 k]);
+%! k = 30;
+%! x = randsample(p, k, true, ones(length(p),1));
+%! assert (isstring(x));
+%! assert (size(x), [1 k]);
+
+%!error <randsample: The input v must be a vector or positive integer.> ...
+%! randsample ([1 2 3; 1 2 3], 5)
+
+%!error <randsample: The input k must be a non-negative integer.> ...
+%! randsample (10, -1)
+
+%!error <Sampling without replacement needs k <= n.> ...
+%! randsample (10, 100)
+
+%!error <randsample: the size w .* must match the first argument .*> ...
+%! randsample (10, 5, false, ones(5,1))
