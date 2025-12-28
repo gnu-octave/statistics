@@ -47,7 +47,6 @@
 ## @end deftypefn
 
 function D = dummyvar (g)
-  %#ok<*STRETCH>  % for compatibility with different Octave linters
 
   ## Table single-column extraction (non-fatal if 'table' not present)
   try
@@ -59,18 +58,18 @@ function D = dummyvar (g)
       g = g{:,1};
     end
   catch
-    % If table class not available, skip extraction and let later checks handle it.
+    ## If table class not available, skip extraction and let later checks handle it.
   end
 
-  % --- CATEGORICAL branch ---
+  ## --- CATEGORICAL branch ---
   if (exist ("categorical", "class") && isa (g, "categorical"))
-    % "Categorical grouping variable must have one column."
+    ## "Categorical grouping variable must have one column."
     s = size (g);
     if (numel (s) > 2 || s(2) ~= 1)
       error ("Categorical grouping variable must have one column.");
     end
 
-    % categories is a categorical class method; no standalone function check needed
+    ## categories is a categorical class method; no standalone function check needed
 
     cats = categories (g);
     K = numel (cats);
@@ -86,29 +85,29 @@ function D = dummyvar (g)
     ## <undefined> results in NaN rows in output.
 
     try
-      idx = double (g);    % maps categories to 1..K, undefined -> NaN
+      idx = double (g);    ## maps categories to 1..K, undefined -> NaN
     catch
-      % fallback: construct mapping manually (less efficient)
-      % Use grp2idx-like approach
+      ## fallback: construct mapping manually (less efficient)
+      ## Use grp2idx-like approach
       [~, ~, idx] = unique (g);
       idx = double (idx);
-      % Unique will not produce NaN for undefined; handle undefined explicitly
+      ## Unique will not produce NaN for undefined; handle undefined explicitly
       undef_mask = isundefined (g);
       idx (undef_mask) = NaN;
     end
 
-    % Build matrix: rows with idx==NaN are rows of NaN(1,K)
+    ## Build matrix: rows with idx==NaN are rows of NaN(1,K)
     rows = (1:n)';
     D = zeros (n, K);
 
-    % Build using sparse (skip NaNs)
+    ## Build using sparse (skip NaNs)
     valid = ~isnan (idx);
     if any (valid)
       S = sparse (rows(valid), idx(valid), 1, n, K);
       D (:) = full (S);
     end
 
-    % Replace rows where idx is NaN with NaN across all columns 
+    ## Replace rows where idx is NaN with NaN across all columns
     nan_rows = find (isnan (idx));
     if ~ isempty (nan_rows)
       D (nan_rows, :) = NaN;
@@ -118,10 +117,11 @@ function D = dummyvar (g)
     return;
   end
 
-  % --- NUMERIC / LEGACY branch ---
-  % If the input is numeric (vector), create indicator columns for 1..max(g)
+  ## --- NUMERIC / LEGACY branch ---
+  ## If the input is numeric (vector), create indicator columns for 1..max(g)
   if (isnumeric (g) && isvector (g))
-    g = g(:);                 % ensure column
+     ## ensure column
+    g = g(:);                
     if isempty (g)
       D = zeros (0, 0);
       return;
@@ -138,7 +138,8 @@ function D = dummyvar (g)
     n = numel (g);
     ## Build sparse/dense
     rows = (1:n)';
-    idx = round (g);          % keep integer mapping
+    ## keep integer mapping
+    idx = round (g);          
     valid = (idx >= 1) & (idx <= K) & ~isnan (idx);
     if any (valid)
       S = sparse (rows(valid), idx(valid), 1, n, K);
@@ -157,13 +158,13 @@ end
 ## Test dummyvar behavior 
 
 %!test
-%! % numeric grouping vector
+%! ## numeric grouping vector
 %! g = [1;2;1;3;2];
 %! D = dummyvar(g);
 %! assert(isequal(D, [1 0 0; 0 1 0; 1 0 0; 0 0 1; 0 1 0]));
 
 %!test
-%! % categorical with universe -> columns for each category in same order
+%! ## categorical with universe -> columns for each category in same order
 %! g = categorical({'a';'b';'a'}, {'a','b','c'});
 %! D = dummyvar(g);
 %! assert(size(D,2) == numel(categories(g)));
@@ -172,7 +173,7 @@ end
 %! assert(all(D(:,3) == [0;0;0]));
 
 %!test
-%! % categorical with <undefined> -> row of NaNs
+%! ## categorical with <undefined> -> row of NaNs
 %! g = categorical({'a'; ''; 'b'}, {'a','b','c'});
 %! D = dummyvar(g);
 %! assert(all(isnan(D(2,:))));
@@ -180,12 +181,12 @@ end
 %! assert(all(D(3,:) == [0 1 0]));
 
 %!test
-%! % empty categorical -> 
+%! ## empty categorical -> 
 %! g = categorical({}, {'a','b'});
 %! assert (throws (@() dummyvar(g)));
 
 %!test
-%! % table column input
+%! ## table column input
 %! G = categorical({'a'; 'b'; 'a'}, {'a','b','c'});
 %! T = table(G, [10;20;30], 'VariableNames', {'G','Val'});
 %! D = dummyvar(T.G);
@@ -200,7 +201,7 @@ end
 %! dummyvar (categorical ([], {'a','b'}))
 
 %!error<Categorical grouping variable must have one column> ...
-%! dummyvar (categorical ({'a','b'}, {'a','b'}))   % row categorical
+%! dummyvar (categorical ({'a','b'}, {'a','b'}))   ## row categorical
 
 %!error<dummyvar on a table expects a single-column input> ...
 %! dummyvar (table ([1;2], [3;4]))
