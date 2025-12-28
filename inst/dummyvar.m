@@ -197,3 +197,20 @@ end
 %! T = table(G, [10;20;30], 'VariableNames', {'G','Val'});
 %! D = dummyvar(T.G);
 %! assert(size(D,2) == numel(categories(G)));
+
+## Test input validation
+
+%!error<Invalid call to dummyvar.  Correct usage is> dummyvar
+%!error<Invalid call to dummyvar.  Correct usage is> dummyvar (1, 2)
+
+%!error<Categorical grouping variable must have one column> ...
+%! dummyvar (categorical ([], {'a','b'}))
+
+%!error<Categorical grouping variable must have one column> ...
+%! dummyvar (categorical ({'a','b'}, {'a','b'}))   % row categorical
+
+%!error<dummyvar on a table expects a single-column input> ...
+%! dummyvar (table ([1;2], [3;4]))
+
+%!error<dummyvar requires a numeric vector or a categorical array> ...
+%! dummyvar (struct ("a", 1))
