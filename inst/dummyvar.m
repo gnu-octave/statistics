@@ -34,7 +34,7 @@
 ## zeros.
 ##
 ## Elements of @var{g} that are @code{<undefined>} result in rows of
-## @code{NaN} values in @var{D}, matching MATLAB behavior.
+## @code{NaN} values in @var{D}.
 ##
 ## If @var{g} is a single-column table, the grouping variable is taken from that
 ## column.  For example:
@@ -49,7 +49,7 @@
 function D = dummyvar (g)
   %#ok<*STRETCH>  % for compatibility with different Octave linters
 
-  % Table single-column extraction (non-fatal if 'table' not present)
+  ## Table single-column extraction (non-fatal if 'table' not present)
   try
     if isa(g, "table")
       if (size(g,2) ~= 1)
@@ -64,9 +64,7 @@ function D = dummyvar (g)
 
   % --- CATEGORICAL branch ---
   if (exist ("categorical", "class") && isa (g, "categorical"))
-    % Match MATLAB error for empty categorical shape: MATLAB complains
     % "Categorical grouping variable must have one column."
-    % In MATLAB that arises when categorical is 0x0 or not a single column.
     s = size (g);
     if (numel (s) > 2 || s(2) ~= 1)
       error ("Categorical grouping variable must have one column.");
@@ -78,15 +76,15 @@ function D = dummyvar (g)
     K = numel (cats);
     n = numel (g);
 
-    % For empty (0x1) categorical, MATLAB errors out above; if not thrown,
-    % keep consistent handling. (We already enforced one column.)
     if (n == 0)
       error ("Categorical grouping variable must have one column.");
       return;
     end
 
-    % Convert to numeric indices. Unknown/undefined map to NaN or 0 depending on API.
-    % In MATLAB, <undefined> results in NaN rows in output.
+    ## Convert to numeric indices. 
+    ## Unknown/undefined map to NaN or 0 depending on API.
+    ## <undefined> results in NaN rows in output.
+
     try
       idx = double (g);    % maps categories to 1..K, undefined -> NaN
     catch
@@ -110,7 +108,7 @@ function D = dummyvar (g)
       D (:) = full (S);
     end
 
-    % Replace rows where idx is NaN with NaN across all columns (MATLAB semantics)
+    % Replace rows where idx is NaN with NaN across all columns 
     nan_rows = find (isnan (idx));
     if ~ isempty (nan_rows)
       D (nan_rows, :) = NaN;
@@ -128,17 +126,17 @@ function D = dummyvar (g)
       D = zeros (0, 0);
       return;
     end
-    % If g has non-integer values, MATLAB implicitly coerces to integer indices
-    % by using unique? Historically dummyvar expects group indices (positive ints).
-    % We'll follow MATLAB's numeric behavior: use max(g) as number of columns.
-    % Construct column count K = max(g)
+    ## If g has non-integer values, we implicitly coerces to integer indices
+    ## by using unique? Historically dummyvar expects group indices (positive ints).
+    ## We'll follow this behavior: use max(g) as number of columns.
+    ## Construct column count K = max(g)
     K = max (g);
     if ~ isreal (K) || K < 0
       error ("dummyvar:InvalidInput", "Numeric grouping must produce a positive integer number of groups.");
     end
     K = double (K);
     n = numel (g);
-    % Build sparse/dense
+    ## Build sparse/dense
     rows = (1:n)';
     idx = round (g);          % keep integer mapping
     valid = (idx >= 1) & (idx <= K) & ~isnan (idx);
@@ -152,11 +150,11 @@ function D = dummyvar (g)
     return;
   end
 
-  % --- FALLBACK: unsupported input types ---
+  ## --- FALLBACK: unsupported input types ---
   error ("dummyvar:UnsupportedType", "dummyvar requires a numeric vector or a categorical array.");
 end
 
-## Test dummyvar behavior (MATLAB-compatible)
+## Test dummyvar behavior 
 
 %!test
 %! % numeric grouping vector
@@ -182,7 +180,7 @@ end
 %! assert(all(D(3,:) == [0 1 0]));
 
 %!test
-%! % empty categorical -> MATLAB-style error
+%! % empty categorical -> 
 %! g = categorical({}, {'a','b'});
 %! assert (throws (@() dummyvar(g)));
 
