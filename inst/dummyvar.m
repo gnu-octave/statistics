@@ -72,10 +72,7 @@ function D = dummyvar (g)
       error ("Categorical grouping variable must have one column.");
     end
 
-    % categories and double mapping must exist
-    if ~ (exist ("categories", "file") || exist ("categories", "builtin"))
-      error ("datatypes:Missing", "datatypes: 'categories' not found on path; load datatypes.");
-    end
+    % categories is a categorical class method; no standalone function check needed
 
     cats = categories (g);
     K = numel (cats);
@@ -84,9 +81,7 @@ function D = dummyvar (g)
     % For empty (0x1) categorical, MATLAB errors out above; if not thrown,
     % keep consistent handling. (We already enforced one column.)
     if (n == 0)
-      % If we got here, treat as MATLAB does (above check should have errored),
-      % but to be safe produce an empty 0xK double.
-      D = zeros (0, K);
+      error ("Categorical grouping variable must have one column.");
       return;
     end
 
