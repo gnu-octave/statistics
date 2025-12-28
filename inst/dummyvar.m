@@ -112,3 +112,40 @@ function D = dummyvar (g)
   % --- FALLBACK: unsupported input types ---
   error ("dummyvar:UnsupportedType", "dummyvar requires a numeric vector or a categorical array.");
 end
+
+## Test dummyvar behavior (MATLAB-compatible)
+
+%!test
+%! % numeric grouping vector
+%! g = [1;2;1;3;2];
+%! D = dummyvar(g);
+%! assert(isequal(D, [1 0 0; 0 1 0; 1 0 0; 0 0 1; 0 1 0]));
+
+%!test
+%! % categorical with universe -> columns for each category in same order
+%! g = categorical({'a';'b';'a'}, {'a','b','c'});
+%! D = dummyvar(g);
+%! assert(size(D,2) == numel(categories(g)));
+%! assert(all(D(:,1) == [1;0;1]));
+%! assert(all(D(:,2) == [0;1;0]));
+%! assert(all(D(:,3) == [0;0;0]));
+
+%!test
+%! % categorical with <undefined> -> row of NaNs
+%! g = categorical({'a'; ''; 'b'}, {'a','b','c'});
+%! D = dummyvar(g);
+%! assert(all(isnan(D(2,:))));
+%! assert(all(D(1,:) == [1 0 0]));
+%! assert(all(D(3,:) == [0 1 0]));
+
+%!test
+%! % empty categorical -> MATLAB-style error
+%! g = categorical({}, {'a','b'});
+%! assert (throws (@() dummyvar(g)));
+
+%!test
+%! % table column input
+%! G = categorical({'a'; 'b'; 'a'}, {'a','b','c'});
+%! T = table(G, [10;20;30], 'VariableNames', {'G','Val'});
+%! D = dummyvar(T.G);
+%! assert(size(D,2) == numel(categories(G)));
