@@ -14,6 +14,37 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
+##
+## -*- texinfo -*-
+## @deftypefn  {statistics} {@var{D} =} dummyvar (@var{g})
+##
+## Create dummy variables (one-hot encoding) from a grouping variable.
+##
+## The input @var{g} must be a numeric vector of group indices or a
+## @code{categorical} array.  The output @var{D} is a numeric matrix whose
+## columns correspond to the distinct groups and whose rows correspond to the
+## elements of @var{g}.
+##
+## For numeric inputs, the number of columns in @var{D} is equal to
+## @code{max (@var{g})}, and column @math{k} corresponds to group @math{k}.
+##
+## For @code{categorical} inputs, the number and order of columns in @var{D}
+## correspond to the categories returned by @code{categories (@var{g})}.
+## Categories that are defined but not present in @var{g} produce columns of
+## zeros.
+##
+## Elements of @var{g} that are @code{<undefined>} result in rows of
+## @code{NaN} values in @var{D}, matching MATLAB behavior.
+##
+## If @var{g} is a single-column table, the grouping variable is taken from that
+## column.  For example:
+##
+## @example
+## D = dummyvar (T.Group)
+## @end example
+##
+## @seealso{tabulate, grpstats}
+## @end deftypefn
 
 function D = dummyvar (g)
   %#ok<*STRETCH>  % for compatibility with different Octave linters
