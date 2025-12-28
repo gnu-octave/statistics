@@ -86,6 +86,7 @@ function D = dummyvar (g)
 
     try
       idx = double (g);    ## maps categories to 1..K, undefined -> NaN
+      idx = idx(:);        ## FORCE column vector
     catch
       ## fallback: construct mapping manually (less efficient)
       ## Use grp2idx-like approach
@@ -96,14 +97,15 @@ function D = dummyvar (g)
       idx (undef_mask) = NaN;
     end
 
-    ## Build matrix: rows with idx==NaN are rows of NaN(1,K)
-    rows = (1:n)';
+    ## Build matrix: rows_idx with idx==NaN are rows_idx of NaN(1,K)
+    rows_idx = (1:n)';
     D = zeros (n, K);
 
     ## Build using sparse (skip NaNs)
     valid = ~isnan (idx);
+    valid = valid(:);    ## FORCE column vector
     if any (valid)
-      S = sparse (rows(valid), idx(valid), 1, n, K);
+      S = sparse (rows_idx(valid), idx(valid), 1, n, K);
       D (:) = full (S);
     end
 
@@ -137,12 +139,12 @@ function D = dummyvar (g)
     K = double (K);
     n = numel (g);
     ## Build sparse/dense
-    rows = (1:n)';
+    rows_idx = (1:n)';
     ## keep integer mapping
     idx = round (g);          
     valid = (idx >= 1) & (idx <= K) & ~isnan (idx);
     if any (valid)
-      S = sparse (rows(valid), idx(valid), 1, n, K);
+      S = sparse (rows_idx(valid), idx(valid), 1, n, K);
       D = full (S);
     else
       D = zeros (n, K);
