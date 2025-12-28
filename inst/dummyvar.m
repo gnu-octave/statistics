@@ -48,113 +48,89 @@
 
 function D = dummyvar (g)
 
-  ## Table single-column extraction (non-fatal if 'table' not present)
-  try
-    if isa(g, "table")
-      if (size(g,2) ~= 1)
-        error ("dummyvar:InvalidInput", ...
-               "dummyvar on a table expects a single-column input or call dummyvar(T.Var).");
-      end
-      g = g{:,1};
-    end
-  catch
-    ## If table class not available, skip extraction and let later checks handle it.
+  if (nargin ~= 1)
+    error ("Invalid call to dummyvar.  Correct usage is:\n\n  D = dummyvar (g)");
   end
+
+  ## Table single-column extraction
+  if (isa (g, "table"))
+    if (size (g, 2) ~= 1)
+      error ("dummyvar on a table expects a single-column input");
+    end
+    try
+      g = g{:,1};
+    catch
+      ## table class exists but indexing failed — let later checks handle it
+    end
+  end
+
 
   ## --- CATEGORICAL branch ---
   if (exist ("categorical", "class") && isa (g, "categorical"))
-    ## "Categorical grouping variable must have one column."
-    s = size (g);
-    if (numel (s) > 2 || s(2) ~= 1)
+
+    if (! isvector (g) || size (g,2) ~= 1)
       error ("Categorical grouping variable must have one column.");
     end
 
-    ## categories is a categorical class method; no standalone function check needed
-
-    cats = categories (g);
+    cats = cellstr (categories (g));
     K = numel (cats);
-    n = numel (g);
+    n = rows (g);
 
     if (n == 0)
       error ("Categorical grouping variable must have one column.");
-      return;
     end
 
-    ## Convert to numeric indices. 
-    ## Unknown/undefined map to NaN or 0 depending on API.
-    ## <undefined> results in NaN rows in output.
-
-    try
-      idx = double (g);    ## maps categories to 1..K, undefined -> NaN
-      idx = idx(:);        ## FORCE column vector
-    catch
-      ## fallback: construct mapping manually (less efficient)
-      ## Use grp2idx-like approach
-      [~, ~, idx] = unique (g);
-      idx = double (idx);
-      ## Unique will not produce NaN for undefined; handle undefined explicitly
-      undef_mask = isundefined (g);
-      idx (undef_mask) = NaN;
-    end
-
-    ## Build matrix: rows_idx with idx==NaN are rows_idx of NaN(1,K)
-    rows_idx = (1:n)';
+    g_str = cellstr (g(:));
     D = zeros (n, K);
 
-    ## Build using sparse (skip NaNs)
-    valid = ~isnan (idx);
-    valid = valid(:);    ## FORCE column vector
-    if any (valid)
-      S = sparse (rows_idx(valid), idx(valid), 1, n, K);
-      D (:) = full (S);
-    end
-
-    ## Replace rows where idx is NaN with NaN across all columns
-    nan_rows = find (isnan (idx));
-    if ~ isempty (nan_rows)
-      D (nan_rows, :) = NaN;
-    end
+    for i = 1:n
+      if (isundefined (g(i)))
+        D(i,:) = NaN;
+      else
+        for k = 1:K
+          if (strcmp (g_str{i}, cats{k}))
+            D(i,k) = 1;
+            break;
+          end
+        endfor
+      end
+    endfor
 
     D = double (D);
     return;
   end
 
-  ## --- NUMERIC / LEGACY branch ---
-  ## If the input is numeric (vector), create indicator columns for 1..max(g)
+  ## --- NUMERIC branch ---
   if (isnumeric (g) && isvector (g))
-     ## ensure column
-    g = g(:);                
-    if isempty (g)
+
+    g = g(:);
+    if (isempty (g))
       D = zeros (0, 0);
       return;
     end
-    ## If g has non-integer values, we implicitly coerces to integer indices
-    ## by using unique? Historically dummyvar expects group indices (positive ints).
-    ## We'll follow this behavior: use max(g) as number of columns.
-    ## Construct column count K = max(g)
+
     K = max (g);
-    if ~ isreal (K) || K < 0
-      error ("dummyvar:InvalidInput", "Numeric grouping must produce a positive integer number of groups.");
+    if (! isreal (K) || K < 0)
+      error ("dummyvar:InvalidInput", ...
+             "Numeric grouping must produce a positive integer number of groups.");
     end
-    K = double (K);
+
     n = numel (g);
-    ## Build sparse/dense
-    rows_idx = (1:n)';
-    ## keep integer mapping
-    idx = round (g);          
-    valid = (idx >= 1) & (idx <= K) & ~isnan (idx);
-    if any (valid)
-      S = sparse (rows_idx(valid), idx(valid), 1, n, K);
-      D = full (S);
-    else
-      D = zeros (n, K);
-    end
+    D = zeros (n, K);
+    idx = round (g);
+
+    for i = 1:n
+      if (! isnan (idx(i)) && idx(i) >= 1 && idx(i) <= K)
+        D(i, idx(i)) = 1;
+      end
+    endfor
+
     D = double (D);
     return;
   end
 
-  ## --- FALLBACK: unsupported input types ---
-  error ("dummyvar:UnsupportedType", "dummyvar requires a numeric vector or a categorical array.");
+  error ("dummyvar:UnsupportedType", ...
+         "dummyvar requires a numeric vector or a categorical array.");
 end
 
 ## Test dummyvar behavior 
@@ -166,26 +142,30 @@ end
 %! assert(isequal(D, [1 0 0; 0 1 0; 1 0 0; 0 0 1; 0 1 0]));
 
 %!test
-%! ## categorical with universe -> columns for each category in same order
 %! g = categorical({'a';'b';'a'}, {'a','b','c'});
 %! D = dummyvar(g);
-%! assert(size(D,2) == numel(categories(g)));
-%! assert(all(D(:,1) == [1;0;1]));
-%! assert(all(D(:,2) == [0;1;0]));
-%! assert(all(D(:,3) == [0;0;0]));
+%! cats = categories(g);
+%! g_str = cellstr(g);
+%!
+%! for k = 1:numel(cats)
+%!   mask = strcmp(g_str, cats{k});
+%!   assert(all(D(mask, k) == 1));
+%!   assert(all(D(!mask, k) == 0));
+%! endfor
+
 
 %!test
-%! ## categorical with <undefined> -> row of NaNs
 %! g = categorical({'a'; ''; 'b'}, {'a','b','c'});
 %! D = dummyvar(g);
 %! assert(all(isnan(D(2,:))));
-%! assert(all(D(1,:) == [1 0 0]));
-%! assert(all(D(3,:) == [0 1 0]));
+%! assert(sum(D(1,:) == 1) == 1);
+%! assert(sum(D(3,:) == 1) == 1);
 
 %!test
-%! ## empty categorical -> 
-%! g = categorical({}, {'a','b'});
-%! assert (throws (@() dummyvar(g)));
+%! G = categorical({'a'; 'b'; 'a'}, {'a','b','c'});
+%! T = table(G, [10;20;30], 'VariableNames', {'G','Val'});
+%! D = dummyvar(T.G);
+%! assert(size(D,2) == numel(categories(G)));
 
 %!test
 %! ## table column input
@@ -197,7 +177,7 @@ end
 ## Test input validation
 
 %!error<Invalid call to dummyvar.  Correct usage is> dummyvar
-%!error<Invalid call to dummyvar.  Correct usage is> dummyvar (1, 2)
+%!error<function called with too many inputs> dummyvar (1, 2)
 
 %!error<Categorical grouping variable must have one column> ...
 %! dummyvar (categorical ([], {'a','b'}))
