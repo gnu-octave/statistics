@@ -145,6 +145,11 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
 
   y = y(:);
 
+  ## Validate row compatibility BEFORE any concatenation
+if (rows (X) != rows (y))
+  error ("stepwisefit: X must be a matrix and y a vector");
+endif
+
   ## Parse Name–Value pairs
   InModel  = [];
   Display  = "on";
@@ -197,6 +202,14 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
     error ("stepwisefit: MaxIter must be a positive integer");
   endif
 
+  ## Handle missing values
+  wasnan = any (isnan ([X y]), 2);
+  Xc = X(!wasnan, :);
+  yc = y(!wasnan);
+
+  n = rows (Xc);
+  p = columns (Xc);
+
   ## Validate Keep and InModel type (if provided)
   if (! isempty (Keep) && ! islogical (Keep))
     error ("stepwisefit: Keep must be a logical vector");
@@ -216,14 +229,6 @@ function [b, se, pval, finalmodel, stats, nextstep, history] = ...
   if (! isempty (args))
     error ("stepwisefit: unrecognized input arguments");
   endif
-
-  ## Handle missing values
-  wasnan = any (isnan ([X y]), 2);
-  Xc = X(!wasnan, :);
-  yc = y(!wasnan);
-
-  n = rows (Xc);
-  p = columns (Xc);
 
   if (isempty (Keep))
     Keep = false(1, p);
