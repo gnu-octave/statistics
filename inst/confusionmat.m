@@ -55,7 +55,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
   y_true = group;
   y_pred = grouphat;
 
-  if (class (y_true) != class (y_pred))
+  if (! strcmp (class (y_true), class (y_pred)))
     error ("confusionmat: group and grouphat must be of the same data type");
   endif
 
@@ -76,7 +76,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
   if ((nargin > 3) && strcmp (opt, "Order"))
     unique_tokens = grouporder;
 
-    if class( y_true ) != class( unique_tokens )
+    if (! strcmp (class (y_true), class (unique_tokens)))
       error ("confusionmat: group and grouporder must be of the same data type");
     endif
   endif
@@ -442,15 +442,15 @@ endfunction
 %! [C, order] = confusionmat (g, gh);
 %! assert (C, 3);
 %! assert (order, 1);
-%!error
+%!error <confusionmat: group and grouphat must be of the same data type>
 %! confusionmat ([1; 2], {'A'; 'B'})
-%!error
+%!error <confusionmat: group and grouphat must be of the same data type>
 %! confusionmat ('A', [1])
-%!error
+%!error <confusionmat: group and grouphat must be of the same length>
 %! confusionmat ([1; 2; 3], [1; 2])
-%!error
+%!error <confusionmat: group and grouporder must be of the same data type>
 %! confusionmat ([1; 2], [1; 2], "Order", {'A'; 'B'})
-%!error
+%!error <confusionmat: group and grouporder must be of the same data type>
 %! confusionmat ({'A'}, {'A'}, "Order", [1])
-%!error
+%!error <confusionmat: group must be a vector or character array>
 %! confusionmat (eye(2), eye(2))
