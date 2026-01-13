@@ -191,11 +191,26 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
       C(row_index, col_index)++;
     endfor
 
-  elseif (isstring (y_true))
-    ## string array
-    ## FIXME: not implemented yet
+  // MY FIX STARTS
+  elseif (isstring (y_true) || iscategorical (y_true))
+    ## string or categorical array
 
-    error ("confusionmat: string array not implemented yet");
+    if (! exist ("unique_tokens", "var"))
+      unique_tokens = union (y_true, y_pred);
+    endif
+
+    C_size = length (unique_tokens);
+    C = zeros (C_size);
+
+    for i = 1:length (y_true)
+      row_index = find (unique_tokens == y_true(i));
+      col_index = find (unique_tokens == y_pred(i));
+
+      if (! isempty (row_index) && ! isempty (col_index))
+        C(row_index, col_index)++;
+      endif
+    endfor
+    // FIX COMPLETED
   else
     error ("confusionmat: invalid data type");
   endif
