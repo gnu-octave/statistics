@@ -153,13 +153,12 @@ function [y, idcs] = datasample (data, k, varargin)
     else
       ## complex case
       if (k > imax)
-        error (strcat ("datasample: Sample size K must be less than or", ...
-                       " equal to the size of the dimension from which to", ...
-                       " sample for sampling without replacement."));
+        error (strcat ("datasample: K must not exceed the number of", ...
+                       " available elements when sampling without replacement."));
       endif
       if (k > sum (weights > 0))
-        error (strcat ("datasample: There must be at least K positive", ...
-                       " weights when sampling without replacement."));
+        error (strcat ("datasample: sampling without replacement", ...
+                       " requires at least K elements with positive weights."));
       endif
 
       ## choose k numbers uniformly between 0 and 1
@@ -225,10 +224,10 @@ endfunction
 %!error <weights must be defined> datasample([1 2], 1, 1, "Weights", [1 -2 3]);
 %!error <weights must be defined> datasample([1 2], 1, 1, "Weights", ones (2));
 %!error <weights must be equal> datasample([1 2], 1, 1, "Weights", [1 2 3]);
-%!error <datasample: Sample size K must be less than or equal to the size of the dimension from which to sample for sampling without replacement.> ...
+%!error <datasample: K must not exceed the number of available elements when sampling without replacement.> ...
 %! data = 1:5; weights = [0.077846, 0.103765, 0.703748, 0.840937, 0.422901];
 %! sampled = datasample (data, 8, 'Weights', weights, 'Replace', false);
-%!error <datasample: There must be at least K positive weights when sampling without replacement.> ...
+%!error <datasample: sampling without replacement requires at least K elements with positive weights.> ...
 %! data = 1:5; weights = [1, 0, 1, 0, 0];
 %! sampled = datasample (data, 3, 'Weights', weights, 'Replace', false);
 
