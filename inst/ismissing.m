@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2023 The Octave Project Developers
+## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,36 +19,58 @@
 ## @deftypefn  {statistics} {@var{TF} =} ismissing (@var{A})
 ## @deftypefnx {statistics} {@var{TF} =} ismissing (@var{A}, @var{indicator})
 ##
-## Find missing data in a numeric or string array.
+## Find missing data in arrays.
 ##
-## Given an input numeric data array, char array, or array of cell strings
-## @var{A}, @code{ismissing} returns a logical array @var{TF} with
-## the same dimensions as @var{A}, where @code{true} values match missing
-## values in the input data.
+## @code{@var{TF} = ismissing (@var{A})} returns a logical array, @var{TF}, with
+## the same dimensions as @var{A}, where @code{true} values match the standard
+## missing values in the input data according to their data type.
 ##
-## The optional input @var{indicator} is an array of values that represent
-## missing values in the input data.  The values which represent missing data
-## by default depend on the data type of @var{A}:
+## Standard missing values and their corresponding data types are:
 ##
 ## @itemize
-## @item
-## @qcode{NaN}: @code{single}, @code{double}.
-##
-## @item
-## @qcode{' '} (white space): @code{char}.
-##
-## @item
-## @qcode{@{''@}}: string cells.
+## @item @qcode{NaN} - for @qcode{double}, @qcode{single}, @qcode{duration}, and
+## @qcode{calendarDuration} arrays.
+## @item @qcode{NaT} - for @qcode{datetime} arrays.
+## @item @qcode{<missing>} - for @qcode{string} arrays.
+## @item @qcode{<undefined>} - for @qcode{categorical} arrays.
+## @item @qcode{@{''@}} - for @qcode{cell} arrays of character vectors.
 ## @end itemize
 ##
-## Note: logical and numeric data types may be used in any combination
-## for @var{A} and @var{indicator}. @var{A} and the indicator values will be
-## compared as type double, and the output will have the same class as @var{A}.
-## Data types other than those specified above have no defined 'missing' value.
-## As such, the TF output for those inputs will always be
-## @code{false(size(@var{A}))}. The exception to this is that @var{indicator}
-## can be specified for logical and numeric inputs to designate values that
-## will register as 'missing'.
+## For any data types that do not support missing values, @code{ismissing}
+## returns @code{@var{TF} = false (size (@var{A}))}.
+##
+## Note: the generic @code{ismissing} function from the statistics package only
+## operates on core Octave datatypes and it explicitly identifies missing values
+## in @qcode{double} and @qcode{single} arrays, as well as in @qcode{cell}
+## arrays of character vectors.  All other data types are handled by the
+## overloaded methods from their respective data class from the datatypes
+## package.  Use @code{help class_name.ismissing} to find more information about
+## the functional specialization of their respective class implementation.
+##
+## The optional input @var{indicator} can be a scalar or a vector, of the same
+## type as the input data @var{A}, specifying alternative missing values in the
+## input data.  When specifying @var{indicator} values, the standard missing
+## values are ignored, unless explicitly stated in the @var{indicator}.
+##
+## Additional data type matches between @var{indicator} and @var{A} are:
+##
+## @itemize
+## @item @qcode{double} indicators also match @qcode{single}, all integer types,
+## and @qcode{logical} data in @var{A}.
+##
+## @item @qcode{string} and @qcode{char} indicators also match
+## @qcode{categorical} data in @var{A}.
+##
+## @item @qcode{char} and @qcode{cellstr} indicators also match @qcode{string}
+## data in @var{A}.
+## @end itemize
+##
+## Note: the generic @code{ismissing} function from the statistics package only
+## accepts @var{indicator} argument for numeric, @qcode{logical}, and
+## @qcode{char} arrays, as well as for @qcode{cell} arrays of character vectors.
+## For all other core Octave data types, @code{ismissing} produces an error.
+## However, @var{indicator} is supported for data classes from the datatypes
+## package through their respective class implementation of overloaded methods.
 ##
 ## @seealso{fillmissing, rmmissing, standardizeMissing}
 ## @end deftypefn
@@ -59,112 +81,118 @@ function TF = ismissing (A, indicator)
     print_usage ();
   endif
 
-  ## check "indicator"
+  ## Check INDICATOR
   if (nargin != 2)
-     indicator = [];
+    indicator = [];
   endif
 
-  ## if A is an array of cell strings and indicator just a string,
-  ## convert indicator to a cell string with one element
+  ## If A is a cell array of character vectors and INDICATOR is a character
+  ## vector, convert it to a single-element cell array of character vectors
   if (iscellstr (A) && ischar (indicator) && ! iscellstr (indicator))
     indicator = {indicator};
   endif
 
   if ((! isempty (indicator)) &&
-      ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
+      ((isnumeric (A) && ! isnumeric (indicator)) ||
+       (iscellstr (A) && ! iscellstr (indicator)) ||
        (ischar (A) && ! ischar (indicator)) ||
-       (iscellstr (A) && ! (iscellstr (indicator)))))
-    error ("ismissing: 'indicator' and 'A' must have the same data type");
+       (islogical (A) && ! (islogical (indicator) || isnumeric (indicator)))))
+    error ("ismissing: 'indicator' and 'A' must have the same data type.");
   endif
 
   ## main logic
   if (isempty (indicator))
 
     if (isnumeric (A))
-      ## numeric matrix: just find the NaNs
+      ## Numeric matrix: just find the NaNs
       ## integer types have no missing value, but isnan will return false
       TF = isnan (A);
 
     elseif (iscellstr (A))
-      ## cell strings - find empty cells
+      ## Cell array of character vectors - find cells with empty char {''}
       TF = cellfun ('isempty', A);
 
-    elseif (ischar (A))
-      ## char matrix: find the white spaces
-      TF = isspace (A);
-
     else
-      ##no missing type defined, return false
+      ## No standard missing type defined, return false.
+      ## Other datatypes with standard missing values are
+      ## handled by their respective overloading methods.
       TF = false (size (A));
     endif
 
   else
-    ## indicator specified for missing data
+    ## INDICATOR specified for missing data
     TF = false (size (A));
-    if (isnumeric(A) || ischar (A) || islogical (A))
-      for iter = 1 : numel (indicator)
+    if (isnumeric (A))
+      for iter = 1:numel (indicator)
         if (isnan (indicator(iter)))
-          TF(isnan(A)) = true;
+          TF(isnan (A)) = true;
         else
           TF(A == indicator(iter)) = true;
         endif
       endfor
+    elseif (islogical (A) || ischar (A))
+      for iter = 1:numel (indicator)
+        TF(A == indicator(iter)) = true;
+      endfor
     elseif (iscellstr (A))
-      for iter = 1 : numel (indicator)
-        TF(strcmp (A, indicator(iter))) = true;
+      for iter = 1:numel (indicator)
+        if (isempty (indicator{iter}))
+          TF(cellfun ('isempty', A)) = true;
+        else
+          TF(strcmp (A, indicator(iter))) = true;
+        endif
       endfor
     else
       error ("ismissing: indicators not supported for data type '%s'", ...
-               class(A));
+             class (A));
     endif
   endif
 endfunction
 
-%!assert (ismissing ([1,NaN,3]), [false,true,false])
-%!assert (ismissing ('abcd f'), [false,false,false,false,true,false])
-%!assert (ismissing ({'xxx','','xyz'}), [false,true,false])
-%!assert (ismissing ({'x','','y'}), [false,true,false])
-%!assert (ismissing ({'x','','y';'z','a',''}), logical([0,1,0;0,0,1]))
-%!assert (ismissing ([1,2;NaN,2]), [false,false;true,false])
-%!assert (ismissing ([1,2;NaN,2], 2), [false,true;false,true])
-%!assert (ismissing ([1,2;NaN,2], [1 2]), [true,true;false,true])
-%!assert (ismissing ([1,2;NaN,2], NaN), [false,false;true,false])
+%!assert (ismissing ([1, NaN, 3]), [false, true, false])
+%!assert (ismissing ('abcd f'), [false, false, false, false, false, false])
+%!assert (ismissing ({'xxx', '', 'xyz'}), [false, true, false])
+%!assert (ismissing ({'x', '', 'y'}), [false, true, false])
+%!assert (ismissing ({'x', '', 'y'; 'z', 'a', ''}), logical ([0, 1, 0; 0, 0, 1]))
+%!assert (ismissing ([1, 2; NaN, 2]), [false, false; true, false])
+%!assert (ismissing ([1, 2; NaN, 2], 2), [false, true; false, true])
+%!assert (ismissing ([1, 2; NaN, 2], [1, 2]), [true, true; false, true])
+%!assert (ismissing ([1, 2; NaN, 2], NaN), [false, false; true, false])
 
 ## test nD array data
-%!assert (ismissing (cat(3,magic(2),magic(2))), logical (zeros (2,2,2)))
-%!assert (ismissing (cat(3,magic(2),[1 2;3 NaN])), logical (cat(3,[0,0;0,0],[0,0;0,1])))
-%!assert (ismissing ([1 2; 3 4], [5 1; 2 0]), logical([1 1; 0 0]))
-%!assert (ismissing (cat(3,'f oo','ba r')), logical(cat(3,[0 1 0 0],[0 0 1 0])))
-%!assert (ismissing (cat(3,{'foo'},{''},{'bar'})), logical(cat(3,0,1,0)))
+%!assert (ismissing (cat (3, magic (2), magic (2))), logical (zeros (2, 2, 2)))
+%!assert (ismissing (cat (3, magic (2), [1, 2; 3, NaN])), ...
+%!        logical (cat (3, [0, 0; 0, 0], [0, 0; 0, 1])))
+%!assert (ismissing ([1, 2; 3, 4], [5, 1; 2, 0]), logical ([1, 1; 0, 0]))
+%!assert (ismissing (cat (3, 'f oo', 'ba r')), ...
+%!        logical (cat (3, [0, 0, 0, 0], [0, 0, 0, 0])))
+%!assert (ismissing (cat (3, {'foo'}, {''}, {'bar'})), logical (cat (3, 0, 1, 0)))
 
 ## test data type handling
 %!assert (ismissing (double (NaN)), true)
 %!assert (ismissing (single (NaN)), true)
-%!assert (ismissing (' '), true)
+%!assert (ismissing (' '), false)
 %!assert (ismissing ({''}), true)
 %!assert (ismissing ({' '}), false)
-%!assert (ismissing (double (eye(3)), single (1)), logical(eye(3)))
-%!assert (ismissing (double (eye(3)), true), logical(eye(3)))
-%!assert (ismissing (double (eye(3)), int32 (1)), logical(eye(3)))
-%!assert (ismissing (single (eye(3)), true), logical(eye(3)))
-%!assert (ismissing (single (eye(3)), double (1)), logical(eye(3)))
-%!assert (ismissing (single(eye(3)), int32 (1)), logical(eye(3)))
+%!assert (ismissing (double (eye(3)), single (1)), logical (eye (3)))
+%!assert (ismissing (double (eye(3)), int32 (1)), logical (eye (3)))
+%!assert (ismissing (single (eye(3)), double (1)), logical (eye (3)))
+%!assert (ismissing (single (eye(3)), int32 (1)), logical (eye (3)))
 
 ## test data types without missing values
-%!assert (ismissing ({'123', '', 123}), [false false false])
-%!assert (ismissing (logical ([1 0 1])), [false false false])
-%!assert (ismissing (int32 ([1 2 3])), [false false false])
-%!assert (ismissing (uint32 ([1 2 3])), [false false false])
-%!assert (ismissing ({1, 2, 3}), [false false false])
-%!assert (ismissing ([struct struct struct]), [false false false])
-%!assert (ismissing (logical (eye(3)), true), logical(eye(3)))
-%!assert (ismissing (logical (eye(3)), double (1)), logical(eye(3)))
-%!assert (ismissing (logical (eye(3)), single (1)), logical(eye(3)))
-%!assert (ismissing (logical (eye(3)), int32 (1)), logical(eye(3)))
-%!assert (ismissing (int32 (eye(3)), int32 (1)), logical(eye(3)))
-%!assert (ismissing (int32 (eye(3)), true), logical(eye(3)))
-%!assert (ismissing (int32 (eye(3)), double (1)), logical(eye(3)))
-%!assert (ismissing (int32 (eye(3)), single (1)), logical(eye(3)))
+%!assert (ismissing ({'123', '', 123}), [false, false, false])
+%!assert (ismissing (logical ([1, 0, 1])), [false, false, false])
+%!assert (ismissing (int32 ([1, 2, 3])), [false, false, false])
+%!assert (ismissing (uint32 ([1, 2, 3])), [false, false, false])
+%!assert (ismissing ({1, 2, 3}), [false, false, false])
+%!assert (ismissing ([struct struct struct]), [false, false, false])
+%!assert (ismissing (logical (eye(3)), true), logical (eye (3)))
+%!assert (ismissing (logical (eye(3)), double (1)), logical (eye (3)))
+%!assert (ismissing (logical (eye(3)), single (1)), logical (eye (3)))
+%!assert (ismissing (logical (eye(3)), int32 (1)), logical (eye (3)))
+%!assert (ismissing (int32 (eye(3)), int32 (1)), logical (eye (3)))
+%!assert (ismissing (int32 (eye(3)), double (1)), logical (eye (3)))
+%!assert (ismissing (int32 (eye(3)), single (1)), logical (eye (3)))
 
 ## test empty input handling
 %!assert (ismissing ([]), logical([]))
@@ -173,9 +201,28 @@ endfunction
 %!assert (ismissing (ones (1,0)), logical(ones(1,0)))
 %!assert (ismissing (ones (1,2,0)), logical(ones(1,2,0)))
 
+## test indicators and standard missing values
+%!assert (ismissing ([1, NaN, 0, 2]), [false, true, false, false])
+%!assert (ismissing ([1, NaN, 0, 2], [0, 1]), [true, false, true, false])
+%!assert (ismissing ([1, NaN, 0, 2], [0, NaN]), [false, true, true, false])
+%!assert (ismissing ([true, false, true]), [false, false, false])
+%!assert (ismissing ([true, false, true], 1), [true, false, true])
+%!assert (ismissing ([true, false, true], 0), [false, true, false])
+%!assert (ismissing ({'', 'a', 'f'}), [true, false, false])
+%!assert (ismissing ({'', 'a', 'f'}, 'a'), [false, true, false])
+%!assert (ismissing ({'', 'a', 'f'}, {'a', 'g'}), [false, true, false])
+%!assert (ismissing ({'', 'a', 'f'}, {'a', 'f'}), [false, true, true])
+
 ## Test input validation
 %!error ismissing ()
-%!error <'indicator' and 'A' must have the same> ismissing ([1 2; 3 4], "abc")
-%!error <'indicator' and 'A' must have the same> ismissing ({"", "", ""}, 1)
-%!error <'indicator' and 'A' must have the same> ismissing (1, struct)
-%!error <indicators not supported for data type> ismissing (struct, 1)
+%!error ismissing (1, 2, 3)
+%!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
+%!       ismissing ([1, 2; 3, 4], 'abc')
+%!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
+%!       ismissing ({'', '', ''}, 1)
+%!error <ismissing: 'indicator' and 'A' must have the same data type.> ...
+%!       ismissing (1, struct)
+%!error <ismissing: indicators not supported for data type 'struct'> ...
+%!       ismissing (struct, 1)
+%!error <ismissing: indicators not supported for data type 'cell'> ...
+%!       ismissing ({1, 2, 3}, 2)
