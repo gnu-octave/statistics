@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2023 The Octave Project Developers
+## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -19,158 +19,158 @@
 ## @deftypefn  {statistics} {@var{R} =} rmmissing (@var{A})
 ## @deftypefnx {statistics} {@var{R} =} rmmissing (@var{A}, @var{dim})
 ## @deftypefnx {statistics} {@var{R} =} rmmissing (@dots{}, @var{Name}, @var{Value})
-## @deftypefnx {statistics} {[@var{R} @var{TF}] =} rmmissing (@dots{})
+## @deftypefnx {statistics} {[@var{R}, @var{TF}] =} rmmissing (@dots{})
 ##
-## Remove missing or incomplete data from an array.
+## Remove missing data from arrays.
 ##
-## Given an input vector or matrix (2-D array) @var{A}, remove missing data
-## from a vector or missing rows or columns from a matrix.  @var{A}
-## can be a numeric array, char array, or an array of cell strings.
-## @var{R} returns the array after removal of missing data.
+## Given an input vector or matrix (2-D array) @var{A}, @code{@var{R} =
+## rmmissing (@var{A})} returns an output vector or matrix @var{R} of the same
+## type as input @var{A} and any missing elements removed.  If @var{A} is a
+## vector, missing elements are removed individually, if @var{A} is a matrix,
+## then rows containing missing elements are removed.
 ##
-## The values which represent missing data depend on the data type of @var{A}:
+## Standard missing values and their corresponding data types are:
+##
+## @itemize
+## @item @qcode{NaN} - for @qcode{double}, @qcode{single}, @qcode{duration}, and
+## @qcode{calendarDuration} arrays.
+## @item @qcode{NaT} - for @qcode{datetime} arrays.
+## @item @qcode{<missing>} - for @qcode{string} arrays.
+## @item @qcode{<undefined>} - for @qcode{categorical} arrays.
+## @item @qcode{@{''@}} - for @qcode{cell} arrays of character vectors.
+## @end itemize
+##
+## For any data types that do not support missing values, @code{rmmissing}
+## returns @code{@var{R} == @var{A}} and if a second output argument is
+## requested it also returns @code{@var{TF} = false (size (@var{A}))}.
+##
+## Given an input matrix (2-D array) @var{A}, @code{@var{R} = rmmissing
+## (@var{A}, @var{dim})} further specifies whether rows or columns containing
+## missing data are removed from the output @var{R} based on the value of
+## @var{dim}, which must be either 1 or 0.
 ##
 ## @itemize
 ## @item
-## @qcode{NaN}: @code{single}, @code{double}.
+## @qcode{1}: remove rows.
 ##
 ## @item
-## @qcode{' '} (white space): @code{char}.
-##
-## @item
-## @qcode{@{''@}}: string cells.
+## @qcode{2}: remove columns.
 ## @end itemize
 ##
-## Choose to remove rows (default) or columns by setting optional input
-## @var{dim}:
+## @code{@var{R} = rmmissing (@dots{}, @var{Name}, @var{Value})} also accepts
+## the following paired arguments.
 ##
-## @itemize
-## @item
-## @qcode{1}: rows.
+## @multitable @columnfractions 0.2 0.05 0.75
+## @headitem Name @tab @tab Value
+## @item @qcode{'MinNumMissing'} @tab @tab A positive integer scalar value
+## specifying the required minimum number of missing values for removing any
+## particular row or column from a matrix input.  Note that this argument is
+## ignored if input @var{A} is a vector.
 ##
-## @item
-## @qcode{2}: columns.
-## @end itemize
-##
-## Note: data types with no default 'missing' value will always result in
-## @code{R == A} and a TF output of @code{false(size(@var{A}))}.
-##
-## Additional optional parameters are set by @var{Name}-@var{Value} pairs.
-## These are:
-##
-## @itemize
-## @item
-## @qcode{MinNumMissing}: minimum number of missing values to remove an entry,
-## row or column, defined as a positive integer number.  E.g.: if
-## @qcode{MinNumMissing} is set to @code{2}, remove the row of a numeric matrix
-## only if it includes 2 or more NaN.
-## @end itemize
+## @item @qcode{'MissingLocations'} @tab @tab A logical array of the same size
+## as input @var{A} indexing the locations of missing values in input array
+## @var{A}.  Note that specifying @qcode{'MissingLocations'} overrides any
+## standard missing values in @var{A}.
+## @end multitable
 ##
 ## Optional return value @var{TF} is a logical array where @code{true} values
 ## represent removed entries, rows or columns from the original data @var{A}.
 ##
-## @end deftypefn
-##
 ## @seealso{fillmissing, ismissing, standardizeMissing}
+## @end deftypefn
 
 function [R, TF] = rmmissing (A, varargin)
 
-  if ((nargin < 1) || (nargin > 4))
-     print_usage ();
+  ## Validate data in A
+  if (nargin < 1)
+    print_usage ();
+  endif
+  if (ndims(A) > 2)
+    error ("rmmissing: A must be a matrix; no more than 2 dimensions allowed.");
+  endif
+  if (isempty (A))
+    R = A;
+    TF = false (size (A));
+    return;
   endif
 
-  if ndims(A) > 2
-    error ("rmmissing: input dimension cannot exceed 2");
+  ## Parse optional Name-Value paired arguments
+  optNames = {'MinNumMissing', 'MissingLocations'};
+  dfValues = {1, []};
+  [MinNumMissing, MissingLocations, args] = pairedArgs (optNames, dfValues, ...
+                                                        varargin(:));
+
+  ## Validate optional Name-Value paired arguments
+  if (! (isscalar (MinNumMissing) && isnumeric (MinNumMissing) &&
+         MinNumMissing > 0 && fix (MinNumMissing) == MinNumMissing))
+    error ("rmmissing: 'MinNumMissing' must be a positive integer value.");
   endif
-
-  optDimensionI = 2; # default dimension: rows
-  optMinNumMissingI = 1;
-
-  ## parse options
-  if (nargin > 1)
-    if (isnumeric (varargin{1}))
-      ## option "dim"
-      switch (varargin{1})
-        case 1
-          optDimensionI = 2;
-        case 2
-          optDimensionI = 1;
-        otherwise
-          error ("rmmissing: 'dim' must be either 1 or 2");
-      endswitch
-
-      pair_index = 2;
-    else
-      [r, c] = size (A);
-
-      ## first non singleton dimension, but only two dimensions considered
-      if (r == 1 && c != 1)
-        optDimensionI = 1;
-      endif
-
-      pair_index = 1;
+  if (! isempty (MissingLocations))
+    if (! (islogical (MissingLocations) &&
+           isequal (size (MissingLocations), size (A))))
+      error (strcat ("rmmissing: 'MissingLocations' must be a", ...
+                     " logical matrix of the same size as input A."));
     endif
-
-    ## parse name-value parameters
-    while (pair_index <= (nargin - 1))
-      switch (lower (varargin{pair_index}))
-        ## minimum number of missing values to remove entries;
-        ## it must be a positive integer number
-        case "minnummissing"
-          if (! isnumeric (varargin{pair_index + 1}) ||
-              ! isscalar (varargin{pair_index + 1}) ||
-              floor (varargin{pair_index + 1}) != varargin{pair_index + 1} ||
-              varargin{pair_index + 1} < 1)
-            error (["rmmissing: 'MinNumMissing' requires a positive integer"...
-                    " number as value"]);
-          endif
-
-          optMinNumMissingI = varargin{pair_index + 1};
-        otherwise
-          error ("rmmissing: unknown parameter name '%s'", ...
-                 varargin{pair_index});
-      endswitch
-
-      pair_index += 2;
-    endwhile
   endif
 
-  ## main logic
-  TF = ismissing (A);
-  if (isvector (A))
-    R = A(TF == 0);
+  ## Check for DIM
+  if (isempty (args))
+    dim = 2;
+  elseif (isscalar (args))
+    dim = args{1};
+    if (! (isscalar (dim) && (dim == 1 || dim == 2)))
+      error ("rmmissing: specified DIM must be either 1 or 2.");
+    endif
+    ## Swap DIM to operate orthogonal to specified DIM
+    if (dim == 1)
+      dim = 2;
+    else
+      dim = 1;
+    endif
+  else
+    error ("rmmissing: too many input arguments.");
+  endif
 
-  elseif (iscellstr(A) || ismatrix (A))
-    ## matrix: ismissing returns an array, so it must be converted to a row or
-    ## column vector according to the "dim" of choice
-    if (optMinNumMissingI > 1)
-      TF = sum (TF, optDimensionI);
-      TF(TF < optMinNumMissingI) = 0;
+  ## Get missing values
+  if (isempty (MissingLocations))
+    TF = ismissing (A);
+  else
+    TF = MissingLocations;
+  endif
+
+  ## Remove missing values
+  if (isvector (A))
+    R = A(TF == 0); # MinNumMissing does not matter here
+  else
+    ## matrix: ismissing returns an array, so it must be converted
+    ## to a row or column vector according to the "dim" of choice
+    if (MinNumMissing > 1)
+      TF = sum (TF, dim);
+      TF(TF < MinNumMissing) = 0; # true only if at least MinNumMissing
       TF = logical (TF);
     else
-      TF = any (TF, optDimensionI);
+      TF = any (TF, dim);
     endif
 
-    if (optDimensionI == 2)
+    if (dim == 2)
       ## remove the rows
       R = A((TF == 0), :);
     else
       ## remove the columns
       R = A(:, (TF == 0));
     endif
-  else
-    error ("rmmissing: unsupported data");
   endif
+
 endfunction
 
-%!assert (rmmissing ([1,NaN,3]), [1,3])
-%!assert (rmmissing ('abcd f'), 'abcdf')
-%!assert (rmmissing ({'xxx','','xyz'}), {'xxx','xyz'})
-%!assert (rmmissing ({'xxx','';'xyz','yyy'}), {'xyz','yyy'})
-%!assert (rmmissing ({'xxx','';'xyz','yyy'}, 2), {'xxx';'xyz'})
-%!assert (rmmissing ([1,2;NaN,2]), [1,2])
-%!assert (rmmissing ([1,2;NaN,2], 2), [2,2]')
-%!assert (rmmissing ([1,2;NaN,4;NaN,NaN],"MinNumMissing", 2), [1,2;NaN,4])
+%!assert (rmmissing ([1, NaN, 3]), [1, 3])
+%!assert (rmmissing ('abcd f'), 'abcd f')
+%!assert (rmmissing ({'xxx', '', 'xyz'}), {'xxx', 'xyz'})
+%!assert (rmmissing ({'xxx', ''; 'xyz', 'yyy'}), {'xyz', 'yyy'})
+%!assert (rmmissing ({'xxx', ''; 'xyz', 'yyy'}, 2), {'xxx'; 'xyz'})
+%!assert (rmmissing ([1, 2; NaN, 2]), [1, 2])
+%!assert (rmmissing ([1, 2; NaN, 2], 2), [2, 2]')
+%!assert (rmmissing ([1, 2; NaN, 4; NaN, NaN],"MinNumMissing", 2), [1, 2; NaN, 4])
 
 ## Test second output
 %!test
@@ -194,7 +194,7 @@ endfunction
 %! assert (class(idx), 'logical');
 
 ## Test data type handling
-%!assert (rmmissing (single ([1 2 NaN; 3 4 5])), single ([3 4 5]))
+%!assert (rmmissing (single ([1, 2, NaN; 3, 4, 5])), single ([3, 4, 5]))
 %!assert (rmmissing (logical (ones (3))), logical (ones (3)))
 %!assert (rmmissing (int32 (ones (3))), int32 (ones (3)))
 %!assert (rmmissing (uint32 (ones (3))), uint32 (ones (3)))
@@ -203,21 +203,30 @@ endfunction
 
 ## Test empty input handling
 %!assert (rmmissing ([]), [])
-%!assert (rmmissing (ones (1,0)), ones (1,0))
-%!assert (rmmissing (ones (1,0), 1), ones (1,0))
-%!assert (rmmissing (ones (1,0), 2), ones (1,0))
-%!assert (rmmissing (ones (0,1)), ones (0,1))
-%!assert (rmmissing (ones (0,1), 1), ones (0,1))
-%!assert (rmmissing (ones (0,1), 2), ones (0,1))
-%!error <input dimension> rmmissing (ones (0,1,2))
+%!assert (rmmissing (ones (1, 0)), ones (1, 0))
+%!assert (rmmissing (ones (1, 0), 1), ones (1, 0))
+%!assert (rmmissing (ones (1, 0), 2), ones (1, 0))
+%!assert (rmmissing (ones (0, 1)), ones (0, 1))
+%!assert (rmmissing (ones (0, 1), 1), ones (0, 1))
+%!assert (rmmissing (ones (0, 1), 2), ones (0, 1))
+%!error <rmmissing: A must be a matrix; no more than 2 dimensions allowed.> ...
+%!       rmmissing (ones (0, 1, 2))
 
 ## Test input validation
 %!error rmmissing ()
-%!error <input dimension> rmmissing (ones(2,2,2))
-%!error <must be either 1 or 2> rmmissing ([1 2; 3 4], 5)
-%!error <unknown parameter name> rmmissing ([1 2; 3 4], "XXX", 1)
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], 2, "MinNumMissing", -2)
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 3.8)
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", [1 2 3])
-%!error <'MinNumMissing'> rmmissing ([1 2; 3 4], "MinNumMissing", 'xxx')
-
+%!error <rmmissing: A must be a matrix; no more than 2 dimensions allowed.> ...
+%!       rmmissing (ones(2, 2, 2))
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!       rmmissing (ones(2, 2), 'MinNumMissing', 0)
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!       rmmissing ([1, 2; 3, 4], 2, "MinNumMissing", -2)
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", 3.8)
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", [1, 2, 3])
+%!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
+%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", 'xxx')
+%!error <rmmissing: 'MissingLocations' must be a logical matrix of the same size as input A.> ...
+%!       rmmissing ([1, 2; 3, 4], 'MissingLocations', false ([1, 1, 1]))
+%!error <rmmissing: specified DIM must be either 1 or 2.> rmmissing ([1, 2; 3, 4], 5)
+%!error <rmmissing: too many input arguments.> rmmissing ([1, 2; 3, 4], 'XXX', 1)
