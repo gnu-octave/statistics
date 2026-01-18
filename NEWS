@@ -35,3 +35,46 @@
  ** std
 
  ** var
+
+
+  Summary of important user-visible changes for statistics 1.8.1:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Soon after Octave 11.1 is officially released the
+                      'statistics' package will update its dependency to
+                      Octave 11, so that further development can rely on
+                      advancements to core statistics and data functions
+                      that will be available with Octave 11.
+                   2) Incompatibility with the `nan` package
+                   3) Using `tablicious` as a drop in replacement
+                      for `datatypes` might cause issues.
+
+ New functions:
+ ==============
+
+ ** dummyvar
+
+ Improvements:
+ =============
+
+ ** cvpartition: 'summary' method has been implemented
+
+ ** datasample: improved input validation
+
+ ** friedman: returns ANOVA results in a table
+
+ ** grp2idx: fixed MATLAB compatibility, add support for new data types
+
+ ** grpstats: add support for tables and categorical arrays, add ploting
+              functionality, fix remaining MATLAB compatiblity issue
+
+ ** ismissing: fixed MATLAB compatibility
+
+ ** rmmissing: fixed MATLAB compatibility
+
+ ** stepwisefit: fixed MATLAB compatibility, replaced legacy Draper-Smith
+                 algorithm, results may differ from previous implementation
+
+ ** tabulate: add support for tables and categorical arrays
+
+ ** wishrnd: allow for non-integral DF under certain constrains
