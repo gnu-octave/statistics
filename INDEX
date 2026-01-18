@@ -50,6 +50,7 @@ Data Manipulation
  combnk
  crosstab
  datasample
+ dummyvar
  fillmissing
  grp2idx
  ismissing
