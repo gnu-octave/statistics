@@ -51,7 +51,7 @@ function [g, gn, gl] = grp2idx (s)
   elseif (isstring (s) && isvector (s))
     s_was_string = true;
     s = cellstr (s);
-  elseif (iscategorical (s) && isvector (s))
+  elseif (iscategorical (s) && (isvector (s) || isempty (s)))
     s_was_categorical = true;
     undef = isundefined (s);
     cats = categories (s);
@@ -100,7 +100,13 @@ function [g, gn, gl] = grp2idx (s)
 
   if (nargout > 1)
     if (s_was_categorical)
-      gn = categories (categorical (s));
+      if (isempty (s))
+        gn = cats(:);
+      elseif (all (isnan (g)))
+        gn = cell (0,1);
+      else
+        gn = cats(:);
+      endif
     elseif (s_was_duration)
       gn = cellstr(gl);
     elseif (iscellstr (gl))
@@ -333,3 +339,28 @@ endfunction
 %! assert (isequaln (g, [NaN; 1; 2; NaN]));
 %! assert (isequal (gn, {'high'; 'low'}));
 %! assert (isequal (gl, string ({'high'; 'low'})));
+
+## Test empty categorical with defined categories
+%!test
+%! s = categorical ({}, {'low','med','high'});
+%! [g, gn, gl] = grp2idx (s);
+%! assert (isempty (g));
+%! assert (isequal (gn, {'low'; 'med'; 'high'}));
+%! assert (isequal (gl, categorical ({'low'; 'med'; 'high'})));
+
+## Test all-undefined categorical
+%!test
+%! s = categorical ({'a','b','c'});
+%! s(:) = categorical (missing);
+%! [g, gn, gl] = grp2idx (s);
+%! assert (isequaln (g, [NaN; NaN; NaN]));
+%! assert (isempty (gn));
+%! assert (isequal (gl, categorical (cell (0,1))));
+
+## Test all-missing string
+%!test
+%! s = string ({missing, missing});
+%! [g, gn, gl] = grp2idx (s);
+%! assert (isequaln (g, [NaN; NaN]));
+%! assert (isempty (gn));
+%! assert (isequal (gl, string (cell (0,1))));
