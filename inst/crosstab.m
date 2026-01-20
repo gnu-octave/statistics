@@ -28,7 +28,8 @@
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
-## with a data type of numeric, logical, char, or string (cell array).
+## with a data type of numeric, logical, char, categorical, or cell array of
+## strings.
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
@@ -53,8 +54,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
 
   for i = 1:nargin
     vector = varargin{i};
-    ## If char array, convert to numerical vector
-    if (ischar (vector) || iscellstr (vector))
+    ## Convert char, cellstr, or categorical to indexed numeric vector
+    if (ischar (vector) || iscellstr (vector) || iscategorical (vector))
       try
         [vector, gnames] = grp2idx (vector);
       catch
@@ -145,3 +146,23 @@ endfunction
 %! y = [1, 2, 3, NaN];
 %! t = crosstab (x, y);
 %! assert (t, [1, 0, 0; 0, 1, 0]);
+
+## Test categorical input
+%!test
+%! x = categorical ({'A', 'B', 'A', 'C', 'B'});
+%! y = [1, 2, 1, 3, 2];
+%! t = crosstab (x, y);
+%! assert (size (t), [3, 3]);
+%! assert (t(1, 1), 2);  # A with 1
+%! assert (t(2, 2), 2);  # B with 2
+%!test
+%! x = categorical ({'low', 'med', 'high', 'low', 'med'});
+%! y = categorical ({'X', 'Y', 'X', 'Y', 'X'});
+%! [t, ~, ~, labels] = crosstab (x, y);
+%! assert (size (t), [3, 2]);
+%!test
+%! ## Test categorical with numeric
+%! x = categorical ([10, 20, 10, 30, 20]);
+%! y = [1, 2, 1, 3, 2];
+%! t = crosstab (x, y);
+%! assert (t, [2, 0, 0; 0, 2, 0; 0, 0, 1]);
