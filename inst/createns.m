@@ -131,6 +131,13 @@ function obj = createns (X, varargin)
     error ("createns: invalid 'NSMethod' value: '%s'.", NSMethod);
   endif
 
+  ## If NSMethod was not explicitly provided (still default), auto-select backend
+  ## based on data shape using a simple heuristic.
+  if (isempty (idx) && strcmp (NSMethod, "exhaustive"))
+    [N, D] = size (X);
+    NSMethod = select_nn_backend (N, D);
+  endif
+
   ## Instantiate the appropriate searcher object
   switch (NSMethod)
     case "exhaustive"
@@ -141,6 +148,38 @@ function obj = createns (X, varargin)
       obj = hnswSearcher (X, varargin{:});
   endswitch
 
+endfunction
+
+## Decide backend based on data shape.
+## Kept internal to make unit-testing trivial and to avoid changing public API.
+##
+## Heuristic (conservative defaults, based on benchmark data):
+## - small N (<= 5000)       -> exhaustive (cheap to build, vectorized query)
+## - low D (<= 20) & large N -> kdtree (logarithmic query, good for low-D)
+## - high D (> 20) & very large N (>= 100k) -> hnsw (expensive build, but
+##   scales well for massive high-D data; only triggered for very large N
+##   to avoid surprising users with slow build times)
+## - otherwise               -> exhaustive (safe fallback)
+##
+## Note: HNSW threshold is deliberately conservative (N >= 100000) because
+## HNSW build time dominates for smaller datasets. Users who want HNSW for
+## smaller N can explicitly request it via NSMethod="hnsw".
+##
+## These thresholds can be tuned after collecting more benchmark data.
+function method = select_nn_backend (N, D)
+  if (N <= 5000)
+    method = "exhaustive";
+    return;
+  endif
+  if (D <= 20 && N >= 50000)
+    method = "kdtree";
+    return;
+  endif
+  if (D > 20 && N >= 100000)
+    method = "hnsw";
+    return;
+  endif
+  method = "exhaustive";
 endfunction
 
 ## Test Cases
@@ -187,3 +226,61 @@ endfunction
 %! X = [1, 2; 3, 4]; createns (X, "NSMethod", 1)
 %!error<createns: invalid 'NSMethod' value: 'invalid'.>
 %! X = [1, 2; 3, 4]; createns (X, "NSMethod", "invalid")
+
+## Tests for auto-selection heuristic behavior
+
+%!test
+%! ## Auto-select: small N should pick exhaustive
+%! X = rand (100, 5);
+%! obj = createns (X);
+%! assert (isa (obj, "ExhaustiveSearcher"));
+
+%!test
+%! ## Auto-select: N at threshold (5000) should pick exhaustive
+%! X = rand (5000, 10);
+%! obj = createns (X);
+%! assert (isa (obj, "ExhaustiveSearcher"));
+
+%!test
+%! ## Auto-select: large N (>=50000), low D (<=20) should pick kdtree
+%! X = rand (50000, 5);
+%! obj = createns (X);
+%! assert (isa (obj, "KDTreeSearcher"));
+
+%!test
+%! ## Auto-select: very large N (>=100k), high D (>20) should pick hnsw
+%! ## Note: HNSW threshold is conservative due to expensive build time
+%! X = rand (100000, 25);
+%! obj = createns (X);
+%! assert (isa (obj, "hnswSearcher"));
+
+%!test
+%! ## Auto-select: medium N or high-D with N < 100k falls back to exhaustive
+%! X = rand (10000, 50);
+%! obj = createns (X);
+%! assert (isa (obj, "ExhaustiveSearcher"));
+
+%!test
+%! ## Auto-select: large N (50k) but high D still uses exhaustive (not hnsw)
+%! ## because HNSW threshold is conservative at 100k
+%! X = rand (50000, 50);
+%! obj = createns (X);
+%! assert (isa (obj, "ExhaustiveSearcher"));
+
+%!test
+%! ## Explicit override: force exhaustive on data that would auto-select kdtree
+%! X = rand (50000, 5);
+%! obj = createns (X, "NSMethod", "exhaustive");
+%! assert (isa (obj, "ExhaustiveSearcher"));
+
+%!test
+%! ## Explicit override: force kdtree on small data
+%! X = rand (100, 3);
+%! obj = createns (X, "NSMethod", "kdtree");
+%! assert (isa (obj, "KDTreeSearcher"));
+
+%!test
+%! ## Explicit override: force hnsw on small data
+%! X = rand (100, 3);
+%! obj = createns (X, "NSMethod", "hnsw");
+%! assert (isa (obj, "hnswSearcher"));
