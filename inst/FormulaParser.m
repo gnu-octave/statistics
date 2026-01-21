@@ -14,3 +14,31 @@
 ##
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
+
+classdef FormulaParser < handle
+    properties
+        FormulaString
+        VariableNames
+        Terms          % The binary matrix (Model Terms)
+        ResponseName   % The name of the Y variable
+        PredictorNames % The names of the X variables used
+        HasIntercept   % Boolean
+    end
+
+    methods
+        function obj = FormulaParser(formulaStr, varNames)
+             obj.FormulaString = formulaStr;
+             obj.VariableNames = varNames;
+             obj.parse();
+        end
+
+        function parse(obj)
+            % 1. Split by '~' to get Response and Predictors
+            % 2. Parse ResponseName (trim whitespace)
+            % 3. Check for '-1' or '0' to determine HasIntercept
+            % 4. Split Predictors by '+'
+            % 5. Handle ':' interactions
+            % 6. Map strings to indices in VariableNames to build obj.Terms
+        end
+    end
+end
