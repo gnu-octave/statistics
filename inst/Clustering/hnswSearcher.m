@@ -700,14 +700,14 @@ function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
       best_count = best_count + 1;
       best_nodes(best_count) = n;
       best_dists_arr(best_count) = d;
-
-      ## Trim best list if exceeds SetSize (keep sorted)
-      if (best_count > SetSize)
-        [best_dists_arr(1:best_count), sort_idx] = sort (best_dists_arr(1:best_count));
-        best_nodes(1:best_count) = best_nodes(sort_idx);
-        best_count = SetSize;
-      endif
     endfor
+
+    ## Trim best list once per batch instead of per element
+    if (best_count > SetSize)
+      [best_dists_arr(1:best_count), sort_idx] = sort (best_dists_arr(1:best_count));
+      best_nodes(1:best_count) = best_nodes(sort_idx);
+      best_count = SetSize;
+    endif
   endwhile
 
   ## Return top Points results
