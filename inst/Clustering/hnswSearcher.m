@@ -607,57 +607,118 @@ function [indices, distances] = search_hnsw (graph, Y, X, dist, param, ...
                                             K, SearchSetSize, 0, current_entry);
 endfunction
 
-## Private Function Search a single HNSW layer
+## Private Function Search a single HNSW layer (optimized)
 function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
                                                    Points, SetSize, L, ...
                                                    entry_points)
-  visited = false (size (X, 1), 1);
-  candidates = entry_points(:)';
-  dists = pdist2 (X(entry_points,:), Y, dist, param);
-  visited(entry_points) = true;
-  best_candidates = candidates;
-  best_dists = dists;
+  N = size (X, 1);
+  visited = false (N, 1);
 
-  while (! isempty (candidates) && ! isempty (dists))
-    [~, idx] = min (dists);
-    closest = candidates(idx);
-    candidates(idx) = [];
-    dists(idx) = [];
+  ## Pre-allocate fixed-size arrays with generous capacity
+  capacity = N;
 
-    if (length (best_dists) > 0 && ! isempty (dists)
-                                && best_dists(end) < min (dists))
-      break;
+  ## Candidate list (nodes to explore)
+  cand_nodes = zeros (1, capacity);
+  cand_dists = zeros (1, capacity);
+  cand_count = 0;
+
+  ## Best results list (top SetSize closest nodes, kept sorted)
+  best_nodes = zeros (1, capacity);
+  best_dists_arr = zeros (1, capacity);
+  best_count = 0;
+
+  ## Initialize with entry points
+  entry_points = entry_points(:)';
+  num_entries = length (entry_points);
+  init_dists = pdist2 (X(entry_points,:), Y, dist, param);
+
+  for i = 1:num_entries
+    ep = entry_points(i);
+    visited(ep) = true;
+    cand_count = cand_count + 1;
+    cand_nodes(cand_count) = ep;
+    cand_dists(cand_count) = init_dists(i);
+    best_count = best_count + 1;
+    best_nodes(best_count) = ep;
+    best_dists_arr(best_count) = init_dists(i);
+  endfor
+
+  ## Cache layer adjacency list reference
+  layer_adj = graph.layers{L+1};
+
+  ## Main search loop
+  while (cand_count > 0)
+    ## Find minimum distance candidate
+    [~, idx] = min (cand_dists(1:cand_count));
+    closest = cand_nodes(idx);
+
+    ## Swap-and-pop removal (O(1) instead of O(n) array shift)
+    cand_nodes(idx) = cand_nodes(cand_count);
+    cand_dists(idx) = cand_dists(cand_count);
+    cand_count = cand_count - 1;
+
+    ## Early termination check (matching original logic exactly)
+    if (best_count > 0 && cand_count > 0)
+      ## best_dists_arr is kept sorted, so end element is worst
+      if (best_dists_arr(best_count) < min (cand_dists(1:cand_count)))
+        break;
+      endif
     endif
 
-    neighbors = graph.layers{L+1}{closest};
-    for n = neighbors
-      if (! visited(n))
-        visited(n) = true;
-        d = pdist2 (X(n,:), Y, dist, param);
+    ## Get neighbors of closest node
+    neighbors = layer_adj{closest};
+    if (isempty (neighbors))
+      continue;
+    endif
 
-        candidates = [candidates, n];
-        dists = [dists, d];
-        best_candidates = [best_candidates, n];
-        best_dists = [best_dists, d];
-        if (length (best_dists) > SetSize)
-          [best_dists, sort_idx] = sort (best_dists);
-          best_candidates = best_candidates(sort_idx);
-          best_dists = best_dists(1:SetSize);
-          best_candidates = best_candidates(1:SetSize);
-        endif
+    ## Filter to unvisited neighbors only
+    unvisited_mask = ~visited(neighbors);
+    new_neighbors = neighbors(unvisited_mask);
 
+    if (isempty (new_neighbors))
+      continue;
+    endif
+
+    ## Mark all new neighbors as visited
+    visited(new_neighbors) = true;
+
+    ## Batch distance computation (single pdist2 call)
+    new_dists = pdist2 (X(new_neighbors,:), Y, dist, param);
+
+    ## Add each new neighbor to candidates and best lists
+    num_new = length (new_neighbors);
+    for i = 1:num_new
+      n = new_neighbors(i);
+      d = new_dists(i);
+
+      ## Add to candidates
+      cand_count = cand_count + 1;
+      cand_nodes(cand_count) = n;
+      cand_dists(cand_count) = d;
+
+      ## Add to best list
+      best_count = best_count + 1;
+      best_nodes(best_count) = n;
+      best_dists_arr(best_count) = d;
+
+      ## Trim best list if exceeds SetSize (keep sorted)
+      if (best_count > SetSize)
+        [best_dists_arr(1:best_count), sort_idx] = sort (best_dists_arr(1:best_count));
+        best_nodes(1:best_count) = best_nodes(sort_idx);
+        best_count = SetSize;
       endif
     endfor
   endwhile
 
-  if (length (best_dists) > Points)
-    [best_dists, sort_idx] = sort (best_dists);
-    best_candidates = best_candidates(sort_idx);
-    indices = best_candidates(1:Points);
-    distances = best_dists(1:Points);
+  ## Return top Points results
+  if (best_count > Points)
+    [best_dists_arr(1:best_count), sort_idx] = sort (best_dists_arr(1:best_count));
+    best_nodes(1:best_count) = best_nodes(sort_idx);
+    indices = best_nodes(1:Points);
+    distances = best_dists_arr(1:Points);
   else
-    indices = best_candidates;
-    distances = best_dists;
+    indices = best_nodes(1:best_count);
+    distances = best_dists_arr(1:best_count);
   endif
 endfunction
 
