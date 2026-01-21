@@ -1,3 +1,5 @@
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
+
 ## This file is part of the statistics package for GNU Octave.
 ##
 ## This program is free software; you can redistribute it and/or modify it under
