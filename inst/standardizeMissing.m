@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2025 The Octave Project Developers
+## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,49 +16,52 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{B} =} standardizeMissing (@var{A}, @var{indicator})
+## @deftypefn {statistics} {@var{B} =} standardizeMissing (@var{A}, @var{indicator})
 ##
-## Replace data values specified by @var{indicator} in @var{A} by the
-## standard 'missing' data value for that data type.
+## Replace selected values by standard missing values.
 ##
-## @var{A} can be a numeric scalar or array, a character vector or array, or
-## a cell array of character vectors (a.k.a. string cells).
+## @code{@var{Β} = standardizeMissing (@var{A}, @var{indicator})} returns a
+## standardized array @var{B} of the same size and data type as the input array
+## @var{A} and with all elements specified by @var{indicator} replaced by the
+## standard missing value corresponding the data type of @var{A}.
+## @var{indicator} can be either a scalar or a vector.
 ##
-## @var{indicator} can be a scalar or an array containing values to be
-## replaced by the 'missing' value for the class of @var{A}, and should have
-## a data type matching @var{A}.
-##
-## 'missing' values are defined as :
+## Standard missing values and their corresponding data types are:
 ##
 ## @itemize
-## @item
-## @qcode{NaN}: @code{single}, @code{double}
-##
-## @item
-## @qcode{" "} (white space): @code{char}
-##
-## @item
-## @qcode{@{""@}} (empty string in cell): string cells.
+## @item @qcode{NaN} - for @qcode{double}, @qcode{single}, @qcode{duration}, and
+## @qcode{calendarDuration} arrays.
+## @item @qcode{NaT} - for @qcode{datetime} arrays.
+## @item @qcode{<missing>} - for @qcode{string} arrays.
+## @item @qcode{<undefined>} - for @qcode{categorical} arrays.
+## @item @qcode{@{''@}} - for @qcode{cell} arrays of character vectors.
 ## @end itemize
 ##
-## Compatibility Notes:
+## For any other data type input that does not support missing values,
+## @code{standardizeMissing} returns @code{@var{B} = @var{A}} and any
+## @var{indicator} value is ignored.
+##
+## The nonstandard missing value @var{indicator} must be of the same type as the
+## data input @var{A} or have a compatible data types according to the following
+## rules:
+##
 ## @itemize
-## @item
-## Octave's implementation of @code{standardizeMissing}
-## does not restrict @var{indicator} of type @qcode{char} to row vectors.
-##
-## @item
-## All numerical and logical inputs for @var{A} and @var{indicator} may
-## be specified in any combination. The output will be the same class as
-## @var{A}, with the @var{indicator} converted to that data type for
-## comparison.  Only @code{single} and @code{double} have defined 'missing'
-## values, so @var{A} of other data types will always output
-## @var{B} = @var{A}.
+## @item all numeric indicators match both @qcode{double} and @qcode{single}
+## data types in @var{A}.
+## @item indicators specified as @qcode{string} arrays, @qcode{char} vectors,
+## and @code{cell} arrays of character vectors match categorical data type in
+## @var{A}.
+## @item a @qcode{char} vector matches a @qcode{cell} array of character vectors
+## in @var{A}.
 ## @end itemize
 ##
-## @end deftypefn
+## Note: the generic @code{standardizeMissing} function from the statistics does
+## not operate on table inputs, which is handled by the overloaded method of the
+## table class.  Use @code{help table.standardizeMissing} to find more
+## information about the functional specialization on tables.
 ##
 ## @seealso{fillmissing, ismissing, rmmissing}
+## @end deftypefn
 
 function A = standardizeMissing (A, indicator)
 
@@ -66,74 +69,75 @@ function A = standardizeMissing (A, indicator)
     print_usage ();
   endif
 
-  input_class = class (A);
-  do_nothing_flag = false;
-
-  ## Set missing_val.
-  ## Compatibility requirements:
-  ## Numeric/logical: Only double and single have 'missing' values defined,
-  ## so other numeric and logical pass through unchanged.
-  ## Other: only char & cellstr have 'missing' values defined, others produce
-  ## error.
-  ##
-  ## TODO: as implemented in Octave, add table, string, timetable,
-  ## categorical, datetime, and duration to class checks and BISTs
-  ##
-  ## TODO: when 'missing' class is implemented, these switch blocks can all
-  ## be removed and the final assignment updated to call missing instead of
-  ## missing_val
-
-  if (isnumeric(A) || islogical(A))
-    switch (input_class)
+  if (isnumeric (A))
+    if (! isnumeric (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+    switch (class (A))
       case "double"
-        missing_val = NaN ("double");
+        A(ismember (A, indicator)) = NaN ("double");
       case "single"
-        missing_val = NaN ("single");
-      otherwise
-        do_nothing_flag = true;
+        A(ismember (A, indicator)) = NaN ("single");
     endswitch
-  else
-    switch (input_class)
-      case "char"
-        missing_val = " ";
-      case "cell"
-        if iscellstr(A)
-          missing_val = {""};
-        else
-          error (strcat ("standardizeMissing: only cell arrays", ...
-                         " of character vectors are supported."));
-        endif
-      case "categorical"
-        missing_val = categorical (NaN);
-      case "datetime"
-        missing_val = NaT;
-      case "duration"
-        missing_val = days (NaN);
-      case "string"
-        missing_val = missing;
-    otherwise
-      error ("standardizeMissing: unsupported data type '%s'.", input_class);
-    endswitch
-  endif
 
-  if (! do_nothing_flag)
-
-    ## if A is an array of cell strings and indicator just a string,
-    ## convert indicator to a cell string with one element
-    if (iscellstr (A) && ischar (indicator) && ! iscellstr (indicator))
+  elseif (iscellstr (A))
+    if (ischar (indicator))
+      if (! isrow (indicator))
+        error ("standardizeMissing: character INDICATOR must be a row vector.");
+      endif
       indicator = {indicator};
+    elseif (! iscellstr (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
     endif
+    A(ismember (A, indicator)) = {''};
 
-    if ((isnumeric (A) && ! (isnumeric (indicator) || islogical (indicator))) ||
-        (ischar (A) && ! ischar (indicator)) ||
-        (iscellstr (A) && ! iscellstr (indicator)) ||
-        (isa (A, 'categorical') && ! isa (indicator, 'categorical')) ||
-        (isa (A, 'duration') && ! isa (indicator, 'duration')))
-      error (strcat ("standardizeMissing: 'indicator' and 'A' must", ...
-                     " have the same data type."));
+  elseif (iscategorical (A))
+    if (ischar (indicator))
+      if (! isrow (indicator))
+        error ("standardizeMissing: character INDICATOR must be a row vector.");
+      endif
+      indicator = {indicator};
+    elseif (! (iscellstr (indicator) || isstring (indicator)
+                                     || iscategorical (indicator)))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
+    A(ismember (A, indicator)) = categorical (NaN);
 
-    A(ismember (A, indicator)) = missing_val;
+  elseif (isdatetime (A))
+    if (! isdatetime (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+    A(ismember (A, indicator)) = NaT;
+
+  elseif (isduration (A))
+    if (! isduration (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+    A(ismember (A, indicator)) = days (NaN);
+
+  elseif (iscalendarduration (A))
+    if (! iscalendarduration (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+    A(ismember (A, indicator)) = days (NaN);
+
+  elseif (isstring (A))
+    if (! isstring (indicator))
+      error ("standardizeMissing: incompatible INDICATOR and input data A.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+    A(ismember (A, indicator)) = missing;
   endif
 
 endfunction
@@ -142,14 +146,14 @@ endfunction
 %!assert (standardizeMissing (1, 1), NaN)
 %!assert (standardizeMissing (1, 0), 1)
 %!assert (standardizeMissing (eye(2), 1), [NaN 0;0 NaN])
-%!assert (standardizeMissing ([1:3;4:6], [2 3; 4 5]), [1, NaN, NaN; NaN, NaN, 6])
+%!assert (standardizeMissing ([1:3;4:6], [2 3 4 5]), [1, NaN, NaN; NaN, NaN, 6])
 %!assert (standardizeMissing (cat (3,1,2,3,4), 3), cat (3,1,2,NaN,4))
 
 ## char and cellstr tests
 %!assert (standardizeMissing ('foo', 'a'), 'foo')
-%!assert (standardizeMissing ('foo', 'f'), ' oo')
-%!assert (standardizeMissing ('foo', 'o'), 'f  ')
-%!assert (standardizeMissing ('foo', 'oo'), 'f  ')
+%!assert (standardizeMissing ('foo', 'f'), 'foo')
+%!assert (standardizeMissing ('foo', 'o'), 'foo')
+%!assert (standardizeMissing ('foo', 'oo'), 'foo')
 
 %!assert (standardizeMissing ({'foo'}, 'f'), {'foo'})
 %!assert (standardizeMissing ({'foo'}, {'f'}), {'foo'})
@@ -159,9 +163,9 @@ endfunction
 %!assert (standardizeMissing ({'foo'}, {'foo'}), {''})
 
 ## char and cellstr array tests
-%!assert (standardizeMissing (['foo';'bar'], 'oar'), ['f  ';'b  '])
-%!assert (standardizeMissing (['foo';'bar'], ['o';'a';'r']), ['f  ';'b  '])
-%!assert (standardizeMissing (['foo';'bar'], ['o ';'ar']), ['f  ';'b  '])
+%!assert (standardizeMissing (['foo';'bar'], 'oar'), ['foo';'bar'])
+%!assert (standardizeMissing (['foo';'bar'], ['o';'a';'r']), ['foo';'bar'])
+%!assert (standardizeMissing (['foo';'bar'], ['o ';'ar']), ['foo';'bar'])
 
 %!assert (standardizeMissing ({'foo','bar'}, 'foo'), {'','bar'})
 %!assert (standardizeMissing ({'foo','bar'}, 'f'), {'foo','bar'})
@@ -174,8 +178,8 @@ endfunction
 %!assert (standardizeMissing (double (1), single (1)), double (NaN))
 %!assert (standardizeMissing (single (1), single (1)), single (NaN))
 %!assert (standardizeMissing (single (1), double (1)), single (NaN))
-%!assert (standardizeMissing (single (1), true), single (NaN))
-%!assert (standardizeMissing (double (1), int32(1)), double (NaN))
+%!assert (standardizeMissing (single (1), uint8 (1)), single (NaN))
+%!assert (standardizeMissing (double (1), int32 (1)), double (NaN))
 
 ## Passtrough tests
 %!assert (standardizeMissing (true, true), true)
@@ -184,10 +188,16 @@ endfunction
 %!assert (standardizeMissing (int32 (1), 1), int32 (1))
 %!assert (standardizeMissing (uint32 (1), uint32 (1)), uint32 (1))
 %!assert (standardizeMissing (uint32 (1), 1), uint32 (1))
+%!assert (standardizeMissing ({'abc', 1}, 1), {'abc', 1})
+%!assert (standardizeMissing (struct ('a','b'), 1), struct ('a','b'))
 
 ## categorical array tests
 %!assert (double (standardizeMissing (categorical (1), categorical (1))), NaN)
+%!assert (double (standardizeMissing (categorical (1), '1')), NaN)
+%!assert (class (standardizeMissing (categorical (1), categorical (1))), 'categorical')
 %!assert (double (standardizeMissing (categorical (1), categorical (2))), 1)
+%!assert (double (standardizeMissing (categorical (1), '2')), 1)
+%!assert (class (standardizeMissing (categorical (1), categorical (2))), 'categorical')
 
 ## datetime array tests
 %!assert (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
@@ -205,26 +215,16 @@ endfunction
 %!error <Invalid call> standardizeMissing ();
 %!error <Invalid call> standardizeMissing (1);
 %!error <standardizeMissing: function called with too many inputs> standardizeMissing (1, 2, 3);
-%!error <standardizeMissing: only cell arrays of character vectors are supported.> ...
-%!       standardizeMissing ({'abc', 1}, 1);
-%!error <standardizeMissing: unsupported data type 'struct'.> ...
-%!       standardizeMissing (struct ('a','b'), 1);
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ([1 2 3], {1});
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ([1 2 3], 'a');
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ([1 2 3], struct ('a', 1));
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ('foo', 1);
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ('foo', {1});
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ('foo', {'f'});
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ('foo', struct ('a', 1));
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ({'foo'}, 1);
-%!error <standardizeMissing: 'indicator' and 'A' must have the same data type.> ...
-%!       standardizeMissing ({'foo'}, 1);
+%!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
+%!       standardizeMissing ([1, 2, 3], {1});
+%!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
+%!       standardizeMissing ([1, 2, 3], 'a');
+%!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
+%!       standardizeMissing ([1, 2, 3], struct ('a', 1));
+%!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
+%!       standardizeMissing (categorical (1), 1);
+%!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
+%!       standardizeMissing ({'foo'}, string ('foo'));
+%!error <standardizeMissing: character INDICATOR must be a row vector.> ...
+%!       standardizeMissing ({'foo'}, ['a';'b']);
 
