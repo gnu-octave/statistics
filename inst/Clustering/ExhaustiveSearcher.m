@@ -473,8 +473,12 @@ classdef ExhaustiveSearcher
       endwhile
 
       ## Compute distance matrix
-      D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
-      D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
+      if (ischar (obj.Distance))
+        D_mat = pdist2 (Y, obj.X, obj.Distance, obj.DistParameter);
+      else
+        D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
+        D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
+      endif
 
       if (K == 1 && ! IncludeTies)
         [D, idx] = min (D_mat, [], 2);
@@ -489,9 +493,9 @@ classdef ExhaustiveSearcher
             else
               kth_dist = sorted_D(i, K);
             endif
-            tie_idx = find (sorted_D(i, :) <= kth_dist);
-            idx{i} = sorted_idx(i, tie_idx);
-            D{i} = sorted_D(i, tie_idx);
+            tie_idx = find (D_mat(i, :) <= kth_dist);
+            [D{i}, order] = sort (D_mat(i, tie_idx));
+            idx{i} = tie_idx(order);
           endfor
         else
           idx = sorted_idx(:, 1:K);
@@ -576,8 +580,12 @@ classdef ExhaustiveSearcher
       endwhile
 
       ## Compute distance matrix
-      D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
-      D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
+      if (ischar (obj.Distance))
+        D_mat = pdist2 (Y, obj.X, obj.Distance, obj.DistParameter);
+      else
+        D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
+        D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
+      endif
 
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
