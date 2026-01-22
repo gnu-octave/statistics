@@ -472,36 +472,60 @@ classdef ExhaustiveSearcher
         varargin (1:2) = [];
       endwhile
 
-      ## Compute distance matrix
-      if (ischar (obj.Distance))
-        D_mat = pdist2 (Y, obj.X, obj.Distance, obj.DistParameter);
+      ## Determine block size based on memory target (128 MB)
+      N = rows (obj.X);
+      M = rows (Y);
+      targetBytes = 128 * 1024^2;
+      BlockSize = max (1, floor (targetBytes / (N * 8)));
+
+      ## Initialize outputs
+      if (IncludeTies)
+        idx = cell (M, 1);
+        D = cell (M, 1);
+      elseif (K == 1)
+        idx = zeros (M, 1);
+        D = zeros (M, 1);
       else
-        D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
-        D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
+        idx = zeros (M, K);
+        D = zeros (M, K);
       endif
 
-      if (K == 1 && ! IncludeTies)
-        [D, idx] = min (D_mat, [], 2);
-      else
-        [sorted_D, sorted_idx] = sort (D_mat, 2);
-        if (IncludeTies)
-          idx = cell (rows (Y), 1);
-          D = cell (rows (Y), 1);
-          for i = 1:rows (Y)
-            if (K > columns (sorted_D))
-              kth_dist = sorted_D(i, end);
-            else
-              kth_dist = sorted_D(i, K);
-            endif
-            tie_idx = find (D_mat(i, :) <= kth_dist);
-            [D{i}, order] = sort (D_mat(i, tie_idx));
-            idx{i} = tie_idx(order);
-          endfor
+      ## Process Y in blocks
+      for blk_start = 1:BlockSize:M
+        blk_end = min (blk_start + BlockSize - 1, M);
+        Y_blk = Y(blk_start:blk_end, :);
+        blk_rows = blk_end - blk_start + 1;
+
+        ## Compute distance matrix for this block
+        if (ischar (obj.Distance))
+          D_blk = pdist2 (Y_blk, obj.X, obj.Distance, obj.DistParameter);
         else
-          idx = sorted_idx(:, 1:K);
-          D = sorted_D(:, 1:K);
+          D_blk = pdist2 (obj.X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = reshape (D_blk', blk_rows, N);
         endif
-      endif
+
+        ## Process block results
+        if (K == 1 && ! IncludeTies)
+          [D(blk_start:blk_end), idx(blk_start:blk_end)] = min (D_blk, [], 2);
+        else
+          [sorted_D, sorted_idx] = sort (D_blk, 2);
+          if (IncludeTies)
+            for i = 1:blk_rows
+              if (K > columns (sorted_D))
+                kth_dist = sorted_D(i, end);
+              else
+                kth_dist = sorted_D(i, K);
+              endif
+              tie_idx = find (D_blk(i, :) <= kth_dist);
+              [D{blk_start + i - 1}, order] = sort (D_blk(i, tie_idx));
+              idx{blk_start + i - 1} = tie_idx(order);
+            endfor
+          else
+            idx(blk_start:blk_end, :) = sorted_idx(:, 1:K);
+            D(blk_start:blk_end, :) = sorted_D(:, 1:K);
+          endif
+        endif
+      endfor
     endfunction
 
     ## -*- texinfo -*-
@@ -579,26 +603,42 @@ classdef ExhaustiveSearcher
         varargin (1:2) = [];
       endwhile
 
-      ## Compute distance matrix
-      if (ischar (obj.Distance))
-        D_mat = pdist2 (Y, obj.X, obj.Distance, obj.DistParameter);
-      else
-        D_mat = pdist2 (obj.X, Y, obj.Distance, obj.DistParameter);
-        D_mat = reshape (D_mat', size (Y, 1), size (obj.X, 1));
-      endif
+      ## Determine block size based on memory target (128 MB)
+      N = rows (obj.X);
+      M = rows (Y);
+      targetBytes = 128 * 1024^2;
+      BlockSize = max (1, floor (targetBytes / (N * 8)));
 
-      idx = cell (rows (Y), 1);
-      D = cell (rows (Y), 1);
-      for i = 1:rows (Y)
-        within_r = find (D_mat(i, :) <= r);
-        if (SortIndices)
-          [sorted_D, sort_idx] = sort (D_mat(i, within_r));
-          idx{i} = within_r(sort_idx);
-          D{i} = sorted_D;
+      ## Initialize outputs
+      idx = cell (M, 1);
+      D = cell (M, 1);
+
+      ## Process Y in blocks
+      for blk_start = 1:BlockSize:M
+        blk_end = min (blk_start + BlockSize - 1, M);
+        Y_blk = Y(blk_start:blk_end, :);
+        blk_rows = blk_end - blk_start + 1;
+
+        ## Compute distance matrix for this block
+        if (ischar (obj.Distance))
+          D_blk = pdist2 (Y_blk, obj.X, obj.Distance, obj.DistParameter);
         else
-          idx{i} = within_r;
-          D{i} = D_mat(i, within_r);
+          D_blk = pdist2 (obj.X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = reshape (D_blk', blk_rows, N);
         endif
+
+        ## Process block results
+        for i = 1:blk_rows
+          within_r = find (D_blk(i, :) <= r);
+          if (SortIndices)
+            [sorted_D, sort_idx] = sort (D_blk(i, within_r));
+            idx{blk_start + i - 1} = within_r(sort_idx);
+            D{blk_start + i - 1} = sorted_D;
+          else
+            idx{blk_start + i - 1} = within_r;
+            D{blk_start + i - 1} = D_blk(i, within_r);
+          endif
+        endfor
       endfor
     endfunction
 
