@@ -213,17 +213,7 @@ classdef RegressionGAM
 
           case "interactions"
             if (F_I < 1)
-              tmp = varargin{2};
-              if (isnumeric (tmp) && isscalar (tmp)
-                                  && tmp == fix (tmp) && tmp >= 0)
-                Interactions = tmp;
-              elseif (islogical (tmp))
-                Interactions = tmp;
-              elseif (ischar (tmp) && strcmpi (tmp, "all"))
-                Interactions = tmp;
-              else
-                error ("RegressionGAM: invalid Interactions parameter.");
-              endif
+              Interactions = varargin{2}; % Just store it, let Parser check it later
               F_I += 1;
             else
               error ("RegressionGAM: Formula has been already defined.");

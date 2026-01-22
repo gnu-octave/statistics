@@ -108,11 +108,14 @@ classdef FormulaParser
         endif
         intMat = interactions;
 
-      elseif (isnumeric (interactions))
+      elseif (isnumeric (interactions) && isscalar (interactions))
         ## Just check that the given number is not higher than
         ## p*(p-1)/2, where p is the number of predictors.
         p = numPredictors;
-        if (interactions > p * (p - 1) / 2)
+
+        if (interactions < 0)
+          error ("FormulaParser: Invalid interaction argument.");
+        elseif (interactions > p * (p - 1) / 2)
           error ("FormulaParser: number of interaction terms requested is larger than all possible combinations.");
         endif
 
@@ -163,15 +166,10 @@ endclassdef
 
 %!test
 %! ## Test 4: Parse Interactions "all"
-%! ## 3 vars -> Pairs: (1,2), (1,3), (2,3) -> 3 rows of 2s.
-%! ## Plus triplet (1,2,3) -> 1 row of 3s.
-%! ## ff2n(3) gives 8 rows.
-%! ## Row sums: 0(1), 1(3), 2(3), 3(1).
-%! ## Our logic keeps sum > 1. So 3+1 = 4 rows.
 %! intMat = FormulaParser.parseInteractions ("all", 3);
 %! assert (size (intMat, 1), 4);
 %! assert (columns (intMat), 3);
 
 %!error <FormulaParser: invalid syntax in Formula> FormulaParser.parseFormula ("y x1 + x2", {"x1"})
 %!error <FormulaParser: no predictor terms> FormulaParser.parseFormula ("y ~ ", {"x1"})
-%!error <FormulaParser: some predictors in the formula were not found> FormulaParser.parseFormula ("y ~ x1 + z", {"x1"})
+%!error <FormulaParser: some terms have not been identified> FormulaParser.parseFormula ("y ~ x1 + z", {"x1"})
