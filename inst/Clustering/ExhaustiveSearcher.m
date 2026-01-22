@@ -878,6 +878,25 @@ endclassdef
 %! assert (D, 2, 1e-10)
 
 %!test
+%! ## IncludeTies returns all tied neighbors
+%! X = [0; 1; 2];
+%! obj = ExhaustiveSearcher (X);
+%! Y = 1;
+%! [idx, D] = knnsearch (obj, Y, "K", 2, "IncludeTies", true);
+%! assert (idx{1}, [2, 1, 3])
+%! assert (D{1}, [0, 1, 1])
+
+%!test
+%! ## Custom distance function with vectorized output
+%! X = [1, 2; 3, 4];
+%! f = @(x, y) sum(abs(x - y), 2);
+%! obj = ExhaustiveSearcher (X, "Distance", f);
+%! Y = [2, 3];
+%! [idx, D] = knnsearch (obj, Y);
+%! assert (idx, 1)
+%! assert (D, 2)
+
+%!test
 %! ## Euclidean with high-dimensional data
 %! X = [1, 2, 3; 4, 5, 6; 7, 8, 9; 10, 11, 12];
 %! obj = ExhaustiveSearcher (X);

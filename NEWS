@@ -68,9 +68,16 @@
  ** grpstats: add support for tables and categorical arrays, add ploting
               functionality, fix remaining MATLAB compatiblity issue
 
- ** ismissing: fixed MATLAB compatibility
+ ** hnswSearcher: improved performance in building index and query operations
 
- ** rmmissing: fixed MATLAB compatibility
+ ** ismissing: fixed MATLAB compatibility, char arrays do not have standard
+               missing values
+
+ ** rmmissing: fixed MATLAB compatibility, char arrays do not have standard
+               missing values
+
+ ** standardizeMissing: fixed MATLAB compatibility, char arrays do not have
+                        standard missing values
 
  ** stepwisefit: fixed MATLAB compatibility, replaced legacy Draper-Smith
                  algorithm, results may differ from previous implementation
