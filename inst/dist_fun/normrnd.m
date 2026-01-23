@@ -68,13 +68,15 @@ function r = normrnd (mu, sigma, varargin)
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isempty (varargin{1}))
+        sz = [0, 0];
+    elseif (isscalar (varargin{1}) && varargin{1} >= 0 ...
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
     elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
                                 && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    else
       error (strcat ("normrnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
@@ -126,6 +128,7 @@ endfunction
 %!assert (size (normrnd (1, 1, 0, 1)), [0, 1])
 %!assert (size (normrnd (1, 1, 1, 0)), [1, 0])
 %!assert (size (normrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (normrnd (0, 1, []), []);
 
 ## Test class of input preserved
 %!assert (class (normrnd (1, 1)), "double")
