@@ -684,7 +684,7 @@ classdef ClassificationGAM
               endif
               F_I += 1;
             else
-              error ("ClassificationGAM: 'Interactions' have already been defined.");
+              error ("ClassificationGAM: 'Formula' has already been defined.");
             endif
 
           case "knots"
@@ -843,7 +843,8 @@ classdef ClassificationGAM
       if (F_I > 0)
         if (isempty (this.Formula))
           ## Analyze Interactions optional parameter
-          this.IntMatrix = FormulaParser.parseInteractions (this.Interactions, this.NumPredictors);
+          ## NEW: Use external FormulaParser function
+          this.IntMatrix = FormulaParser (this.Interactions, this.NumPredictors);
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));
@@ -858,8 +859,8 @@ classdef ClassificationGAM
 
         else
           ## Analyze Formula optional parameter
-          ## NEW: Capture 3 outputs (Matrix, Response Name, Intercept Flag)
-          [this.IntMatrix, parsedResp, ~] = FormulaParser.parseFormula (this.Formula, this.PredictorNames);
+          ## NEW: Use external FormulaParser function and capture response
+          [this.IntMatrix, parsedResp, ~] = FormulaParser (this.Formula, this.PredictorNames);
 
           ## If the formula included a Response Name (LHS), update the object property
           if (! isempty (parsedResp))
@@ -1473,13 +1474,13 @@ endfunction
 %! ClassificationGAM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
 %!error<FormulaParser: invalid syntax. Formula must contain '~'.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something")
-%!error<FormulaParser: no predictor terms in Formula.> ...
+%!error<FormulaParser: no predictor terms found.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<FormulaParser: no predictor terms in Formula.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<FormulaParser: invalid syntax in interaction term 'x1:'> ...
+%!error<FormulaParser: no predictor terms found.> ...
+%! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something~   ")
+%!error<FormulaParser: invalid syntax> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
-%!error<ClassificationGAM: 'Interactions' have already been defined.> ...
+%!error<ClassificationGAM: 'Formula' has already been defined.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
 %!error<ClassificationGAM: 'Interactions' have already been defined.> ...
 %! ClassificationGAM (ones(10,2), ones (10,1), "interactions", 1, "formula", "y ~ x1 + x2")
@@ -1588,10 +1589,3 @@ endfunction
 %! crossval (obj, "leaveout", 1)
 %!error<ClassificationGAM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (obj, "cvpartition", 1)
-
-%!error<FormulaParser: invalid syntax in interaction term 'x1:'> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
-%!error<ClassificationGAM: 'Interactions' have already been defined.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
-%!error<ClassificationGAM: 'Interactions' have already been defined.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), "interactions", 1, "formula", "y ~ x1 + x2")

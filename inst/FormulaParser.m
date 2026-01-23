@@ -15,214 +15,348 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-classdef FormulaParser
-  ## -*- texinfo -*-
-  ## @deftp {statistics} FormulaParser
-  ##
-  ## Utility class for parsing Wilkinson notation formulas and interaction specifications.
-  ##
-  ## This class provides static methods to convert formula strings (e.g., "y ~ x1 + x2")
-  ## or interaction specifications into binary terms matrices required by regression
-  ## and classification models.
-  ##
-  ## @end deftp
+## -*- texinfo -*-
+## @deftypefn {Function File} {[@var{intMat}, @var{response}, @var{hasIntercept}] =} FormulaParser (@var{formula}, @var{predictorNames})
+## @deftypefnx {Function File} {@var{intMat} =} FormulaParser (@var{interactions}, @var{numPredictors})
+##
+## Parse a Wilkinson notation formula string or interaction specification into a binary term matrix.
+##
+## This utility processes formula strings (e.g., @qcode{"y ~ (A + B) * C"}) or
+## interaction arguments to generate the design matrix logic required by
+## regression and classification models.
+##
+## @strong{Inputs:}
+## @itemize
+## @item @var{formula}: A character string specifying the model.
+## @item @var{predictorNames}: A cell array of strings containing the names of valid predictors.
+## @item @var{interactions}: A numeric scalar, logical matrix, or string @qcode{"all"}.
+## @item @var{numPredictors}: Integer number of total predictor variables.
+## @end itemize
+##
+## @strong{Outputs:}
+## @itemize
+## @item @var{intMat}: A logical matrix where each row represents a model term and each
+## column represents a predictor.
+## @item @var{response}: The name of the response variable extracted from the LHS.
+## @item @var{hasIntercept}: Boolean flag. @code{true} unless @qcode{"-1"} is specified.
+## @end itemize
+##
+## @strong{Supported Features:}
+## @table @code
+## @item +
+## Additive term (e.g., @qcode{"A + B"}).
+## @item :
+## Interaction term (e.g., @qcode{"A:B"}).
+## @item *
+## Factorial expansion. @qcode{"A*B"} expands to @qcode{"A + B + A:B"}.
+## @item ()
+## Nested grouping and distribution (e.g., @qcode{"(A + B):C"} expands to @qcode{"A:C + B:C"}).
+## @item -1
+## Remove intercept.
+## @end table
+##
+## @strong{Ordering:}
+## Terms are sorted by complexity (Main Effects first, then Interactions) and
+## then by the order of predictors in @var{predictorNames}.
+##
+## @end deftypefn
 
-  methods (Static)
+function [intMat, response, hasIntercept] = FormulaParser (varargin)
 
-    ## -*- texinfo -*-
-    ## @deftypefn {FormulaParser} {[@var{intMat}, @var{response}, @var{hasIntercept}] =} parseFormula (@var{formula}, @var{predictorNames})
-    ## Parse a Wilkinson notation formula string into components.
-    ##
-    ## @var{formula} is a string (e.g., "y ~ A * B").
-    ## @var{predictorNames} is a cell array of strings defining valid predictors.
-    ##
-    ## Output:
-    ## @var{intMat}: Binary matrix (Terms x Predictors). 1 indicates variable presence.
-    ## @var{response}: String name of the response variable.
-    ## @var{hasIntercept}: Boolean. True unless "-1" is specified.
-    ## @end deftypefn
-    function [intMat, response, hasIntercept] = parseFormula (formula, predictorNames)
-      intMat = [];
-      response = "";
-      hasIntercept = true; ## Default for Wilkinson notation
+  intMat = [];
+  response = "";
+  hasIntercept = true;
 
-      ## 1. Syntax Check
-      if (isempty (strfind (formula, '~')))
-        error ("FormulaParser: invalid syntax. Formula must contain '~'.");
+  if (nargin != 2)
+    error ("FormulaParser: invalid input arguments.");
+  endif
+
+  arg1 = varargin{1};
+  arg2 = varargin{2};
+
+  ## --- Mode 1: Formula Parsing ---
+  ## Condition: arg2 is a cell array (predictor names)
+  if (iscellstr (arg2))
+    formula = arg1;
+    predictorNames = arg2;
+
+    if (! ischar (formula))
+       error ("FormulaParser: Formula must be a string.");
+    endif
+
+    ## 1. Syntax Check
+    if (isempty (strfind (formula, '~')))
+      error ("FormulaParser: invalid syntax. Formula must contain '~'.");
+    endif
+
+    ## 2. Split LHS (Response) and RHS (Predictors)
+    parts = strsplit (formula, '~');
+    if (numel (parts) < 2)
+      error ("FormulaParser: no predictor terms found.");
+    endif
+
+    response = strtrim (parts{1});
+    rhs = strtrim (parts{2});
+
+    if (isempty (rhs))
+      error ("FormulaParser: no predictor terms found.");
+    endif
+
+    ## 3. Handle Intercepts (+1 / -1)
+    if (! isempty (strfind (rhs, '-1')) || ! isempty (strfind (rhs, '- 1')))
+      hasIntercept = false;
+      rhs = strrep (rhs, '- 1', '');
+      rhs = strrep (rhs, '-1', '');
+    endif
+
+    rhs = strrep (rhs, '+ 1', '');
+    rhs = strrep (rhs, '+1', '');
+
+    ## 4. Recursive Expansion
+    termsList = parse_expression (rhs, predictorNames);
+
+    ## Convert list to matrix (cell2mat handles empty list correctly)
+    intMat = cell2mat (termsList');
+
+    ## 5. Sort and Unique
+    if (! isempty (intMat))
+      intMat = unique (intMat, 'rows');
+      termComplexity = sum (intMat, 2);
+      [~, idx] = sortrows ([termComplexity, -intMat]);
+      intMat = intMat(idx, :);
+    else
+      ## This error block is now reachable if termsList was empty
+      error ("FormulaParser: formula resulted in no valid terms.");
+    endif
+
+  ## --- Mode 2: Interaction Parsing ---
+  ## Condition: arg2 is a numeric scalar (number of predictors)
+  elseif (isnumeric (arg2) && isscalar (arg2))
+    interactions = arg1;
+    numPredictors = arg2;
+
+    if (islogical (interactions))
+      if (numPredictors != columns (interactions))
+        error ("FormulaParser: columns in Interactions logical matrix must equal the number of predictors.");
       endif
+      intMat = interactions;
 
-      ## 2. Split LHS (Response) and RHS (Predictors)
-      parts = strsplit (formula, '~');
-      if (numel (parts) < 2)
-        error ("FormulaParser: no predictor terms in Formula.");
-      endif
-
-      response = strtrim (parts{1});
-      rhs = strtrim (parts{2});
-
-      if (isempty (rhs))
-        error ("FormulaParser: no predictor terms in Formula.");
-      endif
-
-      ## 3. Handle Intercepts (+1 / -1)
-      ## Check for explicit removal
-      if (! isempty (strfind (rhs, '-1')) || ! isempty (strfind (rhs, '- 1')))
-        hasIntercept = false;
-        rhs = strrep (rhs, '- 1', '');
-        rhs = strrep (rhs, '-1', '');
-      endif
-
-      ## Remove explicit inclusion (redundant but valid syntax)
-      rhs = strrep (rhs, '+ 1', '');
-      rhs = strrep (rhs, '+1', '');
-
-      ## 4. Expand Terms (Handle + and *)
-      ## First, split by '+' to get high-level blocks
-      blocks = strtrim (strsplit (rhs, '+'));
-      blocks(cellfun (@isempty, blocks)) = []; ## Clean up empty cells
-
-      finalTerms = {};
-
-      for i = 1:numel (blocks)
-        block = blocks{i};
-
-        ## Handle Cross Operator (*)
-        ## A * B expands to: A + B + A:B
-        ## FIX: Replaced 'contains' with '!isempty(strfind)' for Octave compatibility
-        if (! isempty (strfind (block, '*')))
-          factors = strtrim (strsplit (block, '*'));
-          ## Generate all combinations (Power Set minus empty set)
-          n_factors = numel (factors);
-          combo_indices = ff2n (n_factors);
-          ## Remove the 'all zeros' row
-          combo_indices(1, :) = [];
-
-          ## Construct terms from combinations
-          for r = 1:rows (combo_indices)
-            active_factors = factors(logical (combo_indices(r, :)));
-            term_str = strjoin (active_factors, ':');
-            finalTerms{end+1} = term_str;
-          endfor
-        else
-          ## No *, just add the block (could be "A" or "A:B")
-          finalTerms{end+1} = block;
-        end
-      endfor
-
-      ## 5. Map Terms to Predictor Indices
-      numPreds = numel (predictorNames);
-      if (numPreds == 0)
-         return;
-      endif
-
-      ## We use a map/hashtable approach or standard loop to build the matrix
-      ## Rows = Terms, Cols = Predictors
-
-      for i = 1:numel (finalTerms)
-        currentTerm = finalTerms{i};
-
-        ## Split by ':' to find interacting variables
-        vars = strtrim (strsplit (currentTerm, ':'));
-
-        ## Check for invalid syntax (e.g. "x1:") which creates empty strings
-        if (any (cellfun (@isempty, vars)))
-           error ("FormulaParser: invalid syntax in interaction term '%s'.", currentTerm);
-        endif
-
-        termRow = zeros (1, numPreds);
-
-        for v = 1:numel (vars)
-          idx = find (strcmp (predictorNames, vars{v}));
-          if (isempty (idx))
-             error ("FormulaParser: predictor '%s' not found in PredictorNames.", vars{v});
-          endif
-          termRow(idx) = 1;
-        endfor
-
-        ## Append to matrix
-        intMat = [intMat; termRow];
-      endfor
-
-      ## 6. Cleanup (Unique rows)
-      if (! isempty (intMat))
-        ## Use 'stable' to preserve the order terms appeared in the formula (MATLAB compat)
-        intMat = unique (intMat, 'rows', 'stable');
-      else
-        error ("FormulaParser: formula resulted in no valid terms.");
-      endif
-
-    endfunction
-
-    ## -*- texinfo -*-
-    ## @deftypefn {FormulaParser} {@var{intMat} =} parseInteractions (@var{interactions}, @var{numPredictors})
-    ## Generate an interaction matrix from an interactions argument.
-    ##
-    ## @var{interactions} can be "all", a logical matrix, or a numeric scalar.
-    ## @end deftypefn
-    function intMat = parseInteractions (interactions, numPredictors)
-      if (islogical (interactions))
-        if (numPredictors != columns (interactions))
-          error ("FormulaParser: columns in Interactions logical matrix must equal the number of predictors.");
-        endif
-        intMat = interactions;
-
-      elseif (isnumeric (interactions) && isscalar (interactions))
-        p = numPredictors;
-        if (interactions < 0)
-          error ("FormulaParser: Invalid interaction argument.");
-        elseif (interactions > p * (p - 1) / 2)
-          error ("FormulaParser: number of interaction terms requested is larger than all possible combinations.");
-        endif
-
-        allMat = ff2n (p);
-        iterms = find (sum (allMat, 2) > 1);
-        intMat = allMat(iterms, :);
-
-      elseif (ischar (interactions) && strcmpi (interactions, "all"))
-        p = numPredictors;
-        allMat = ff2n (p);
-        iterms = find (sum (allMat, 2) > 1);
-        intMat = allMat(iterms, :);
-      else
+    elseif (isnumeric (interactions) && isscalar (interactions))
+      if (interactions < 0)
         error ("FormulaParser: Invalid interaction argument.");
+      elseif (interactions > numPredictors * (numPredictors - 1) / 2)
+        error ("FormulaParser: number of interaction terms requested is larger than all possible combinations.");
       endif
-    endfunction
 
-  endmethods
-endclassdef
+      allMat = ff2n (numPredictors);
+      iterms = find (sum (allMat, 2) > 1);
+
+      ## Cast to logical
+      intMat = logical (allMat(iterms, :));
+
+    elseif (ischar (interactions) && strcmpi (interactions, "all"))
+      allMat = ff2n (numPredictors);
+      iterms = find (sum (allMat, 2) > 1);
+
+      ## Cast to logical
+      intMat = logical (allMat(iterms, :));
+    else
+      error ("FormulaParser: Invalid interaction argument.");
+    endif
+
+    ## Sort Mode 2 results
+    if (! isempty (intMat))
+       [~, idx] = sortrows ([sum(intMat, 2), -intMat]);
+       intMat = intMat(idx, :);
+    endif
+
+  else
+    error ("FormulaParser: invalid input arguments. Second argument must be PredictorNames (cellstr) or NumPredictors (scalar).");
+  endif
+
+endfunction
+
+## --- Helper Functions for Recursive Parsing ---
+
+function terms = parse_expression (str, pNames)
+  terms = {};
+  blocks = paren_split (str, '+');
+
+  for i = 1:numel (blocks)
+    block = strtrim (blocks{i});
+    if (isempty (block))
+      continue;
+    endif
+    subTerms = parse_term (block, pNames);
+    terms = [terms, subTerms];
+  endfor
+endfunction
+
+function terms = parse_term (str, pNames)
+
+  ## Case 1: Factorial Expansion (*)
+  factors = paren_split (str, '*');
+  if (numel (factors) > 1)
+    expanded_factors = {};
+    for i = 1:numel (factors)
+      expanded_factors{end+1} = parse_term (factors{i}, pNames);
+    endfor
+
+    n_fac = numel (factors);
+    combo_map = ff2n (n_fac);
+    combo_map(1, :) = [];
+
+    terms = {};
+    for r = 1:rows (combo_map)
+      active_indices = find (combo_map(r, :));
+      current_terms = expanded_factors{active_indices(1)};
+
+      for k = 2:numel (active_indices)
+        next_terms = expanded_factors{active_indices(k)};
+        new_combo = {};
+        for t1 = 1:numel (current_terms)
+          for t2 = 1:numel (next_terms)
+            new_combo{end+1} = current_terms{t1} | next_terms{t2};
+          endfor
+        endfor
+        current_terms = new_combo;
+      endfor
+      terms = [terms, current_terms];
+    endfor
+    return;
+  endif
+
+  ## Case 2: Interaction (:)
+  factors = paren_split (str, ':');
+  if (numel (factors) > 1)
+    component_terms = {};
+    for i = 1:numel (factors)
+      component_terms{end+1} = parse_term (factors{i}, pNames);
+    endfor
+
+    terms = component_terms{1};
+    for k = 2:numel (component_terms)
+      next_set = component_terms{k};
+      product_set = {};
+      for t1 = 1:numel (terms)
+        for t2 = 1:numel (next_set)
+          product_set{end+1} = terms{t1} | next_set{t2};
+        endfor
+      endfor
+      terms = product_set;
+    endfor
+    return;
+  endif
+
+  ## Case 3: Parentheses
+  if (length (str) >= 2 && str(1) == '(' && str(end) == ')')
+    terms = parse_expression (str(2:end-1), pNames);
+    return;
+  endif
+
+  ## Case 4: Base Predictor
+  idx = find (strcmp (pNames, str));
+  if (isempty (idx))
+    if (isempty (str))
+       error ("FormulaParser: invalid syntax (empty term derived).");
+    endif
+    error ("FormulaParser: predictor '%s' not found in PredictorNames.", str);
+  endif
+
+  termVec = logical (zeros (1, numel (pNames)));
+  termVec(idx) = 1;
+  terms = {termVec};
+
+endfunction
+
+function parts = paren_split (str, delim)
+  parts = {};
+  depth = 0;
+  start_idx = 1;
+  len = length (str);
+
+  for i = 1:len
+    c = str(i);
+    if (c == '(')
+      depth += 1;
+    elseif (c == ')')
+      depth -= 1;
+    elseif (c == delim && depth == 0)
+      parts{end+1} = strtrim (str(start_idx:i-1));
+      start_idx = i + 1;
+    endif
+  endfor
+
+  parts{end+1} = strtrim (str(start_idx:end));
+endfunction
+
+%!demo
+%! ## Nested grouping distribution
+%! pnames = {"A", "B", "C"};
+%! formula = "Y ~ (A + B):C";
+%! [intMat, ~, ~] = FormulaParser (formula, pnames)
 
 %!test
-%! pnames = {"x1", "x2", "x3"};
 %! ## Test 1: Simple additive formula
-%! [intMat, resp, hasInt] = FormulaParser.parseFormula ("y ~ x1 + x2", pnames);
-%! expected = [1, 0, 0; 0, 1, 0];
+%! pnames = {"x1", "x2", "x3"};
+%! [intMat, resp, hasInt] = FormulaParser ("y ~ x1 + x2", pnames);
+%! expected = logical ([1, 0, 0; 0, 1, 0]);
 %! assert (intMat, expected);
 %! assert (resp, "y");
 %! assert (hasInt, true);
 
 %!test
+%! ## Test 2: Factorial Expansion and Ordering
 %! pnames = {"A", "B"};
-%! ## Test 2: Interaction term with colon and Intercept Removal
-%! [intMat, resp, hasInt] = FormulaParser.parseFormula ("Cost ~ A + A:B - 1", pnames);
-%! expected = [1, 0; 1, 1];
+%! ## A * B -> A + B + A:B
+%! ## Sorted: A (1,0), B (0,1), AB (1,1)
+%! [intMat, resp, ~] = FormulaParser ("y ~ A * B", pnames);
+%! expected = logical ([1, 0; 0, 1; 1, 1]);
 %! assert (intMat, expected);
-%! assert (resp, "Cost");
+
+%!test
+%! ## Test 3: Intercept Removal
+%! pnames = {"A", "B"};
+%! [~, ~, hasInt] = FormulaParser ("Cost ~ A + B - 1", pnames);
 %! assert (hasInt, false);
 
 %!test
-%! pnames = {"x1", "x2"};
-%! ## Test 3: Whitespace handling
-%! [intMat, ~, ~] = FormulaParser.parseFormula ("y ~ x1 + x1 : x2", pnames);
-%! expected = [1, 0; 1, 1];
+%! ## Test 4: Nested Grouping Distribution
+%! pnames = {"A", "B", "C"};
+%! ## (A + B):C -> A:C + B:C
+%! ## A:C is [1 0 1], B:C is [0 1 1]
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A + B):C", pnames);
+%! expected = logical ([1, 0, 1; 0, 1, 1]);
 %! assert (intMat, expected);
 
 %!test
-%! ## Test 4: Parse Interactions "all"
-%! intMat = FormulaParser.parseInteractions ("all", 3);
-%! assert (size (intMat, 1), 4);
-%! assert (columns (intMat), 3);
+%! ## Test 5: Complex Nested Factorial
+%! pnames = {"A", "B", "C"};
+%! ## (A+B)*C -> A, B, C, A:C, B:C
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A + B) * C", pnames);
+%! expected = logical ([1,0,0; 0,1,0; 0,0,1; 1,0,1; 0,1,1]);
+%! assert (intMat, expected);
 
-%!error <FormulaParser: invalid syntax. Formula must contain '~'.> FormulaParser.parseFormula ("y x1 + x2", {"x1"})
-%!error <FormulaParser: no predictor terms in Formula.> FormulaParser.parseFormula ("y ~ ", {"x1"})
-%!error <FormulaParser: predictor 'z' not found in PredictorNames.> FormulaParser.parseFormula ("y ~ x1 + z", {"x1"})
-%!error <FormulaParser: invalid syntax in interaction term 'x1:'> FormulaParser.parseFormula ("y ~ x1:", {"x1"})
+%!test
+%! ## Test 6: Whitespace handling
+%! pnames = {"x1", "x2"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ x1 + x1 : x2", pnames);
+%! assert (intMat, logical ([1, 0; 1, 1]));
+
+%!test
+%! ## Test 7: Interaction Argument 'all' (Sorted)
+%! ## 3 predictors -> A:B, A:C, B:C, A:B:C
+%! intMat = FormulaParser ("all", 3);
+%! expected = logical ([1, 1, 0; 1, 0, 1; 0, 1, 1; 1, 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 8: Trailing Syntax Error
+%! pnames = {"x"};
+%! fail ("FormulaParser ('y ~ x:', pnames)", "invalid syntax");
+
+%!error <FormulaParser: invalid syntax. Formula must contain '~'.> FormulaParser ("y x1 + x2", {"x1"})
+%!error <FormulaParser: no predictor terms found.> FormulaParser ("y ~ ", {"x1"})
+%!error <FormulaParser: predictor 'z' not found in PredictorNames.> FormulaParser ("y ~ x1 + z", {"x1"})
+%!error <FormulaParser: invalid syntax> FormulaParser ("y ~ x1:", {"x1"})
+%!error <FormulaParser: formula resulted in no valid terms.> FormulaParser ("y ~ -1", {"x1"})

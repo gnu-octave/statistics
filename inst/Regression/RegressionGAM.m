@@ -337,7 +337,8 @@ classdef RegressionGAM
       if (F_I > 0)
         if (isempty (this.Formula))
           ## Analyze Interactions optional parameter
-          this.IntMatrix = FormulaParser.parseInteractions (this.Interactions, this.NumPredictors);
+          ## NEW: Use external FormulaParser function
+          this.IntMatrix = FormulaParser (this.Interactions, this.NumPredictors);
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));
@@ -352,8 +353,8 @@ classdef RegressionGAM
 
         else
           ## Analyze Formula optional parameter
-          ## NEW: Capture 3 outputs (Matrix, Response Name, Intercept Flag)
-          [this.IntMatrix, parsedResp, ~] = FormulaParser.parseFormula (this.Formula, this.PredictorNames);
+          ## NEW: Use external FormulaParser function and capture response
+          [this.IntMatrix, parsedResp, ~] = FormulaParser (this.Formula, this.PredictorNames);
 
           ## If the formula included a Response Name (LHS), update the object property
           if (! isempty (parsedResp))
@@ -782,7 +783,7 @@ endfunction
 %! formula = "Y ~ A + B + C + D + A:C";
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = RegressionGAM (x, y, "predictors", pnames, "formula", formula);
-%! assert (sortrows(a.IntMatrix), sortrows(double (intMat)))
+%! assert (sortrows(a.IntMatrix), sortrows(intMat))
 %! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
 %! assert (a.Formula, formula)
 
@@ -801,11 +802,11 @@ endfunction
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
 %!error<FormulaParser: invalid syntax. Formula must contain '~'.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something")
-%!error<FormulaParser: no predictor terms in Formula.> ...
+%!error<FormulaParser: no predictor terms found.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<FormulaParser: no predictor terms in Formula.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<FormulaParser: invalid syntax in interaction term 'x1:'> ...
+%!error<FormulaParser: no predictor terms found.> ...
+%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~   ")
+%!error<FormulaParser: invalid syntax> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
 %!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", "some")
@@ -813,7 +814,7 @@ endfunction
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", -1)
 %!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", [1 2 3 4])
-%!error<FormulaParser: number of interaction terms requested is larger than all possible combinations.> ...
+%!error<FormulaParser: number of interaction terms requested is larger than> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", 3)
 %!error<RegressionGAM: Formula has been already defined.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
