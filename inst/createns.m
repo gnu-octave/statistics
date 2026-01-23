@@ -118,10 +118,7 @@ function obj = createns (X, varargin)
       error ("createns: 'NSMethod' must be a string.");
     endif
     NSMethod = lower (NSMethod);
-    remove_idx = [];
-    for i = idx
-      remove_idx = [remove_idx, 2*i-1, 2*i];
-    endfor
+    remove_idx = reshape ([2*idx-1; 2*idx], 1, []);
     varargin(remove_idx) = [];
   endif
 
