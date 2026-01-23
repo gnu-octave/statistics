@@ -1,5 +1,6 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -351,7 +352,14 @@ classdef RegressionGAM
 
         else
           ## Analyze Formula optional parameter
-          this.IntMatrix = FormulaParser.parseFormula (this.Formula, this.PredictorNames);
+          ## NEW: Capture 3 outputs (Matrix, Response Name, Intercept Flag)
+          [this.IntMatrix, parsedResp, ~] = FormulaParser.parseFormula (this.Formula, this.PredictorNames);
+
+          ## If the formula included a Response Name (LHS), update the object property
+          if (! isempty (parsedResp))
+            this.ResponseName = parsedResp;
+          endif
+
           ## Add selected predictors and interaction terms
           XN = [];
           for i = 1:rows (this.IntMatrix)
@@ -774,7 +782,7 @@ endfunction
 %! formula = "Y ~ A + B + C + D + A:C";
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = RegressionGAM (x, y, "predictors", pnames, "formula", formula);
-%! assert (a.IntMatrix, double (intMat))
+%! assert (sortrows(a.IntMatrix), sortrows(double (intMat)))
 %! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
 %! assert (a.Formula, formula)
 
@@ -791,13 +799,13 @@ endfunction
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", {"y~x1+x2"})
 %!error<RegressionGAM: Formula must be a string.>
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
-%!error<FormulaParser: invalid syntax in Formula. Missing '~'.> ...
+%!error<FormulaParser: invalid syntax. Formula must contain '~'.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something")
 %!error<FormulaParser: no predictor terms in Formula.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
 %!error<FormulaParser: no predictor terms in Formula.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<FormulaParser: some predictors in the formula were not found in PredictorNames.> ...
+%!error<FormulaParser: invalid syntax in interaction term 'x1:'> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
 %!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", "some")
