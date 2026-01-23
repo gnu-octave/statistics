@@ -21,43 +21,60 @@
 ##
 ## Parse a Wilkinson notation formula string or interaction specification into a binary term matrix.
 ##
-## This utility processes formula strings (e.g., @qcode{"y ~ (A + B) * C"}) or
-## interaction arguments to generate the design matrix logic required by
-## regression and classification models.
+## This utility converts high-level model specifications (strings like @qcode{"y ~ A * B"}
+## or interaction flags) into the numeric design matrix logic required by regression
+## and classification algorithms (e.g., @code{fitlm}, @code{fitrgam}).
 ##
 ## @strong{Inputs:}
 ## @itemize
-## @item @var{formula}: A character string specifying the model.
-## @item @var{predictorNames}: A cell array of strings containing the names of valid predictors.
-## @item @var{interactions}: A numeric scalar, logical matrix, or string @qcode{"all"}.
-## @item @var{numPredictors}: Integer number of total predictor variables.
+## @item @var{formula}: A character string specifying the model relationship.
+## The string must contain a tilde (@qcode{~}) separating the response variable
+## (LHS) from the predictor terms (RHS).
+## @item @var{predictorNames}: A cell array of strings containing the names of
+## valid predictor variables in the dataset.
+## @item @var{interactions}: Alternative input mode. Can be a numeric scalar,
+## a logical matrix, or the string @qcode{"all"}.
+## @item @var{numPredictors}: Integer number of total predictor variables (used
+## only in interaction mode).
 ## @end itemize
 ##
 ## @strong{Outputs:}
 ## @itemize
-## @item @var{intMat}: A logical matrix where each row represents a model term and each
-## column represents a predictor.
-## @item @var{response}: The name of the response variable extracted from the LHS.
-## @item @var{hasIntercept}: Boolean flag. @code{true} unless @qcode{"-1"} is specified.
+## @item @var{intMat}: A logical matrix of size @math{K \times P}, where @math{K} is
+## the number of terms and @math{P} is the number of predictors. A value of @code{1}
+## at @code{(i,j)} indicates that predictor @math{j} is included in term @math{i}.
+## @item @var{response}: The name of the response variable extracted from the
+## Left-Hand Side (LHS) of the formula.
+## @item @var{hasIntercept}: A boolean flag indicating whether an intercept term
+## should be included. Default is @code{true} unless explicitly removed.
 ## @end itemize
 ##
-## @strong{Supported Features:}
+## @strong{Supported Wilkinson Operators:}
 ## @table @code
 ## @item +
-## Additive term (e.g., @qcode{"A + B"}).
+## Additive term. @qcode{"A + B"} includes both A and B as separate terms.
 ## @item :
-## Interaction term (e.g., @qcode{"A:B"}).
+## Interaction term. @qcode{"A:B"} includes the interaction between A and B, but
+## not the main effects.
 ## @item *
-## Factorial expansion. @qcode{"A*B"} expands to @qcode{"A + B + A:B"}.
+## Factorial expansion. @qcode{"A * B"} expands to @qcode{"A + B + A:B"}. It includes
+## both main effects and their interaction.
+## @item - 1
+## Intercept removal. @qcode{"y ~ x - 1"} forces the model to pass through the origin.
 ## @item ()
-## Nested grouping and distribution (e.g., @qcode{"(A + B):C"} expands to @qcode{"A:C + B:C"}).
-## @item -1
-## Remove intercept.
+## Grouping. Parentheses can be used to group terms for operators. For example,
+## @qcode{"(A + B):C"} expands to @qcode{"A:C + B:C"}.
 ## @end table
 ##
-## @strong{Ordering:}
-## Terms are sorted by complexity (Main Effects first, then Interactions) and
-## then by the order of predictors in @var{predictorNames}.
+## @strong{Term Ordering:}
+## The resulting @var{intMat} is sorted to ensure consistency with standard model
+## hierarchies:
+## @enumerate
+## @item Main effects appear first (lower complexity).
+## @item Interaction terms appear subsequently (higher complexity).
+## @item Within the same complexity level, terms are sorted by the order of
+## predictors in @var{predictorNames}.
+## @end enumerate
 ##
 ## @end deftypefn
 
@@ -291,10 +308,47 @@ function parts = paren_split (str, delim)
 endfunction
 
 %!demo
-%! ## Nested grouping distribution
+%! ## 1. Basic Additive Model
+%! ## Defines a model with two main effects (Age, Weight) and an intercept.
+%! pnames = {"Age", "Height", "Weight"};
+%! formula = "BP ~ Age + Weight";
+%! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
+
+%!demo
+%! ## 2. Interaction Term
+%! ## Defines a model with main effects A, B and their interaction A:B.
+%! ## Note: A:B only includes the interaction column.
+%! pnames = {"A", "B", "C"};
+%! formula = "y ~ A + B + A:B";
+%! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
+
+%!demo
+%! ## 3. Factorial Expansion (*)
+%! ## The * operator is shorthand for Main Effects + Interaction.
+%! ## "A * B" automatically expands to "A + B + A:B".
+%! pnames = {"A", "B"};
+%! formula = "y ~ A * B";
+%! [intMat, resp, ~] = FormulaParser (formula, pnames)
+
+%!demo
+%! ## 4. Intercept Removal
+%! ## Use "- 1" to exclude the constant term from the model.
+%! pnames = {"x1", "x2"};
+%! formula = "y ~ x1 + x2 - 1";
+%! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
+
+%!demo
+%! ## 5. Nested Grouping and Distribution
+%! ## Parentheses can group terms. "(A + B):C" expands to "A:C + B:C".
 %! pnames = {"A", "B", "C"};
 %! formula = "Y ~ (A + B):C";
 %! [intMat, ~, ~] = FormulaParser (formula, pnames)
+
+%!demo
+%! ## 6. Generating 'All' Interactions
+%! ## Generates all pairwise combinations of 3 predictors.
+%! numPreds = 3;
+%! intMat = FormulaParser ("all", numPreds)
 
 %!test
 %! ## Test 1: Simple additive formula
