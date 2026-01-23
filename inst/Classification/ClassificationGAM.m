@@ -843,7 +843,7 @@ classdef ClassificationGAM
       if (F_I > 0)
         if (isempty (this.Formula))
           ## Analyze Interactions optional parameter
-          ## NEW: Use external FormulaParser function
+          ## Use external FormulaParser function
           this.IntMatrix = FormulaParser (this.Interactions, this.NumPredictors);
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
@@ -859,7 +859,7 @@ classdef ClassificationGAM
 
         else
           ## Analyze Formula optional parameter
-          ## NEW: Use external FormulaParser function and capture response
+          ## Use external FormulaParser function and capture response
           [this.IntMatrix, parsedResp, ~] = FormulaParser (this.Formula, this.PredictorNames);
 
           ## If the formula included a Response Name (LHS), update the object property

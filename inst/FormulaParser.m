@@ -16,54 +16,82 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Function File} {[@var{intMat}, @var{response}, @var{hasIntercept}] =} FormulaParser (@var{formula}, @var{predictorNames})
-## @deftypefnx {Function File} {@var{intMat} =} FormulaParser (@var{interactions}, @var{numPredictors})
+## @deftypefn {statistics} {[@var{intMat}, @var{response}, @var{hasIntercept}] =} FormulaParser (@var{formula}, @var{predictorNames})
+## @deftypefnx {statistics} {@var{intMat} =} FormulaParser (@var{interactions}, @var{numPredictors})
 ##
 ## Parse a Wilkinson notation formula string or interaction specification into a binary term matrix.
 ##
-## This utility converts high-level model specifications (strings like @qcode{"y ~ A * B"}
-## or interaction flags) into the numeric design matrix logic required by regression
-## and classification algorithms (e.g., @code{fitlm}, @code{fitrgam}).
+## This utility is the central parsing engine for the statistics package. It converts
+## high-level model specifications (strings like @qcode{"y ~ A * B"} or interaction
+## flags) into the numeric design matrix logic required by regression and
+## classification algorithms (e.g., @code{fitlm}, @code{fitrgam}).
 ##
-## @strong{Inputs:}
-## @itemize
-## @item @var{formula}: A character string specifying the model relationship.
-## The string must contain a tilde (@qcode{~}) separating the response variable
-## (LHS) from the predictor terms (RHS).
-## @item @var{predictorNames}: A cell array of strings containing the names of
-## valid predictor variables in the dataset.
-## @item @var{interactions}: Alternative input mode. Can be a numeric scalar,
-## a logical matrix, or the string @qcode{"all"}.
-## @item @var{numPredictors}: Integer number of total predictor variables (used
-## only in interaction mode).
-## @end itemize
+## @strong{Modes of Operation:}
 ##
-## @strong{Outputs:}
-## @itemize
-## @item @var{intMat}: A logical matrix of size @math{K \times P}, where @math{K} is
-## the number of terms and @math{P} is the number of predictors. A value of @code{1}
+## @strong{1. Formula Parsing Mode}
+## @*
+## Usage: @code{FormulaParser ("y ~ A + B", @{"A", "B"@})}
+## @*
+## Parses a string containing a tilde (@qcode{~}) to separate the response variable
+## from predictor terms. Supports complex expansion rules including factorials and
+## nesting.
+##
+## @strong{2. Interaction Parsing Mode}
+## @*
+## Usage: @code{FormulaParser ("all", 3)}
+## @*
+## Generates an interaction matrix based on a numeric or string descriptor. Useful
+## for automated model building where a specific formula is not provided.
+##
+## @strong{Input Arguments:}
+##
+## @multitable @columnfractions 0.2 0.8
+## @item @var{formula}
+## @tab A character string specifying the model relationship. The string must contain
+## a tilde (@qcode{~}) separating the response (LHS) from the terms (RHS).
+## @item @var{predictorNames}
+## @tab A cell array of strings containing the names of valid predictor variables
+## in the dataset. Used to map string terms to column indices.
+## @item @var{interactions}
+## @tab Alternative input. Can be a numeric scalar (max interaction degree),
+## a logical matrix (manual specification), or the string @qcode{"all"}.
+## @item @var{numPredictors}
+## @tab Integer number of total predictor variables (used only in Interaction Mode).
+## @end multitable
+##
+## @strong{Output Arguments:}
+##
+## @multitable @columnfractions 0.2 0.8
+## @item @var{intMat}
+## @tab A logical matrix of size @math{K \times P}, where @math{K} is the number
+## of terms and @math{P} is the number of predictors. A value of @code{true} (1)
 ## at @code{(i,j)} indicates that predictor @math{j} is included in term @math{i}.
-## @item @var{response}: The name of the response variable extracted from the
-## Left-Hand Side (LHS) of the formula.
-## @item @var{hasIntercept}: A boolean flag indicating whether an intercept term
-## should be included. Default is @code{true} unless explicitly removed.
-## @end itemize
+## @item @var{response}
+## @tab The name of the response variable extracted from the Left-Hand Side (LHS)
+## of the formula. Returns an empty string if LHS is missing (invalid syntax).
+## @item @var{hasIntercept}
+## @tab A boolean flag indicating whether an intercept term should be included.
+## Default is @code{true} unless explicitly removed via @qcode{"- 1"}.
+## @end multitable
 ##
-## @strong{Supported Wilkinson Operators:}
+## @strong{Supported Wilkinson Syntax:}
+##
 ## @table @code
 ## @item +
-## Additive term. @qcode{"A + B"} includes both A and B as separate terms.
+## Additive term. @qcode{"A + B"} creates two separate terms: Main Effect A and
+## Main Effect B.
 ## @item :
-## Interaction term. @qcode{"A:B"} includes the interaction between A and B, but
-## not the main effects.
+## Interaction term. @qcode{"A:B"} creates a single term representing the
+## interaction between A and B (no main effects included).
 ## @item *
-## Factorial expansion. @qcode{"A * B"} expands to @qcode{"A + B + A:B"}. It includes
-## both main effects and their interaction.
+## Factorial expansion. @qcode{"A * B"} is shorthand for @qcode{"A + B + A:B"}.
+## It includes both main effects and their interaction.
 ## @item - 1
-## Intercept removal. @qcode{"y ~ x - 1"} forces the model to pass through the origin.
+## Intercept removal. @qcode{"y ~ x - 1"} forces the model to pass through the
+## origin by setting @var{hasIntercept} to @code{false}.
 ## @item ()
 ## Grouping. Parentheses can be used to group terms for operators. For example,
-## @qcode{"(A + B):C"} expands to @qcode{"A:C + B:C"}.
+## @qcode{"(A + B):C"} distributes the interaction to expand to @qcode{"A:C + B:C"}.
 ## @end table
 ##
 ## @strong{Term Ordering:}
@@ -73,9 +101,10 @@
 ## @item Main effects appear first (lower complexity).
 ## @item Interaction terms appear subsequently (higher complexity).
 ## @item Within the same complexity level, terms are sorted by the order of
-## predictors in @var{predictorNames}.
+## variables in @var{predictorNames}.
 ## @end enumerate
 ##
+## @seealso{fitcgam, fitrgam, fitlm}
 ## @end deftypefn
 
 function [intMat, response, hasIntercept] = FormulaParser (varargin)
@@ -142,7 +171,7 @@ function [intMat, response, hasIntercept] = FormulaParser (varargin)
       [~, idx] = sortrows ([termComplexity, -intMat]);
       intMat = intMat(idx, :);
     else
-      ## This error block is now reachable if termsList was empty
+      ## This error block is reachable if termsList was empty (e.g. "y ~ -1")
       error ("FormulaParser: formula resulted in no valid terms.");
     endif
 
@@ -168,14 +197,14 @@ function [intMat, response, hasIntercept] = FormulaParser (varargin)
       allMat = ff2n (numPredictors);
       iterms = find (sum (allMat, 2) > 1);
 
-      ## Cast to logical
+      ## Cast to logical to match Mode 1 output
       intMat = logical (allMat(iterms, :));
 
     elseif (ischar (interactions) && strcmpi (interactions, "all"))
       allMat = ff2n (numPredictors);
       iterms = find (sum (allMat, 2) > 1);
 
-      ## Cast to logical
+      ## Cast to logical to match Mode 1 output
       intMat = logical (allMat(iterms, :));
     else
       error ("FormulaParser: Invalid interaction argument.");
@@ -310,14 +339,15 @@ endfunction
 %!demo
 %! ## 1. Basic Additive Model
 %! ## Defines a model with two main effects (Age, Weight) and an intercept.
+%! ## The response 'BP' is extracted automatically.
 %! pnames = {"Age", "Height", "Weight"};
 %! formula = "BP ~ Age + Weight";
 %! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
 
 %!demo
 %! ## 2. Interaction Term
-%! ## Defines a model with main effects A, B and their interaction A:B.
-%! ## Note: A:B only includes the interaction column.
+%! ## Defines a model with main effects A, B and their specific interaction A:B.
+%! ## Note: The term 'A:B' in the matrix will have 1s at both A and B's indices.
 %! pnames = {"A", "B", "C"};
 %! formula = "y ~ A + B + A:B";
 %! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
@@ -333,20 +363,23 @@ endfunction
 %!demo
 %! ## 4. Intercept Removal
 %! ## Use "- 1" to exclude the constant term from the model.
+%! ## 'hasInt' will return false (0).
 %! pnames = {"x1", "x2"};
 %! formula = "y ~ x1 + x2 - 1";
 %! [intMat, resp, hasInt] = FormulaParser (formula, pnames)
 
 %!demo
 %! ## 5. Nested Grouping and Distribution
-%! ## Parentheses can group terms. "(A + B):C" expands to "A:C + B:C".
+%! ## Parentheses can be used to group terms. "(A + B):C" distributes the
+%! ## interaction to expand to "A:C + B:C".
 %! pnames = {"A", "B", "C"};
 %! formula = "Y ~ (A + B):C";
 %! [intMat, ~, ~] = FormulaParser (formula, pnames)
 
 %!demo
 %! ## 6. Generating 'All' Interactions
-%! ## Generates all pairwise combinations of 3 predictors.
+%! ## Generates all possible pairwise and higher-order interactions.
+%! ## Useful for generating a hypothesis space without a formula.
 %! numPreds = 3;
 %! intMat = FormulaParser ("all", numPreds)
 
