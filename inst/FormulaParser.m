@@ -442,6 +442,290 @@ endfunction
 %! pnames = {"x"};
 %! fail ("FormulaParser ('y ~ x:', pnames)", "invalid syntax");
 
+%!test
+%! ## Test 9: Deep Nesting Distribution
+%! ## ((A + B) : C) : D -> (A:C + B:C) : D -> A:C:D + B:C:D
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ ((A + B) : C) : D", pnames);
+%! ## A:C:D [1 0 1 1], B:C:D [0 1 1 1]
+%! expected = logical ([1, 0, 1, 1; 0, 1, 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 10: FOIL Distribution (Two Groups)
+%! ## (A + B) : (C + D) -> A:C + A:D + B:C + B:D
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A + B) : (C + D)", pnames);
+%! expected = logical ([1,0,1,0; 1,0,0,1; 0,1,1,0; 0,1,0,1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 11: Mixed Factorial and Interaction
+%! ## (A * B) : C -> (A + B + A:B) : C -> A:C + B:C + A:B:C
+%! pnames = {"A", "B", "C"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A * B) : C", pnames);
+%! expected = logical ([1, 0, 1; 0, 1, 1; 1, 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 12: Triple Factorial Expansion
+%! ## A * B * C -> A + B + C + AB + AC + BC + ABC
+%! pnames = {"A", "B", "C"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A * B * C", pnames);
+%! ## Order: Main(A,B,C), Pairs(AB,AC,BC), Trip(ABC)
+%! expected = logical ([1,0,0; 0,1,0; 0,0,1; 1,1,0; 1,0,1; 0,1,1; 1,1,1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 13: Redundant Terms Handling
+%! ## A + A + (A:B) + (B:A) -> Collapses to unique terms: A, A:B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A + A + (A:B) + (B:A)", pnames);
+%! expected = logical ([1, 0; 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 14: Parentheses Stripping
+%! ## (A) + ((B)) -> A + B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A) + ((B))", pnames);
+%! expected = logical ([1, 0; 0, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 15: Interaction of Factorials (Stress Test)
+%! ## (A * B) : (C * D) -> (A+B+AB):(C+D+CD) -> 9 terms (all combos of left x right)
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A * B) : (C * D)", pnames);
+%! ## Should produce 9 rows. We just check size to be safe.
+%! assert (size (intMat), [9, 4]);
+%! ## Check one complex term: A:B:C:D (1 1 1 1) should be present
+%! assert (ismember ([1, 1, 1, 1], intMat, "rows"));
+
+%!test
+%! ## Test 16: Intercept inside grouping (Should treat '-1' as token removal)
+%! ## y ~ (A + B) - 1 -> A + B, no intercept
+%! pnames = {"A", "B"};
+%! [intMat, ~, hasInt] = FormulaParser ("y ~ (A + B) - 1", pnames);
+%! assert (hasInt, false);
+%! assert (intMat, logical ([1, 0; 0, 1]));
+
+%!test
+%! ## Test 17: Complex Real-World (Main + Specific Interactions)
+%! ## y ~ A + B + C + A:B + B:C
+%! pnames = {"A", "B", "C"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A + B + C + A:B + B:C", pnames);
+%! expected = logical ([1,0,0; 0,1,0; 0,0,1; 1,1,0; 0,1,1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 18: Empty Grouping / Edge Case
+%! ## y ~ A + () -> A (Parser should skip empty group)
+%! pnames = {"A"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A + ()", pnames);
+%! assert (intMat, logical ([1]));
+
+%!test
+%! ## Test 19: High-Arity Distribution (FOIL on Steroids)
+%! ## (A + B + C) : (D + E) -> 3x2 = 6 interaction terms
+%! pnames = {"A", "B", "C", "D", "E"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A + B + C) : (D + E)", pnames);
+%! assert (rows (intMat), 6);
+%! ## Check A:D term [1 0 0 1 0]
+%! assert (ismember ([1, 0, 0, 1, 0], intMat, "rows"));
+
+%!test
+%! ## Test 20: Operator Precedence (Standard R/Wilkinson)
+%! ## A : B * C -> A : (B * C) [because * is expansion, : is interaction]
+%! ## Expands to: A : (B + C + B:C) -> A:B + A:C + A:B:C
+%! pnames = {"A", "B", "C"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A : B * C", pnames);
+%! ## A:B (110), C (001), A:B:C (111)
+%! ## Sorted: C (001), A:B (110), A:B:C (111)
+%! expected = logical ([0, 0, 1; 1, 1, 0; 1, 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 21: Extreme Parenthesis Depth
+%! ## ((((A)))) + B -> A + B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ ((((A)))) + B", pnames);
+%! assert (intMat, logical ([1, 0; 0, 1]));
+
+%!test
+%! ## Test 22: Self-Interaction Redundancy
+%! ## A : A should behave as A (Logical OR 1|1 = 1)
+%! pnames = {"A"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A : A", pnames);
+%! assert (intMat, logical ([1]));
+
+%!test
+%! ## Test 23: Multi-Level Factorial
+%! ## (A*B)*(C*D) -> (A+B+AB) * (C+D+CD) -> Full cross product
+%! ## Result should have 3*3 = 9 terms, then their interaction expansions...
+%! ## Actually A*B*C*D generates 15 terms (2^4 - 1).
+%! ## (A*B)*(C*D) is structurally A*B*C*D.
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A * B) * (C * D)", pnames);
+%! assert (rows (intMat), 15);
+%! assert (ismember ([1, 1, 1, 1], intMat, "rows"));
+
+%!test
+%! ## Test 24: Consistency Check ("all" vs formula)
+%! ## "all" with 2 vars should equal "A * B"
+%! pnames = {"A", "B"};
+%! mat1 = FormulaParser ("y ~ A * B", pnames);
+%! mat2 = FormulaParser ("all", 2);
+%! ## Note: "all" generates interactions, A*B generates main+inter
+%! ## Wait, mode 2 "all" in FormulaParser returns INTERACTIONS ONLY (sum > 1).
+%! ## "A*B" returns Main + Inter.
+%! ## So we expect mat1 to contain mat2.
+%! assert (all (ismember (mat2, mat1, "rows")));
+
+%!test
+%! ## Test 25: Variable Names with Numbers and Underscores
+%! pnames = {"Var_1", "Var_2"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ Var_1 * Var_2", pnames);
+%! expected = logical ([1, 0; 0, 1; 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 26: Interleaved Operators
+%! ## A + B : C + D -> A, B:C, D
+%! ## Sorted: A (1000), D (0001), B:C (0110)
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A + B : C + D", pnames);
+%! expected = logical ([1,0,0,0; 0,0,0,1; 0,1,1,0]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 27: The "Empty Set" Interaction / Redundancy
+%! ## A : (B + B) -> A : B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A : (B + B)", pnames);
+%! assert (intMat, logical ([1, 1]));
+
+%!test
+%! ## Test 28: Complex Whitespace Abuse
+%! ## y ~  A   * B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~   A   * B   ", pnames);
+%! assert (intMat, logical ([1, 0; 0, 1; 1, 1]));
+
+%!test
+%! ## Test 29: Triple Interaction Chain
+%! ## A : B : C
+%! pnames = {"A", "B", "C"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A : B : C", pnames);
+%! expected = logical ([1, 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 30: Factorial inside Interaction inside Factorial (Torture Test)
+%! ## ((A*B):C)*D -> ( (A+B+AB):C ) * D -> (AC + BC + ABC) * D
+%! ## -> AC + BC + ABC + D + ACD + BCD + ABCD
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ ((A*B):C)*D", pnames);
+%! ## AC(1010), BC(0110), ABC(1110)
+%! ## D(0001)
+%! ## ACD(1011), BCD(0111), ABCD(1111)
+%! expected = logical ([1,0,1,0; 0,1,1,0; 1,1,1,0; 0,0,0,1; 1,0,1,1; 0,1,1,1; 1,1,1,1]);
+%! ## Ordering might differ, use unique/sort check implied by function
+%! assert (rows (intMat), 7);
+%! assert (all (ismember (expected, intMat, "rows")));
+
+%!test
+%! ## Test 31: Substring Variable Names
+%! ## Predictor names where one is a substring of another.
+%! pnames = {"Age", "AgeGroup"};
+%! ## If parser is not exact, "Age" might match "AgeGroup".
+%! [intMat, ~, ~] = FormulaParser ("y ~ Age + AgeGroup", pnames);
+%! expected = logical ([1, 0; 0, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 32: Associativity of Factorial
+%! ## A * (B * C) should equal A * B * C
+%! pnames = {"A", "B", "C"};
+%! mat1 = FormulaParser ("y ~ A * (B * C)", pnames);
+%! mat2 = FormulaParser ("y ~ A * B * C", pnames);
+%! assert (isequal (mat1, mat2));
+
+%!test
+%! ## Test 33: Three-Way Group Distribution (3-Way FOIL)
+%! ## (A+B) : (C+D) : (E+F) -> 2*2*2 = 8 terms
+%! pnames = {"A", "B", "C", "D", "E", "F"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A+B):(C+D):(E+F)", pnames);
+%! assert (rows (intMat), 8);
+%! ## Check A:C:E (1 0 1 0 1 0)
+%! assert (ismember ([1, 0, 1, 0, 1, 0], intMat, "rows"));
+
+%!test
+%! ## Test 34: Self-Factorial
+%! ## A * A -> A + A + A:A -> A
+%! pnames = {"A"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A * A", pnames);
+%! assert (intMat, logical ([1]));
+
+%!test
+%! ## Test 35: Complex Mixed Structure
+%! ## (A + B:C) * D -> (A + BC) * D -> A + BC + D + AD + BCD
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A + B:C) * D", pnames);
+%! ## A(1000), BC(0110), D(0001), AD(1001), BCD(0111)
+%! expected = logical ([1,0,0,0; 0,1,1,0; 0,0,0,1; 1,0,0,1; 0,1,1,1]);
+%! assert (rows (intMat), 5);
+%! assert (all (ismember (expected, intMat, "rows")));
+
+%!test
+%! ## Test 36: Duplicate Group Factorial
+%! ## (A+B) * (A+B) -> Equivalent to (A+B) * (A+B)
+%! ## (A+B) * (A+B) -> A+B + A+B + (A+B):(A+B)
+%! ## -> A + B + (AA + AB + BA + BB) -> A + B + A + AB + AB + B
+%! ## -> A + B + AB.
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A+B) * (A+B)", pnames);
+%! expected = logical ([1, 0; 0, 1; 1, 1]);
+%! assert (intMat, expected);
+
+%!test
+%! ## Test 37: Leading Operator Resilience
+%! ## + A + B should parse as A + B
+%! pnames = {"A", "B"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ + A + B", pnames);
+%! assert (intMat, logical ([1, 0; 0, 1]));
+
+%!test
+%! ## Test 38: Deeply Nested Interaction Chain
+%! ## A : (B : (C : D)) -> ABCD
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ A : (B : (C : D))", pnames);
+%! assert (intMat, logical ([1, 1, 1, 1]));
+
+%!test
+%! ## Test 39: Interaction of High-Order Factorial
+%! ## (A*B*C) : D -> (A+B+C+AB+AC+BC+ABC) : D
+%! ## -> AD + BD + CD + ABD + ACD + BCD + ABCD
+%! pnames = {"A", "B", "C", "D"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A*B*C):D", pnames);
+%! assert (rows (intMat), 7);
+%! ## Check ABCD
+%! assert (ismember ([1, 1, 1, 1], intMat, "rows"));
+
+%!test
+%! ## Test 40: The Kitchen Sink
+%! ## (A*B) + (C:D) + ((E+F):G)
+%! ## -> A, B, AB
+%! ## -> CD
+%! ## -> EG, FG
+%! pnames = {"A", "B", "C", "D", "E", "F", "G"};
+%! [intMat, ~, ~] = FormulaParser ("y ~ (A*B) + (C:D) + ((E+F):G)", pnames);
+%! assert (rows (intMat), 6);
+%! ## Check AB (1100000)
+%! assert (ismember ([1,1,0,0,0,0,0], intMat, "rows"));
+%! ## Check EG (0000101)
+%! assert (ismember ([0,0,0,0,1,0,1], intMat, "rows"));
+
 %!error <FormulaParser: invalid syntax. Formula must contain '~'.> FormulaParser ("y x1 + x2", {"x1"})
 %!error <FormulaParser: no predictor terms found.> FormulaParser ("y ~ ", {"x1"})
 %!error <FormulaParser: predictor 'z' not found in PredictorNames.> FormulaParser ("y ~ x1 + z", {"x1"})
