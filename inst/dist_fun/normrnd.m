@@ -71,7 +71,7 @@ function r = normrnd (mu, sigma, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0 ...
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0) ...
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
                                 && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
@@ -126,6 +126,7 @@ endfunction
 %!assert (size (normrnd (1, 1, 0, 1)), [0, 1])
 %!assert (size (normrnd (1, 1, 1, 0)), [1, 0])
 %!assert (size (normrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (normrnd (1, 1, [])), [0, 0])
 
 ## Test class of input preserved
 %!assert (class (normrnd (1, 1)), "double")
