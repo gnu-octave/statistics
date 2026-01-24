@@ -72,11 +72,11 @@ function r = plrnd (x, Fx, varargin)
   if (nargin == 2)
     sz = 1;
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("plrnd: SZ must be a scalar or a row vector", ...
@@ -128,6 +128,8 @@ endfunction
 %!assert (size (plrnd (x, Fx, 0, 1)), [0, 1])
 %!assert (size (plrnd (x, Fx, 1, 0)), [1, 0])
 %!assert (size (plrnd (x, Fx, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (plrnd (x, Fx, [])), [0, 0])
+%!assert (size (plrnd (x, Fx, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
 %!assert (class (plrnd (x, Fx)), "double")

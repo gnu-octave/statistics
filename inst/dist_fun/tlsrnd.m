@@ -72,11 +72,11 @@ function r = tlsrnd (mu, sigma, nu, varargin)
   if (nargin == 3)
     sz = size (nu);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("tlsrnd: SZ must be a scalar or a row vector", ...
@@ -112,16 +112,18 @@ endfunction
 
 ## Test output
 %!assert (size (tlsrnd (1, 2, 3)), [1, 1])
-%!assert (size (tlsrnd (ones (2,1), 2, 3)), [2, 1])
-%!assert (size (tlsrnd (ones (2,2), 2, 3)), [2, 2])
+%!assert (size (tlsrnd (ones (2, 1), 2, 3)), [2, 1])
+%!assert (size (tlsrnd (ones (2, 2), 2, 3)), [2, 2])
 %!assert (size (tlsrnd (1, 2, 3, 3)), [3, 3])
-%!assert (size (tlsrnd (1, 2, 3, [4 1])), [4, 1])
+%!assert (size (tlsrnd (1, 2, 3, [4, 1])), [4, 1])
 %!assert (size (tlsrnd (1, 2, 3, 4, 1)), [4, 1])
 %!assert (size (tlsrnd (1, 2, 3, 4, 1)), [4, 1])
 %!assert (size (tlsrnd (1, 2, 3, 4, 1, 5)), [4, 1, 5])
 %!assert (size (tlsrnd (1, 2, 3, 0, 1)), [0, 1])
 %!assert (size (tlsrnd (1, 2, 3, 1, 0)), [1, 0])
 %!assert (size (tlsrnd (1, 2, 3, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (tlsrnd (1, 2, 3, [])), [0, 0])
+%!assert (size (tlsrnd (1, 2, 3, [2, 0, 2, 1])), [2, 0, 2])
 %!assert (tlsrnd (1, 2, 0, 1, 1), NaN)
 %!assert (tlsrnd (1, 2, [0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 

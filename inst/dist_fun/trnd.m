@@ -62,11 +62,11 @@ function r = trnd (df, varargin)
   if (nargin == 1)
     sz = size (df);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("trnd: SZ must be a scalar or a row vector", ...
@@ -114,23 +114,25 @@ endfunction
 
 ## Test output
 %!assert (size (trnd (2)), [1, 1])
-%!assert (size (trnd (ones (2,1))), [2, 1])
-%!assert (size (trnd (ones (2,2))), [2, 2])
+%!assert (size (trnd (ones (2, 1))), [2, 1])
+%!assert (size (trnd (ones (2, 2))), [2, 2])
 %!assert (size (trnd (1, 3)), [3, 3])
-%!assert (size (trnd (1, [4 1])), [4, 1])
+%!assert (size (trnd (1, [4, 1])), [4, 1])
 %!assert (size (trnd (1, 4, 1)), [4, 1])
 %!assert (size (trnd (1, 4, 1)), [4, 1])
 %!assert (size (trnd (1, 4, 1, 5)), [4, 1, 5])
 %!assert (size (trnd (1, 0, 1)), [0, 1])
 %!assert (size (trnd (1, 1, 0)), [1, 0])
 %!assert (size (trnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (trnd (1, [])), [0, 0])
+%!assert (size (trnd (1, [2, 0, 2, 1])), [2, 0, 2])
 %!assert (trnd (0, 1, 1), NaN)
 %!assert (trnd ([0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
 ## Test class of input preserved
 %!assert (class (trnd (2)), "double")
 %!assert (class (trnd (single (2))), "single")
-%!assert (class (trnd (single ([2 2]))), "single")
+%!assert (class (trnd (single ([2, 2]))), "single")
 
 ## Test input validation
 %!error<trnd: function called with too few input arguments.> trnd ()

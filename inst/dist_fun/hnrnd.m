@@ -65,11 +65,11 @@ function r = hnrnd (mu, sigma, varargin)
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("hnrnd: SZ must be a scalar or a row vector", ...
@@ -114,8 +114,10 @@ endfunction
 %!assert (size (hnrnd (ones (2, 1), 1)), [2, 1])
 %!assert (size (hnrnd (ones (2, 2), 1)), [2, 2])
 %!assert (size (hnrnd (1, 1, 3)), [3, 3])
-%!assert (size (hnrnd (1, 1, [4 1])), [4, 1])
+%!assert (size (hnrnd (1, 1, [4, 1])), [4, 1])
 %!assert (size (hnrnd (1, 1, 4, 1)), [4, 1])
+%!assert (size (hnrnd (1, 1, [])), [0, 0])
+%!assert (size (hnrnd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
 %!test
 %! r =  hnrnd (1, [1, 0, -1]);
 %! assert (r([2:3]), [NaN, NaN])
@@ -123,11 +125,11 @@ endfunction
 ## Test class of input preserved
 %!assert (class (hnrnd (1, 0)), "double")
 %!assert (class (hnrnd (1, single (0))), "single")
-%!assert (class (hnrnd (1, single ([0 0]))), "single")
+%!assert (class (hnrnd (1, single ([0, 0]))), "single")
 %!assert (class (hnrnd (1, single (1))), "single")
-%!assert (class (hnrnd (1, single ([1 1]))), "single")
+%!assert (class (hnrnd (1, single ([1, 1]))), "single")
 %!assert (class (hnrnd (single (1), 1)), "single")
-%!assert (class (hnrnd (single ([1 1]), 1)), "single")
+%!assert (class (hnrnd (single ([1, 1]), 1)), "single")
 
 ## Test input validation
 %!error<hnrnd: function called with too few input arguments.> hnrnd ()

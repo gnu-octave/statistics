@@ -72,8 +72,8 @@ function [W, D] = wishrnd (Sigma, df, D, n = 1)
   if (df < p)
     ## Truncate and warn only if the distribution is undefined.
     if (! df_isint && (df < (p - 1)))
-      warning (strcat ("wishrnd: Wishart distribution undefined for non-integral df < p-1;", ...
-                       " truncating to floor(df)."));
+      warning (strcat ("wishrnd: Wishart distribution undefined for", ...
+                       " non-integral df < p-1; truncating to floor(df)."));
       df = floor (df);
       df_isint = 1; ## Now it is an integer
     endif
@@ -92,8 +92,8 @@ function [W, D] = wishrnd (Sigma, df, D, n = 1)
       Z = D * randn (p, df);
     else
       Z = diag (sqrt(chi2rnd (df - (0:(p - 1))))); ##fill diagonal
-      ##note: chi2rnd(x) is equivalent to 2*randg(x/2), but the latter seems to
-      ## offer no performance advantage
+      ## Note: chi2rnd(x) is equivalent to 2*randg(x/2), but the latter
+      ## seems to offer no performance advantage
       Z(ii > jj) = randn (p * (p - 1) / 2, 1); #fill lower triangle
       Z = D * Z;
     endif

@@ -58,11 +58,11 @@ function r = raylrnd (sigma, varargin)
   if (nargin == 1)
     sz = size (sigma);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("raylrnd: SZ must be a scalar or a row vector", ...
@@ -99,23 +99,25 @@ endfunction
 
 ## Test output
 %!assert (size (raylrnd (2)), [1, 1])
-%!assert (size (raylrnd (ones (2,1))), [2, 1])
-%!assert (size (raylrnd (ones (2,2))), [2, 2])
+%!assert (size (raylrnd (ones (2, 1))), [2, 1])
+%!assert (size (raylrnd (ones (2, 2))), [2, 2])
 %!assert (size (raylrnd (1, 3)), [3, 3])
-%!assert (size (raylrnd (1, [4 1])), [4, 1])
+%!assert (size (raylrnd (1, [4, 1])), [4, 1])
 %!assert (size (raylrnd (1, 4, 1)), [4, 1])
 %!assert (size (raylrnd (1, 4, 1)), [4, 1])
 %!assert (size (raylrnd (1, 4, 1, 5)), [4, 1, 5])
 %!assert (size (raylrnd (1, 0, 1)), [0, 1])
 %!assert (size (raylrnd (1, 1, 0)), [1, 0])
 %!assert (size (raylrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (raylrnd (1, [])), [0, 0])
+%!assert (size (raylrnd (1, [2, 0, 2, 1])), [2, 0, 2])
 %!assert (raylrnd (0, 1, 1), NaN)
 %!assert (raylrnd ([0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
 ## Test class of input preserved
 %!assert (class (raylrnd (2)), "double")
 %!assert (class (raylrnd (single (2))), "single")
-%!assert (class (raylrnd (single ([2 2]))), "single")
+%!assert (class (raylrnd (single ([2, 2]))), "single")
 
 ## Test input validation
 %!error<raylrnd: function called with too few input arguments.> raylrnd ()

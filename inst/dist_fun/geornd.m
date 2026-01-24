@@ -60,11 +60,11 @@ function r = geornd (ps, varargin)
   if (nargin == 1)
     sz = size (ps);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("geornd: SZ must be a scalar or a row vector", ...
@@ -120,6 +120,8 @@ endfunction
 %!assert (size (geornd (0.5, 3)), [3, 3])
 %!assert (size (geornd (0.5, [4 1])), [4, 1])
 %!assert (size (geornd (0.5, 4, 1)), [4, 1])
+%!assert (size (geornd (0.5, [])), [0, 0])
+%!assert (size (geornd (0.5, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
 %!assert (class (geornd (0.5)), "double")

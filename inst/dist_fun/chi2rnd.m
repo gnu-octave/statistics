@@ -57,11 +57,11 @@ function r = chi2rnd (df, varargin)
   if (nargin == 1)
     sz = size (df);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("chi2rnd: SZ must be a scalar or a row vector", ...
@@ -107,13 +107,15 @@ endfunction
 %!assert (size (chi2rnd (ones (2,1))), [2, 1])
 %!assert (size (chi2rnd (ones (2,2))), [2, 2])
 %!assert (size (chi2rnd (1, 3)), [3, 3])
-%!assert (size (chi2rnd (1, [4 1])), [4, 1])
+%!assert (size (chi2rnd (1, [4, 1])), [4, 1])
 %!assert (size (chi2rnd (1, 4, 1)), [4, 1])
 %!assert (size (chi2rnd (1, 4, 1)), [4, 1])
 %!assert (size (chi2rnd (1, 4, 1, 5)), [4, 1, 5])
 %!assert (size (chi2rnd (1, 0, 1)), [0, 1])
 %!assert (size (chi2rnd (1, 1, 0)), [1, 0])
 %!assert (size (chi2rnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (chi2rnd (1, [])), [0, 0])
+%!assert (size (chi2rnd (1, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
 %!assert (class (chi2rnd (2)), "double")

@@ -60,11 +60,11 @@ function r = poissrnd (lambda, varargin)
   if (nargin == 1)
     sz = size (lambda);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("poissrnd: SZ must be a scalar or a row vector", ...
@@ -107,16 +107,18 @@ endfunction
 
 ## Test output
 %!assert (size (poissrnd (2)), [1, 1])
-%!assert (size (poissrnd (ones (2,1))), [2, 1])
-%!assert (size (poissrnd (ones (2,2))), [2, 2])
+%!assert (size (poissrnd (ones (2, 1))), [2, 1])
+%!assert (size (poissrnd (ones (2, 2))), [2, 2])
 %!assert (size (poissrnd (1, 3)), [3, 3])
-%!assert (size (poissrnd (1, [4 1])), [4, 1])
+%!assert (size (poissrnd (1, [4, 1])), [4, 1])
 %!assert (size (poissrnd (1, 4, 1)), [4, 1])
 %!assert (size (poissrnd (1, 4, 1)), [4, 1])
 %!assert (size (poissrnd (1, 4, 1, 5)), [4, 1, 5])
 %!assert (size (poissrnd (1, 0, 1)), [0, 1])
 %!assert (size (poissrnd (1, 1, 0)), [1, 0])
 %!assert (size (poissrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert (size (poissrnd (1, [])), [0, 0])
+%!assert (size (poissrnd (1, [2, 0, 2, 1])), [2, 0, 2])
 %!assert (poissrnd (0, 1, 1), 0)
 %!assert (poissrnd ([0, 0, 0], [1, 3]), [0 0 0])
 

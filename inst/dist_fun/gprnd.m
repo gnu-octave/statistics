@@ -78,11 +78,11 @@ function r = gprnd (k, sigma, theta, varargin)
   if (nargin == 3)
     sz = size (k);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0 ...
+    if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) && all (varargin{1} >= 0) ...
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
+            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif
       error (strcat ("gprnd: SZ must be a scalar or a row vector", ...
@@ -167,6 +167,8 @@ endfunction
 %!assert (size (gprnd (-1, 1, 0, 3)), [3, 3])
 %!assert (size (gprnd (-1, 1, 0, [4, 1])), [4, 1])
 %!assert (size (gprnd (-1, 1, 0, 4, 1)), [4, 1])
+%!assert (size (gprnd (-1, 1, 0, [])), [0, 0])
+%!assert (size (gprnd (-1, 1, 0, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
 %!assert (class (gprnd (0, 1, 0)), "double")
