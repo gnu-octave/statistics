@@ -56,12 +56,12 @@ function [coeff, latent, explained] = pcacov (K)
 
   ## Check X being a square matrix
   if (ndims (K) != 2 || size (K, 1) != size (K, 2))
-    error ("pcacov: K must be a square, symmetric and positive semi-definite matrix.");
+    error ("pcacov: K must be a square matrix.");
   endif
 
   ## Check X being a symmetric matrix 
   if(! issymmetric (K))
-    error ("pcacov: K must be a square, symmetric and positive semi-definite matrix.");
+    error ("pcacov: K must be a symmetric matrix.");
   endif
 
   [U, S, V] = svd (K);
@@ -74,7 +74,7 @@ function [coeff, latent, explained] = pcacov (K)
 
   ## Check for positive semi-definiteness
   if (any (is_negative & is_significant))
-     error ("pcacov: K must be a square, symmetric and positive semi-definite matrix.");
+     error ("pcacov: K must be a positive semi-definite matrix.");
   endif
 
   ## Force a sign convention on the coefficients so that
@@ -128,7 +128,7 @@ endfunction
 %! assert (explained, e_out, 1e-4);
 
 ## Test input validation
-%!error <pcacov: K must be a square, symmetric and positive semi-definite matrix.> pcacov (ones (2,3))
-%!error <pcacov: K must be a square, symmetric and positive semi-definite matrix.> pcacov (ones (3,3,3))
-%!error <pcacov: K must be a square, symmetric and positive semi-definite matrix.> k1 = [1, 2; 0, 1]; pcacov (k1)
-%!error <pcacov: K must be a square, symmetric and positive semi-definite matrix.> k2 = [10, 0; 0, -1]; pcacov (k2)
+%!error <pcacov: K must be a square matrix.> pcacov (ones (2,3))
+%!error <pcacov: K must be a square matrix.> pcacov (ones (3,3,3))
+%!error <pcacov: K must be a symmetric matrix.> k1 = [1, 2; 0, 1]; pcacov (k1)
+%!error <pcacov: K must be a positive semi-definite matrix.> k2 = [10, 0; 0, -1]; pcacov (k2)
