@@ -59,7 +59,23 @@ function [coeff, latent, explained] = pcacov (K)
     error ("pcacov: K must be a square matrix.");
   endif
 
+  ## Check X being a symmetric matrix 
+  if(! issymmetric (K))
+    error ("pcacov: K must be a symmetric matrix.");
+  endif
+
   [U, S, V] = svd (K);
+  s_vals = diag (S);
+
+  col_dot_prod = sum (real (conj (U) .* V), 1);
+  tol = size (K, 1) * eps (max (s_vals));
+  is_negative = col_dot_prod < -0.9;
+  is_significant = s_vals' > tol;
+
+  ## Check for positive semi-definiteness
+  if (any (is_negative & is_significant))
+     error ("pcacov: K must be a positive semi-definite matrix.");
+  endif
 
   ## Force a sign convention on the coefficients so that
   ## the largest element in each column has a positive sign
@@ -112,5 +128,7 @@ endfunction
 %! assert (explained, e_out, 1e-4);
 
 ## Test input validation
-%!error<pcacov: K must be a square matrix.> pcacov (ones (2,3))
-%!error<pcacov: K must be a square matrix.> pcacov (ones (3,3,3))
+%!error <pcacov: K must be a square matrix.> pcacov (ones (2,3))
+%!error <pcacov: K must be a square matrix.> pcacov (ones (3,3,3))
+%!error <pcacov: K must be a symmetric matrix.> k1 = [1, 2; 0, 1]; pcacov (k1)
+%!error <pcacov: K must be a positive semi-definite matrix.> k2 = [10, 0; 0, -1]; pcacov (k2)
