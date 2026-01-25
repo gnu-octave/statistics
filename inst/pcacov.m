@@ -59,8 +59,8 @@ function [coeff, latent, explained] = pcacov (K)
     error ("pcacov: K must be a square matrix.");
   endif
 
-  ## Check X being a symmetric matrix 
-  if(! issymmetric (K))
+  ## Check X being a symmetric matrix
+  if (! issymmetric (K))
     error ("pcacov: K must be a symmetric matrix.");
   endif
 
@@ -128,7 +128,7 @@ endfunction
 %! assert (explained, e_out, 1e-4);
 
 ## Test input validation
-%!error <pcacov: K must be a square matrix.> pcacov (ones (2,3))
-%!error <pcacov: K must be a square matrix.> pcacov (ones (3,3,3))
-%!error <pcacov: K must be a symmetric matrix.> k1 = [1, 2; 0, 1]; pcacov (k1)
-%!error <pcacov: K must be a positive semi-definite matrix.> k2 = [10, 0; 0, -1]; pcacov (k2)
+%!error <pcacov: K must be a square matrix.> pcacov (ones (2, 3))
+%!error <pcacov: K must be a square matrix.> pcacov (ones (3, 3, 3))
+%!error <pcacov: K must be a symmetric matrix.> pcacov ([1, 2; 0, 1])
+%!error <pcacov: K must be a positive semi-definite matrix.> pcacov ([10, 0; 0, -1])
