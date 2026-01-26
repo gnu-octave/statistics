@@ -119,9 +119,13 @@
 ## @seealso{barttest, factoran, pcacov, pcares}
 ## @end deftypefn
 
-##FIXME
-## -- can change isnan to ismissing once the latter is implemented in Octave
-## -- change mystd to std and remove the helper function mystd once weighting is available in the Octave function
+## FIXME (compatibility notes):
+## - ismissing behaves like isnan for numeric arrays in recent Octave
+##   versions, but isnan is retained for backward compatibility.
+## - std(x, w) supports weighted standard deviation for vectors, but
+##   does not currently support NaN omission with weights for matrices.
+##   The mystd helper is therefore required for PCA variable scaling.
+
 
 function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
