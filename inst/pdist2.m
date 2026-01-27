@@ -178,11 +178,44 @@ function [D, I] = pdist2 (X, Y, varargin)
                    " to compute second output."));
   endif
 
-  ## Calculate selected distance
-  [ix, iy] = meshgrid (1:size (X, 1), 1:size (Y, 1));
+  ## Threshold for switching between vectorized and blocked computation
+  M = size (X, 1);
+  Nrows = size (Y, 1);
+  N_threshold = 500;
 
-  ## Handle build-in distance metric
-  if (ischar (Distance))
+  ## Handle a function handle (always row-by-row)
+  if (is_function_handle (Distance))
+    ## Check the input output sizes of the user function
+    D2 = [];
+    try
+      D2 = Distance (X(1,:), Y);
+    catch ME
+      error ("pdist2: invalid function handle for distance metric.");
+    end_try_catch
+    if (! isequal (size (D2), [Nrows, 1]))
+      error ("pdist2: custom distance function produces wrong output size.");
+    endif
+    ## Evaluate user defined distance metric function
+    D = zeros (M, Nrows);
+    for r = 1:M
+      D(r,:) = feval (Distance, X(r,:), Y)';
+    endfor
+
+    if (nargout > 1 || parcount)
+      [D, I] = sort (D', 2, SortOrder);
+      K = min (size (D, 2), K);
+      D = D(:,1:K)';
+      I = I(:,1:K)';
+    endif
+    return;
+  endif
+
+  ## For small M and N: use original vectorized implementation (fast, O(M*N*P) memory)
+  ## For large M or N: use blocked row-by-row computation (slower, O(N*P) memory)
+  if (max (M, Nrows) < N_threshold)
+    ## Original vectorized implementation
+    [ix, iy] = meshgrid (1:M, 1:Nrows);
+
     switch (Distance)
       case "euclidean"
         D = sqrt (sum ((X(ix(:),:) - Y(iy(:),:)) .^ 2, 2));
@@ -232,7 +265,7 @@ function [D, I] = pdist2 (X, Y, varargin)
           warning (msg);
         endif
         dxy = X(ix(:),:) - Y(iy(:),:);
-        D   = sqrt (sum ((dxy * DP_inv) .* dxy, 2));
+        D = sqrt (sum ((dxy * DP_inv) .* dxy, 2));
 
       case "cityblock"
         D = sum (abs (X(ix(:),:) - Y(iy(:),:)), 2);
@@ -256,7 +289,7 @@ function [D, I] = pdist2 (X, Y, varargin)
       case "cosine"
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
         sy = sum (Y .^ 2, 2) .^ (-1 / 2);
-        D  = 1 - sum (X(ix(:),:) .* Y(iy(:),:), 2) .* sx(ix(:)) .* sy(iy(:));
+        D = 1 - sum (X(ix(:),:) .* Y(iy(:),:), 2) .* sx(ix(:)) .* sy(iy(:));
 
       case "correlation"
         mX = mean (X(ix(:),:), 2);
@@ -274,10 +307,10 @@ function [D, I] = pdist2 (X, Y, varargin)
         D = sum ((X(ix(:),:) != Y(iy(:),:)) & xy0, 2) ./ sum (xy0, 2);
 
       case "spearman"
-        for i = 1:size (X, 1)
+        for i = 1:M
           rX(i,:) = tiedrank (X(i,:));
         endfor
-        for i = 1:size (Y, 1)
+        for i = 1:Nrows
           rY(i,:) = tiedrank (Y(i,:));
         endfor
         rM = (size (X, 2) + 1) / 2;
@@ -285,36 +318,157 @@ function [D, I] = pdist2 (X, Y, varargin)
         xx = sqrt (sum ((rX(ix(:),:) - rM) .* (rX(ix(:),:) - rM), 2));
         yy = sqrt (sum ((rY(iy(:),:) - rM) .* (rY(iy(:),:) - rM), 2));
         D = 1 - (xy ./ (xx .* yy));
+    endswitch
 
+    ## From vector to matrix
+    D = reshape (D, Nrows, M)';
+
+  else
+    ## Blocked row-by-row computation for large M or N (avoids O(M*N*P) memory)
+    D = zeros (M, Nrows);
+
+    ## Precompute metric-specific data
+    switch (Distance)
+      case "seuclidean"
+        if (isempty (DistParameter))
+          DistParameter = std (X, [], 1);
+        else
+          if (numel (DistParameter) != columns (X))
+            error (strcat ("pdist2: DistParameter for standardized", ...
+                           " euclidean must be a vector of equal length", ...
+                           " to the number of columns in X."));
+          endif
+          if (any (DistParameter < 0))
+            error (strcat ("pdist2: DistParameter for standardized", ...
+                           " euclidean must be a nonnegative vector."));
+          endif
+        endif
+        DistParameter(DistParameter == 0) = 1;
+
+      case "mahalanobis"
+        if (isempty (DistParameter))
+          DistParameter = cov (X(! any (isnan (X), 2),:));
+        else
+          if (columns (DistParameter) != columns (X))
+            error (strcat ("pdist2: DistParameter for mahalanobis", ...
+                           " distance must be a covariance matrix with", ...
+                           " the same number of columns as X."));
+          endif
+          [~, p] = chol (DistParameter);
+          if (p != 0)
+            error (strcat ("pdist2: covariance matrix for mahalanobis", ...
+                           " distance must be symmetric and positive", ...
+                           " definite."));
+          endif
+        endif
+        [DP_inv, rc] = inv (DistParameter);
+        if (rc < eps)
+          msg = sprintf (strcat ("pdist2: matrix is close to", ...
+                                 " singular or badly scaled.\n RCOND = ", ...
+                                 " %e. Results may be inaccurate."), rc);
+          warning (msg);
+        endif
+
+      case "minkowski"
+        if (isempty (DistParameter))
+          DistParameter = 2;
+        else
+          if (! (isnumeric (DistParameter) && isscalar (DistParameter)
+                                           && DistParameter > 0))
+            error (strcat ("pdist2: DistParameter for minkowski distance", ...
+                           " must be a positive scalar."));
+          endif
+        endif
+
+      case "cosine"
+        sx = sum (X .^ 2, 2) .^ (-1 / 2);
+        sy = sum (Y .^ 2, 2) .^ (-1 / 2);
+
+      case "spearman"
+        rX = zeros (size (X));
+        rY = zeros (size (Y));
+        for i = 1:M
+          rX(i,:) = tiedrank (X(i,:));
+        endfor
+        for i = 1:Nrows
+          rY(i,:) = tiedrank (Y(i,:));
+        endfor
+        rM = (size (X, 2) + 1) / 2;
+    endswitch
+
+    ## Row-by-row computation with switch outside loop
+    switch (Distance)
+      case "euclidean"
+        for i = 1:M
+          D(i,:) = sqrt (sum ((X(i,:) - Y) .^ 2, 2))';
+        endfor
+
+      case "squaredeuclidean"
+        for i = 1:M
+          D(i,:) = sum ((X(i,:) - Y) .^ 2, 2)';
+        endfor
+
+      case "seuclidean"
+        for i = 1:M
+          D(i,:) = sqrt (sum (((X(i,:) - Y) ./ DistParameter) .^ 2, 2))';
+        endfor
+
+      case "mahalanobis"
+        for i = 1:M
+          dxy = X(i,:) - Y;
+          D(i,:) = sqrt (sum ((dxy * DP_inv) .* dxy, 2))';
+        endfor
+
+      case "cityblock"
+        for i = 1:M
+          D(i,:) = sum (abs (X(i,:) - Y), 2)';
+        endfor
+
+      case "minkowski"
+        for i = 1:M
+          D(i,:) = (sum (abs (X(i,:) - Y) .^ DistParameter, 2) .^ (1 / DistParameter))';
+        endfor
+
+      case "chebychev"
+        for i = 1:M
+          D(i,:) = max (abs (X(i,:) - Y), [], 2)';
+        endfor
+
+      case "cosine"
+        for i = 1:M
+          D(i,:) = (1 - sum (X(i,:) .* Y, 2) .* sx(i) .* sy)';
+        endfor
+
+      case "correlation"
+        for i = 1:M
+          mXi = mean (X(i,:));
+          mY = mean (Y, 2);
+          xy = sum ((X(i,:) - mXi) .* (Y - mY), 2);
+          xx = sqrt (sum ((X(i,:) - mXi) .^ 2));
+          yy = sqrt (sum ((Y - mY) .^ 2, 2));
+          D(i,:) = (1 - (xy ./ (xx .* yy)))';
+        endfor
+
+      case "hamming"
+        for i = 1:M
+          D(i,:) = mean (abs (X(i,:) != Y), 2)';
+        endfor
+
+      case "jaccard"
+        for i = 1:M
+          xy0 = (X(i,:) != 0 | Y != 0);
+          D(i,:) = (sum ((X(i,:) != Y) & xy0, 2) ./ sum (xy0, 2))';
+        endfor
+
+      case "spearman"
+        for i = 1:M
+          xy = sum ((rX(i,:) - rM) .* (rY - rM), 2);
+          xx = sqrt (sum ((rX(i,:) - rM) .^ 2));
+          yy = sqrt (sum ((rY - rM) .^ 2, 2));
+          D(i,:) = (1 - (xy ./ (xx .* yy)))';
+        endfor
     endswitch
   endif
-
-  ## Handle a function handle
-  if (is_function_handle (Distance))
-    ## Check the input output sizes of the user function
-    D2 = [];
-    try
-      D2 = Distance (X(1,:), Y);
-    catch ME
-      error ("pdist2: invalid function handle for distance metric.");
-    end_try_catch
-    Yrows = rows (Y);
-    if (! isequal (size (D2), [Yrows, 1]))
-      error ("pdist2: custom distance function produces wrong output size.");
-    endif
-    ## Evaluate user defined distance metric function
-    Yrows = rows (Y);
-    D = zeros (numel (ix), 1);
-    id_beg = 1;
-    for r = 1:rows (X)
-      id_end = id_beg + Yrows - 1;
-      D(id_beg:id_end) = feval (Distance, X(r,:), Y);
-      id_beg = id_end + 1;
-    endfor
-  endif
-
-  ## From vector to matrix
-  D = reshape (D, size (Y, 1), size (X, 1))';
 
   if (nargout > 1 || parcount)
     [D, I] = sort (D', 2, SortOrder);
