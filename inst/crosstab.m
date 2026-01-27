@@ -28,8 +28,8 @@
 ## Create a cross-tabulation (contingency table) @var{t} from data vectors.
 ##
 ## The inputs @var{x1}, @var{x2}, ... @var{xn} must be vectors of equal length
-## with a data type of numeric, logical, char, categorical, or cell array of
-## strings.
+## with a data type of numeric, logical, char array, categorical, strings, or
+## cell array of character vectors.
 ##
 ## As additional return values @code{crosstab} returns the chi-square statistics
 ## @var{chisq}, its p-value @var{p} and a cell array @var{labels}, containing
@@ -83,8 +83,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
   t = zeros (reshape_format);
 
   ## Main logic:
-  ## For each combination of x1, x2, ... xn, search in unique elements stored 
-  ## in coordinates for each dimension and increment the position value in t 
+  ## For each combination of x1, x2, ... xn, search in unique elements stored
+  ## in coordinates for each dimension and increment the position value in t
   ## multidimensional matrix (always if there is no NaN element in the combination).
   for idx = 1:size (X, 1)
     if (!any (isnan (X(idx,:))))
