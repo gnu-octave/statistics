@@ -55,18 +55,21 @@ function [t, chisq, p, labels] = crosstab (varargin)
   for i = 1:nargin
     vector = varargin{i};
     ## Convert char, cellstr, or categorical to indexed numeric vector
-    if (ischar (vector) || iscellstr (vector) || iscategorical (vector))
+    if (ischar (vector) || iscellstr (vector) ||
+                           iscategorical (vector) || isstring (vector))
       try
         [vector, gnames] = grp2idx (vector);
       catch
         error ("crosstab: x1, x2 ... xn must be vectors.");
       end_try_catch
-    else
+    elseif (isnumeric (vector) || islogical (vector))
       if (! isvector (vector))
         error ("crosstab: x1, x2 ... xn must be vectors.");
       endif
       vector = vector(:);
       gnames = cellstr (num2str (vector));
+    else
+      error ("crosstab: unsupported type for data vector.");
     endif
     v_length(i) = length (vector);
     if (length (unique (v_length)) != 1)
@@ -110,6 +113,7 @@ endfunction
 %!error <crosstab: x1, x2 ... xn must be vectors.> crosstab ([1 1], ones (2))
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1], [1 2])
 %!error <x1, x2 .* must be vectors of the same length> crosstab ([1 2], [1])
+%!error <crosstab: unsupported type for data vector.> crosstab ([1 2], {1, 2})
 %!test
 %! load carbig
 %! [table, chisq, p, labels] = crosstab (cyl4, when, org);
@@ -158,7 +162,7 @@ endfunction
 %!test
 %! x = categorical ({'low', 'med', 'high', 'low', 'med'});
 %! y = categorical ({'X', 'Y', 'X', 'Y', 'X'});
-%! [t, ~, ~, labels] = crosstab (x, y);
+%! t = crosstab (x, y);
 %! assert (size (t), [3, 2]);
 %!test
 %! ## Test categorical with numeric
