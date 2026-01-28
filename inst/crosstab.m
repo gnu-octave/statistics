@@ -262,3 +262,10 @@ endfunction
 %! assert (t, [4 0; 0 4]);
 %! assert (chisq, 8.00000000);
 %! assert (p, 0.00467773, 1e-8);
+%!test
+%! set1 = repmat ((1:5)', 20, 1);
+%! set2 = repmat ([1; 2], 50, 1);
+%! [t, chisq, p] = crosstab (set1, set2);
+%! assert (t, 10 * ones (5,2));
+%! assert (chisq, 0);
+%! assert (p, 1);
