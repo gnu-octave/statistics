@@ -247,3 +247,11 @@ endfunction
 %! assert (all (t(:) == 0));
 %! assert (isnan (chisq));
 %! assert (isnan (p));
+%!test
+%! ## single observation → 1×1 table, NaN statistic
+%! [t, chisq, p, labels] = crosstab (5, 'Z');
+%! assert (t, 1);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%! assert (labels{1,1}, '5');
+%! assert (labels{1,2}, 'Z');
