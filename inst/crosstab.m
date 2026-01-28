@@ -113,7 +113,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
   endfor
 
   if (nargout > 1)
-    if (isscalar (t))
+    if (isscalar (t) || isempty (t))
       chisq = NaN;
       p = NaN;
     else
@@ -237,5 +237,13 @@ endfunction
 %! b = ones (15,1);
 %! [t, chisq, p] = crosstab (a, b);
 %! assert (t, 15);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%!test
+%! ## all NaN → empty table + NaN stats
+%! na = NaN (6,1);
+%! nb = (1:6)';
+%! [t, chisq, p] = crosstab (na, nb);
+%! assert (all (t(:) == 0));
 %! assert (isnan (chisq));
 %! assert (isnan (p));
