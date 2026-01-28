@@ -280,3 +280,11 @@ endfunction
 %! assert (t, expected);
 %! assert (chisq, 6.00000000);
 %! assert (p, 0.53974935, 1e-9);
+%!test
+%! ## sparse cellstr
+%! g = [1 5 7 12 1 5 19]';
+%! h = {'A', 'B', 'A', 'C', 'D', 'E', 'A'}';
+%! [t, chisq, p] = crosstab (g, h);
+%! assert (sum (t(:)), 7);
+%! assert (chisq, 16.33333333, 1e-8);
+%! assert (p, 0.42994852, 1e-8);
