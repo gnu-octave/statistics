@@ -137,51 +137,92 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
     return;
   endif
 
-  ## distance matrix showing the distance for any two rows of X
-  if (! exist ('distMatrix', 'var'))
-    distMatrix = squareform (pdist (X, metric, varargin{:}));
-  endif
-
-  ## calculate values of si one by one
-  for iii = 1 : length (si)
-
-    ## allocate values to clusters
-    groupedValues = {};
-    for jjj = 1 : m
-      groupedValues{clusterIDs(jjj)} = [distMatrix(iii, ...
-                                        clust == clusterIDs(jjj))];
-    endfor
-    ## end allocation
-
-    ## calculate a(i)
-    ## average distance of iii to all other objects in the same cluster
-    if (length (groupedValues{clust(iii)}) == 1)
-      si(iii) = 1;
-      continue;
-    else
-      a_i = (sum (groupedValues{clust(iii)})) / ...
-            (length (groupedValues{clust(iii)}) - 1);
-    endif
-    ## end a(i)
-
-
-    ## calculate b(i)
-    clusterIDs_new = clusterIDs;
-    ## remove the cluster iii in
-    clusterIDs_new(find (clusterIDs_new == clust(iii))) = [];
-    ## average distance of iii to all objects of another cluster
-    a_iii_2others = zeros (length (clusterIDs_new), 1);
-    for jjj = 1 : length (clusterIDs_new)
-      a_iii_2others(jjj) = mean (groupedValues{clusterIDs_new(jjj)});
-    endfor
-    b_i = min (a_iii_2others);
-    ## end b(i)
-
-
-    ## calculate s(i)
-    si(iii) = (b_i - a_i) / (max ([a_i; b_i]));
-    ## end s(i)
+  ## Precompute cluster membership masks and counts
+  clusterMask = false (n, m);
+  clusterCount = zeros (m, 1);
+  for jjj = 1:m
+    clusterMask(:, jjj) = (clust == clusterIDs(jjj));
+    clusterCount(jjj) = sum (clusterMask(:, jjj));
   endfor
+
+  ## Map each point to its cluster index (1..m)
+  pointClusterIdx = zeros (n, 1);
+  for jjj = 1:m
+    pointClusterIdx(clusterMask(:, jjj)) = jjj;
+  endfor
+
+  ## Use precomputed distance matrix if provided, otherwise compute on-the-fly
+  if (exist ('distMatrix', 'var'))
+    ## Use full precomputed distance matrix
+    for iii = 1:n
+      myCluster = pointClusterIdx(iii);
+      myMask = clusterMask(:, myCluster);
+      myCount = clusterCount(myCluster);
+
+      ## Singleton cluster
+      if (myCount == 1)
+        si(iii) = 1;
+        continue;
+      endif
+
+      ## a(i): mean distance to own cluster (excluding self)
+      a_i = sum (distMatrix(iii, myMask)) / (myCount - 1);
+
+      ## b(i): minimum mean distance to other clusters
+      b_i = Inf;
+      for jjj = 1:m
+        if (jjj != myCluster)
+          b_i = min (b_i, mean (distMatrix(iii, clusterMask(:, jjj))));
+        endif
+      endfor
+
+      ## s(i)
+      si(iii) = (b_i - a_i) / max (a_i, b_i);
+    endfor
+  else
+    ## Compute distances row-by-row to avoid O(n^2) memory
+    for iii = 1:n
+      ## Compute distances from point iii to all other points
+      diffs = X - X(iii, :);
+      switch (metric)
+        case "squaredeuclidean"
+          dists = sum (diffs .^ 2, 2);
+        case "euclidean"
+          dists = sqrt (sum (diffs .^ 2, 2));
+        case "cityblock"
+          dists = sum (abs (diffs), 2);
+        case "chebychev"
+          dists = max (abs (diffs), [], 2);
+        otherwise
+          ## Fall back to pdist2-style computation for other metrics
+          dists = pdist2 (X(iii, :), X, metric, varargin{:})';
+      endswitch
+
+      myCluster = pointClusterIdx(iii);
+      myMask = clusterMask(:, myCluster);
+      myCount = clusterCount(myCluster);
+
+      ## Singleton cluster
+      if (myCount == 1)
+        si(iii) = 1;
+        continue;
+      endif
+
+      ## a(i): mean distance to own cluster (excluding self, dist=0)
+      a_i = sum (dists(myMask)) / (myCount - 1);
+
+      ## b(i): minimum mean distance to other clusters
+      b_i = Inf;
+      for jjj = 1:m
+        if (jjj != myCluster)
+          b_i = min (b_i, mean (dists(clusterMask(:, jjj))));
+        endif
+      endfor
+
+      ## s(i)
+      si(iii) = (b_i - a_i) / max (a_i, b_i);
+    endfor
+  endif
 
   ## plot
   ## a poor man silhouette graph
