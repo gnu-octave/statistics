@@ -1,5 +1,6 @@
 ## Copyright (C) 2023 Mohammed Azmat Khan <azmat.dev0@gmail.com>
 ## Copyright (C) 2023-2024 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -213,17 +214,7 @@ classdef RegressionGAM
 
           case "interactions"
             if (F_I < 1)
-              tmp = varargin{2};
-              if (isnumeric (tmp) && isscalar (tmp)
-                                  && tmp == fix (tmp) && tmp >= 0)
-                Interactions = tmp;
-              elseif (islogical (tmp))
-                Interactions = tmp;
-              elseif (ischar (tmp) && strcmpi (tmp, "all"))
-                Interactions = tmp;
-              else
-                error ("RegressionGAM: invalid Interactions parameter.");
-              endif
+              Interactions = varargin{2}; % Just store it, let Parser check it later
               F_I += 1;
             else
               error ("RegressionGAM: Formula has been already defined.");
@@ -346,7 +337,8 @@ classdef RegressionGAM
       if (F_I > 0)
         if (isempty (this.Formula))
           ## Analyze Interactions optional parameter
-          this.IntMatrix = this.parseInteractions ();
+          ## Use external FormulaParser function
+          this.IntMatrix = FormulaParser (this.Interactions, this.NumPredictors);
           ## Append interaction terms to the predictor matrix
           for i = 1:rows (this.IntMatrix)
             tindex = logical (this.IntMatrix(i,:));
@@ -361,7 +353,14 @@ classdef RegressionGAM
 
         else
           ## Analyze Formula optional parameter
-          this.IntMatrix = this.parseFormula ();
+          ## Use external FormulaParser function and capture response
+          [this.IntMatrix, parsedResp, ~] = FormulaParser (this.Formula, this.PredictorNames);
+
+          ## If the formula included a Response Name (LHS), update the object property
+          if (! isempty (parsedResp))
+            this.ResponseName = parsedResp;
+          endif
+
           ## Add selected predictors and interaction terms
           XN = [];
           for i = 1:rows (this.IntMatrix)
@@ -623,88 +622,6 @@ classdef RegressionGAM
   ## Helper functions
   methods (Access = private)
 
-    ## Determine interactions from Interactions optional parameter
-    function intMat = parseInteractions (this)
-      if (islogical (this.Interactions))
-        ## Check that interaction matrix corresponds to predictors
-        if (numel (this.PredictorNames) != columns (this.Interactions))
-          error (strcat ("RegressionGAM: columns in Interactions logical", ...
-                         " matrix must equal to the number of predictors."));
-        endif
-        intMat = this.Interactions
-      elseif (isnumeric (this.Interactions))
-        ## Need to measure the effect of all interactions to keep the best
-        ## performing. Just check that the given number is not higher than
-        ## p*(p-1)/2, where p is the number of predictors.
-        p = this.NumPredictors;
-        if (this.Interactions > p * (p - 1) / 2)
-          error (strcat ("RegressionGAM: number of interaction terms", ...
-                         " requested is larger than all possible", ...
-                         " combinations of predictors in X."));
-        endif
-        ## Get all combinations except all zeros
-        allMat = flip (fullfact(p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
-      elseif (strcmpi (this.Interactions, "all"))
-        ## Calculate all p*(p-1)/2 interaction terms
-        allMat = flip (fullfact(p)([2:end],:), 2);
-        ## Only keep interaction terms
-        iterms = find (sum (allMat, 2) != 1);
-        intMat = allMat(iterms);
-      endif
-    endfunction
-
-    ## Determine interactions from formula
-    function intMat = parseFormula (this)
-      intMat = [];
-      ## Check formula for syntax
-      if (isempty (strfind (this.Formula, '~')))
-        error ("RegressionGAM: invalid syntax in Formula.");
-      endif
-      ## Split formula and keep predictor terms
-      formulaParts = strsplit (this.Formula, '~');
-      ## Check there is some string after '~'
-      if (numel (formulaParts) < 2)
-        error ("RegressionGAM: no predictor terms in Formula.");
-      endif
-      predictorString = strtrim (formulaParts{2});
-      if (isempty (predictorString))
-        error ("RegressionGAM: no predictor terms in Formula.");
-      endif
-      ## Split additive terms (between + sign)
-      aterms = strtrim (strsplit (predictorString, '+'));
-      ## Process all terms
-      for i = 1:numel (aterms)
-        ## Find individual terms (string missing ':')
-        if (isempty (strfind (aterms(i), ':'){:}))
-          ## Search PredictorNames to associate with column in X
-          sterms = strcmp (this.PredictorNames, aterms(i));
-          ## Append to interactions matrix
-          intMat = [intMat; sterms];
-        else
-          ## Split interaction terms (string contains ':')
-          mterms = strsplit (aterms{i}, ':');
-          ## Add each individual predictor to interaction term vector
-          iterms = logical (zeros (1, this.NumPredictors));
-          for t = 1:numel (mterms)
-            iterms = iterms | strcmp (this.PredictorNames, mterms(t));
-          endfor
-          ## Check that all predictors have been identified
-          if (sum (iterms) != t)
-            error ("RegressionGAM: some predictors have not been identified.");
-          endif
-          ## Append to interactions matrix
-          intMat = [intMat; iterms];
-        endif
-      endfor
-      ## Check that all terms have been identified
-      if (! all (sum (intMat, 2) > 0))
-        error ("RegressionGAM: some terms have not been identified.");
-      endif
-    endfunction
-
     ## Fit the model
     function [iter, param, res, RSS] = fitGAM (this, X, Y, Inter, Knots, Order)
       ## Initialize variables
@@ -866,7 +783,7 @@ endfunction
 %! formula = "Y ~ A + B + C + D + A:C";
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = RegressionGAM (x, y, "predictors", pnames, "formula", formula);
-%! assert (a.IntMatrix, double (intMat))
+%! assert (sortrows(a.IntMatrix), sortrows(intMat))
 %! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
 %! assert (a.Formula, formula)
 
@@ -883,21 +800,21 @@ endfunction
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", {"y~x1+x2"})
 %!error<RegressionGAM: Formula must be a string.>
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
-%!error<RegressionGAM: invalid syntax in Formula.> ...
+%!error<FormulaParser: invalid syntax. Formula must contain '~'.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something")
-%!error<RegressionGAM: no predictor terms in Formula.> ...
+%!error<FormulaParser: no predictor terms found.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<RegressionGAM: no predictor terms in Formula.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
-%!error<RegressionGAM: some predictors have not been identified> ...
+%!error<FormulaParser: no predictor terms found.> ...
+%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~   ")
+%!error<FormulaParser: invalid syntax> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
-%!error<RegressionGAM: invalid Interactions parameter.> ...
+%!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", "some")
-%!error<RegressionGAM: invalid Interactions parameter.> ...
+%!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", -1)
-%!error<RegressionGAM: invalid Interactions parameter.> ...
+%!error<FormulaParser: Invalid interaction argument.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", [1 2 3 4])
-%!error<RegressionGAM: number of interaction terms requested is larger than> ...
+%!error<FormulaParser: number of interaction terms requested is larger than> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "interactions", 3)
 %!error<RegressionGAM: Formula has been already defined.> ...
 %! RegressionGAM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
