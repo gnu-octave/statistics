@@ -49,7 +49,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
   v_length = [];                    # vector of lengths of input vectors
   reshape_format = [];              # vector of the dimensions of t
   X = [];                           # matrix of the indexed input values
-  labels = {};                      # cell array of labels
+  labels_data = {};                 # temporary cell array for unique labels
   coordinates = {};                 # cell array of unique elements
 
   for i = 1:nargin
@@ -59,6 +59,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
                            iscategorical (vector) || isstring (vector))
       try
         [vector, gnames] = grp2idx (vector);
+        labels_data{i} = gnames;
       catch
         error ("crosstab: x1, x2 ... xn must be vectors.");
       end_try_catch
@@ -67,7 +68,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
         error ("crosstab: x1, x2 ... xn must be vectors.");
       endif
       vector = vector(:);
-      gnames = cellstr (num2str (vector));
+      unique_vals = unique (vector (!isnan (vector)));
+      labels_data{i} = cellstr (num2str (unique_vals));
     else
       error ("crosstab: unsupported type for data vector.");
     endif
@@ -76,12 +78,23 @@ function [t, chisq, p, labels] = crosstab (varargin)
       error ("crosstab: x1, x2 ... xn must be vectors of the same length.");
     endif
     X = [X, vector];
-    for h = 1:length (gnames)
-      labels{h, i} = gnames{h};
-    endfor
     reshape_format(i) = length (unique (vector(!isnan (vector))));
     coordinates(i) = unique (vector(!isnan (vector)));
   endfor
+
+  if (nargout > 3)
+    max_rows = 0;
+    for i = 1:nargin
+      max_rows = max (max_rows, numel (labels_data{i}));
+    endfor
+    labels = cell (max_rows, nargin);
+    for i = 1:nargin
+      col_labels = labels_data{i};
+      labels(1:numel (col_labels), i) = col_labels;
+    endfor
+  else
+    labels = {};
+  endif
 
   t = zeros (reshape_format);
 
@@ -170,3 +183,14 @@ endfunction
 %! y = [1, 2, 1, 3, 2];
 %! t = crosstab (x, y);
 %! assert (t, [2, 0, 0; 0, 2, 0; 0, 0, 1]);
+%!test
+%! smoker = [1 1 0 0 1 0 1 1 0 0 1 0]';
+%! gender = [1 0 1 0 1 1 0 0 1 0 0 1]';
+%! [t, chisq, p, labels] = crosstab (smoker, gender);
+%! assert (t, [2 4; 4 2]);
+%! assert (chisq, 1.33333333, 1e-8);
+%! assert (p, 0.24821308, 1e-8);
+%! assert (labels{1,1}, '0');
+%! assert (labels{1,2}, '0');
+%! assert (labels{2,1}, '1');
+%! assert (labels{2,2}, '1');
