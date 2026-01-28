@@ -57,6 +57,13 @@
  Improvements:
  =============
 
+ All random generator distribution functions now accept empty size vectors
+ as third input argument for MATLAB compatibility.
+
+ ** confusionmat: add support for new data types
+
+ ** crosstab: add support for new data types
+
  ** cvpartition: 'summary' method has been implemented
 
  ** datasample: improved input validation
@@ -72,6 +79,10 @@
 
  ** ismissing: fixed MATLAB compatibility, char arrays do not have standard
                missing values
+
+ ** pcacov: improved input validation
+
+ ** pdist, pdist2: improved performance
 
  ** rmmissing: fixed MATLAB compatibility, char arrays do not have standard
                missing values
