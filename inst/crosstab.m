@@ -229,3 +229,10 @@ endfunction
 %! assert (labels{5,2}, '50');
 %! assert (isempty (labels{6,1}));
 %! assert (labels{6,2}, '60');
+%!test
+%! a = ones (15,1);
+%! b = ones (15,1);
+%! [t, chisq, p] = crosstab (a, b);
+%! assert (t, 15);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
