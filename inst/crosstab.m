@@ -296,3 +296,11 @@ endfunction
 %! assert (t, [1 1; 1 1; 1 0]);
 %! assert (chisq, 0.83333333, 1e-8);
 %! assert (p, 0.659240631, 1e-9);
+%!test
+%! ## cellstr
+%! c1 = {'A','B','A','C','B','A'}';
+%! c2 = {'1','2','1','3','2','1'}';
+%! [t, chisq, p] = crosstab (c1, c2);
+%! assert (t, [3 0 0; 0 2 0; 0 0 1]);
+%! assert (chisq, 12.00000000, 1e-14);
+%! assert (p, 0.01735127, 1e-8);
