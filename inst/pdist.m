@@ -124,53 +124,83 @@ function D = pdist (X, varargin)
   endif
 
   ## Calculate selected distance
-  order = nchoosek (1:rows (X) ,2);
-  ix = order (:,1);
-  iy = order (:,2);
+  ## Use loop-based computation to avoid O(n^2) memory for index arrays
+  N = rows (X);
+  num_pairs = N * (N - 1) / 2;
+  D = zeros (1, num_pairs);
 
   ## Handle build-in distance metric
   if (ischar (Distance))
     switch (Distance)
+
       case "euclidean"
-        D = sqrt (sum ((X(ix(:),:) - X(iy(:),:)) .^ 2, 2));
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            diffs = Xi - X(j,:);
+            D(idx) = sqrt (sum (diffs .^ 2));
+          endfor
+        endfor
 
       case "squaredeuclidean"
-        D = sum ((X(ix(:),:) - X(iy(:),:)) .^ 2, 2);
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            diffs = Xi - X(j,:);
+            D(idx) = sum (diffs .^ 2);
+          endfor
+        endfor
 
       case "seuclidean"
+        ## Precomputation: compute or validate scale vector
         if (isempty (DistParameter))
           DistParameter = std (X, [], 1);
         else
           if (numel (DistParameter) != columns (X))
-            error (strcat ("pdist2: DistParameter for standardized", ...
+            error (strcat ("pdist: DistParameter for standardized", ...
                            " euclidean must be a vector of equal length", ...
                            " to the number of columns in X."));
           endif
           if (any (DistParameter < 0))
-            error (strcat ("pdist2: DistParameter for standardized", ...
+            error (strcat ("pdist: DistParameter for standardized", ...
                            " euclidean must be a nonnegative vector."));
           endif
         endif
         DistParameter(DistParameter == 0) = 1;  # fix constant variable
-        D = sqrt (sum (((X(ix(:),:) - X(iy(:),:)) ./ DistParameter) .^ 2, 2));
+        ## Main loop
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            diffs = (Xi - X(j,:)) ./ DistParameter;
+            D(idx) = sqrt (sum (diffs .^ 2));
+          endfor
+        endfor
 
       case "mahalanobis"
+        ## Precomputation: compute covariance and its inverse
         if (isempty (DistParameter))
           DistParameter = cov (X(! any (isnan (X), 2),:));
         else
           if (columns (DistParameter) != columns (X))
-            error (strcat ("pdist2: DistParameter for mahalanobis", ...
+            error (strcat ("pdist: DistParameter for mahalanobis", ...
                            " distance must be a covariance matrix with", ...
                            " the same number of columns as X."));
           endif
           [~, p] = chol (DistParameter);
           if (p != 0)
-            error (strcat ("pdist2: covariance matrix for mahalanobis", ...
+            error (strcat ("pdist: covariance matrix for mahalanobis", ...
                            " distance must be symmetric and positive", ...
                            " definite."));
           endif
         endif
-        dxx = X(ix(:),:) - X(iy(:),:);
         ## Catch warning if matrix is close to singular or badly scaled.
         [DP_inv, rc] = inv (DistParameter);
         if (rc < eps)
@@ -179,59 +209,141 @@ function D = pdist (X, varargin)
                                  " %e. Results may be inaccurate."), rc);
           warning (msg);
         endif
-        D   = sqrt (sum ((dxx  * DP_inv) .* dxx, 2));
+        ## Main loop
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            dxx = Xi - X(j,:);
+            D(idx) = sqrt (sum ((dxx * DP_inv) .* dxx));
+          endfor
+        endfor
 
       case "cityblock"
-        D = sum (abs (X(ix(:),:) - X(iy(:),:)), 2);
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            D(idx) = sum (abs (Xi - X(j,:)));
+          endfor
+        endfor
 
       case "minkowski"
+        ## Precomputation: validate exponent parameter
         if (isempty (DistParameter))
           DistParameter = 2;
         else
           if (! (isnumeric (DistParameter) && isscalar (DistParameter)
                                            && DistParameter > 0))
-            error (strcat ("pdist2: DistParameter for minkowski distance", ...
+            error (strcat ("pdist: DistParameter for minkowski distance", ...
                            " must be a positive scalar."));
           endif
         endif
-        D = sum (abs (X(ix(:),:) - X(iy(:),:)) .^ DistParameter, 2) .^ ...
-                (1 / DistParameter);
+        p_exp = DistParameter;
+        p_inv = 1 / DistParameter;
+        ## Main loop
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            D(idx) = sum (abs (Xi - X(j,:)) .^ p_exp) .^ p_inv;
+          endfor
+        endfor
 
       case "chebychev"
-        D = max (abs (X(ix(:),:) - X(iy(:),:)), [], 2);
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            D(idx) = max (abs (Xi - X(j,:)));
+          endfor
+        endfor
 
       case "cosine"
+        ## Precomputation: compute inverse norms for all points
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
-        D  = 1 - sum (X(ix(:),:) .* X(iy(:),:), 2) .* sx(ix(:)) .* sx(iy(:));
+        ## Main loop
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          sx_i = sx(i);
+          for j = (i+1):N
+            idx += 1;
+            D(idx) = 1 - sum (Xi .* X(j,:)) * sx_i * sx(j);
+          endfor
+        endfor
 
       case "correlation"
-        mX = mean (X(ix(:),:), 2);
-        mY = mean (X(iy(:),:), 2);
-        xy = sum ((X(ix(:),:) - mX) .* (X(iy(:),:) - mY), 2);
-        xx = sqrt (sum ((X(ix(:),:) - mX) .* (X(ix(:),:) - mX), 2));
-        yy = sqrt (sum ((X(iy(:),:) - mY) .* (X(iy(:),:) - mY), 2));
-        D = 1 - (xy ./ (xx .* yy));
+        ## Precomputation: none needed (means depend on pairs)
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            Xj = X(j,:);
+            mXi = mean (Xi);
+            mXj = mean (Xj);
+            Xi_c = Xi - mXi;
+            Xj_c = Xj - mXj;
+            xy = sum (Xi_c .* Xj_c);
+            xx = sqrt (sum (Xi_c .^ 2));
+            yy = sqrt (sum (Xj_c .^ 2));
+            D(idx) = 1 - (xy / (xx * yy));
+          endfor
+        endfor
 
       case "hamming"
-        D = mean (abs (X(ix(:),:) != X(iy(:),:)), 2);
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            D(idx) = mean (Xi != X(j,:));
+          endfor
+        endfor
 
       case "jaccard"
-        xx0 = (X(ix(:),:) != 0 | X(iy(:),:) != 0);
-        D = sum ((X(ix(:),:) != X(iy(:),:)) & xx0, 2) ./ sum (xx0, 2);
+        ## Precomputation: none needed
+        idx = 0;
+        for i = 1:(N-1)
+          Xi = X(i,:);
+          for j = (i+1):N
+            idx += 1;
+            Xj = X(j,:);
+            xy0 = (Xi != 0 | Xj != 0);
+            D(idx) = sum ((Xi != Xj) & xy0) / sum (xy0);
+          endfor
+        endfor
 
       case "spearman"
-        for i = 1:size (X, 1)
+        ## Precomputation: compute ranks for all rows
+        rX = zeros (size (X));
+        for i = 1:N
           rX(i,:) = tiedrank (X(i,:));
         endfor
-        rM = (size (X, 2) + 1) / 2;
-        xy = sum ((rX(ix(:),:) - rM) .* (rX(iy(:),:) - rM), 2);
-        xx = sqrt (sum ((rX(ix(:),:) - rM) .* (rX(ix(:),:) - rM), 2));
-        yy = sqrt (sum ((rX(iy(:),:) - rM) .* (rX(iy(:),:) - rM), 2));
-        D = 1 - (xy ./ (xx .* yy));
+        rM = (columns (X) + 1) / 2;
+        ## Main loop
+        idx = 0;
+        for i = 1:(N-1)
+          rXi = rX(i,:) - rM;
+          for j = (i+1):N
+            idx += 1;
+            rXj = rX(j,:) - rM;
+            xy = sum (rXi .* rXj);
+            xx = sqrt (sum (rXi .^ 2));
+            yy = sqrt (sum (rXj .^ 2));
+            D(idx) = 1 - (xy / (xx * yy));
+          endfor
+        endfor
 
-  endswitch
-  ## Force output to row vector
-  D = D';
+    endswitch
   endif
 
   ## Handle a function handle
@@ -243,15 +355,14 @@ function D = pdist (X, varargin)
     catch ME
       error ("pdist: invalid function handle for distance metric.");
     end_try_catch
-    Xrows = rows (X) - 1;
+    Xrows = N - 1;
     if (! isequal (size (D2), [Xrows, 1]))
       error ("pdist: custom distance function produces wrong output size.");
     endif
     ## Evaluate user defined distance metric function
-    D = zeros (1, numel (ix));
     id_beg = 1;
     for r = 1:Xrows
-      id_end = id_beg + size (X([r+1:end],:), 1) - 1;
+      id_end = id_beg + (N - r) - 1;
       D(id_beg:id_end) = feval (Distance, X(r,:), X([r+1:end],:));
       id_beg = id_end + 1;
     endfor
