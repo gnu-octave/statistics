@@ -209,3 +209,23 @@ endfunction
 %! assert (t, diag ([3 3 3]));
 %! assert (chisq, 18.00000000);
 %! assert (p, 0.00123410, 1e-8);
+%!test
+%! ## Test for Partial NaN giving NaN for chisq/p
+%! x7 = [1 2 3 4 NaN NaN]';
+%! y7 = [10 20 30 40 50 60]';
+%! [t, chisq, p, labels] = crosstab (x7, y7);
+%! assert (t, [eye(4), zeros(4, 2)]);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%! assert (labels{1,1}, '1');
+%! assert (labels{1,2}, '10');
+%! assert (labels{2,1}, '2');
+%! assert (labels{2,2}, '20');
+%! assert (labels{3,1}, '3');
+%! assert (labels{3,2}, '30');
+%! assert (labels{4,1}, '4');
+%! assert (labels{4,2}, '40');
+%! assert (isempty (labels{5,1}));
+%! assert (labels{5,2}, '50');
+%! assert (isempty (labels{6,1}));
+%! assert (labels{6,2}, '60');
