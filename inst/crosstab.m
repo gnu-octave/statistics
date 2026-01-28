@@ -194,3 +194,11 @@ endfunction
 %! assert (labels{1,2}, '0');
 %! assert (labels{2,1}, '1');
 %! assert (labels{2,2}, '1');
+%!test
+%! ## Test for categorical
+%! smk_cat = categorical ([0 0 1 1 0 1 0 0 1 1 0 1]');
+%! gen_cat = categorical ([0 1 0 1 0 0 1 1 0 1 1 0]');
+%! [t, chisq, p] = crosstab (smk_cat, gen_cat);
+%! assert (t, [2 4; 4 2]);
+%! assert (chisq, 1.33333333, 1e-6);
+%! assert (p, 0.24821308, 1e-6);
