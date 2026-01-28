@@ -255,3 +255,10 @@ endfunction
 %! assert (isnan (p));
 %! assert (labels{1,1}, '5');
 %! assert (labels{1,2}, 'Z');
+%!test
+%! xx = [1 1 1 1 2 2 2 2]';
+%! yy = [10 10 10 10 20 20 20 20]';
+%! [t, chisq, p] = crosstab (xx, yy);
+%! assert (t, [4 0; 0 4]);
+%! assert (chisq, 8.00000000);
+%! assert (p, 0.00467773, 1e-8);
