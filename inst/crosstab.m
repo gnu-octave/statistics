@@ -269,3 +269,14 @@ endfunction
 %! assert (t, 10 * ones (5,2));
 %! assert (chisq, 0);
 %! assert (p, 1);
+%!test
+%! ## 3-way table with NaN
+%! a = [1 1 2 2 3 3 1]';
+%! b = [1 2 1 2 1 2 1]';
+%! c = [1 1 NaN 2 2 1 2]';
+%! [t, chisq, p] = crosstab (a, b, c);
+%! expected(:,:,1) = [1 1; 0 0; 0 1];
+%! expected(:,:,2) = [1 0; 0 1; 1 0];
+%! assert (t, expected);
+%! assert (chisq, 6.00000000);
+%! assert (p, 0.53974935, 1e-9);
