@@ -202,3 +202,10 @@ endfunction
 %! assert (t, [2 4; 4 2]);
 %! assert (chisq, 1.33333333, 1e-6);
 %! assert (p, 0.24821308, 1e-6);
+%!test
+%! x = [1 1 1 2 2 2 3 3 3]';
+%! y = [1 1 1 2 2 2 3 3 3]';
+%! [t, chisq, p, labels] = crosstab (x, y);
+%! assert (t, diag ([3 3 3]));
+%! assert (chisq, 18.00000000);
+%! assert (p, 0.00123410, 1e-8);
