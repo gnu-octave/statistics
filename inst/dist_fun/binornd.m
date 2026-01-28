@@ -72,9 +72,12 @@ function r = binornd (n, ps, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif ((isrow (varargin{1})) && all (varargin{1} >= 0)
+                                  && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
     elseif
       error (strcat ("binornd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
