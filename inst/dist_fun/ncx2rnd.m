@@ -67,10 +67,13 @@ function r = ncx2rnd (df, lambda, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
+    else
       error (strcat ("ncx2rnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
