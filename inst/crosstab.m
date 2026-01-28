@@ -288,3 +288,11 @@ endfunction
 %! assert (sum (t(:)), 7);
 %! assert (chisq, 16.33333333, 1e-8);
 %! assert (p, 0.42994852, 1e-8);
+%!test
+%! ## string array
+%! str1 = ['low'; 'high'; 'med'; 'low'; 'high'];
+%! str2 = ['X'; 'Y'; 'X'; 'Y'; 'X'];
+%! [t, chisq, p] = crosstab (str1, str2);
+%! assert (t, [1 1; 1 1; 1 0]);
+%! assert (chisq, 0.83333333, 1e-8);
+%! assert (p, 0.659240631, 1e-9);
