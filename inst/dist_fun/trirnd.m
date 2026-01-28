@@ -52,7 +52,7 @@
 ## @seealso{tricdf, triinv, tripdf, tristat}
 ## @end deftypefn
 
-function rnd = trirnd (a, b, c, varargin)
+function r = trirnd (a, b, c, varargin)
 
   ## Check for valid number of input arguments
   if (nargin < 3)
@@ -82,10 +82,13 @@ function rnd = trirnd (a, b, c, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
+    else
       error (strcat ("trirnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
@@ -98,7 +101,8 @@ function rnd = trirnd (a, b, c, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (a) && ! isequal (size (a), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (a) && ! isequal (size (a), size (ones (sz))))
     error ("trirnd: A, B, and C must be scalar or of size SZ.");
   endif
 
@@ -117,12 +121,12 @@ function rnd = trirnd (a, b, c, varargin)
       right_width = c-b;
       h = 2 / w;
       left_area = h * left_width / 2;
-      rnd = rand (sz, cls);
-      idx = rnd < left_area;
-      rnd(idx) = a + (rnd(idx) * w * left_width).^0.5;
-      rnd(~idx) = c - ((1-rnd(~idx)) * w * right_width).^0.5;
+      r = rand (sz, cls);
+      idx = r < left_area;
+      r(idx) = a + (r(idx) * w * left_width).^0.5;
+      r(~idx) = c - ((1-r(~idx)) * w * right_width).^0.5;
     else
-      rnd = NaN (sz, cls);
+      r = NaN (sz, cls);
     endif
   else
     w = c-a;
@@ -130,13 +134,13 @@ function rnd = trirnd (a, b, c, varargin)
     right_width = c-b;
     h = 2 ./ w;
     left_area = h .* left_width / 2;
-    rnd = rand (sz, cls);
-    k = rnd < left_area;
-    rnd(k) = a(k) + (rnd(k) .* w(k) .* left_width(k)).^0.5;
-    rnd(~k) = c(~k) - ((1-rnd(~k)) .* w(~k) .* right_width(~k)).^0.5;
+    r = rand (sz, cls);
+    k = r < left_area;
+    r(k) = a(k) + (r(k) .* w(k) .* left_width(k)).^0.5;
+    r(~k) = c(~k) - ((1-r(~k)) .* w(~k) .* right_width(~k)).^0.5;
 
     k = ! (-Inf < a) | ! (a < c) | ! (a <= b) | ! (b <= c) | ! (c < Inf);
-    rnd(k) = NaN;
+    r(k) = NaN;
   endif
 
 endfunction

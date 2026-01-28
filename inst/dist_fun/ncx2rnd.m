@@ -86,7 +86,8 @@ function r = ncx2rnd (df, lambda, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (df) && ! isequal (size (df), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (df) && ! isequal (size (df), size (ones (sz))))
     error ("ncx2rnd: DF and LAMBDA must be scalars or of size SZ.");
   endif
 

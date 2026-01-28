@@ -70,10 +70,13 @@ function r = unidrnd (N, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
+    else
       error (strcat ("unidrnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
@@ -86,7 +89,8 @@ function r = unidrnd (N, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (N) && ! isequal (size (N), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (N) && ! isequal (size (N), size (ones (sz))))
     error ("unidrnd: N must be scalar or of size SZ.");
   endif
 

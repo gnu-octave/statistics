@@ -93,7 +93,8 @@ function r = hygernd (m, k, n, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (m) && ! isequal (size (m), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (m) && ! isequal (size (m), size (ones (sz))))
     error ("hygernd: T, M, and N must be scalars or of size SZ.");
   endif
 

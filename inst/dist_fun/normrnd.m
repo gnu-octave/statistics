@@ -71,10 +71,13 @@ function r = normrnd (mu, sigma, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
+    else
       error (strcat ("normrnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
@@ -87,7 +90,8 @@ function r = normrnd (mu, sigma, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (mu) && ! isequal (size (mu), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (mu) && ! isequal (size (mu), size (ones (sz))))
     error ("normrnd: MU and SIGMA must be scalars or of size SZ.");
   endif
 

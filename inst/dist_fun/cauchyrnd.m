@@ -54,8 +54,7 @@ function r = cauchyrnd (x0, gamma, varargin)
   if (! isscalar (x0) || ! isscalar (gamma))
     [retval, x0, gamma] = common_size (x0, gamma);
     if (retval > 0)
-      error (strcat ("cauchyrnd: X0 and GAMMA must be of common", ...
-                     " size or scalars."));
+      error ("cauchyrnd: X0 and GAMMA must be of common size or scalars.");
     endif
   endif
 
@@ -71,10 +70,13 @@ function r = cauchyrnd (x0, gamma, varargin)
     if (isscalar (varargin{1}) && varargin{1} >= 0
                                && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif ((isrow (varargin{1}) || isempty (varargin{1})) &&
-            all (varargin{1} >= 0) && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
+                                && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
-    elseif
+    elseif (isempty (varargin{1}))
+      r = [];
+      return;
+    else
       error (strcat ("cauchyrnd: SZ must be a scalar or a row vector", ...
                      " of non-negative integers."));
     endif
@@ -87,7 +89,8 @@ function r = cauchyrnd (x0, gamma, varargin)
   endif
 
   ## Check that parameters match requested dimensions in size
-  if (! isscalar (x0) && ! isequal (size (x0), sz))
+  ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
+  if (! isscalar (x0) && ! isequal (size (x0), size (ones (sz))))
     error ("cauchyrnd: X0 and GAMMA must be scalars or of size SZ.");
   endif
 
