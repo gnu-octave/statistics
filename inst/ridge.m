@@ -97,8 +97,10 @@ function b = ridge (y, X, k, scaled)
   z = (X - m) ./ stdx;
 
   ## Add pseudo observations
-  Z_pseudo = [z; (sqrt(k(1)) .* eye (columns(X)))];
-  Y_pseudo = [y; zeros(columns(X), 1)];
+  p = columns (X);
+  I = eye (p);
+  Z_pseudo = [z; (sqrt(k(1)) .* I)];
+  Y_pseudo = [y; zeros(p, 1)];
 
   ## Compute coefficients
   b = Z_pseudo \ Y_pseudo;
@@ -114,7 +116,7 @@ function b = ridge (y, X, k, scaled)
     b(end,nk) = 0;
 
     for i=2:nk
-      Z_pseudo(end-columns(X)+1:end, :)  =  sqrt (k(i)) .* eye (columns (X));
+      Z_pseudo(end-p+1:end, :) = sqrt (k(i)) .* I;
       b(:,i) = Z_pseudo \ Y_pseudo;
     endfor
   endif
