@@ -113,7 +113,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
   endfor
 
   if (nargout > 1)
-    if (length (reshape_format) > 1)
+    if (isscalar (t))
+      chisq = NaN;
+      p = NaN;
+    else
       [p, chisq] = chi2test (t);
     endif
   endif
