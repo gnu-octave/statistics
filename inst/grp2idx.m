@@ -52,7 +52,7 @@
 ## of the group names in @var{gn} follow the same pattern as the group indices
 ## in @var{g} according to the data type of @var{s}, as described above.
 ##
-## code{[@var{g}, @var{gn}, @var{gl}] = grp2idx (@var{s})} further returns a
+## @code{[@var{g}, @var{gn}, @var{gl}] = grp2idx (@var{s})} further returns a
 ## column vector @var{gl} representing the list of the group levels with the
 ## same data type as @var{s}.
 ##
