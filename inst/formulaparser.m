@@ -10,7 +10,7 @@ function varargout = formulaparser (varargin)
   if (nargin > 1)
     mode = varargin{2};
   else
-    mode = "tokenize";
+    mode = "expand";
   endif
 
   switch (lower (mode))
@@ -207,6 +207,14 @@ function [tree, curr] = run_parser (tokens, curr, prec_limit)
     tree.value = t.value;
     tree.left = [];
     tree.right = [];
+
+  elseif (strcmp (t.type, "SEPARATOR"))
+    ## Handle unary '~' (Formula with no LHS)
+    tree.type = "OPERATOR";
+    tree.value = t.value;
+    tree.left = [];
+    ## Recursively parse the RHS with precedence 5 (same as infix ~)
+    [tree.right, curr] = run_parser (tokens, curr, 5); 
 
   elseif (strcmp (t.type, "LPAREN"))
     [tree, curr] = run_parser (tokens, curr, 0);
@@ -563,6 +571,10 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     n_total = length (data.(fnames{1}));
     valid_mask = true (n_total, 1);
   else
+    if (! isfield (data, req_vars{1}))
+      error ("formulaparser: Unknown variable '%s' in Data Table.", req_vars{1});
+    endif
+
     n_total = length (data.(req_vars{1}));
     valid_mask = true (n_total, 1);
     for i = 1:length (req_vars)
@@ -575,6 +587,10 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
 
   if (! isempty (schema.ResponseIdx))
     y_name = req_vars{schema.ResponseIdx};
+    if (! isfield (data, y_name))
+      error ("formulaparser: Unknown variable '%s' in Data Table.", y_name);
+    endif
+
     y_col = data.(y_name);
     if (isnumeric (y_col))
       valid_mask = valid_mask & ! isnan (y_col);
@@ -701,3 +717,164 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
   endif
 
 endfunction
+
+%!test
+%! ## Test : Identifiers with numbers and underscores
+%! tokens = formulaparser ("Yield ~ Var_1 + A2_B", "tokenize");
+%! vals = {tokens.value};
+%! assert (vals, {"Yield", "~", "Var_1", "+", "A2_B", "EOF"});
+%!test
+%! ## Test : Floating point numbers
+%! tokens = formulaparser ("y ~ 0.5 * A", "tokenize");
+%! vals = {tokens.value};
+%! assert (vals, {"y", "~", "0.5", "*", "A", "EOF"});
+%!test
+%! ## Test : Whitespace insensitivity
+%! t1 = formulaparser ("A*B", "tokenize");
+%! t2 = formulaparser ("A   * B", "tokenize");
+%! assert ({t1.value}, {t2.value});
+%!test
+%! ## Test : Precedence 
+%! t = formulaparser ("A + B * C . D", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"A", "B", "C:D", "B:C:D"}));
+%!test
+%! ## Test : Parentheses Override
+%! t = formulaparser ("(A + B) . C", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"A:C", "B:C"}));
+%!test
+%! ## Test : Crossing Operator (*)
+%! t = formulaparser ("A * B", "expand");
+%! assert (length (t), 3);
+%! t3 = formulaparser ("A * B * C", "expand");
+%! assert (length (t3), 7);
+%!test
+%! ## Test : Nesting Operator (/)
+%! t = formulaparser ("Field / Plot", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"Field", "Field:Plot"}));
+%!test
+%! ## Test : Multi-level Nesting
+%! t = formulaparser ("Block / Plot / Subplot", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"Block", "Block:Plot", "Block:Plot:Subplot"}));
+%!test
+%! ## Test : Interaction Operator (.)
+%! t = formulaparser ("A . B", "expand");
+%! assert (length (t), 1);
+%! assert (t{1}, {"A", "B"});
+%!test
+%! ## Test : Redundancy Check
+%! t1 = formulaparser ("A + A", "expand");
+%! assert (length (t1), 1);
+%! t2 = formulaparser ("A * A", "expand");
+%! assert (length (t2), 1);
+%!test
+%! ## Test : Deletion - Exact (-)
+%! t = formulaparser ("A * B - A", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"B", "A:B"}));
+%!test
+%! ## Test : Deletion - Clean (-*)
+%! t = formulaparser ("A * B -* A", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), {"B"});
+%!test
+%! ## Test : Deletion - Marginal (-/)
+%! t = formulaparser ("A * B -/ A", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (sort (terms), sort ({"A", "B"}));
+%!test
+%! ## Test : Deletion - Complex Sequence
+%! t = formulaparser ("A*B*C - A:B:C", "expand");
+%! assert (length (t), 6);
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (! ismember ("A:B:C", terms));
+%! assert (ismember ("A:B", terms));
+%!test
+%! ## Test : LHS and RHS Identification
+%! s = formulaparser ("logY ~ A + B", "matrix");
+%! assert (s.VariableNames{s.ResponseIdx}, "logY");
+%! assert (any (strcmp ("A", s.VariableNames)));
+%!test
+%! ## Test : No Response Variable
+%! s = formulaparser ("~ A + B", "matrix");
+%! assert (isempty (s.ResponseIdx));
+%!test
+%! ## Test : Intercept Handling
+%! s1 = formulaparser ("~ A", "matrix");
+%! assert (any (all (s1.Terms == 0, 2)));
+%! s2 = formulaparser ("~ A - 1", "matrix");
+%! assert (! any (all (s2.Terms == 0, 2)));
+%!test
+%! ## Test : Numeric Interaction
+%! d.y = [1;2;3;4;5];
+%! d.X1 = [1;2;1;2;1];
+%! d.X2 = [10;10;20;20;10];
+%! [M, ~, ~] = formulaparser ("y ~ X1:X2", "model_matrix", d);
+%! assert (size (M), [5, 2]);
+%! assert (M(:, 2), d.X1 .* d.X2);
+%!test
+%! ## Test : Categorical Expansion
+%! d.y = [1;1;1];
+%! d.G = {"A"; "B"; "C"};
+%! [M, ~, names] = formulaparser ("~ G", "model_matrix", d);
+%! assert (size (M, 2), 3);
+%! assert (names, {"(Intercept)"; "G_B"; "G_C"});
+%!test
+%! ## Test : Categorical * Categorical Rank
+%! d.y = [1;2;3;4];
+%! d.F1 = {"a";"b";"a";"b"};
+%! d.F2 = {"x";"x";"y";"y"};
+%! [M, ~, ~] = formulaparser ("~ F1 * F2", "model_matrix", d);
+%! assert (size (M, 2), 4);
+%! assert (rank (M), 4);
+%!test
+%! ## Test : Numeric * Categorical Naming
+%! d.y = [1;2];
+%! d.N = [10; 20];
+%! d.C = {"lo"; "hi"};
+%! [M, ~, names] = formulaparser ("~ N * C", "model_matrix", d);
+%! assert (any (strcmp (names, "C_lo:N")));
+%!test
+%! ## Test : Intercept Only Model
+%! d.y = [1; 2; 3];
+%! [X, ~, names] = formulaparser ("y ~ 1", "model_matrix", d);
+%! assert (size (X, 2), 1);
+%! assert (names, {"(Intercept)"});
+%! assert (all (X == 1));
+%!test
+%! ## Test : NaNs and Missing Data
+%! d.y = [1; 2; 3; 4];
+%! d.A = [1; 1; NaN; 1];
+%! d.B = [10; 20; 30; NaN];
+%! [X, y_out, ~] = formulaparser ("y ~ A", "model_matrix", d);
+%! assert (length (y_out), 3);
+%! assert (y_out(3), 4);
+%! assert (size (X, 1), 3);
+%!test
+%! ## Test : Nesting with Groups
+%! t = formulaparser ("A / (B + C)", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! expected = sort ({"A", "A:B", "A:C"});
+%! assert (sort (terms), expected);
+%!test
+%! ## Test 25: Edge Case - Variable Name Collision
+%! d.Var = [1; 1];
+%! d.Var_1 = [2; 2];
+%! [~, ~, names] = formulaparser ("~ Var + Var_1", "model_matrix", d);
+%! assert (any (strcmp (names, "Var")));
+%! assert (any (strcmp (names, "Var_1")));
+%!test
+%! ## Test : One-argument call 
+%! result = formulaparser ("A * B");
+%! expected = sort ({"A", "B", "A:B"});
+%! actual = cellfun (@(x) strjoin(sort(x), ":"), result, "UniformOutput", false);
+%! assert (sort (actual), expected);
+%!error <Input formula string is required> formulaparser ()
+%!error <Unknown mode> formulaparser ("y~x", "invalid_mode")
+%!error <Unexpected End Of Formula> formulaparser ("A *", "parse")
+%!error <Mismatched Parentheses> formulaparser ("(A + B", "parse")
+%!error <Unknown variable> d.x=1; formulaparser ("~ Z", "model_matrix", d)
+%!error <'model_matrix' mode requires a Data Table> formulaparser ("~ A", "model_matrix")
