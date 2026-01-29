@@ -230,14 +230,15 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   else
     ## Disallow kdtree with custom distance functions
     if (strcmpi (NSMethod, "kdtree") && isa (Distance, "function_handle"))
-      error ("rangesearch: 'kdtree' cannot be used with custom distance functions.");
+      error (strcat ("rangesearch: 'kdtree' cannot be used", ...
+                     " with custom distance functions."));
     endif
     ## Check if kdtree can be used
     if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))
-      error (strcat ("rangesearch: 'kdtree' cannot be used with", ...
-                     " the given distance metric."));
+      error (strcat ("rangesearch: 'kdtree' cannot be used", ...
+                     " with the given distance metric."));
     endif
   endif
 
@@ -507,6 +508,21 @@ endfunction
 %!                         "NSMethod", "exhaustive");
 %! assert (idx, {[1, 2]; [1, 2, 3]});
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%!test
+%! X = ones (10, 2);
+%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree");
+%! assert (numel (idx), 10);
+%!test
+%! X = ones (3, 2);
+%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree", "BucketSize", 1);
+%! assert (numel (idx), 3);
+%! assert (cellfun (@numel, idx) == 3, [true; true; true]);
+%! assert (idx{1}, [1, 2, 3]);
+%! assert (idx{2}, [1, 2, 3]);
+%! assert (idx{3}, [1, 2, 3]);
+%! assert (D{1}, [0, 0, 0]);
+%! assert (D{2}, [0, 0, 0]);
+%! assert (D{3}, [0, 0, 0]);
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)
@@ -529,6 +545,8 @@ endfunction
 %! rangesearch (ones (4, 5), ones (1, 5), 1, "cov", ones(4,5), "distance", "euclidean")
 %!error<rangesearch: invalid value of bucketsize.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, "bucketsize", -1)
+%!error<rangesearch: invalid value of bucketsize.> ...
+%! rangesearch (ones (4,2), ones (1,2), 1, "BucketSize", 2.5)
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "cosine")
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
@@ -543,16 +561,5 @@ endfunction
 %! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "hamming")
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "jaccard")
-%!error<rangesearch: invalid value of bucketsize.> ...
-%! rangesearch (ones (4,2), ones (1,2), 1, "BucketSize", 2.5)
-%!test
-%! X = ones (10,2);
-%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree");
-%! assert (numel (idx), 10);
-%!test
-%! X = ones (3,2);
-%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree", "BucketSize", 1);
-%! assert (numel (idx), 3);
-%! assert (all (cellfun (@numel, idx) == 3));
 %!error<rangesearch: 'kdtree' cannot be used with custom distance functions.> ...
 %! rangesearch (ones (4,2), ones (1,2), 1, "Distance", @(x,y) sqrt(sum((x-y).^2)), "NSMethod", "kdtree")
