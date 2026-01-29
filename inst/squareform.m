@@ -36,8 +36,8 @@
 ## @var{n}.  The resulting matrix will be @var{n} by @var{n}.
 ##
 ## If @var{x} is a distance matrix, it must be square and the diagonal entries
-## of @var{x} must all be zeros.  @code{squareform} will generate a warning if
-## @var{x} is not symmetric.
+## of @var{x} must all be zeros.  If @var{x} is not symmetric, only the lower
+## triangular part is used.
 ##
 ## The second argument is used to specify the output type in case there
 ## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
@@ -69,9 +69,6 @@ function y = squareform (x, method)
         error ("squareform: Z is not a square matrix.");
       elseif (any (diag (x) != 0))
         error ("squareform: Z is not a hollow matrix.");
-      elseif (! issymmetric(x))
-        warning ("squareform:symmetric",
-                 "squareform: Z is not a symmetric matrix");
       endif
 
       y = vec (tril (x, -1, "pack"), 2);
@@ -110,8 +107,6 @@ endfunction
 %!assert (squareform (1), [0 1;1 0])
 %!assert (squareform (1, "tomatrix"), [0 1; 1 0])
 %!assert (squareform (0, "tovector"), zeros (1, 0))
-
-%!warning <not a symmetric matrix> squareform ([0 1 2; 3 0 4; 5 6 0]);
 
 ## confirm that it respects input class
 %!test
