@@ -218,7 +218,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
                      " be given for mahalanobis distance."));
     endif
   endif
-  if (! isscalar (BS) || BS < 0)
+  if (! isscalar (BS) || ! isnumeric (BS) || BS < 0 || fix (BS) != BS)
     error ("knnsearch: invalid value of bucketsize.");
   endif
 
@@ -243,12 +243,17 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       NSMethod = "exhaustive";
     endif
   else
+    ## Disallow kdtree with custom distance functions
+    if (strcmpi (NSMethod, "kdtree") && isa (Distance, "function_handle"))
+      error (strcat ("knnsearch: 'kdtree' cannot be used", ...
+                     " with custom distance functions."));
+    endif
     ## Check if kdtree can be used
     if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
      || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
      || strcmpi (Distance, "chebychev")))
-      error (strcat ("knnsearch: 'kdtree' cannot be used with", ...
-                     " the given distance metric."));
+      error (strcat ("knnsearch: 'kdtree' cannot be used", ...
+                     " with the given distance metric."));
     endif
   endif
 
@@ -340,6 +345,10 @@ function node = __build_kdtree__ (indices, depth, X, bucket_size)
     split_value = sorted_values(median_idx);
     left_indices = indices(values <= split_value);
     right_indices = indices(values > split_value);
+    if (isempty (left_indices) || isempty (right_indices))
+      node = struct ('indices', indices);
+      return;
+    endif
     left_node = __build_kdtree__ (left_indices, depth + 1, X, bucket_size);
     right_node = __build_kdtree__ (right_indices, depth + 1, X, bucket_size);
     node = struct ('axis', axis, 'split_value', split_value, ...
@@ -657,6 +666,8 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), "cov", ones(4,5), "distance", "euclidean")
 %!error<knnsearch: invalid value of bucketsize.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), "bucketsize", -1)
+%!error<knnsearch: invalid value of bucketsize.> ...
+%! knnsearch (ones (4, 5), ones (1, 5), "bucketsize", 2.5)
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "cosine")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
