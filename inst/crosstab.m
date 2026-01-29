@@ -132,13 +132,13 @@ endfunction
 %!error <crosstab: unsupported type for data vector.> crosstab ([1 2], {1, 2})
 %!test
 %! load carbig
-%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (table(2,3,1), 38);
+%! [t, chisq, p, labels] = crosstab (cyl4, when, org);
+%! assert (t(2,3,1), 38);
 %! assert (labels{3,3}, "Japan");
 %!test
 %! load carbig
-%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (table(2,3,2), 17);
+%! [t, chisq, p, labels] = crosstab (cyl4, when, org);
+%! assert (t(2,3,2), 17);
 %! assert (labels{1,3}, "USA");
 %!test
 %! x = [1, 1, 2, 3, 1];
