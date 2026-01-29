@@ -36,8 +36,8 @@
 ## @var{n}.  The resulting matrix will be @var{n} by @var{n}.
 ##
 ## If @var{x} is a distance matrix, it must be square and the diagonal entries
-## of @var{x} must all be zeros.  @code{squareform} will generate a warning if
-## @var{x} is not symmetric.
+## of @var{x} must all be zeros.  If @var{x} is not symmetric, only the lower
+## triangular part is used.
 ##
 ## The second argument is used to specify the output type in case there
 ## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
