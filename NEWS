@@ -68,6 +68,8 @@
 
  ** datasample: improved input validation
 
+ ** fillmissing: char arrays do not have standard missing values
+
  ** friedman: returns ANOVA results in a table
 
  ** grp2idx: fixed MATLAB compatibility, add support for new data types
@@ -80,9 +82,13 @@
  ** ismissing: fixed MATLAB compatibility, char arrays do not have standard
                missing values
 
+ ** knnsearch: improved input validation and avoid infinite recursion
+
  ** pcacov: improved input validation
 
  ** pdist, pdist2: improved performance
+
+ ** rangesearch: improved input validation and avoid infinite recursion
 
  ** rmmissing: fixed MATLAB compatibility, char arrays do not have standard
                missing values
