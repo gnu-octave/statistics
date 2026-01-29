@@ -50,12 +50,12 @@ function T = clusterdata (X, varargin)
   D = 2;
 
   if (isnumeric (varargin{1}))              # clusterdata (X, cutoff)
-    if (isinteger (varargin{1}) && (varargin{1} >= 2))
+    C = varargin{1};
+    if (fix (C) == C && (C >= 2))
       clustering_method = "MaxClust";
     else
       clustering_method = "Cutoff";
     endif
-    C = varargin{1};
 
   else                                      # clusterdata (Name, Value)
     pair_index = 1;
