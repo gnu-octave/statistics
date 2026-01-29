@@ -340,6 +340,10 @@ function node = __build_kdtree__ (indices, depth, X, bucket_size)
     split_value = sorted_values(median_idx);
     left_indices = indices(values <= split_value);
     right_indices = indices(values > split_value);
+    if (isempty (left_indices) || isempty (right_indices))
+      node = struct ('indices', indices);
+      return;
+    endif
     left_node = __build_kdtree__ (left_indices, depth + 1, X, bucket_size);
     right_node = __build_kdtree__ (right_indices, depth + 1, X, bucket_size);
     node = struct ('axis', axis, 'split_value', split_value, ...
@@ -671,3 +675,9 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "hamming")
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), "NSmethod", "kdtree", "distance", "jaccard")
+%!test
+%! X = ones (10, 2);
+%! Y = X(1,:);
+%! [idx, D] = knnsearch (X, Y, "NSMethod", "kdtree", "BucketSize", 1);
+%! assert (numel (idx), 1);
+%! assert (idx(1), 1);
