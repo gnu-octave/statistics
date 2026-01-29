@@ -49,7 +49,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
   v_length = [];                    # vector of lengths of input vectors
   reshape_format = [];              # vector of the dimensions of t
   X = [];                           # matrix of the indexed input values
-  labels = {};                      # cell array of labels
+  labels_data = {};                 # temporary cell array for unique labels
   coordinates = {};                 # cell array of unique elements
 
   for i = 1:nargin
@@ -59,6 +59,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
                            iscategorical (vector) || isstring (vector))
       try
         [vector, gnames] = grp2idx (vector);
+        labels_data{i} = gnames;
       catch
         error ("crosstab: x1, x2 ... xn must be vectors.");
       end_try_catch
@@ -67,7 +68,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
         error ("crosstab: x1, x2 ... xn must be vectors.");
       endif
       vector = vector(:);
-      gnames = cellstr (num2str (vector));
+      unique_vals = unique (vector (!isnan (vector)));
+      labels_data{i} = cellstr (num2str (unique_vals));
     else
       error ("crosstab: unsupported type for data vector.");
     endif
@@ -76,12 +78,23 @@ function [t, chisq, p, labels] = crosstab (varargin)
       error ("crosstab: x1, x2 ... xn must be vectors of the same length.");
     endif
     X = [X, vector];
-    for h = 1:length (gnames)
-      labels{h, i} = gnames{h};
-    endfor
     reshape_format(i) = length (unique (vector(!isnan (vector))));
     coordinates(i) = unique (vector(!isnan (vector)));
   endfor
+
+  if (nargout > 3)
+    max_rows = 0;
+    for i = 1:nargin
+      max_rows = max (max_rows, numel (labels_data{i}));
+    endfor
+    labels = cell (max_rows, nargin);
+    for i = 1:nargin
+      col_labels = labels_data{i};
+      labels(1:numel (col_labels), i) = col_labels;
+    endfor
+  else
+    labels = {};
+  endif
 
   t = zeros (reshape_format);
 
@@ -100,7 +113,10 @@ function [t, chisq, p, labels] = crosstab (varargin)
   endfor
 
   if (nargout > 1)
-    if (length (reshape_format) > 1)
+    if (isscalar (t) || isempty (t))
+      chisq = NaN;
+      p = NaN;
+    else
       [p, chisq] = chi2test (t);
     endif
   endif
@@ -116,13 +132,13 @@ endfunction
 %!error <crosstab: unsupported type for data vector.> crosstab ([1 2], {1, 2})
 %!test
 %! load carbig
-%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (table(2,3,1), 38);
+%! [t, chisq, p, labels] = crosstab (cyl4, when, org);
+%! assert (t(2,3,1), 38);
 %! assert (labels{3,3}, "Japan");
 %!test
 %! load carbig
-%! [table, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (table(2,3,2), 17);
+%! [t, chisq, p, labels] = crosstab (cyl4, when, org);
+%! assert (t(2,3,2), 17);
 %! assert (labels{1,3}, "USA");
 %!test
 %! x = [1, 1, 2, 3, 1];
@@ -170,3 +186,121 @@ endfunction
 %! y = [1, 2, 1, 3, 2];
 %! t = crosstab (x, y);
 %! assert (t, [2, 0, 0; 0, 2, 0; 0, 0, 1]);
+%!test
+%! smoker = [1 1 0 0 1 0 1 1 0 0 1 0]';
+%! gender = [1 0 1 0 1 1 0 0 1 0 0 1]';
+%! [t, chisq, p, labels] = crosstab (smoker, gender);
+%! assert (t, [2 4; 4 2]);
+%! assert (chisq, 1.33333333, 1e-8);
+%! assert (p, 0.24821308, 1e-8);
+%! assert (labels{1,1}, '0');
+%! assert (labels{1,2}, '0');
+%! assert (labels{2,1}, '1');
+%! assert (labels{2,2}, '1');
+%!test
+%! ## Test for categorical
+%! smk_cat = categorical ([0 0 1 1 0 1 0 0 1 1 0 1]');
+%! gen_cat = categorical ([0 1 0 1 0 0 1 1 0 1 1 0]');
+%! [t, chisq, p] = crosstab (smk_cat, gen_cat);
+%! assert (t, [2 4; 4 2]);
+%! assert (chisq, 1.33333333, 1e-6);
+%! assert (p, 0.24821308, 1e-6);
+%!test
+%! x = [1 1 1 2 2 2 3 3 3]';
+%! y = [1 1 1 2 2 2 3 3 3]';
+%! [t, chisq, p, labels] = crosstab (x, y);
+%! assert (t, diag ([3 3 3]));
+%! assert (chisq, 18.00000000);
+%! assert (p, 0.00123410, 1e-8);
+%!test
+%! ## Test for Partial NaN giving NaN for chisq/p
+%! x7 = [1 2 3 4 NaN NaN]';
+%! y7 = [10 20 30 40 50 60]';
+%! [t, chisq, p, labels] = crosstab (x7, y7);
+%! assert (t, [eye(4), zeros(4, 2)]);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%! assert (labels{1,1}, '1');
+%! assert (labels{1,2}, '10');
+%! assert (labels{2,1}, '2');
+%! assert (labels{2,2}, '20');
+%! assert (labels{3,1}, '3');
+%! assert (labels{3,2}, '30');
+%! assert (labels{4,1}, '4');
+%! assert (labels{4,2}, '40');
+%! assert (isempty (labels{5,1}));
+%! assert (labels{5,2}, '50');
+%! assert (isempty (labels{6,1}));
+%! assert (labels{6,2}, '60');
+%!test
+%! a = ones (15,1);
+%! b = ones (15,1);
+%! [t, chisq, p] = crosstab (a, b);
+%! assert (t, 15);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%!test
+%! ## all NaN → empty table + NaN stats
+%! na = NaN (6,1);
+%! nb = (1:6)';
+%! [t, chisq, p] = crosstab (na, nb);
+%! assert (all (t(:) == 0));
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%!test
+%! ## single observation → 1×1 table, NaN statistic
+%! [t, chisq, p, labels] = crosstab (5, 'Z');
+%! assert (t, 1);
+%! assert (isnan (chisq));
+%! assert (isnan (p));
+%! assert (labels{1,1}, '5');
+%! assert (labels{1,2}, 'Z');
+%!test
+%! xx = [1 1 1 1 2 2 2 2]';
+%! yy = [10 10 10 10 20 20 20 20]';
+%! [t, chisq, p] = crosstab (xx, yy);
+%! assert (t, [4 0; 0 4]);
+%! assert (chisq, 8.00000000);
+%! assert (p, 0.00467773, 1e-8);
+%!test
+%! set1 = repmat ((1:5)', 20, 1);
+%! set2 = repmat ([1; 2], 50, 1);
+%! [t, chisq, p] = crosstab (set1, set2);
+%! assert (t, 10 * ones (5,2));
+%! assert (chisq, 0);
+%! assert (p, 1);
+%!test
+%! ## 3-way table with NaN
+%! a = [1 1 2 2 3 3 1]';
+%! b = [1 2 1 2 1 2 1]';
+%! c = [1 1 NaN 2 2 1 2]';
+%! [t, chisq, p] = crosstab (a, b, c);
+%! expected(:,:,1) = [1 1; 0 0; 0 1];
+%! expected(:,:,2) = [1 0; 0 1; 1 0];
+%! assert (t, expected);
+%! assert (chisq, 6.00000000);
+%! assert (p, 0.53974935, 1e-9);
+%!test
+%! ## sparse cellstr
+%! g = [1 5 7 12 1 5 19]';
+%! h = {'A', 'B', 'A', 'C', 'D', 'E', 'A'}';
+%! [t, chisq, p] = crosstab (g, h);
+%! assert (sum (t(:)), 7);
+%! assert (chisq, 16.33333333, 1e-8);
+%! assert (p, 0.42994852, 1e-8);
+%!test
+%! ## string array
+%! str1 = ['low'; 'high'; 'med'; 'low'; 'high'];
+%! str2 = ['X'; 'Y'; 'X'; 'Y'; 'X'];
+%! [t, chisq, p] = crosstab (str1, str2);
+%! assert (t, [1 1; 1 1; 1 0]);
+%! assert (chisq, 0.83333333, 1e-8);
+%! assert (p, 0.659240631, 1e-9);
+%!test
+%! ## cellstr
+%! c1 = {'A','B','A','C','B','A'}';
+%! c2 = {'1','2','1','3','2','1'}';
+%! [t, chisq, p] = crosstab (c1, c2);
+%! assert (t, [3 0 0; 0 2 0; 0 0 1]);
+%! assert (chisq, 12.00000000, 1e-14);
+%! assert (p, 0.01735127, 1e-8);
