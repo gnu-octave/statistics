@@ -80,8 +80,9 @@ function m = harmmean (x, varargin)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
-
-  if (! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
+  if (islogical (x))
+    x = double(x);
+  elseif(! isnumeric (x) || ! isreal (x) || ! all (x(! isnan (x))(:) >= 0))
     error ("harmmean: X must contain real nonnegative values.");
   endif
 
@@ -304,6 +305,12 @@ endfunction
 %! assert (harmmean (x, [3 2]), m, 4e-14);
 %! m(2,3) = 13.06617961315406;
 %! assert (harmmean (x, [3 2], "omitnan"), m, 4e-14);
+
+## Test logical input arrays
+%!test
+%! assert (harmmean([true true]), 1);
+%! assert (harmmean([true false]), 0);
+%! assert (harmmean([true true false]), 0);
 
 ## Test errors
 %!error <harmmean: X must contain real nonnegative values.> harmmean ("char")
