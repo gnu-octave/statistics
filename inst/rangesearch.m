@@ -549,5 +549,10 @@ endfunction
 %! X = ones (10,2);
 %! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree");
 %! assert (numel (idx), 10);
+%!test
+%! X = ones (3,2);
+%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree", "BucketSize", 1);
+%! assert (numel (idx), 3);
+%! assert (all (cellfun (@numel, idx) == 3));
 %!error<rangesearch: 'kdtree' cannot be used with custom distance functions.> ...
 %! rangesearch (ones (4,2), ones (1,2), 1, "Distance", @(x,y) sqrt(sum((x-y).^2)), "NSMethod", "kdtree")
