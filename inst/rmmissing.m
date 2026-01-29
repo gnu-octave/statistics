@@ -37,7 +37,7 @@
 ## @item @qcode{NaT} - for @qcode{datetime} arrays.
 ## @item @qcode{<missing>} - for @qcode{string} arrays.
 ## @item @qcode{<undefined>} - for @qcode{categorical} arrays.
-## @item @qcode{@{''@}} - for @qcode{cell} arrays of character vectors.
+## @item @qcode{@{0x0 char@}} - for @qcode{cell} arrays of character vectors.
 ## @end itemize
 ##
 ## For any data types that do not support missing values, @code{rmmissing}
