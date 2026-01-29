@@ -69,9 +69,6 @@ function y = squareform (x, method)
         error ("squareform: Z is not a square matrix.");
       elseif (any (diag (x) != 0))
         error ("squareform: Z is not a hollow matrix.");
-      elseif (! issymmetric(x))
-        warning ("squareform:symmetric",
-                 "squareform: Z is not a symmetric matrix");
       endif
 
       y = vec (tril (x, -1, "pack"), 2);
@@ -110,8 +107,6 @@ endfunction
 %!assert (squareform (1), [0 1;1 0])
 %!assert (squareform (1, "tomatrix"), [0 1; 1 0])
 %!assert (squareform (0, "tovector"), zeros (1, 0))
-
-%!warning <not a symmetric matrix> squareform ([0 1 2; 3 0 4; 5 6 0]);
 
 ## confirm that it respects input class
 %!test
