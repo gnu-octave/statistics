@@ -1,4 +1,4 @@
-## Copyright (C) 1995-2023 The Octave Project Developers
+## Copyright (C) 1995-2026 The Octave Project Developers
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -24,21 +24,26 @@
 ## @deftypefnx {statistics} {@var{B} =} fillmissing (@dots{}, @var{PropertyName}, @var{PropertyValue})
 ## @deftypefnx {statistics} {[@var{B}, @var{idx}] =} fillmissing (@dots{})
 ##
+## Fill missing data in arrays.
+##
 ## Replace missing entries of array @var{A} either with values in @var{v} or
 ## as determined by other specified methods.  'missing' values are determined
 ## by the data type of @var{A} as identified by the function @ref{ismissing},
 ## currently defined as:
 ##
+## Standard missing values and their corresponding data types are:
+##
 ## @itemize
-## @item
-## @qcode{NaN}: @code{single}, @code{double}
-##
-## @item
-## @qcode{" "} (white space): @code{char}
-##
-## @item
-## @qcode{@{""@}} (white space in cell): string cells.
+## @item @qcode{NaN} - for @qcode{double}, @qcode{single}, @qcode{duration}, and
+## @qcode{calendarDuration} arrays.
+## @item @qcode{NaT} - for @qcode{datetime} arrays.
+## @item @qcode{<missing>} - for @qcode{string} arrays.
+## @item @qcode{<undefined>} - for @qcode{categorical} arrays.
+## @item @qcode{@{0x0 char@}} - for @qcode{cell} arrays of character vectors.
 ## @end itemize
+##
+## For any data types that do not support missing values, @code{ismissing}
+## returns @code{@var{TF} = false (size (@var{A}))}.
 ##
 ## @var{A} can be a numeric scalar or array, a character vector or array, or
 ## a cell array of character vectors (a.k.a. string cells).
@@ -182,10 +187,6 @@
 ## @var{fill_function} processing because the moving window is always empty.
 ## (3) operation in dimensions higher than 2 perform identically to operations
 ## in dims 1 and 2, most notable on vectors.
-## @item
-## Method "makima" is not yet implemented in @code{interp1}, which is
-## used by @code{fillmissing}. Attempting to call this method will execute
-## the method from makima.m function created
 ## @end itemize
 ##
 ## @seealso{ismissing, rmmissing, standardizeMissing}
@@ -193,7 +194,7 @@
 
 function [A, idx_out] = fillmissing (A, varargin)
 
-  if ((nargin < 2)|| (nargin > 12))
+  if (nargin < 2 || nargin > 12)
      print_usage ();
   endif
 
@@ -223,7 +224,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   v = [];
 
   if (idx_flag)
-      idx_out = false (sz_A);
+    idx_out = false (sz_A);
   endif
 
   ## Process input arguments.
@@ -2169,58 +2170,68 @@ endfunction
 %! assert (idx, logical ([0, 1, 0]));
 
 ## Test char and cellstr
-%!assert (fillmissing (" foo bar ", "constant", "X"), "XfooXbarX")
-%!assert (fillmissing ([" foo"; "bar "], "constant", "X"), ["Xfoo"; "barX"])
-%!assert (fillmissing ([" foo"; "bar "], "next"), ["bfoo"; "bar "])
-%!assert (fillmissing ([" foo"; "bar "], "next", 1), ["bfoo"; "bar "])
-%!assert (fillmissing ([" foo"; "bar "], "previous"), [" foo"; "baro"])
-%!assert (fillmissing ([" foo"; "bar "], "previous", 1), [" foo"; "baro"])
-%!assert (fillmissing ([" foo"; "bar "], "nearest"), ["bfoo"; "baro"])
-%!assert (fillmissing ([" foo"; "bar "], "nearest", 1), ["bfoo"; "baro"])
-%!assert (fillmissing ([" foo"; "bar "], "next", 2), ["ffoo"; "bar "])
-%!assert (fillmissing ([" foo"; "bar "], "previous", 2), [" foo"; "barr"])
-%!assert (fillmissing ([" foo"; "bar "], "nearest", 2), ["ffoo"; "barr"])
-%!assert (fillmissing ([" foo"; "bar "], "next", 3), [" foo"; "bar "])
-%!assert (fillmissing ([" foo"; "bar "], "previous", 3), [" foo"; "bar "])
-%!assert (fillmissing ([" foo"; "bar "], "nearest", 3), [" foo"; "bar "])
-%!assert (fillmissing ({"foo", "bar"}, "constant", "a"), {"foo", "bar"})
-%!assert (fillmissing ({"foo", "bar"}, "constant", {"a"}), {"foo", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "constant", "a"), {"foo", "a", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "constant", {"a"}), {"foo", "a", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "previous"), {"foo", "foo", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "next"), {"foo", "bar", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "nearest"), {"foo", "bar", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "previous", 2), {"foo", "foo", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "next", 2), {"foo", "bar", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "nearest", 2), {"foo", "bar", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "previous", 1), {"foo", "", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "previous", 1), {"foo", "", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "next", 1), {"foo", "", "bar"})
-%!assert (fillmissing ({"foo", "", "bar"}, "nearest", 1), {"foo", "", "bar"})
-%!assert (fillmissing ("abc ", @(x,y,z) x+y+z, 2), "abcj")
-%!assert (fillmissing ({"foo", "", "bar"}, @(x,y,z) x(1), 3), {"foo", "foo", "bar"})
+%!assert (fillmissing (' foo bar ', "constant", 'X', "missinglocations", logical ([1, 0, 0, 0, 1, 0, 0, 0, 1])), 'XfooXbarX')
+%!assert (fillmissing ([' foo'; 'bar '], "constant", 'X', "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['Xfoo'; 'barX'])
+%!assert (fillmissing ([' foo'; 'bar '], "next", "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['bfoo'; 'bar '])
+%!assert (fillmissing ([' foo'; 'bar '], "next", 1, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['bfoo'; 'bar '])
+%!assert (fillmissing ([' foo'; 'bar '], "previous", "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'baro'])
+%!assert (fillmissing ([' foo'; 'bar '], "previous", 1, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'baro'])
+%!assert (fillmissing ([' foo'; 'bar '], "nearest", "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['bfoo'; 'baro'])
+%!assert (fillmissing ([' foo'; 'bar '], "nearest", 1, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['bfoo'; 'baro'])
+%!assert (fillmissing ([' foo'; 'bar '], "next", 2, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['ffoo'; 'bar '])
+%!assert (fillmissing ([' foo'; 'bar '], "previous", 2, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'barr'])
+%!assert (fillmissing ([' foo'; 'bar '], "nearest", 2, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), ['ffoo'; 'barr'])
+%!assert (fillmissing ([' foo'; 'bar '], "next", 3, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'bar '])
+%!assert (fillmissing ([' foo'; 'bar '], "previous", 3, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'bar '])
+%!assert (fillmissing ([' foo'; 'bar '], "nearest", 3, "missinglocations", logical ([1, 0, 0, 0; 0, 0, 0, 1])), [' foo'; 'bar '])
+%!assert (fillmissing ({'foo', 'bar'}, "constant", 'a'), {'foo', 'bar'})
+%!assert (fillmissing ({'foo', 'bar'}, "constant", {'a'}), {'foo', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "constant", 'a'), {'foo', 'a', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "constant", {'a'}), {'foo', 'a', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "previous"), {'foo', 'foo', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "next"), {'foo', 'bar', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "nearest"), {'foo', 'bar', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 2), {'foo', 'foo', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "next", 2), {'foo', 'bar', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "nearest", 2), {'foo', 'bar', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 1), {'foo', '', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "previous", 1), {'foo', '', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "next", 1), {'foo', '', 'bar'})
+%!assert (fillmissing ({'foo', '', 'bar'}, "nearest", 1), {'foo', '', 'bar'})
+%!assert (fillmissing ('abc ', @(x,y,z) x+y+z, 2, "missinglocations", logical ([0, 0, 0, 1])), 'abcj')
+%!assert (fillmissing ({'foo', '', 'bar'}, @(x,y,z) x(1), 3), {'foo', 'foo', 'bar'})
 
 %!test
-%! [A, idx] = fillmissing (" a b c", "constant", " ");
-%! assert (A, " a b c");
+%! [A, idx] = fillmissing (' a b c', "constant", ' ', "missinglocations", logical ([1, 0, 1, 0, 1, 0]));
+%! assert (A, ' a b c');
+%! assert (idx, logical ([1, 0, 1, 0, 1, 0]));
+%!test
+%! [A, idx] = fillmissing (' a b c', "constant", ' ');
+%! assert (A, ' a b c');
 %! assert (idx, logical ([0, 0, 0, 0, 0, 0]));
-%! [A, idx] = fillmissing ({"foo", "", "bar", ""}, "constant", "");
-%! assert (A, {"foo", "", "bar", ""});
+%!test
+%! [A, idx] = fillmissing ({'foo', '', 'bar', ''}, "constant", '');
+%! assert (A, {'foo', '', 'bar', ''});
 %! assert (idx, logical ([0, 0, 0, 0]));
-%! [A, idx] = fillmissing ({"foo", "", "bar", ""}, "constant", {""});
-%! assert (A, {"foo", "", "bar", ""});
+%!test
+%! [A, idx] = fillmissing ({'foo', '', 'bar', ''}, "constant", {''});
+%! assert (A, {'foo', '', 'bar', ''});
 %! assert (idx, logical ([0, 0, 0, 0]));
-%! [A,idx] = fillmissing (" f o o ", @(x,y,z) repelem ("a", numel (z)), 3);
-%! assert (A, "afaoaoa");
+%!test
+%! [A, idx] = fillmissing (' f o o ', @(x,y,z) repelem ('a', numel (z)), 3, "missinglocations", logical ([1, 0, 1, 0, 1, 0, 1]));
+%! assert (A, 'afaoaoa');
 %! assert (idx, logical ([1, 0, 1, 0, 1, 0, 1]));
-%! [A,idx] = fillmissing (" f o o ", @(x,y,z) repelem (" ", numel (z)), 3);
-%! assert (A, " f o o ");
+%!test
+%! [A, idx] = fillmissing (' f o o ', @(x,y,z) repelem (' ', numel (z)), 3);
+%! assert (A, ' f o o ');
 %! assert (idx, logical ([0, 0, 0, 0, 0, 0, 0]));
-%! [A,idx] = fillmissing ({"", "foo", ""}, @(x,y,z) repelem ({"a"}, numel (z)), 3);
+%!test
+%! [A, idx] = fillmissing ({'', 'foo', ''}, @(x,y,z) repelem ({'a'}, numel (z)), 3);
 %! assert (A, {"a", "foo", "a"});
 %! assert (idx, logical ([1, 0, 1]));
-%! [A,idx] = fillmissing ({"", "foo", ""}, @(x,y,z) repelem ({""}, numel (z)), 3);
-%! assert (A, {"", "foo", ""});
+%!test
+%! [A, idx] = fillmissing ({'', 'foo', ''}, @(x,y,z) repelem ({''}, numel (z)), 3);
+%! assert (A, {'', 'foo', ''});
 %! assert (idx, logical ([0, 0, 0]));
 
 ## Types without a defined 'missing' (currently logical, int) that can be filled
