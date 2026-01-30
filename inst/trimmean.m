@@ -110,9 +110,14 @@ function m = trimmean (x, p, varargin)
     dim = varargin{2};
   endif
 
+  ## Force row vector to column vector
+  if (isrow (x))
+    x = x';
+  endif
+
   ## Get size of X
   szx = size (x);
-  ndx = numel (szx);
+  ndx = ndims (x);
 
   ## Handle special case X = []
   if (isempty (x))
@@ -135,6 +140,8 @@ function m = trimmean (x, p, varargin)
   if (strcmpi (dim, "all"))
     x = x(:);
     dim = 1;
+    szx = size (x);
+    ndx = 2;
   endif
   if (! (isvector (dim) && all (dim > 0) && all (rem (dim, 1) == 0)))
     error ("trimmean: DIM must be a positive integer scalar or vector.");
@@ -335,6 +342,9 @@ endfunction
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [2, 3, 5]);
 %! assert (out, [18.5; 2.3750; 3.2857; 24; 22.5], 1e-4);
+
+## Test bug reported in PR #381
+%!assert (trimmean ([1, 2, 3, 4, 5], 40), 3)
 
 ## Test special cases
 %!assert (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape(1:40, [5, 4, 2]))
