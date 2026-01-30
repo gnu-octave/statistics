@@ -310,6 +310,7 @@ Regression
  cholcov
  dcov
  factoran
+ formulaparser
  glmfit
  glmval
  logistic_regression
