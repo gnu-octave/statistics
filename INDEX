@@ -310,12 +310,12 @@ Regression
  cholcov
  dcov
  factoran
- formulaparser
  glmfit
  glmval
  logistic_regression
  mnrfit
  monotone_smooth
+ parseWilkinsonFormula
  pca
  pcacov
  pcares

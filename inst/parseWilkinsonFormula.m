@@ -17,9 +17,9 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{terms} =} formulaparser (@var{formula})
-## @deftypefnx {statistics} {@var{result} =} formulaparser (@var{formula}, @var{mode})
-## @deftypefnx {statistics} {[@var{X}, @var{y}, @var{names}] =} formulaparser (@var{formula}, "model_matrix", @var{data})
+## @deftypefn  {statistics} {@var{terms} =} parseWilkinsonFormula (@var{formula})
+## @deftypefnx {statistics} {@var{result} =} parseWilkinsonFormula (@var{formula}, @var{mode})
+## @deftypefnx {statistics} {[@var{X}, @var{y}, @var{names}] =} parseWilkinsonFormula (@var{formula}, "model_matrix", @var{data})
 ##
 ## Parse and expand statistical model formulae using the Wilkinson & Rogers notation.
 ##
@@ -80,12 +80,12 @@
 ##
 ## @end deftypefn
 
-function varargout = formulaparser (varargin)
+function varargout = parseWilkinsonFormula (varargin)
 
   if (nargin < 1)
-    error ("formulaparser: Input formula string is required.");
+    error ("parseWilkinsonFormula: Input formula string is required.");
   elseif (nargin > 3)
-    error ("formulaparser: Too many input arguments.");
+    error ("parseWilkinsonFormula: Too many input arguments.");
   endif
 
   formula_str = varargin{1};
@@ -111,13 +111,13 @@ function varargout = formulaparser (varargin)
          && strcmp (tree.left.type, "OPERATOR") && strcmp (tree.left.value, "~")) ...
         || (! isempty (tree.right) && isstruct (tree.right) ...
          && strcmp (tree.right.type, "OPERATOR") && strcmp (tree.right.value, "~")))
-      error ("formulaparser: Unexpected token");
+      error ("parseWilkinsonFormula: Unexpected token");
     endif
   endif
 
   ## Check for Trailing (EOF)
   if (curr <= length (tokens) && ! strcmp (tokens(curr).type, "EOF"))
-    error ("formulaparser: Unexpected token");
+    error ("parseWilkinsonFormula: Unexpected token");
   endif
 
   ## Mode specific Processing
@@ -146,7 +146,7 @@ function varargout = formulaparser (varargin)
 
       ## Compile with Data
       if (nargin < 3)
-        error ("formulaparser: 'model_matrix' mode requires a Data Table.");
+        error ("parseWilkinsonFormula: 'model_matrix' mode requires a Data Table.");
       endif
 
       data_table = varargin{3};
@@ -157,7 +157,7 @@ function varargout = formulaparser (varargin)
       if (nargout > 2), varargout{3} = names; endif
 
     otherwise
-      error ("formulaparser: Unknown mode: %s", mode);
+      error ("parseWilkinsonFormula: Unknown mode: %s", mode);
   endswitch
 
 endfunction
@@ -271,7 +271,7 @@ function tokens = run_lexer (formula_str)
       case ')'
         type = "RPAREN";
       otherwise
-        error ("formulaparser: Unexpected character '%s' at position %d", c, i);
+        error ("parseWilkinsonFormula: Unexpected character '%s' at position %d", c, i);
     endswitch
 
     tok_idx = tok_idx + 1;
@@ -297,7 +297,7 @@ function [tree, curr] = run_parser (tokens, curr, prec_limit)
 
   n = length (tokens);
   if (curr > n)
-    error ("formulaparser: Unexpected End Of Formula.");
+    error ("parseWilkinsonFormula: Unexpected End Of Formula.");
   endif
 
   t = tokens(curr);
@@ -329,7 +329,7 @@ function [tree, curr] = run_parser (tokens, curr, prec_limit)
       if (curr <= n && strcmp (tokens(curr).type, "RPAREN"))
         curr = curr + 1;
       else
-        error ("formulaparser: Missing ')' for function call '%s'.", func_name);
+        error ("parseWilkinsonFormula: Missing ')' for function call '%s'.", func_name);
       endif
 
       tree.type = "FUNCTION";
@@ -365,13 +365,13 @@ function [tree, curr] = run_parser (tokens, curr, prec_limit)
     if (curr <= n && strcmp (tokens(curr).type, "RPAREN"))
       curr = curr + 1;
     else
-      error ("formulaparser: Mismatched Parentheses. Missing ')'.");
+      error ("parseWilkinsonFormula: Mismatched Parentheses. Missing ')'.");
     endif
 
   elseif (strcmp (t.type, "EOF"))
-    error ("formulaparser: Unexpected End Of Formula.");
+    error ("parseWilkinsonFormula: Unexpected End Of Formula.");
   else
-    error ("formulaparser: Syntax Error. Unexpected token: '%s'", t.value);
+    error ("parseWilkinsonFormula: Syntax Error. Unexpected token: '%s'", t.value);
   endif
 
   ## Operator Handling
@@ -485,7 +485,7 @@ function result = run_expander (node)
       case "^"
         base_terms = run_expander (node.left);
         if (! strcmp (node.right.type, "NUMBER"))
-          error ("formulaparser: Exponent must be a number.");
+          error ("parseWilkinsonFormula: Exponent must be a number.");
         endif
 
         power_val = str2double (node.right.value);
@@ -513,12 +513,12 @@ function result = run_expander (node)
         result = list_difference (lhs, rhs, "margin");
 
       otherwise
-        error ("formulaparser: Unknown operator '%s'", node.value);
+        error ("parseWilkinsonFormula: Unknown operator '%s'", node.value);
     endswitch
     return;
   endif
 
-  error ("formulaparser: Corrupt Tree.");
+  error ("parseWilkinsonFormula: Corrupt Tree.");
 
 endfunction
 
@@ -704,7 +704,7 @@ function schema = run_schema_builder (expanded)
 
     [found, idx] = ismember (vars_in_this_term, all_vars);
     if (any (! found))
-      error ("formulaparser: Unknown variable in term definition.");
+      error ("parseWilkinsonFormula: Unknown variable in term definition.");
     endif
     terms_mat(i, idx) = 1;
   endfor
@@ -745,7 +745,7 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     valid_mask = true (n_total, 1);
   else
     if (! check_has_var (req_vars{1}))
-      error ("formulaparser: Unknown variable '%s' in Data Table.", req_vars{1});
+      error ("parseWilkinsonFormula: Unknown variable '%s' in Data Table.", req_vars{1});
     endif
 
     n_total = length (data.(req_vars{1}));
@@ -761,7 +761,7 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
   if (! isempty (schema.ResponseIdx))
     y_name = req_vars{schema.ResponseIdx};
     if (! check_has_var (y_name))
-      error ("formulaparser: Unknown variable '%s' in Data Table.", y_name);
+      error ("parseWilkinsonFormula: Unknown variable '%s' in Data Table.", y_name);
     endif
 
     y_col = data.(y_name);
@@ -913,35 +913,35 @@ endfunction
 %! ## Demo : Tokenizer Mode
 %! ## Inspects the raw tokens generated from a formula string.
 %! formula = "y ~ A * (B + c)";
-%! tokens = formulaparser (formula, "tokenize");
+%! tokens = parseWilkinsonFormula (formula, "tokenize");
 %! display (tokens);
 
 %!demo
 %! ## Demo : Parser Mode (AST generation)
 %! ## Returns the Abstract Syntax Tree (AST) structure.
 %! formula = "A / B";
-%! tree = formulaparser (formula, "parse");
+%! tree = parseWilkinsonFormula (formula, "parse");
 %! display (tree);
 
 %!demo
 %! ## Demo : Expansion Mode (Crossings)
 %! ## Demonstrates standard Wilkinson expansion for interactions.
 %! formula = "A * B * C";
-%! terms = formulaparser (formula, "expand");
+%! terms = parseWilkinsonFormula (formula, "expand");
 %! disp (terms.model);
 
 %!demo
 %! ## Demo : Expansion Mode (Nesting)
 %! ## Demonstrates hierarchical nesting logic.
 %! formula = "Block / Plot / Subplot";
-%! terms = formulaparser (formula, "expand");
+%! terms = parseWilkinsonFormula (formula, "expand");
 %! disp (terms.model);
 
 %!demo
 %! ## Demo : Matrix Schema Mode
 %! ## Generates the binary terms matrix (Row = Term, Col = Variable).
 %! formula = "y ~ Age + Height + Age:Height";
-%! schema = formulaparser (formula, "matrix");
+%! schema = parseWilkinsonFormula (formula, "matrix");
 %! disp (schema.VariableNames);
 %! disp (schema.Terms);
 
@@ -951,7 +951,7 @@ endfunction
 %! d_reg.BP = [120; 122; 128; 130; 125];
 %! d_reg.Age = [25; 30; 35; 40; 32];
 %! d_reg.Weight = [70; 75; 80; 85; 78];
-%! [X, y, names] = formulaparser ("BP ~ Age * Weight", "model_matrix", d_reg);
+%! [X, y, names] = parseWilkinsonFormula ("BP ~ Age * Weight", "model_matrix", d_reg);
 %! disp (names);
 %! disp (X);
 
@@ -960,7 +960,7 @@ endfunction
 %! ## Automatically handles categorical variables (dummy coding).
 %! d_cat.Yield = [10; 12; 15; 14; 11; 13];
 %! d_cat.Variety = {"A"; "A"; "B"; "B"; "C"; "C"};
-%! [X, y, names] = formulaparser ("Yield ~ Variety", "model_matrix", d_cat);
+%! [X, y, names] = parseWilkinsonFormula ("Yield ~ Variety", "model_matrix", d_cat);
 %! disp (names);
 %! disp (X);
 
@@ -970,124 +970,124 @@ endfunction
 %! d_mix.Growth = [1.2; 1.4; 1.1; 1.8];
 %! d_mix.Fertilizer = {"Old"; "Old"; "New"; "New"};
 %! d_mix.Dose = [10; 20; 10; 20];
-%! [X, ~, names] = formulaparser ("Growth ~ Fertilizer * Dose", "model_matrix", d_mix);
+%! [X, ~, names] = parseWilkinsonFormula ("Growth ~ Fertilizer * Dose", "model_matrix", d_mix);
 %! disp (names);
 %! disp (X);
 
 %!test
 %! ## Test : Identifiers with numbers and underscores
-%! tokens = formulaparser ("Yield ~ Var_1 + A2_B", "tokenize");
+%! tokens = parseWilkinsonFormula ("Yield ~ Var_1 + A2_B", "tokenize");
 %! vals = {tokens.value};
 %! assert (vals, {"Yield", "~", "Var_1", "+", "A2_B", "EOF"});
 %!test
 %! ## Test : Floating point numbers
-%! tokens = formulaparser ("y ~ 0.5 * A", "tokenize");
+%! tokens = parseWilkinsonFormula ("y ~ 0.5 * A", "tokenize");
 %! vals = {tokens.value};
 %! assert (vals, {"y", "~", "0.5", "*", "A", "EOF"});
 %!test
 %! ## Test : Whitespace insensitivity
-%! t1 = formulaparser ("A*B", "tokenize");
-%! t2 = formulaparser ("A   * B", "tokenize");
+%! t1 = parseWilkinsonFormula ("A*B", "tokenize");
+%! t2 = parseWilkinsonFormula ("A   * B", "tokenize");
 %! assert ({t1.value}, {t2.value});
 %!test
 %! ## Test : Precedence 
-%! t = formulaparser ("A + B * C . D", "expand");
+%! t = parseWilkinsonFormula ("A + B * C . D", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"A", "B", "C:D", "B:C:D"}));
 %!test
 %! ## Test : Parentheses Override
-%! t = formulaparser ("(A + B) . C", "expand");
+%! t = parseWilkinsonFormula ("(A + B) . C", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"A:C", "B:C"}));
 %!test
 %! ## Test : Crossing Operator (*)
-%! t = formulaparser ("A * B", "expand");
+%! t = parseWilkinsonFormula ("A * B", "expand");
 %! assert (length (t), 3);
-%! t3 = formulaparser ("A * B * C", "expand");
+%! t3 = parseWilkinsonFormula ("A * B * C", "expand");
 %! assert (length (t3), 7);
 %!test
 %! ## Test : Nesting Operator (/)
-%! t = formulaparser ("Field / Plot", "expand");
+%! t = parseWilkinsonFormula ("Field / Plot", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"Field", "Field:Plot"}));
 %!test
 %! ## Test : Multi-level Nesting
-%! t = formulaparser ("Block / Plot / Subplot", "expand");
+%! t = parseWilkinsonFormula ("Block / Plot / Subplot", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"Block", "Block:Plot", "Block:Plot:Subplot"}));
 %!test
 %! ## Test : Interaction Operator (.)
-%! t = formulaparser ("A . B", "expand");
+%! t = parseWilkinsonFormula ("A . B", "expand");
 %! assert (length (t), 1);
 %! assert (t{1}, {"A", "B"});
 %!test
 %! ## Test : Power operator on cube.
-%! t = formulaparser ("(A + B + C)^3", "expand");
+%! t = parseWilkinsonFormula ("(A + B + C)^3", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! expected = sort ({"A", "B", "C", "A:B", "A:C", "B:C", "A:B:C"});
 %! assert (sort (terms), expected);
 %!test
 %! ## Test : Power Operator.
-%! t = formulaparser ("(A + B + C)^2", "expand");
+%! t = parseWilkinsonFormula ("(A + B + C)^2", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (! ismember ("A:B:C", terms));
 %! assert (ismember ("A:B", terms));
 %!test
 %! ## Test : Redundancy Check
-%! t1 = formulaparser ("A + A", "expand");
+%! t1 = parseWilkinsonFormula ("A + A", "expand");
 %! assert (length (t1), 1);
-%! t2 = formulaparser ("A * A", "expand");
+%! t2 = parseWilkinsonFormula ("A * A", "expand");
 %! assert (length (t2), 1);
 %!test
 %! ## Test : Deletion - Exact (-)
-%! t = formulaparser ("A * B - A", "expand");
+%! t = parseWilkinsonFormula ("A * B - A", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"B", "A:B"}));
 %!test
 %! ## Test : Deletion - Clean (-*)
-%! t = formulaparser ("A * B -* A", "expand");
+%! t = parseWilkinsonFormula ("A * B -* A", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), {"B"});
 %!test
 %! ## Test : Deletion - Marginal (-/)
-%! t = formulaparser ("A * B -/ A", "expand");
+%! t = parseWilkinsonFormula ("A * B -/ A", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (sort (terms), sort ({"A", "B"}));
 %!test
 %! ## Test : Deletion - Complex Sequence
-%! t = formulaparser ("A*B*C - A:B:C", "expand");
+%! t = parseWilkinsonFormula ("A*B*C - A:B:C", "expand");
 %! assert (length (t), 6);
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! assert (! ismember ("A:B:C", terms));
 %! assert (ismember ("A:B", terms));
 %!test
 %! ## Test : LHS and RHS Identification
-%! s = formulaparser ("logY ~ A + B", "matrix");
+%! s = parseWilkinsonFormula ("logY ~ A + B", "matrix");
 %! assert (s.VariableNames{s.ResponseIdx}, "logY");
 %! assert (any (strcmp ("A", s.VariableNames)));
 %!test
 %! ## Test : No Response Variable
-%! s = formulaparser ("~ A + B", "matrix");
+%! s = parseWilkinsonFormula ("~ A + B", "matrix");
 %! assert (isempty (s.ResponseIdx));
 %!test
 %! ## Test : Intercept Handling
-%! s1 = formulaparser ("~ A", "matrix");
+%! s1 = parseWilkinsonFormula ("~ A", "matrix");
 %! assert (any (all (s1.Terms == 0, 2)));
-%! s2 = formulaparser ("~ A - 1", "matrix");
+%! s2 = parseWilkinsonFormula ("~ A - 1", "matrix");
 %! assert (! any (all (s2.Terms == 0, 2)));
 %!test
 %! ## Test : Numeric Interaction
 %! d.y = [1;2;3;4;5];
 %! d.X1 = [1;2;1;2;1];
 %! d.X2 = [10;10;20;20;10];
-%! [M, ~, ~] = formulaparser ("y ~ X1:X2", "model_matrix", d);
+%! [M, ~, ~] = parseWilkinsonFormula ("y ~ X1:X2", "model_matrix", d);
 %! assert (size (M), [5, 2]);
 %! assert (M(:, 2), d.X1 .* d.X2);
 %!test
 %! ## Test : Categorical Expansion
 %! d.y = [1;1;1];
 %! d.G = {"A"; "B"; "C"};
-%! [M, ~, names] = formulaparser ("~ G", "model_matrix", d);
+%! [M, ~, names] = parseWilkinsonFormula ("~ G", "model_matrix", d);
 %! assert (size (M, 2), 3);
 %! assert (names, {"(Intercept)"; "G_B"; "G_C"});
 %!test
@@ -1095,7 +1095,7 @@ endfunction
 %! d.y = [1;2;3;4];
 %! d.F1 = {"a";"b";"a";"b"};
 %! d.F2 = {"x";"x";"y";"y"};
-%! [M, ~, ~] = formulaparser ("~ F1 * F2", "model_matrix", d);
+%! [M, ~, ~] = parseWilkinsonFormula ("~ F1 * F2", "model_matrix", d);
 %! assert (size (M, 2), 4);
 %! assert (rank (M), 4);
 %!test
@@ -1103,12 +1103,12 @@ endfunction
 %! d.y = [1;2];
 %! d.N = [10; 20];
 %! d.C = {"lo"; "hi"};
-%! [M, ~, names] = formulaparser ("~ N * C", "model_matrix", d);
+%! [M, ~, names] = parseWilkinsonFormula ("~ N * C", "model_matrix", d);
 %! assert (any (strcmp (names, "C_lo:N")));
 %!test
 %! ## Test : Intercept Only Model
 %! d.y = [1; 2; 3];
-%! [X, ~, names] = formulaparser ("y ~ 1", "model_matrix", d);
+%! [X, ~, names] = parseWilkinsonFormula ("y ~ 1", "model_matrix", d);
 %! assert (size (X, 2), 1);
 %! assert (names, {"(Intercept)"});
 %! assert (all (X == 1));
@@ -1117,13 +1117,13 @@ endfunction
 %! d.y = [1; 2; 3; 4];
 %! d.A = [1; 1; NaN; 1];
 %! d.B = [10; 20; 30; NaN];
-%! [X, y_out, ~] = formulaparser ("y ~ A", "model_matrix", d);
+%! [X, y_out, ~] = parseWilkinsonFormula ("y ~ A", "model_matrix", d);
 %! assert (length (y_out), 3);
 %! assert (y_out(3), 4);
 %! assert (size (X, 1), 3);
 %!test
 %! ## Test : Nesting with Groups
-%! t = formulaparser ("A / (B + C)", "expand");
+%! t = parseWilkinsonFormula ("A / (B + C)", "expand");
 %! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
 %! expected = sort ({"A", "A:B", "A:C"});
 %! assert (sort (terms), expected);
@@ -1131,12 +1131,12 @@ endfunction
 %! ## Test : Variable Name Collision
 %! d.Var = [1; 1];
 %! d.Var_1 = [2; 2];
-%! [~, ~, names] = formulaparser ("~ Var + Var_1", "model_matrix", d);
+%! [~, ~, names] = parseWilkinsonFormula ("~ Var + Var_1", "model_matrix", d);
 %! assert (any (strcmp (names, "Var")));
 %! assert (any (strcmp (names, "Var_1")));
 %!test
 %! ## Test : One-argument call 
-%! result = formulaparser ("A * B");
+%! result = parseWilkinsonFormula ("A * B");
 %! expected = sort ({"A", "B", "A:B"});
 %! actual = cellfun (@(x) strjoin(sort(x), ":"), result, "UniformOutput", false);
 %! assert (sort (actual), expected);
@@ -1147,24 +1147,24 @@ endfunction
 %! BP = [120; 122; 128; 130; 135];
 %! T = table (Age, Weight, BP);
 %! formula = "BP ~ Age * Weight";
-%! [X, y, names] = formulaparser (formula, "model_matrix", T);
+%! [X, y, names] = parseWilkinsonFormula (formula, "model_matrix", T);
 %! assert (size (X), [5, 4]);
 %! assert (y, BP);
 %! assert (any (strcmp ("Age", names)));
 %! assert (any (strcmp ("Weight", names)));
 %! assert (names{1}, "(Intercept)");
-%!error <Input formula string is required> formulaparser ()
-%!error <Unknown mode> formulaparser ("y ~ x", "invalid_mode")
-%!error <Unexpected End Of Formula> formulaparser ("", "parse")
-%!error <Unexpected End Of Formula> formulaparser ("A +", "parse")
-%!error <Unexpected End Of Formula> formulaparser ("A *", "parse")
-%!error <Unexpected End Of Formula> formulaparser ("A .", "parse")
-%!error <Unexpected End Of Formula> formulaparser ("A /", "parse")
-%!error <Exponent must be a number> formulaparser ("(A+B)^C", "expand")
-%!error <Mismatched Parentheses> formulaparser ("(A + B", "parse")
-%!error <formulaparser: Unexpected token> formulaparser ("A + B)", "parse")
-%!error <Unexpected token> formulaparser ("( )", "parse")
-%!error <Unexpected token> formulaparser ("A + * B", "parse")
-%!error <Unexpected token> formulaparser ("y ~ x ~ z", "parse")
-%!error <'model_matrix' mode requires a Data Table> formulaparser ("~ A", "model_matrix")
-%!error <Unknown variable> d.x=1; formulaparser ("~ Z", "model_matrix", d)
+%!error <Input formula string is required> parseWilkinsonFormula ()
+%!error <Unknown mode> parseWilkinsonFormula ("y ~ x", "invalid_mode")
+%!error <Unexpected End Of Formula> parseWilkinsonFormula ("", "parse")
+%!error <Unexpected End Of Formula> parseWilkinsonFormula ("A +", "parse")
+%!error <Unexpected End Of Formula> parseWilkinsonFormula ("A *", "parse")
+%!error <Unexpected End Of Formula> parseWilkinsonFormula ("A .", "parse")
+%!error <Unexpected End Of Formula> parseWilkinsonFormula ("A /", "parse")
+%!error <Exponent must be a number> parseWilkinsonFormula ("(A+B)^C", "expand")
+%!error <Mismatched Parentheses> parseWilkinsonFormula ("(A + B", "parse")
+%!error <parseWilkinsonFormula: Unexpected token> parseWilkinsonFormula ("A + B)", "parse")
+%!error <Unexpected token> parseWilkinsonFormula ("( )", "parse")
+%!error <Unexpected token> parseWilkinsonFormula ("A + * B", "parse")
+%!error <Unexpected token> parseWilkinsonFormula ("y ~ x ~ z", "parse")
+%!error <'model_matrix' mode requires a Data Table> parseWilkinsonFormula ("~ A", "model_matrix")
+%!error <Unknown variable> d.x=1; parseWilkinsonFormula ("~ Z", "model_matrix", d)
