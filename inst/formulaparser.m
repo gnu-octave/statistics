@@ -256,6 +256,8 @@ function tokens = run_lexer (formula_str)
         endif
       case '*'
         type = "OP_CROSS";
+      case '^'
+        type = "OP_POWER";
       case '/'
         type = "OP_NEST";
       case '+'
@@ -378,7 +380,9 @@ function [tree, curr] = run_parser (tokens, curr, prec_limit)
     op_prec = 0;
 
     ## precedences
-    if (strcmp (op_type, "OP_DOT"))
+    if (strcmp (op_type, "OP_POWER"))
+      op_prec = 60;
+    elseif (strcmp (op_type, "OP_DOT"))
       op_prec = 50;
     elseif (strcmp (op_type, "OP_NEST"))
       op_prec = 40;
@@ -477,6 +481,22 @@ function result = run_expander (node)
         interaction = list_product (lhs, rhs);
         step1 = list_union (lhs, rhs);
         result = list_union (step1, interaction);
+      
+      case "^"
+        base_terms = run_expander (node.left);
+        if (! strcmp (node.right.type, "NUMBER"))
+          error ("formulaparser: Exponent must be a number.");
+        endif
+
+        power_val = str2double (node.right.value);
+        result = base_terms;
+        
+        ## Repeatedly apply Crossing.
+        for k = 2:power_val
+           interaction = list_product (result, base_terms);
+           step1 = list_union (result, base_terms);
+           result = list_union (step1, interaction);
+        endfor
 
       case "/"  
         max_L = get_maximal_terms (lhs); 
@@ -1001,6 +1021,18 @@ endfunction
 %! assert (length (t), 1);
 %! assert (t{1}, {"A", "B"});
 %!test
+%! ## Test : Power operator on cube.
+%! t = formulaparser ("(A + B + C)^3", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! expected = sort ({"A", "B", "C", "A:B", "A:C", "B:C", "A:B:C"});
+%! assert (sort (terms), expected);
+%!test
+%! ## Test : Power Operator.
+%! t = formulaparser ("(A + B + C)^2", "expand");
+%! terms = cellfun (@(x) strjoin(sort(x), ":"), t, "UniformOutput", false);
+%! assert (! ismember ("A:B:C", terms));
+%! assert (ismember ("A:B", terms));
+%!test
 %! ## Test : Redundancy Check
 %! t1 = formulaparser ("A + A", "expand");
 %! assert (length (t1), 1);
@@ -1128,6 +1160,7 @@ endfunction
 %!error <Unexpected End Of Formula> formulaparser ("A *", "parse")
 %!error <Unexpected End Of Formula> formulaparser ("A .", "parse")
 %!error <Unexpected End Of Formula> formulaparser ("A /", "parse")
+%!error <Exponent must be a number> formulaparser ("(A+B)^C", "expand")
 %!error <Mismatched Parentheses> formulaparser ("(A + B", "parse")
 %!error <formulaparser: Unexpected token> formulaparser ("A + B)", "parse")
 %!error <Unexpected token> formulaparser ("( )", "parse")
