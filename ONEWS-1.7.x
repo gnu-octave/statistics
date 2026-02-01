@@ -49,7 +49,7 @@
  Improvements:
  =============
 
- ** BinomialDistribution: fixed computations on truncated distribution
+ ** BinomialDistribution: fix computations on truncated distribution
                           methods (github issue #128)
 
  ** ClassificationKNN: new methods and various bug fixes
