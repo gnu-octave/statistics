@@ -254,11 +254,11 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
 																							Distance, DistParameter, true, r);
       if (SI)
         [sorted_D, sort_idx] = sort (temp_D);
-        idx{i} = temp_idx(sort_idx);
-        dist{i} = sorted_D;
+        idx{i} = temp_idx(sort_idx)(:).';
+        dist{i} = sorted_D(:).';
       else
-        idx{i} = temp_idx;
-        dist{i} = temp_D;
+        idx{i} = temp_idx(:).';
+        dist{i} = temp_D(:).';
       endif
     endfor
   else
@@ -523,6 +523,14 @@ endfunction
 %! assert (D{1}, [0, 0, 0]);
 %! assert (D{2}, [0, 0, 0]);
 %! assert (D{3}, [0, 0, 0]);
+%!test
+%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree", "SortIndices", true);
+%! assert (idx, {[1, 4, 2]; [1, 4]});
+%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%!test
+%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree", "SortIndices", false);
+%! assert (idx, {[1, 2, 4]; [1, 4]});
+%! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)
