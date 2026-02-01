@@ -603,6 +603,23 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
   endif
   indices = [];
   distances = [];
+
+  ## Precompute distance function based on metric
+  dist_lower = lower (dist);
+  switch (dist_lower)
+    case "euclidean"
+      compute_dists = @(leaf_X) sqrt (sum ((leaf_X - query) .^ 2, 2));
+    case "cityblock"
+      compute_dists = @(leaf_X) sum (abs (leaf_X - query), 2);
+    case "chebychev"
+      compute_dists = @(leaf_X) max (abs (leaf_X - query), [], 2);
+    case "minkowski"
+      p = distparam;
+      compute_dists = @(leaf_X) sum (abs (leaf_X - query) .^ p, 2) .^ (1/p);
+    otherwise
+      error ("search_kdtree: unsupported distance metric.");
+  endswitch
+
   search (node, 0);
 
   function search (node, depth)
@@ -612,23 +629,36 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
 
     if (isfield (node, 'indices'))
       leaf_indices = node.indices;
-      if (strcmpi (dist, "minkowski"))
-        dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
-      else
-        dists = pdist2 (X(leaf_indices,:), query, dist);
-      endif
+      dists = compute_dists (X(leaf_indices,:));
       if (is_range)
         mask = dists <= r;
         indices = [indices; leaf_indices(mask)'];
         distances = [distances; dists(mask)];
       else
-        indices = [indices; leaf_indices'];
-        distances = [distances; dists];
-        if (length (distances) > k)
-          [distances, sort_idx] = sort (distances);
-          indices = indices(sort_idx);
-          distances = distances(1:k);
-          indices = indices(1:k);
+        ## Early rejection: only add candidates that could enter top-K
+        if (length (distances) >= k)
+          max_dist = distances(end);
+          mask = dists < max_dist;
+          if (any (mask))
+            indices = [indices; leaf_indices(mask)'];
+            distances = [distances; dists(mask)];
+            [distances, sort_idx] = sort (distances);
+            indices = indices(sort_idx);
+            distances = distances(1:k);
+            indices = indices(1:k);
+          endif
+        else
+          indices = [indices; leaf_indices'];
+          distances = [distances; dists];
+          if (length (distances) > k)
+            [distances, sort_idx] = sort (distances);
+            indices = indices(sort_idx);
+            distances = distances(1:k);
+            indices = indices(1:k);
+          elseif (length (distances) == k)
+            [distances, sort_idx] = sort (distances);
+            indices = indices(sort_idx);
+          endif
         endif
       endif
     else
