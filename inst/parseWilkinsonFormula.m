@@ -1070,14 +1070,14 @@ endfunction
 %! ## Demonstrates standard Wilkinson expansion for interactions.
 %! formula = "A * B * C";
 %! terms = parseWilkinsonFormula (formula, "expand");
-%! disp (terms.model);
+%! disp (terms); 
 
 %!demo
 %! ## Demo : Expansion Mode (Nesting)
 %! ## Demonstrates hierarchical nesting logic.
 %! formula = "Block / Plot / Subplot";
 %! terms = parseWilkinsonFormula (formula, "expand");
-%! disp (terms.model);
+%! disp (terms);
 
 %!demo
 %! ## Demo : Matrix Schema Mode
