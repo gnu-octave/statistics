@@ -26,19 +26,26 @@
 ## This function implements the recursive-descent parser and expansion logic described
 ## by Wilkinson & Rogers (1973) for factorial models. It allows the symbolic specification
 ## of analysis of variance and regression models, converting strings into computational
-## schemas or design matrices.
+## schemas or design matrices. It supports multi-variable response specification on the
+## Left-Hand Side (LHS) using lists or ranges.
 ##
 ## @strong{Inputs}
 ## @table @var
 ## @item formula
-## A string defining the statistical model (e.g., @code{"y ~ A * B"}).
-## Supported operators include:
+## A string defining the statistical model.
+## @strong{LHS (Response) Operators:}
+## @itemize
+## @item @code{,} : List separator for multiple responses.
+## @item @code{-} : Range operator (selects variables between two columns in @var{data}).
+## @end itemize
+## @strong{RHS (Model) Operators:}
 ## @itemize
 ## @item @code{+} : Term addition (Union of terms).
 ## @item @code{-} : Term deletion (Difference of terms).
 ## @item @code{*} : Crossing (Expands to Main Effects + Interaction).
 ## @item @code{/} : Nesting (Hierarchical relationship).
 ## @item @code{:} : Direct interaction.
+## @item @code{^} : Crossing expansion limit.
 ## @end itemize
 ##
 ## @item mode
@@ -49,7 +56,7 @@
 ## @item "matrix"
 ## Returns a schema structure containing a binary matrix defining term membership.
 ## @item "model_matrix"
-## Constructs the full Design Matrix (@var{X}) and Response vector (@var{y}) based
+## Constructs the full Design Matrix (@var{X}) and Response Matrix (@var{y}) based
 ## on the provided @var{data}. Uses corner-point (reference) coding for categoricals.
 ## @item "parse"
 ## Returns the raw Abstract Syntax Tree (AST).
@@ -59,7 +66,12 @@
 ##
 ## @item data
 ## A structure or table containing the data variables. Required only when @var{mode}
-## is @code{"model_matrix"}. Field names must match variables in the formula.
+## is @code{"model_matrix"}.
+## @itemize
+## @item Field names must match variables in the formula.
+## @item Response variables (LHS) must be numeric.
+## @item Rows containing @code{NaN} are automatically removed.
+## @end itemize
 ## @end table
 ##
 ## @strong{Outputs}
@@ -69,7 +81,7 @@
 ## @item X
 ## The numeric design matrix (observations x parameters).
 ## @item y
-## The response vector (observations x 1).
+## The response matrix (observations x K).
 ## @item names
 ## A cell array of column names corresponding to @var{X}.
 ## @end table
