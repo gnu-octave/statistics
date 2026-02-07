@@ -274,8 +274,19 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
+    ## Create a new figure and ensure it becomes active
+    f = figure ();
+    set (0, "currentfigure", f);
+
+    ## Create a new axes inside this figure and make it current
+    ax = axes ("parent", f);
+    set (f, "currentaxes", ax);
+
+    ## Now boxplot will ALWAYS draw here
     boxplot (x, group_id, "Notch", "on", "Labels", group_names);
+
   endif
+
 endfunction
 
 
