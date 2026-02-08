@@ -577,7 +577,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
     box(indi) = nd;
     if (nd > 1)
       ## Min, max and quartiles
-      s(1:5, indi) = statistics (col)(1:5);
+      ## Calculate the 5-number summary using specific quantiles
+      qs = prctile(col, [0, 25, 50, 75, 100]); 
+      ## Store them in the 's' matrix
+      s(1:5, indi) = qs;
       ## Confidence interval for the median
       est = 1.57 * (s(4, indi) - s(2, indi)) / sqrt (nd);
       s(6, indi) = max ([s(3, indi) - est, s(2, indi)]);
