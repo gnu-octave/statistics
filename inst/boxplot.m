@@ -641,13 +641,25 @@ function [s_o, hs_o] = boxplot (data, varargin)
     box = box .* (widths ./ box);
   endif
   ## Draw notches if desired.
-  quartile_x = ones (11, 1) * groups + ...
-               [-a; -1; -1; 1 ; 1; a; 1; 1; -1; -1; -a] * box;
-  quartile_y = s([3, 7, 4, 4, 7, 3, 6, 2, 2, 6, 3], :);
+  if (notched)
+  ## --- NOTCHED BOX ---
+    xm = [-a; -1; -1;  1;  1;  a;  1;  1; -1; -1; -a];
+    quartile_x = ones (11, 1) * groups + xm * box;
+    quartile_y = s([3, 7, 4, 4, 7, 3, 6, 2, 2, 6, 3], :);
+    median_x = ones (2, 1) * groups + [-a; +a] * box;
+    median_y = s([3, 3], :);
 
-  ## Draw a line through the median
-  median_x = ones (2, 1) * groups + [-a; +a] * box;
-  median_y = s([3, 3], :);
+  else
+    ## --- PLAIN BOX (NO NOTCH) ---
+    xm = [-1; -1;  1;  1;  1; -1; -1; -1;  1;  1; -1];
+    quartile_x = ones (11, 1) * groups + xm * box;
+
+    ##Proper rectangle: top(Q3) → bottom(Q1) → back to top
+    quartile_y = s([4, 4, 4, 2, 2, 2, 4, 4, 4, 4, 4], :);
+
+    median_x = ones (2, 1) * groups + [-1; +1] * box;
+    median_y = s([3, 3], :);
+  endif
 
   ## Chop all boxes which don't have enough stats
   quartile_x(:, chop) = [];
