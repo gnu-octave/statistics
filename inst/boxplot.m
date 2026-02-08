@@ -583,8 +583,9 @@ function [s_o, hs_o] = boxplot (data, varargin)
       s(1:5, indi) = qs;
       ## Confidence interval for the median
       est = 1.57 * (s(4, indi) - s(2, indi)) / sqrt (nd);
-      s(6, indi) = max ([s(3, indi) - est, s(2, indi)]);
-      s(7, indi) = min ([s(3, indi) + est, s(4, indi)]);
+      ## output clipping by deleting min/max constraints
+      s(6, indi) = s(3, indi) - est;
+      s(7, indi) = s(3, indi) + est;
       ## Whiskers out to the last point within the desired inter-quartile range
       IQR = maxwhisker * (s(4, indi) - s(2, indi));
       whisker_y(:, indi) = [min(col(col >= s(2, indi) - IQR)); s(2, indi)];
