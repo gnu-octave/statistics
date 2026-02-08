@@ -5,7 +5,6 @@
 ## Copyright (C) 2016 Pascal Dupuis <cdemills@gmail.com>
 ## Copyright (C) 2020 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2020 Philip Nienhuis (prnienhuis@users.sf.net)
-## Copyright (C) 2026 Anjani Nandan <anjaninandan599@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -179,7 +178,7 @@
 ##
 ## @end deftypefn
 
-function [s_o, hs_o] = boxplot (data, varargin)
+function [s_o, hs_o] = myboxplot (data, varargin)
 
   ## Assign parameter defaults
   if (nargin < 1)
@@ -402,6 +401,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     notched = 0.25;
   endif
   a = 1-notched;
+  
 
   ## Figure out how many data sets we have
   if (isempty (groups))
@@ -577,11 +577,15 @@ function [s_o, hs_o] = boxplot (data, varargin)
     box(indi) = nd;
     if (nd > 1)
       ## Min, max and quartiles
-      s(1:5, indi) = statistics (col)(1:5);
+      % Calculate the 5-number summary using specific quantiles
+      qs = prctile(col, [0, 25, 50, 75, 100]); 
+
+      % Store them in the 's' matrix
+      s(1:5, indi) = qs;
       ## Confidence interval for the median
       est = 1.57 * (s(4, indi) - s(2, indi)) / sqrt (nd);
-      s(6, indi) = max ([s(3, indi) - est, s(2, indi)]);
-      s(7, indi) = min ([s(3, indi) + est, s(4, indi)]);
+      s(6, indi) = s(3, indi) - est;
+      s(7, indi) = s(3, indi) + est;
       ## Whiskers out to the last point within the desired inter-quartile range
       IQR = maxwhisker * (s(4, indi) - s(2, indi));
       whisker_y(:, indi) = [min(col(col >= s(2, indi) - IQR)); s(2, indi)];
@@ -637,13 +641,28 @@ function [s_o, hs_o] = boxplot (data, varargin)
     box = box .* (widths ./ box);
   endif
   ## Draw notches if desired.
-  quartile_x = ones (11, 1) * groups + ...
-               [-a; -1; -1; 1 ; 1; a; 1; 1; -1; -1; -a] * box;
+  if (notched)
+  % --- NOTCHED BOX ---
+  xm = [-a; -1; -1;  1;  1;  a;  1;  1; -1; -1; -a];
+  quartile_x = ones (11, 1) * groups + xm * box;
   quartile_y = s([3, 7, 4, 4, 7, 3, 6, 2, 2, 6, 3], :);
 
-  ## Draw a line through the median
   median_x = ones (2, 1) * groups + [-a; +a] * box;
   median_y = s([3, 3], :);
+
+else
+  % --- PLAIN BOX (NO NOTCH), upstream-compatible ---
+  xm = [-1; -1;  1;  1;  1; -1; -1; -1;  1;  1; -1];
+  quartile_x = ones (11, 1) * groups + xm * box;
+
+  % Proper rectangle: top(Q3) → bottom(Q1) → back to top
+  quartile_y = s([4, 4, 4, 2, 2, 2, 4, 4, 4, 4, 4], :);
+
+  median_x = ones (2, 1) * groups + [-1; +1] * box;
+  median_y = s([3, 3], :);
+
+endif
+
 
   ## Chop all boxes which don't have enough stats
   quartile_x(:, chop) = [];
@@ -664,6 +683,9 @@ function [s_o, hs_o] = boxplot (data, varargin)
     cap_x(2, :) += repmat ((capwid * widths / 8), 1, 2);
   endif
   cap_y = whisker_y([1, 1], :);
+  zero_whisker = abs(whisker_y(1,:) - whisker_y(2,:)) < eps;
+cap_x(:, zero_whisker) = NaN;
+cap_y(:, zero_whisker) = NaN;
 
   ## Calculate coordinates for outlier tags
   outliers_tags_x = outliers_x + 0.08;
@@ -807,7 +829,6 @@ function htags = plot_tags (out_tags_x, out_tags_y, out_idx, out_IDs, ...
   endfor
 
 endfunction
-
 
 function f = fillbox (quartile_y, quartile_x, bcolor)
 
