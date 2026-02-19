@@ -23,9 +23,9 @@
 ## Burr type XII probability density function (PDF).
 ##
 ## For each element of @var{x}, compute the probability density function (PDF)
-## of the Burr type XII distribution with with scale parameter @var{lambda},
-## first shape parameter @var{c}, and second shape parameter @var{k}.  The size
-## of @var{y} is the common size of @var{x}, @var{lambda}, @var{c}, and @var{k}.
+## of the Burr type XII distribution with scale parameter @var{lambda}, first
+## shape parameter @var{c}, and second shape parameter @var{k}.  The size of
+## @var{y} is the common size of @var{x}, @var{lambda}, @var{c}, and @var{k}.
 ##  A scalar input functions as a constant matrix of the same size as the other
 ## inputs.
 ##

@@ -21,7 +21,7 @@
 ##
 ## Fit a Generalized Additive Model (GAM) for binary classification.
 ##
-## @code{@var{Mdl} = fitcgam (@var{X}, @var{Y})} returns a a GAM classification
+## @code{@var{Mdl} = fitcgam (@var{X}, @var{Y})} returns a GAM classification
 ## model, @var{Mdl}, with @var{X} being the predictor data, and @var{Y} the
 ## binary class labels of observations in @var{X}.
 ##

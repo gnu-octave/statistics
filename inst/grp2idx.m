@@ -44,8 +44,8 @@
 ## @var{s}.  Note that in case of a categorical grouping variable, the indexing
 ## integer values might not be continuous, since @var{s} may contain unassigned
 ## categories.  For every other data type, @var{g} will contain integer values
-## in the the range @math{[1:K]}, where @math{K} is the number of distinct
-## groups in @var{s}.
+## in the range @math{[1:K]}, where @math{K} is the number of distinct groups
+## in @var{s}.
 ##
 ## @code{[@var{g}, @var{gn}] = grp2idx (@var{s})} also retuns a cell array of
 ## character vectors @var{gn} representing the list of group names.  The order
