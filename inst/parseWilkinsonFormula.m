@@ -829,14 +829,20 @@ function schema = run_schema_builder (expanded)
     terms_mat(i, idx) = 1;
   endfor
 
-  ## sorting : order by order.
+  ## sorting : order by order (ascending), then by variable sequence (descending)
   term_orders = sum (terms_mat, 2);
   M = [term_orders, terms_mat];
 
+  ## Create unique rows first
   [~, unique_idx] = unique (M, 'rows');
   terms_mat = terms_mat (unique_idx, :);
+  M = M (unique_idx, :);
 
-  [~, sort_idx] = sortrows ([sum(terms_mat, 2), terms_mat]);
+  ## Create the direction vector: [1, -2, -3, -4, ...]
+  sort_dirs = [1, -(2:size(M, 2))];
+
+  ## Sort using the direction vector
+  [~, sort_idx] = sortrows (M, sort_dirs);
   schema.Terms = terms_mat (sort_idx, :);
 
 endfunction
