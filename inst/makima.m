@@ -478,8 +478,17 @@ endfunction
 %! xi = 2.5;
 %! yi = makima (x, y, xi);
 %! assert (yi, 5, 1e-12);
+%!test
+%! ## Extrapolation check.
+%! x = [1; 2; 3];
+%! y = [5; 10; 15];
+%! xi = [0; 4];
+%! yi = makima (x, y, xi, "extrap");
+%! assert (all (isfinite (yi)));
+%! assert (yi, [0; 20], 1e-12);
 %!error <makima: The sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
 %!error <makima: invalid number of inputs> makima (1)
 %!error <makima: The first two inputs must have at least two elements.> makima (1, 2, 1.5)
 %!error <makima: The number of sample points X, 4, is incompatible with the number of values Y, 5.> makima ([1 2 3 4], [1 2 3 4 5], 2)
 %!error <makima: unknown option 'linear'> makima ([1 2 3], [1 2 3], 2, "linear")
+%!error <makima: invalid number of inputs> makima ([1 2 3], [1 2 3], 2, "extrap", "too_many")
