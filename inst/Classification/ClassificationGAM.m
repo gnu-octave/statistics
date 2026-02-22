@@ -1,6 +1,7 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan  <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
