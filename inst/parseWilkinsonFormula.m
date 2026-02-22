@@ -1665,6 +1665,24 @@ endfunction
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
+%!test
+%! ## Verify parseWilkinsonFormula schema matches MATLAB fitlm sorting
+%! formula = 'Y ~ x1 * x2 * x3';
+%! schema = parseWilkinsonFormula(formula, 'matrix');
+%!
+%! ## Expected Octave Binary Matrix (8 rows, 4 columns)
+%! ## Columns are sorted alphabetically by the parser: {'Y', 'x1', 'x2', 'x3'}
+%! expected_terms = [0, 0, 0, 0;  ## (Intercept)
+%!                   0, 1, 0, 0;  ## x1
+%!                   0, 0, 1, 0;  ## x2
+%!                   0, 0, 0, 1;  ## x3
+%!                   0, 1, 1, 0;  ## x1:x2
+%!                   0, 1, 0, 1;  ## x1:x3
+%!                   0, 0, 1, 1;  ## x2:x3
+%!                   0, 1, 1, 1]; ## x1:x2:x3
+%!
+%! assert(schema.VariableNames, {'Y', 'x1', 'x2', 'x3'});
+%! assert(schema.Terms, expected_terms);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
