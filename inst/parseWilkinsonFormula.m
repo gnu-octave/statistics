@@ -201,7 +201,7 @@ function varargout = parseWilkinsonFormula (varargin)
       else
         lhs_vars = resolve_lhs_symbolic (lhs_str);
       endif
-      
+
       ## build the required output.
       varargout{1} = run_equation_builder (lhs_vars, rhs_terms);
 
@@ -519,14 +519,14 @@ function result = run_expander (node, mode)
       args_str_parts = {};
       for k = 1:length (node.args)
         arg_res = run_expander (node.args{k}, mode);
-        
+
         if (! isempty (arg_res) && ! isempty (arg_res{1}))
-           args_str_parts{end+1} = arg_res{1}{1}; 
+           args_str_parts{end+1} = arg_res{1}{1};
         else
            args_str_parts{end+1} = '';
         endif
       endfor
-      
+
       full_term = sprintf ("%s(%s)", node.name, strjoin (args_str_parts, ','));
       result = {{full_term}};
     else
@@ -1140,14 +1140,14 @@ function [lhs_str, rhs_terms] = split_and_expand_rhs (formula_str, mode)
   ## process RHS
   rhs_tokens = run_lexer (rhs_str);
   [rhs_tree, ~] = run_parser (rhs_tokens);
-  
+
   wrapper.type = 'OPERATOR';
   wrapper.value = '~';
   wrapper.left = [];
   wrapper.right = rhs_tree;
-  
+
   expanded = run_expander (wrapper, mode);
-  
+
   ## extract the terms.
   if (isstruct (expanded) && isfield (expanded, 'model'))
     rhs_terms = expanded.model;
@@ -1164,22 +1164,22 @@ function vars = resolve_lhs_symbolic (lhs_str)
   for i = 1:length (parts)
     p = strtrim (parts{i});
     if (isempty (p)), continue; endif
-    
+
     range_parts = strsplit (p, '-');
-    
+
     if (length (range_parts) == 2)
       s_str = strtrim (range_parts{1});
       e_str = strtrim (range_parts{2});
-      
+
       [s_tok] = regexp (s_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
       [e_tok] = regexp (e_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
-      
+
       if (! isempty (s_tok) && ! isempty (e_tok))
         prefix = s_tok{1}{1};
         s_num  = str2double (s_tok{1}{2});
         e_prefix = e_tok{1}{1};
         e_num    = str2double (e_tok{1}{2});
-        
+
         if (strcmp (prefix, e_prefix) && s_num <= e_num)
           for n = s_num:e_num
             vars{end+1} = sprintf ("%s%d", prefix, n);
@@ -1203,7 +1203,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
   for i = 1:length (rhs_terms)
     t = rhs_terms{i};
     if (isempty (t))
-      term_strs{end+1} = ''; 
+      term_strs{end+1} = '';
     else
       if (length (t) == 1 && any (strfind (t{1}, "(")))
          term_strs{end+1} = t{1};
@@ -1229,13 +1229,13 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
         rhs_parts{end+1} = sprintf ("%s*%s", coeff, t_str);
       endif
     endfor
-    
+
     full_rhs = strjoin (rhs_parts, ' + ');
     if (isempty (full_rhs)), full_rhs = '0'; endif
     lines{end+1} = sprintf ("%s = %s", lhs_vars{k}, full_rhs);
   endfor
 
-  eq_list = string (lines'); 
+  eq_list = string (lines');
 endfunction
 
 %!demo
@@ -1271,7 +1271,7 @@ endfunction
 
 %!demo
 %!
-%! ## Interaction Effects : 
+%! ## Interaction Effects :
 %! ## We analyze Relief Score based on Drug Type and Dosage Level.
 %! ## The '*' operator expands to the main effects PLUS the interaction term.
 %! ## Categorical variables are automatically created.
@@ -1287,11 +1287,11 @@ endfunction
 
 %!demo
 %!
-%! ## Polynomial Regression : 
+%! ## Polynomial Regression :
 %! ## Uses the power operator (^) to model non-linear relationships.
 %! Distance = [20; 45; 80; 125];
 %! Speed    = [30; 50; 70; 90];
-%! Speed_2  = Speed .^ 2; 
+%! Speed_2  = Speed .^ 2;
 %! t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
 %!
 %! formula = 'Distance ~ Speed^2';
@@ -1316,7 +1316,7 @@ endfunction
 
 %!demo
 %!
-%! ## Explicit Nesting : 
+%! ## Explicit Nesting :
 %! ## The parser also supports the explicit 'B(A)' syntax, which means
 %! ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
 %! ## but often used to denote random effects or specific hierarchy.
@@ -1327,7 +1327,7 @@ endfunction
 
 %!demo
 %!
-%! ## Excluding Terms : 
+%! ## Excluding Terms :
 %! ## Demonstrates building a complex model and then simplifying it.
 %! ## We define a full 3-way interaction (A*B*C) but explicitly remove the
 %! ## three-way term (A:B:C) using the minus operator.
@@ -1338,7 +1338,7 @@ endfunction
 
 %!demo
 %!
-%! ## Repeated Measures : 
+%! ## Repeated Measures :
 %! ## This allows predicting multiple outcomes simultaneously.
 %! ## The range operator '-' selects all variables between 'T1' and 'T3'
 %! ## as the response matrix Y.
