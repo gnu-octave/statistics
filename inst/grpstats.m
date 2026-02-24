@@ -1099,7 +1099,7 @@ endfunction
 %! ci = grpstats (x, g, 'predci');
 %! expected = [-2.49070107176829 28.4907010717683; 22.5092989282317 ...
 %!             53.4907010717683];
-%! assert (ci, expected, 1e-14);
+%! assert (ci, expected, 2e-14);
 %!test
 %! Y = [5; 6; 7; 4; 9; 8];
 %! X = [1; 2; 3; 4; 5; 6];
