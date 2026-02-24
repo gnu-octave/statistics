@@ -478,7 +478,7 @@ classdef RegressionGAM
                              " must be a logical value."));
             endif
             ## Check model for interactions
-            if (tmpInt && isempty (this.IntMat))
+            if (tmpInt && isempty (this.IntMatrix))
               error (strcat ("RegressionGAM.predict: trained model", ...
                              " does not include any interactions."));
             endif
@@ -503,8 +503,8 @@ classdef RegressionGAM
       if (incInt)
         if (! isempty (this.Interactions))
           ## Append interaction terms to the predictor matrix
-          for i = 1:rows (this.IntMat)
-            tindex = logical (this.IntMat(i,:));
+          for i = 1:rows (this.IntMatrix)
+            tindex = logical (this.IntMatrix(i,:));
             Xterms = Xfit(:,tindex);
             Xinter = ones (rows (Xfit), 1);
             for c = 1:sum (tindex)
@@ -516,8 +516,8 @@ classdef RegressionGAM
         else
           ## Add selected predictors and interaction terms
           XN = [];
-          for i = 1:rows (this.IntMat)
-            tindex = logical (this.IntMat(i,:));
+          for i = 1:rows (this.IntMatrix)
+            tindex = logical (this.IntMatrix(i,:));
             Xterms = Xfit(:,tindex);
             Xinter = ones (rows (Xfit), 1);
             for c = 1:sum (tindex)
@@ -869,6 +869,19 @@ endfunction
 %! assert (a.IntMatrix, double (intMat))
 %! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
 %! assert (a.Formula, formula)
+
+%!test
+%! ## Test that predict() executes correctly when interactions are present
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];
+%! Y = [10; 20; 30; 40];
+%! mdl = RegressionGAM (X, Y, "formula", "Y ~ x1 + x2 + x1:x2");
+%! ypred = predict (mdl, X);
+%! assert (isnumeric (ypred));
+%! assert (size (ypred), [4, 1]);
+%! [ypred2, ySD, yInt] = predict (mdl, X, "includeinteractions", true);
+%! assert (size (ypred2), [4, 1]);
+%! assert (size (ySD), [4, 1]);
+%! assert (size (yInt), [4, 2]);
 
 ## Test input validation for constructor
 %!error<RegressionGAM: too few input arguments.> RegressionGAM ()
