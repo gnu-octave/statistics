@@ -102,7 +102,19 @@ function [g, gn, gl] = grp2idx (s)
     endif
     is_string = true;
     s = cellstr (s);
-  elseif (! (isnumeric (s) || islogical (s) || iscellstr (s)))
+  elseif (isnumeric (s))
+    if (! isvector (s))
+      error ("grp2idx: 'numeric' grouping variable must be a vector.");
+    endif
+  elseif (islogical (s))
+    if (! isvector (s))
+      error ("grp2idx: 'logical' grouping variable must be a vector.");
+    endif
+  elseif (iscellstr (s))
+    if (! isvector (s))
+      error ("grp2idx: 'cell array' grouping variable must be a vector.");
+    endif
+  else
     error ("grp2idx: unsupported type for input S.");
   endif
 
@@ -419,3 +431,6 @@ endfunction
 %!error <grp2idx: 'string' grouping variable must be a vector.> ...
 %! grp2idx (string ({'a', 'a'; 'b', 'c'}))
 %!error <grp2idx: unsupported type for input S.> grp2idx ({1})
+%!error <grp2idx: 'numeric' grouping variable must be a vector.> grp2idx ([10, 20; 10, 30])
+%!error <grp2idx: 'logical' grouping variable must be a vector.> grp2idx ([true, false; false, true])
+%!error <grp2idx: 'cell array' grouping variable must be a vector.> grp2idx ({'a', 'b'; 'c', 'd'})
