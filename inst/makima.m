@@ -1,5 +1,4 @@
-## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
+## Copyright (C) 2025-2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -81,7 +80,7 @@ function yi = makima (x, y, xq, varargin)
 
   if (is_y_vector)
     if (numel (y) != n)
-      error ("makima: The number of sample points X, %d, is incompatible with the number of values Y, %d.", n, numel (y));
+      error ("makima: the number of sample points X, %d, is incompatible with the number of values Y, %d.", n, numel (y));
     endif
     y = y(:);
     dim_y = 1;
@@ -89,7 +88,7 @@ function yi = makima (x, y, xq, varargin)
   else
     dim_y = ndims (y);
     if (size_y(dim_y) != n)
-      error ("makima: The number of sample points X, %d, is incompatible with the number of values Y, %d.", n, size_y(dim_y));
+      error ("makima: the number of sample points X, %d, is incompatible with the number of values Y, %d.", n, size_y(dim_y));
     endif
 
     ## permute the interpolation dimension to be the first
@@ -121,7 +120,7 @@ function yi = makima (x, y, xq, varargin)
   endif
 
   if (n < 2)
-    error ("makima: The first two inputs must have at least two elements.");
+    error ("makima: the first two inputs must have at least two elements.");
   endif
 
   if (! issorted (x))
@@ -156,7 +155,7 @@ function yi = makima (x, y, xq, varargin)
     dx = diff (x);
   
     if (any (dx <= 0))
-      error ("makima: The sample points x must be unique.");
+      error ("makima: the sample points x must be unique.");
     endif
   dy = diff (y);
   m = dy ./ dx;
@@ -486,9 +485,9 @@ endfunction
 %! yi = makima (x, y, xi, "extrap");
 %! assert (all (isfinite (yi)));
 %! assert (yi, [0; 20], 1e-12);
-%!error <makima: The sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
+%!error <makima: the sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
 %!error <makima: invalid number of inputs> makima (1)
-%!error <makima: The first two inputs must have at least two elements.> makima (1, 2, 1.5)
-%!error <makima: The number of sample points X, 4, is incompatible with the number of values Y, 5.> makima ([1 2 3 4], [1 2 3 4 5], 2)
+%!error <makima: the first two inputs must have at least two elements.> makima (1, 2, 1.5)
+%!error <makima: the number of sample points X, 4, is incompatible with the number of values Y, 5.> makima ([1 2 3 4], [1 2 3 4 5], 2)
 %!error <makima: unknown option 'linear'> makima ([1 2 3], [1 2 3], 2, "linear")
 %!error <makima: invalid number of inputs> makima ([1 2 3], [1 2 3], 2, "extrap", "too_many")
