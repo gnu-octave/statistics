@@ -5,6 +5,7 @@
 ## Copyright (C) 2016 Pascal Dupuis <cdemills@gmail.com>
 ## Copyright (C) 2020 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2020 Philip Nienhuis (prnienhuis@users.sf.net)
+## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -80,11 +81,12 @@
 ##
 ## @item
 ## @var{group} may be passed as an optional argument only in the second
-## position after @var{data}.  @var{group} contains a numerical vector defining
-## separate categories, each plotted in a different box, for each set of
-## @var{DATA} values that share the same @var{group} value or values.  With
-## the formalism (@var{data}, @var{group}), both must be vectors of the same
-## length.
+## position after @var{data}. @var{group} can be a numeric, character,
+## string, or categorical vector defining separate categories. To group by
+## multiple variables simultaneously, pass a cell array of grouping vectors
+## (e.g., @code{@{group1, group2@}}). A separate box is plotted for each
+## unique combination of group values. All grouping variables must have the
+## same length as @var{data}.
 ##
 ## @item
 ## @var{options} are additional paired arguments passed with the formalism
@@ -136,8 +138,9 @@
 ## the group axis, which by default is [1:number of groups].
 ##
 ## @item 'Labels' @tab cell @tab A cell vector of strings containing the names
-## of each group.  By default each group is labeled numerically according to
-## its order in the data set
+## of each group. By default each group is labeled numerically. If multiple
+## grouping variables are provided, default labels are automatically generated
+## by joining the category names and stacked hierarchically.
 ##
 ## @item 'Colors' @tab character string or Nx3 numerical matrix @tab If just
 ## one character or 1x3 vector of RGB values, specify the fill color of all
@@ -225,11 +228,12 @@ function [s_o, hs_o] = boxplot (data, varargin)
         if (2 != indopt)
           error ("boxplot: grouping vector may only be passed as second arg.");
         endif
-        if (isnumeric (dummy))
+        if (isnumeric (dummy) || ischar (dummy) || iscell (dummy) || ...
+            iscategorical (dummy) || isa (dummy, "string"))
           groups = dummy;
           group_exists = 1;
         else
-          error ("boxplot: grouping vector must be numerical.");
+          error ("boxplot: grouping variable must be numeric, character, string, categorical, or cell array.");
         endif
       elseif (length (dummy) == 1)
         ## Old way: positional argument
@@ -445,82 +449,94 @@ function [s_o, hs_o] = boxplot (data, varargin)
     if (! isvector (data))
       error ("boxplot: with the formalism (data, group), both must be vectors.");
     endif
+
+    ## Normalize groups into a cell array of grouping variables
+    if (! iscell (groups) || iscellstr (groups))
+      groups_cell = {groups};
+    else
+      groups_cell = groups;
+    endif
+
+    ## Validate dimensions against data
+    n_obs = numel (data);
+    for i = 1:numel (groups_cell)
+      curr_group = groups_cell{i};
+      if (size (curr_group, 1) != n_obs && size (curr_group, 2) != n_obs)
+        error ("boxplot: all grouping variables must have the same length as the data.");
+      endif
+      ## Ensure column vector format for consistent processing later
+      if (isrow (curr_group) && ! ischar (curr_group))
+        groups_cell{i} = curr_group(:);
+      endif
+    endfor
+
     ## If sample IDs given, check that their size matches the data
     if (! isempty (sample_IDs))
       if (length (sample_IDs) != 1 || length (sample_IDs{1}) != length (data))
         error ("boxplot: Sample_IDs must match the data");
       endif
-      nug = unique (groups);
-      dummy_data = cell (1, length (nug));
-      dummy_sIDs = cell (1, length (nug));
-      ## Check if groups are parsed as a numeric vector
-      if (isnumeric (groups))
-        for ind_c = (1:length (nug))
-          dummy_data(ind_c) = data(groups == nug(ind_c));
-          dummy_sIDs(ind_c) = {sample_IDs{1}(groups == nug(ind_c))};
-        endfor
-        ## Create labels according to unique numeric groups in case
-        ## they are not provided by the user as optional argument
-        if (isempty (labels))
-          for i = 1:nug
-            column_label = num2str (groups(i));
-            labels(i) = {column_label};
-          endfor
-        endif
-      ## Check if groups are parsed as a cell string vector
-      elseif iscellstr (groups)
-        for ind_c = (1:length (nug))
-          dummy_data(ind_c) = data(ismember (group, nug(ind_c)));
-          dummy_sIDs(ind_c) = {sample_IDs{1}(ismember (group, nug(ind_c)))};
-        endfor
-        ## Create labels according to unique cell string groups in case
-        ## they are not provided by the user as optional argument
-        if (isempty (labels))
-          labels = nug;
-        endif
-      else
-        error ("boxplot: group argument must be numeric or cell string vector.");
+    endif
+
+    ## map native groups to integers
+    n_groups = numel (groups_cell);
+    idx_matrix = zeros (n_obs, n_groups);
+    raw_uniques = cell (1, n_groups);
+
+    for i = 1:n_groups
+      [unq_vals, ~, col_idx] = unique (groups_cell{i});
+      idx_matrix(:, i) = col_idx;
+      raw_uniques{i} = unq_vals;
+    endfor
+
+    ## find valid group combinations.
+    [valid_combinations, ~, final_numeric_groups] = unique (idx_matrix, "rows");
+    nc = size (valid_combinations, 1);
+    nug = 1:nc;
+
+    dummy_data = cell (1, nc);
+    dummy_sIDs = cell (1, nc);
+
+    ## apply mask and populate dummy arrays
+    for i = 1:nc
+      mask = (final_numeric_groups == i);
+      dummy_data{i} = data(mask);
+      if (! isempty (sample_IDs))
+        dummy_sIDs{i} = sample_IDs{1}(mask);
       endif
-      data = dummy_data;
-      groups = nug(:).';
-      nc = length (nug);
+    endfor
+
+    ## generate labels based on native datatypes
+    if (isempty (labels))
+      labels = cell (1, nc);
+      for i = 1:nc
+        comb = valid_combinations(i, :);
+        lbl_parts = cell (1, n_groups);
+        for j = 1:n_groups
+          if (iscell (raw_uniques{j}))
+            val = raw_uniques{j}{comb(j)};
+          else
+            val = raw_uniques{j}(comb(j));
+          endif
+
+          if (isnumeric (val) || islogical (val))
+            lbl_parts{j} = num2str (val);
+          elseif (ischar (val))
+            lbl_parts{j} = val;
+          elseif (isa (val, "string") || iscategorical (val))
+            lbl_parts{j} = char (val);
+          else
+            lbl_parts{j} = "";
+          endif
+        endfor
+        ## Join multiple group labels with a newline for hierarchical stacking
+        labels{i} = strjoin (lbl_parts, char(10));
+      endfor
+    endif
+
+    data = dummy_data;
+    groups = nug(:).';
+    if (! isempty (sample_IDs))
       sample_IDs = dummy_sIDs;
-    else
-      nug = unique (groups);
-      dummy_data = cell (1, length (nug));
-      ## Check if groups are parsed as a numeric vector
-      if (isnumeric (groups))
-        for ind_c = (1:length (nug))
-          dummy_data(ind_c) = data(groups == nug(ind_c));
-        endfor
-        ## Create labels according to unique numeric groups in case
-        ## they are not provided by the user as optional argument
-        if (isempty (labels))
-          for i = 1:nug
-            column_label = num2str (groups(i));
-            labels(i) = {column_label};
-          endfor
-        endif
-      ## Check if groups are parsed as a cell string vector
-      elseif (iscellstr (groups))
-        for ind_c = (1:length (nug))
-          dummy_data(ind_c) = data(ismember (group, nug(ind_c)));
-        endfor
-        ## Create labels according to unique cell string groups in case
-        ## they are not provided by the user as optional argument
-        if (isempty (labels))
-          labels = nug;
-        endif
-      else
-        error ("boxplot: group argument must be numeric vector or cell string.");
-      endif
-      data = dummy_data;
-      nc = length (nug);
-      if (iscell (groups))
-        groups = [1:nc];
-      else
-        groups = nug(:).';
-      endif
     endif
   endif
 
@@ -777,12 +793,13 @@ function [s_o, hs_o] = boxplot (data, varargin)
     set (gca(), "ytick", groups, "yticklabel", labels);
     hs.labels = get (gcf, "currentaxes");
   endif
-  ## Retain original ishold status
+
+  ## retain original ishold status.
   if (! hold_status)
     hold off;
   endif
 
-  ## Return output arguments if desired
+  ## return output arguments if desired.
   if (nargout >= 1)
     s_o = s;
   endif
@@ -823,7 +840,6 @@ function f = fillbox (quartile_y, quartile_x, bcolor)
   endfor
 
 endfunction
-
 
 %!demo
 %! axis ([0, 3]);
@@ -871,11 +887,29 @@ endfunction
 %!          "colors", colors, "whisker", 1.3, "boxwidth", "proportional");
 %! title ("Example of different colors specified as RGB values");
 
+%!demo
+%! randn ("seed", 11); # for reproducibility
+%! data = randn (30, 1);
+%! ## Using modern string arrays
+%! str_groups = string(repmat(["Control"; "TreatmentA"; "TreatmentB"], 10, 1));
+%! boxplot (data, str_groups, "colors", "rgb");
+%! title ("Example using modern string arrays for grouping");
+
+%!demo
+%! randn ("seed", 10); # for reproducibility
+%! data = randn (40, 1) * 5 + 50;
+%! ## Create two different grouping variables
+%! group1 = repmat ({'USA'; 'EU'}, 20, 1);
+%! group2 = repmat ([1980; 1980; 1990; 1990], 10, 1);
+%! ## Pass them together as a cell array
+%! boxplot (data, {group1, group2});
+%! title ("Example of Multiple Grouping Variables (Region & Year)");
+
 ## Input data validation
 %!error <numerical array or cell array containing> boxplot ("a")
 %!error <data cells must contain> boxplot ({[1 2 3], "a"})
 %!error <grouping vector may only be passed> boxplot ([1 2 3], 1, {2, 3})
-%!error <grouping vector must be numerical> boxplot ([1 2 3], {"a", "b"})
+%!error <all grouping variables must have the same length> boxplot ([1 2 3], {"a", "b"})
 %!error <'Notch' input argument accepts> boxplot ([1:10], "notch", "any")
 %!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", i)
 %!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", {})
@@ -932,4 +966,29 @@ endfunction
 %!   assert (ishold, true);
 %! unwind_protect_cleanup
 %!   close (hf);
+%! end_unwind_protect
+%!test
+%! ## Test multi-variable grouping.
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12];
+%!   g1 = [1; 1; 2; 2; 3; 3; 1; 1; 2; 2; 3; 3];
+%!   g2 = string ({'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'});
+%!   g3 = categorical ({'X'; 'X'; 'Y'; 'Y'; 'Z'; 'Z'; 'X'; 'X'; 'Y'; 'Y'; 'Z'; 'Z'});
+%!   [a, b] = boxplot (data, {g1, g2, g3});
+%!   assert (size (a, 2), 6);
+%! unwind_protect_cleanup
+%!     close (hf);
+%! end_unwind_protect
+%!test
+%! ## Test multi-variable grouping with empty intersections dropping correctly.
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   data = [1; 2; 3; 4];
+%!   g1 = [1; 1; 2; 2];
+%!   g2 = string ({'A'; 'A'; 'B'; 'B'});
+%!   [a, b] = boxplot (data, {g1, g2});
+%!   assert (size (a, 2), 2);
+%! unwind_protect_cleanup
+%!     close (hf);
 %! end_unwind_protect
