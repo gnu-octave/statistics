@@ -899,11 +899,11 @@ endfunction
 %! randn ("seed", 10); # for reproducibility
 %! data = randn (40, 1) * 5 + 50;
 %! ## Create two different grouping variables
-%! group1 = repmat ({'USA'; 'EU'}, 20, 1);
-%! group2 = repmat ([1980; 1980; 1990; 1990], 10, 1);
+%! group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);
+%! group2 = repmat ([2022; 2022; 2023; 2023], 10, 1);
 %! ## Pass them together as a cell array
 %! boxplot (data, {group1, group2});
-%! title ("Example of Multiple Grouping Variables (Region & Year)");
+%! title ("Example of Multiple Grouping Variables (Model & Year)");
 
 ## Input data validation
 %!error <numerical array or cell array containing> boxplot ("a")
