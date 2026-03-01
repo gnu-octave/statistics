@@ -177,8 +177,7 @@ function [p, h, stats] = signtest (x, my, varargin)
 
   ## Calculate differences between X and Y vectors: remove equal values of NaNs
   XY_diff = x(:) - my(:);
-  NO_diff = (XY_diff == 0);
-  XY_diff(NO_diff | isnan (NO_diff)) = [];
+  XY_diff(XY_diff == 0 | isnan (XY_diff)) = [];
 
   ## Recalculate remaining length of X vector (after equal or NaNs removal)
   n = length (XY_diff);
@@ -236,7 +235,7 @@ function [p, h, stats] = signtest (x, my, varargin)
 
   endswitch
   stats.sign = pos_n;
-  h = double (p < alpha);
+  h = double (p <= alpha);
 endfunction
 
 ## Test output
@@ -257,6 +256,22 @@ endfunction
 %! assert (h, 0);
 %! assert (stats.zval, 0.4082482904638631, 1e-14);
 %! assert (stats.sign, 4);
+%!test
+%! x = [1, 2, 3, 4, NaN, NaN, NaN];
+%! [pval, h] = signtest (x);
+%! assert (pval, 0.1250, 1e-4);
+%! assert (h, 0);
+%!test
+%! x = [1, 2, 3, 4, 5];
+%! y = [1, 1, NaN, 5, 4];
+%! [pval, h] = signtest (x, y);
+%! assert (pval, 1.0, 1e-4);
+%! assert (h, 0);
+%!test
+%! x = [1, 2, 3, 4, 5, -1];
+%! [p_val, ~] = signtest (x);
+%! [p, h, stats] = signtest (x, 0, "alpha", p_val);
+%! assert (h, 1);
 
 ## Test input validation
 %!error <signtest: X must be a vector.> signtest (ones (2))
