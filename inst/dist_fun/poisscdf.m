@@ -123,7 +123,7 @@ endfunction
 %! ylim ([0, 1])
 %! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "southeast")
 %! title ("Poisson CDF")
-%! xlabel ("values in x (number of occurences)")
+%! xlabel ("values in x (number of occurrences)")
 %! ylabel ("probability")
 
 ## Test output

@@ -521,7 +521,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
         ci(idx,:) = d;
       endfor
 
-      ## Plot the eror bars
+      ## Plot the error bars
       h = errorbar ([1:ngroups]', mu, ci);
       xticks ([1:ngroups]);
       xlim ([0, ngroups+1]);

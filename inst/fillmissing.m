@@ -72,10 +72,10 @@
 ## when equidistant as determined by @code{SamplePoints}.)
 ##
 ## @item linear
-## linear interpolation of neigboring, non-missing values
+## linear interpolation of neighboring, non-missing values
 ##
 ## @item spline
-## piecewise cubic spline interpolation of neigboring, non-missing values
+## piecewise cubic spline interpolation of neighboring, non-missing values
 ##
 ## @item pchip
 ## 'shape preserving' piecewise cubic spline interposaliton of neighboring,
@@ -267,7 +267,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         endif
 
         if ((! ischar(v)) && isempty (v))
-          error ("fillmissing: a numeric fill value cannot be emtpy.");
+          error ("fillmissing: a numeric fill value cannot be empty.");
         endif
 
         ## Type check v against A.
@@ -1019,7 +1019,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                  gap_locations, window_points_r_c(:,1), "UniformOutput",false);
 
 
-          ## If any window is emtpy, do not pass that gap to the move_fcn.
+          ## If any window is empty, do not pass that gap to the move_fcn.
           empty_gaps = cellfun ("isempty", window_points_r_c(:,1));
           if (any (empty_gaps))
             removed_element_idx(...
@@ -2312,7 +2312,7 @@ endfunction
 %!error <'movmean' and 'movmedian' methods only valid for numeric> fillmissing ("a b c", "movmean", 2)
 %!error <'movmean' and 'movmedian' methods only valid for numeric> fillmissing ({"a", "b"}, "movmean", 2)
 %!error <'constant' method must be followed by> fillmissing (1, "constant")
-%!error <a numeric fill value cannot be emtpy> fillmissing (1, "constant", [])
+%!error <a numeric fill value cannot be empty> fillmissing (1, "constant", [])
 %!error <fill value must be the same data type> fillmissing (1, "constant", "a")
 %!error <fill value must be the same data type> fillmissing ("a", "constant", 1)
 %!error <fill value must be the same data type> fillmissing ("a", "constant", {"foo"})

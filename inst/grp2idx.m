@@ -47,7 +47,7 @@
 ## in the range @math{[1:K]}, where @math{K} is the number of distinct groups
 ## in @var{s}.
 ##
-## @code{[@var{g}, @var{gn}] = grp2idx (@var{s})} also retuns a cell array of
+## @code{[@var{g}, @var{gn}] = grp2idx (@var{s})} also returns a cell array of
 ## character vectors @var{gn} representing the list of group names.  The order
 ## of the group names in @var{gn} follow the same pattern as the group indices
 ## in @var{g} according to the data type of @var{s}, as described above.

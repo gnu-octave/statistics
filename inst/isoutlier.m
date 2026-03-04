@@ -160,7 +160,7 @@
 ## as @var{x} in all dimensions except for the operating dimension where the
 ## length is 1.  If @var{movmethod} is used, then @var{C} has the same size as
 ## @var{x}.  For @qcode{"median"}, @qcode{"movmedian"}, @qcode{"mean"}, and
-## @qcode{"movmean"} methods, @var{C} is computed by taking into acount the
+## @qcode{"movmean"} methods, @var{C} is computed by taking into account the
 ## outlier values.  For @qcode{"grubbs"} and @qcode{"gesd"} methods, @var{C} is
 ## computed by excluding the outliers.  For the @qcode{"percentiles"} method,
 ## @var{C} is the average between @var{U} and @var{L} thresholds.
@@ -197,7 +197,7 @@ function [TF, L, U, C] = isoutlier (x, varargin)
   ## c = -1 / (sqrt (2) * erfcinv (3/2))
   c = 1.482602218505602;
 
-  ## Parse exrta arguments
+  ## Parse extra arguments
   while (numel (varargin) > 0)
     if (ischar (varargin{1}))
       switch (lower (varargin{1}))
@@ -904,4 +904,3 @@ endfunction
 %!error<isoutlier: DIM must be a positive integer scalar.> isoutlier (A, 0);
 %!error<isoutlier: DIM must be a positive integer scalar.> isoutlier (A, [1 2]);
 %!error<isoutlier: DIM must be a positive integer scalar.> isoutlier (A, -2);
-

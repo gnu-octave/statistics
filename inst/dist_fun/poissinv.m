@@ -210,7 +210,7 @@ endfunction
 %! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northwest")
 %! title ("Poisson iCDF")
 %! xlabel ("probability")
-%! ylabel ("values in x (number of occurences)")
+%! ylabel ("values in x (number of occurrences)")
 
 ## Test output
 %!shared p

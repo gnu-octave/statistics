@@ -120,7 +120,7 @@ endfunction
 %! grid on
 %! xlim ([-5, 5])
 %! legend ({"half-normal with μ = 0, σ = 1", ...
-%!          "standart normal (μ = 0, σ = 1)"}, "location", "southeast")
+%!          "standard normal (μ = 0, σ = 1)"}, "location", "southeast")
 %! title ("Half-normal against standard normal CDF")
 %! xlabel ("values in x")
 %! ylabel ("probability")

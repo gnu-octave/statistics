@@ -1112,7 +1112,7 @@ function [b, sse, resid, ucov, hat] = lmfit (X, Y, W)
 
   ## Get model coefficients by solving the linear equation by QR decomposition
   ## The number of free parameters (i.e. intercept + coefficients) is equal
-  ## to n - dfe. If optional arument W is provided, it should be a diagonal
+  ## to n - dfe. If optional argument W is provided, it should be a diagonal
   ## matrix of weights or a positive definite covariance matrix
   if (nargin < 3)
     ## If no weights are provided, create an identity matrix
