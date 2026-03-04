@@ -100,7 +100,7 @@ endfunction
 %! xlim ([-5, 5])
 %! ylim ([0, 0.9])
 %! legend ({"half-normal with μ = 0, σ = 1", ...
-%!          "standart normal (μ = 0, σ = 1)"}, "location", "northeast")
+%!          "standard normal (μ = 0, σ = 1)"}, "location", "northeast")
 %! title ("Half-normal against standard normal PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")

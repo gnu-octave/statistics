@@ -1598,7 +1598,7 @@ endfunction
 %! expected = string('y = c1 + c2*x1 + c3*x2');
 %! assert (isequal (eq, expected));
 %!test
-%! ## Test : interation.
+%! ## Test : interaction.
 %! eq = parseWilkinsonFormula ('y ~ x1:x2:x3:x4', 'equation');
 %! expected = string('y = c1 + c2*x1*x2*x3*x4');
 %! assert (isequal (eq, expected));
@@ -1655,7 +1655,7 @@ endfunction
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
 %!test
-%! ## Test : empty modal.
+%! ## Test : empty model.
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
@@ -1685,4 +1685,3 @@ endfunction
 %!error <Invalid symbolic range> parseWilkinsonFormula ('A-B ~ x', 'equation')
 %!error <parseWilkinsonFormula: Invalid symbolic range 'y1-'.> parseWilkinsonFormula ('y1- ~ x', 'equation')
 %!error <Input formula string is required> parseWilkinsonFormula ()
-

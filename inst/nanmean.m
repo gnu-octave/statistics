@@ -27,7 +27,7 @@
 ## @qcode{NaN} values.  If @var{x} is a vector, a scalar value is returned.  If
 ## @var{x} is a matrix, a row vector of column means is returned.  If @var{x} is
 ## a multidimensional array, @code{nanmean} operates along the first
-## nonsingleton dimension.  If all values along a dimesion are @qcode{NaN}, the
+## nonsingleton dimension.  If all values along a dimension are @qcode{NaN}, the
 ## mean is returned returned as @qcode{NaN}.
 ##
 ## @code{@var{s} = nanmean (@var{x}, @qcode{'all'})} returns the mean of all
@@ -164,4 +164,3 @@ endfunction
 %! x([5:6, 20]) = NaN;
 %! assert (squeeze (nanmean (x, [1, 2])), [25/6; 100/8; 144/7])
 %! assert (nanmean (x, [2, 3]), [139/11; 13])
-

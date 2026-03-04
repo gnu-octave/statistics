@@ -311,7 +311,7 @@ classdef ClassificationKNN
     ##
     ## A character vector specifying the distance metric used by the
     ## neighbor-searcher method.  See the available distance metrics in
-    ## @code{knnseaarch} for more info.  Change the @qcode{Distance} property
+    ## @code{knnsearch} for more info.  Change the @qcode{Distance} property
     ## using dot notation as in:
     ## @itemize
     ## @item @qcode{@var{obj}.Distance = @var{newDistance}}
@@ -615,7 +615,7 @@ classdef ClassificationKNN
     ## it is 1.
     ##
     ## @item @qcode{"Distance"} @tab @tab Any valid distance metric supported by
-    ## the @code{pdist2} function.  Note that the allowable distrance metrics
+    ## the @code{pdist2} function.  Note that the allowable distance metrics
     ## depend on the selected nearest neighbor search method.
     ##
     ## @item @qcode{"DistanceWeight"} @tab @tab Either a distance weighting
@@ -3171,4 +3171,3 @@ endfunction
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "leaveout", 1)
 %!error<ClassificationKNN.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "cvpartition", 1)
-

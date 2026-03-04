@@ -27,7 +27,7 @@
 ## @qcode{NaN} values.  If @var{x} is a vector, a scalar value is returned.  If
 ## @var{x} is a matrix, a row vector of column sums is returned.  If @var{x} is
 ## a multidimensional array, the @code{nansum} operates along the first
-## nonsingleton dimension.  If all values along a dimesion are @qcode{NaN}, the
+## nonsingleton dimension.  If all values along a dimension are @qcode{NaN}, the
 ## sum is returned returned as 0.
 ##
 ## @code{@var{s} = nansum (@var{x}, @qcode{'all'})} returns the sum of all
