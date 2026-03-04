@@ -1655,7 +1655,7 @@ endfunction
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
 %!test
-%! ## Test : empty modal.
+%! ## Test : empty model.
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
