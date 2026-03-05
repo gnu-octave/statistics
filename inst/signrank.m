@@ -177,8 +177,7 @@ function [p, h, stats] = signrank (x, my, varargin)
 
   ## Calculate differences between X and Y vectors: remove equal values of NaNs
   XY_diff = x(:) - my(:);
-  NO_diff = (XY_diff == 0);
-  XY_diff(NO_diff | isnan (NO_diff)) = [];
+  XY_diff(XY_diff == 0 | isnan (XY_diff)) = [];
 
   ## Recalculate remaining length of X vector (after equal or NaNs removal)
   n = length (XY_diff);
@@ -317,6 +316,11 @@ endfunction
 %! assert (h, false);
 %! assert (stats.zval, 2.0966, 1e-4);
 %! assert (stats.signedrank, 21);
+%!test
+%! x = [1, 2, 3, NaN, 4, 5];
+%! p_clean = signrank ([1, 2, 3, 4, 5]);
+%! p_nan   = signrank (x);
+%! assert (p_nan, p_clean);
 
 ## Test input validation
 %!error <signrank: X must be a vector.> signrank (ones (2))

@@ -751,7 +751,7 @@ classdef ClassificationDiscriminant
         endfor
         this.Sigma = this.Sigma / (this.NumObservations - num_classes);
 
-        ## Check for predictors wih zero within-class variance
+        ## Check for predictors with zero within-class variance
         zwcv = find (diag (this.Sigma) == 0);
         if (! isempty (zwcv))
           msg = strcat ("ClassificationDiscriminant: Predictor", ...
