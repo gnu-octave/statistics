@@ -155,18 +155,32 @@ function [g, gn, gl] = grp2idx (s)
 
   if (nargout > 1)
     if (is_categorical)
-      gn = cellstr (cats);
+      if (isempty (cats))
+        gn = cell (0,1);
+      else
+        gn = cellstr (cats);
+      endif
     elseif (is_duration)
-      gn = cellstr (gl);
+      if (isempty (gl))
+        gn = cell (0,1);
+      else
+        gn = cellstr (gl);
+      endif
     elseif (iscellstr (gl))
       gn = gl;
+      if (isempty (gn))
+        gn = cell (0,1);
+      endif
     elseif (iscell (gl))
       gn = cellfun (@num2str, gl, "UniformOutput", false);
+      if (isempty (gn))
+        gn = cell (0,1);
+      endif
     else
       gn = arrayfun (@num2str, gl, "UniformOutput", false);
-    endif
-    if (isempty (gn))
-      gn = cell (0,1);
+      if (isempty (gn))
+        gn = cell (0,1);
+      endif
     endif
   endif
 
@@ -284,6 +298,13 @@ endfunction
 %! assert (gl, cell(0,1));
 
 %!test
+%! s = {'', '', '', ''};
+%! [g, gn, gl] = grp2idx (s);
+%! assert (g, [NaN; NaN; NaN; NaN]);
+%! assert (gn, cell(0,1));
+%! assert (gl, cell(0,1));
+
+%!test
 %! s = {'a'; ''; 'b'; ''; 'c'};
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [1; NaN; 2; NaN; 3]);
@@ -307,6 +328,12 @@ endfunction
 %!test
 %! s = [duration(NaN, 0, 0), duration(NaN, 0, 0), duration(NaN, 0, 0)];
 %! [g, gn, gl] = grp2idx (s);
+%! assert (g, [NaN; NaN; NaN]);
+%! assert (gn, cell (0,1));
+%! assert (isequal (gl, duration (NaN (0,3))));
+
+%!test
+%! [g, gn, gl] = grp2idx (duration (NaN (3, 1), 0, 0));
 %! assert (g, [NaN; NaN; NaN]);
 %! assert (gn, cell (0,1));
 %! assert (isequal (gl, duration (NaN (0,3))));
