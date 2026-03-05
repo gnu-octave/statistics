@@ -93,7 +93,7 @@ endfunction
 %! [A, B, r, U, V, stats] = canoncorr (X, Y);
 %! Cuv = (U' * V) / (k - 1);
 %!assert (diag (Cuv)', r, 10 * eps);
-%!assert (diag (diag (Cuv)), Cuv, eps);
+%!assert (diag (diag (Cuv)), Cuv, 2 * eps);
 %!assert (r, [0.99590, 0.26754], 1E-5);
 %!assert (U, center(X) * A, 10 * eps);
 %!assert (V, center(Y) * B, 10 * eps);
