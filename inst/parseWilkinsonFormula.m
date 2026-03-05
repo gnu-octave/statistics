@@ -1,5 +1,6 @@
 ## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan  <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -201,7 +202,7 @@ function varargout = parseWilkinsonFormula (varargin)
       else
         lhs_vars = resolve_lhs_symbolic (lhs_str);
       endif
-      
+
       ## build the required output.
       varargout{1} = run_equation_builder (lhs_vars, rhs_terms);
 
@@ -519,14 +520,14 @@ function result = run_expander (node, mode)
       args_str_parts = {};
       for k = 1:length (node.args)
         arg_res = run_expander (node.args{k}, mode);
-        
+
         if (! isempty (arg_res) && ! isempty (arg_res{1}))
-           args_str_parts{end+1} = arg_res{1}{1}; 
+           args_str_parts{end+1} = arg_res{1}{1};
         else
            args_str_parts{end+1} = '';
         endif
       endfor
-      
+
       full_term = sprintf ("%s(%s)", node.name, strjoin (args_str_parts, ','));
       result = {{full_term}};
     else
@@ -829,14 +830,20 @@ function schema = run_schema_builder (expanded)
     terms_mat(i, idx) = 1;
   endfor
 
-  ## sorting : order by order.
+  ## sorting : order by order (ascending), then by variable sequence (descending)
   term_orders = sum (terms_mat, 2);
   M = [term_orders, terms_mat];
 
+  ## Create unique rows first
   [~, unique_idx] = unique (M, 'rows');
   terms_mat = terms_mat (unique_idx, :);
+  M = M (unique_idx, :);
 
-  [~, sort_idx] = sortrows ([sum(terms_mat, 2), terms_mat]);
+  ## Create the direction vector: [1, -2, -3, -4, ...]
+  sort_dirs = [1, -(2:size(M, 2))];
+
+  ## Sort using the direction vector
+  [~, sort_idx] = sortrows (M, sort_dirs);
   schema.Terms = terms_mat (sort_idx, :);
 
 endfunction
@@ -1140,14 +1147,14 @@ function [lhs_str, rhs_terms] = split_and_expand_rhs (formula_str, mode)
   ## process RHS
   rhs_tokens = run_lexer (rhs_str);
   [rhs_tree, ~] = run_parser (rhs_tokens);
-  
+
   wrapper.type = 'OPERATOR';
   wrapper.value = '~';
   wrapper.left = [];
   wrapper.right = rhs_tree;
-  
+
   expanded = run_expander (wrapper, mode);
-  
+
   ## extract the terms.
   if (isstruct (expanded) && isfield (expanded, 'model'))
     rhs_terms = expanded.model;
@@ -1164,22 +1171,22 @@ function vars = resolve_lhs_symbolic (lhs_str)
   for i = 1:length (parts)
     p = strtrim (parts{i});
     if (isempty (p)), continue; endif
-    
+
     range_parts = strsplit (p, '-');
-    
+
     if (length (range_parts) == 2)
       s_str = strtrim (range_parts{1});
       e_str = strtrim (range_parts{2});
-      
+
       [s_tok] = regexp (s_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
       [e_tok] = regexp (e_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
-      
+
       if (! isempty (s_tok) && ! isempty (e_tok))
         prefix = s_tok{1}{1};
         s_num  = str2double (s_tok{1}{2});
         e_prefix = e_tok{1}{1};
         e_num    = str2double (e_tok{1}{2});
-        
+
         if (strcmp (prefix, e_prefix) && s_num <= e_num)
           for n = s_num:e_num
             vars{end+1} = sprintf ("%s%d", prefix, n);
@@ -1203,7 +1210,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
   for i = 1:length (rhs_terms)
     t = rhs_terms{i};
     if (isempty (t))
-      term_strs{end+1} = ''; 
+      term_strs{end+1} = '';
     else
       if (length (t) == 1 && any (strfind (t{1}, "(")))
          term_strs{end+1} = t{1};
@@ -1229,13 +1236,13 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
         rhs_parts{end+1} = sprintf ("%s*%s", coeff, t_str);
       endif
     endfor
-    
+
     full_rhs = strjoin (rhs_parts, ' + ');
     if (isempty (full_rhs)), full_rhs = '0'; endif
     lines{end+1} = sprintf ("%s = %s", lhs_vars{k}, full_rhs);
   endfor
 
-  eq_list = string (lines'); 
+  eq_list = string (lines');
 endfunction
 
 %!demo
@@ -1271,7 +1278,7 @@ endfunction
 
 %!demo
 %!
-%! ## Interaction Effects : 
+%! ## Interaction Effects :
 %! ## We analyze Relief Score based on Drug Type and Dosage Level.
 %! ## The '*' operator expands to the main effects PLUS the interaction term.
 %! ## Categorical variables are automatically created.
@@ -1287,11 +1294,11 @@ endfunction
 
 %!demo
 %!
-%! ## Polynomial Regression : 
+%! ## Polynomial Regression :
 %! ## Uses the power operator (^) to model non-linear relationships.
 %! Distance = [20; 45; 80; 125];
 %! Speed    = [30; 50; 70; 90];
-%! Speed_2  = Speed .^ 2; 
+%! Speed_2  = Speed .^ 2;
 %! t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
 %!
 %! formula = 'Distance ~ Speed^2';
@@ -1316,7 +1323,7 @@ endfunction
 
 %!demo
 %!
-%! ## Explicit Nesting : 
+%! ## Explicit Nesting :
 %! ## The parser also supports the explicit 'B(A)' syntax, which means
 %! ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
 %! ## but often used to denote random effects or specific hierarchy.
@@ -1327,7 +1334,7 @@ endfunction
 
 %!demo
 %!
-%! ## Excluding Terms : 
+%! ## Excluding Terms :
 %! ## Demonstrates building a complex model and then simplifying it.
 %! ## We define a full 3-way interaction (A*B*C) but explicitly remove the
 %! ## three-way term (A:B:C) using the minus operator.
@@ -1338,7 +1345,7 @@ endfunction
 
 %!demo
 %!
-%! ## Repeated Measures : 
+%! ## Repeated Measures :
 %! ## This allows predicting multiple outcomes simultaneously.
 %! ## The range operator '-' selects all variables between 'T1' and 'T3'
 %! ## as the response matrix Y.
@@ -1659,6 +1666,24 @@ endfunction
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
+%!test
+%! ## Verify parseWilkinsonFormula schema matches MATLAB fitlm sorting
+%! formula = 'Y ~ x1 * x2 * x3';
+%! schema = parseWilkinsonFormula(formula, 'matrix');
+%!
+%! ## Expected Octave Binary Matrix (8 rows, 4 columns)
+%! ## Columns are sorted alphabetically by the parser: {'Y', 'x1', 'x2', 'x3'}
+%! expected_terms = [0, 0, 0, 0;  ## (Intercept)
+%!                   0, 1, 0, 0;  ## x1
+%!                   0, 0, 1, 0;  ## x2
+%!                   0, 0, 0, 1;  ## x3
+%!                   0, 1, 1, 0;  ## x1:x2
+%!                   0, 1, 0, 1;  ## x1:x3
+%!                   0, 0, 1, 1;  ## x2:x3
+%!                   0, 1, 1, 1]; ## x1:x2:x3
+%!
+%! assert(schema.VariableNames, {'Y', 'x1', 'x2', 'x3'});
+%! assert(schema.Terms, expected_terms);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
