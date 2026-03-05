@@ -96,7 +96,7 @@ function y = wblpdf (x, varargin)
 endfunction
 
 %!demo
-%! ## Plot various PDFs from the Weibul distribution
+%! ## Plot various PDFs from the Weibull distribution
 %! x = 0:0.001:2.5;
 %! y1 = wblpdf (x, 1, 0.5);
 %! y2 = wblpdf (x, 1, 1);
@@ -107,7 +107,7 @@ endfunction
 %! ylim ([0, 2.5])
 %! legend ({"λ = 5, k = 0.5", "λ = 9, k = 1", ...
 %!          "λ = 6, k = 1.5", "λ = 2, k = 5"}, "location", "northeast")
-%! title ("Weibul PDF")
+%! title ("Weibull PDF")
 %! xlabel ("values in x")
 %! ylabel ("density")
 

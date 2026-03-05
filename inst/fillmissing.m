@@ -78,7 +78,7 @@
 ## piecewise cubic spline interpolation of neigboring, non-missing values
 ##
 ## @item pchip
-## 'shape preserving' piecewise cubic spline interposaliton of neighboring,
+## 'shape preserving' piecewise cubic spline interpolation of neighboring,
 ## non-missing values
 ## @end table
 ##
