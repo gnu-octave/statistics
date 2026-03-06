@@ -111,11 +111,7 @@
  Summary of important user-visible changes for statistics 1.8.2:
 -------------------------------------------------------------------
 
- Important Notice: 1) Soon after Octave 11.1 is officially released the
-                      'statistics' package will update its dependency to
-                      Octave 11, so that further development can rely on
-                      advancements to core statistics and data functions
-                      that will be available with Octave 11.
+ Important Notice: 1) Update dependency to datatypes 1.2.0.
                    2) Incompatibility with the `nan` package
                    3) Using `tablicious` as a drop in replacement
                       for `datatypes` might cause issues.
