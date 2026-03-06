@@ -106,3 +106,34 @@
  ** tabulate: add support for tables and categorical arrays
 
  ** wishrnd: allow for non-integral DF under certain constrains
+
+
+ Summary of important user-visible changes for statistics 1.8.2:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Soon after Octave 11.1 is officially released the
+                      'statistics' package will update its dependency to
+                      Octave 11, so that further development can rely on
+                      advancements to core statistics and data functions
+                      that will be available with Octave 11.
+                   2) Incompatibility with the `nan` package
+                   3) Using `tablicious` as a drop in replacement
+                      for `datatypes` might cause issues.
+
+
+ Improvements:
+ =============
+
+ ** anova1: properly handle NaN values as group labels
+
+ ** boxplot: add support for multi grouping variables
+
+ ** grp2ixd: improve integration with datatypes class objects
+
+ ** makima: improve MATLAB compatibility
+
+ ** parseWilkinsonFormula: add 'equations' mode
+
+ ** sampsizepwr: fix computations for single-tailed distributions
+
+ ** signtest: properly handle NaN values
