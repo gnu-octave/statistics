@@ -124,7 +124,7 @@
 
  ** boxplot: add support for multi grouping variables
 
- ** grp2ixd: improve integration with datatypes class objects
+ ** grp2idx: improve integration with datatypes class objects
 
  ** makima: improve MATLAB compatibility
 

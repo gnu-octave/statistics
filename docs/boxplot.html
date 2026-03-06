@@ -861,11 +861,12 @@
 
  </li><li>
  <var>group</var> may be passed as an optional argument only in the second
- position after <var>data</var>.  <var>group</var> contains a numerical vector defining
- separate categories, each plotted in a different box, for each set of
- <var>DATA</var> values that share the same <var>group</var> value or values.  With
- the formalism (<var>data</var>, <var>group</var>), both must be vectors of the same
- length.
+ position after <var>data</var>. <var>group</var> can be a numeric, character,
+ string, or categorical vector defining separate categories. To group by
+ multiple variables simultaneously, pass a cell array of grouping vectors
+ (e.g., <code>{group1, group2}</code>). A separate box is plotted for each
+ unique combination of group values. All grouping variables must have the
+ same length as <var>data</var>.
 
  </li><li>
  <var>options</var> are additional paired arguments passed with the formalism
@@ -906,8 +907,9 @@
  groups in a desired manner.  This vector merely defines the points along
  the group axis, which by default is [1:number of groups].</td></tr>
 <tr><td>&rsquo;Labels&rsquo;</td><td>cell</td><td>A cell vector of strings containing the names
- of each group.  By default each group is labeled numerically according to
- its order in the data set</td></tr>
+ of each group. By default each group is labeled numerically. If multiple
+ grouping variables are provided, default labels are automatically generated
+ by joining the category names and stacked hierarchically.</td></tr>
 <tr><td>&rsquo;Colors&rsquo;</td><td>character string or Nx3 numerical matrix</td><td>If just
  one character or 1x3 vector of RGB values, specify the fill color of all
  boxes when BoxStyle = &rsquo;filled&rsquo;.  If a character string or Nx3 matrix is
@@ -1103,6 +1105,82 @@
                   </table>
                   <div class="text-center">
                     <img src="assets/boxplot_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 5
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ randn ("seed", 11); # for reproducibility
+ data = randn (30, 1);
+ ## Using modern string arrays
+ str_groups = string(repmat(["Control"; "TreatmentA"; "TreatmentB"], 10, 1));
+ boxplot (data, str_groups, "colors", "rgb");
+ title ("Example using modern string arrays for grouping");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                  </div><p></p>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container-xl my-4">
+          <div class="card rounded">
+            <div class="card-header card-header-mod">
+              <div class="row d-flex flex-wrap align-items-center">
+                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                  <h3 class="d-inline-block mr-2">
+                  Example: 6
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="container bg-light">
+                <div class="row">
+                  <table><tbody><tr>
+                    <td>&nbsp;</td>
+                    <td><pre class="example">
+
+ randn ("seed", 10); # for reproducibility
+ data = randn (40, 1) * 5 + 50;
+ ## Create two different grouping variables
+ group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);
+ group2 = repmat ([2022; 2022; 2023; 2023], 10, 1);
+ ## Pass them together as a cell array
+ boxplot (data, {group1, group2});
+ title ("Example of Multiple Grouping Variables (Model & Year)");
+
+                    </pre></td></tr></tbody>
+                  </table>
+                  <div class="text-center">
+                    <img src="assets/boxplot_601.png" class="rounded img-thumbnail" alt="plotted figure">
                   </div><p></p>
 
                 </div>

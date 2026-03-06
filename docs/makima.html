@@ -806,22 +806,39 @@
 <dt><code><h5 class="fs">statistics: <var>yi</var> = <b>makima</b> (&hellip;, <code>&quot;extrap&quot;</code>)</code></h5></dt>
 </dl>
 
-<p> Compute the 1-D Modified Akima (MAKIMA) interpolant of sample data
- <var>x</var>, <var>y</var> evaluated at query points <var>xq</var>.
+<p> Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of
+ sample data <var>x</var> and <var>y</var>.
 </p>
 <div class="ms-5">
-<p> The MAKIMA method generates a **shape-preserving piecewise cubic Hermite**
- interpolant using a modified Akima derivative estimation method.
+<p> The Modified Akima (MAKIMA) algorithm generates a shape-preserving 
+ piecewise cubic interpolant. It differs from standard splines by avoiding
+ excessive local undulations and overshoots, and it connects collinear points
+ (flat regions) with straight lines. It is particularly well-suited for
+ oscillatory data where <code>pchip</code> might aggressively flatten local
+ extrema.
 </p>
-<p> For a strictly increasing vector of sample points <var>x</var> and corresponding
- values <var>y</var>, the function returns the interpolated values <var>yi</var> at the
- query points <var>xq</var>.
+<p> The sample points <var>x</var> must be a vector of unique values. If <var>x</var>
+ is not sorted, the function will automatically sort it and rearrange
+ <var>y</var> accordingly.
 </p>
-<p> If only two inputs are given, <var>x</var> is assumed to be
- <code>[1:length(<var>y</var>)]</code>.
+<p> The sample values <var>y</var> can be a scalar, vector, or an N-dimensional
+ array. If <var>y</var> is an N-dimensional array, the interpolation is
+ performed along its last dimension, which must have the same length as
+ <var>x</var>. Complex values for <var>y</var> are supported.
 </p>
-<p> The optional string <code>&quot;extrap&quot;</code> enables extrapolation for query points
- outside the range of <var>x</var>. By default, extrapolation returns <code>NaN</code>.
+<p> If query points <var>xq</var> are provided, the function evaluates the 
+ interpolant and returns the interpolated values <var>yi</var>. By default,
+ <code>makima</code> uses the boundary polynomials to extrapolate for points 
+ outside the range of <var>x</var>. The optional string argument <code>&quot;extrap&quot;</code> 
+ is accepted for compatibility with other interpolation functions.
+</p>
+<p> If only <var>x</var> and <var>y</var> are provided, the function returns a 
+ piecewise polynomial structure <var>pp</var> that represents the interpolant.
+ This structure can be evaluated later at specific query points using
+ <code>ppval</code>.
+</p>
+<p> Evaluating the interpolant at query points outside the domain of <var>x</var>
+ automatically extrapolates using the boundary polynomials.
 </p>
 <p> <strong>See also: </strong>
 interp1, 

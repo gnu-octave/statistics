@@ -808,7 +808,7 @@
 <p> Fit a Generalized Additive Model (GAM) for binary classification.
 </p>
 <div class="ms-5">
-<p> <code><var>Mdl</var> = fitcgam (<var>X</var>, <var>Y</var>)</code> returns a a GAM classification
+<p> <code><var>Mdl</var> = fitcgam (<var>X</var>, <var>Y</var>)</code> returns a GAM classification
  model, <var>Mdl</var>, with <var>X</var> being the predictor data, and <var>Y</var> the
  binary class labels of observations in <var>X</var>.
 </p>
@@ -845,7 +845,7 @@
  otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
 <tr><td width="18%"><code>&quot;Formula&quot;</code></td><td width="2%"></td><td width="80%">A model specification given as a string in
- the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the reponse variable
+ the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the response variable
  and <code>terms</code> the predictor variables.  The formula can be used to
  specify a subset of variables for training model.  For example:
  <code>&quot;Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3&quot;</code> specifies four linear terms

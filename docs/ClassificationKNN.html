@@ -1436,7 +1436,7 @@ Distance metric
 <p> </p>
 <p> A character vector specifying the distance metric used by the
  neighbor-searcher method.  See the available distance metrics in
- <code>knnseaarch</code> for more info.  Change the <code>Distance</code> property
+ <code>knnsearch</code> for more info.  Change the <code>Distance</code> property
  using dot notation as in:
  </p><ul>
 <li> <code><var>obj</var>.Distance = <var>newDistance</var></code>
@@ -1745,7 +1745,7 @@ Create a <code>ClassificationKNN</code> class object containing a k-Nearest
  algorithm for classifying each point during prediction.  By default,
  it is 1.</td></tr>
 <tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">Any valid distance metric supported by
- the <code>pdist2</code> function.  Note that the allowable distrance metrics
+ the <code>pdist2</code> function.  Note that the allowable distance metrics
  depend on the selected nearest neighbor search method.</td></tr>
 <tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">Either a distance weighting
  function, specified either as a function handle, which accepts a matrix
@@ -2270,7 +2270,7 @@ demo&nbsp;ClassificationKNN&nbsp;2
                     <td><pre class="example">
 CVMdl =
 
-  ClassificationPartitionedModel object with properties:
+  1x1 ClassificationPartitionedModel object with properties:
 
                    BinEdges: []
       CategoricalPredictors: []
@@ -2339,7 +2339,7 @@ demo&nbsp;ClassificationKNN&nbsp;3
                     <td><pre class="example">
 CVMdl =
 
-  ClassificationPartitionedModel object with properties:
+  1x1 ClassificationPartitionedModel object with properties:
 
                    BinEdges: []
       CategoricalPredictors: []

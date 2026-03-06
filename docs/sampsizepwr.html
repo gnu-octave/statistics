@@ -845,7 +845,7 @@
  normally distributed data with equal unknown standard deviations.
  <var>params</var> is a two-element vector [MU0 SIGMA0] of the mean and standard
  deviation of the first sample under the null and alternative hypotheses.  P1
- is the mean of the second sample under the alternative hypothesis.</td></tr>
+ is the the mean of the second sample under the alternative hypothesis.</td></tr>
 <tr><td width="5%"></td><td width="10%">&quot;var&quot;</td><td width="85%">chi-square test of variance for normally distributed
  data.  <var>params</var> is the variance under the null hypothesis.  P1 is the
  variance under the alternative hypothesis.</td></tr>
@@ -870,7 +870,7 @@
 <p> <code>[<var>n1</var>, <var>n2</var>] = sampsizepwr (&quot;t2&quot;, <var>params</var>, <var>p1</var>,
  <var>power</var>)</code> returns the sample sizes <var>n1</var> and <var>n2</var> for the two
  samples.  These values are the same unless the &quot;ratio&quot; parameter,
- <code><var>ratio</var> = <var>n2</var> / <var>n1</var></code>, is set to a value other than
+ <code><var>ratio</var> = <var>n2</var> / <var>n2</var></code>, is set to a value other than
  the default (See the name/value pair definition of ratio below).
 </p>
 <p> <code><var>power</var> = sampsizepwr (<var>testtype</var>, <var>params</var>, <var>p1</var>, [],
@@ -903,7 +903,7 @@
 </table>
 
  <table>
-<tr><td width="5%"></td><td width="15%">&quot;ratio&quot;</td><td width="80%">desired ratio <var>n2</var> / <var>n1</var> of the larger
+<tr><td width="5%"></td><td width="15%">&quot;ratio&quot;</td><td width="80%">desired ratio <var>n2</var> / <var>n2</var> of the larger
  sample size <var>n2</var> to the smaller sample size <var>n1</var>.  Used only for the
  two-sample t-test.  The value of <code><var>ratio</var></code> is greater than or equal
  to 1 (default is 1).</td></tr>

@@ -820,80 +820,103 @@
  notation string specified by <var>formula</var> either as a character vector or a
  string scalar with the following list of valid symbols:
 </p>
- <ul>
-<li> <strong>LHS (Response) Operators:</strong>
+<p> <strong>Right-Hand Side (Model) Operators</strong>
+ The RHS specifies the independent variables (predictors) and the structural
+ relationships between them, such as interactions and nesting. The parser
+ expands these expressions into fundamental model terms following the standard
+ statistical rules of marginality. Additionally, explicit nesting notation
+ (e.g., <code>B(A)</code>) is supported to denote that factor B is nested within A.
+</p>
+ <table>
+<thead><tr><th width="15%">Operator</th><th width="35%">Description</th><th width="50%">Expansion Example</th></tr></thead>
+<tr><td width="15%"><code>+</code></td><td width="35%">Addition (Union)</td><td width="50%"><code>A + B</code> expands to A, B</td></tr>
+<tr><td width="15%"><code>*</code></td><td width="35%">Crossing</td><td width="50%"><code>A * B</code> expands to A, B, A:B</td></tr>
+<tr><td width="15%"><code>-</code></td><td width="35%">Deletion</td><td width="50%"><code>A*B - A:B</code> expands to A, B</td></tr>
+<tr><td width="15%"><code>/</code></td><td width="35%">Nesting</td><td width="50%"><code>A / B</code> expands to A, A:B</td></tr>
+<tr><td width="15%"><code>:</code></td><td width="35%">Interaction</td><td width="50%"><code>A : B</code> expands to A:B</td></tr>
+<tr><td width="15%"><code>^</code></td><td width="35%">Power (Limit)</td><td width="50%"><code>(A+B)^2</code> expands to A, B, A:B</td></tr>
+<tr><td width="15%"><code>1</code></td><td width="35%">Intercept</td><td width="50%"><code>y ~ A - 1</code> removes intercept</td></tr>
+</table>
 
- <ul>
-<li> <code>,</code> : List separator for selecting multiple responses.
 
- </li><li> <code>-</code> : Range operator for selecting multiple responses.
- </li></ul>
+<p> <strong>Left-Hand Side (Response) Operators</strong>
+ The LHS, separated by the <code>~</code> operator, defines the dependent variables.
+ It natively supports multi-response syntaxes.
+</p>
+ <table>
+<thead><tr><th width="15%">Operator</th><th width="35%">Description</th><th width="50%">Usage Example</th></tr></thead>
+<tr><td width="15%"><code>~</code></td><td width="35%">Formula separator</td><td width="50%"><code>y ~ x</code></td></tr>
+<tr><td width="15%"><code>,</code></td><td width="35%">List separator</td><td width="50%"><code>y1, y2 ~ x</code></td></tr>
+<tr><td width="15%"><code>-</code></td><td width="35%">Range operator</td><td width="50%"><code>T1 - T3 ~ x</code></td></tr>
+</table>
 
- </li><li> <strong>RHS (Model) Operators:</strong>
-
- <ul>
-<li> <code>+</code> : Term addition (Union of terms).
-
- </li><li> <code>-</code> : Term deletion (Difference of terms).
-
- </li><li> <code>*</code> : Crossing (Expands to Main Effects + Interaction).
-
- </li><li> <code>/</code> : Nesting (Hierarchical relationship).
-
- </li><li> <code>:</code> : Direct interaction.
-
- </li><li> <code>^</code> : Crossing expansion limit.
- </li></ul>
-</li></ul>
-
-<p> <code>parseWilkinsonFormula (<var>formula</var>, <var>mode</var>)</code> further specifies
- how to process the Wilkinson notation specified by <var>formula</var>.  <var>mode</var>
- must be a character vector or a string scalar with any of the following
- acceptable values.
+<p> <strong>Processing Modes</strong>
+ <code>parseWilkinsonFormula (<var>formula</var>, <var>mode</var>)</code> evaluates the
+ formula string based on the selected <var>mode</var>:
 </p>
  <ul>
-<li> <code>'expand'</code> (default) : Returns a cell array of character vectors
- containing the expanded model terms (e.g., <code>{&quot;A&quot;, &quot;B&quot;, &quot;A:B&quot;}</code>).
+<li> <code>'expand'</code> (default) - Returns a structure containing
+ <code>response</code> and <code>model</code> fields. Each field contains cell arrays
+ of the expanded, fundamental terms.
 
- </li><li> <code>'matrix'</code> : Returns a schema structure containing a binary
- matrix defining term membership.
+ </li><li> <code>'equation'</code> - Generates a string representing the mathematical
+ equation of the fitted model. Coefficients are represented generically as
+ <code>c1, c2, ...</code>. If multiple responses are specified, it returns a
+ string array of equations.
 
- </li><li> <code>'model_matrix'</code> : Constructs the full Design Matrix (<var>X</var>)
- and Response Matrix (<var>y</var>) based on the provided <var>data</var>.  Uses
- corner-point (reference) coding for categoricals.
+ <table>
+<thead><tr><th width="40%">Formula String</th><th width="60%">Equation Output</th></tr></thead>
+<tr><td width="40%"><code>y ~ x</code></td><td width="60%"><code>&quot;y = c1 + c2*x&quot;</code></td></tr>
+<tr><td width="40%"><code>y ~ A * B</code></td><td width="60%"><code>&quot;y = c1 + c2*A + c3*B + c4*A*B&quot;</code></td></tr>
+<tr><td width="40%"><code>y ~ School / Class</code></td><td width="60%"><code>&quot;y = c1 + c2*School + c3*Class*School&quot;</code></td></tr>
+<tr><td width="40%"><code>y ~ x^2</code></td><td width="60%"><code>&quot;y = c1 + c2*x + c3*x^2&quot;</code></td></tr>
+<tr><td width="40%"><code>y1 - y2 ~ Trt</code></td><td width="60%"><code>[&quot;y1 = c1 + c2*Trt&quot;, &quot;y2 = ...&quot;]</code></td></tr>
+</table>
 
- </li><li> <code>'parse'</code> : Returns the raw Abstract Syntax Tree (AST).
+ </li><li> <code>'matrix'</code> - Returns a schema structure containing a binary
+ matrix defining term membership, useful for internal algorithmic processing.
 
- </li><li> <code>'tokenize'</code> : Returns the list of tokens generated by the lexer
- (useful only for debugging).
+ </li><li> <code>'model_matrix'</code> - Constructs the numeric Design Matrix (<var>X</var>)
+ and Response Matrix (<var>y</var>) directly from a provided data table.
+
+ </li><li> <code>'parse'</code> - Returns the raw Abstract Syntax Tree (AST) structure.
+
+ </li><li> <code>'tokenize'</code> - Returns the array of tokens generated by the lexer.
  </li></ul>
 
-<p> <code>[<var>X</var>, <var>y</var>, <var>names</var>] = parseWilkinsonFormula &nbsp; (<var>formula</var>, &quot;model_matrix&quot;, <var>data</var>)</code> will also accept a structure or
- a table containing the data variables.  Required only when <var>mode</var> is
- <code>&quot;model_matrix&quot;</code>.
+<p> <strong>Data Handling (&rsquo;model_matrix&rsquo; mode)</strong>
+ When using the <code>'model_matrix'</code> mode, a <var>data</var> argument must be
+ provided as an Octave <code>table</code>.
  </p><ul>
-<li> Field names must match variables in the formula.
- </li><li> Response variables (LHS) must be numeric.
- </li><li> Rows containing <code>NaN</code> are automatically removed.
+<li> <strong>Categorical Variables:</strong> Cell arrays of strings in the table
+ are automatically detected as categorical factors and undergo corner-point
+ (reference) dummy coding.
+ </li><li> <strong>Numeric Variables:</strong> Standard numeric vectors are treated as
+ continuous predictors or responses.
+ </li><li> <strong>Missing Data:</strong> Rows containing <code>NaN</code> values in any of the
+ active variables are automatically omitted from the final matrices.
  </li></ul>
 
 <p> <strong>Outputs</strong>
  </p><dl compact="compact">
-<dt> <var>terms/result</var></dt>
+<dt> <var>terms / result</var></dt>
 </dl>
-<p> The processed model structure depending on the selected <var>mode</var>.
+<p> The processed model structure, string array, or cell array depending on the
+ selected <var>mode</var>.
  </p></dd>
 <dt> <var>X</var></dt>
 </dl>
-<p> The numeric design matrix (observations x parameters).
+<p> The generated numeric design matrix (Observations x Parameters). Includes
+ a column of ones for the intercept unless <code>- 1</code> is in the formula.
  </p></dd>
 <dt> <var>y</var></dt>
 </dl>
-<p> The response matrix (observations x K).
+<p> The numeric response matrix (Observations x K responses).
  </p></dd>
 <dt> <var>names</var></dt>
 </dl>
-<p> A cell array of column names corresponding to <var>X</var>.
+<p> A cell array of character vectors containing the column names corresponding
+ to the generated design matrix <var>X</var>.
  </p></dd>
 </dl>
 
@@ -925,19 +948,46 @@
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Tokenizer Mode
- ## Inspects the raw tokens generated from a formula string.
- formula = "y ~ A * (B + c)";
- tokens = parseWilkinsonFormula (formula, "tokenize");
- display (tokens);
 
-tokens =
+ ## Simple Linear Regression :
+ ## This example models a continuous response (Height) as a linear function
+ ## of a single continuous predictor (Age). The 'equation' mode returns the
+ ## symbolic representation, while 'model_matrix' generates the design matrix.
+ Age = [10; 12; 14; 16; 18];
+ Height = [140; 148; 155; 162; 170];
+ t = table (Height, Age);
 
-  1x10 struct array containing the fields:
+ formula = 'Height ~ Age';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
 
-    type
-    value
-    pos
+Formula: Height ~ Age
+equation =
+  string
+
+   "Height = c1 + c2*Age"
+X =
+
+    1   10
+    1   12
+    1   14
+    1   16
+    1   18
+
+y =
+
+   140
+   148
+   155
+   162
+   170
+
+names =
+  2x1 cell array
+
+    {'(Intercept)'}    
+    {'Age'        }    
 
                     </pre></td></tr></tbody>
                   </table>
@@ -966,36 +1016,46 @@ tokens =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Parser Mode (AST generation)
- ## Returns the Abstract Syntax Tree (AST) structure.
- formula = "A / B";
- tree = parseWilkinsonFormula (formula, "parse");
- display (tree);
 
-tree =
+ ## Multiple Regression :
+ ## Here we model House Price based on two independent predictors: Area and
+ ## number of Rooms. The '+' operator adds terms to the model without assuming
+ ## any interaction between them.
+ Price = [300; 350; 400; 450];
+ Area  = [1500; 1800; 2200; 2500];
+ Rooms = [3; 3; 4; 5];
+ t = table (Price, Area, Rooms);
 
-  scalar structure containing the fields:
+ formula = 'Price ~ Area + Rooms';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
 
-    type = OPERATOR
-    value = /
-    left =
+Formula: Price ~ Area + Rooms
+equation =
+  string
 
-      scalar structure containing the fields:
+   "Price = c1 + c2*Area + c3*Rooms"
+X =
 
-        type = IDENTIFIER
-        value = A
-        left = [](0x0)
-        right = [](0x0)
+      1      3   1500
+      1      3   1800
+      1      4   2200
+      1      5   2500
 
-    right =
+y =
 
-      scalar structure containing the fields:
+   300
+   350
+   400
+   450
 
-        type = IDENTIFIER
-        value = B
-        left = [](0x0)
-        right = [](0x0)
+names =
+  3x1 cell array
 
+    {'(Intercept)'}    
+    {'Rooms'      }    
+    {'Area'       }    
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1024,15 +1084,47 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Expansion Mode (Crossings)
- ## Demonstrates standard Wilkinson expansion for interactions.
- formula = "A * B * C";
- terms = parseWilkinsonFormula (formula, "expand");
- disp (terms);
 
-  1x7 cell array
+ ## Interaction Effects : 
+ ## We analyze Relief Score based on Drug Type and Dosage Level.
+ ## The '*' operator expands to the main effects PLUS the interaction term.
+ ## Categorical variables are automatically created.
+ Relief = [5; 7; 6; 8];
+ Drug   = {'Placebo'; 'Placebo'; 'Active'; 'Active'};
+ Dose   = {'Low'; 'High'; 'Low'; 'High'};
+ t = table (Relief, Drug, Dose);
 
-    {1x1 cell}    {1x1 cell}    {1x2 cell}    {1x1 cell}    {1x2 cell}    {1x2 cell}    {1x3 cell}    
+ formula = 'Relief ~ Drug * Dose';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
+
+Formula: Relief ~ Drug * Dose
+equation =
+  string
+
+   "Relief = c1 + c2*Drug + c3*Dose + c4*Dose*Drug"
+X =
+
+   1   1   1   1
+   1   1   0   0
+   1   0   1   0
+   1   0   0   0
+
+y =
+
+   5
+   7
+   6
+   8
+
+names =
+  4x1 cell array
+
+    {'(Intercept)'          }    
+    {'Drug_Placebo'         }    
+    {'Dose_Low'             }    
+    {'Dose_Low:Drug_Placebo'}    
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1061,15 +1153,44 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Expansion Mode (Nesting)
- ## Demonstrates hierarchical nesting logic.
- formula = "Block / Plot / Subplot";
- terms = parseWilkinsonFormula (formula, "expand");
- disp (terms);
 
-  1x3 cell array
+ ## Polynomial Regression : 
+ ## Uses the power operator (^) to model non-linear relationships.
+ Distance = [20; 45; 80; 125];
+ Speed    = [30; 50; 70; 90];
+ Speed_2  = Speed .^ 2; 
+ t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
 
-    {1x1 cell}    {1x2 cell}    {1x3 cell}    
+ formula = 'Distance ~ Speed^2';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
+
+Formula: Distance ~ Speed^2
+equation =
+  string
+
+   "Distance = c1 + c2*Speed + c3*Speed^2"
+X =
+
+      1    900     30
+      1   2500     50
+      1   4900     70
+      1   8100     90
+
+y =
+
+    20
+    45
+    80
+   125
+
+names =
+  3x1 cell array
+
+    {'(Intercept)'}    
+    {'Speed^2'    }    
+    {'Speed'      }    
 
                     </pre></td></tr></tbody>
                   </table>
@@ -1098,21 +1219,55 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Matrix Schema Mode
- ## Generates the binary terms matrix (Row = Term, Col = Variable).
- formula = "y ~ Age + Height + Age:Height";
- schema = parseWilkinsonFormula (formula, "matrix");
- disp (schema.VariableNames);
- disp (schema.Terms);
 
-  1x3 cell array
+ ## Hierarchical Design.
+ ## Common in psychometrics. Here, 'Class' is nested within 'School'.
+ ## The '/' operator implies School + School:Class.
+ Score  = [88; 92; 75; 80];
+ School = {'North'; 'North'; 'South'; 'South'};
+ Class  = {'Rm101'; 'Rm102'; 'Rm201'; 'Rm202'};
+ t = table (Score, School, Class);
 
-    {'Age'}    {'Height'}    {'y'}    
+ formula = 'Score ~ School / Class';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ terms = parseWilkinsonFormula (formula, 'expand')
 
-   0   0   0
-   0   1   0
-   1   0   0
-   1   1   0
+Formula: Score ~ School / Class
+equation =
+  string
+
+   "Score = c1 + c2*School + c3*Class*School"
+terms =
+
+  scalar structure containing the fields:
+
+    response =
+    {
+      [1,1] =
+      {
+        [1,1] = Score
+      }
+
+    }
+
+    model =
+    {
+      [1,1] = {}(0x0)
+      [1,2] =
+      {
+        [1,1] = School
+      }
+
+      [1,3] =
+      {
+        [1,1] = Class
+        [1,2] = School
+      }
+
+    }
+
+
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1140,27 +1295,46 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Model Matrix (Regression / Continuous)
- ## Builds the Design Matrix (X) and Response (y) for numeric data.
- d_reg.BP = [120; 122; 128; 130; 125];
- d_reg.Age = [25; 30; 35; 40; 32];
- d_reg.Weight = [70; 75; 80; 85; 78];
- [X, y, names] = parseWilkinsonFormula ("BP ~ Age * Weight", "model_matrix", d_reg);
- disp (names);
- disp (X);
 
-  4x1 cell array
+ ## Explicit Nesting : 
+ ## The parser also supports the explicit 'B(A)' syntax, which means
+ ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
+ ## but often used to denote random effects or specific hierarchy.
+ formula = 'y ~ Class(School)';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ terms = parseWilkinsonFormula (formula, 'expand')
 
-    {'(Intercept)'}    
-    {'Weight'     }    
-    {'Age'        }    
-    {'Age:Weight' }    
+Formula: y ~ Class(School)
+equation =
+  string
 
-      1     70     25   1750
-      1     75     30   2250
-      1     80     35   2800
-      1     85     40   3400
-      1     78     32   2496
+   "y = c1 + c2*Class(School)"
+terms =
+
+  scalar structure containing the fields:
+
+    response =
+    {
+      [1,1] =
+      {
+        [1,1] = y
+      }
+
+    }
+
+    model =
+    {
+      [1,1] = {}(0x0)
+      [1,2] =
+      {
+        [1,1] = Class
+        [1,2] = School
+      }
+
+    }
+
+
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1188,26 +1362,73 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Model Matrix (ANOVA / Categorical)
- ## Automatically handles categorical variables (dummy coding).
- d_cat.Yield = [10; 12; 15; 14; 11; 13];
- d_cat.Variety = {"A"; "A"; "B"; "B"; "C"; "C"};
- [X, y, names] = parseWilkinsonFormula ("Yield ~ Variety", "model_matrix", d_cat);
- disp (names);
- disp (X);
 
-  3x1 cell array
+ ## Excluding Terms : 
+ ## Demonstrates building a complex model and then simplifying it.
+ ## We define a full 3-way interaction (A*B*C) but explicitly remove the
+ ## three-way term (A:B:C) using the minus operator.
+ formula = 'y ~ (A + B + C)^3 - A:B:C';
+ disp (['Formula: ', formula]);
+ equation = parseWilkinsonFormula (formula, 'equation')
+ terms = parseWilkinsonFormula (formula, 'expand')
 
-    {'(Intercept)'}    
-    {'Variety_B'  }    
-    {'Variety_C'  }    
+Formula: y ~ (A + B + C)^3 - A:B:C
+equation =
+  string
 
-   1   0   0
-   1   0   0
-   1   1   0
-   1   1   0
-   1   0   1
-   1   0   1
+   "y = c1 + c2*A + c3*B + c4*C + c5*A*B + c6*A*C + c7*B*C"
+terms =
+
+  scalar structure containing the fields:
+
+    response =
+    {
+      [1,1] =
+      {
+        [1,1] = y
+      }
+
+    }
+
+    model =
+    {
+      [1,1] = {}(0x0)
+      [1,2] =
+      {
+        [1,1] = A
+      }
+
+      [1,3] =
+      {
+        [1,1] = B
+      }
+
+      [1,4] =
+      {
+        [1,1] = C
+      }
+
+      [1,5] =
+      {
+        [1,1] = A
+        [1,2] = B
+      }
+
+      [1,6] =
+      {
+        [1,1] = A
+        [1,2] = C
+      }
+
+      [1,7] =
+      {
+        [1,1] = B
+        [1,2] = C
+      }
+
+    }
+
+
                     </pre></td></tr></tbody>
                   </table>
 
@@ -1235,130 +1456,46 @@ tree =
                     <td>&nbsp;</td>
                     <td><pre class="example">
 
- ## Demo : Model Matrix (Mixed Numeric & Categorical)
- ## Demonstrates Analysis of Covariance (ANCOVA) structures.
- d_mix.Growth = [1.2; 1.4; 1.1; 1.8];
- d_mix.Fertilizer = {"Old"; "Old"; "New"; "New"};
- d_mix.Dose = [10; 20; 10; 20];
- [X, ~, names] = parseWilkinsonFormula ("Growth ~ Fertilizer * Dose", "model_matrix", d_mix);
- disp (names);
- disp (X);
 
-  4x1 cell array
+ ## Repeated Measures : 
+ ## This allows predicting multiple outcomes simultaneously.
+ ## The range operator '-' selects all variables between 'T1' and 'T3'
+ ## as the response matrix Y.
+ T1 = [10; 11];
+ T2 = [12; 13];
+ T3 = [14; 15];
+ Treatment = {'Control'; 'Treated'};
+ t = table (T1, T2, T3, Treatment);
 
-    {'(Intercept)'        }    
-    {'Fertilizer_Old'     }    
-    {'Dose'               }    
-    {'Dose:Fertilizer_Old'}    
+ formula = 'T1 - T3 ~ Treatment';
+ disp (['Formula: ', formula]);
+ equations = parseWilkinsonFormula (formula, 'equation')
+ [X, Y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
 
-    1    1   10   10
-    1    1   20   20
-    1    0   10    0
-    1    0   20    0
-                    </pre></td></tr></tbody>
-                  </table>
+Formula: T1 - T3 ~ Treatment
+equations =
+  3x1 string array
 
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    "T1 = c1 + c2*Treatment"    
+    "T2 = c3 + c4*Treatment"    
+    "T3 = c5 + c6*Treatment"    
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 9
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+X =
 
- ## Demo : Multi-Response
- ## Selects specific response variables using comma.
- d_list = struct ();
- d_list.Yield_A = [10; 12; 11; 14];
- d_list.Yield_B = [20; 22; 21; 24];
- d_list.Rain    = [100; 110; 105; 120];
- formula = "Yield_A, Yield_B ~ Rain";
- [X, y, names] = parseWilkinsonFormula (formula, "model_matrix", d_list);
- disp (names);
- disp (y);
- disp (X);
-
-  2x1 cell array
-
-    {'(Intercept)'}    
-    {'Rain'       }    
-
-   10   20
-   12   22
-   11   21
-   14   24
-     1   100
-     1   110
-     1   105
-     1   120
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 10
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Demo : Multi-Response
- ## Selects a contiguous range of variables using the hyphen.
- d_rng.Y_Jan = rand (4, 1);
- d_rng.Y_Feb = rand (4, 1);
- d_rng.Y_Mar = rand (4, 1);
- d_rng.Trt   = {"A"; "B"; "A"; "B"};
- formula = "Y_Jan - Y_Mar ~ Trt";
- [X, y, names] = parseWilkinsonFormula (formula, "model_matrix", d_rng);
- disp (names);
- disp (y);
- disp (X);
-
-  2x1 cell array
-
-    {'(Intercept)'}    
-    {'Trt_B'      }    
-
-   0.7084   0.7574   0.1893
-   0.5557   0.8113   0.8787
-   0.2801   0.8206   0.8471
-   0.9481   0.3679   0.4640
    1   0
    1   1
-   1   0
-   1   1
+
+Y =
+
+   10   12   14
+   11   13   15
+
+names =
+  2x1 cell array
+
+    {'(Intercept)'      }    
+    {'Treatment_Treated'}    
+
                     </pre></td></tr></tbody>
                   </table>
 

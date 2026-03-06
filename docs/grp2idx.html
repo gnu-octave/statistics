@@ -830,10 +830,10 @@
  <var>s</var>.  Note that in case of a categorical grouping variable, the indexing
  integer values might not be continuous, since <var>s</var> may contain unassigned
  categories.  For every other data type, <var>g</var> will contain integer values
- in the the range <math>[1:K]</math>, where <math>K</math> is the number of distinct
- groups in <var>s</var>.
+ in the range <math>[1:K]</math>, where <math>K</math> is the number of distinct groups
+ in <var>s</var>.
 </p>
-<p> <code>[<var>g</var>, <var>gn</var>] = grp2idx (<var>s</var>)</code> also retuns a cell array of
+<p> <code>[<var>g</var>, <var>gn</var>] = grp2idx (<var>s</var>)</code> also returns a cell array of
  character vectors <var>gn</var> representing the list of group names.  The order
  of the group names in <var>gn</var> follow the same pattern as the group indices
  in <var>g</var> according to the data type of <var>s</var>, as described above.
