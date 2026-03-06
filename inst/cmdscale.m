@@ -1,4 +1,5 @@
 ## Copyright (C) 2014 JD Walsh <walsh@math.gatech.edu>
+## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -75,41 +76,47 @@
 ## @seealso{pdist}
 ## @end deftypefn
 
-function [Y, e] = cmdscale (D)
+function [Y, e] = cmdscale (D, p)
 
-  % Check for matrix input
-  if ((nargin ~= 1) || ...
-      (~any(strcmp ({'matrix' 'scalar' 'range'}, typeinfo(D)))))
-    usage ('cmdscale: input must be vector or matrix; see help');
+  ## Check for matrix input and valid number of arguments
+  if (nargin < 1 || nargin > 2 || ! isnumeric (D) || ! ismatrix (D))
+    error ("cmdscale: input must be a numeric vector or matrix.");
   endif
 
-  % If vector, convert to matrix; otherwise, check for square symmetric input
+  ## If vector, convert to matrix; otherwise, check for square symmetric input
   if (isvector (D))
     D = squareform (D);
-  elseif ((~issquare (D)) || (norm (D - D', 1) > 0))
-    usage ('cmdscale: matrix input must be square symmetric; see help');
+  elseif (! issquare (D) || norm (D - D', 1) > 0)
+    error ("cmdscale: matrix input must be square symmetric.");
   endif
 
-  n = size (D,1);
-  % Check for valid format (see help above); If similarity matrix, convert
+  n = size (D, 1);
+
+  if (nargin > 1 && ! isempty (p))
+    if (! isscalar (p) || ! isreal (p) || p != round (p) || p < 1 || p > n)
+      error ("cmdscale: p must be an integer between 1 and %d.", n);
+    endif
+  endif
+
+  ## Check for valid format and if similarity matrix, convert
   if (any (any (D < 0)))
-    usage ('cmdscale: entries must be nonnegative; see help');
-  elseif (trace (D) ~= 0)
-      if ((~all (diag (D) == 1)) || (~all (D <= 1)))
-        usage ('cmdscale: input must be distance vector or matrix; see help');
-      endif
-      D = sqrt (ones (n,n) - D);
+    error ("cmdscale: entries must be nonnegative.");
+  elseif (trace (D) != 0)
+    if (!all (diag (D) == 1) || !all (D(:) <= 1))
+      error ("cmdscale: input must be a distance vector or matrix.");
+    endif
+    D = sqrt (ones (n,n) - D);
   endif
 
-  % Build centering matrix, perform double centering, extract eigenpairs
+  ## Build centering matrix, perform double centering, extract eigenpairs
   J = eye (n) - ones (n,n) / n;
   B = -1 / 2 * J * (D .^ 2) * J;
   [Q, e] = eig (B);
   e = diag (e);
   etmp = e;
-  e = sort(e, 'descend');
+  e = sort (e, 'descend');
 
-  % Remove complex eigenpairs (only possible due to machine approximation)
+  ## Remove complex eigenpairs (only possible due to machine approximation)
   if (iscomplex (etmp))
     for i = 1 : size (etmp,1)
       cmp(i) = (isreal (etmp(i)));
@@ -118,28 +125,76 @@ function [Y, e] = cmdscale (D)
     Q = Q(:,cmp);
   endif
 
-  % Order eigenpairs
+  ## Order eigenpairs
   [etmp, ord] = sort (etmp, 'descend');
   Q = Q(:,ord);
 
-  % Remove negative eigenpairs
-  cmp = (etmp > 0);
-  etmp = etmp(cmp);
-  Q = Q(:,cmp);
+  ## determine total strictly positive eigenvalues
+  tol = n * max (abs (etmp)) * eps;
+  n_pos = sum (etmp > tol);
 
-  % Test for n-dimensional results
-  if (size(etmp,1) == n)
-    etmp = etmp(1:n-1);
-    Q = Q(:, 1:n-1);
+  if (nargin > 1 && ! isempty (p))
+    ## if p is given, eigenvalue output length is exactly p
+    e = etmp(1:p);
+    k = min (p, n_pos);
+  else
+    e = etmp;
+    k = n_pos;
+    
+    if (k == n)
+      k = n - 1;
+    endif
   endif
 
-  % Build output matrix Y
+  ## build output matrix Y by safely slicing the top k elements
+  etmp = etmp(1:k);
+  Q = Q(:, 1:k);
   Y = Q * diag (sqrt (etmp));
 
 endfunction
 
+%!test
 %!shared m, n, X, D
-%! m = randi(100) + 1; n = randi(100) + 1; X = rand(m, n); D = pdist(X);
-%!assert(norm(pdist(cmdscale(D))), norm(D), sqrt(eps))
-%!assert(norm(pdist(cmdscale(squareform(D)))), norm(D), sqrt(eps))
+%! m = randi (100) + 1;
+%! n = randi (100) + 1;
+%! X = rand (m, n);
+%! D = pdist (X);
+%!assert (norm (pdist (cmdscale (D))), norm (D), sqrt (eps))
+%!assert (norm (pdist (cmdscale (squareform (D)))), norm (D), sqrt (eps))
+%!test
+%! ## basic dimentionality reduction
+%! D = [0 2 3; 2 0 4; 3 4 0];
+%! [Y, e] = cmdscale (D, 2);
+%! assert (size (Y, 2), 2);
+%! assert (length (e), 2);
+%!test
+%! ## oversized dimension
+%! X = [0 0; 1 0; 0 1; 1 1];
+%! D = pdist (X);
+%! [Y, e] = cmdscale (D, 3);
+%! assert (size (Y, 2), 2);
+%! assert (length (e), 3);
+%!test
+%! ## non euclidean distance.
+%! X = [1 2; 3 4; 5 6; 7 8; 9 10];
+%! D = pdist (X, "cityblock");
+%! [Y, e] = cmdscale (D, 2);
+%! assert (size (Y, 2), 1);
+%! assert (length (e), 2);
+%!test
+%! ## compatability with p
+%! X = rand (10, 4);
+%! D = pdist (X);
+%! [Y, e] = cmdscale (D, 3);
+%! assert (size (Y, 2), 3);
+%! assert (length (e), 3);
+%! assert (size (Y, 1), 10);
+%!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
+%!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
+%!error <entries must be nonnegative> cmdscale (-ones (3))
+%!error <p must be an integer> cmdscale (eye (3), 0)
+%!error <p must be an integer> cmdscale (eye (3), 4)
+%!error <p must be an integer> cmdscale (eye (3), 1.5)
+%!error <p must be an integer> cmdscale (eye (3), [1, 2])
+%!error <p must be an integer> cmdscale (eye (3), 2 + 1i)
 
