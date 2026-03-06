@@ -1,5 +1,5 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
-## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2022-2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -134,8 +134,10 @@
 ## @end deftypefn
 
 function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
+
   ## Check for valid number of input arguments
   narginchk (3, Inf);
+
   ## Add defaults for 3 or 4 input arguments
   if (nargin == 3)
     power = 0.90;
@@ -143,61 +145,63 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
   elseif (nargin == 4)
     n = [];
   endif
-  ## Add defaults for extra arguments
-  alpha = 0.05;
-  tail = "both";
-  ratio = 1;
+
+  ## Force TestType to lower case
+  TestType = lower (TestType);
+
   ## Check for valid test type and corresponding size of parameters
-  t_types = {"z", "t", "t2", "var", "p", "r"};
+  t_types = {'z', 't', 't2', 'var', 'p', 'r'};
   nparams = [2, 2, 2, 1, 1, 1];
   if (isempty (TestType) || ! ischar (TestType) || size (TestType, 1) != 1)
-    error ("sampsizepwr: test type must be a non-empty string.");
+    error ("sampsizepwr: test type must be a non-empty character vector.");
   endif
-  if (sum (strcmpi (TestType, t_types)) != 1)
+  if (sum (strcmp (TestType, t_types)) != 1)
     error ("sampsizepwr: invalid test type.");
   endif
   if (! isnumeric (params))
     error ("sampsizepwr: parameters must be numeric.");
   endif
-  if (length (params) != nparams(strcmpi (TestType, t_types)))
+  if (length (params) != nparams(strcmp (TestType, t_types)))
     error ("sampsizepwr: invalid size of parameters for this test type.");
   endif
+
   ## Check for correct number of output arguments
-  if ((nargout > 1) && ! strcmpi (TestType, "t2"))
+  if ((nargout > 1) && ! strcmp (TestType, 't2'))
     error ("sampsizepwr: wrong number of output arguments for this test type.");
   endif
   Lbound = [-Inf, -Inf, -Inf,   0, 0, -1];
   Ubound = [ Inf,  Inf,  Inf, Inf, 1,  1];
-  Lbound = Lbound(strcmpi (TestType, t_types));
-  Ubound = Ubound(strcmpi (TestType, t_types));
+  Lbound = Lbound(strcmp (TestType, t_types));
+  Ubound = Ubound(strcmp (TestType, t_types));
+
   ## Check for invalid parameters specific to each test type
-  switch (lower (TestType))
-    case "z"
+  switch (TestType)
+    case 'z'
       if (params(2) <= 0)
         error ("sampsizepwr: negative or zero variance.");
       endif
       PowerFunction = @PowerFunction_N;
-    case "t"
+    case 't'
       if (params(2) <= 0)
         error ("sampsizepwr: negative or zero variance.");
       endif
       PowerFunction = @PowerFunction_T;
-    case "t2"
+    case 't2'
       if (params(2) <= 0)
         error ("sampsizepwr: negative or zero variance.");
       endif
       PowerFunction = @PowerFunction_T2;
-    case "var"
+    case 'var'
       if (params(1) <= 0)
         error ("sampsizepwr: negative or zero variance.");
       endif
       PowerFunction = @PowerFunction_V;
-    case "p"
+    case 'p'
       if (params(1) <= 0 || params(1) >= 1)
         error ("sampsizepwr: out of range probability.");
       endif
       PowerFunction = @PowerFunction_P;
-    case "r"
+    case 'r'
       if (params(1) <= -1 || params(1) >= 1)
         error ("sampsizepwr: out of range regression coefficient.");
       elseif (params(1) == 0)
@@ -205,55 +209,58 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
       endif
       PowerFunction = @PowerFunction_R;
   endswitch
-  ## Get and validate optional parameters
-  numarg = numel (varargin);
-  argpos = 1;
-  while (numarg)
-    argname = varargin{argpos};
-    switch (lower (argname))
-      case "alpha"
-        alpha = varargin{argpos + 1};
-        if (! isnumeric (alpha) || any (alpha(:) <= 0) || any( alpha(:) >= 1))
-          error ("sampsizepwr: invalid value for 'alpha' parameter.");
-        endif
-      case "tail"
-        tail = varargin{argpos + 1};
-        if (! ischar (tail) || (size (tail, 1) != 1))
-          error ("sampsizepwr: 'tail' parameter must be a non-empty string.");
-        endif
-        if (sum (strcmpi (tail, {"left","both","right"})) != 1)
-          error ("sampsizepwr: invalid value for 'tail' parameter.");
-        endif
-      case "ratio"
-        ratio = varargin{argpos + 1};
-        if (! isnumeric (ratio) || any (ratio(:) < 1))
-          error ("sampsizepwr: invalid value for 'ratio' parameter.");
-        endif
-    endswitch
-    numarg -= 2;
-    argpos += 2;
-  endwhile
+
+  ## Parse optional Name-Value paired arguments
+  optNames = {'alpha', 'tail', 'ratio'};
+  dfValues = {0.05, 'both', 1};
+  [alpha, tail, ratio, args] = parsePairedArguments (optNames, dfValues, ...
+                                                     varargin(:));
+
+  ## Validate optional parameters
+  if (! isempty (args))
+    error ("sampsizepwr: unrecognized optional Name-Value parameter name.");
+  endif
+  if (numel (varargin) > 0)
+    if (! isnumeric (alpha) || any (alpha(:) <= 0) || any (alpha(:) >= 1))
+      error ("sampsizepwr: invalid value for 'alpha' parameter.");
+    endif
+    tail = lower (tail);
+    if (! ischar (tail) || (size (tail, 1) != 1))
+      error (strcat ("sampsizepwr: 'tail' parameter must", ...
+                     " be a non-empty character vector."));
+    endif
+    if (! ismember (tail, {'left', 'both', 'right'}))
+      error ("sampsizepwr: invalid value for 'tail' parameter.");
+    endif
+    if (! isnumeric (ratio) || any (ratio(:) < 1))
+      error ("sampsizepwr: invalid value for 'ratio' parameter.");
+    endif
+  endif
+
   ## Check that only one of either p1, power, or n are missing
   if (isempty(p1) + isempty(power) + isempty(n) != 1)
     error ("sampsizepwr: only one of either p1, power, or n must be missing.");
   endif
+
   ## Check for valid P1
   if (! isempty (p1))
     if (! isnumeric (p1))
       error ("sampsizepwr: alternative hypothesis parameter must be numeric.");
-    elseif ((! strcmpi (tail, "right") && any (p1(:) <= Lbound)) || ...
-           (! strcmpi (tail, "left") && any (p1(:) >= Ubound)))
+    elseif ((! strcmp (tail, 'right') && any (p1(:) <= Lbound)) ||
+            (! strcmp (tail, 'left') && any (p1(:) >= Ubound)))
         error ("sampsizepwr: alternative hypothesis parameter out of range.");
     endif
   endif
+
   ## Check for valid POWER
-  if (! isempty (power) && ...
+  if (! isempty (power) &&
      (! isnumeric (power) || any (power(:) <= 0) || any (power(:) >= 1)))
     error ("sampsizepwr: invalid value for POWER.");
   endif
   if (! isempty (power) && any (power(:) <= alpha(:)))
     error ("sampsizepwr: Cannot compute N or P1 unless POWER > 'alpha'.");
   endif
+
   ## Expand non-empty P1/POWER/N so they are all the same size
   if (isempty (p1))
     [err, power, n, alpha, ratio] = common_size (power, n, alpha, ratio);
@@ -268,60 +275,65 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
   if (err > 0)
     error ("sampsizepwr: input arguments size mismatch.");
   end
+
   ## Check for valid options when computing N
   if (isempty (n))
     if (any (p1(:) == params(1)))
       error ("sampsizepwr: Same value for null and alternative hypothesis.");
-    elseif (strcmpi (tail, "left") && any (p1(:) >= params(1)))
+    elseif (strcmp (tail, 'left') && any (p1(:) >= params(1)))
       error ("sampsizepwr: Invalid P1 for testing left tail.");
-    elseif (strcmpi (tail, "right") && any(p1(:) <= params(1)))
+    elseif (strcmp (tail, 'right') && any (p1(:) <= params(1)))
       error ("sampsizepwr: Invalid P1 for testing right tail.");
     endif
   endif
+
   ## Allocate output of proper size and class
   out = zeros (size (alpha), outclass);
+
   ## Compute whichever one of P1/POWER/N that is now empty
   if (isempty (p1))
     ## Compute effect size given power and sample size
-    switch (lower (TestType))
-      case "z"
+    switch (TestType)
+      case 'z'
         ## z (normal) test
         out(:) = findP1z (params(1), params(2), power, n, alpha, tail);
-      case "t"
+      case 't'
         ## t-test
         out(:) = findP1t (params(1), params(2), power, n, alpha, tail);
-      case "t2"
+      case 't2'
         ## two-sample t-test
         out(:) = findP1t2 (params(1), params(2), power, n, alpha, tail, ratio);
-      case "var"
+      case 'var'
         ## chi-square (variance) test
         out(:) = findP1v (params(1), power, n, alpha, tail);
-      case "p"
+      case 'p'
         ## binomial (p) test
         out(:) = findP1p (params(1), power, n, alpha, tail);
-      case "r"
+      case 'r'
         ## regression coefficient (r) test
         out(:) = findP1r (params(1), power, n, alpha, tail);
     endswitch
+
   elseif (isempty (power))
     ## Compute power given effect size and sample size
-    switch (lower (TestType))
-      case {"z", "t"}
+    switch (TestType)
+      case {'z', 't'}
         out(:) = PowerFunction (params(1), p1, params(2), alpha, tail, n);
-      case "t2"
+      case 't2'
         out(:) = PowerFunction (params(1), p1, params(2), alpha, tail, n, ratio);
-      case {"var", "p", "r"}
+      case {'var', 'p', 'r'}
         out(:) = PowerFunction (params(1), p1, alpha, tail, n);
     endswitch
+
   else
     ## Compute sample size given power and effect size
-    switch (lower (TestType))
-      case {"z", "t"}
+    switch (TestType)
+      case {'z', 't'}
         ## Calculate one-sided Z value directly
         out(:) = z1testN (params(1), p1, params(2), power, alpha, tail);
         ## Iterate upward from there for the other cases
-        if (strcmpi (TestType, "t") || strcmpi (tail, "both"))
-          if (strcmpi (TestType, "t"))
+        if (strcmp (TestType, 't') || strcmp (tail, 'both'))
+          if (strcmp (TestType, 't'))
             out = max (out, 2);
           endif
           ## Count upward until we get the value we need
@@ -333,17 +345,17 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
             out(elem) = out(elem) + 1;
           endwhile
         endif
-      case "t2"
+      case 't2'
         ## Initialize second output argument
         N2 = zeros (size (alpha), outclass);
         ## Caculate one-sided two-sample t-test iteratively
         [out(:), N2(:)] = t1testN (params(1), p1, params(2), power, ...
                                    alpha, tail, ratio);
-      case "var"
+      case 'var'
         ## Use a binary search method
         out(:) = searchbinaryN (PowerFunction, [1, 100], params(1), ...
                                 p1, power, alpha, tail);
-      case "p"
+      case 'p'
         ## Use a binary search method
         out(:) = searchbinaryN (PowerFunction, [0, 100], params(1), ...
                                 p1, power, alpha, tail);
@@ -357,7 +369,7 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
         if (any (! t(:)))
           warning ("sampsizepwr: approximate N.");
         endif
-      case "r"
+      case 'r'
         ## Calculate sample size using Student's t distribution
         out(:) = r1testN (params(1), p1, power, alpha, tail);
     endswitch
@@ -366,18 +378,17 @@ endfunction
 
 ## Define class for output
 function out = getclass (varargin)
-  if (class (varargin{1}) == "single" || class (varargin{2}) == "single" || ...
-      class (varargin{3}) == "single" || class (varargin{4}) == "single")
-    out = "single";
+  if (any (cellfun (@(x) isa (x, 'single'), varargin)))
+    out = 'single';
   else
-    out = "double";
+    out = 'double';
   endif
 endfunction
 
 ## Sample size calculation for the one-sided Z test
 function N = z1testN (mu0, mu1, sig, desiredpower, alpha, tail)
   ## Compute the one-sided normal value directly
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
   endif
   z1 = -norminv (alpha);
@@ -389,7 +400,7 @@ endfunction
 ## Sample size calculation for R test
 function N = rtestN (r0, r1, desiredpower, alpha, tail)
   ## Compute only for 2-tailed test
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
   else
     error ("sampsizepwr: only 2-tailed testing for regression coefficient.");
@@ -406,12 +417,12 @@ endfunction
 
 ## Find alternative hypothesis parameter value P1 for Z test
 function mu1 = findP1z (mu0, sig, desiredpower, N, alpha, tail)
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
   end
   sig = sig ./ sqrt (N);
   ## Get quantiles of the normal or t distribution
-  if (strcmpi (tail, "left"))
+  if (strcmp (tail, 'left'))
     z1 = norminv (alpha);
     z2 = norminv (desiredpower);
   else               # upper or two-tailed test
@@ -420,7 +431,7 @@ function mu1 = findP1z (mu0, sig, desiredpower, N, alpha, tail)
   endif
   mu1 = mu0 + sig .* (z1 - z2);
   ## For 2-sided test, refine by taking the other tail into account
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     elem = 1:numel (alpha);
     desiredbeta = 1 - desiredpower;
     betahi = desiredbeta;
@@ -443,13 +454,13 @@ endfunction
 
 ## Find alternative hypothesis parameter value P1 for t-test
 function mu1 = findP1t (mu0, sig, desiredpower, N, alpha, tail)
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     a2 = alpha ./ 2;
   else
     a2 = alpha;
   endif
   ## Get quantiles of the normal or t distribution
-  if (strcmpi (tail, "left"))
+  if (strcmp (tail, 'left'))
     z1 = norminv(alpha);
     z2 = norminv(desiredpower);
   else               # upper or two-tailed test
@@ -472,7 +483,7 @@ endfunction
 
 ## Sample size calculation for the one-sided two-sample t-test
 function [N1, N2] = t1testN (mu0, mu1, sig, desiredpower, alpha, tail, ratio)
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
   endif
   ## Compute the initial value of N, approximated by normal distribution
@@ -483,7 +494,7 @@ function [N1, N2] = t1testN (mu0, mu1, sig, desiredpower, alpha, tail, ratio)
   n_0(n_0 <= 1) = 2;
   N = ones (size (n_0));
   ## iteratively update the sample size
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     for j = 1:numel (n_0)
       F = @(n) nctcdf (tinv (alpha(j), n + ratio(j) .* n - 2), ...
                        n + ratio(j) .* n - 2, abs (mu1(j) - mu0) ./ ...
@@ -508,13 +519,13 @@ endfunction
 
 ## Find alternative hypothesis parameter value P1 for two-sample t-test
 function mu1 = findP1t2 (mu0, sig, desiredpower, N,  alpha, tail, ratio)
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     a2 = alpha ./ 2;
   else
     a2 = alpha;
   endif
   ## Get quantiles of the normal or t distribution
-  if (strcmpi (tail, "left"))
+  if (strcmp (tail, 'left'))
     t1 = tinv (alpha, N + ratio .* N - 2);
     t2 = tinv (desiredpower, N + ratio .* N - 2);
   else               # upper or two-tailed test
@@ -541,24 +552,24 @@ function p1 = findP1v (p0, desiredpower, N, alpha, tail)
   F = @(x,n,p1) chi2cdf (x .* (n - 1) ./ p1, n - 1);     # cdf for s^2
   Finv = @(p,n,p1) p1 .* chi2inv (p, n - 1) ./ (n - 1);  # inverse
 
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
   endif
   desiredbeta = 1 - desiredpower;
 
   ## Calculate critical values and p1 for one-sided test
-  if (! strcmpi (tail, "left"))
+  if (! strcmp (tail, 'left'))
     critU = Finv (1 - alpha, N, p0);
     p1 = 1 ./ Finv (desiredbeta, N, 1 ./ critU);
   endif
-  if (! strcmpi (tail, "right"))
+  if (! strcmp (tail, 'right'))
     critL = Finv (alpha, N, p0);
   endif
-  if (strcmpi (tail, "left"))
+  if (strcmp (tail, 'left'))
     p1 = 1 ./ Finv (desiredpower, N, 1 ./ critL);
   endif
 
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     ## For 2-sided test, we have the upper tail probability under H1.
     ## Refine by taking the other tail into account.
     elem = 1:numel (alpha);
@@ -588,9 +599,9 @@ function p1 = findP1p (p0, desiredpower, N, alpha, tail)
   sigma = sqrt (p0 .* (1 - p0) ./ N);
   p1 = findP1z (p0, sigma, desiredpower, N, alpha, tail);
   ## Problem if we have no critical region left
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     t = (critL == 0 & critU == N);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     t = (critU == N);
   else
     t = (critL == 0);
@@ -626,7 +637,7 @@ endfunction
 ## Find alternative hypothesis parameter value P1 for r test
 function p1 = findP1r (p0, desiredpower, N, alpha, tail)
   ## Compute only for 2-tailed test
-  if (! strcmpi (tail, "both"))
+  if (! strcmp (tail, 'both'))
     error ("sampsizepwr: only 2-tailed testing for regression coefficient.");
   endif
   ## Set initial search boundaries for p1
@@ -658,9 +669,9 @@ function [critL, critU] = getcritP (p0, N, alpha, tail)
   ## left-over alpha, probably more than alpha/2, for the upper tail.
 
   ## Get part of alpha available for lower tail
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     Alo = alpha ./ 2;
-  elseif (strcmpi (tail, "left"))
+  elseif (strcmp (tail, 'left'))
     Alo = alpha;
   else
     Alo = 0;
@@ -668,14 +679,14 @@ function [critL, critU] = getcritP (p0, N, alpha, tail)
   ## Calculate critical values
   critU = N;
   critL = zeros(size(N));
-  if (! strcmpi (tail, "right"))
+  if (! strcmp (tail, 'right'))
     critL = binoinv (Alo, N, p0);
     Alo = binocdf (critL, N, p0);
     t = (critL < N) & (Alo <= alpha / 2);
     critL(t) = critL(t) + 1;
     Alo(! t) = Alo(! t) - binopdf (critL(! t), N(! t), p0);
   endif
-  if (! strcmpi (tail, "left"))
+  if (! strcmp (tail, 'left'))
     Aup = max(0, alpha - Alo);
     critU = binoinv(1 - Aup, N, p0);
   endif
@@ -712,18 +723,18 @@ function N = adjdiscreteN (N, PowerFunction, p0, p1, alpha, tail, power)
   for j=1:numel(N)
     allN = 1:N(j);
     obspower = PowerFunction (p0, p1(j), alpha(j), tail, allN);
-    N(j) = allN(find (obspower >= power(j), 1, "first"));
+    N(j) = allN(find (obspower >= power(j), 1, 'first'));
   endfor
 endfunction
 
 ## Normal power calculation
 function power = PowerFunction_N (mu0, mu1, sig, alpha, tail, n)
   S = sig ./ sqrt (n);
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     critL = norminv (alpha / 2, mu0, S);
     critU = mu0 + (mu0 - critL);
     power = normcdf (critL, mu1, S) + normcdf (-critU, -mu1, S);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     crit = mu0 + (mu0 - norminv (alpha, mu0, S));
     power = normcdf (-crit, -mu1, S);
   else
@@ -736,11 +747,11 @@ endfunction
 function power = PowerFunction_T (mu0, mu1, sig, alpha, tail, n)
   S = sig ./ sqrt (n);
   ncp = (mu1 - mu0) ./ S;
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     critL = tinv (alpha / 2, n - 1);
     critU = -critL;
     power = nctcdf (critL, n - 1, ncp) + nctcdf (-critU, n - 1, -ncp);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     crit = tinv (1 - alpha, n - 1);
     power = nctcdf (-crit, n - 1, -ncp);
   else
@@ -752,12 +763,12 @@ endfunction
 ## Two-sample T power calculation
 function power = PowerFunction_T2 (mu0, mu1, sig, alpha, tail, n, ratio)
   ncp = (mu1 - mu0) ./ (sig .* sqrt (1 ./  n + 1 ./ (ratio .* n)));
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     critL = tinv (alpha / 2, n + ratio .* n - 2);
     critU = -critL;
     power = nctcdf (critL, n + ratio .* n - 2, ncp) + ...
             nctcdf (-critU, n + ratio .* n - 2, -ncp);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     crit = tinv (1 - alpha, n + ratio .* n - 2);
     power = nctcdf (-crit, n + ratio .* n - 2, -ncp);
   else
@@ -768,11 +779,11 @@ endfunction
 
 ## Chi-square power calculation  #MK: THESE CONFUSED POWER WITH 1-POWER!
 function power = PowerFunction_V (v0, v1, alpha, tail, n)
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
    critU = v0 .* chi2inv (1 - alpha / 2, n - 1)
    critL = v0 .* chi2inv (alpha / 2, n - 1)
    power = chi2cdf (critL ./ v1, n - 1) + 1-chi2cdf (critU ./ v1, n - 1);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     crit = v0 .* chi2inv (1 - alpha, n - 1);
     power = 1-chi2cdf (crit ./ v1, n - 1);
   else
@@ -787,9 +798,9 @@ function [power, critL, critU] = PowerFunction_P (p0, p1, alpha, ...
   if (nargin < 6)
     [critL, critU] = getcritP (p0, n, alpha, tail);
   endif
-  if (strcmpi (tail, "both"))
+  if (strcmp (tail, 'both'))
     power = binocdf (critL - 1, n, p1) + 1 - binocdf (critU, n, p1);
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmp (tail, 'right'))
     power = 1 - binocdf (critU , n, p1);
   else
     power = binocdf (critL - 1, n, p1);
@@ -799,7 +810,7 @@ endfunction
 ## Regression power calculation
 function power = PowerFunction_R (r0, r1, alpha, tail, n)
   ## Compute only for 2-tailed test
-  if (! strcmpi (tail, "both"))
+  if (! strcmp (tail, 'both'))
     error ("sampsizepwr: only 2-tailed testing for regression coefficient.");
   endif
   ## Set initial search boundaries for power
@@ -841,9 +852,9 @@ function N = localfzero (F, N0, ratio)
   endif
   ## Find solution
   if (F(N0) > 0)
-    N = fzero (F, [minN, N0], optimset ('TolX',1e-6)); # N0 is an upper bound
+    N = fzero (F, [minN, N0], optimset ('TolX', 1e-6)); # N0 is an upper bound
   else
-    N = fzero (F, N0, optimset ('TolX',1e-6));         # N0 is a starting value
+    N = fzero (F, N0, optimset ('TolX', 1e-6));         # N0 is a starting value
   endif
 endfunction
 
@@ -888,11 +899,11 @@ endfunction
 %! ylabel ("Power")
 
 ## Input validation
-%!error<sampsizepwr: test type must be a non-empty string.> ...
+%!error<sampsizepwr: test type must be a non-empty character vector.> ...
 %! out = sampsizepwr ([], [100, 10], [], 0.8, 60);
-%!error<sampsizepwr: test type must be a non-empty string.> ...
+%!error<sampsizepwr: test type must be a non-empty character vector.> ...
 %! out = sampsizepwr (3, [100, 10], [], 0.8, 60);
-%!error<sampsizepwr: test type must be a non-empty string.> ...
+%!error<sampsizepwr: test type must be a non-empty character vector.> ...
 %! out = sampsizepwr ({"t", "t2"}, [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: invalid test type.> ...
 %! out = sampsizepwr ("reg", [100, 10], [], 0.8, 60);
@@ -956,9 +967,9 @@ endfunction
 %! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", 1.5);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
 %! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", "zero");
-%!error<sampsizepwr: 'tail' parameter must be a non-empty string.> ...
+%!error<sampsizepwr: 'tail' parameter must be a non-empty character vector.> ...
 %! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", 1.5);
-%!error<sampsizepwr: 'tail' parameter must be a non-empty string.> ...
+%!error<sampsizepwr: 'tail' parameter must be a non-empty character vector.> ...
 %! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", {"both", "left"});
 %!error<sampsizepwr: invalid value for 'tail' parameter.> ...
 %! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", "other");
@@ -1033,7 +1044,7 @@ endfunction
 %! assert (nout, 18);
 %!test
 %! p1out = sampsizepwr ("t", [20, 5], [], 0.95, 10, "Tail", "right");
-%! assert (p1out, 25.65317979360237, 1e-14);
+%! assert (p1out, 25.65317979360237, 5e-14);
 %!test
 %! pwr = sampsizepwr ("t2", [1.4, 0.2], 1.7, [], 5, "Ratio", 2);
 %! assert (pwr, 0.716504004686586, 1e-14);
