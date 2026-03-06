@@ -110,7 +110,7 @@ function [Y, e] = cmdscale (D, p)
   if (any (any (D < 0)))
     error ("cmdscale: entries must be nonnegative.");
   elseif (trace (D) != 0)
-    if (!all (diag (D) == 1) || !all (D(:) <= 1))
+    if (! all (diag (D) == 1) || ! all (D(:) <= 1))
       error ("cmdscale: input must be a distance vector or matrix.");
     endif
     D = sqrt (ones (n,n) - D);
@@ -166,6 +166,28 @@ endfunction
 %! D = pdist (X);
 %! assert (norm (pdist (cmdscale (D))), norm (D), sqrt (eps));
 %! assert (norm (pdist (cmdscale (squareform (D)))), norm (D), sqrt (eps));
+%!test
+%! ## test output
+%! X = [
+%!   0.8147, 0.1576, 0.6557, 0.7060;
+%!   0.9058, 0.9706, 0.0357, 0.0318;
+%!   0.1270, 0.9572, 0.8491, 0.2769;
+%!   0.9134, 0.4854, 0.9340, 0.0462;
+%!   0.6324, 0.8003, 0.6787, 0.0971
+%! ];
+%! D = pdist (X);
+%! p = 2;
+%! [Y, e] = cmdscale (D, p);
+%! expected_Y = [
+%!    0.635444598081665, -0.209808014423477;
+%!   -0.558655450609184, -0.457908993032377;
+%!   -0.158680352453745,  0.622280326562354;
+%!    0.222509398493731, -0.047804408953240;
+%!   -0.140618193512467,  0.093241089846740
+%! ];
+%! expected_e = [0.810349112746116; 0.651912015993974];
+%! assert (Y, expected_Y, 1e-14);
+%! assert (e, expected_e, 1e-14);
 %!test
 %! ## basic dimentionality reduction
 %! D = [0 2 3; 2 0 4; 3 4 0];
