@@ -1,12 +1,12 @@
 Name: statistics
-Version: 1.8.1
-Date: 2026-02-10
+Version: 1.8.2
+Date: 2026-03-06
 Author: various authors
 Maintainer: Andreas Bertsatos <abertsatos@biol.uoa.gr>
 Title: Statistics
 Description: The Statistics package for GNU Octave.
 Categories: Statistics
-Depends: octave (>= 9.1.0), datatypes(>=1.1.8)
+Depends: octave (>= 9.1.0), datatypes(>=1.2.0)
 License: GPLv3+
 Url: https://github.com/gnu-octave/statistics
 Tracker: https://github.com/gnu-octave/statistics/issues
