@@ -19,6 +19,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{Y} =} cmdscale (@var{D})
 ## @deftypefnx {statistics} {[@var{Y}, @var{e}] =} cmdscale (@var{D})
+## @deftypefnx {statistics} {@var{Y} =} cmdscale (@var{D}, @var{p})
+## @deftypefnx {statistics} {[@var{Y}, @var{e}] =} cmdscale (@var{D}, @var{p})
 ##
 ## Classical multidimensional scaling of a matrix.
 ##
