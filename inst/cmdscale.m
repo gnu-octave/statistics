@@ -32,6 +32,12 @@
 ## of columns of @var{Y}, is equal to the number of positive real eigenvalues of
 ## @var{B}.
 ##
+## The optional argument @var{p} is a positive integer between 1 and @var{n}
+## that specifies the maximum dimensionality of the desired embedding @var{Y}.
+## If specified, @var{Y} will have at most @var{p} columns, and the returned
+## eigenvalues @var{e} will be a vector of exactly length @var{p}. Specifying
+## @var{p} can be useful for reducing dimensions for visualization (e.g., @code{@var{p} = 2}).
+##
 ## @var{D} can be a full or sparse matrix or a vector of length
 ## @code{@var{n}*(@var{n}-1)/2} containing the upper triangular elements (like
 ## the output of the @code{pdist} function). It must be symmetric with
@@ -108,30 +114,25 @@ function [Y, e] = cmdscale (D, p)
     D = sqrt (ones (n,n) - D);
   endif
 
-  ## Build centering matrix, perform double centering, extract eigenpairs
-  J = eye (n) - ones (n,n) / n;
+  ## Build centering matrix, perform double centering
+  J = eye (n) - ones (n, n) / n;
   B = -1 / 2 * J * (D .^ 2) * J;
+
+  B = (B + B') / 2;
+
+  ## extract and sort eigenpairs
   [Q, e] = eig (B);
-  e = diag (e);
-  etmp = e;
-  e = sort (e, 'descend');
-
-  ## Remove complex eigenpairs (only possible due to machine approximation)
-  if (iscomplex (etmp))
-    for i = 1 : size (etmp,1)
-      cmp(i) = (isreal (etmp(i)));
-    endfor
-    etmp = etmp(cmp);
-    Q = Q(:,cmp);
-  endif
-
-  ## Order eigenpairs
+  etmp = diag (e);
   [etmp, ord] = sort (etmp, 'descend');
-  Q = Q(:,ord);
+  Q = Q(:, ord);
 
   ## determine total strictly positive eigenvalues
   tol = n * max (abs (etmp)) * eps;
   n_pos = sum (etmp > tol);
+
+  if (n_pos == n)
+    n_pos = n - 1;
+  endif
 
   if (nargin > 1 && ! isempty (p))
     ## if p is given, eigenvalue output length is exactly p
@@ -140,10 +141,6 @@ function [Y, e] = cmdscale (D, p)
   else
     e = etmp;
     k = n_pos;
-    
-    if (k == n)
-      k = n - 1;
-    endif
   endif
 
   ## build output matrix Y by safely slicing the top k elements
@@ -151,16 +148,22 @@ function [Y, e] = cmdscale (D, p)
   Q = Q(:, 1:k);
   Y = Q * diag (sqrt (etmp));
 
+  [~, maxind] = max (abs (Y), [], 1);
+  d = size (Y, 2);
+  idx = maxind + (0 : n : (d - 1) * n);
+  colsign = sign (Y(idx));
+  colsign(colsign == 0) = 1; 
+  Y = Y .* colsign;
+
 endfunction
 
 %!test
-%!shared m, n, X, D
 %! m = randi (100) + 1;
 %! n = randi (100) + 1;
 %! X = rand (m, n);
 %! D = pdist (X);
-%!assert (norm (pdist (cmdscale (D))), norm (D), sqrt (eps))
-%!assert (norm (pdist (cmdscale (squareform (D)))), norm (D), sqrt (eps))
+%! assert (norm (pdist (cmdscale (D))), norm (D), sqrt (eps));
+%! assert (norm (pdist (cmdscale (squareform (D)))), norm (D), sqrt (eps));
 %!test
 %! ## basic dimentionality reduction
 %! D = [0 2 3; 2 0 4; 3 4 0];
@@ -189,6 +192,26 @@ endfunction
 %! assert (size (Y, 2), 3);
 %! assert (length (e), 3);
 %! assert (size (Y, 1), 10);
+%!test
+%! ## sign convention.
+%! rng (0, "twister");
+%! X = rand (10, 3);
+%! D = pdist (X);
+%! Y = cmdscale (D);
+%! [~, maxind] = max (abs (Y), [], 1);
+%! d = size (Y, 2);
+%! n = size (Y, 1);
+%! idx = maxind + (0 : n : (d - 1) * n);
+%! assert (all (Y(idx) >= 0));
+%!test
+%! ## testing with p = n and without p
+%! rng (1, "twister");
+%! X = rand (10, 4);
+%! D = pdist (X);
+%! n_points = size (X, 1);
+%! [Y1, e1] = cmdscale (D);
+%! [Y2, e2] = cmdscale (D, n_points);
+%! assert (size (Y1, 2), size (Y2, 2));
 %!error <cmdscale: input must be a numeric vector or matrix.> cmdscale ({'not', 'a', 'matrix'})
 %!error <matrix input must be square symmetric> cmdscale (rand (3, 4))
 %!error <entries must be nonnegative> cmdscale (-ones (3))
