@@ -1,5 +1,6 @@
 ## Copyright (C) 2014 - Nir Krakauer
 ## Copyright (C) 2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -55,9 +56,13 @@ function y = randsample (v, k, replacement=false, w=[])
                    " integer. Sampling without replacement needs k <= n."));
   endif
 
-  if (all (length (w) != [0, n]))
-    error ("randsample: the size w (%d) must match the first argument (%d)", ...
-           length (w), n);
+  if (! isempty (w))
+    if (length (w) != n)
+      error ("randsample: the size w (%d) must match the first argument (%d)", ...
+             length (w), n);
+    elseif (! all (w >= 0) || sum (w) <= 0)
+      error ("randsample: the weight vector w must consist of non-negative elements and sum to a positive number");
+    endif
   endif
 
 
@@ -71,6 +76,9 @@ function y = randsample (v, k, replacement=false, w=[])
      if (isempty (w))            # all elements are equally likely to be sampled
        y = randperm (n, k);
      else                        # use "accept-reject"-like sampling
+       if (k > nnz (w))
+          error ("randsample: not enough non-zero weights for sampling without replacement");
+       endif
        y = weighted_replacement (k, w);
        while (1)
          [yy, idx] = sort (y);   # Note: sort keeps order of equal elements.
@@ -89,6 +97,13 @@ function y = randsample (v, k, replacement=false, w=[])
 
   if vector_v
     y = v(y);
+    if (iscolumn (v))
+      y = y(:);
+    elseif (isrow (v))
+      y = y(:).';
+    endif
+  else
+    y = y(:);
   endif
 
 endfunction
@@ -104,13 +119,13 @@ endfunction
 %! n = 20;
 %! k = 5;
 %! x = randsample(n, k);
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 %! x = randsample(n, k, true);
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 %! x = randsample(n, k, false);
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 %! x = randsample(n, k, true, ones(n, 1));
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 %! x = randsample(1:n, k);
 %! assert (size(x), [1 k]);
 %! x = randsample(1:n, k, true);
@@ -130,11 +145,11 @@ endfunction
 %! n = 10;
 %! k = 100;
 %! x = randsample(n, k, true, 1:n);
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 %! x = randsample((1:n)', k, true);
 %! assert (size(x), [k 1]);
 %! x = randsample(k, k, false, 1:k);
-%! assert (size(x), [1 k]);
+%! assert (size(x), [k 1]);
 
 %!test
 %! n = 20;
@@ -207,3 +222,15 @@ endfunction
 
 %!error <randsample: the size w .* must match the first argument .*> ...
 %! randsample (10, 5, false, ones(5,1))
+
+%!error <the weight vector w must consist of non-negative elements> ...
+%! randsample (5, 2, true, [0, 0, 0, 0, 0])
+
+%!error <the weight vector w must consist of non-negative elements> ...
+%! randsample (5, 2, true, [1, 2, -1, 4, 5])
+
+%!error <the weight vector w must consist of non-negative elements> ...
+%! randsample (5, 2, true, [1, 2, NaN, 4, 5])
+
+%!error <not enough non-zero weights for sampling without replacement> ...
+%! randsample (5, 4, false, [1, 1, 0, 0, 0])
