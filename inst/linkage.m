@@ -147,24 +147,32 @@ function dgram = linkage (d, method = "single", distarg, savememory)
   d = rot90 (d, 2);                     # exchange low and high cluster numbers
   weight = ones (1, n);                 # cluster weights
   dgram = zeros (n-1, 3);               # clusters from n+1 to 2*n-1
+  sz = n;                               # current matrix size (avoid size calls)
+  mcase = find (mask);                  # pre-compute method case
   for cluster = n+1 : 2*n-1
     ## Find the two nearest clusters
-    [m midx] = min (d(:));
-    [r, c] = ind2sub (size (d), midx);
+    [m, midx] = min (d(:));
+    ## Compute row/column indices directly (faster than ind2sub)
+    c = ceil (midx / sz);
+    r = midx - (c - 1) * sz;
     ## Here is the new cluster
-    dgram(cluster-n, :) = [cname(r) cname(c) d(r, c)];
+    dgram_row = cluster - n;
+    dgram(dgram_row, 1) = cname(r);
+    dgram(dgram_row, 2) = cname(c);
+    dgram(dgram_row, 3) = d(r, c);
     ## Put it in place of the first one and remove the second
     cname(r) = cluster;
     cname(c) = [];
     ## Compute the new distances.
     ## (Octave-7+ needs switch stmt to avoid 'called with too many inputs' err.)
-    switch find (mask)
+    d_rc = d([r, c], :);                # cache row slice
+    switch mcase
       case {1, 2, 4}                    # 1 arg
-        newd = dist (d([r c], :));
+        newd = dist (d_rc);
       case {3, 5, 7}                    # 4 args
-        newd = dist (d([r c], :), r, c, weight);
+        newd = dist (d_rc, r, c, weight);
       case 6                            # 2 args
-        newd = dist (d([r c], :), r);
+        newd = dist (d_rc, r);
       otherwise
     endswitch
     newd(r) = Inf;                      # Take care of the diagonal element
@@ -173,6 +181,7 @@ function dgram = linkage (d, method = "single", distarg, savememory)
     d(:,r) = newd';
     d(c,:) = [];
     d(:,c) = [];
+    sz -= 1;                            # update cached size
     ## The new weight is the sum of the components' weights
     weight(r) += weight(c);
     weight(c) = [];
