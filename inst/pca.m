@@ -189,7 +189,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         optWeights = varargin{pair_index + 1};
         if ((! isvector (optWeights)) ||
             length (optWeights) != nobs ||
-            length (find (optWeights < 0)) > 0)
+            any (optWeights < 0))
           error ("pca: weights must be a numerical array of positive numbers.");
         endif
 
@@ -205,7 +205,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         elseif ((! isvector (optVariableWeights)) ||
                 length (optVariableWeights) != nvars ||
                 (! isnumeric (optVariableWeights)) ||
-                length (find (optVariableWeights < 0)) > 0)
+                any (optVariableWeights < 0))
           error (strcat ("pca: variable weights must be a numerical array", ...
                          " of positive numbers or the string 'variance',"));
         else
@@ -279,14 +279,15 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
 
       if (isempty (optWeights))
         for iter = 1 : nvars
-          mu(iter) = mean (x(find (TF(:, iter) == 0), iter));
+          valid = ! TF(:, iter);
+          mu(iter) = mean (x(valid, iter));
         endfor
       else
         ## weighted mean with missing data
         for iter = 1 : nvars
-          mu(iter) =  sum (x(find (TF(:, iter) == 0), iter) .* ...
-                           optWeights(find (TF(:, iter) == 0))) ./ ...
-                      sum (optWeights(find (TF(:, iter) == 0)));
+          valid = ! TF(:, iter);
+          w = optWeights(valid);
+          mu(iter) = sum (x(valid, iter) .* w) ./ sum (w);
         endfor
       endif
     endif
@@ -345,7 +346,7 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
         ## are equal to the number of valid rows for the couple of columns
         ## used to compute the element
         Xpairwise = Xc;
-        Xpairwise(find (isnan (Xc))) = 0;
+        Xpairwise(isnan (Xc)) = 0;
 
         Ndegrees = (nobs - 1) * ones (nvars, nvars);
         for i_iter = 1 : nvars
@@ -396,8 +397,8 @@ function [coeff, score, latent, tsquared, explained, mu] = pca (x, varargin)
     ## FIXME: this needs tests
     if (nmissing)
       scoretmp = zeros (nobs, nvars);
-      scoretmp(find (missingRows == 0), :) = score;
-      scoretmp(find (missingRows), :) = NaN;
+      scoretmp(! missingRows, :) = score;
+      scoretmp(missingRows, :) = NaN;
       score = scoretmp;
     endif
 
