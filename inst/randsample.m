@@ -41,17 +41,17 @@
 
 function y = randsample (v, k, replacement=false, w=[])
 
-  if (isscalar (v) && isreal (v))
+  if (isscalar (v) && isnumeric (v) && (round (v) == v) && (v >= 0))
     n = v;
     vector_v = false;
-  elseif (isvector (v))
+  elseif (isvector (v) || isscalar (v))
     n = length (v);
     vector_v = true;
   else
-    error ("randsample: The input v must be a vector or positive integer.");
+    error ("randsample: The input v must be a vector or non-negative integer.");
   endif
 
-  if k < 0 || ( k > n && !replacement )
+  if (! isscalar (k) || ! isnumeric (k) || k < 0 || round (k) != k || (k > n && ! replacement))
     error (strcat ("randsample: The input k must be a non-negative", ...
                    " integer. Sampling without replacement needs k <= n."));
   endif
@@ -211,7 +211,13 @@ endfunction
 %! assert (isstring(x));
 %! assert (size(x), [1 k]);
 
-%!error <randsample: The input v must be a vector or positive integer.> ...
+%!test
+%! assert (randsample ('A', 1), 'A');
+%! assert (randsample (true, 1), true);
+%! assert (randsample (5.5, 1), 5.5);
+%! assert (randsample (-5, 1), -5);
+
+%!error <randsample: The input v must be a vector or non-negative integer.> ...
 %! randsample ([1 2 3; 1 2 3], 5)
 
 %!error <randsample: The input k must be a non-negative integer.> ...
@@ -234,3 +240,6 @@ endfunction
 
 %!error <not enough non-zero weights for sampling without replacement> ...
 %! randsample (5, 4, false, [1, 1, 0, 0, 0])
+
+%!error <randsample: The input k must be a non-negative integer.> ...
+%! randsample (10, 2.5)
