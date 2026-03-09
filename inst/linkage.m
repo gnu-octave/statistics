@@ -147,10 +147,14 @@ function dgram = linkage (d, method = "single", distarg, savememory)
   d = rot90 (d, 2);                     # exchange low and high cluster numbers
   weight = ones (1, n);                 # cluster weights
   dgram = zeros (n-1, 3);               # clusters from n+1 to 2*n-1
+  sz = n;                               # current matrix size (avoid size calls)
+  mcase = find (mask);                  # pre-compute method case
   for cluster = n+1 : 2*n-1
     ## Find the two nearest clusters
-    [m midx] = min (d(:));
-    [r, c] = ind2sub (size (d), midx);
+    [~, midx] = min (d(:));
+    ## Compute row/column indices directly (faster than ind2sub)
+    c = ceil (midx / sz);
+    r = midx - (c - 1) * sz;
     ## Here is the new cluster
     dgram(cluster-n, :) = [cname(r) cname(c) d(r, c)];
     ## Put it in place of the first one and remove the second
@@ -158,13 +162,14 @@ function dgram = linkage (d, method = "single", distarg, savememory)
     cname(c) = [];
     ## Compute the new distances.
     ## (Octave-7+ needs switch stmt to avoid 'called with too many inputs' err.)
-    switch find (mask)
+    d_rc = d([r, c], :);                # cache row slice
+    switch mcase
       case {1, 2, 4}                    # 1 arg
-        newd = dist (d([r c], :));
+        newd = dist (d_rc);
       case {3, 5, 7}                    # 4 args
-        newd = dist (d([r c], :), r, c, weight);
+        newd = dist (d_rc, r, c, weight);
       case 6                            # 2 args
-        newd = dist (d([r c], :), r);
+        newd = dist (d_rc, r);
       otherwise
     endswitch
     newd(r) = Inf;                      # Take care of the diagonal element
@@ -173,6 +178,7 @@ function dgram = linkage (d, method = "single", distarg, savememory)
     d(:,r) = newd';
     d(c,:) = [];
     d(:,c) = [];
+    sz -= 1;                            # update cached size
     ## The new weight is the sum of the components' weights
     weight(r) += weight(c);
     weight(c) = [];
@@ -259,3 +265,55 @@ endfunction
 %!assert (cond (linkage (x, "ward", "euclidean")),      17.195198, t);
 %!assert (cond (linkage (x, "ward", {"euclidean"})),    17.195198, t);
 %!assert (cond (linkage (x, "ward", {"minkowski", 2})), 17.195198, t);
+
+## Additional tests for method/metric combinations
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "single", "cityblock");
+%! assert (size (L), [4, 3]);
+%! assert (L(:,3) >= 0);  # distances non-negative
+
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "complete", "cityblock");
+%! assert (size (L), [4, 3]);
+%! assert (all (diff (L(:,3)) >= -eps));  # monotonically increasing
+
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "average", "chebychev");
+%! assert (size (L), [4, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 2 3; 4 5 6; 7 8 9; 10 11 12];
+%! L = linkage (y, "weighted", {"minkowski", 3});
+%! assert (size (L), [3, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 0 1; 0 1 1; 1 1 0; 0 0 1];
+%! L = linkage (y, "single", "cosine");
+%! assert (size (L), [3, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 2 3; 2 3 4; 5 6 7];
+%! L = linkage (y, "complete", "correlation");
+%! assert (size (L), [2, 3]);
+%! assert (L(:,3) >= 0);
+
+## Test with 2 observations (minimal case)
+%!test
+%! y = [1 2; 3 4];
+%! L = linkage (y, "single", "euclidean");
+%! assert (size (L), [1, 3]);
+%! assert (L(1,1:2), [1, 2]);
+
+## Test output structure: cluster indices are valid
+%!test
+%! y = rand (6, 3);
+%! L = linkage (y, "average", "euclidean");
+%! assert (all (L(:,1) >= 1 & L(:,1) <= 11));  # valid cluster refs
+%! assert (all (L(:,2) >= 1 & L(:,2) <= 11));
+%! assert (all (L(:,1) < L(:,2)));  # sorted within rows
