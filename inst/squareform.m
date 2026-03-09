@@ -1,4 +1,5 @@
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
+## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -91,6 +92,11 @@ function y = squareform (x, method)
       error ("squareform: invalid METHOD '%s'.", method);
   endswitch
 
+  ## Force to logical (if applicable)
+  if (isa (x, 'logical'))
+    y = logical (y);
+  endif
+
 endfunction
 
 %!shared v, m
@@ -112,7 +118,7 @@ endfunction
 
 ## confirm that it respects input class
 %!test
-%! for c = {@single, @double, @uint8, @uint32, @uint64}
+%! for c = {@single, @double, @uint8, @uint32, @uint64, @logical}
 %!   f = c{1};
 %!   assert (squareform (f (v)), f (m))
 %!   assert (squareform (f (m)), f (v))
