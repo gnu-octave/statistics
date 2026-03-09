@@ -151,15 +151,12 @@ function dgram = linkage (d, method = "single", distarg, savememory)
   mcase = find (mask);                  # pre-compute method case
   for cluster = n+1 : 2*n-1
     ## Find the two nearest clusters
-    [m, midx] = min (d(:));
+    [~, midx] = min (d(:));
     ## Compute row/column indices directly (faster than ind2sub)
     c = ceil (midx / sz);
     r = midx - (c - 1) * sz;
     ## Here is the new cluster
-    dgram_row = cluster - n;
-    dgram(dgram_row, 1) = cname(r);
-    dgram(dgram_row, 2) = cname(c);
-    dgram(dgram_row, 3) = d(r, c);
+    dgram(cluster-n, :) = [cname(r) cname(c) d(r, c)];
     ## Put it in place of the first one and remove the second
     cname(r) = cluster;
     cname(c) = [];
@@ -268,3 +265,55 @@ endfunction
 %!assert (cond (linkage (x, "ward", "euclidean")),      17.195198, t);
 %!assert (cond (linkage (x, "ward", {"euclidean"})),    17.195198, t);
 %!assert (cond (linkage (x, "ward", {"minkowski", 2})), 17.195198, t);
+
+## Additional tests for method/metric combinations
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "single", "cityblock");
+%! assert (size (L), [4, 3]);
+%! assert (L(:,3) >= 0);  # distances non-negative
+
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "complete", "cityblock");
+%! assert (size (L), [4, 3]);
+%! assert (all (diff (L(:,3)) >= -eps));  # monotonically increasing
+
+%!test
+%! y = [1 2; 3 5; 4 6; 7 8; 9 11];
+%! L = linkage (y, "average", "chebychev");
+%! assert (size (L), [4, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 2 3; 4 5 6; 7 8 9; 10 11 12];
+%! L = linkage (y, "weighted", {"minkowski", 3});
+%! assert (size (L), [3, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 0 1; 0 1 1; 1 1 0; 0 0 1];
+%! L = linkage (y, "single", "cosine");
+%! assert (size (L), [3, 3]);
+%! assert (L(:,3) >= 0);
+
+%!test
+%! y = [1 2 3; 2 3 4; 5 6 7];
+%! L = linkage (y, "complete", "correlation");
+%! assert (size (L), [2, 3]);
+%! assert (L(:,3) >= 0);
+
+## Test with 2 observations (minimal case)
+%!test
+%! y = [1 2; 3 4];
+%! L = linkage (y, "single", "euclidean");
+%! assert (size (L), [1, 3]);
+%! assert (L(1,1:2), [1, 2]);
+
+## Test output structure: cluster indices are valid
+%!test
+%! y = rand (6, 3);
+%! L = linkage (y, "average", "euclidean");
+%! assert (all (L(:,1) >= 1 & L(:,1) <= 11));  # valid cluster refs
+%! assert (all (L(:,2) >= 1 & L(:,2) <= 11));
+%! assert (all (L(:,1) < L(:,2)));  # sorted within rows
