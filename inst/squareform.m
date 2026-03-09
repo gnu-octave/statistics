@@ -16,10 +16,10 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{z} =} squareform (@var{y})
-## @deftypefnx {statistics} {@var{y} =} squareform (@var{z})
-## @deftypefnx {statistics} {@var{z} =} squareform (@var{y}, @qcode{"tovector"})
-## @deftypefnx {statistics} {@var{y} =} squareform (@var{z}, @qcode{"tomatrix"})
+## @deftypefn  {statistics} {@var{zOut} =} squareform (@var{yIn})
+## @deftypefnx {statistics} {@var{yOut} =} squareform (@var{zIn})
+## @deftypefnx {statistics} {@var{zOut} =} squareform (@var{yIn}, @qcode{'tovector'})
+## @deftypefnx {statistics} {@var{yOut} =} squareform (@var{zIn}, @qcode{'tomatrix'})
 ##
 ## Interchange between distance matrix and distance vector formats.
 ##
@@ -49,8 +49,10 @@ function y = squareform (x, method)
 
   if (nargin < 1 || nargin > 2)
     print_usage ();
-  elseif (! isnumeric (x) || ! ismatrix (x))
-    error ("squareform: Y or Z must be a numeric matrix or vector.");
+  elseif (! isnumeric (x) && ! islogical (x))
+    error ("squareform: Y or Z must be either numeric or logical.");
+  elseif (! ismatrix (x))
+    error ("squareform: Y or Z must be either a vector or a matrix.");
   endif
 
   if (nargin == 1)
@@ -64,7 +66,7 @@ function y = squareform (x, method)
   endif
 
   switch (tolower (method))
-    case "tovector"
+    case {'tovector', 'tov'}
       if (! issquare (x))
         error ("squareform: Z is not a square matrix.");
       elseif (any (diag (x) != 0))
@@ -73,7 +75,7 @@ function y = squareform (x, method)
 
       y = vec (tril (x, -1, "pack"), 2);
 
-    case "tomatrix"
+    case {'tomatrix', 'tom'}
       ## the dimensions of y are the solution to the quadratic formula for:
       ## length (x) = (sy - 1) * (sy / 2)
       sy = (1 + sqrt (1 + 8 * numel (x))) / 2;
