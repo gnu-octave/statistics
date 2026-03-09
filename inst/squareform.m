@@ -31,17 +31,19 @@
 ## @code{pdist} into a distance matrix.  It performs the opposite operation
 ## if input is a matrix.
 ##
-## If @var{x} is a vector, its number of elements must fit into the
+## If @var{x} is a numeric or logical vector, its number of elements must fit into the
 ## triangular part of a matrix (main diagonal excluded).  In other words,
 ## @code{numel (@var{x}) = @var{n} * (@var{n} - 1) / 2} for some integer
 ## @var{n}.  The resulting matrix will be @var{n} by @var{n}.
 ##
-## If @var{x} is a distance matrix, it must be square and the diagonal entries
+## If @var{x} is a numeric or logical distance matrix, it must be square and the diagonal entries
 ## of @var{x} must all be zeros.  If @var{x} is not symmetric, only the lower
 ## triangular part is used.
 ##
 ## The second argument is used to specify the output type in case there
-## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
+## is a single element.  Accepted values are @qcode{"tomatrix"} (or @qcode{"tom"})
+## and @qcode{"tovector"} (or @qcode{"tov"}).  It will default to
+## @qcode{"tomatrix"} otherwise.
 ##
 ## @seealso{pdist}
 ## @end deftypefn
@@ -104,14 +106,17 @@ endfunction
 %! m = [0 1 2 3;1 0 4 5;2 4 0 6;3 5 6 0];
 
 ## make sure that it can go both directions automatically
+%!test
 %!assert (squareform (v), m)
 %!assert (squareform (squareform (v)), v)
 %!assert (squareform (m), v)
 
 ## treat row and column vectors equally
+%!test
 %!assert (squareform (v'), m)
 
 ## handle 1 element input properly
+%!test
 %!assert (squareform (1), [0 1;1 0])
 %!assert (squareform (1, "tomatrix"), [0 1; 1 0])
 %!assert (squareform (0, "tovector"), zeros (1, 0))
@@ -123,4 +128,27 @@ endfunction
 %!   assert (squareform (f (v)), f (m))
 %!   assert (squareform (f (m)), f (v))
 %! endfor
+
+## test logical inputs.
+%!test
+%! v_log = [true, false, true];
+%! m_log = [false, true, false; true, false, true; false, true, false];
+%! assert (squareform (v_log), m_log);
+%! assert (squareform (m_log), v_log);
+
+## test partial string matching and case insensitivity
+%!test
+%! assert (squareform (v, "tom"), m);
+%! assert (squareform (m, "tov"), v);
+%! assert (squareform (v, "TOMATRIX"), m);
+
+## input validations
+%!error <squareform: Y or Z must be either numeric or logical.> squareform ("string")
+%!error <squareform: Y or Z must be either numeric or logical.> squareform ({1, 2, 3})
+%!error <squareform: Z is not a square matrix.> squareform ([1, 2, 3; 4, 5, 6], "tovector")
+%!error <squareform: Z is not a hollow matrix.> squareform (eye (3), "tovector")
+%!error <squareform: the numel of Y cannot form a square matrix.> squareform ([1, 2, 3, 4], "tomatrix")
+%!error <squareform: invalid METHOD 'to'> squareform ([1, 2, 3], "to")
+%!error <squareform: invalid METHOD 'invalid'> squareform ([1, 2, 3], "invalid")
+
 
