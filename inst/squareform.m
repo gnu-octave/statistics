@@ -1,5 +1,5 @@
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
-## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
+## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -17,10 +17,10 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{z} =} squareform (@var{y})
-## @deftypefnx {statistics} {@var{y} =} squareform (@var{z})
-## @deftypefnx {statistics} {@var{z} =} squareform (@var{y}, @qcode{"tovector"})
-## @deftypefnx {statistics} {@var{y} =} squareform (@var{z}, @qcode{"tomatrix"})
+## @deftypefn  {statistics} {@var{zOut} =} squareform (@var{yIn})
+## @deftypefnx {statistics} {@var{yOut} =} squareform (@var{zIn})
+## @deftypefnx {statistics} {@var{zOut} =} squareform (@var{yIn}, @qcode{'tovector'})
+## @deftypefnx {statistics} {@var{yOut} =} squareform (@var{zIn}, @qcode{'tomatrix'})
 ##
 ## Interchange between distance matrix and distance vector formats.
 ##
@@ -42,8 +42,6 @@
 ##
 ## The second argument is used to specify the output type in case there
 ## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
-## The string is case-insensitive and partial matches are accepted as
-## long as they are not ambiguous (e.g., @qcode{"tom"} or @qcode{"tov"}).
 ##
 ## @seealso{pdist}
 ## @end deftypefn
@@ -52,8 +50,10 @@ function y = squareform (x, method)
 
   if (nargin < 1 || nargin > 2)
     print_usage ();
-  elseif (! (isnumeric (x) || islogical (x)) || ! ismatrix (x))
-    error ("squareform: Y or Z must be a numeric or logical matrix or vector.");
+  elseif (! isnumeric (x) && ! islogical (x))
+    error ("squareform: Y or Z must be either numeric or logical.");
+  elseif (! ismatrix (x))
+    error ("squareform: Y or Z must be either a vector or a matrix.");
   endif
 
   if (nargin == 1)
@@ -64,19 +64,10 @@ function y = squareform (x, method)
     else
       method = "tovector";
     endif
-  elseif (ischar (method) || isstring (method))
-    method = tolower (method);
-    if (length (method) >= 3)
-      if (strncmp (method, "tovector", length (method)))
-        method = "tovector";
-      elseif (strncmp (method, "tomatrix", length (method)))
-        method = "tomatrix";
-      endif
-    endif
   endif
 
-  switch (method)
-    case "tovector"
+  switch (tolower (method))
+    case {'tovector', 'tov'}
       if (! issquare (x))
         error ("squareform: Z is not a square matrix.");
       elseif (any (diag (x) != 0))
@@ -85,7 +76,7 @@ function y = squareform (x, method)
 
       y = vec (tril (x, -1, "pack"), 2);
 
-    case "tomatrix"
+    case {'tomatrix', 'tom'}
       ## the dimensions of y are the solution to the quadratic formula for:
       ## length (x) = (sy - 1) * (sy / 2)
       sy = (1 + sqrt (1 + 8 * numel (x))) / 2;
@@ -95,71 +86,67 @@ function y = squareform (x, method)
 
       y = zeros (sy, class (x));
       y(tril (true (sy), -1)) = x;  # fill lower triangular part
-      if (islogical (x))
-        y = y | y.'; 
-      else
-        y += y.'; # and then the upper triangular part
-      endif
+      y += y.'; # and then the upper triangular part
 
     otherwise
       error ("squareform: invalid METHOD '%s'.", method);
   endswitch
 
+  ## Force to logical (if applicable)
+  if (isa (x, 'logical'))
+    y = logical (y);
+  endif
+
 endfunction
 
-%!test
+%!shared v, m
 %! v = 1:6;
-%! m = [0 1 2 3; 1 0 4 5; 2 4 0 6; 3 5 6 0];
-%! assert (squareform (v), m);
-%! assert (squareform (m), v);
-%! assert (squareform (squareform (v)), v);
+%! m = [0 1 2 3;1 0 4 5;2 4 0 6;3 5 6 0];
 
-## test the row and column vectors equally
+## make sure that it can go both directions automatically
 %!test
-%! v = 1:6;
-%! m = [0 1 2 3; 1 0 4 5; 2 4 0 6; 3 5 6 0];
-%! assert (squareform (v'), m);
+%!assert (squareform (v), m)
+%!assert (squareform (squareform (v)), v)
+%!assert (squareform (m), v)
+
+## treat row and column vectors equally
+%!test
+%!assert (squareform (v'), m)
 
 ## handle 1 element input properly
 %!test
-%! assert (squareform (1), [0 1; 1 0]);
-%! assert (squareform (1, "tomatrix"), [0 1; 1 0]);
-%! assert (squareform (0, "tovector"), zeros (1, 0));
-
-## test logical inputs 
-%!test
-%! v = [true, false, true];
-%! m = [false, true, false; true, false, true; false, true, false];
-%! assert (squareform (v), m);
-%! assert (squareform (m), v);
-%! assert (class (squareform (v)), "logical");
-%! assert (class (squareform (m)), "logical");
+%!assert (squareform (1), [0 1;1 0])
+%!assert (squareform (1, "tomatrix"), [0 1; 1 0])
+%!assert (squareform (0, "tovector"), zeros (1, 0))
 
 ## confirm that it respects input class
 %!test
-%! v = 1:6;
-%! m = [0 1 2 3; 1 0 4 5; 2 4 0 6; 3 5 6 0];
-%! classes = {@logical, @single, @double, @uint8, @uint32, @uint64};
-%! for i = 1:numel (classes)
-%!   f = classes{i};
-%!   assert (squareform (f (v)), f (m));
-%!   assert (squareform (f (m)), f (v));
+%! for c = {@single, @double, @uint8, @uint32, @uint64, @logical}
+%!   f = c{1};
+%!   assert (squareform (f (v)), f (m))
+%!   assert (squareform (f (m)), f (v))
 %! endfor
+
+## test logical inputs.
+%!test
+%! v_log = [true, false, true];
+%! m_log = [false, true, false; true, false, true; false, true, false];
+%! assert (squareform (v_log), m_log);
+%! assert (squareform (m_log), v_log);
 
 ## test partial string matching and case insensitivity
 %!test
-%! v = 1:6;
-%! m = [0 1 2 3; 1 0 4 5; 2 4 0 6; 3 5 6 0];
 %! assert (squareform (v, "tom"), m);
 %! assert (squareform (m, "tov"), v);
 %! assert (squareform (v, "TOMATRIX"), m);
 
 ## input validations
-%!error <squareform: Y or Z must be a numeric or logical matrix or vector.> squareform ("string")
-%!error <squareform: Y or Z must be a numeric or logical matrix or vector.> squareform ({1, 2, 3})
+%!error <squareform: Y or Z must be either numeric or logical.> squareform ("string")
+%!error <squareform: Y or Z must be either numeric or logical.> squareform ({1, 2, 3})
 %!error <squareform: Z is not a square matrix.> squareform ([1, 2, 3; 4, 5, 6], "tovector")
 %!error <squareform: Z is not a hollow matrix.> squareform (eye (3), "tovector")
 %!error <squareform: the numel of Y cannot form a square matrix.> squareform ([1, 2, 3, 4], "tomatrix")
 %!error <squareform: invalid METHOD 'to'> squareform ([1, 2, 3], "to")
 %!error <squareform: invalid METHOD 'invalid'> squareform ([1, 2, 3], "invalid")
+
 
