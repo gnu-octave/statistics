@@ -41,7 +41,9 @@
 ## triangular part is used.
 ##
 ## The second argument is used to specify the output type in case there
-## is a single element.  It will default to @qcode{"tomatrix"} otherwise.
+## is a single element.  Accepted values are @qcode{"tomatrix"} (or @qcode{"tom"})
+## and @qcode{"tovector"} (or @qcode{"tov"}).  It will default to
+## @qcode{"tomatrix"} otherwise.
 ##
 ## @seealso{pdist}
 ## @end deftypefn
