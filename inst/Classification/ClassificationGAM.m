@@ -1,6 +1,7 @@
 ## Copyright (C) 2024 Ruchika Sonagote <ruchikasonagote2003@gmail.com>
 ## Copyright (C) 2024-2025 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan  <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -222,9 +223,12 @@ classdef ClassificationGAM
     ##
     ## Model specification formula
     ##
-    ## A character vector specifying the model formula in the form
-    ## @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable and
-    ## @qcode{terms} specifies the predictor variables and interaction terms.
+    ## A character vector specifying the model formula using standard Wilkinson
+    ## notation in the form @qcode{"Y ~ terms"}. In addition to basic main
+    ## effects and interactions (@code{+}, @code{:}), it fully supports
+    ## advanced operators including crossing (@code{*}), nesting (@code{/}),
+    ## power/limits (@code{^}), and deletion (@code{-}). The formula is
+    ## evaluated internally via @code{parseWilkinsonFormula}.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -518,9 +522,10 @@ classdef ClassificationGAM
     ## @qcode{'symmetriclogit'}.
     ##
     ## @item @qcode{'Formula'} @tab @tab A character vector specifying the model
-    ## formula in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the
-    ## response variable and @qcode{terms} specifies the predictor variables and
-    ## interaction terms.
+    ## formula using standard Wilkinson notation in the form @qcode{"Y ~ terms"}.
+    ## In addition to basic main effects and interactions (@code{+}, @code{:}),
+    ## it supports advanced operators including crossing (@code{*}), nesting
+    ## (@code{/}), power/limits (@code{^}), and deletion (@code{-}).
     ##
     ## @item @qcode{'Interactions'} @tab @tab A logical matrix, a positive
     ## integer scalar, or the string @qcode{"all"} for defining the interactions
@@ -1276,52 +1281,38 @@ classdef ClassificationGAM
 
     ## Determine interactions from formula
     function intMat = parseFormula (this)
-      intMat = [];
-      ## Check formula for syntax
-      if (isempty (strfind (this.Formula, '~')))
-        error ("ClassificationGAM: invalid syntax in 'Formula'.");
+      try
+        schema = parseWilkinsonFormula (this.Formula, 'matrix');
+      catch ME
+        error ("ClassificationGAM: Invalid formula. %s", ME.message);
+      end_try_catch
+
+      termMat  = schema.Terms;
+      varNames = schema.VariableNames;
+
+      if (! isempty (schema.ResponseIdx))
+        respIdx = schema.ResponseIdx;
+        varNames(respIdx) = [];
+        termMat(:, respIdx) = [];
       endif
-      ## Split formula and keep predictor terms
-      formulaParts = strsplit (this.Formula, '~');
-      ## Check there is some string after '~'
-      if (numel (formulaParts) < 2)
-        error ("ClassificationGAM: no predictor terms in 'Formula'.");
-      endif
-      predictorString = strtrim (formulaParts{2});
-      if (isempty (predictorString))
-        error ("ClassificationGAM: no predictor terms in 'Formula'.");
-      endif
-      ## Split additive terms (between + sign)
-      aterms = strtrim (strsplit (predictorString, '+'));
-      ## Process all terms
-      for i = 1:numel (aterms)
-        ## Find individual terms (string missing ':')
-        if (isempty (strfind (aterms(i), ':'){:}))
-          ## Search PredictorNames to associate with column in X
-          sterms = strcmp (this.PredictorNames, aterms(i));
-          ## Append to interactions matrix
-          intMat = [intMat; sterms];
-        else
-          ## Split interaction terms (string contains ':')
-          mterms = strsplit (aterms{i}, ':');
-          ## Add each individual predictor to interaction term vector
-          iterms = logical (zeros (1, this.NumPredictors));
-          for t = 1:numel (mterms)
-            iterms = iterms | strcmp (this.PredictorNames, mterms(t));
-          endfor
-          ## Check that all predictors have been identified
-          if (sum (iterms) != t)
-            error (strcat ("ClassificationGAM: some predictors", ...
-                           " have not been identified."));
-          endif
-          ## Append to interactions matrix
-          intMat = [intMat; iterms];
+
+      intMat = zeros (rows (termMat), this.NumPredictors);
+
+      for i = 1:numel (varNames)
+        colIdx = find (strcmp (this.PredictorNames, varNames{i}));
+        if (isempty (colIdx))
+          error ("ClassificationGAM: Formula contains unknown predictor '%s'.", varNames{i});
         endif
+        intMat(:, colIdx) = termMat(:, i);
       endfor
-      ## Check that all terms have been identified
-      if (! all (sum (intMat, 2) > 0))
-        error ("ClassificationGAM: some terms have not been identified.");
-      endif
+
+      ## Remove intercept row (all zeros)
+      ## ClassificationGAM handles the intercept internally during fitting,
+      ## so we strip out the explicit intercept term if the parser included it.
+      interceptRow = (sum (intMat, 2) == 0);
+      intMat(interceptRow, :) = [];
+
+      intMat = logical (intMat);
     endfunction
 
     ## Fit the model
@@ -1634,6 +1625,22 @@ endfunction
 %! assert (CVMdl.KFold == 3)
 %! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
 %! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%!test
+%! ## Test advanced Wilkinson notation parsing in ClassificationGAM
+%! X = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
+%! Y = [0; 0; 1; 1];
+%!
+%! ## The * operator should automatically expand to main effects + interaction
+%! a = ClassificationGAM (X, Y, 'Formula', 'Y ~ x1 * x2');
+%!
+%! assert (class (a), "ClassificationGAM");
+%! assert (a.NumPredictors, 3);
+%!
+%! ## Verify the IntMatrix correctly captured x1, x2, and x1:x2 in MATLAB order
+%! expected_int = logical ([1, 0, 0;
+%!                          0, 1, 0;
+%!                          1, 1, 0]);
+%! assert (a.IntMatrix, expected_int);
 
 ## Test input validation for crossval method
 %!error<ClassificationGAM.crossval: Name-Value arguments must be in pairs.> ...
