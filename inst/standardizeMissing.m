@@ -48,6 +48,9 @@
 ## @itemize
 ## @item all numeric indicators match both @qcode{double} and @qcode{single}
 ## data types in @var{A}.
+## @item @qcode{double} indicators match @qcode{integer} and @qcode{logical}
+## data types in @var{A}. Integer indicators must exactly match the integer class 
+## of @var{A}.
 ## @item indicators specified as @qcode{string} arrays, @qcode{char} vectors,
 ## and @code{cell} arrays of character vectors match categorical data type in
 ## @var{A}.
@@ -70,11 +73,18 @@ function A = standardizeMissing (A, indicator)
   endif
 
   if (isnumeric (A))
-    if (! isnumeric (indicator))
+    if (isinteger (A))
+      if (! (strcmp (class (indicator), class (A)) || isa (indicator, "double")))
+        error ("standardizeMissing: INDICATOR must be %s or double.", class (A));
+      endif
+    elseif (! isnumeric (indicator))
       error ("standardizeMissing: incompatible INDICATOR and input data A.");
-    elseif (! isvector (indicator))
+    endif
+    
+    if (! isvector (indicator))
       error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
+    
     switch (class (A))
       case "double"
         A(ismember (A, indicator)) = NaN ("double");
@@ -138,6 +148,18 @@ function A = standardizeMissing (A, indicator)
       error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
     A(ismember (A, indicator)) = missing;
+    
+  elseif (islogical (A))
+    if (! (islogical (indicator) || isa (indicator, "double")))
+      error ("standardizeMissing: INDICATOR must be logical or double.");
+    elseif (! isvector (indicator))
+      error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
+    endif
+
+  elseif (! ischar (A))
+    error (strcat ("standardizeMissing: input array A must be a numeric, ", ...
+                   "logical, datetime, duration, calendarDuration, string, ", ...
+                   "categorical, char, cellstr, table, or timetable."));
   endif
 
 endfunction
@@ -188,8 +210,6 @@ endfunction
 %!assert (standardizeMissing (int32 (1), 1), int32 (1))
 %!assert (standardizeMissing (uint32 (1), uint32 (1)), uint32 (1))
 %!assert (standardizeMissing (uint32 (1), 1), uint32 (1))
-%!assert (standardizeMissing ({'abc', 1}, 1), {'abc', 1})
-%!assert (standardizeMissing (struct ('a','b'), 1), struct ('a','b'))
 
 ## categorical array tests
 %!assert (double (standardizeMissing (categorical (1), categorical (1))), NaN)
@@ -221,10 +241,22 @@ endfunction
 %!       standardizeMissing ([1, 2, 3], 'a');
 %!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
 %!       standardizeMissing ([1, 2, 3], struct ('a', 1));
+%!error <standardizeMissing: INDICATOR must be int8 or double.> ...
+%!       standardizeMissing (int8 ([1, 2, 3]), 'a');
+%!error <standardizeMissing: INDICATOR must be int8 or double.> ...
+%!       standardizeMissing (int8 ([1, 2, 3]), int16 (2));
 %!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
 %!       standardizeMissing (categorical (1), 1);
 %!error <standardizeMissing: incompatible INDICATOR and input data A.> ...
 %!       standardizeMissing ({'foo'}, string ('foo'));
 %!error <standardizeMissing: character INDICATOR must be a row vector.> ...
 %!       standardizeMissing ({'foo'}, ['a';'b']);
+%!error <standardizeMissing: input array A must be a> ...
+%!       standardizeMissing ({'abc', 1}, 1);
+%!error <standardizeMissing: input array A must be a> ...
+%!       standardizeMissing (struct ('a','b'), 1);
+%!error <standardizeMissing: INDICATOR must be logical or double.> ...
+%!       standardizeMissing ([true, false], "missing");
+%!error <standardizeMissing: INDICATOR must be logical or double.> ...
+%!       standardizeMissing ([true, false], int8 (1));
 
