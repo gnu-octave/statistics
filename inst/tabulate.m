@@ -52,9 +52,9 @@
 function tbl = tabulate (x)
 
   ## Check input for being numeric, string, categorical, cell array or logical
-  if (! (isnumeric (x) && (isvector (x) || isempty (x))) && ! (iscellstr (x)
-                       && isvector (x)) && ! ischar (x) && ! iscategorical (x)
-                       && ! isa (x, "string") && ! islogical (x))
+  if (! ((isnumeric (x) || islogical (x) || ischar (x) || iscellstr (x) 
+          || iscategorical (x) || isa (x, "string")) 
+         && (ischar (x) || isvector (x) || isempty (x))))
     error (strcat ("tabulate: X must be either a numeric vector, a", ...
                    " vector cell array of strings, a character matrix,", ...
                    " a categorical array, or a string array."));
@@ -392,6 +392,12 @@ endfunction
 %!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
 %!error<tabulate: X must be either a numeric vector> ...
 %! tabulate ({"a", "b"; "a", "c"})
+%!error<tabulate: X must be either a numeric vector> ... 
+%! tabulate ([true, false; true, true])
+%!error<tabulate: X must be either a numeric vector> ...
+%! tabulate (string ({"a", "b"; "c", "d"}))
+%!error<tabulate: X must be either a numeric vector> ... 
+%! tabulate (categorical ({'a', 'b'; 'c', 'd'}))
 
 ## Test categorical with all undefined values (should return zero counts/percents)
 %!test
@@ -417,3 +423,13 @@ endfunction
 %! tbl = tabulate (x);
 %! assert (iscell (tbl));
 %! assert (isempty (tbl));
+
+## Test 2D character matrices.
+%!test
+%! x = ['yes'; 'no'; 'yes'];
+%! tbl = tabulate (x);
+%! assert (iscell (tbl));
+%! assert (size (tbl), [2, 3]);
+%! assert (tbl(:,1), {'yes'; 'no'});
+%! assert ([tbl{:,2}]', [2; 1]);
+%! assert ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
