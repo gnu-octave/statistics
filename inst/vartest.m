@@ -1,4 +1,4 @@
-## Copyright (C) 2014 Tony Richardson
+## Copyright (C) 2014 Tony Richardson <richardson.tony@gmail.com>
 ## Copyright (C) 2022 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
