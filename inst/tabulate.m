@@ -23,9 +23,9 @@
 ## Create a frequency table of unique values in vector @var{x}.
 ##
 ## @code{tabulate (x)} displays a frequency table of the data in the vector
-## @var{x}.  The input @var{x} can be a numeric vector, a logical vector,
-## a character array, a cell array of strings, a categorical array, or a
-## string array.
+## @var{x}.  The input @var{x} can be a numeric vector, a logical vector, a
+## character matrix, a cell vector of character vectors, a categorical vector,
+## or a string vector.
 ##
 ## The table displays the value, the number of instances (count), and the
 ## percentage of that value in @var{x}.  If no output argument is requested,
@@ -51,13 +51,16 @@
 
 function tbl = tabulate (x)
 
-  ## Check input for being numeric, string, categorical, cell array or logical
-  if (! ((isnumeric (x) || islogical (x) || ischar (x) || iscellstr (x) 
-          || iscategorical (x) || isa (x, "string")) 
-         && (ischar (x) || isvector (x) || isempty (x))))
-    error (strcat ("tabulate: X must be either a numeric vector, a", ...
-                   " vector cell array of strings, a character matrix,", ...
-                   " a categorical array, or a string array."));
+  ## Check input for being numeric, logical, categorical, or text
+  ## All types but char array must be vectors
+  if (ischar (x) && ! ismatrix (x))
+    error ("tabulate: char array input must be a matrix.");
+  elseif (! isvector (x) && ! isempty (x) && ! ischar (x))
+    error ("tabulate: input must be a vector except for char array.");
+  elseif (! (isnumeric (x) || islogical (x) || iscellstr (x) ||
+             iscategorical (x) || isa (x, "string")) && ! ischar (x))
+    error (strcat ("tabulate: X must be numeric, logical, categorical,", ...
+                   " cellstring, string, or a char array."));
   endif
 
   ## Ensure vector input
@@ -388,17 +391,6 @@ endfunction
 %! assert (counts(strcmp (vals, 'Male')), 47);
 %! assert (counts(strcmp (vals, 'Female')), 53);
 
-%!error<tabulate: X must be either a numeric vector> tabulate (ones (3))
-%!error<tabulate: X must be either a numeric vector> tabulate ({1, 2, 3, 4})
-%!error<tabulate: X must be either a numeric vector> ...
-%! tabulate ({"a", "b"; "a", "c"})
-%!error<tabulate: X must be either a numeric vector> ... 
-%! tabulate ([true, false; true, true])
-%!error<tabulate: X must be either a numeric vector> ...
-%! tabulate (string ({"a", "b"; "c", "d"}))
-%!error<tabulate: X must be either a numeric vector> ... 
-%! tabulate (categorical ({'a', 'b'; 'c', 'd'}))
-
 ## Test categorical with all undefined values (should return zero counts/percents)
 %!test
 %! x = categorical ({'a','b','c'});
@@ -433,3 +425,19 @@ endfunction
 %! assert (tbl(:,1), {'yes'; 'no'});
 %! assert ([tbl{:,2}]', [2; 1]);
 %! assert ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
+
+## Test input validation
+%!error<tabulate: char array input must be a matrix.> ...
+%! tabulate (repmat ('a', 3, 3, 3))
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate ([3, 3; 3, 3])
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate ({'3', '3'; '3', '3'})
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate ([true, true; false, true])
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate (categorical ([true, true; false, true]))
+%!error<tabulate: input must be a vector except for char array.> ...
+%! tabulate (string ({"a", "b"; "a", "c"}))
+%!error<tabulate: X must be numeric, logical, categorical, cellstring, string, or a char array.> ...
+%! tabulate ({3, 3, 3, 3})
