@@ -1,4 +1,4 @@
-## Copyright (C) 2016 - Juan Pablo Carbajal
+## Copyright (C) 2016 Juan Pablo Carbajal
 ## Copyright (C) 2022-2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
