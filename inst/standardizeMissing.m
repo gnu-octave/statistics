@@ -181,7 +181,7 @@ endfunction
 %!assert (standardizeMissing (single (1), uint8 (1)), single (NaN))
 %!assert (standardizeMissing (double (1), int32 (1)), double (NaN))
 
-## Passtrough tests
+## pass-trough tests
 %!assert (standardizeMissing (true, true), true)
 %!assert (standardizeMissing (true, 1), true)
 %!assert (standardizeMissing (int32 (1), int32 (1)), int32 (1))
@@ -198,6 +198,14 @@ endfunction
 %!assert (double (standardizeMissing (categorical (1), categorical (2))), 1)
 %!assert (double (standardizeMissing (categorical (1), '2')), 1)
 %!assert (class (standardizeMissing (categorical (1), categorical (2))), 'categorical')
+
+## fix GitHub PR #419, requires datatypes 1.2.0+
+%!test
+%! A = categorical ({'a', 'b', 'c'});
+%! indicator = 'b';
+%! a = standardizeMissing (A , indicator);
+%! assert (class (a), 'categorical');
+%! assert (double (a), [1, NaN, 3]);
 
 ## datetime array tests
 %!assert (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
