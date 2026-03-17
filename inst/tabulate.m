@@ -1,6 +1,5 @@
 ## Copyright (C) 2003 Alberto Terruzzi <t-albert@libero.it>
 ## Copyright (C) 2023 Andreas Bertsatos <abertsatos@biol.uoa.gr>
-## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -53,8 +52,8 @@
 function tbl = tabulate (x)
 
   ## Check input for being numeric, string, categorical, cell array or logical
-  if (! ((isnumeric (x) || islogical (x) || ischar (x) || iscellstr (x) ...
-          || iscategorical (x) || isa (x, "string")) ...
+  if (! ((isnumeric (x) || islogical (x) || ischar (x) || iscellstr (x) 
+          || iscategorical (x) || isa (x, "string")) 
          && (ischar (x) || isvector (x) || isempty (x))))
     error (strcat ("tabulate: X must be either a numeric vector, a", ...
                    " vector cell array of strings, a character matrix,", ...
