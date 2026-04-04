@@ -267,3 +267,36 @@ function mdl = stepwiselm (X, y, varargin)
 
   PredNames    = VarNames(1:p);
   ResponseName = VarNames{p + 1};
+
+  ## Drop NaN rows
+  wasnan = any (isnan ([X, y]), 2);
+  Xc = X(! wasnan, :);
+  yc = y(! wasnan);
+  n  = rows (Xc);
+
+  if (n < 2)
+    error ("stepwiselm: fewer than 2 complete observations");
+  endif
+
+  ## Build augmented design matrix for Upper bound
+  [Xaug, termNames] = swlm_build_terms (Xc, PredNames, Upper);
+  p_aug = columns (Xaug);
+
+  ## Lower bound: forced-in terms
+  [~, lowerNames] = swlm_build_terms (Xc, PredNames, Lower);
+  keep_mask = ismember (termNames, lowerNames);
+
+  ## Starting model
+  [~, startNames] = swlm_build_terms (Xc, PredNames, modelspec);
+  inmodel_mask = ismember (termNames, startNames) | keep_mask;
+
+  ## Stepwise selection
+  if (strcmp (Criterion, "sse"))
+    [finalmodel, history] = swlm_pval_step ( ...
+        Xaug, yc, logical (inmodel_mask), logical (keep_mask), ...
+        PEnter, PRemove, NSteps, Verbose, termNames, Intercept);
+  else
+    [finalmodel, history] = swlm_crit_step ( ...
+        Xaug, yc, logical (inmodel_mask), logical (keep_mask), ...
+        Criterion, NSteps, Verbose, termNames, Intercept);
+  endif
