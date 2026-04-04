@@ -110,17 +110,12 @@ function m = trimmean (x, p, varargin)
     dim = varargin{2};
   endif
 
-  ## Force row vector to column vector
-  if (isrow (x))
-    x = x';
-  endif
-
   ## Get size of X
   szx = size (x);
   ndx = ndims (x);
 
   ## Handle special case X = []
-  if (isempty (x))
+  if (isequal (szx, [0, 0]))
     m = NaN (class (x));
     return
   endif
@@ -173,7 +168,7 @@ function m = trimmean (x, p, varargin)
   endif
 
   ## Permute dim to simplify all operations along dim1.  At func. end ipermute.
-  if (numel (dim) > 1 || (dim != 1 && ! isvector (x)))
+  if (numel (dim) > 1 || dim != 1)
     perm = 1:ndx;
     if (! vecdim_flag)
       ## Move dim to dim 1
@@ -203,7 +198,7 @@ function m = trimmean (x, p, varargin)
   sizem(dim) = 1;
 
   ## Sort X along 1st dimensions
-  x = sort (x);
+  x = sort (x, 1);
 
   ## No missing data, all columns have the same length
   if (! any (isnan (x(:))))
@@ -350,6 +345,22 @@ endfunction
 %!assert (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape(1:40, [5, 4, 2]))
 %!assert (trimmean ([], 10), NaN)
 %!assert (trimmean ([1;2;3;4;5], 10, 2), [1;2;3;4;5])
+
+%!test
+%! ## Row vector with explicit dimension 1
+%! assert (trimmean ([1, 2, 3], 10, 1), [1, 2, 3]);
+
+%!test
+%! ## Row vector with explicit dimension 2 
+%! assert (trimmean ([1, 2, 3], 10, 2), 2);
+
+%!test
+%! ## Empty array with non-operating dimension preserved (dim=1)
+%! assert (trimmean (zeros (0, 5), 10, 1), NaN (1, 5));
+
+%!test
+%! ## Empty array with non-operating dimension preserved (dim=2)
+%! assert (trimmean (zeros (2, 0), 10, 2), NaN (2, 1));
 
 ## Test input validation
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1)
