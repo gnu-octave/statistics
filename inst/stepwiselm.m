@@ -149,11 +149,10 @@ function mdl = stepwiselm (X, y, varargin)
 
   [~, p] = size (X);
 
-  ## ── Optional positional
-      modelspec ──────────────────────────────── valid_ms = {
-          "constant", "linear", "interactions", "full"};
-  opt_keys = {"Upper",      "Lower",   "Criterion", "PEnter",   "PRemove",
-              ... "NSteps", "Verbose", "VarNames",  "Intercept"};
+  ## Optional positional modelspec
+  valid_ms = {"constant", "linear", "interactions", "full"};
+  opt_keys = {"Upper", "Lower", "Criterion", "PEnter", "PRemove",
+              "NSteps", "Verbose", "VarNames", "Intercept"};
 
   optStart = 1;
   modelspec = "constant";
@@ -185,4 +184,38 @@ function mdl = stepwiselm (X, y, varargin)
     else
       error ("stepwiselm: unrecognized input arguments");
     endif
+  endif
+
+  ## Semantic validation
+  Upper     = lower (Upper);
+  Lower     = lower (Lower);
+  modelspec = lower (modelspec);
+  Criterion = lower (Criterion);
+
+  if (! any (strcmp (Upper, valid_ms)))
+    error ("stepwiselm: Upper must be constant, linear, interactions, full");
+  endif
+  if (! any (strcmp (Lower, valid_ms)))
+    error ("stepwiselm: Lower must be constant, linear, interactions, full");
+  endif
+  if (! any (strcmp (modelspec, valid_ms)))
+    error ("stepwiselm: modelspec must be constant, linear, interactions, full");
+  endif
+
+  mrank = struct ("constant", 0, "linear", 1, "interactions", 2, "full", 3);
+  if (mrank.(Lower) > mrank.(Upper))
+    error ("stepwiselm: Lower model cannot be more complex than Upper");
+  endif
+
+  ## Clamp starting model between Lower and Upper
+  if (mrank.(modelspec) < mrank.(Lower))
+    modelspec = Lower;
+  endif
+  if (mrank.(modelspec) > mrank.(Upper))
+    modelspec = Upper;
+  endif
+
+  valid_crit = {"sse", "aic", "bic", "rsquared", "adjrsquared"};
+  if (! any (strcmp (Criterion, valid_crit)))
+    error ("stepwiselm: Criterion must be sse, aic, bic, rsquared, adjrsquared");
   endif
