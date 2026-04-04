@@ -40,3 +40,18 @@
 ## @item @qcode{"full"} -- all main effects and higher-order interactions
 ## @end itemize
 ##
+## @subheading Name-Value Options
+##
+## @table @asis
+## @item @qcode{"Upper"}
+## Upper-bound model: maximum complexity allowed.  Accepts the same
+## keywords as @var{modelspec}.  Default is @qcode{"linear"}.
+##
+## @item @qcode{"Lower"}
+## Lower-bound model: terms that are always kept in the model.
+## Default is @qcode{"constant"} (intercept only).
+##
+## @item @qcode{"Criterion"}
+## Selection criterion.  One of @qcode{"sse"} (p-value, default),
+## @qcode{"aic"}, @qcode{"bic"}, @qcode{"rsquared"},
+## @qcode{"adjrsquared"}.
