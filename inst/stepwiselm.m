@@ -149,3 +149,40 @@ function mdl = stepwiselm (X, y, varargin)
 
   [~, p] = size (X);
 
+  ## ── Optional positional
+      modelspec ──────────────────────────────── valid_ms = {
+          "constant", "linear", "interactions", "full"};
+  opt_keys = {"Upper",      "Lower",   "Criterion", "PEnter",   "PRemove",
+              ... "NSteps", "Verbose", "VarNames",  "Intercept"};
+
+  optStart = 1;
+  modelspec = "constant";
+
+  if (!isempty(varargin))
+    v1 = varargin{1};
+  if (ischar(v1) && any(strcmpi(v1, valid_ms)))
+    ##Valid modelspec keyword provided as 3rd positional argument modelspec =
+        lower(v1);
+  optStart = 2;
+  elseif(ischar(v1) && !any(strcmpi(v1, opt_keys)))##Unknown string — not a
+      valid modelspec and not a known option key.##Let it fall into the Name
+      - Value parser so pairedArgs can flag it##as an
+        unrecognized option with the standard error message.optStart = 1;
+  elseif(!ischar(v1) && !isnumeric(v1))
+      error("stepwiselm: third argument must be a modelspec string");
+  endif endif
+
+  ## Parse Name-Value pairs
+  rest = varargin(optStart:end);
+
+  dfVals = {"interactions", "constant", "sse", 0.05, 0.10, Inf, 1, {}, true};
+  [Upper, Lower, Criterion, PEnter, PRemove, NSteps, Verbose, ...
+   VarNames, Intercept, extras] = pairedArgs (opt_keys, dfVals, rest(:));
+
+  if (! isempty (extras))
+    if (ischar (extras{1}))
+      error ("stepwiselm: unrecognized option '%s'", extras{1});
+    else
+      error ("stepwiselm: unrecognized input arguments");
+    endif
+  endif
