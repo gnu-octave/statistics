@@ -84,3 +84,44 @@
 ## Display level: @code{0} (silent), @code{1} (final summary, default),
 ## @code{2} (per-step detail).
 ##
+## @item @qcode{"VarNames"}
+## Cell array of length @var{p}+1 giving names for each predictor
+## (columns 1 to @var{p}) and the response (column @var{p}+1).
+## Defaults to @{@qcode{"x1"},@dots{},@qcode{"xp"},@qcode{"y"}@}.
+##
+## @item @qcode{"Intercept"}
+## Logical scalar;
+if @code{true} (default) include an intercept term.
+## @end table
+##
+## @subheading Return Value
+##
+## @var{mdl} is a structure with fields mirroring MATLAB's
+## @code{LinearModel} object:
+##
+## @itemize
+## @item @var{mdl}.Coefficients -- struct with Estimate, SE, tStat,
+## pValue for each coefficient in the final model.
+## @item @var{mdl}.CoefficientNames -- cell array of coefficient names.
+## @item @var{mdl}.Fitted -- fitted values (@var{n}-by-1).
+## @item @var{mdl}.Residuals -- struct with Raw, Pearson, Standardized.
+## @item @var{mdl}.Rsquared -- struct with Ordinary and Adjusted.
+## @item @var{mdl}.ModelCriterion -- struct with AIC, BIC, AICc.
+## @item @var{mdl}.RMSE, @var{mdl}.MSE -- error magnitude measures.
+## @item @var{mdl}.SSE, @var{mdl}.SST, @var{mdl}.SSR -- sums of squares.
+## @item @var{mdl}.DFE -- residual degrees of freedom.
+## @item @var{mdl}.NumObservations -- number of (non-NaN) observations.
+## @item @var{mdl}.NumCoefficients -- total estimated coefficients.
+## @item @var{mdl}.NumPredictors -- predictors in the final model.
+## @item @var{mdl}.PredictorNames -- all input predictor names.
+## @item @var{mdl}.SelectedPredictors -- names of selected predictors.
+## @item @var{mdl}.ResponseName -- name of the response variable.
+## @item @var{mdl}.Formula -- formula string of the final model.
+## @item @var{mdl}.History -- struct tracking the stepwise steps.
+## @item @var{mdl}.NumRemovedNaN -- observations dropped due to NaN.
+## @end itemize
+##
+## @seealso{
+  stepwisefit, fitlm, regress
+}
+##@end deftypefn
