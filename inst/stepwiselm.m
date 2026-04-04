@@ -300,3 +300,58 @@ function mdl = stepwiselm (X, y, varargin)
         Xaug, yc, logical (inmodel_mask), logical (keep_mask), ...
         Criterion, NSteps, Verbose, termNames, Intercept);
   endif
+
+  ## Final regression on selected terms
+  X_sel = Xaug(:, finalmodel);
+
+  if (Intercept)
+    Xfit = [ones(n, 1), X_sel];
+  else
+    Xfit = X_sel;
+  endif
+
+  if (columns (Xfit) == 0)
+    error ("stepwiselm: final model is empty (no intercept and no terms)");
+  endif
+
+  [B, BINT, R] = regress (yc, Xfit);
+  k_fit = columns (Xfit);
+  dfe   = n - k_fit;
+  sse   = sum (R .^ 2);
+  sst   = sum ((yc - mean (yc)) .^ 2);
+  ssr   = sst - sse;
+
+  if (dfe > 0)
+    mse  = sse / dfe;
+    rmse = sqrt (mse);
+  else
+    mse  = NaN;
+    rmse = NaN;
+  endif
+
+  ## Standard errors, t-stats, p-values
+  df_se = max (dfe, 1);
+  se_B  = (BINT(:,2) - B) ./ tinv (0.975, df_se);
+  tstat = B ./ se_B;
+  pval  = 2 * (1 - tcdf (abs (tstat), dfe));
+
+  ## R-squared
+  rsq     = 1 - sse / max (sst, eps);
+  if (n > k_fit + 1)
+    rsq_adj = 1 - (sse / dfe) / (sst / (n - 1));
+  else
+    rsq_adj = NaN;
+  endif
+
+  ## Information criteria (MLE sigma^2 = SSE/n)
+  ll   = -n / 2 * log (2 * pi * sse / n) - n / 2;
+  aic  = -2 * ll + 2 * k_fit;
+  bic  = -2 * ll + k_fit * log (n);
+  aicc = aic + 2 * k_fit * (k_fit + 1) / max (n - k_fit - 1, 1);
+
+  ## Hat-matrix diagonal for standardised residuals
+  [Qf, ~] = qr (Xfit, 0);
+  h       = sum (Qf .^ 2, 2);
+  h       = min (h, 1 - eps);
+  res_std = R ./ (rmse * sqrt (max (1 - h, eps)));
+
