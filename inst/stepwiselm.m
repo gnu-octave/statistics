@@ -355,3 +355,86 @@ function mdl = stepwiselm (X, y, varargin)
   h       = min (h, 1 - eps);
   res_std = R ./ (rmse * sqrt (max (1 - h, eps)));
 
+
+  ## Coefficient names
+  selNames = termNames(finalmodel);
+
+  if (Intercept)
+    coefNames = [{"(Intercept)"}, selNames(:).'];
+  else
+    coefNames = selNames(:).';
+  endif
+
+  ## Formula string
+  if (numel (selNames) == 0)
+    rhs = "1";
+  else
+    rhs = strjoin (selNames, " + ");
+    if (! Intercept)
+      rhs = ["-1 + ", rhs];
+    endif
+  endif
+  formula_str = [ResponseName, " ~ ", rhs];
+
+  ## Assemble output struct
+  Coefficients.Estimate = B;
+  Coefficients.SE       = se_B;
+  Coefficients.tStat    = tstat;
+  Coefficients.pValue   = pval;
+
+  Residuals.Raw          = R;
+  Residuals.Pearson      = R ./ max (rmse, eps);
+  Residuals.Standardized = res_std;
+
+  Rsquared.Ordinary = rsq;
+  Rsquared.Adjusted = rsq_adj;
+
+  ModelCriterion.AIC  = aic;
+  ModelCriterion.BIC  = bic;
+  ModelCriterion.AICc = aicc;
+
+  mdl.Coefficients       = Coefficients;
+  mdl.CoefficientNames   = coefNames;
+  mdl.Fitted             = Xfit * B;
+  mdl.Residuals          = Residuals;
+  mdl.Rsquared           = Rsquared;
+  mdl.ModelCriterion     = ModelCriterion;
+  mdl.MSE                = mse;
+  mdl.RMSE               = rmse;
+  mdl.SSE                = sse;
+  mdl.SST                = sst;
+  mdl.SSR                = ssr;
+  mdl.DFE                = dfe;
+  mdl.NumObservations    = n;
+  mdl.NumCoefficients    = numel (B);
+  mdl.NumPredictors      = sum (finalmodel);
+  mdl.PredictorNames     = PredNames;
+  mdl.SelectedPredictors = selNames;
+  mdl.ResponseName       = ResponseName;
+  mdl.Formula            = formula_str;
+  mdl.VariableNames      = VarNames;
+  mdl.TermNames          = termNames;
+  mdl.InModel            = finalmodel;
+  mdl.History            = history;
+  mdl.NumRemovedNaN      = sum (wasnan);
+
+  ## Verbose display
+  if (Verbose >= 1)
+    printf ("\nStepwise linear regression model:\n");
+    printf ("  %s\n\n", formula_str);
+    printf ("Coefficients:\n");
+    printf ("  %-22s  %10s  %10s  %10s  %10s\n", ...
+            "Name", "Estimate", "SE", "tStat", "pValue");
+    printf ("  %s\n", repmat ("-", 1, 68));
+    for k = 1:numel (coefNames)
+      printf ("  %-22s  %10.4f  %10.4f  %10.4f  %10.4g\n", ...
+              coefNames{k}, B(k), se_B(k), tstat(k), pval(k));
+    endfor
+    printf ("\n");
+    printf ("Number of observations: %d,  Error df: %d\n", n, dfe);
+    printf ("R-squared: %.4f,  Adjusted R-squared: %.4f\n", ...
+            rsq, rsq_adj);
+    printf ("RMSE: %.4f\n\n", rmse);
+  endif
+
+endfunction
