@@ -125,3 +125,27 @@ if @code{true} (default) include an intercept term.
   stepwisefit, fitlm, regress
 }
 ##@end deftypefn
+
+function mdl = stepwiselm (X, y, varargin)
+
+  ## Input validation
+  if (nargin < 2)
+    error ("stepwiselm: at least two input arguments required");
+  endif
+
+  if (! isnumeric (X) || ! ismatrix (X))
+    error ("stepwiselm: X must be a numeric matrix");
+  endif
+
+  if (! isnumeric (y) || ! isvector (y))
+    error ("stepwiselm: y must be a numeric vector");
+  endif
+
+  y = y(:);
+
+  if (rows (X) != rows (y))
+    error ("stepwiselm: X and y must have the same number of rows");
+  endif
+
+  [~, p] = size (X);
+
