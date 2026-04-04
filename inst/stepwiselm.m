@@ -219,3 +219,51 @@ function mdl = stepwiselm (X, y, varargin)
   if (! any (strcmp (Criterion, valid_crit)))
     error ("stepwiselm: Criterion must be sse, aic, bic, rsquared, adjrsquared");
   endif
+
+  ## PEnter / PRemove validation is criterion-aware
+  ## For SSE: both must be probabilities in (0,1).
+  ## For AIC/BIC/R2/AdjR2: can be any finite scalar (change thresholds).
+  ## For ALL criteria:PEnter < PRemove strictly enforced.
+  if (! (isscalar (PEnter) && isnumeric (PEnter) && isfinite (PEnter)))
+    error ("stepwiselm: PEnter must be a finite scalar");
+  endif
+  if (! (isscalar (PRemove) && isnumeric (PRemove) && isfinite (PRemove)))
+    error ("stepwiselm: PRemove must be a finite scalar");
+  endif
+  if (strcmp (Criterion, "sse"))
+    if (PEnter <= 0 || PEnter >= 1)
+      error ("stepwiselm: PEnter must be a scalar in (0,1) for SSE criterion");
+    endif
+    if (PRemove <= 0 || PRemove >= 1)
+      error ("stepwiselm: PRemove must be a scalar in (0,1) for SSE criterion");
+    endif
+  endif
+  ## Universal rule: PRemove > PEnter (confirmed for AIC in sm3.m output)
+  if (PRemove <= PEnter)
+    error ("stepwiselm: PRemove must be strictly greater than PEnter");
+  endif
+  if (! (isscalar (NSteps) && isnumeric (NSteps) && NSteps > 0))
+    error ("stepwiselm: NSteps must be a positive scalar or Inf");
+  endif
+  if (! (isscalar (Verbose) && isnumeric (Verbose) && any (Verbose == [0 1 2])))
+    error ("stepwiselm: Verbose must be 0, 1, or 2");
+  endif
+  if (! (isscalar (Intercept) && islogical (Intercept)))
+    error ("stepwiselm: Intercept must be a logical scalar");
+  endif
+
+  ## Default variable names
+  if (isempty (VarNames))
+    VarNames = cell (1, p + 1);
+    for k = 1:p
+      VarNames{k} = sprintf ("x%d", k);
+    endfor
+    VarNames{p + 1} = "y";
+  else
+    if (! iscell (VarNames) || numel (VarNames) != p + 1)
+      error ("stepwiselm: VarNames must be a cell array of length p+1");
+    endif
+  endif
+
+  PredNames    = VarNames(1:p);
+  ResponseName = VarNames{p + 1};
