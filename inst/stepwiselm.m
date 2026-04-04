@@ -55,3 +55,32 @@
 ## Selection criterion.  One of @qcode{"sse"} (p-value, default),
 ## @qcode{"aic"}, @qcode{"bic"}, @qcode{"rsquared"},
 ## @qcode{"adjrsquared"}.
+##
+## @item @qcode{"PEnter"}
+## Threshold for adding a term.  For @qcode{"sse"}: maximum p-value for
+## entry; default @code{0.05}, must be in @code{(0,1)}.
+## For @qcode{"aic"}/@qcode{"bic"}: maximum AIC/BIC change allowed for
+## entry; default @code{0} (add term only if criterion strictly decreases).
+## For @qcode{"rsquared"}: minimum R@sup{2} increase required; default
+## @code{0.1}.  For @qcode{"adjrsquared"}: default @code{0}.
+## Must satisfy @code{PEnter < PRemove} for all criteria.
+## @strong{Note:} for non-@qcode{"sse"} criteria, PEnter and PRemove are
+## accepted but currently ignored internally; the greedy (best-move) rule
+## is used instead.  This matches MATLAB's default-threshold behaviour.
+##
+## @item @qcode{"PRemove"}
+## Threshold for removing a term.  For @qcode{"sse"}: minimum p-value to
+## trigger removal; default @code{0.10}, must be in @code{(0,1)}, and
+## must satisfy @code{PRemove > PEnter} strictly.
+## For @qcode{"aic"}/@qcode{"bic"}: default @code{0.01}.
+## For @qcode{"rsquared"}: default @code{0.05}.
+## For @qcode{"adjrsquared"}: default @code{-0.05}.
+## Must satisfy @code{PEnter < PRemove} for all criteria.
+##
+## @item @qcode{"NSteps"}
+## Maximum number of stepwise iterations.  Default @code{Inf}.
+##
+## @item @qcode{"Verbose"}
+## Display level: @code{0} (silent), @code{1} (final summary, default),
+## @code{2} (per-step detail).
+##
