@@ -130,32 +130,31 @@ function m = harmmean (x, varargin)
         x = x(! isnan (x));
       endif
 
-      if (any (x == 0))
-        m = 0;
-        return;
-      endif
-
       m = length (x) ./ sum (1 ./ x);
-      m(m == Inf) = 0;  # handle zeros in X
 
     else
-      ## Find the first non-singleton dimension.
-      (dim = find (szx != 1, 1)) || (dim = 1);
-      n = szx(dim);
-      is_nan = 0;
-      if (omitnan)
-        idx = isnan (x);
-        n = sum (! idx, dim);
-        is_nan = sum (idx, dim);
-        x(idx) = 1;     # remove NaNs by subtracting is_nan below
+      if (ndx == 2 && isempty (x) && szx == [0,0])
+        m = NaN;
+      else
+        ## Find the first non-singleton dimension.
+        (dim = find (szx != 1, 1)) || (dim = 1);
+        n = szx(dim);
+        is_nan = 0;
+        if (omitnan)
+          idx = isnan (x);
+          n = sum (! idx, dim);
+          is_nan = sum (idx, dim);
+          x(idx) = 1;     # remove NaNs by subtracting is_nan below
+        endif
+
+        m = n ./ (sum (1 ./ x, dim) - is_nan);
       endif
-
-      m = n ./ (sum (1 ./ x, dim) - is_nan);
-      m(m == Inf) = 0;  # handle zeros in X
-
     endif
 
   else
+    if (all_flag)
+      error ("harmmean: dimension and 'all' flag are mutually exclusive.");
+    endif
 
     ## Two numeric input arguments, dimensions given.  Note scalar is vector!
     vecdim = varargin{1};
@@ -186,8 +185,6 @@ function m = harmmean (x, varargin)
           endif
 
           m = n ./ (sum (1 ./ x, vecdim) - is_nan);
-          m(m == Inf) = 0;  # handle zeros in X
-
         endif
 
       else
@@ -217,13 +214,7 @@ function m = harmmean (x, varargin)
               x = x(! isnan (x));
             endif
 
-            if (any (x == 0))
-              m = 0;
-              return;
-            endif
-
             m = length (x) ./ sum (1 ./ x);
-            m(m == Inf) = 0;  # handle zeros in X
 
           else
             ## Permute to bring vecdims to front
@@ -249,7 +240,6 @@ function m = harmmean (x, varargin)
             endif
 
             m = n ./ (sum (1 ./ x, 1) - is_nan);
-            m(m == Inf) = 0;  # handle zeros in X
 
             ## Inverse permute back to correct dimensions
             m = ipermute (m, perm);
@@ -305,6 +295,29 @@ endfunction
 %! m(2,3) = 13.06617961315406;
 %! assert (harmmean (x, [3 2], "omitnan"), m, 4e-14);
 
+## Test results for pure Inf arrays and omitnan interactions
+%!test
+%! assert (harmmean ([Inf, Inf]), Inf);
+%! assert (harmmean ([Inf, Inf], "all"), Inf);
+%! assert (harmmean ([Inf, Inf], 2), Inf);
+%! assert (harmmean ([NaN, Inf], "omitnan"), Inf);
+%! assert (harmmean ([NaN, Inf], "includenan"), NaN);
+%! assert (harmmean ([0, Inf]), 0);
+
+## Test NaN propagation in the presence of zeros.
+%!test
+%! assert (harmmean ([0, NaN]), NaN);
+%! assert (harmmean ([0, NaN], "all"), NaN);
+%! assert (harmmean ([0, NaN], [1, 2]), NaN);
+%! assert (harmmean ([0, NaN], "omitnan"), 0);
+%! assert (harmmean ([0, NaN], "all", "omitnan"), 0);
+
+## Test default handling of empty arrays.
+%!test
+%! a = harmmean ([]);
+%! assert (isnan (a));
+%! assert (size (a), [1, 1]);
+
 ## Test errors
 %!error <harmmean: X must contain real nonnegative values.> harmmean ("char")
 %!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
@@ -314,3 +327,7 @@ endfunction
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), 0)
 %!error <harmmean: VECDIM must contain non-repeating positive integers.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])
+%!error <harmmean: dimension and 'all' flag are mutually exclusive.> ...
+%! harmmean ([1, 2; 3, 4], 1, "all")
+%!error <harmmean: dimension and 'all' flag are mutually exclusive.> ...
+%! harmmean ([1, 2; 3, 4], [1, 2], "all")
