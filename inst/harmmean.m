@@ -163,14 +163,6 @@ function m = harmmean (x, varargin)
       error ("harmmean: DIM must be a positive integer scalar or vector.");
     endif
 
-    if (ndx == 2 && isempty (x) && szx == [0,0])
-      ## FIXME: this special case handling could be removed once sum
-      ##        compatibly handles all sizes of empty inputs
-      sz_out = szx;
-      sz_out (vecdim(vecdim <= ndx)) = 1;
-      m = NaN (sz_out);
-    else
-
       if (isscalar (vecdim))
         if (vecdim > ndx)
           m = x;
@@ -246,7 +238,6 @@ function m = harmmean (x, varargin)
           endif
         endif
       endif
-    endif
   endif
 
 endfunction
@@ -317,6 +308,16 @@ endfunction
 %! a = harmmean ([]);
 %! assert (isnan (a));
 %! assert (size (a), [1, 1]);
+%!assert (harmmean (ones (2, 0, 3, 2)), ones (1, 0, 3, 2))
+%!assert (harmmean (ones (2, 0, 3, 2), [1, 2]), NaN (1, 1, 3, 2))
+%!assert (harmmean (ones (2, 0, 3, 2), 'all'), NaN)
+%!assert (harmmean (ones (2, 0, 3, 2), 1), ones (1, 0, 3, 2))
+%!assert (harmmean (ones (2, 0, 3, 2), 2), NaN (2, 1, 3, 2))
+%!assert (harmmean (ones (2, 0, 3, 2), 3), ones (2, 0, 1, 2))
+%!assert (harmmean (ones (2, 0, 3, 2), 4), ones (2, 0, 3))
+%!assert (harmmean ([], 1), ones (1, 0))
+%!assert (harmmean ([], 2), ones (0, 1))
+%!assert (harmmean ([], 3), [])
 
 ## Test errors
 %!error <harmmean: X must contain real nonnegative values.> harmmean ("char")
