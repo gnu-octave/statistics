@@ -1422,7 +1422,7 @@ endfunction
 
 %!demo
 %!
-%! ## Repeated Measures : 
+%! ## Repeated Measures :
 %! ## This allows predicting multiple outcomes simultaneously.
 %! ## The range operator '-' selects all variables between 'T1' and 'T3'
 %! ## as the response matrix Y.
@@ -1761,12 +1761,12 @@ endfunction
 %! assert(schema.VariableNames, {'x1', 'x2', 'x3', 'Y'});
 %! assert(schema.Terms, expected_terms);
 %!test
-%! ## B1+B2: polynomial x^2 produces base var with exponent in terms matrix
+%! ## polynomial x^2 produces base var with exponent in terms matrix
 %! s = parseWilkinsonFormula ('y ~ x^2', 'matrix');
 %! assert (s.VariableNames, {'x', 'y'});
 %! assert (s.Terms, [0 0; 1 0; 2 0]);
 %!test
-%! ## B3: polynomial model_matrix computes x.^2 column
+%! ## polynomial model_matrix computes x.^2 column
 %! x = (1:5)'; y = x .^ 2;
 %! t = table (x, y);
 %! [X, ~, names] = parseWilkinsonFormula ('y ~ x^2', 'model_matrix', t);
@@ -1774,13 +1774,13 @@ endfunction
 %! assert (X(:,2), x);
 %! assert (X(:,3), x .^ 2);
 %!test
-%! ## B4: variable ordering follows table column order
+%! ## variable ordering follows table column order
 %! Age = [25;30]; Weight = [70;75]; BP = [120;122];
 %! t = table (Age, Weight, BP);
 %! [~, ~, n] = parseWilkinsonFormula ('BP ~ Age * Weight', 'model_matrix', t);
 %! assert (n, {'(Intercept)'; 'Age'; 'Weight'; 'Age:Weight'});
 %!test
-%! ## B5: numeric columns named before categorical in interactions
+%! ## numeric columns named before categorical in interactions
 %! N = [10;20]; C = {'lo';'hi'}; y = [1;2];
 %! d = table (N, C, y);
 %! [~, ~, n] = parseWilkinsonFormula ('y ~ N * C', 'model_matrix', d);
