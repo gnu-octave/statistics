@@ -1,4 +1,4 @@
-## Copyright (C) 2025 Jayant Chauhan <0001jayant@gmail.com>
+## Copyright (C) 2025-26 Jayant Chauhan <0001jayant@gmail.com>
 ## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -69,21 +69,15 @@ function D = dummyvar (g)
                      " variable must be a column vector."));
     endif
 
-    g_cats = cellstr (categories (g));
-    g_cstr = cellstr (g(:));
-    K = numel (g_cats);
+    [idx, gn] = grp2idx (g);
+    K = numel (gn);
     D = zeros (nr, K);
 
     for i = 1:nr
-      if (isundefined (g(i)))
+      if (isnan (idx(i)))
         D(i,:) = NaN;
       else
-        for k = 1:K
-          if (strcmp (g_cstr{i}, g_cats{k}))
-            D(i,k) = 1;
-            break;
-          endif
-        endfor
+        D(i, idx(i)) = 1;
       endif
     endfor
 
@@ -212,8 +206,19 @@ endfunction
 %! D = dummyvar (g);
 %! D1 = [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0];
 %! assert (D, D1);
-
-## Test input validation
+%!test
+%! g = categorical ({'a'; 'b'; 'a'}, {'b', 'a', 'c'}, {'b', 'a', 'c'});
+%! D = dummyvar (g);
+%! assert (D, [0, 1, 0; 1, 0, 0; 0, 1, 0]);
+%!test
+%! g = categorical ({''; ''; ''}, {'x', 'y'});
+%! D = dummyvar (g);
+%! assert (D, [NaN, NaN; NaN, NaN; NaN, NaN]);
+%!test
+%! g = categorical ({'a'; 'a'; 'b'}, {'a', 'b', 'c'});
+%! D = dummyvar (g);
+%! assert (D, [1, 0, 0; 1, 0, 0; 0, 1, 0]);
+%! assert (size (D, 2), 3);
 %!error dummyvar ()
 %!error<dummyvar: function called with too many inputs> dummyvar (1, 2)
 %!error<dummyvar: categorical grouping variable must be a column vector.> ...
