@@ -1,5 +1,6 @@
 ## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -201,7 +202,7 @@ function varargout = parseWilkinsonFormula (varargin)
       else
         lhs_vars = resolve_lhs_symbolic (lhs_str);
       endif
-      
+
       ## build the required output.
       varargout{1} = run_equation_builder (lhs_vars, rhs_terms);
 
@@ -519,14 +520,14 @@ function result = run_expander (node, mode)
       args_str_parts = {};
       for k = 1:length (node.args)
         arg_res = run_expander (node.args{k}, mode);
-        
+
         if (! isempty (arg_res) && ! isempty (arg_res{1}))
-           args_str_parts{end+1} = arg_res{1}{1}; 
+           args_str_parts{end+1} = arg_res{1}{1};
         else
            args_str_parts{end+1} = '';
         endif
       endfor
-      
+
       full_term = sprintf ("%s(%s)", node.name, strjoin (args_str_parts, ','));
       result = {{full_term}};
     else
@@ -774,11 +775,8 @@ function schema = run_schema_builder (expanded)
     endif
   endfunction
 
-  ## extract variables
+  ## extract variables — collect RHS predictors first, then LHS response
   all_vars = {};
-  if (! isempty (lhs_term))
-    all_vars = [all_vars, flatten_recursive(lhs_term)];
-  endif
 
   cleaned_rhs = cell (length (rhs_terms), 1);
   for i = 1:length (rhs_terms)
@@ -789,11 +787,26 @@ function schema = run_schema_builder (expanded)
       final_term_vars = [final_term_vars, parts];
     endfor
     cleaned_rhs{i} = final_term_vars;
-    all_vars = [all_vars, final_term_vars];
+    ## Add only the BASE variable name to all_vars (strip ^k suffix)
+    for j = 1:length (final_term_vars)
+      tv = final_term_vars{j};
+      caret = strfind (tv, '^');
+      if (! isempty (caret))
+        all_vars{end+1} = tv(1:caret(1)-1);
+      else
+        all_vars{end+1} = tv;
+      endif
+    endfor
   endfor
 
-  all_vars = unique (all_vars);
-  ## Remove intercept marker from var list
+  ## Append LHS (response) variables after RHS predictors
+  if (! isempty (lhs_term))
+    all_vars = [all_vars, flatten_recursive(lhs_term)];
+  endif
+
+  ## Stable dedup (preserves first-seen order)
+  [~, ui] = unique (all_vars, 'stable');
+  all_vars = all_vars(sort (ui));
   all_vars(strcmp (all_vars, '1')) = [];
 
   schema.VariableNames = all_vars;
@@ -808,7 +821,7 @@ function schema = run_schema_builder (expanded)
     endif
   endif
 
-  ## Build terms matrix
+  ## Build terms matrix (stores exponents, not just binary 1)
   n_vars = length (all_vars);
   n_terms = length (cleaned_rhs);
   terms_mat = zeros (n_terms, n_vars);
@@ -822,22 +835,46 @@ function schema = run_schema_builder (expanded)
       continue;
     endif
 
-    [found, idx] = ismember (vars_in_this_term, all_vars);
-    if (any (! found))
-      error ("parseWilkinsonFormula: Unknown variable in term definition.");
-    endif
-    terms_mat(i, idx) = 1;
+    for jj = 1:length (vars_in_this_term)
+      tv = vars_in_this_term{jj};
+      caret = strfind (tv, '^');
+      if (! isempty (caret))
+        base_name = tv(1:caret(1)-1);
+        exp_val   = str2double (tv(caret(1)+1:end));
+      else
+        base_name = tv;
+        exp_val   = 1;
+      endif
+      col = find (strcmp (all_vars, base_name));
+      if (isempty (col))
+        error ("parseWilkinsonFormula: Unknown variable '%s' in term.", ...
+               base_name);
+      endif
+      terms_mat(i, col) = exp_val;
+    endfor
   endfor
 
-  ## sorting : order by order.
-  term_orders = sum (terms_mat, 2);
-  M = [term_orders, terms_mat];
+  ## sorting: order by (1) number of active variables ascending,
+  ## (2) binary mask descending (x1 before x2 before x3),
+  ## (3) exponent values ascending (x before x^2)
+  term_orders = sum (terms_mat > 0, 2);
+  binary_mask = double (terms_mat > 0);
+  M = [term_orders, binary_mask, terms_mat];
 
-  [~, unique_idx] = unique (M, 'rows');
+  ## Create unique rows based on actual terms
+  [~, unique_idx] = unique ([term_orders, terms_mat], 'rows');
   terms_mat = terms_mat (unique_idx, :);
+  cleaned_rhs = cleaned_rhs(unique_idx);
+  M = M (unique_idx, :);
 
-  [~, sort_idx] = sortrows ([sum(terms_mat, 2), terms_mat]);
+  n_v = size (terms_mat, 2);
+  ## Direction: [asc on order, desc on binary mask, asc on exponents]
+  sort_dirs = [1, -(2:1+n_v), (2+n_v:1+2*n_v)];
+
+  ## Sort using the direction vector
+  [~, sort_idx] = sortrows (M, sort_dirs);
   schema.Terms = terms_mat (sort_idx, :);
+  schema.TermTokens = cleaned_rhs(sort_idx);
 
 endfunction
 
@@ -921,6 +958,19 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     endif
   endfor
 
+  ## Reorder schema.VariableNames to match table column order (Fix B4)
+  tbl_col_order = data.Properties.VariableNames;
+  [~, pos] = ismember (schema.VariableNames, tbl_col_order);
+  pos(pos == 0) = length (tbl_col_order) + 1;
+  [~, reorder_idx] = sort (pos);
+  schema.VariableNames = schema.VariableNames(reorder_idx);
+  schema.Terms         = schema.Terms(:, reorder_idx);
+  if (! isempty (schema.ResponseIdx))
+    resp_name = req_vars{schema.ResponseIdx};
+    schema.ResponseIdx = find (strcmp (schema.VariableNames, resp_name));
+  endif
+  req_vars = schema.VariableNames;
+
   ## Build Design Matrix X
   X = [];
   col_names = {};
@@ -930,6 +980,7 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
   has_intercept = ! isempty (intercept_row_idx);
 
   n_terms = size (schema.Terms, 1);
+  cleaned_rhs_terms = schema.TermTokens;
 
   for i = 1:n_terms
     term_row = schema.Terms(i, :);
@@ -942,20 +993,53 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
       continue;
     endif
 
+    ## Sort vars_idx: numeric variables before categorical (Fix B5)
+    if (length (vars_idx) > 1)
+      is_cat = arrayfun (@(v) strcmp (var_info.(req_vars{v}).type, ...
+                                     'categorical'), vars_idx);
+      [~, sort_order] = sort (is_cat);
+      vars_idx = vars_idx(sort_order);
+    endif
+
     current_block = ones (n_rows, 1);
     current_names = {''};
 
+    ## Resolve term tokens for polynomial support (Fix B3)
+    term_tokens = cleaned_rhs_terms{i};
+    token_idx = 0;
+
     for v = vars_idx
-      vname = req_vars{v};
+      token_idx = token_idx + 1;
+      if (! isempty (term_tokens) && token_idx <= length (term_tokens))
+        term_token = term_tokens{token_idx};
+      else
+        term_token = req_vars{v};
+      endif
+
+      caret = strfind (term_token, '^');
+      if (! isempty (caret))
+        vname = term_token(1:caret(1)-1);
+      else
+        vname = req_vars{v};
+      endif
       info = var_info.(vname);
 
       if (strcmp (info.type, 'numeric'))
-        current_block = current_block .* info.data;
+        ## Resolve polynomial exponent from term token
+        if (! isempty (caret))
+          exp_val   = str2double (term_token(caret(1)+1:end));
+          col_data  = info.data .^ exp_val;
+          disp_name = term_token;
+        else
+          col_data  = info.data;
+          disp_name = vname;
+        endif
+        current_block = current_block .* col_data;
         for k = 1:length (current_names)
           if (isempty (current_names{k}))
-            current_names{k} = vname;
+            current_names{k} = disp_name;
           else
-            current_names{k} = [current_names{k}, ':', vname];
+            current_names{k} = [current_names{k}, ':', disp_name];
           endif
         endfor
       else
@@ -1140,14 +1224,14 @@ function [lhs_str, rhs_terms] = split_and_expand_rhs (formula_str, mode)
   ## process RHS
   rhs_tokens = run_lexer (rhs_str);
   [rhs_tree, ~] = run_parser (rhs_tokens);
-  
+
   wrapper.type = 'OPERATOR';
   wrapper.value = '~';
   wrapper.left = [];
   wrapper.right = rhs_tree;
-  
+
   expanded = run_expander (wrapper, mode);
-  
+
   ## extract the terms.
   if (isstruct (expanded) && isfield (expanded, 'model'))
     rhs_terms = expanded.model;
@@ -1164,22 +1248,22 @@ function vars = resolve_lhs_symbolic (lhs_str)
   for i = 1:length (parts)
     p = strtrim (parts{i});
     if (isempty (p)), continue; endif
-    
+
     range_parts = strsplit (p, '-');
-    
+
     if (length (range_parts) == 2)
       s_str = strtrim (range_parts{1});
       e_str = strtrim (range_parts{2});
-      
+
       [s_tok] = regexp (s_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
       [e_tok] = regexp (e_str, '^([a-zA-Z_]\w*)(\d+)$', 'tokens');
-      
+
       if (! isempty (s_tok) && ! isempty (e_tok))
         prefix = s_tok{1}{1};
         s_num  = str2double (s_tok{1}{2});
         e_prefix = e_tok{1}{1};
         e_num    = str2double (e_tok{1}{2});
-        
+
         if (strcmp (prefix, e_prefix) && s_num <= e_num)
           for n = s_num:e_num
             vars{end+1} = sprintf ("%s%d", prefix, n);
@@ -1203,7 +1287,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
   for i = 1:length (rhs_terms)
     t = rhs_terms{i};
     if (isempty (t))
-      term_strs{end+1} = ''; 
+      term_strs{end+1} = '';
     else
       if (length (t) == 1 && any (strfind (t{1}, "(")))
          term_strs{end+1} = t{1};
@@ -1229,13 +1313,13 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
         rhs_parts{end+1} = sprintf ("%s*%s", coeff, t_str);
       endif
     endfor
-    
+
     full_rhs = strjoin (rhs_parts, ' + ');
     if (isempty (full_rhs)), full_rhs = '0'; endif
     lines{end+1} = sprintf ("%s = %s", lhs_vars{k}, full_rhs);
   endfor
 
-  eq_list = string (lines'); 
+  eq_list = string (lines');
 endfunction
 
 %!demo
@@ -1271,7 +1355,7 @@ endfunction
 
 %!demo
 %!
-%! ## Interaction Effects : 
+%! ## Interaction Effects :
 %! ## We analyze Relief Score based on Drug Type and Dosage Level.
 %! ## The '*' operator expands to the main effects PLUS the interaction term.
 %! ## Categorical variables are automatically created.
@@ -1287,11 +1371,11 @@ endfunction
 
 %!demo
 %!
-%! ## Polynomial Regression : 
+%! ## Polynomial Regression :
 %! ## Uses the power operator (^) to model non-linear relationships.
 %! Distance = [20; 45; 80; 125];
 %! Speed    = [30; 50; 70; 90];
-%! Speed_2  = Speed .^ 2; 
+%! Speed_2  = Speed .^ 2;
 %! t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
 %!
 %! formula = 'Distance ~ Speed^2';
@@ -1316,7 +1400,7 @@ endfunction
 
 %!demo
 %!
-%! ## Explicit Nesting : 
+%! ## Explicit Nesting :
 %! ## The parser also supports the explicit 'B(A)' syntax, which means
 %! ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
 %! ## but often used to denote random effects or specific hierarchy.
@@ -1327,7 +1411,7 @@ endfunction
 
 %!demo
 %!
-%! ## Excluding Terms : 
+%! ## Excluding Terms :
 %! ## Demonstrates building a complex model and then simplifying it.
 %! ## We define a full 3-way interaction (A*B*C) but explicitly remove the
 %! ## three-way term (A:B:C) using the minus operator.
@@ -1487,7 +1571,7 @@ endfunction
 %! C = {'lo'; 'hi'};
 %! d = table (y, N, C);
 %! [M, ~, names] = parseWilkinsonFormula ('~ N * C', 'model_matrix', d);
-%! assert (any (strcmp (names, 'C_lo:N')));
+%! assert (any (strcmp (names, 'N:C_lo')));
 %!test
 %! ## Test : Intercept Only Model
 %! y = [1; 2; 3];
@@ -1659,6 +1743,48 @@ endfunction
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
+%!test
+%! ## Verify parseWilkinsonFormula schema matches MATLAB fitlm sorting
+%! formula = 'Y ~ x1 * x2 * x3';
+%! schema = parseWilkinsonFormula(formula, 'matrix');
+%!
+%! ## Columns: predictors first in formula order, response last
+%! expected_terms = [0, 0, 0, 0;  ## (Intercept)
+%!                   1, 0, 0, 0;  ## x1
+%!                   0, 1, 0, 0;  ## x2
+%!                   0, 0, 1, 0;  ## x3
+%!                   1, 1, 0, 0;  ## x1:x2
+%!                   1, 0, 1, 0;  ## x1:x3
+%!                   0, 1, 1, 0;  ## x2:x3
+%!                   1, 1, 1, 0]; ## x1:x2:x3
+%!
+%! assert(schema.VariableNames, {'x1', 'x2', 'x3', 'Y'});
+%! assert(schema.Terms, expected_terms);
+%!test
+%! ## B1+B2: polynomial x^2 produces base var with exponent in terms matrix
+%! s = parseWilkinsonFormula ('y ~ x^2', 'matrix');
+%! assert (s.VariableNames, {'x', 'y'});
+%! assert (s.Terms, [0 0; 1 0; 2 0]);
+%!test
+%! ## B3: polynomial model_matrix computes x.^2 column
+%! x = (1:5)'; y = x .^ 2;
+%! t = table (x, y);
+%! [X, ~, names] = parseWilkinsonFormula ('y ~ x^2', 'model_matrix', t);
+%! assert (names, {'(Intercept)'; 'x'; 'x^2'});
+%! assert (X(:,2), x);
+%! assert (X(:,3), x .^ 2);
+%!test
+%! ## B4: variable ordering follows table column order
+%! Age = [25;30]; Weight = [70;75]; BP = [120;122];
+%! t = table (Age, Weight, BP);
+%! [~, ~, n] = parseWilkinsonFormula ('BP ~ Age * Weight', 'model_matrix', t);
+%! assert (n, {'(Intercept)'; 'Age'; 'Weight'; 'Age:Weight'});
+%!test
+%! ## B5: numeric columns named before categorical in interactions
+%! N = [10;20]; C = {'lo';'hi'}; y = [1;2];
+%! d = table (N, C, y);
+%! [~, ~, n] = parseWilkinsonFormula ('y ~ N * C', 'model_matrix', d);
+%! assert (n, {'(Intercept)'; 'N'; 'C_lo'; 'N:C_lo'});
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
