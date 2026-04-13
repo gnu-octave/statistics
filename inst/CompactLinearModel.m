@@ -185,11 +185,22 @@ classdef CompactLinearModel < handle
     function disp (obj)
 
       fprintf ("\n");
-      fprintf ("Linear regression model:\n");
 
-      ## Formula line
+      ## Show "Compact" prefix for CompactLinearModel, not for LinearModel
+      if (strcmp (class (obj), "CompactLinearModel"))
+        fprintf ("Compact linear regression model:\n");
+      else
+        fprintf ("Linear regression model:\n");
+      endif
+
+      ## Formula line: ResponseName ~ LinearPredictor
       if (isstruct (obj.Formula) && isfield (obj.Formula, "LinearPredictor"))
-        fprintf ("    %s\n", obj.Formula.LinearPredictor);
+        if (! isempty (obj.ResponseName))
+          fprintf ("    %s ~ %s\n", obj.ResponseName, ...
+                   obj.Formula.LinearPredictor);
+        else
+          fprintf ("    %s\n", obj.Formula.LinearPredictor);
+        endif
       endif
 
       fprintf ("\n");
@@ -306,6 +317,60 @@ classdef CompactLinearModel < handle
                 [varargout{1:nargout}] = coefTest (obj, args{:});
               else
                 [varargout{1:nargout}] = coefTest (obj);
+              endif
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
+            case "compact"
+              [varargout{1:nargout}] = compact (obj);
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
+            case "addTerms"
+              if (! isempty (chain_s) && strcmp (chain_s(1).type, "()"))
+                args = chain_s(1).subs;
+                chain_s = chain_s(2:end);
+                [varargout{1:nargout}] = addTerms (obj, args{:});
+              else
+                error ("CompactLinearModel: addTerms requires arguments.");
+              endif
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
+            case "removeTerms"
+              if (! isempty (chain_s) && strcmp (chain_s(1).type, "()"))
+                args = chain_s(1).subs;
+                chain_s = chain_s(2:end);
+                [varargout{1:nargout}] = removeTerms (obj, args{:});
+              else
+                error ("CompactLinearModel: removeTerms requires arguments.");
+              endif
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
+            case "step"
+              if (! isempty (chain_s) && strcmp (chain_s(1).type, "()"))
+                args = chain_s(1).subs;
+                chain_s = chain_s(2:end);
+                [varargout{1:nargout}] = step (obj, args{:});
+              else
+                [varargout{1:nargout}] = step (obj);
+              endif
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
+            case "anova"
+              if (! isempty (chain_s) && strcmp (chain_s(1).type, "()"))
+                args = chain_s(1).subs;
+                chain_s = chain_s(2:end);
+                [varargout{1:nargout}] = anova (obj, args{:});
+              else
+                [varargout{1:nargout}] = anova (obj);
               endif
               if (! isempty (chain_s))
                 [varargout{1:nargout}] = subsref (varargout{1}, chain_s);

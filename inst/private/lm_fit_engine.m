@@ -74,6 +74,12 @@
 ## Struct with fields @code{AIC}, @code{AICc}, @code{BIC}, @code{CAIC}.
 ## @item n
 ## Number of observations.
+## @item Q
+## Economy QR factor for non-deficient columns (n x p_est).  Used by
+## @code{LinearModel} to compute the hat matrix without a second QR.
+## @item h
+## Leverage vector (n x 1), equal to @code{diag(Q*Q')} = row sums of
+## squares of @var{Q}.
 ## @end table
 ##
 ## @seealso{CompactLinearModel}
@@ -183,6 +189,11 @@ function s = lm_fit_engine (X, y, weights)
   s.rsq      = struct ("Ordinary",  ssr / sst, ...
                         "Adjusted", 1 - (sse / dfe) / (sst / (n - 1)));
   s.crit     = struct ("AIC", aic, "AICc", aicc, "BIC", bic, "CAIC", caic);
+
+  ## QR factor and leverage for LinearModel diagnostics
+  Q_est = Q(:, ! rank_def);
+  s.Q   = Q_est;
+  s.h   = sum (Q_est .^ 2, 2);
 
 endfunction
 
