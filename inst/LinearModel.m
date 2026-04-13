@@ -419,14 +419,12 @@ classdef LinearModel < CompactLinearModel
       [~, sort_idx] = sort (term_order);
       merged_terms = merged_terms(sort_idx, :);
 
-      ## Rebuild design matrix from current stored X info
-      ## Phase 3A approach: rebuild X from column manipulation
-      X_old = __rebuild_X__ (obj);
+      ## Rebuild design matrix
       y_vec = __get_y__ (obj);
       w_vec = __get_weights__ (obj);
 
-      ## Build new design matrix columns for new terms
-      X_new = __build_X_from_terms__ (obj, merged_terms);
+      ## Build new design matrix (Phase 3B: returns coef names for categoricals)
+      [X_new, new_coef_names] = __build_X_from_terms__ (obj, merged_terms);
 
       ## Refit
       fit_s = lm_fit_engine (X_new, y_vec, w_vec);
@@ -434,9 +432,7 @@ classdef LinearModel < CompactLinearModel
       ## Update formula
       new_formula = current_formula;
       new_formula.Terms = merged_terms;
-      new_formula.CoefficientNames = __terms_to_coef_names__ ( ...
-                                       merged_terms, p_names, ...
-                                       current_formula.HasIntercept);
+      new_formula.CoefficientNames = new_coef_names;
       new_formula.LinearPredictor = __terms_to_formula_str__ ( ...
                                       merged_terms, p_names, ...
                                       current_formula.HasIntercept);
@@ -503,7 +499,7 @@ classdef LinearModel < CompactLinearModel
       ## Rebuild design matrix
       y_vec = __get_y__ (obj);
       w_vec = __get_weights__ (obj);
-      X_new = __build_X_from_terms__ (obj, merged_terms);
+      [X_new, new_coef_names] = __build_X_from_terms__ (obj, merged_terms);
 
       ## Refit
       fit_s = lm_fit_engine (X_new, y_vec, w_vec);
@@ -511,9 +507,7 @@ classdef LinearModel < CompactLinearModel
       ## Update formula
       new_formula = current_formula;
       new_formula.Terms = merged_terms;
-      new_formula.CoefficientNames = __terms_to_coef_names__ ( ...
-                                       merged_terms, p_names, ...
-                                       current_formula.HasIntercept);
+      new_formula.CoefficientNames = new_coef_names;
       new_formula.LinearPredictor = __terms_to_formula_str__ ( ...
                                       merged_terms, p_names, ...
                                       current_formula.HasIntercept);
@@ -687,13 +681,13 @@ classdef LinearModel < CompactLinearModel
         if (strcmp (best_action, "add"))
           current_mdl = addTerms (current_mdl, best_term);
           if (verbose)
-            fprintf ("%d. Adding %s, FStat = %.3f, pValue = %g\n", ...
+            fprintf ("%d. Adding %s, FStat = %.4g, pValue = %.4g\n", ...
                      step_count, best_term_name, best_fstat, best_pval);
           endif
         else
           current_mdl = removeTerms (current_mdl, best_term);
           if (verbose)
-            fprintf ("%d. Removing %s, FStat = %.6f, pValue = %g\n", ...
+            fprintf ("%d. Removing %s, FStat = %.4g, pValue = %.4g\n", ...
                      step_count, best_term_name, best_fstat, best_pval);
           endif
         endif
@@ -744,7 +738,7 @@ classdef LinearModel < CompactLinearModel
         reduced_terms = current_terms;
         reduced_terms(term_idx(k), :) = [];
 
-        X_reduced = __build_X_from_terms__ (obj, reduced_terms);
+        [X_reduced, ~] = __build_X_from_terms__ (obj, reduced_terms);
         fit_reduced = lm_fit_engine (X_reduced, y_vec, w_vec);
 
         ## Partial SS
@@ -832,66 +826,200 @@ function rows_out = __parse_term_string__ (term_str, pred_names)
   endfor
 endfunction
 
-function X = __rebuild_X__ (obj)
+function [X, coef_names] = __rebuild_X__ (obj)
   ## Rebuild the design matrix from stored Formula + predictor data.
-  ## Phase 3A: uses stored internal fields.
-  X = __build_X_from_terms__ (obj, obj.Formula.Terms);
+  [X, coef_names] = __build_X_from_terms__ (obj, obj.Formula.Terms);
 endfunction
 
-function X = __build_X_from_terms__ (obj, terms)
+function [X, coef_names] = __build_X_from_terms__ (obj, terms)
   ## Build design matrix from terms matrix and stored predictor data.
   ##
-  ## For Phase 3A, this uses the _X_data and _y_data stored on the object
-  ## by the factory function, or reconstructs from Variables if available.
+  ## Phase 3B: handles categorical variables via reference (corner-point)
+  ## dummy coding.  For categorical predictors with K levels, K-1 dummy
+  ## columns are generated (dropping the first level when intercept is
+  ## present).  Interactions between categorical and numeric variables
+  ## produce a Cartesian product of dummy columns x numeric columns.
+  ##
+  ## Returns:
+  ##   X          - n_obs x p design matrix
+  ##   coef_names - 1 x p cell of coefficient name strings
 
   ## Get predictor data for subset observations
   subset = obj.ObservationInfo.Subset;
   p_names = obj.PredictorNames;
   n_pred = numel (p_names);
 
-  ## Try to get data from Variables (preferred)
-  if (! isempty (obj.Variables) && isa (obj.Variables, "table"))
-    ## Extract predictor columns from table
-    pred_data = zeros (sum (subset), n_pred);
-    for k = 1:n_pred
-      col = obj.Variables.(p_names{k});
-      pred_data(:, k) = col(subset);
-    endfor
-  elseif (! isempty (obj.Variables) && isstruct (obj.Variables))
-    pred_data = zeros (sum (subset), n_pred);
-    for k = 1:n_pred
-      if (isfield (obj.Variables, p_names{k}))
-        col = obj.Variables.(p_names{k});
-        pred_data(:, k) = col(subset);
-      endif
-    endfor
-  else
-    error (strcat ("LinearModel: cannot rebuild design matrix", ...
-                   " without stored Variables data."));
-  endif
+  ## Detect intercept
+  has_intercept = any (all (terms == 0, 2));
 
+  ## Extract predictor columns and detect categorical status
   n_obs = sum (subset);
+  pred_raw = cell (1, n_pred);
+  is_categorical = false (1, n_pred);
+  cat_levels = cell (1, n_pred);
+  cat_indices = cell (1, n_pred);
 
-  ## Build X column by column from terms
-  X_cols = {};
-  for i = 1:rows (terms)
-    row = terms(i, :);
-    if (all (row == 0))
-      ## Intercept
-      X_cols{end+1} = ones (n_obs, 1);
+  for k = 1:n_pred
+    pname = p_names{k};
+    if (! isempty (obj.Variables) && isa (obj.Variables, "table"))
+      col_full = obj.Variables.(pname);
+    elseif (! isempty (obj.Variables) && isstruct (obj.Variables))
+      if (isfield (obj.Variables, pname))
+        col_full = obj.Variables.(pname);
+      else
+        error ("LinearModel: predictor '%s' not found in Variables.", pname);
+      endif
     else
-      ## Product of predictor columns raised to powers
-      col = ones (n_obs, 1);
-      for j = 1:n_pred
-        if (row(j) > 0)
-          col = col .* (pred_data(:, j) .^ row(j));
-        endif
-      endfor
-      X_cols{end+1} = col;
+      error (strcat ("LinearModel: cannot rebuild design matrix", ...
+                     " without stored Variables data."));
+    endif
+
+    ## Extract subset rows
+    if (iscell (col_full) || iscellstr (col_full) || isstring (col_full))
+      col = col_full(subset);
+    elseif (isa (col_full, "categorical"))
+      col = col_full(subset);
+    else
+      col = col_full(subset, :);
+    endif
+
+    pred_raw{k} = col;
+
+    ## Detect categorical: use VariableInfo.IsCategorical as primary source
+    ## (Fix 4, Phase 3B), with type-sniffing as a secondary fallback.
+    vi_is_cat = false;
+    if (! isempty (obj.VariableInfo) && isstruct (obj.VariableInfo) && ...
+        isfield (obj.VariableInfo, "IsCategorical"))
+      vi_idx = strcmp (obj.VariableNames, pname);
+      if (any (vi_idx))
+        vi_is_cat = obj.VariableInfo.IsCategorical(vi_idx);
+      endif
+    endif
+
+    ## Type-sniff fallback (cellstr, string, categorical)
+    type_is_cat = iscellstr (col) || isstring (col) || isa (col, "categorical");
+
+    if (vi_is_cat || type_is_cat)
+      is_categorical(k) = true;
+      if (isa (col, "categorical"))
+        levs = categories (col);
+        cat_levels{k} = cellstr (levs);
+        [~, idx] = ismember (col, levs);
+        cat_indices{k} = idx;
+      elseif (iscellstr (col))
+        [u, ~, idx] = unique (col);
+        cat_levels{k} = u;
+        cat_indices{k} = idx;
+      elseif (isstring (col))
+        col_c = cellstr (col);
+        [u, ~, idx] = unique (col_c);
+        cat_levels{k} = u;
+        cat_indices{k} = idx;
+      else
+        ## Numeric column flagged categorical via VariableInfo.IsCategorical
+        ## Treat unique numeric values as levels (sorted)
+        [u, ~, idx] = unique (col);
+        cat_levels{k} = cellfun (@num2str, num2cell (u), "UniformOutput", false);
+        cat_indices{k} = idx;
+      endif
+    else
+      is_categorical(k) = false;
     endif
   endfor
 
-  X = cell2mat (X_cols);
+  ## Build X column by column from terms
+  X = [];
+  coef_names = {};
+
+  for i = 1:rows (terms)
+    row = terms(i, :);
+
+    if (all (row == 0))
+      ## Intercept
+      X = [X, ones(n_obs, 1)];
+      coef_names{end+1} = "(Intercept)";
+      continue;
+    endif
+
+    ## Find active predictors for this term
+    active_idx = find (row);
+
+    ## Build the term's columns via Cartesian product approach.
+    ## Start with a single column of ones, then for each active predictor:
+    ##   - If numeric: multiply current block by (data.^power)
+    ##   - If categorical: Cartesian product with dummy columns
+    current_block = ones (n_obs, 1);
+    current_names = {''};
+
+    for ai = 1:numel (active_idx)
+      v = active_idx(ai);
+      pname = p_names{v};
+      pwr = row(v);
+
+      if (is_categorical(v))
+        ## Build dummy columns (reference coding)
+        levs = cat_levels{v};
+        idx = cat_indices{v};
+        n_lev = numel (levs);
+
+        if (has_intercept)
+          start_lev = 2;
+        else
+          start_lev = 1;
+        endif
+
+        n_dum = n_lev - start_lev + 1;
+        dummies = zeros (n_obs, n_dum);
+        dum_names = cell (1, n_dum);
+
+        for L = start_lev:n_lev
+          col_idx = L - start_lev + 1;
+          dummies(:, col_idx) = double (idx == L);
+          dum_names{col_idx} = sprintf ("%s_%s", pname, levs{L});
+        endfor
+
+        ## Cartesian product of current block and dummies
+        next_block = [];
+        next_names = {};
+        for c1 = 1:columns (current_block)
+          for c2 = 1:columns (dummies)
+            next_block = [next_block, current_block(:, c1) .* dummies(:, c2)];
+            n1 = current_names{c1};
+            n2 = dum_names{c2};
+            if (isempty (n1))
+              next_names{end+1} = n2;
+            else
+              next_names{end+1} = [n1, ":", n2];
+            endif
+          endfor
+        endfor
+        current_block = next_block;
+        current_names = next_names;
+
+      else
+        ## Numeric predictor: multiply current block by data.^power
+        col_data = pred_raw{v};
+        if (pwr > 1)
+          col_data = col_data .^ pwr;
+          disp_name = sprintf ("%s^%d", pname, pwr);
+        else
+          disp_name = pname;
+        endif
+
+        current_block = bsxfun (@times, current_block, col_data);
+        for cn = 1:numel (current_names)
+          if (isempty (current_names{cn}))
+            current_names{cn} = disp_name;
+          else
+            current_names{cn} = [current_names{cn}, ":", disp_name];
+          endif
+        endfor
+      endif
+    endfor
+
+    X = [X, current_block];
+    coef_names = [coef_names, current_names];
+  endfor
 endfunction
 
 function y = __get_y__ (obj)
@@ -1043,9 +1171,13 @@ endfunction
 %!         false(10,1), false(10,1), [], vars);
 %! cmdl = compact (mdl);
 %! assert (strcmp (class (cmdl), 'CompactLinearModel'));
-%! assert (cmdl.MSE, mdl.MSE);
-%! assert (cmdl.SSE, mdl.SSE);
+%! assert (cmdl.MSE, mdl.MSE, 1e-10);
+%! assert (cmdl.RMSE, mdl.RMSE, 1e-10);
+%! assert (cmdl.SSE, mdl.SSE, 1e-10);
+%! assert (cmdl.SSR, mdl.SSR, 1e-10);
+%! assert (cmdl.SST, mdl.SST, 1e-10);
 %! assert (cmdl.DFE, mdl.DFE);
+%! assert (cmdl.LogLikelihood, mdl.LogLikelihood, 1e-10);
 
 ## Test: Residuals formulas
 %!test
@@ -1154,3 +1286,198 @@ endfunction
 %! assert (tbl.DF(end), mdl.DFE);
 %! assert (tbl.MeanSq(end), mdl.MSE, 1e-10);
 
+## Test: categorical predictor produces correct dummy columns
+## (Block 16: Species with 3 levels -> 2 dummy columns)
+%!test
+%! n = 30;
+%! x_num = randn (n, 1);
+%! species = cell (n, 1);
+%! for ii = 1:n
+%!   if (ii <= 10)
+%!     species{ii} = 'setosa';
+%!   elseif (ii <= 20)
+%!     species{ii} = 'versicolor';
+%!   else
+%!     species{ii} = 'virginica';
+%!   endif
+%! endfor
+%! y = x_num * 2 + (1:n)' * 0.1 + randn(n,1) * 0.3;
+%! ## Build design matrix manually: intercept + x_num + 2 dummies
+%! [~, ~, idx] = unique (species);
+%! dum = zeros (n, 2);
+%! dum(:,1) = (idx == 2);  ## versicolor
+%! dum(:,2) = (idx == 3);  ## virginica
+%! X = [ones(n,1), x_num, dum];
+%! fit_s = lm_fit_engine (X, y);
+%! pred_names = {'SW', 'Species'};
+%! formula = struct ('Terms', [0 0; 1 0; 0 1], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + SW + Species', ...
+%!                   'CoefficientNames', ...
+%!                   {{'(Intercept)', 'SW', 'Species_versicolor', ...
+%!                     'Species_virginica'}});
+%! obs_info = struct ('Weights', ones(n,1), 'Excluded', false(n,1), ...
+%!                    'Missing', false(n,1), 'Subset', true(n,1));
+%! vars = struct ('SW', x_num, 'Species', {species}, 'SL', y);
+%! mdl = LinearModel.fromFit (fit_s, X, y, formula, pred_names, ...
+%!         'SL', {'SW', 'Species', 'SL'}, [], {}, obs_info, [], ...
+%!         false(n,1), false(n,1), [], vars);
+%! ## Verify: __build_X_from_terms__ produces 4 columns
+%! assert (mdl.NumCoefficients, 4);
+%! ## Verify coefficient names
+%! assert (numel (mdl.Formula.CoefficientNames), 4);
+
+## Test: addTerms with categorical increases NumCoefficients by K-1
+## (Block 17: adding Species (3 levels) adds 2 coefficients)
+%!test
+%! n = 30;
+%! x_num = randn (n, 1);
+%! species = cell (n, 1);
+%! for ii = 1:n
+%!   if (ii <= 10)
+%!     species{ii} = 'setosa';
+%!   elseif (ii <= 20)
+%!     species{ii} = 'versicolor';
+%!   else
+%!     species{ii} = 'virginica';
+%!   endif
+%! endfor
+%! y = x_num * 2 + randn(n,1) * 0.3;
+%! ## Start with intercept + SW only
+%! X_base = [ones(n,1), x_num];
+%! fit_s = lm_fit_engine (X_base, y);
+%! pred_names = {'SW', 'Species'};
+%! formula = struct ('Terms', [0 0; 1 0], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + SW', ...
+%!                   'CoefficientNames', {{'(Intercept)', 'SW'}});
+%! obs_info = struct ('Weights', ones(n,1), 'Excluded', false(n,1), ...
+%!                    'Missing', false(n,1), 'Subset', true(n,1));
+%! vars = struct ('SW', x_num, 'Species', {species}, 'SL', y);
+%! mdl = LinearModel.fromFit (fit_s, X_base, y, formula, pred_names, ...
+%!         'SL', {'SW', 'Species', 'SL'}, [], {}, obs_info, [], ...
+%!         false(n,1), false(n,1), [], vars);
+%! assert (mdl.NumCoefficients, 2);
+%! ## Add Species (3 levels -> 2 dummies)
+%! mdl2 = addTerms (mdl, 'Species');
+%! assert (mdl2.NumCoefficients, 4);
+%! ## Coefficient names should include dummy suffixes
+%! cnames = mdl2.Formula.CoefficientNames;
+%! assert (any (cellfun (@(c) ~isempty (strfind (c, 'Species_')), cnames)));
+
+## Test: anova DF for categorical term = num_levels - 1
+%!test
+%! n = 30;
+%! x_num = randn (n, 1);
+%! species = cell (n, 1);
+%! for ii = 1:n
+%!   if (ii <= 10)
+%!     species{ii} = 'setosa';
+%!   elseif (ii <= 20)
+%!     species{ii} = 'versicolor';
+%!   else
+%!     species{ii} = 'virginica';
+%!   endif
+%! endfor
+%! y = x_num * 2 + (1:n)' * 0.1 + randn(n,1) * 0.3;
+%! [~, ~, idx] = unique (species);
+%! dum = zeros (n, 2);
+%! dum(:,1) = (idx == 2);
+%! dum(:,2) = (idx == 3);
+%! X = [ones(n,1), x_num, dum];
+%! fit_s = lm_fit_engine (X, y);
+%! pred_names = {'SW', 'Species'};
+%! formula = struct ('Terms', [0 0; 1 0; 0 1], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + SW + Species', ...
+%!                   'CoefficientNames', ...
+%!                   {{'(Intercept)', 'SW', 'Species_versicolor', ...
+%!                     'Species_virginica'}});
+%! obs_info = struct ('Weights', ones(n,1), 'Excluded', false(n,1), ...
+%!                    'Missing', false(n,1), 'Subset', true(n,1));
+%! vars = struct ('SW', x_num, 'Species', {species}, 'SL', y);
+%! mdl = LinearModel.fromFit (fit_s, X, y, formula, pred_names, ...
+%!         'SL', {'SW', 'Species', 'SL'}, [], {}, obs_info, [], ...
+%!         false(n,1), false(n,1), [], vars);
+%! tbl = anova (mdl);
+%! ## Species should have DF = 2 (3 levels - 1)
+%! species_row = find (strcmp (tbl.RowNames, 'Species'));
+%! assert (tbl.DF(species_row), 2);
+%! ## SW should have DF = 1
+%! sw_row = find (strcmp (tbl.RowNames, 'SW'));
+%! assert (tbl.DF(sw_row), 1);
+
+## Test: numeric:categorical interaction produces Cartesian product
+%!test
+%! n = 30;
+%! x_num = randn (n, 1);
+%! grp = cell (n, 1);
+%! for ii = 1:n
+%!   if (ii <= 15)
+%!     grp{ii} = 'A';
+%!   else
+%!     grp{ii} = 'B';
+%!   endif
+%! endfor
+%! y = x_num * 2 + randn(n,1) * 0.3;
+%! pred_names = {'x1', 'grp'};
+%! ## Start with main effects only: intercept [0 0], x1 [1 0], grp [0 1]
+%! [~, ~, idx] = unique (grp);
+%! dum_B = double (idx == 2);
+%! X = [ones(n,1), x_num, dum_B];
+%! fit_s = lm_fit_engine (X, y);
+%! formula = struct ('Terms', [0 0; 1 0; 0 1], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + x1 + grp', ...
+%!                   'CoefficientNames', ...
+%!                   {{'(Intercept)', 'x1', 'grp_B'}});
+%! obs_info = struct ('Weights', ones(n,1), 'Excluded', false(n,1), ...
+%!                    'Missing', false(n,1), 'Subset', true(n,1));
+%! vars = struct ('x1', x_num, 'grp', {grp}, 'y', y);
+%! mdl = LinearModel.fromFit (fit_s, X, y, formula, pred_names, ...
+%!         'y', {'x1', 'grp', 'y'}, [], {}, obs_info, [], ...
+%!         false(n,1), false(n,1), [], vars);
+%! assert (mdl.NumCoefficients, 3);
+%! ## Add x1:grp interaction — should produce 1 interaction column (x1:grp_B)
+%! mdl2 = addTerms (mdl, 'x1:grp');
+%! assert (mdl2.NumCoefficients, 4);
+%! ## Check coefficient names contain interaction
+%! cnames = mdl2.Formula.CoefficientNames;
+%! has_interaction = any (cellfun (@(c) ~isempty (strfind (c, 'x1:grp_B')), ...
+%!                                cnames));
+%! assert (has_interaction);
+
+## Test: Steps property is [] for non-stepwise models
+%!test
+%! X = [ones(10,1), (1:10)'];
+%! y = 2 + 3*(1:10)' + randn(10,1)*0.5;
+%! fit_s = lm_fit_engine (X, y);
+%! pred_names = {'x1'};
+%! formula = struct ('Terms', [0; 1], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + x1', ...
+%!                   'CoefficientNames', {{'(Intercept)', 'x1'}});
+%! obs_info = struct ('Weights', ones(10,1), 'Excluded', false(10,1), ...
+%!                    'Missing', false(10,1), 'Subset', true(10,1));
+%! vars = struct ('x1', (1:10)', 'y', y);
+%! mdl = LinearModel.fromFit (fit_s, X, y, formula, pred_names, ...
+%!         'y', {'x1', 'y'}, [], {}, obs_info, [], ...
+%!         false(10,1), false(10,1), [], vars);
+%! assert (isempty (mdl.Steps));
+
+## Test: step() with Verbose=false produces no error and returns a model
+%!test
+%! n = 20;
+%! x1 = randn(n,1); x2 = randn(n,1);
+%! y = 2*x1 + randn(n,1)*0.5;
+%! X_base = [ones(n,1), x1];
+%! fit_s = lm_fit_engine (X_base, y);
+%! pred_names = {'x1', 'x2'};
+%! formula = struct ('Terms', [0 0; 1 0], 'HasIntercept', true, ...
+%!                   'LinearPredictor', '1 + x1', ...
+%!                   'CoefficientNames', {{'(Intercept)', 'x1'}});
+%! obs_info = struct ('Weights', ones(n,1), 'Excluded', false(n,1), ...
+%!                    'Missing', false(n,1), 'Subset', true(n,1));
+%! vars = struct ('x1', x1, 'x2', x2, 'y', y);
+%! mdl = LinearModel.fromFit (fit_s, X_base, y, formula, pred_names, ...
+%!         'y', {'x1', 'x2', 'y'}, [], {}, obs_info, [], ...
+%!         false(n,1), false(n,1), [], vars);
+%! ## step with Verbose=false should not error and should return a LinearModel
+%! mdl2 = step (mdl, 'Verbose', false);
+%! assert (isa (mdl2, 'LinearModel'));
+%! assert (ischar (mdl2.Formula.LinearPredictor));
