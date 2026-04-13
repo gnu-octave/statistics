@@ -139,7 +139,7 @@ classdef LinearModel < CompactLinearModel
     function obj = fromFit (fit_s, X, y, formula, pred_names, resp_name, ...
                               var_names, var_info, obs_names, obs_info, ...
                               weights, excluded, missing_mask, steps, ...
-                              variables_data)
+                              variables_data, X_full)
       ## fromFit  Build a LinearModel from lm_fit_engine output.
       ##
       ## This static factory method takes the raw lm_fit_engine struct and
@@ -170,12 +170,14 @@ classdef LinearModel < CompactLinearModel
       ## Compute Fitted for ALL observations (including excluded/missing)
       fitted_all = NaN (n_total, 1);
       fitted_all(subset) = fit_s.yhat;
-      ## Excluded/missing rows: compute yhat = X_full * beta if X is available
-      ## For Phase 3A, excluded rows get NaN fitted values
-      ## (MATLAB Block 14 shows excluded rows DO get fitted values)
-      ## We compute them using the stored design matrix columns
-      ## This requires the full design matrix, which we don't store.
-      ## For now, leave excluded rows as NaN; fitlm (Phase 4) will handle this.
+      ## Excluded-but-not-missing rows: compute yhat = X_full * beta (Phase 4)
+      ## MATLAB Block 7: excluded rows DO get Fitted values (X*beta extrapolation)
+      if (nargin >= 16 && ! isempty (X_full))
+        excl_not_missing = excluded & ! missing_mask;
+        if (any (excl_not_missing))
+          fitted_all(excl_not_missing) = X_full(excl_not_missing, :) * fit_s.beta;
+        endif
+      endif
 
       ## Compute diagnostics for used observations
       h     = fit_s.h;
