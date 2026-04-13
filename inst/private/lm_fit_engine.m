@@ -1,4 +1,4 @@
-## Copyright (C) 2025-26 Jayant Chauhan <0001jayant@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -91,7 +91,7 @@ function s = lm_fit_engine (X, y, weights)
   n = rows (X);
   p = columns (X);
 
-  ## --- Weighted or unweighted QR ---
+  ## Weighted or unweighted QR
   if (isempty (weights))
     [Q, R] = qr (X, 0);
     Qty    = Q' * y;
@@ -101,12 +101,12 @@ function s = lm_fit_engine (X, y, weights)
     Qty    = Q' * (sqw .* y);
   endif
 
-  ## --- Rank deficiency detection ---
+  ## Rank deficiency detection
   ## Detect before solving to avoid spurious singular-matrix warnings
   tol      = max ([n, p]) * eps (norm (R, "inf"));
   rank_def = abs (diag (R)) < tol;
 
-  ## --- Solve for beta ---
+  ## Solve for beta
   if (any (rank_def))
     warning ("CompactLinearModel:rankDeficient", ...
              "CompactLinearModel: rank deficient, rank = %d.", ...
@@ -120,7 +120,7 @@ function s = lm_fit_engine (X, y, weights)
     beta = R \ Qty;
   endif
 
-  ## --- Residuals and sums of squares ---
+  ## Residuals and sums of squares
   yhat  = X * beta;
   resid = y - yhat;
   p_est = sum (! rank_def);           ## NumEstimatedCoefficients
@@ -132,7 +132,7 @@ function s = lm_fit_engine (X, y, weights)
   mse   = sse / dfe;
   rmse  = sqrt (mse);
 
-  ## --- Coefficient covariance ---
+  ## Coefficient covariance
   ## Use pinv-style via R to handle rank deficiency
   Rinv  = zeros (p, p);
   idx   = find (! rank_def);
@@ -147,7 +147,7 @@ function s = lm_fit_engine (X, y, weights)
   pval      = 2 * (1 - tcdf (abs (tstat), dfe));
   pval(rank_def)  = NaN;
 
-  ## --- Log-likelihood and information criteria ---
+  ## Log-likelihood and information criteria
   ## Under normality, MLE variance estimate is sigma2 = SSE/n (not MSE = SSE/DFE)
   ## This matches MATLAB's computation of LogLikelihood.
   sigma2_mle = sse / n;
@@ -161,7 +161,7 @@ function s = lm_fit_engine (X, y, weights)
   bic  = -2 * logL + m * log (n);
   caic = -2 * logL + m * (log (n) + 1);
 
-  ## --- Pack output struct ---
+  ## Pack output struct
   s.beta     = beta;
   s.se       = se;
   s.tstat    = tstat;
@@ -186,11 +186,7 @@ function s = lm_fit_engine (X, y, weights)
 
 endfunction
 
-## ============================================================
-## Tests
-## ============================================================
-
-## Test 1: Simple 2-predictor OLS — linearly independent columns
+## Simple 2-predictor OLS — linearly independent columns
 %!test
 %! X = [ones(5,1), [1;2;3;4;5], [2;1;4;3;6]];
 %! y = X * [1; 2; -0.5];
@@ -201,7 +197,7 @@ endfunction
 %! assert (s.p_tot, 3);
 %! assert (s.n, 5);
 
-## Test 2: Known regression — y = 2 + 3*x with noise-free data
+## Known regression — y = 2 + 3*x with noise-free data
 %!test
 %! x = (1:10)';
 %! y = 2 + 3 * x;
@@ -211,7 +207,7 @@ endfunction
 %! assert (s.sse, 0, 1e-10);
 %! assert (s.rsq.Ordinary, 1, 1e-10);
 
-## Test 3: Rank-deficient design matrix
+## Rank-deficient design matrix
 %!test
 %! warning ("off", "CompactLinearModel:rankDeficient");
 %! X = [1, 2, 4; 1, 3, 6; 1, 4, 8; 1, 5, 10];  ## col3 = 2*col2
@@ -227,7 +223,7 @@ endfunction
 %! assert (isnan (s.pval(s.rank_def)), true);
 %! warning ("on", "CompactLinearModel:rankDeficient");
 
-## Test 4: SST = SSE + SSR identity
+## SST = SSE + SSR identity
 %!test
 %! X = [ones(20,1), randn(20,2)];
 %! y = X * [1; 2; -1] + 0.5 * randn (20, 1);
@@ -235,7 +231,7 @@ endfunction
 %! assert (s.sst, s.sse + s.ssr, 1e-10);
 %! assert (s.dfe, 20 - 3);
 
-## Test 5: ModelCriterion — m = p_est (no +1)
+## ModelCriterion — m = p_est (no +1)
 ## Verify AIC = -2*logL + 2*p_est
 %!test
 %! X = [ones(20,1), (1:20)'];
@@ -244,7 +240,7 @@ endfunction
 %! assert (s.crit.AIC, -2 * s.logL + 2 * s.p_est, 1e-10);
 %! assert (s.crit.BIC, -2 * s.logL + s.p_est * log (s.n), 1e-10);
 
-## Test 6: Weighted regression
+## Weighted regression
 %!test
 %! X = [ones(5,1), [1;2;3;4;5]];
 %! y = [2; 4; 5; 4; 5];

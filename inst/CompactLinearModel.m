@@ -1,4 +1,4 @@
-## Copyright (C) 2025-26 Jayant Chauhan <0001jayant@gmail.com>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -111,11 +111,9 @@ classdef CompactLinearModel < handle
 
   endproperties
 
-  ## ====================================================================
   ## Constructor — Access = protected so only LinearModel (subclass) or
   ## internal factory methods can create CompactLinearModel objects.
   ## When Octave supports (Access = ?LinearModel), switch to that.
-  ## ====================================================================
   methods (Access = protected)
 
     function obj = CompactLinearModel (s)
@@ -136,14 +134,14 @@ classdef CompactLinearModel < handle
         error ("CompactLinearModel: constructor argument must be a struct.");
       endif
 
-      ## --- Coefficient results ---
+      ## Coefficient results
       obj.Coefficients             = s.Coefficients;
       obj.CoefficientNames         = s.CoefficientNames;
       obj.CoefficientCovariance    = s.CoefficientCovariance;
       obj.NumCoefficients          = s.NumCoefficients;
       obj.NumEstimatedCoefficients = s.NumEstimatedCoefficients;
 
-      ## --- Summary statistics ---
+      ## Summary statistics
       obj.DFE            = s.DFE;
       obj.SSE            = s.SSE;
       obj.SSR            = s.SSR;
@@ -154,10 +152,10 @@ classdef CompactLinearModel < handle
       obj.LogLikelihood  = s.LogLikelihood;
       obj.ModelCriterion = s.ModelCriterion;
 
-      ## --- Fitting method ---
+      ## Fitting method
       obj.Robust = s.Robust;
 
-      ## --- Formula and variable info ---
+      ## Formula and variable info
       obj.Formula         = s.Formula;
       obj.NumObservations  = s.NumObservations;
       obj.NumPredictors    = s.NumPredictors;
@@ -171,9 +169,7 @@ classdef CompactLinearModel < handle
 
   endmethods
 
-  ## ====================================================================
   ## Hidden methods: display, disp, subsref
-  ## ====================================================================
   methods (Hidden)
 
     ## Custom display — called when variable name is typed at prompt
@@ -355,9 +351,7 @@ classdef CompactLinearModel < handle
 
   endmethods
 
-  ## ====================================================================
   ## Public methods: predict, coefCI, coefTest
-  ## ====================================================================
   methods (Access = public)
 
     ## -*- texinfo -*-
@@ -586,10 +580,6 @@ classdef CompactLinearModel < handle
   endmethods
 
 endclassdef
-
-## ============================================================
-## Tests
-## ============================================================
 
 ## Test: CompactLinearModel cannot be constructed directly (protected access)
 ## This should error since the constructor is protected.
