@@ -70,9 +70,15 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
     ## ObservationNames from row names
     obs_names = tbl.Properties.RowNames;     ## cell or {} if unset
 
-    ## Parse optional modelspec (2nd positional arg if char/not a NV key)
+    ## Parse optional modelspec (2nd positional arg if char/not a NV key,
+    ## or a numeric terms matrix)
     modelspec = "linear";                    ## default shorthand
-    if (! isempty (varargin) && ischar (varargin{1}) && ...
+    if (! isempty (varargin) && isnumeric (varargin{1}) && ...
+        ismatrix (varargin{1}) && ndims (varargin{1}) == 2)
+      ## Numeric terms matrix passed directly
+      modelspec = varargin{1};
+      varargin(1) = [];
+    elseif (! isempty (varargin) && ischar (varargin{1}) && ...
         ! __is_nv_key__ (varargin{1}))
       modelspec = varargin{1};
       varargin(1) = [];
@@ -161,9 +167,14 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
     p = columns (X_in);
     obs_names = {};
 
-    ## Parse optional modelspec
+    ## Parse optional modelspec (char string, shorthand, or numeric terms matrix)
     modelspec = "linear";
-    if (! isempty (varargin) && ischar (varargin{1}) && ...
+    if (! isempty (varargin) && isnumeric (varargin{1}) && ...
+        ismatrix (varargin{1}) && ndims (varargin{1}) == 2)
+      ## Numeric terms matrix passed directly
+      modelspec = varargin{1};
+      varargin(1) = [];
+    elseif (! isempty (varargin) && ischar (varargin{1}) && ...
         ! __is_nv_key__ (varargin{1}))
       modelspec = varargin{1};
       varargin(1) = [];
@@ -233,12 +244,13 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
   has_intercept = logical (intercept_arg);
 
   ## If modelspec is a formula string, extract has_intercept from it
-  if (! isempty (strfind (modelspec, "~")))
+  if (ischar (modelspec) && ! isempty (strfind (modelspec, "~")))
     has_intercept = isempty (regexp (modelspec, '-\s*1'));
     if (! has_intercept)
       ## '-1' suppresses intercept; strip it for later parsing
     endif
   endif
+
 
   ## If Intercept=false was explicitly given, override
   if (! intercept_arg)

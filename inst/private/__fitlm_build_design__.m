@@ -44,24 +44,36 @@ function [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept
   n_vars = p + 1;                ## predictors + response
 
   ## ── Step 1: Resolve shorthand → Terms matrix ────────────────────────────
-  is_formula = ! isempty (strfind (modelspec, "~"));
-
-  if (is_formula)
-    ## Formula string — parse response name and RHS
-    tilde = strfind (modelspec, "~");
-    rhs = strtrim (modelspec(tilde(1)+1:end));
-    ## Check for intercept suppression
-    if (! isempty (regexp (rhs, '(^|\s|[+])\s*-\s*1\b')))
-      has_intercept = false;
-      rhs = regexprep (rhs, '\s*[-]\s*1\b', '');
-      rhs = strtrim (rhs);
+  if (isnumeric (modelspec) && ismatrix (modelspec) && ndims (modelspec) == 2)
+    ## Numeric terms matrix passed directly (e.g., from stepwiselm)
+    terms_pred = modelspec;
+    ## If width = p+1 (includes response column), strip last column
+    if (columns (terms_pred) == n_vars)
+      terms_pred = terms_pred(:, 1:p);
     endif
-    ## Parse the RHS terms
-    terms_pred = __parse_rhs_terms__ (rhs, pred_names, has_intercept);
+    ## Detect intercept from the terms matrix
+    has_intercept = any (all (terms_pred == 0, 2));
   else
-    ## Shorthand string
-    terms_pred = __shorthand_to_terms__ (lower (modelspec), p, has_intercept);
+    is_formula = ! isempty (strfind (modelspec, "~"));
+
+    if (is_formula)
+      ## Formula string — parse response name and RHS
+      tilde = strfind (modelspec, "~");
+      rhs = strtrim (modelspec(tilde(1)+1:end));
+      ## Check for intercept suppression
+      if (! isempty (regexp (rhs, '(^|\s|[+])\s*-\s*1\b')))
+        has_intercept = false;
+        rhs = regexprep (rhs, '\s*[-]\s*1\b', '');
+        rhs = strtrim (rhs);
+      endif
+      ## Parse the RHS terms
+      terms_pred = __parse_rhs_terms__ (rhs, pred_names, has_intercept);
+    else
+      ## Shorthand string
+      terms_pred = __shorthand_to_terms__ (lower (modelspec), p, has_intercept);
+    endif
   endif
+
 
   ## terms_pred: (n_terms x p) — predictor columns only
   ## Expand to include response column (always 0)
