@@ -162,13 +162,7 @@ classdef ClusterCriterion < handle
       this.N = rows (this.X);
       this.P = columns (this.X);
       ## look for missing values
-      for iter = 1:this.N
-        if (any (isnan (x(iter, :))))
-          this.Missing(iter) = true;
-        else
-          this.Missing(iter) = false;
-        endif
-      endfor
+      this.Missing = any (isnan (x), 2)';
       ## number of usable observations
       this.NumObservations = sum (this.Missing == false);
 
