@@ -190,6 +190,11 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
           ## an evaluation of the ratio between within-cluster and
           ## between-cluster distances
 
+          ## Compute centroids when clustering labels are provided as input.
+          if (numel (this.Centroids) < iter || isempty (this.Centroids{iter}))
+            this.Centroids{iter} = this.computeCentroids (UsableX, iter);
+          endif
+
           ## mean distances between cluster members and their centroid
           vD = zeros (this.InspectedK(iter), 1);
           for i = 1 : this.InspectedK(iter)
@@ -241,6 +246,13 @@ endclassdef
 %! load fisheriris
 %! eva = evalclusters (meas, "kmeans", "DaviesBouldin", "KList", [1:6]);
 %! assert (class (eva), "DaviesBouldinEvaluation");
+
+%!test
+%! ## Verify DB index for a known 2-cluster case
+%! X = [ones(5,1); 5 * ones(5,1)];
+%! clust = [ones(5,1); 2 * ones(5,1)];
+%! eva = evalclusters (X, clust, "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0, 1);
 
 %!test
 %! ## Deterministic 1-D example; expected value is 7/30 (matches MATLAB)
