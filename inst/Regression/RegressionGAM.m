@@ -556,12 +556,10 @@ classdef RegressionGAM
         ## Get the residuals between predicted and actual response data
         rs     = Y - yrs;
         var_rs = var (rs);
-        var_pr = var (yFit);  # var is calculated here instead take sqrt(SD)
 
         t_mul  = tinv (1 - alpha / 2, this.DoF);
 
-        ydev   = (yFit - mean (yFit)) .^ 2;
-        ySD    = sqrt (ydev / (rows (yFit) - 1));
+        ySD    = sqrt (var_rs) * ones (rows (yFit), 1);
 
         varargout{1} = ySD;
         if (nargout > 1)
