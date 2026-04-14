@@ -211,7 +211,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
           endfor
 
           ## ( max_j D1j + max_j D2j + ... + max_j Dkj) / k
-          this.CriterionValues(iter) = sum (max (Dij(i, :), [], 2)) / ...
+          Dij = Dij + Dij';
+          this.CriterionValues(iter) = sum (max (Dij, [], 2)) / ...
                                             this.InspectedK(iter);
         endif
       endfor
@@ -240,3 +241,10 @@ endclassdef
 %! load fisheriris
 %! eva = evalclusters (meas, "kmeans", "DaviesBouldin", "KList", [1:6]);
 %! assert (class (eva), "DaviesBouldinEvaluation");
+
+%!test
+%! ## Verify DB index for a known 2-cluster case
+%! X = [ones(5,1); 5 * ones(5,1)];
+%! clust = [ones(5,1); 2 * ones(5,1)];
+%! eva = evalclusters (X, clust, "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0, 1);
