@@ -881,6 +881,29 @@ endfunction
 %! assert (size (ySD), [4, 1]);
 %! assert (size (yInt), [4, 2]);
 
+%!test
+%! ## Verify ySD is based on training residual variance
+%! X = (1:10)';
+%! Y = [2; 1; 4; 3; 6; 5; 8; 7; 10; 9];
+%! mdl = RegressionGAM (X, Y);
+%! y_train = predict (mdl, X);
+%! rs = Y - y_train;
+%! expected_ySD = sqrt (var (rs));
+%! [~, ySD] = predict (mdl, X(1:4,:));
+%! assert (ySD, expected_ySD * ones (4, 1), 1e-10);
+
+%!test
+%! ## Verify ySD remains the same for one or more prediction points
+%! X = (1:10)';
+%! Y = [2; 1; 4; 3; 6; 5; 8; 7; 10; 9];
+%! mdl = RegressionGAM (X, Y);
+%! y_train = predict (mdl, X);
+%! expected_ySD = sqrt (var (Y - y_train));
+%! [~, ySD_1] = predict (mdl, X(1,:));
+%! [~, ySD_3] = predict (mdl, X(1:3,:));
+%! assert (ySD_1, expected_ySD, 1e-10);
+%! assert (ySD_3, expected_ySD * ones (3, 1), 1e-10);
+
 ## Test input validation for constructor
 %!error<RegressionGAM: too few input arguments.> RegressionGAM ()
 %!error<RegressionGAM: too few input arguments.> RegressionGAM (ones(10,2))
