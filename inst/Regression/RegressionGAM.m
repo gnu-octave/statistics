@@ -546,7 +546,7 @@ classdef RegressionGAM
       yFit = predict_val (params, Xfit, Interc);
 
       ## Predict Standard Deviation and Intervals of estimated data if requested
-      if (nargout > 0)
+      if (nargout > 1)
         ## Ensure that RowsUsed in the model are selected
         Y = this.Y(logical (this.RowsUsed));
         X = this.X(logical (this.RowsUsed), :);
@@ -563,14 +563,11 @@ classdef RegressionGAM
         ydev   = (yFit - mean (yFit)) .^ 2;
         ySD    = sqrt (ydev / (rows (yFit) - 1));
 
-        varargout{1} = ySD;
-        if (nargout > 1)
+        if (nargout > 2)
           moe    = t_mul (1) * ySD;
           lower  = (yFit - moe);
           upper  = (yFit + moe);
           yInt   = [lower, upper];
-
-          varargout{2} = yInt;
         endif
       endif
 
