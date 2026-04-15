@@ -190,6 +190,11 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
           ## an evaluation of the ratio between within-cluster and
           ## between-cluster distances
 
+          ## Compute centroids when clustering labels are provided as input.
+          if (numel (this.Centroids) < iter || isempty (this.Centroids{iter}))
+            this.Centroids{iter} = this.computeCentroids (UsableX, iter);
+          endif
+
           ## mean distances between cluster members and their centroid
           vD = zeros (this.InspectedK(iter), 1);
           for i = 1 : this.InspectedK(iter)
@@ -211,7 +216,8 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
           endfor
 
           ## ( max_j D1j + max_j D2j + ... + max_j Dkj) / k
-          this.CriterionValues(iter) = sum (max (Dij(i, :), [], 2)) / ...
+          Dij = Dij + Dij';
+          this.CriterionValues(iter) = sum (max (Dij, [], 2)) / ...
                                             this.InspectedK(iter);
         endif
       endfor
@@ -240,3 +246,61 @@ endclassdef
 %! load fisheriris
 %! eva = evalclusters (meas, "kmeans", "DaviesBouldin", "KList", [1:6]);
 %! assert (class (eva), "DaviesBouldinEvaluation");
+
+%!test
+%! ## Verify DB index for a known 2-cluster case
+%! X = [ones(5,1); 5 * ones(5,1)];
+%! clust = [ones(5,1); 2 * ones(5,1)];
+%! eva = evalclusters (X, clust, "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0, 1);
+
+%!test
+%! ## Deterministic 1-D example; expected value is 7/30 (matches MATLAB)
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 1; 4; 5; 9; 10];
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 3);
+%! assert (eva.CriterionValues, 7 / 30, 1e-12);
+
+%!test
+%! ## Verify aggregation uses all cluster rows in Dij
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 1; 4; 5; 9; 10];
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 3);
+%! idx = eva.OptimalY;
+%! k = 3;
+%! vD = zeros (k, 1);
+%! C = zeros (k, 1);
+%! for i = 1:k
+%!   Xi = X(idx == i);
+%!   C(i) = mean (Xi);
+%!   vD(i) = mean (abs (Xi - C(i)));
+%! endfor
+%! Dij = zeros (k);
+%! for i = 1:(k - 1)
+%!   for j = (i + 1):k
+%!     Dij(i, j) = (vD(i) + vD(j)) / abs (C(i) - C(j));
+%!   endfor
+%! endfor
+%! Dij = Dij + Dij';
+%! expected = sum (max (Dij, [], 2)) / k;
+%! assert (eva.CriterionValues, expected, 1e-12);
+
+%!test
+%! ## MATLAB reference case: well-separated tight clusters
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 0.1; 0.2; 5; 5.1; 5.2];
+%! X = horzcat (X, zeros (rows (X), 1));
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0.0267, 1e-4);
+
+%!test
+%! ## MATLAB reference case: uneven spread clusters
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 0.1; 0.2; 10; 20; 30];
+%! X = horzcat (X, zeros (rows (X), 1));
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0.3885, 1e-4);
