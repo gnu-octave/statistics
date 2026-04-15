@@ -286,3 +286,21 @@ endclassdef
 %! Dij = Dij + Dij';
 %! expected = sum (max (Dij, [], 2)) / k;
 %! assert (eva.CriterionValues, expected, 1e-12);
+
+%!test
+%! ## MATLAB reference case: well-separated tight clusters
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 0.1; 0.2; 5; 5.1; 5.2];
+%! X = horzcat (X, zeros (rows (X), 1));
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0.0267, 1e-4);
+
+%!test
+%! ## MATLAB reference case: uneven spread clusters
+%! rand ("seed", 1);
+%! randn ("seed", 1);
+%! X = [0; 0.1; 0.2; 10; 20; 30];
+%! X = horzcat (X, zeros (rows (X), 1));
+%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! assert (eva.CriterionValues, 0.3885, 1e-4);
