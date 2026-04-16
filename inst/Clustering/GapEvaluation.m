@@ -382,8 +382,6 @@ classdef GapEvaluation < ClusterCriterion
                   error (strcat ("GapEvaluation: invalid return value", ...
                                  " from custom clustering function"));
                 endif
-                this.ClusteringSolutions(:, iter) = ...
-                  this.ClusteringFunction(UsableX, this.InspectedK(iter));
               else
                 switch (this.ClusteringFunction)
                   case "kmeans"
@@ -496,3 +494,17 @@ endclassdef
 %! eva = evalclusters (meas([1:50],:), "kmeans", "gap", "KList", [1:3], ...
 %!                     "referencedistribution", "uniform");
 %! assert (class (eva), "GapEvaluation");
+
+%!function C = count_calls_gap (X, k)
+%!  global count_calls_gap_n;
+%!  count_calls_gap_n += 1;
+%!  C = mod ((0 : rows (X) - 1)', k) + 1;
+%!endfunction
+%!test
+%! ## custom function must be called exactly once per inspected K per run
+%! global count_calls_gap_n;
+%! count_calls_gap_n = 0;
+%! evalclusters (rand (20, 2), @count_calls_gap, "gap", ...
+%!               "KList", [2, 3], "B", 1);
+%! assert (count_calls_gap_n, 4);
+%! clear -global count_calls_gap_n;

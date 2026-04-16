@@ -158,8 +158,6 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
                 error (strcat ("CalinskiHarabaszEvaluation: invalid return", ...
                                " value from custom clustering function."));
               endif
-              this.ClusteringSolutions(:, iter) = ...
-                this.ClusteringFunction(UsableX, this.InspectedK(iter));
             else
               switch (this.ClusteringFunction)
                 case "kmeans"
@@ -249,3 +247,17 @@ endclassdef
 %! load fisheriris
 %! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
 %! assert (class (eva), "CalinskiHarabaszEvaluation");
+
+%!function C = count_calls_calinskiharabasz (X, k)
+%!  global count_calls_calinskiharabasz_n;
+%!  count_calls_calinskiharabasz_n += 1;
+%!  C = mod ((0 : rows (X) - 1)', k) + 1;
+%!endfunction
+%!test
+%! ## custom function must be called exactly once per inspected K
+%! global count_calls_calinskiharabasz_n;
+%! count_calls_calinskiharabasz_n = 0;
+%! evalclusters (rand (20, 2), @count_calls_calinskiharabasz, ...
+%!               "CalinskiHarabasz", "KList", [2, 3]);
+%! assert (count_calls_calinskiharabasz_n, 2);
+%! clear -global count_calls_calinskiharabasz_n;
