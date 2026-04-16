@@ -64,9 +64,16 @@ function D = dummyvar (g)
   ## --- CATEGORICAL branch ---
   if (isa (g, 'categorical'))
 
+    ## Accept row vectors by converting to column
+    if (isrow (g))
+      g = g(:);
+      nr = numel (g);
+      nc = 1;
+    endif
+
     if (! isvector (g) || nc != 1)
       error (strcat ("dummyvar: categorical grouping", ...
-                     " variable must be a column vector."));
+                     " variable must be a vector."));
     endif
 
     [idx, gn] = grp2idx (g);
@@ -115,9 +122,9 @@ function D = dummyvar (g)
   ## --- CELLSTRING branch ---
   elseif (iscellstr (g) && isvector (g))
 
-    if (! isvector (g) || nc != 1)
-      error (strcat ("dummyvar: cellstring grouping", ...
-                     " variable must be a column vector."));
+    ## Accept row vectors by converting to column
+    if (isrow (g))
+      g = g(:);
     endif
 
     g = grp2idx (g);
