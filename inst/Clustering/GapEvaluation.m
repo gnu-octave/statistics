@@ -505,6 +505,6 @@ endclassdef
 %! global count_calls_gap_n;
 %! count_calls_gap_n = 0;
 %! evalclusters (rand (20, 2), @count_calls_gap, "gap", ...
-%!               "KList", [2, 3], "B", 1);
-%! assert (count_calls_gap_n, 4);
+%!               "KList", [2, 3], "B", 2);
+%! assert (count_calls_gap_n, 6);
 %! clear -global count_calls_gap_n;
