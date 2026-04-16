@@ -339,21 +339,21 @@ classdef GapEvaluation < ClusterCriterion
     ## evaluate
     ## do the evaluation
     function this = evaluate (this, K)
+      ## use complete observations only
+      ActualX = this.X(find (this.Missing == false), :);
+      colMins = min (ActualX);
+      colRange = max (ActualX) - colMins;
+
       ## Monte-Carlo runs
       for mcrun = 1 : (this.B + 1)
-        ## use complete observations only
-        UsableX = this.X(find (this.Missing == false), :);
-
         ## the last run use tha actual data,
         ## the others are Monte-Carlo runs with reconstructed data
         if (mcrun <= this.B)
           ## uniform distribution
-          colMins = min (UsableX);
-          colMaxs = max (UsableX);
-          for col = 1 : columns (UsableX)
-            UsableX(:, col) = colMins(col) + rand (this.NumObservations, 1) *...
-                              (colMaxs(col) - colMins(col));
-          endfor
+          UsableX = colMins + rand (this.NumObservations, columns (ActualX)) ...
+                    .* colRange;
+        else
+          UsableX = ActualX;
         endif
 
         if (! isempty (this.ClusteringFunction))
