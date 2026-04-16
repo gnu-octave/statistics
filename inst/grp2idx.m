@@ -68,6 +68,17 @@ function [g, gn, gl] = grp2idx (s)
   if (nargin != 1)
     print_usage ();
   endif
+
+  ## Handle empty input immediately
+  if (isempty (s))
+    g = [];
+    gn = {};
+    if (nargout > 2)
+      gl = [];
+    endif
+    return;
+  endif
+  
   if (ndims (s) != 2)
     error ("grp2idx: S must be either a vector or a matrix.");
   endif
