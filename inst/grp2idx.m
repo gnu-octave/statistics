@@ -71,6 +71,9 @@ function [g, gn, gl] = grp2idx (s)
 
   ## Handle empty input immediately
   if (isempty (s))
+    if (! isvector (s) && ! ischar (s) && ! isstring (s) && ! iscellstr (s) && ! iscategorical (s))
+      error ("grp2idx: Grouping variable must be a vector, character array, string array, or cell array of character vectors.");
+    endif
     g = [];
     gn = {};
     if (nargout > 2)
