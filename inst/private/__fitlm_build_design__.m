@@ -103,7 +103,7 @@ function [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept
       col_raw = raw_cols{k};
       if (isa (col_raw, "categorical"))
         levs = cellstr (categories (col_raw));
-        [~, cat_idx] = ismember (col_raw, levs);
+        [~, cat_idx] = ismember (cellstr (col_raw), levs);
       elseif (iscellstr (col_raw) || isstring (col_raw))
         if (isstring (col_raw))
           col_raw = cellstr (col_raw);
