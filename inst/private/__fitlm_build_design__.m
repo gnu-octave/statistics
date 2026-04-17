@@ -348,6 +348,22 @@ function terms = __parse_rhs_terms__ (rhs, pred_names, has_intercept)
   ## Deduplicate
   add_rows = __dedup_rows__ (add_rows);
 
+  ## Sort by MATLAB canonical order: (total_degree, max_power, first_var_index)
+  if (numel (add_rows) > 1)
+    sort_keys = zeros (numel (add_rows), 3);
+    for i = 1:numel (add_rows)
+      row = add_rows{i};
+      sort_keys(i, 1) = sum (row);           ## total degree
+      sort_keys(i, 2) = max (row);           ## max individual power
+      nz = find (row > 0);
+      if (! isempty (nz))
+        sort_keys(i, 3) = nz(1);             ## first nonzero variable index
+      endif
+    endfor
+    [~, ord] = sortrows (sort_keys);
+    add_rows = add_rows(ord);
+  endif
+
   ## Assemble terms matrix
   n_terms = numel (add_rows);
   terms_body = zeros (n_terms, p);
