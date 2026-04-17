@@ -266,7 +266,8 @@ function result = __is_nv_key__ (s)
   ## Everything that is NOT a known key and contains '~' or is a shorthand
   ## is passed as modelspec.
   known = {"weights", "exclude", "intercept", "categoricalvars", ...
-           "varnames", "robustopts", "responsevar", "predictorvars"};
+           "varnames", "robustopts", "responsevar", "predictorvars", ...
+           "dummyvarcoding"};
   result = any (strcmpi (s, known));
 endfunction
 
@@ -303,6 +304,8 @@ function [weights_arg, excl_arg, intercept_arg, cat_vars_arg, var_names_arg, ...
         var_names_arg = val;
       case "robustopts"
         ## Accepted but not implemented in Phase 4
+      case "dummyvarcoding"
+        ## Accepted; default 'reference' coding used (full coding not yet implemented)
       case "responsevar"
         resp_var_arg = val;
       case "predictorvars"

@@ -60,6 +60,10 @@ function [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept
       ## Formula string — parse response name and RHS
       tilde = strfind (modelspec, "~");
       rhs = strtrim (modelspec(tilde(1)+1:end));
+      ## Check for unsupported C() notation
+      if (! isempty (regexp (rhs, 'C\s*\(')))
+        error ("Unable to understand the character vector or string scalar '%s'.", modelspec);
+      endif
       ## Check for intercept suppression
       if (! isempty (regexp (rhs, '(^|\s|[+])\s*-\s*1\b')))
         has_intercept = false;
@@ -293,11 +297,23 @@ function terms = __shorthand_to_terms__ (spec, p, has_intercept)
       endif
 
     otherwise
-      ## Unknown — default to linear
-      if (has_intercept)
-        terms = [zeros(1, p); eye(p)];
+      ## Check for polyNM pattern (e.g., 'poly22', 'poly33')
+      m = regexp (spec, '^poly(\d+)$', 'tokens');
+      if (! isempty (m))
+        digits_str = m{1}{1};
+        if (numel (digits_str) != p)
+          error ("fitlm: 'poly%s' requires %d digits for %d predictors.", ...
+                 digits_str, p, p);
+        endif
+        max_powers = arrayfun (@(c) str2double (c), digits_str);
+        terms = __poly_to_terms__ (max_powers, p, has_intercept);
       else
-        terms = eye (p);
+        ## Unknown — default to linear
+        if (has_intercept)
+          terms = [zeros(1, p); eye(p)];
+        else
+          terms = eye (p);
+        endif
       endif
   endswitch
 endfunction
@@ -306,60 +322,43 @@ endfunction
 ## ── Formula RHS → terms_pred ─────────────────────────────────────────────────
 
 function terms = __parse_rhs_terms__ (rhs, pred_names, has_intercept)
-  ## Parse a Wilkinson RHS string like '1 + x1 + x2 + x1:x2'
-  ## Returns (n_terms x p) binary matrix
+  ## Parse a Wilkinson RHS string with full operator support:
+  ## +, -, *, /, :, ^, (group)^N
+  ## Returns (n_terms x p) matrix
   p = numel (pred_names);
 
-  ## Split on '+' to get individual term tokens
-  tokens = strtrim (strsplit (rhs, "+"));
+  ## Split into positive and negative terms (respecting parentheses)
+  [add_toks, sub_toks, has_int_in_rhs, remove_int] = __split_additive__ (rhs);
 
-  rows_list = {};
-  has_int_in_rhs = false;
-
-  for ti = 1:numel (tokens)
-    tok = strtrim (tokens{ti});
-    if (isempty (tok))
-      continue;
-    endif
-    if (strcmp (tok, "1"))
-      has_int_in_rhs = true;
-      continue;
-    endif
-    ## Split on ':' for interaction
-    parts = strtrim (strsplit (tok, ":"));
-    row = zeros (1, p);
-    valid = true;
-    for pi = 1:numel (parts)
-      part = parts{pi};
-      ## Handle power: x1^2
-      caret = strfind (part, "^");
-      if (! isempty (caret))
-        base = strtrim (part(1:caret(1)-1));
-        pwr  = str2double (part(caret(1)+1:end));
-      else
-        base = part;
-        pwr  = 1;
-      endif
-      idx = find (strcmp (pred_names, base));
-      if (isempty (idx))
-        ## Could be response name or unknown — skip
-        valid = false;
-        break;
-      endif
-      row(idx(1)) = pwr;
-    endfor
-    if (valid)
-      rows_list{end+1} = row;
-    endif
+  ## Expand each positive token into term rows
+  add_rows = {};
+  for i = 1:numel (add_toks)
+    expanded = __expand_token__ (add_toks{i}, pred_names, p);
+    add_rows = [add_rows, expanded];
   endfor
 
-  ## Assemble
-  n_terms = numel (rows_list);
+  ## Remove subtracted terms
+  for i = 1:numel (sub_toks)
+    expanded = __expand_token__ (sub_toks{i}, pred_names, p);
+    for j = 1:numel (expanded)
+      add_rows = __remove_row__ (add_rows, expanded{j});
+    endfor
+  endfor
+
+  ## Deduplicate
+  add_rows = __dedup_rows__ (add_rows);
+
+  ## Assemble terms matrix
+  n_terms = numel (add_rows);
   terms_body = zeros (n_terms, p);
   for i = 1:n_terms
-    terms_body(i, :) = rows_list{i};
+    terms_body(i, :) = add_rows{i};
   endfor
 
+  ## Handle intercept
+  if (remove_int)
+    has_intercept = false;
+  endif
   if (has_intercept || has_int_in_rhs)
     terms = [zeros(1, p); terms_body];
   else
@@ -392,4 +391,324 @@ function s = __build_lp_str__ (terms_pred, pred_names, has_intercept)
     endif
   endfor
   s = strjoin (parts, " + ");
+endfunction
+
+
+## ── Split RHS on + and - (respecting parentheses) ───────────────────────────
+
+function [add_toks, sub_toks, has_int, remove_int] = __split_additive__ (rhs)
+  add_toks = {};
+  sub_toks = {};
+  has_int = false;
+  remove_int = false;
+  rhs = strtrim (rhs);
+  if (isempty (rhs))
+    return;
+  endif
+  depth = 0;
+  current = '';
+  sign = 1;
+  for i = 1:numel (rhs)
+    ch = rhs(i);
+    if (ch == '(')
+      depth++;
+      current = [current, ch];
+    elseif (ch == ')')
+      depth--;
+      current = [current, ch];
+    elseif (depth == 0 && (ch == '+' || ch == '-'))
+      tok = strtrim (current);
+      if (! isempty (tok))
+        if (strcmp (tok, '1'))
+          if (sign == -1), remove_int = true; else, has_int = true; endif
+        else
+          if (sign == -1), sub_toks{end+1} = tok; else, add_toks{end+1} = tok; endif
+        endif
+      endif
+      current = '';
+      if (ch == '+'), sign = 1; else, sign = -1; endif
+    else
+      current = [current, ch];
+    endif
+  endfor
+  tok = strtrim (current);
+  if (! isempty (tok))
+    if (strcmp (tok, '1'))
+      if (sign == -1), remove_int = true; else, has_int = true; endif
+    else
+      if (sign == -1), sub_toks{end+1} = tok; else, add_toks{end+1} = tok; endif
+    endif
+  endif
+endfunction
+
+
+## ── Expand a single token into term rows ─────────────────────────────────────
+
+function rows = __expand_token__ (tok, pred_names, p)
+  tok = strtrim (tok);
+  rows = {};
+
+  ## Case 1: (group)^N
+  m = regexp (tok, '^\((.+)\)\^(\d+)$', 'tokens');
+  if (! isempty (m))
+    inner_str = m{1}{1};
+    power = str2double (m{1}{2});
+    inner_toks = strtrim (strsplit (inner_str, '+'));
+    inner_vars = [];
+    for i = 1:numel (inner_toks)
+      idx = find (strcmp (pred_names, strtrim (inner_toks{i})));
+      if (! isempty (idx))
+        inner_vars(end+1) = idx;
+      endif
+    endfor
+    if (! isempty (inner_vars))
+      rows = __group_power_expand__ (inner_vars, power, p);
+    endif
+    return;
+  endif
+
+  ## Case 2: bare (group)
+  m = regexp (tok, '^\((.+)\)$', 'tokens');
+  if (! isempty (m))
+    inner_str = m{1}{1};
+    [add_t, sub_t, ~, ~] = __split_additive__ (inner_str);
+    for i = 1:numel (add_t)
+      tmp_exp = __expand_token__ (add_t{i}, pred_names, p);
+      rows = [rows, tmp_exp];
+    endfor
+    for i = 1:numel (sub_t)
+      sub_r = __expand_token__ (sub_t{i}, pred_names, p);
+      for j = 1:numel (sub_r)
+        rows = __remove_row__ (rows, sub_r{j});
+      endfor
+    endfor
+    rows = __dedup_rows__ (rows);
+    return;
+  endif
+
+  ## Case 3: crossing (*)
+  if (__has_at_toplevel__ (tok, '*'))
+    parts = __split_toplevel__ (tok, '*');
+    result = __expand_token__ (parts{1}, pred_names, p);
+    for i = 2:numel (parts)
+      right = __expand_token__ (parts{i}, pred_names, p);
+      result = __crossing_rows__ (result, right);
+    endfor
+    rows = result;
+    return;
+  endif
+
+  ## Case 4: nesting (/)
+  if (__has_at_toplevel__ (tok, '/'))
+    parts = __split_toplevel__ (tok, '/');
+    left = __expand_token__ (parts{1}, pred_names, p);
+    for i = 2:numel (parts)
+      right = __expand_token__ (parts{i}, pred_names, p);
+      cross = {};
+      for li = 1:numel (left)
+        for ri = 1:numel (right)
+          cross{end+1} = left{li} + right{ri};
+        endfor
+      endfor
+      left = [left, cross];
+    endfor
+    rows = __dedup_rows__ (left);
+    return;
+  endif
+
+  ## Case 5: power ladder (var^N)
+  m = regexp (tok, '^([a-zA-Z_][a-zA-Z0-9_]*)\^(\d+)$', 'tokens');
+  if (! isempty (m))
+    varname = m{1}{1};
+    power = str2double (m{1}{2});
+    idx = find (strcmp (pred_names, varname));
+    if (! isempty (idx))
+      for pwr = 1:power
+        row = zeros (1, p);
+        row(idx) = pwr;
+        rows{end+1} = row;
+      endfor
+      return;
+    endif
+  endif
+
+  ## Case 6: interaction (A:B)
+  if (any (tok == ':'))
+    parts = strtrim (strsplit (tok, ':'));
+    row = zeros (1, p);
+    valid = true;
+    for i = 1:numel (parts)
+      part = parts{i};
+      caret = strfind (part, '^');
+      if (! isempty (caret))
+        base = strtrim (part(1:caret(1)-1));
+        pwr = str2double (part(caret(1)+1:end));
+      else
+        base = part;
+        pwr = 1;
+      endif
+      idx = find (strcmp (pred_names, base));
+      if (isempty (idx))
+        valid = false;
+        break;
+      endif
+      row(idx(1)) = pwr;
+    endfor
+    if (valid)
+      rows = {row};
+    endif
+    return;
+  endif
+
+  ## Case 7: simple variable
+  idx = find (strcmp (pred_names, tok));
+  if (! isempty (idx))
+    row = zeros (1, p);
+    row(idx) = 1;
+    rows = {row};
+  endif
+endfunction
+
+
+## ── Group power expansion ────────────────────────────────────────────────────
+
+function rows = __group_power_expand__ (var_indices, max_power, p)
+  nv = numel (var_indices);
+  all_exps = __enum_exponents__ (nv, max_power);
+  rows = {};
+  for i = 1:size (all_exps, 1)
+    row = zeros (1, p);
+    for j = 1:nv
+      row(var_indices(j)) = all_exps(i, j);
+    endfor
+    rows{end+1} = row;
+  endfor
+endfunction
+
+
+## ── Enumerate exponent vectors ───────────────────────────────────────────────
+
+function E = __enum_exponents__ (nv, max_deg)
+  E = [];
+  total = (max_deg + 1) ^ nv;
+  for i = 0:total-1
+    vec = zeros (1, nv);
+    val = i;
+    for j = 1:nv
+      vec(j) = mod (val, max_deg + 1);
+      val = floor (val / (max_deg + 1));
+    endfor
+    s = sum (vec);
+    if (s >= 1 && s <= max_deg)
+      E = [E; vec];
+    endif
+  endfor
+endfunction
+
+
+## ── Crossing rows (A*B expansion) ────────────────────────────────────────────
+
+function rows = __crossing_rows__ (left, right)
+  cross = {};
+  for li = 1:numel (left)
+    for ri = 1:numel (right)
+      cross{end+1} = left{li} + right{ri};
+    endfor
+  endfor
+  rows = [left, right, cross];
+  rows = __dedup_rows__ (rows);
+endfunction
+
+
+## ── Remove first matching row ────────────────────────────────────────────────
+
+function rows = __remove_row__ (rows, target)
+  for i = 1:numel (rows)
+    if (isequal (rows{i}, target))
+      rows(i) = [];
+      return;
+    endif
+  endfor
+endfunction
+
+
+## ── Deduplicate rows ─────────────────────────────────────────────────────────
+
+function rows = __dedup_rows__ (rows)
+  keep = true (numel (rows), 1);
+  for i = 1:numel (rows)
+    if (! keep(i)), continue; endif
+    for j = i+1:numel (rows)
+      if (keep(j) && isequal (rows{i}, rows{j}))
+        keep(j) = false;
+      endif
+    endfor
+  endfor
+  rows = rows(keep);
+endfunction
+
+
+## ── Check for char at top level (outside parens) ─────────────────────────────
+
+function result = __has_at_toplevel__ (tok, ch)
+  result = false;
+  depth = 0;
+  for i = 1:numel (tok)
+    if (tok(i) == '('), depth++;
+    elseif (tok(i) == ')'), depth--;
+    elseif (depth == 0 && tok(i) == ch)
+      result = true;
+      return;
+    endif
+  endfor
+endfunction
+
+
+## ── Split on char at top level ───────────────────────────────────────────────
+
+function parts = __split_toplevel__ (tok, ch)
+  parts = {};
+  depth = 0;
+  current = '';
+  for i = 1:numel (tok)
+    if (tok(i) == '('), depth++; current = [current, tok(i)];
+    elseif (tok(i) == ')'), depth--; current = [current, tok(i)];
+    elseif (depth == 0 && tok(i) == ch)
+      parts{end+1} = strtrim (current);
+      current = '';
+    else
+      current = [current, tok(i)];
+    endif
+  endfor
+  if (! isempty (current))
+    parts{end+1} = strtrim (current);
+  endif
+endfunction
+
+
+## ── Polynomial shorthand to terms ────────────────────────────────────────────
+
+function terms = __poly_to_terms__ (max_powers, p, has_intercept)
+  max_deg = max (max_powers);
+  exps = cell (1, p);
+  for j = 1:p
+    exps{j} = 0:max_powers(j);
+  endfor
+  grids = cell (1, p);
+  [grids{:}] = ndgrid (exps{:});
+  n_combos = numel (grids{1});
+  all_rows = zeros (n_combos, p);
+  for j = 1:p
+    all_rows(:, j) = grids{j}(:);
+  endfor
+  total_deg = sum (all_rows, 2);
+  keep = (total_deg >= 1) & (total_deg <= max_deg);
+  terms_body = all_rows(keep, :);
+  [~, ord] = sortrows ([sum(terms_body, 2), terms_body]);
+  terms_body = terms_body(ord, :);
+  if (has_intercept)
+    terms = [zeros(1, p); terms_body];
+  else
+    terms = terms_body;
+  endif
 endfunction
