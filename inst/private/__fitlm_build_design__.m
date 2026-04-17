@@ -37,7 +37,12 @@
 
 function [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept, lp_str] = ...
     __fitlm_build_design__ (raw_X, raw_y, modelspec, var_names, cat_flags, ...
-                            weights, excl_mask, pred_names, raw_cols, has_intercept)
+                            weights, excl_mask, pred_names, raw_cols, ...
+                            has_intercept, dummy_coding)
+
+  if (nargin < 11 || isempty (dummy_coding))
+    dummy_coding = "reference";
+  endif
 
   n = rows (raw_X);
   p = columns (raw_X);           ## number of predictor VARIABLES
@@ -127,19 +132,35 @@ function [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept
       endif
       cat_levels{k} = levs;
       n_lev = numel (levs);
-      ## Dummy: drop first level (reference = level 1, lowest alphabetically)
-      n_dum = n_lev - 1;
-      D = zeros (n, n_dum);
-      dum_names = cell (1, n_dum);
-      for L = 2:n_lev
-        D(:, L-1) = double (cat_idx == L);
-        if (isnumeric (levs))
-          lev_str = num2str (levs(L));
-        else
-          lev_str = levs{L};
-        endif
-        dum_names{L-1} = sprintf ("%s_%s", pred_names{k}, lev_str);
-      endfor
+      ## Dummy coding: 'reference' drops first level, 'full' keeps all
+      if (strcmp (dummy_coding, "full"))
+        n_dum = n_lev;
+        D = zeros (n, n_dum);
+        dum_names = cell (1, n_dum);
+        for L = 1:n_lev
+          D(:, L) = double (cat_idx == L);
+          if (isnumeric (levs))
+            lev_str = num2str (levs(L));
+          else
+            lev_str = levs{L};
+          endif
+          dum_names{L} = sprintf ("%s_%s", pred_names{k}, lev_str);
+        endfor
+      else
+        ## Reference coding: drop first level
+        n_dum = n_lev - 1;
+        D = zeros (n, n_dum);
+        dum_names = cell (1, n_dum);
+        for L = 2:n_lev
+          D(:, L-1) = double (cat_idx == L);
+          if (isnumeric (levs))
+            lev_str = num2str (levs(L));
+          else
+            lev_str = levs{L};
+          endif
+          dum_names{L-1} = sprintf ("%s_%s", pred_names{k}, lev_str);
+        endfor
+      endif
       base_cols{k}   = D;
       base_cnames{k} = dum_names;
     else
@@ -334,6 +355,9 @@ function terms = __parse_rhs_terms__ (rhs, pred_names, has_intercept)
   add_rows = {};
   for i = 1:numel (add_toks)
     expanded = __expand_token__ (add_toks{i}, pred_names, p);
+    if (isempty (expanded))
+      error ("The model formula contains names not recognized as predictor or response names.");
+    endif
     add_rows = [add_rows, expanded];
   endfor
 

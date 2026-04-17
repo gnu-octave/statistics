@@ -39,7 +39,8 @@
 ## @end deftypefn
 
 function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
-          modelspec, obs_names, resp_name, pred_names, has_intercept, raw_cols] = ...
+          modelspec, obs_names, resp_name, pred_names, has_intercept, ...
+          raw_cols, dummy_coding] = ...
     __fitlm_parse_inputs__ (varargin)
 
   if (numel (varargin) < 1)
@@ -86,7 +87,7 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
 
     ## Parse name-value pairs
     [weights_arg, excl_arg, intercept_arg, cat_vars_arg, var_names_arg, ...
-     resp_var_arg, pred_vars_arg] = __parse_nv__ (varargin{:});
+     resp_var_arg, pred_vars_arg, dummy_coding_arg] = __parse_nv__ (varargin{:});
 
     ## Determine response and predictor variables
     if (! isempty (resp_var_arg))
@@ -182,7 +183,7 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
 
     ## Parse name-value pairs
     [weights_arg, excl_arg, intercept_arg, cat_vars_arg, var_names_arg, ...
-     resp_var_arg, pred_vars_arg] = __parse_nv__ (varargin{:});
+     resp_var_arg, pred_vars_arg, dummy_coding_arg] = __parse_nv__ (varargin{:});
 
     ## Variable names
     if (! isempty (var_names_arg))
@@ -252,6 +253,9 @@ function [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
   endif
 
 
+  ## DummyVarCoding
+  dummy_coding = dummy_coding_arg;
+
   ## If Intercept=false was explicitly given, override
   if (! intercept_arg)
     has_intercept = false;
@@ -272,14 +276,15 @@ function result = __is_nv_key__ (s)
 endfunction
 
 function [weights_arg, excl_arg, intercept_arg, cat_vars_arg, var_names_arg, ...
-          resp_var_arg, pred_vars_arg] = __parse_nv__ (varargin)
-  weights_arg   = [];
-  excl_arg      = [];
-  intercept_arg = true;
-  cat_vars_arg  = [];
-  var_names_arg = {};
-  resp_var_arg  = "";
-  pred_vars_arg = {};
+          resp_var_arg, pred_vars_arg, dummy_coding_arg] = __parse_nv__ (varargin)
+  weights_arg     = [];
+  excl_arg        = [];
+  intercept_arg   = true;
+  cat_vars_arg    = [];
+  var_names_arg   = {};
+  resp_var_arg    = "";
+  pred_vars_arg   = {};
+  dummy_coding_arg = "reference";
 
   i = 1;
   while (i <= numel (varargin))
@@ -305,7 +310,7 @@ function [weights_arg, excl_arg, intercept_arg, cat_vars_arg, var_names_arg, ...
       case "robustopts"
         ## Accepted but not implemented in Phase 4
       case "dummyvarcoding"
-        ## Accepted; default 'reference' coding used (full coding not yet implemented)
+        dummy_coding_arg = lower (val);
       case "responsevar"
         resp_var_arg = val;
       case "predictorvars"
