@@ -194,12 +194,17 @@ classdef CompactLinearModel < handle
       endif
 
       ## Formula line: ResponseName ~ LinearPredictor
-      if (isstruct (obj.Formula) && isfield (obj.Formula, "LinearPredictor"))
+      lp_str = "";
+      if (isa (obj.Formula, "LinearFormula"))
+        lp_str = obj.Formula.LinearPredictor;
+      elseif (isstruct (obj.Formula) && isfield (obj.Formula, "LinearPredictor"))
+        lp_str = obj.Formula.LinearPredictor;
+      endif
+      if (! isempty (lp_str))
         if (! isempty (obj.ResponseName))
-          fprintf ("    %s ~ %s\n", obj.ResponseName, ...
-                   obj.Formula.LinearPredictor);
+          fprintf ("    %s ~ %s\n", obj.ResponseName, lp_str);
         else
-          fprintf ("    %s\n", obj.Formula.LinearPredictor);
+          fprintf ("    %s\n", lp_str);
         endif
       endif
 
@@ -488,8 +493,13 @@ classdef CompactLinearModel < handle
       endwhile
 
       ## Build design matrix: prepend intercept column if model has one
-      if (isstruct (obj.Formula) && isfield (obj.Formula, "HasIntercept") ...
-          && obj.Formula.HasIntercept)
+      has_int = false;
+      if (isa (obj.Formula, "LinearFormula"))
+        has_int = obj.Formula.HasIntercept;
+      elseif (isstruct (obj.Formula) && isfield (obj.Formula, "HasIntercept"))
+        has_int = obj.Formula.HasIntercept;
+      endif
+      if (has_int)
         Xmat = [ones(rows (Xnew), 1), Xnew];
       else
         Xmat = Xnew;

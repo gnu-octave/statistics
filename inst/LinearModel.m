@@ -283,10 +283,10 @@ classdef LinearModel < CompactLinearModel
       s = struct ();
 
       ## CompactLinearModel fields
-      s.Coefficients             = struct ("Estimate", fit_s.beta, ...
-                                           "SE", fit_s.se, ...
-                                           "tStat", fit_s.tstat, ...
-                                           "pValue", fit_s.pval);
+      s.Coefficients             = table (fit_s.beta, fit_s.se, ...
+                                           fit_s.tstat, fit_s.pval, ...
+                                           "VariableNames", {"Estimate", "SE", "tStat", "pValue"}, ...
+                                           "RowNames", formula.CoefficientNames(:)');
       s.CoefficientNames         = formula.CoefficientNames;
       s.CoefficientCovariance    = fit_s.vcov;
       s.NumCoefficients          = fit_s.p_tot;
@@ -301,7 +301,7 @@ classdef LinearModel < CompactLinearModel
       s.LogLikelihood            = fit_s.logL;
       s.ModelCriterion           = fit_s.crit;
       s.Robust                   = [];
-      s.Formula                  = formula;
+      s.Formula                  = LinearFormula (formula);
       s.NumObservations          = n_used;
       s.NumPredictors            = numel (pred_names);
       s.NumVariables             = numel (var_names);
@@ -401,6 +401,13 @@ classdef LinearModel < CompactLinearModel
         error ("LinearModel.addTerms: TERMS must be a string or numeric matrix.");
       endif
 
+      ## Pad with response column(s) if Terms matrix is wider than new_rows
+      n_cols_terms = columns (current_terms);
+      if (columns (new_rows) < n_cols_terms)
+        new_rows = [new_rows, zeros(rows (new_rows), ...
+                     n_cols_terms - columns (new_rows))];
+      endif
+
       ## Merge: add new rows to existing terms (skip duplicates)
       merged_terms = current_terms;
       for i = 1:rows (new_rows)
@@ -431,13 +438,24 @@ classdef LinearModel < CompactLinearModel
       ## Refit
       fit_s = lm_fit_engine (X_new, y_vec, w_vec);
 
-      ## Update formula
-      new_formula = current_formula;
+      ## Update formula (convert to struct for modification; fromFit re-wraps)
+      if (isa (current_formula, "LinearFormula"))
+        new_formula = struct ("ResponseName", current_formula.ResponseName, ...
+                              "LinearPredictor", current_formula.LinearPredictor, ...
+                              "Terms", current_formula.Terms, ...
+                              "HasIntercept", current_formula.HasIntercept, ...
+                              "InModel", current_formula.InModel, ...
+                              "CoefficientNames", {current_formula.CoefficientNames}, ...
+                              "PredictorNames", {current_formula.PredictorNames}, ...
+                              "VariableNames", {current_formula.VariableNames});
+      else
+        new_formula = current_formula;
+      endif
       new_formula.Terms = merged_terms;
       new_formula.CoefficientNames = new_coef_names;
       new_formula.LinearPredictor = __terms_to_formula_str__ ( ...
                                       merged_terms, p_names, ...
-                                      current_formula.HasIntercept);
+                                      new_formula.HasIntercept);
 
       ## Build new LinearModel
       subset = obj.ObservationInfo.Subset;
@@ -480,6 +498,13 @@ classdef LinearModel < CompactLinearModel
         error ("LinearModel.removeTerms: TERMS must be a string or numeric.");
       endif
 
+      ## Pad with response column(s) if Terms matrix is wider than remove_rows
+      n_cols_terms = columns (current_terms);
+      if (columns (remove_rows) < n_cols_terms)
+        remove_rows = [remove_rows, zeros(rows (remove_rows), ...
+                        n_cols_terms - columns (remove_rows))];
+      endif
+
       ## Remove matching rows from current terms
       keep_mask = true (rows (current_terms), 1);
       for i = 1:rows (remove_rows)
@@ -506,13 +531,24 @@ classdef LinearModel < CompactLinearModel
       ## Refit
       fit_s = lm_fit_engine (X_new, y_vec, w_vec);
 
-      ## Update formula
-      new_formula = current_formula;
+      ## Update formula (convert to struct for modification; fromFit re-wraps)
+      if (isa (current_formula, "LinearFormula"))
+        new_formula = struct ("ResponseName", current_formula.ResponseName, ...
+                              "LinearPredictor", current_formula.LinearPredictor, ...
+                              "Terms", current_formula.Terms, ...
+                              "HasIntercept", current_formula.HasIntercept, ...
+                              "InModel", current_formula.InModel, ...
+                              "CoefficientNames", {current_formula.CoefficientNames}, ...
+                              "PredictorNames", {current_formula.PredictorNames}, ...
+                              "VariableNames", {current_formula.VariableNames});
+      else
+        new_formula = current_formula;
+      endif
       new_formula.Terms = merged_terms;
       new_formula.CoefficientNames = new_coef_names;
       new_formula.LinearPredictor = __terms_to_formula_str__ ( ...
                                       merged_terms, p_names, ...
-                                      current_formula.HasIntercept);
+                                      new_formula.HasIntercept);
 
       ## Build new LinearModel
       NewMdl = LinearModel.fromFit (fit_s, X_new, y_vec, new_formula, ...
@@ -532,19 +568,22 @@ classdef LinearModel < CompactLinearModel
       ## NewMdl = step (mdl, Name, Value)
       ##
       ## Name-Value pairs:
-      ##   'Criterion'  - 'sse' (default), 'aic', 'bic', 'rsquared',
-      ##                  'adjrsquared'
+      ##   'Criterion'  - 'sse' (default), 'aic', 'bic'
       ##   'PEnter'     - p-value threshold for adding (default 0.05)
       ##   'PRemove'    - p-value threshold for removing (default 0.10)
       ##   'NSteps'     - maximum number of steps (default 1)
       ##   'Verbose'    - 0 (silent), 1 (default, print steps)
+      ##   'Upper'      - maximum model (default 'interactions')
+      ##   'Lower'      - minimum model (default 'constant')
 
       ## Parse name-value pairs
-      criterion = "sse";
-      p_enter   = 0.05;
-      p_remove  = 0.10;
-      n_steps   = 1;
-      verbose   = 1;
+      criterion  = "sse";
+      p_enter    = 0.05;
+      p_remove   = 0.10;
+      n_steps    = 1;
+      verbose    = 1;
+      upper_spec = "interactions";
+      lower_spec = "constant";
 
       i = 1;
       while (i <= numel (varargin))
@@ -567,134 +606,227 @@ classdef LinearModel < CompactLinearModel
           case "verbose"
             verbose = varargin{i+1};
             i = i + 2;
+          case "upper"
+            upper_spec = varargin{i+1};
+            i = i + 2;
+          case "lower"
+            lower_spec = varargin{i+1};
+            i = i + 2;
           otherwise
             error ("LinearModel.step: unknown parameter '%s'.", varargin{i});
         endswitch
       endwhile
 
-      current_mdl = obj;
-      step_count = 0;
+      p_names = obj.PredictorNames;
+      n_pred = numel (p_names);
 
-      for s = 1:n_steps
-        current_terms = current_mdl.Formula.Terms;
-        p_names = current_mdl.PredictorNames;
-        n_pred = numel (p_names);
+      ## Build upper/lower terms matrices
+      upper_terms = [__step_spec_to_terms__(upper_spec, n_pred), ...
+                     zeros(rows (__step_spec_to_terms__(upper_spec, n_pred)), 1)];
+      lower_terms = [__step_spec_to_terms__(lower_spec, n_pred), ...
+                     zeros(rows (__step_spec_to_terms__(lower_spec, n_pred)), 1)];
 
-        best_action = "none";
-        best_term = [];
-        best_score = Inf;       ## lower is better for SSE/AIC/BIC
-        best_pval = 1;
-        best_fstat = 0;
-
-        ## Current model score
-        curr_score = __get_criterion__ (current_mdl, criterion);
-
-        ## Try adding each predictor not already in the model (main effects)
+      ## Build cat_flags from VariableInfo
+      cat_flags = false (1, n_pred + 1);
+      if (isstruct (obj.VariableInfo) && isfield (obj.VariableInfo, "IsCategorical"))
         for k = 1:n_pred
-          new_row = zeros (1, n_pred);
-          new_row(k) = 1;
-          ## Check if this term already exists
-          already_in = false;
-          for j = 1:rows (current_terms)
-            if (isequal (new_row, current_terms(j, :)))
-              already_in = true;
-              break;
+          vi_idx = strcmp (obj.VariableNames, p_names{k});
+          if (any (vi_idx))
+            cat_flags(k) = obj.VariableInfo.IsCategorical(vi_idx);
+          endif
+        endfor
+      endif
+
+      current_terms = obj.Formula.Terms;
+      use_ftest = strcmp (criterion, "sse");
+
+      ## Initialize or extend Steps.History
+      if (isempty (obj.Steps))
+        start_lp = obj.Formula.LinearPredictor;
+        log_action  = {'Start'};
+        log_term    = {start_lp};
+        log_terms   = {current_terms};
+        log_df      = obj.NumCoefficients;
+        log_del_df  = NaN;
+        log_fstat   = NaN;
+        log_pval    = NaN;
+        log_critval = __get_criterion__ (obj, criterion);
+        n_log = 1;
+      else
+        prev_h = obj.Steps.History;
+        n_log = numel (prev_h.Action);
+        log_action  = prev_h.Action;
+        log_term    = cell (n_log, 1);
+        for k = 1:n_log
+          if (iscell (prev_h.TermName{k}))
+            log_term{k} = prev_h.TermName{k}{1};
+          else
+            log_term{k} = prev_h.TermName{k};
+          endif
+        endfor
+        log_terms   = prev_h.Terms;
+        log_df      = prev_h.DF;
+        log_del_df  = prev_h.delDF;
+        if (use_ftest && isfield (prev_h, "FStat"))
+          log_fstat = prev_h.FStat;
+          log_pval  = prev_h.pValue;
+        else
+          log_fstat = NaN (n_log, 1);
+          log_pval  = NaN (n_log, 1);
+        endif
+        log_critval = NaN (n_log, 1);
+      endif
+
+      ## Check for empty candidate set
+      all_cands = __stepwiselm_candidates__ (current_terms, lower_terms, ...
+                                              upper_terms, cat_flags, p_names);
+      if (isempty (all_cands) && verbose >= 1)
+        fprintf ("No terms to add to or remove from initial model.\n");
+      endif
+
+      ## Search loop
+      n_taken = 0;
+      current_mdl = obj;
+
+      while (n_taken < n_steps)
+        made_change = false;
+
+        ## Phase A: BACKWARD SCAN (remove until nothing qualifies)
+        while (n_taken < n_steps)
+          candidates = __stepwiselm_candidates__ ( ...
+              current_terms, lower_terms, upper_terms, cat_flags, p_names);
+          rem_idx = [];
+          for ci = 1:numel (candidates)
+            if (strcmp (candidates(ci).action, "remove"))
+              rem_idx(end+1) = ci;
             endif
           endfor
-          if (already_in)
-            continue;
+          if (isempty (rem_idx)); break; endif
+
+          best_ri = 0; best_pval_r = -Inf; best_fstat_r = 0; best_df_r = 0;
+          for ri = 1:numel (rem_idx)
+            c = candidates(rem_idx(ri));
+            f_stat = 0; f_pval = 1;
+            try
+              test_mdl = removeTerms (current_mdl, c.term_row(1:n_pred));
+              ss_d = test_mdl.SSE - current_mdl.SSE;
+              df_d = test_mdl.DFE - current_mdl.DFE;
+              if (df_d > 0 && current_mdl.MSE > 0)
+                f_stat = (ss_d / df_d) / current_mdl.MSE;
+                f_pval = 1 - fcdf (f_stat, df_d, current_mdl.DFE);
+              endif
+            catch; continue; end_try_catch
+            if (f_pval > p_remove && f_pval > best_pval_r)
+              best_ri = rem_idx(ri); best_pval_r = f_pval;
+              best_fstat_r = f_stat; best_df_r = df_d;
+            endif
+          endfor
+          if (best_ri == 0); break; endif
+
+          best_c = candidates(best_ri);
+          current_mdl = removeTerms (current_mdl, best_c.term_row(1:n_pred));
+          mask = true (rows (current_terms), 1);
+          for j = 1:rows (current_terms)
+            if (isequal (current_terms(j,:), best_c.term_row))
+              mask(j) = false; break;
+            endif
+          endfor
+          current_terms = current_terms(mask, :);
+          n_taken++; made_change = true;
+          n_log++;
+          log_action{n_log} = "Remove"; log_term{n_log} = best_c.term_name;
+          log_terms{n_log} = current_terms;
+          log_df(n_log) = current_mdl.NumCoefficients;
+          log_del_df(n_log) = -best_df_r;
+          log_fstat(n_log) = best_fstat_r; log_pval(n_log) = best_pval_r;
+          log_critval(n_log) = __get_criterion__ (current_mdl, criterion);
+          if (verbose >= 1)
+            fprintf ("%d. Removing %s, FStat = %g, pValue = %g\n", ...
+                     n_taken, best_c.term_name, best_fstat_r, best_pval_r);
           endif
+        endwhile
+        if (n_taken >= n_steps); break; endif
 
-          ## Try adding
-          try
-            test_mdl = addTerms (current_mdl, new_row);
-          catch
-            continue;
-          end_try_catch
-
-          ## Compute partial F-test for the added term
-          ss_diff = current_mdl.SSE - test_mdl.SSE;
-          df_diff = current_mdl.DFE - test_mdl.DFE;
-          if (df_diff > 0 && test_mdl.MSE > 0)
-            f_stat = (ss_diff / df_diff) / test_mdl.MSE;
-            f_pval = 1 - fcdf (f_stat, df_diff, test_mdl.DFE);
-          else
-            f_stat = 0;
-            f_pval = 1;
-          endif
-
-          score = __get_criterion__ (test_mdl, criterion);
-
-          if (f_pval < p_enter && score < best_score)
-            best_action = "add";
-            best_term = new_row;
-            best_score = score;
-            best_pval = f_pval;
-            best_fstat = f_stat;
-            best_term_name = p_names{k};
-          endif
-        endfor
-
-        ## Try removing each non-intercept term
-        for j = 1:rows (current_terms)
-          if (all (current_terms(j, :) == 0))
-            continue;   ## skip intercept
-          endif
-
-          try
-            test_mdl = removeTerms (current_mdl, current_terms(j, :));
-          catch
-            continue;
-          end_try_catch
-
-          ## Compute partial F-test for the removed term
-          ss_diff = test_mdl.SSE - current_mdl.SSE;
-          df_diff = test_mdl.DFE - current_mdl.DFE;
-          if (df_diff > 0 && current_mdl.MSE > 0)
-            f_stat = (ss_diff / df_diff) / current_mdl.MSE;
-            f_pval = 1 - fcdf (f_stat, df_diff, current_mdl.DFE);
-          else
-            f_stat = 0;
-            f_pval = 1;
-          endif
-
-          score = __get_criterion__ (test_mdl, criterion);
-
-          if (f_pval > p_remove && score < best_score)
-            best_action = "remove";
-            best_term = current_terms(j, :);
-            best_score = score;
-            best_pval = f_pval;
-            best_fstat = f_stat;
-            ## Reconstruct term name
-            idx = find (current_terms(j, :));
-            parts = p_names(idx);
-            best_term_name = strjoin (parts, ":");
+        ## Phase B: FORWARD SCAN (add one term)
+        candidates = __stepwiselm_candidates__ ( ...
+            current_terms, lower_terms, upper_terms, cat_flags, p_names);
+        add_idx = [];
+        for ci = 1:numel (candidates)
+          if (strcmp (candidates(ci).action, "add"))
+            add_idx(end+1) = ci;
           endif
         endfor
+        if (isempty (add_idx)); break; endif
 
-        ## Execute best action
-        if (strcmp (best_action, "none"))
-          break;   ## converged
+        best_ai = 0; best_pval_a = Inf; best_fstat_a = 0;
+        best_df_a = 0; best_add_mdl = [];
+        for ai = 1:numel (add_idx)
+          c = candidates(add_idx(ai));
+          f_stat = 0; f_pval = 1;
+          try
+            test_mdl = addTerms (current_mdl, c.term_row(1:n_pred));
+            ss_d = current_mdl.SSE - test_mdl.SSE;
+            df_d = current_mdl.DFE - test_mdl.DFE;
+            if (df_d > 0 && test_mdl.MSE > 0)
+              f_stat = (ss_d / df_d) / test_mdl.MSE;
+              f_pval = 1 - fcdf (f_stat, df_d, test_mdl.DFE);
+            endif
+          catch; continue; end_try_catch
+          if (f_pval < p_enter && f_pval < best_pval_a)
+            best_ai = add_idx(ai); best_pval_a = f_pval;
+            best_fstat_a = f_stat; best_df_a = df_d;
+            best_add_mdl = test_mdl;
+          endif
+        endfor
+        if (best_ai == 0)
+          if (! made_change); break; endif
+          break;
         endif
 
-        step_count = step_count + 1;
-
-        if (strcmp (best_action, "add"))
-          current_mdl = addTerms (current_mdl, best_term);
-          if (verbose)
-            fprintf ("%d. Adding %s, FStat = %.4g, pValue = %.4g\n", ...
-                     step_count, best_term_name, best_fstat, best_pval);
-          endif
-        else
-          current_mdl = removeTerms (current_mdl, best_term);
-          if (verbose)
-            fprintf ("%d. Removing %s, FStat = %.4g, pValue = %.4g\n", ...
-                     step_count, best_term_name, best_fstat, best_pval);
-          endif
+        best_c = candidates(best_ai);
+        current_mdl = best_add_mdl;
+        current_terms = [current_terms; best_c.term_row];
+        term_order = sum (current_terms(:, 1:n_pred), 2);
+        [~, si] = sort (term_order);
+        current_terms = current_terms(si, :);
+        n_taken++; made_change = true;
+        n_log++;
+        log_action{n_log} = "Add"; log_term{n_log} = best_c.term_name;
+        log_terms{n_log} = current_terms;
+        log_df(n_log) = current_mdl.NumCoefficients;
+        log_del_df(n_log) = best_df_a;
+        log_fstat(n_log) = best_fstat_a; log_pval(n_log) = best_pval_a;
+        log_critval(n_log) = __get_criterion__ (current_mdl, criterion);
+        if (verbose >= 1)
+          fprintf ("%d. Adding %s, FStat = %g, pValue = %g\n", ...
+                   n_taken, best_c.term_name, best_fstat_a, best_pval_a);
         endif
+      endwhile
+
+      ## Build Steps struct
+      resp_n = obj.ResponseName;
+      if (isempty (obj.Steps))
+        start_formula = [resp_n, " ~ ", log_term{1}];
+      else
+        start_formula = obj.Steps.Start;
+      endif
+      Steps.Start = start_formula; Steps.Lower = lower_spec;
+      Steps.Upper = upper_spec; Steps.Criterion = upper (criterion);
+      Steps.PEnter = p_enter; Steps.PRemove = p_remove;
+      History.Action = log_action(:);
+      History.TermName = cell (n_log, 1);
+      for k = 1:n_log
+        History.TermName{k} = {log_term{k}};
       endfor
-
+      History.Terms = log_terms(:);
+      History.DF = log_df(:);  History.delDF = log_del_df(:);
+      if (use_ftest)
+        History.FStat = log_fstat(:); History.pValue = log_pval(:);
+      else
+        History.(upper (criterion)) = log_critval(:);
+      endif
+      Steps.History = History;
+      current_mdl.Steps = Steps;
       NewMdl = current_mdl;
 
     endfunction
