@@ -381,6 +381,18 @@ classdef CompactLinearModel < handle
                 [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
               endif
               return;
+            case "feval"
+              if (! isempty (chain_s) && strcmp (chain_s(1).type, "()"))
+                args = chain_s(1).subs;
+                chain_s = chain_s(2:end);
+                [varargout{1:nargout}] = predict (obj, args{:});
+              else
+                error ("CompactLinearModel: feval requires arguments.");
+              endif
+              if (! isempty (chain_s))
+                [varargout{1:nargout}] = subsref (varargout{1}, chain_s);
+              endif
+              return;
             case "disp"
               disp (obj);
               return;
@@ -492,17 +504,26 @@ classdef CompactLinearModel < handle
         endswitch
       endwhile
 
-      ## Build design matrix: prepend intercept column if model has one
+      ## Determine intercept flag
       has_int = false;
       if (isa (obj.Formula, "LinearFormula"))
         has_int = obj.Formula.HasIntercept;
       elseif (isstruct (obj.Formula) && isfield (obj.Formula, "HasIntercept"))
         has_int = obj.Formula.HasIntercept;
       endif
-      if (has_int)
-        Xmat = [ones(rows (Xnew), 1), Xnew];
-      else
+
+      ## Unpack table input into numeric design matrix
+      if (isa (Xnew, "table"))
+        Xnew = __predict_table_to_Xmat__ (obj, Xnew, has_int);
+        ## Xnew is now the full design matrix (with intercept if applicable)
         Xmat = Xnew;
+      else
+        ## Standard numeric matrix path
+        if (has_int)
+          Xmat = [ones(rows (Xnew), 1), Xnew];
+        else
+          Xmat = Xnew;
+        endif
       endif
 
       ## Check dimensions
@@ -650,6 +671,103 @@ classdef CompactLinearModel < handle
       ## r = numerator degrees of freedom (= rows of H)
       r = df1;
 
+    endfunction
+
+    function [varargout] = feval (obj, varargin)
+      ## feval  Evaluate model (alias for predict).
+      ##
+      ## ypred = feval (mdl, Xnew)
+      ## [ypred, yci] = feval (mdl, Xnew, ...)
+      ##
+      ## This method enables MATLAB-compatible feval(mdl, Xnew) syntax.
+
+      [varargout{1:nargout}] = predict (obj, varargin{:});
+    endfunction
+
+  endmethods
+
+  methods (Access = private)
+
+    function Xmat = __predict_table_to_Xmat__ (obj, tbl_new, has_int)
+      ## __predict_table_to_Xmat__  Convert a table of predictors to design matrix.
+      ##
+      ## Extracts columns matching PredictorNames, expands categoricals
+      ## into dummy columns using the same reference coding as the fitted
+      ## model, and prepends an intercept column if needed.
+
+      pred_names = obj.PredictorNames;
+      p = numel (pred_names);
+      n_new = rows (tbl_new);
+
+      ## Get the CoefficientNames to determine expected dummy structure
+      coef_names = obj.CoefficientNames;
+
+      ## Determine which predictors are actually in the model
+      ## Use InModel from Formula if available
+      in_model = true (1, p);
+      if (isa (obj.Formula, "LinearFormula") && ! isempty (obj.Formula.InModel))
+        im = obj.Formula.InModel;
+        in_model = im(1:min(p, numel(im)));
+      elseif (isstruct (obj.Formula) && isfield (obj.Formula, "InModel"))
+        im = obj.Formula.InModel;
+        in_model = im(1:min(p, numel(im)));
+      endif
+
+      ## Build columns for each predictor that is IN the model
+      Xcols = [];
+      for k = 1:p
+        if (! in_model(k))
+          continue;
+        endif
+        pname = pred_names{k};
+
+        ## Extract column from table
+        try
+          col_data = tbl_new.(pname);
+        catch
+          error ("CompactLinearModel.predict: table is missing predictor column '%s'.", ...
+                 pname);
+        end_try_catch
+
+        if (isa (col_data, "categorical"))
+          ## Categorical: expand into dummy columns using reference coding
+          levs = cellstr (categories (col_data));
+          col_str = cellstr (col_data);
+          [~, cat_idx] = ismember (col_str, levs);
+          n_lev = numel (levs);
+
+          ## Determine which levels the model expects (from CoefficientNames)
+          ## Look for patterns like PredName_LevelName in coef_names
+          dum_cols = [];
+          dum_found = false;
+          for L = 1:n_lev
+            expected_name = sprintf ("%s_%s", pname, levs{L});
+            if (any (strcmp (coef_names, expected_name)))
+              dum_found = true;
+              dum_cols = [dum_cols, double(cat_idx == L)];
+            endif
+          endfor
+
+          if (! dum_found)
+            ## Fallback: reference coding (drop first level)
+            for L = 2:n_lev
+              dum_cols = [dum_cols, double(cat_idx == L)];
+            endfor
+          endif
+
+          Xcols = [Xcols, dum_cols];
+        else
+          ## Numeric predictor
+          Xcols = [Xcols, double(col_data)];
+        endif
+      endfor
+
+      ## Prepend intercept
+      if (has_int)
+        Xmat = [ones(n_new, 1), Xcols];
+      else
+        Xmat = Xcols;
+      endif
     endfunction
 
   endmethods
