@@ -33,14 +33,14 @@ function ObservationInfo = __fitlm_build_obsinfo__ (weights, excl_mask, raw_X, r
   ## Missing: any NaN in X rows or y
   nan_in_X = any (isnan (raw_X), 2);
   nan_in_y = isnan (raw_y);
-  missing  = logical (nan_in_X | nan_in_y);
+  missing = logical (nan_in_X | nan_in_y);
 
   excluded = logical (excl_mask(:));
-  subset   = (! excluded) & (! missing);
+  subset = (!excluded) & (!missing);
 
-  ObservationInfo.Weights  = weights(:);
+  ObservationInfo.Weights = weights(:);
   ObservationInfo.Excluded = excluded;
-  ObservationInfo.Missing  = missing;
-  ObservationInfo.Subset   = subset;
+  ObservationInfo.Missing = missing;
+  ObservationInfo.Subset = subset;
 
 endfunction

@@ -38,9 +38,9 @@ function VariableInfo = __fitlm_build_varinfo__ (var_names, cat_flags, raw_cols,
 
   n_vars = numel (var_names);
 
-  Class         = cell  (n_vars, 1);
-  Range         = cell  (n_vars, 1);
-  InModel       = false (n_vars, 1);
+  Class = cell (n_vars, 1);
+  Range = cell (n_vars, 1);
+  InModel = false (n_vars, 1);
   IsCategorical = false (n_vars, 1);
 
   for j = 1:n_vars
@@ -71,14 +71,14 @@ function VariableInfo = __fitlm_build_varinfo__ (var_names, cat_flags, raw_cols,
         levs = unique (cellstr (col));
       else
         ## Numeric forced categorical — unique numeric values
-        uvals = unique (col(! isnan (col)));
+        uvals = unique (col(!isnan (col)));
         levs = uvals(:)';
       endif
       Range{j} = {levs};
     else
       ## Numeric — [min max]
       if (isnumeric (col))
-        valid = col(! isnan (col));
+        valid = col(!isnan (col));
         if (isempty (valid))
           Range{j} = {[NaN NaN]};
         else
@@ -93,9 +93,9 @@ function VariableInfo = __fitlm_build_varinfo__ (var_names, cat_flags, raw_cols,
     InModel(j) = logical (in_model(j));
   endfor
 
-  VariableInfo.Class         = Class;
-  VariableInfo.Range         = Range;
-  VariableInfo.InModel       = InModel;
+  VariableInfo.Class = Class;
+  VariableInfo.Range = Range;
+  VariableInfo.InModel = InModel;
   VariableInfo.IsCategorical = IsCategorical;
 
 endfunction

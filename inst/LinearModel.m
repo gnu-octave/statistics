@@ -33,19 +33,13 @@ classdef LinearModel < CompactLinearModel
 ##
 ## @multitable @columnfractions 0.25 0.75
 ## @headitem Property @tab Description
-## @item @code{Variables} @tab Original input data (all rows, including
-## excluded).
+## @item @code{Variables} @tab Original input data (all rows, including excluded).
 ## @item @code{ObservationNames} @tab Cell array of row names.
-## @item @code{ObservationInfo} @tab Struct with fields @code{Weights},
-## @code{Excluded}, @code{Missing}, @code{Subset}.
+## @item @code{ObservationInfo} @tab Table with columns Weights, Excluded, Missing, Subset.
 ## @item @code{Fitted} @tab Fitted values for all observations.
-## @item @code{Residuals} @tab Struct with fields @code{Raw},
-## @code{Pearson}, @code{Studentized}, @code{Standardized}.
-## @item @code{Diagnostics} @tab Struct with fields @code{Leverage},
-## @code{CooksDistance}, @code{Dffits}, @code{S2_i}, @code{CovRatio},
-## @code{Dfbetas}, @code{HatMatrix}.
-## @item @code{ModelFitVsNullModel} @tab Struct with fields @code{Fstat},
-## @code{Pvalue}, @code{NullModel}.
+## @item @code{Residuals} @tab Table with columns Raw, Pearson, Studentized, Standardized.
+## @item @code{Diagnostics} @tab Table with columns Leverage, CooksDistance, Dffits, S2_i, CovRatio, Dfbetas, HatMatrix.
+## @item @code{ModelFitVsNullModel} @tab Struct with fields Fstat, Pvalue, NullModel.
 ## @item @code{Steps} @tab Stepwise fitting history (empty for fitlm).
 ## @end multitable
 ##
@@ -65,19 +59,20 @@ classdef LinearModel < CompactLinearModel
 
   properties (SetAccess = protected)
     ## Source data (not on CompactLinearModel)
-    Variables            = [];
-    ObservationNames     = {};
-    ObservationInfo      = [];
+    Variables = [];
+    ObservationNames = {};
+    ObservationInfo = [];
 
     ## Diagnostics (not on CompactLinearModel)
-    Fitted               = [];
-    Residuals            = [];
-    Diagnostics          = [];
-    ModelFitVsNullModel  = [];
+    Fitted = [];
+    Residuals = [];
+    Diagnostics = [];
+    ModelFitVsNullModel = [];
 
     ## Fitting method
-    Steps                = [];
+    Steps = [];
   endproperties
+
 
   methods (Access = protected)
 
@@ -95,11 +90,11 @@ classdef LinearModel < CompactLinearModel
       if (nargin < 1)
         ## Allow zero-arg construction for Octave classdef internals
         return;
-      endif
+  endif
 
-      if (! isstruct (s))
-        error ("LinearModel: constructor argument must be a struct.");
-      endif
+      if (!isstruct(s))
+          error("LinearModel: constructor argument must be a struct.");
+  endif
 
       ## Call parent constructor with the CompactLinearModel fields
       obj = obj@CompactLinearModel (s);
@@ -164,14 +159,14 @@ classdef LinearModel < CompactLinearModel
       ##   variables_data  - Variables struct/table (source data)
 
       n_total = numel (excluded);
-      n_used  = fit_s.n;
-      subset  = obs_info.Subset;
+      n_used = fit_s.n;
+      subset = obs_info.Subset;
 
       ## Compute Fitted for ALL observations (including excluded/missing)
       fitted_all = NaN (n_total, 1);
       fitted_all(subset) = fit_s.yhat;
       ## Excluded-but-not-missing rows: compute yhat = X_full * beta (Phase 4)
-      ## MATLAB Block 7: excluded rows DO get Fitted values (X*beta extrapolation)
+      ## MATLAB Block 7: excluded rows DO get Fitted values (X * beta extrapolation)
       if (nargin >= 16 && ! isempty (X_full))
         excl_not_missing = excluded & ! missing_mask;
         if (any (excl_not_missing))
@@ -205,15 +200,25 @@ classdef LinearModel < CompactLinearModel
       studentized_all(subset)  = studentized;
       standardized_all(subset) = standardized;
 
-      resid_struct = struct ("Raw", raw_all, "Pearson", pearson_all, ...
-                             "Studentized", studentized_all, ...
-                             "Standardized", standardized_all);
+      ## Build Residuals table (MATLAB returns n x 4 table)
+      if (! isempty (obs_names))
+        resid_tbl = table (raw_all, pearson_all, studentized_all, ...
+                           standardized_all, ...
+                           "VariableNames", {"Raw", "Pearson", ...
+                                             "Studentized", "Standardized"}, ...
+                           "RowNames", obs_names(:)');
+      else
+        resid_tbl = table (raw_all, pearson_all, studentized_all, ...
+                           standardized_all, ...
+                           "VariableNames", {"Raw", "Pearson", ...
+                                             "Studentized", "Standardized"});
+      endif
 
       ## Diagnostics for used observations
       CooksDistance_used = (1 / p_est) * (h ./ (1 - h)) .* standardized .^ 2;
-      Dffits_used        = studentized .* sqrt (h ./ (1 - h));
+      Dffits_used = studentized .* sqrt (h ./ (1 - h));
       ## CovRatio: Candidate 3 formula, verified to 3.55e-14 against MATLAB
-      CovRatio_used      = (S2_i_used / mse) .^ p_est ./ (1 - h);
+      CovRatio_used = (S2_i_used / mse) .^ p_est ./ (1 - h);
 
       ## Hat matrix from QR factor (n_used x n_used)
       HatMatrix_full = NaN (n_total, n_total);
@@ -254,18 +259,28 @@ classdef LinearModel < CompactLinearModel
         h_i = h(i);
         s2_i = S2_i_used(i);
         if (s2_i > 0 && (1 - h_i) > 0)
-          Dfbetas_all(ii, :) = ((vcov * x_i * e_i) / ...
-                                ((1 - h_i) * sqrt (s2_i))) ./ se_coef;
+          Dfbetas_all(ii, :) = ...
+            ((vcov * x_i * e_i) / ((1 - h_i) * sqrt (s2_i))) ./ se_coef;
         endif
       endfor
 
-      diag_struct = struct ("Leverage", leverage_all, ...
-                            "CooksDistance", CooksDistance_all, ...
-                            "Dffits", Dffits_all, ...
-                            "S2_i", S2_i_all, ...
-                            "CovRatio", CovRatio_all, ...
-                            "Dfbetas", Dfbetas_all, ...
-                            "HatMatrix", HatMatrix_full);
+      ## Build Diagnostics table (MATLAB returns n x 7 table)
+      if (! isempty (obs_names))
+        diag_tbl = table (leverage_all, CooksDistance_all, Dffits_all, ...
+                          S2_i_all, CovRatio_all, Dfbetas_all, ...
+                          HatMatrix_full, ...
+                          "VariableNames", {"Leverage", "CooksDistance", ...
+                                            "Dffits", "S2_i", "CovRatio", ...
+                                            "Dfbetas", "HatMatrix"}, ...
+                          "RowNames", obs_names(:)');
+      else
+        diag_tbl = table (leverage_all, CooksDistance_all, Dffits_all, ...
+                          S2_i_all, CovRatio_all, Dfbetas_all, ...
+                          HatMatrix_full, ...
+                          "VariableNames", {"Leverage", "CooksDistance", ...
+                                            "Dffits", "S2_i", "CovRatio", ...
+                                            "Dfbetas", "HatMatrix"});
+      endif
 
       ## ModelFitVsNullModel
       if (p_est > 1 && mse > 0)
@@ -307,7 +322,16 @@ classdef LinearModel < CompactLinearModel
       s.NumVariables             = numel (var_names);
       s.PredictorNames           = pred_names;
       s.ResponseName             = resp_name;
-      s.VariableInfo             = var_info;
+      ## Wrap VariableInfo as table if it is still a raw struct
+      if (isstruct (var_info) && ! isempty (var_info))
+        s.VariableInfo = table (var_info.Class, var_info.Range, ...
+                                var_info.InModel, var_info.IsCategorical, ...
+                                "VariableNames", {"Class", "Range", ...
+                                                  "InModel", "IsCategorical"}, ...
+                                "RowNames", var_names(:)');
+      else
+        s.VariableInfo = var_info;
+      endif
       s.VariableNames            = var_names;
 
       ## LinearModel-only fields
@@ -317,10 +341,26 @@ classdef LinearModel < CompactLinearModel
         s.Variables = [];
       endif
       s.ObservationNames  = obs_names;
-      s.ObservationInfo   = obs_info;
+      ## Wrap ObservationInfo as table if it is still a raw struct
+      if (isstruct (obs_info) && ! isempty (obs_info))
+        if (! isempty (obs_names))
+          s.ObservationInfo = table (obs_info.Weights, obs_info.Excluded, ...
+                                     obs_info.Missing, obs_info.Subset, ...
+                                     "VariableNames", {"Weights", "Excluded", ...
+                                                       "Missing", "Subset"}, ...
+                                     "RowNames", obs_names(:)');
+        else
+          s.ObservationInfo = table (obs_info.Weights, obs_info.Excluded, ...
+                                     obs_info.Missing, obs_info.Subset, ...
+                                     "VariableNames", {"Weights", "Excluded", ...
+                                                       "Missing", "Subset"});
+        endif
+      else
+        s.ObservationInfo = obs_info;
+      endif
       s.Fitted            = fitted_all;
-      s.Residuals         = resid_struct;
-      s.Diagnostics       = diag_struct;
+      s.Residuals         = resid_tbl;
+      s.Diagnostics       = diag_tbl;
       s.ModelFitVsNullModel = mfvnm;
       s.Steps             = steps;
 
@@ -628,7 +668,8 @@ classdef LinearModel < CompactLinearModel
 
       ## Build cat_flags from VariableInfo
       cat_flags = false (1, n_pred + 1);
-      if (isstruct (obj.VariableInfo) && isfield (obj.VariableInfo, "IsCategorical"))
+      if ((isstruct (obj.VariableInfo) && isfield (obj.VariableInfo, "IsCategorical")) || ...
+          isa (obj.VariableInfo, "table"))
         for k = 1:n_pred
           vi_idx = strcmp (obj.VariableNames, p_names{k});
           if (any (vi_idx))
@@ -1022,8 +1063,9 @@ function [X, coef_names] = __build_X_from_terms__ (obj, terms)
     ## Detect categorical: use VariableInfo.IsCategorical as primary source
     ## (Fix 4, Phase 3B), with type-sniffing as a secondary fallback.
     vi_is_cat = false;
-    if (! isempty (obj.VariableInfo) && isstruct (obj.VariableInfo) && ...
-        isfield (obj.VariableInfo, "IsCategorical"))
+    if (! isempty (obj.VariableInfo) && ...
+        ((isstruct (obj.VariableInfo) && isfield (obj.VariableInfo, "IsCategorical")) || ...
+         isa (obj.VariableInfo, "table")))
       vi_idx = strcmp (obj.VariableNames, pname);
       if (any (vi_idx))
         vi_is_cat = obj.VariableInfo.IsCategorical(vi_idx);
