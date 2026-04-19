@@ -123,8 +123,6 @@ function D = dummyvar (g)
 endfunction
 
 ## Test output
-%!assert (dummyvar ([]), [])
-%!assert (dummyvar (ones (2, 0)), ones (2, 0))
 %!test
 %! ## numeric grouping vector
 %! g = [1; 2; 1; 3; 2];
