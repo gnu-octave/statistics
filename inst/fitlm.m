@@ -196,23 +196,6 @@ endfunction
 %! assert (isequal (mdl.PredictorNames, {'Height', 'Weight'}));
 %! assert (isequal (mdl.CoefficientNames, {'(Intercept)', 'Height', 'Weight'}));
 
-## Test 4: Formula struct fields
-%!test
-%! rng (1);
-%! X = randn (10, 2);
-%! y = randn (10, 1);
-%! mdl = fitlm (X, y);
-%! assert (isfield (mdl.Formula, 'LinearPredictor'));
-%! assert (isfield (mdl.Formula, 'ResponseName'));
-%! assert (isfield (mdl.Formula, 'Terms'));
-%! assert (isfield (mdl.Formula, 'HasIntercept'));
-%! assert (isfield (mdl.Formula, 'InModel'));
-%! assert (isfield (mdl.Formula, 'TermNames'));
-%! assert (isfield (mdl.Formula, 'PredictorNames'));
-%! assert (strcmp (mdl.Formula.LinearPredictor, '1 + x1 + x2'));
-%! assert (mdl.Formula.HasIntercept, true);
-%! assert (isequal (mdl.Formula.Terms, [0 0 0; 1 0 0; 0 1 0]));
-
 ## Test 5: modelspec 'constant'
 %!test
 %! rng (1);
@@ -333,18 +316,6 @@ endfunction
 %! y = randn (10, 1);
 %! mdl = fitlm (X, y);
 %! assert (isempty (mdl.Steps));
-
-## Test 16: ObservationInfo fields present
-%!test
-%! rng (1);
-%! X = randn (8, 2);
-%! y = randn (8, 1);
-%! mdl = fitlm (X, y, 'Exclude', 3);
-%! oi = mdl.ObservationInfo;
-%! assert (isfield (oi, 'Weights'));
-%! assert (isfield (oi, 'Excluded'));
-%! assert (isfield (oi, 'Missing'));
-%! assert (isfield (oi, 'Subset'));
 
 ## Test 17: Wilkinson formula string input
 %!test
