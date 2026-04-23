@@ -172,8 +172,7 @@ function normalised = normalise_distribution (data, distribution, dimension)
       [ ignore, ignore, target_indices ] = unique ( data (:, k ) );
 
       ## Put normalised values in the places where they belong.
-      f_remap = @( k ) ( normal ( k ) );
-      normalised ( :, k ) = arrayfun ( f_remap, target_indices );
+      normalised ( :, k ) = normal (target_indices);
     endfor
   else
     ## With known distributions, everything boils down to a few lines of code
