@@ -201,7 +201,7 @@ function [p, h, stats] = signtest (x, my, varargin)
   endif
 
   ## Get the number of positive and negative elements from X-Y differences
-  pos_n = length (find (XY_diff > 0));
+  pos_n = sum (XY_diff > 0);
   neg_n = n - pos_n;
 
   ## Calculate stats according to selected method and tail
