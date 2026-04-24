@@ -353,7 +353,7 @@ endif
       endfor
 
       ## Map removable predictors to positions within 'included'
-      removable_positions = arrayfun (@(x) find (included == x, 1), removable);
+      [~, removable_positions] = ismember (removable, included);
       [maxp, pos] = max (pvals_included(removable_positions));
 
       if (maxp > PRemove)
