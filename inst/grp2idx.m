@@ -1,5 +1,6 @@
 ## Copyright (C) 2015 Carnë Draug <carandraug@octave.org>
 ## Copyright (C) 2022-2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -67,6 +68,20 @@ function [g, gn, gl] = grp2idx (s)
   if (nargin != 1)
     print_usage ();
   endif
+
+  ## Handle empty input immediately
+  if (isempty (s))
+    if (! isvector (s) && ! ischar (s) && ! isstring (s) && ! iscellstr (s) && ! iscategorical (s))
+      error ("grp2idx: Grouping variable must be a vector, character array, string array, or cell array of character vectors.");
+    endif
+    g = [];
+    gn = {};
+    if (nargout > 2)
+      gl = [];
+    endif
+    return;
+  endif
+  
   if (ndims (s) != 2)
     error ("grp2idx: S must be either a vector or a matrix.");
   endif
@@ -82,10 +97,36 @@ function [g, gn, gl] = grp2idx (s)
       error ("grp2idx: 'categorical' grouping variable must be a vector.");
     endif
     is_categorical = true;
-    undef = isundefined (s);
     cats = categories (s);
-    s = cellstr (s);
-    s(undef) = {""};
+    s_text = cellstr (s(:));
+    g = NaN (numel (s_text), 1);
+
+    if (nargout > 1)
+      if (isempty (cats))
+        gn = cell (0, 1);
+      else
+        gn = cellstr (cats);
+      endif
+    endif
+
+    if (nargout > 2)
+      if (isempty (cats))
+        gl = categorical (cell (0, 1));
+      else
+        gl = categorical (cellstr (cats), cellstr (cats), cellstr (cats));
+      endif
+    endif
+
+    if (isempty (cats))
+      return;
+    endif
+
+    cat_names = cellstr (cats);
+    undef = isundefined (s(:));
+    for i = 1:numel (cat_names)
+      g(! undef & strcmp (s_text, cat_names{i})) = i;
+    endfor
+    return;
   elseif (ischar (s))
     is_char_array = true;
     s = cellstr (s);
@@ -121,16 +162,7 @@ function [g, gn, gl] = grp2idx (s)
   [gl, I, g] = unique (s(:));
   ## Fix order in here, since unique does not support this yet
   if (iscellstr (s) && ! is_categorical)
-    I = sort (I);
-    for i = 1:length (gl)
-      gl_s(i) = gl(g(I(i)));
-      idx(i,:) = (g == g(I(i)));
-    endfor
-    for i = 1:length (gl)
-      g(idx(i,:)) = i;
-    endfor
-    gl = gl_s;
-    gl = gl';
+    [g, gl] = g2i_reindex_stable (g, gl, I);
   endif
 
   ## handle NaNs and empty strings
@@ -205,6 +237,24 @@ function [g, gn, gl] = grp2idx (s)
       endif
     endif
   endif
+
+endfunction
+
+function [g, gl] = g2i_reindex_stable (g, gl, first_idx)
+
+  first_idx = sort (first_idx(:));
+  ng = numel (gl);
+  new_gl = cell (ng, 1);
+  new_g = g;
+
+  for i = 1:ng
+    old_idx = g(first_idx(i));
+    new_gl{i} = gl{old_idx};
+    new_g(g == old_idx) = i;
+  endfor
+
+  gl = new_gl;
+  g = new_g;
 
 endfunction
 
@@ -388,6 +438,13 @@ endfunction
 %! assert (g, [NaN; 2; NaN; 1]);
 %! assert (gn, {'1'; '2'; '3'});
 %! assert (iscategorical (gl), true);
+%! assert (cellstr (gl), gn);
+
+%!test
+%! s = categorical ({'a'; 'b'; 'a'}, {'b', 'a', 'c'}, {'b', 'a', 'c'});
+%! [g, gn, gl] = grp2idx (s);
+%! assert (g, [2; 1; 2]);
+%! assert (gn, {'b'; 'a'; 'c'});
 %! assert (cellstr (gl), gn);
 
 ## test for duration arrays

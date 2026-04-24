@@ -1,4 +1,4 @@
-## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2026 Jayant Chauhan <0001jayant@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -16,397 +16,322 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn  {statistics} {@var{tab} =} fitlm (@var{X}, @var{y})
-## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{name}, @var{value})
-## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{modelspec})
-## @deftypefnx {statistics} {@var{tab} =} fitlm (@var{X}, @var{y}, @var{modelspec}, @var{name}, @var{value})
-## @deftypefnx {statistics} {[@var{tab}] =} fitlm (@dots{})
-## @deftypefnx {statistics} {[@var{tab}, @var{stats}] =} fitlm (@dots{})
-## @deftypefnx {statistics} {[@var{tab}, @var{stats}] =} fitlm (@dots{})
+## @deftypefn  {statistics} {@var{mdl} =} fitlm (@var{X}, @var{y})
+## @deftypefnx {statistics} {@var{mdl} =} fitlm (@var{X}, @var{y}, @var{modelspec})
+## @deftypefnx {statistics} {@var{mdl} =} fitlm (@var{X}, @var{y}, @var{modelspec}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {@var{mdl} =} fitlm (@var{tbl})
+## @deftypefnx {statistics} {@var{mdl} =} fitlm (@var{tbl}, @var{modelspec})
+## @deftypefnx {statistics} {@var{mdl} =} fitlm (@var{tbl}, @var{modelspec}, @var{Name}, @var{Value})
 ##
-## Regress the continuous outcome (i.e. dependent variable) @var{y} on
-## continuous or categorical predictors (i.e. independent variables) @var{X}
-## by minimizing the sum-of-squared residuals. Unless requested otherwise,
-## @qcode{fitlm} prints the model formula, the regression coefficients (i.e.
-## parameters/contrasts) and an ANOVA table. Note that unlike @qcode{anovan},
-## @qcode{fitlm} treats all factors as continuous by default. A bootstrap
-## resampling variant of this function, @code{bootlm}, is available in the
-## statistics-resampling package and has similar usage.
+## Fit a linear regression model.
 ##
-## @var{X} must be a column major matrix or cell array consisting of the
-## predictors. A constant term (intercept) should not be included in X - it
-## is automatically added to the model. @var{y} must be a column vector
-## corresponding to the outcome variable. @var{modelspec} can specified as
-## one of the following:
+## @code{fitlm} fits a linear regression model and returns a
+## @code{LinearModel} object.
 ##
+## @strong{Inputs}
+##
+## @var{X} is an @math{n x p} numeric matrix of predictor values.
+## @var{y} is an @math{n x 1} numeric response vector.
+## @var{tbl} is a @code{table} object containing all variables.
+##
+## @var{modelspec} can be:
 ## @itemize
-## @item
-## "constant" : model contains only a constant (intercept) term.
-##
-## @item
-## "linear" (default) : model contains an intercept and linear term for each
-## predictor.
-##
-## @item
-## "interactions" : model contains an intercept, linear term for each predictor
-## and all products of pairs of distinct predictors.
-##
-## @item
-## "full" : model contains an intercept, linear term for each predictor and
-## all combinations of the predictors.
-##
-## @item
-## a matrix of term definitions : an t-by-(N+1) matrix specifying terms in
-## a model, where t is the number of terms, N is the number of predictor
-## variables, and +1 accounts for the outcome variable. The outcome variable
-## is the last column in the terms matrix and must be a column of zeros.
-## An intercept must be specified in the first row of the terms matrix and
-## must be a row of zeros.
+## @item @qcode{'linear'} (default) — intercept + all linear terms
+## @item @qcode{'constant'} — intercept only
+## @item @qcode{'interactions'} — linear + all pairwise interactions
+## @item @qcode{'purequadratic'} — linear + all squared terms
+## @item @qcode{'quadratic'} — linear + interactions + squared terms
+## @item A Wilkinson formula string, e.g. @qcode{'y ~ x1 + x2 + x1:x2'}
 ## @end itemize
 ##
-## @qcode{fitlm} can take a number of optional parameters as name-value pairs.
+## @strong{Name-Value Arguments}
 ##
-## @code{[@dots{}] = fitlm (..., "CategoricalVars", @var{categorical})}
+## @table @asis
+## @item @qcode{'Weights'} — n×1 double, per-observation weights
+## @item @qcode{'Exclude'} — integer indices or logical vector of rows to exclude
+## @item @qcode{'Intercept'} — logical (default: @code{true})
+## @item @qcode{'CategoricalVars'} — integer indices or cell of names
+## @item @qcode{'VarNames'} — cell of char, override variable names (matrix input)
+## @item @qcode{'ResponseVar'} — char, override response variable (table input)
+## @item @qcode{'PredictorVars'} — cell or indices, specify predictor subset (table input)
+## @end table
 ##
-## @itemize
-## @item
-## @var{categorical} is a vector of indices indicating which of the columns
-## (i.e. variables) in @var{X} should be treated as categorical predictors
-## rather than as continuous predictors.
-## @end itemize
+## @strong{Output}
 ##
-## @qcode{fitlm} also accepts optional @qcode{anovan} parameters as name-value
-## pairs (except for the "model" parameter). The accepted parameter names from
-## @qcode{anovan} and their default values in @qcode{fitlm} are:
+## @var{mdl} is a @code{LinearModel} object with all properties populated.
 ##
-## @itemize
-## @item
-## @var{CONTRASTS} : "treatment"
-##
-## @item
-## @var{SSTYPE}: 2
-##
-## @item
-## @var{ALPHA}: 0.05
-##
-## @item
-## @var{DISPLAY}: "on"
-##
-## @item
-## @var{WEIGHTS}: [] (empty)
-##
-## @item
-## @var{RANDOM}: [] (empty)
-##
-## @item
-## @var{CONTINUOUS}: [1:N]
-##
-## @item
-## @var{VARNAMES}: [] (empty)
-## @end itemize
-##
-## Type '@qcode{help anovan}' to find out more about what these options do.
-##
-## @qcode{fitlm} can return up to two output arguments:
-##
-## [@var{tab}] = fitlm (@dots{}) returns a cell array containing a
-## table of model parameters
-##
-## [@var{tab}, @var{stats}] = fitlm (@dots{}) returns a structure
-## containing additional statistics, including degrees of freedom and effect
-## sizes for each term in the linear model, the design matrix, the
-## variance-covariance matrix, (weighted) model residuals, and the mean squared
-## error. The columns of @var{stats}.coeffs (from left-to-right) report the
-## model coefficients, standard errors, lower and upper 100*(1-alpha)%
-## confidence interval bounds, t-statistics, and p-values relating to the
-## contrasts. The number appended to each term name in @var{stats}.coeffnames
-## corresponds to the column number in the relevant contrast matrix for that
-## factor. The @var{stats} structure can be used as input for @qcode{multcompare}.
-## Note that if the model contains a continuous variable and you wish to use
-## the @var{STATS} output as input to @qcode{multcompare}, then the model needs
-## to be refit with the "contrast" parameter set to a sum-to-zero contrast
-## coding scheme, e.g."simple".
-##
-## @seealso{anovan, multcompare}
+## @seealso{LinearModel, CompactLinearModel, stepwiselm}
 ## @end deftypefn
 
-function [T, STATS] = fitlm (X, y, varargin)
+function mdl = fitlm (varargin)
 
-    ## Check input and output arguments
-    if (nargin < 2)
-      error (strcat ("fitlm usage: ""fitlm (X, y, varargin)""; ", ...
-                     " atleast 2 input arguments required"));
-    endif
-    if (nargout > 3)
-      error ("fitlm: invalid number of output arguments requested");
-    endif
+  if (nargin < 1)
+    print_usage ();
+  endif
 
-    ## Evaluate input data
-    [n, N] = size (X);
-    msg = strcat ("fitlm: do not include the intercept column", ...
-                  " in X - it will be added automatically");
-    if (iscell (X))
-      if (~ iscell (X{:,1}))
-        if (all (X{:,1} == 1))
-          error (msg)
-        endif
-      endif
-    else
-      if (all (X(:,1) == 1))
-        error (msg)
-      endif
-    endif
+  ## ── [Step 1] Parse inputs ────────────────────────────────────────────────
+  [raw_X, raw_y, var_names, cat_flags, weights, excl_mask, ...
+   modelspec, obs_names, resp_name, pred_names, has_intercept, raw_cols, ...
+   dummy_coding] = ...
+    __fitlm_parse_inputs__ (varargin{:});
 
-    ## Fetch anovan options
-    options = varargin;
-    if (isempty(options))
-      options{1} = "linear";
-    endif
+  n = rows (raw_y);
+  p = numel (pred_names);
 
-    ## Check if MODELSPEC was provided. If not create it.
-    if (ischar (options{1}))
-      if (! ismember (lower (options{1}), {"sstype", "varnames", "contrasts", ...
-                      "weights", "alpha", "display", "continuous", ...
-                      "categorical", "categoricalvars", "random", "model"}))
-        MODELSPEC = options{1};
-        options(1) = [];
-        CONTINUOUS = [];
-      else
-        ## If MODELSPEC is not provided, set it for an additive linear model
-        MODELSPEC = zeros (N + 1);
-        MODELSPEC(2:N+1, 1:N) = eye (N);
-      end
-    else
-      MODELSPEC = options{1};
-      options(1) = [];
-    endif
+  ## ── [Step 2] Build design matrix ─────────────────────────────────────────
+  [terms_mat, coef_names, X_full, y_full, incl_mask, p_tot, has_intercept, lp_str] = ...
+    __fitlm_build_design__ (raw_X, raw_y, modelspec, var_names, cat_flags, ...
+                            weights, excl_mask, pred_names, raw_cols, ...
+                            has_intercept, dummy_coding);
 
-    ## Evaluate MODELSPEC
-    if (ischar (MODELSPEC))
-      MODELSPEC = lower (MODELSPEC);
-      if (! isempty (regexp (MODELSPEC, "~")))
-        error ("fitlm: model formulae are not a supported format for MODELSPEC")
-      endif
-      if (! ismember (MODELSPEC, {"constant", "linear", "interaction", ...
-                                  "interactions", "full"}))
-        error ("fitlm: character vector for model specification not recognised")
-      endif
-      if strcmp (MODELSPEC, "constant")
-        X = [];
-        MODELSPEC = "linear";
-        N = 0;
-      endif
-    else
-      if (size (MODELSPEC, 1) < N + 1)
-        error ("fitlm: number of rows in MODELSPEC must  1 + number of columns in X");
-      endif
-      if (size (MODELSPEC, 2) != N + 1)
-        error ("fitlm: number of columns in MODELSPEC must = 1 + number of columns in X");
-      endif
-      if (! all (ismember (MODELSPEC(:), [0,1])))
-        error (strcat ("fitlm: elements of the model terms matrix must be ", ...
-                       " either 0 or 1. Higher order terms are not supported"));
-      endif
-      MODELSPEC = logical (MODELSPEC(2:N+1,1:N));
-    endif
+  ## ── [Step 3] Call math engine on included rows only ──────────────────────
+  X_fit = X_full(incl_mask, :);
+  y_fit = y_full(incl_mask);
+  w_fit = weights(incl_mask);
 
-    ## Check for unsupported options used by anovan
-    if (any (strcmpi ("MODEL", options)))
-      error (strcat("fitlm: modelspec should be specified in the", ...
-                    " third input argument of fitlm (if at all)"));
-    endif
+  warning ("off", "CompactLinearModel:rankDeficient");
+  s = lm_fit_engine (X_fit, y_fit, w_fit);
+  warning ("on",  "CompactLinearModel:rankDeficient");
 
-    ## Check and set variable types
-    idx = find (any (cat (1, strcmpi ("categorical", options), ...
-                          strcmpi ("categoricalvars", options))));
-    if (! isempty (idx))
-      CONTINUOUS = [1:N];
-      CONTINUOUS(ismember(CONTINUOUS,options{idx+1})) = [];
-      options(idx:idx+1) = [];
-    else
-      CONTINUOUS = [1:N];
-    endif
-    idx = find (strcmpi ("continuous", options));
-    if (! isempty (idx))
-      ## Note that setting continuous parameter will override settings made
-      ## to "categorical"
-      CONTINUOUS = options{idx+1};
-    endif
+  n_used = s.n;
 
-    ## Check if anovan CONTRASTS option was used
-    idx = find (strcmpi ("contrasts", options));
-    if (isempty (idx))
-      CONTRASTS = "treatment";
-    else
-      CONTRASTS = options{idx+1};
-      if (ischar(CONTRASTS))
-        contr_str = CONTRASTS;
-        CONTRASTS = cell (1, N);
-        CONTRASTS(:) = {contr_str};
-      endif
-      if (! iscell (CONTRASTS))
-        CONTRASTS = {CONTRASTS};
-      endif
-      for i = 1:N
-        if (! isnumeric(CONTRASTS{i}))
-          if (! isempty (CONTRASTS{i}))
-            if (! ismember (CONTRASTS{i}, ...
-                            {"simple","poly","helmert","effect","treatment"}))
-              error (strcat("fitlm: the choices for built-in contrasts are", ...
-                     " 'simple', 'poly', 'helmert', 'effect', or 'treatment'"));
-            endif
-          endif
-        endif
-      endfor
-    endif
+  ## ── [Step 4] Build Formula struct ────────────────────────────────────────
+  ## fromFit expects formula.CoefficientNames to be set
+  Formula = __fitlm_build_formula__ (terms_mat, var_names, pred_names, ...
+                                     resp_name, has_intercept, lp_str, coef_names);
+  Formula.CoefficientNames = coef_names;   ## required by fromFit (line 288)
 
-    ## Check if anovan SSTYPE option was used
-    idx = find (strcmpi ("sstype", options));
-    if (isempty (idx))
-      SSTYPE = 2;
-    else
-      SSTYPE = options{idx+1};
-    endif
+  ## ── [Step 5] Build VariableInfo struct ────────────────────────────────────
+  VariableInfo = __fitlm_build_varinfo__ (var_names, cat_flags, raw_cols, ...
+                                          Formula.InModel);
 
-    ## Perform model fit and ANOVA
-    [~, ~, STATS] = anovan (y, X, options{:}, ...
-                            "model", MODELSPEC, ...
-                            "contrasts", CONTRASTS, ...
-                            "continuous", CONTINUOUS, ...
-                            "sstype", SSTYPE);
+  ## ── [Step 6] Build ObservationInfo ───────────────────────────────────────
+  ObservationInfo = __fitlm_build_obsinfo__ (weights, excl_mask, raw_X, raw_y, obs_names);
 
-    ## Create table of regression coefficients
-    ncoeff = sum (STATS.df);
-    T = cell (2 + ncoeff, 7);
-    T(1,:) = {"Parameter", "Estimate", "SE", ...
-              "Lower.CI", "Upper.CI", "t", "Prob>|t|"};
-    T(2:end,1) = STATS.coeffnames;
-    T(2:end,2:7) = num2cell (STATS.coeffs);
+  ## ── [Step 7] Build Variables struct ──────────────────────────────────────
+  Variables = __fitlm_build_variables_table__ (raw_cols, var_names, obs_names);
 
-    ## Update STATS structure
-    STATS.source = "fitlm";
+  ## ── [Step 8] Compute missing mask ────────────────────────────────────────
+  missing_mask = ObservationInfo.Missing;
+
+  ## ── [Step 9] Call LinearModel.fromFit ────────────────────────────────────
+  ##
+  ## fromFit signature:
+  ##   fromFit(fit_s, X, y, formula, pred_names, resp_name,
+  ##           var_names, var_info, obs_names, obs_info,
+  ##           weights, excluded, missing_mask, steps, variables_data)
+  ##
+  ## X and y here are the USED (included) subsets — fromFit computes diagnostics
+  mdl = LinearModel.fromFit ( ...
+    s, ...                   ## lm_fit_engine output
+    X_fit, ...               ## design matrix (used rows only)
+    y_fit, ...               ## response (used rows only)
+    Formula, ...             ## Formula struct (with CoefficientNames field)
+    pred_names, ...          ## predictor variable names
+    resp_name, ...           ## response variable name
+    var_names, ...           ## all variable names
+    VariableInfo, ...        ## VariableInfo struct
+    obs_names, ...           ## ObservationNames
+    ObservationInfo, ...     ## ObservationInfo struct
+    weights, ...             ## full n weights
+    excl_mask, ...           ## full n exclusion mask
+    missing_mask, ...        ## full n missing mask
+    [], ...                  ## Steps = [] for fitlm
+    Variables, ...           ## Variables struct
+    X_full);                 ## full n design matrix for excluded-row Fitted
 
 endfunction
 
-%!demo
-%! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
-%!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
-%!        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
-%!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
-%!        25.694 ]';
-%! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
-%!
-%! [TAB,STATS] = fitlm (X,y,"linear","CategoricalVars",1,"display","on");
 
-%!demo
-%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
-%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! brands = {'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'};
-%! popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
-%!           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
-%!
-%! [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
-%!                          "CategoricalVars",[1,2],"display","on");
+## ── Private helper — build Variables struct ───────────────────────────────────
 
+function Vars = __fitlm_build_variables_table__ (raw_cols, var_names, obs_names)
+  ## Build Variables as a struct where each field = one column (all n rows).
+  Vars = struct ();
+  for k = 1:numel (var_names)
+    vn = var_names{k};
+    ## Replace invalid fieldname chars
+    fn = regexprep (vn, '[^a-zA-Z0-9_]', '_');
+    if (isempty (fn) || ! isempty (regexp (fn(1), '[^a-zA-Z_]')))
+      fn = ['v_', fn];
+    endif
+    Vars.(fn) = raw_cols{k};
+  endfor
+endfunction
+
+
+## ─── UNIT TESTS ───────────────────────────────────────────────────────────────
+
+## Test 1: basic matrix input returns LinearModel
 %!test
-%! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
-%!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
-%!        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
-%!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
-%!        25.694 ]';
-%! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
-%! [TAB,STATS] = fitlm (X,y,"continuous",[],"display","off");
-%! [TAB,STATS] = fitlm (X,y,"CategoricalVars",1,"display","off");
-%! [TAB,STATS] = fitlm (X,y,"constant","categorical",1,"display","off");
-%! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
-%! [TAB,STATS] = fitlm (X,y,[0,0;1,0],"categorical",1,"display","off");
-%! assert (TAB{2,2}, 10, 1e-04);
-%! assert (TAB{3,2}, 7.99999999999999, 1e-09);
-%! assert (TAB{4,2}, 8.99999999999999, 1e-09);
-%! assert (TAB{5,2}, 11.0001428571429, 1e-09);
-%! assert (TAB{6,2}, 19.0001111111111, 1e-09);
-%! assert (TAB{2,3}, 1.01775379540949, 1e-09);
-%! assert (TAB{3,3}, 1.64107868458008, 1e-09);
-%! assert (TAB{4,3}, 1.43932122062479, 1e-09);
-%! assert (TAB{5,3}, 1.48983900477565, 1e-09);
-%! assert (TAB{6,3}, 1.3987687997822, 1e-09);
-%! assert (TAB{2,6}, 9.82555903510687, 1e-09);
-%! assert (TAB{3,6}, 4.87484242844031, 1e-09);
-%! assert (TAB{4,6}, 6.25294748040552, 1e-09);
-%! assert (TAB{5,6}, 7.38344399756088, 1e-09);
-%! assert (TAB{6,6}, 13.5834536158296, 1e-09);
-%! assert (TAB{3,7}, 2.85812420217862e-05, 1e-12);
-%! assert (TAB{4,7}, 5.22936741204002e-07, 1e-06);
-%! assert (TAB{5,7}, 2.12794763209106e-08, 1e-07);
-%! assert (TAB{6,7}, 7.82091664406755e-15, 1e-08);
+%! rng (42);
+%! X = randn (20, 3);
+%! y = X * [1; 2; -1] + randn (20, 1) * 0.5;
+%! mdl = fitlm (X, y);
+%! assert (isa (mdl, 'LinearModel'));
+%! assert (mdl.NumPredictors, 3);
+%! assert (mdl.NumObservations, 20);
+%! assert (mdl.NumCoefficients, 4);
+%! assert (isempty (mdl.Steps));
+%! assert (mdl.DFE, 16);
 
+## Test 2: VariableNames and ResponseName for matrix input
 %!test
-%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
-%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! brands = bsxfun (@times, ones(6,1), [1,2,3]);
-%! popper = bsxfun (@times, [1;1;1;2;2;2], ones(1,3));
-%!
-%! [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
-%!                          "categoricalvars",[1,2],"display","off");
-%! assert (TAB{2,2}, 5.66666666666667, 1e-09);
-%! assert (TAB{3,2}, -1.33333333333333, 1e-09);
-%! assert (TAB{4,2}, -2.16666666666667, 1e-09);
-%! assert (TAB{5,2}, 1.16666666666667, 1e-09);
-%! assert (TAB{6,2}, -0.333333333333334, 1e-09);
-%! assert (TAB{7,2}, -0.166666666666667, 1e-09);
-%! assert (TAB{2,3}, 0.215165741455965, 1e-09);
-%! assert (TAB{3,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{4,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{5,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{6,3}, 0.43033148291193, 1e-09);
-%! assert (TAB{7,3}, 0.43033148291193, 1e-09);
-%! assert (TAB{2,6}, 26.3362867542108, 1e-09);
-%! assert (TAB{3,6}, -4.38178046004138, 1e-09);
-%! assert (TAB{4,6}, -7.12039324756724, 1e-09);
-%! assert (TAB{5,6}, 3.83405790253621, 1e-09);
-%! assert (TAB{6,6}, -0.774596669241495, 1e-09);
-%! assert (TAB{7,6}, -0.387298334620748, 1e-09);
-%! assert (TAB{2,7}, 5.49841502258254e-12, 1e-09);
-%! assert (TAB{3,7}, 0.000893505495903642, 1e-09);
-%! assert (TAB{4,7}, 1.21291454302428e-05, 1e-09);
-%! assert (TAB{5,7}, 0.00237798044119407, 1e-09);
-%! assert (TAB{6,7}, 0.453570536021938, 1e-09);
-%! assert (TAB{7,7}, 0.705316781644046, 1e-09);
-%! ## Test with string ids for categorical variables
-%! brands = {'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'; ...
-%!           'Gourmet', 'National', 'Generic'};
-%! popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
-%!           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
-%! [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
-%!                          "categoricalvars",[1,2],"display","off");
+%! rng (1);
+%! X = randn (10, 2);
+%! y = X * [2; -1] + randn (10, 1) * 0.3;
+%! mdl = fitlm (X, y);
+%! assert (isequal (mdl.VariableNames, {'x1', 'x2', 'y'}));
+%! assert (strcmp (mdl.ResponseName, 'y'));
+%! assert (isequal (mdl.PredictorNames, {'x1', 'x2'}));
+%! assert (mdl.NumVariables, 3);
 
+## Test 3: VarNames override
 %!test
-%! load carsmall
-%! X = [Weight,Horsepower,Acceleration];
-%! [TAB, STATS] = fitlm (X, MPG,"constant","display","off");
-%! [TAB, STATS] = fitlm (X, MPG,"linear","display","off");
-%! assert (TAB{2,2}, 47.9767628118615, 1e-09);
-%! assert (TAB{3,2}, -0.00654155878851796, 1e-09);
-%! assert (TAB{4,2}, -0.0429433065881864, 1e-09);
-%! assert (TAB{5,2}, -0.0115826516894871, 1e-09);
-%! assert (TAB{2,3}, 3.87851641748551, 1e-09);
-%! assert (TAB{3,3}, 0.00112741016370336, 1e-09);
-%! assert (TAB{4,3}, 0.0243130608813806, 1e-09);
-%! assert (TAB{5,3}, 0.193325043113178, 1e-09);
-%! assert (TAB{2,6}, 12.369874881944, 1e-09);
-%! assert (TAB{3,6}, -5.80228828790225, 1e-09);
-%! assert (TAB{4,6}, -1.76626492228599, 1e-09);
-%! assert (TAB{5,6}, -0.0599128364487485, 1e-09);
-%! assert (TAB{2,7}, 4.89570341688996e-21, 1e-09);
-%! assert (TAB{3,7}, 9.87424814144e-08, 1e-09);
-%! assert (TAB{4,7}, 0.0807803098213114, 1e-09);
-%! assert (TAB{5,7}, 0.952359384151778, 1e-09);
+%! rng (1);
+%! X = randn (15, 2);
+%! y = X * [3; -1] + randn (15, 1) * 0.5;
+%! mdl = fitlm (X, y, 'VarNames', {'Height', 'Weight', 'BP'});
+%! assert (strcmp (mdl.ResponseName, 'BP'));
+%! assert (isequal (mdl.PredictorNames, {'Height', 'Weight'}));
+%! assert (isequal (mdl.CoefficientNames, {'(Intercept)', 'Height', 'Weight'}));
+
+## Test 5: modelspec 'constant'
+%!test
+%! rng (1);
+%! X = randn (10, 3);
+%! y = randn (10, 1);
+%! mdl = fitlm (X, y, 'constant');
+%! assert (mdl.NumCoefficients, 1);
+%! assert (isequal (mdl.CoefficientNames, {'(Intercept)'}));
+
+## Test 6: modelspec 'interactions'
+%!test
+%! rng (1);
+%! X = randn (15, 2);
+%! y = randn (15, 1);
+%! mdl = fitlm (X, y, 'interactions');
+%! assert (mdl.NumCoefficients, 4);   ## 1 + x1 + x2 + x1:x2
+%! assert (any (strcmp (mdl.CoefficientNames, 'x1:x2')));
+
+## Test 7: Intercept=false
+%!test
+%! rng (42);
+%! X = randn (20, 2);
+%! y = X * [3; -1] + randn (20, 1) * 0.3;
+%! mdl = fitlm (X, y, 'Intercept', false);
+%! assert (mdl.NumCoefficients, 2);
+%! assert (mdl.DFE, 18);
+%! assert (mdl.Formula.HasIntercept, false);
+%! assert (! any (strcmp (mdl.CoefficientNames, '(Intercept)')));
+
+## Test 8: Exclude integer indices
+%!test
+%! rng (1);
+%! X = randn (10, 2);
+%! y = X * [2; -1] + randn (10, 1) * 0.3;
+%! mdl = fitlm (X, y, 'Exclude', [3, 7]);
+%! assert (mdl.NumObservations, 8);
+%! assert (mdl.ObservationInfo.Excluded(3), true);
+%! assert (mdl.ObservationInfo.Excluded(7), true);
+%! assert (mdl.ObservationInfo.Subset(3),   false);
+%! assert (isnan (mdl.Residuals.Raw(3)));
+%! assert (isnan (mdl.Residuals.Raw(7)));
+
+## Test 9: Exclude logical vector gives same coefficients as integer
+%!test
+%! rng (1);
+%! X = randn (10, 2);
+%! y = X * [2; -1] + randn (10, 1) * 0.3;
+%! mdl_int = fitlm (X, y, 'Exclude', [3, 7]);
+%! excl_log = false (10, 1); excl_log([3,7]) = true;
+%! mdl_log = fitlm (X, y, 'Exclude', excl_log);
+%! assert (mdl_int.Coefficients.Estimate, mdl_log.Coefficients.Estimate, 1e-12);
+
+## Test 10: NaN in X → Missing flag, Fitted = NaN
+%!test
+%! rng (1);
+%! X = randn (10, 2);
+%! y = X * [2; -1] + randn (10, 1) * 0.3;
+%! X(5, 1) = NaN;
+%! mdl = fitlm (X, y);
+%! assert (mdl.NumObservations, 9);
+%! assert (mdl.ObservationInfo.Missing(5), true);
+%! assert (isnan (mdl.Fitted(5)));
+%! assert (isnan (mdl.Residuals.Raw(5)));
+
+## Test 11: Weighted regression
+%!test
+%! rng (42);
+%! X = randn (15, 2);
+%! y = X * [3; -1] + randn (15, 1) * 0.5;
+%! w = abs (randn (15, 1)) + 0.5;
+%! mdl_w = fitlm (X, y, 'Weights', w);
+%! mdl_u = fitlm (X, y);
+%! assert (mdl_w.DFE, mdl_u.DFE);
+%! assert (mdl_w.NumObservations, 15);
+%! assert (mdl_w.ObservationInfo.Weights, w, 1e-14);
+
+## Test 12: CategoricalVars on numeric matrix
+%!test
+%! rng (42);
+%! X = [randn(30, 1), repmat([1;2;3], 10, 1), randn(30, 1)];
+%! y = X(:,1)*2 + (X(:,2)==2)*1.5 + randn(30,1)*0.3;
+%! mdl = fitlm (X, y, 'CategoricalVars', 2);
+%! assert (mdl.VariableInfo.IsCategorical(2), true);
+%! assert (mdl.NumCoefficients, 5);   ## intercept + x1 + x2_2 + x2_3 + x3
+%! assert (mdl.NumPredictors, 3);
+%! assert (any (strcmp (mdl.CoefficientNames, 'x2_2')));
+%! assert (any (strcmp (mdl.CoefficientNames, 'x2_3')));
+
+## Test 13: compact() preserves key fields
+%!test
+%! rng (1);
+%! X = randn (15, 2);
+%! y = X * [2; -1] + randn (15, 1) * 0.3;
+%! mdl = fitlm (X, y);
+%! cmdl = compact (mdl);
+%! assert (isa (cmdl, 'CompactLinearModel'));
+%! assert (! isa (cmdl, 'LinearModel'));
+%! assert (cmdl.MSE,  mdl.MSE,  1e-10);
+%! assert (cmdl.RMSE, mdl.RMSE, 1e-10);
+%! assert (cmdl.DFE,  mdl.DFE);
+
+## Test 14: rank-deficient — NumEstimatedCoefficients < NumCoefficients
+%!test
+%! warning ('off', 'CompactLinearModel:rankDeficient');
+%! rng (1);
+%! X_base = randn (20, 2);
+%! X_rd = [X_base, X_base(:,1) + X_base(:,2)];
+%! y = X_base * [2; -1] + randn (20, 1) * 0.3;
+%! mdl = fitlm (X_rd, y);
+%! assert (mdl.NumCoefficients, 4);
+%! assert (mdl.NumEstimatedCoefficients, 3);
+%! warning ('on', 'CompactLinearModel:rankDeficient');
+
+## Test 15: Steps is [] for fitlm models
+%!test
+%! rng (1);
+%! X = randn (10, 2);
+%! y = randn (10, 1);
+%! mdl = fitlm (X, y);
+%! assert (isempty (mdl.Steps));
+
+## Test 17: Wilkinson formula string input
+%!test
+%! rng (1);
+%! X = randn (20, 2);
+%! y = X * [1; 2] + randn (20, 1) * 0.5;
+%! mdl = fitlm (X, y, 'y ~ x1 + x2');
+%! assert (isa (mdl, 'LinearModel'));
+%! assert (mdl.Formula.HasIntercept, true);
+%! assert (strcmp (mdl.Formula.ResponseName, 'y'));
+
+## Test 18: anova() still works on fitlm output
+%!test
+%! rng (1);
+%! X = randn (20, 2);
+%! y = X * [1; 2] + randn (20, 1) * 0.5;
+%! mdl = fitlm (X, y);
+%! T = anova (mdl);
+%! assert (isstruct (T));

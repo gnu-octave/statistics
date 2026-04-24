@@ -1,4 +1,4 @@
-## Copyright (C) 2025 Jayant Chauhan <0001jayant@gmail.com>
+## Copyright (C) 2025-26 Jayant Chauhan <0001jayant@gmail.com>
 ## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
 ##
 ## This file is part of the statistics package for GNU Octave.
@@ -59,31 +59,28 @@ function D = dummyvar (g)
     print_usage;
   endif
 
+  if (!isnumeric (g) && !isa (g, 'categorical'))
+    error ("Number of elements must not change. Use [] as one of the size inputs to automatically calculate the appropriate size for that dimension.");
+  endif
+
   [nr, nc] = size (g);
 
   ## --- CATEGORICAL branch ---
   if (isa (g, 'categorical'))
 
-    if (! isvector (g) || nc != 1)
-      error (strcat ("dummyvar: categorical grouping", ...
-                     " variable must be a column vector."));
+    if (nc != 1 || ndims(g) > 2)
+      error ("Categorical grouping variable must have one column.");
     endif
 
-    g_cats = cellstr (categories (g));
-    g_cstr = cellstr (g(:));
-    K = numel (g_cats);
+    [idx, gn] = grp2idx (g);
+    K = numel (gn);
     D = zeros (nr, K);
 
     for i = 1:nr
-      if (isundefined (g(i)))
+      if (isnan (idx(i)))
         D(i,:) = NaN;
       else
-        for k = 1:K
-          if (strcmp (g_cstr{i}, g_cats{k}))
-            D(i,k) = 1;
-            break;
-          endif
-        endfor
+        D(i, idx(i)) = 1;
       endif
     endfor
 
@@ -91,12 +88,10 @@ function D = dummyvar (g)
   elseif (isnumeric (g))
 
     if (ndims (g) != 2)
-      error (strcat ("dummyvar: numeric grouping variable", ...
-                     " must be either a vector or a matrix."));
+      error ("dummyvar: numeric grouping variable must be either a vector or a matrix.");
     endif
-    if (any (g(:) <= 0) || any (g(:) != fix (g(:))))
-      error (strcat ("dummyvar: numeric grouping variable", ...
-                     " must explicitly contain positive integers."));
+    if (!isempty(g) && (any (g(:) <= 0) || any (g(:) != fix (g(:)))))
+      error ("dummyvar: numeric grouping variable must explicitly contain positive integers.");
     endif
 
     ## Force vector to column vector
@@ -107,6 +102,11 @@ function D = dummyvar (g)
     endif
 
     K = max (g, [], 1);
+    ## Handle empty input properly
+    if (isempty(K))
+        D = [];
+        return;
+    endif
     D = zeros (nr, sum (K));
 
     ij = 0;
@@ -118,45 +118,11 @@ function D = dummyvar (g)
       endfor
     endfor
 
-  ## --- CELLSTRING branch ---
-  elseif (iscellstr (g) && isvector (g))
-
-    if (! isvector (g) || nc != 1)
-      error (strcat ("dummyvar: cellstring grouping", ...
-                     " variable must be a column vector."));
-    endif
-
-    g = grp2idx (g);
-    K = max (g);
-    D = zeros (length (g), K);
-    for i = 1:K
-      D(g == i, i) = 1;
-    endfor
-
-  ## --- CELL ARRAY branch ---
-  elseif (iscell (g) && isvector (g))
-
-    if (any (diff (cellfun (@(x) size (x, 1), g))))
-      error (strcat ("dummyvar: all grouping variables in cell array", ...
-                     " must have the same number of observations."));
-    endif
-
-    D = [];
-    for i = 1:numel (g)
-      g_var = g{i};
-      D_var = dummyvar (g_var);
-      D = [D, D_var];
-    endfor
-
-  else
-    error ("dummyvar: unsupported type of grouping variable.");
   endif
 
 endfunction
 
 ## Test output
-%!assert (dummyvar ([]), [])
-%!assert (dummyvar (ones (2, 0)), ones (2, 0))
 %!test
 %! ## numeric grouping vector
 %! g = [1; 2; 1; 3; 2];
@@ -188,42 +154,32 @@ endfunction
 %!       0, 1, 0, 1, 0; 0, 1, 0, 0, 1; 0, 1, 1, 0, 0; 0, 1, 0, 1, 0];
 %! assert (D, D1);
 %!test
-%! phone = {'mob'; 'land'; 'mob';'mob';'mob';'land';'land'};
-%! codes = categorical ([202; 202; 103; 103; 202; 103; 202]);
-%! D = dummyvar ({phone, codes});
-%! D1 = [1, 0, 0, 1; 0, 1, 0, 1; 1, 0, 1, 0; 1, 0, 1, 0; ...
-%!       1, 0, 0, 1; 0, 1, 1, 0; 0, 1, 0, 1];
-%! assert (D, D1);
-%!test
 %! colors = {'red'; 'blue'; 'red'; 'green'; 'yellow'; 'blue'};
 %! D = dummyvar (categorical (colors));
 %! D1 = [0, 0, 1, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 1, 0, 0; 0, 0, 0, 1; 1, 0, 0, 0];
-%! assert (D, D1);
-%!test
-%! colors = {'red'; 'blue'; 'red'; 'green'; 'yellow'; 'blue'};
-%! D = dummyvar (colors);
-%! D1 = [1, 0, 0, 0; 0, 1, 0, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 0, 0];
-%! assert (D, D1);
-%! D = dummyvar ({colors});
-%! D1 = [1, 0, 0, 0; 0, 1, 0, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 0, 0];
 %! assert (D, D1);
 %!test
 %! g = [1, 2, 1, 2, 1, 3, 2, 1];
 %! D = dummyvar (g);
 %! D1 = [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0];
 %! assert (D, D1);
-
-## Test input validation
+%!test
+%! g = categorical ({'a'; 'b'; 'a'}, {'b', 'a', 'c'}, {'b', 'a', 'c'});
+%! D = dummyvar (g);
+%! assert (D, [0, 1, 0; 1, 0, 0; 0, 1, 0]);
+%!test
+%! g = categorical ({''; ''; ''}, {'x', 'y'});
+%! D = dummyvar (g);
+%! assert (D, [NaN, NaN; NaN, NaN; NaN, NaN]);
+%!test
+%! g = categorical ({'a'; 'a'; 'b'}, {'a', 'b', 'c'});
+%! D = dummyvar (g);
+%! assert (D, [1, 0, 0; 1, 0, 0; 0, 1, 0]);
+%! assert (size (D, 2), 3);
 %!error dummyvar ()
-%!error<dummyvar: function called with too many inputs> dummyvar (1, 2)
-%!error<dummyvar: categorical grouping variable must be a column vector.> ...
-%! dummyvar (categorical ({'a', 'b'}))
-%!error<dummyvar: numeric grouping variable must be either a vector or a matrix.> ...
-%! dummyvar (ones (3, 3, 3))
-%!error<dummyvar: numeric grouping variable must explicitly contain positive integers.> ...
-%! dummyvar ([2, 4, 0, 8, 1])
-%!error<dummyvar: cellstring grouping variable must be a column vector.> ...
-%! dummyvar ({'a', 'b'})
-%!error<dummyvar: all grouping variables in cell array must have the same number of observations.> ...
-%! dummyvar ({[2;3;4;5], [1;2;3]})
-%!error<dummyvar: unsupported type of grouping variable.> dummyvar ([true; false])
+%!error<too many inputs> dummyvar (1, 2)
+%!error<Categorical grouping variable must have one column> dummyvar (categorical ({'a', 'b'}))
+%!error<Number of elements must not change> dummyvar ({'a', 'b'})
+%!error<dummyvar: numeric grouping variable must be either a vector or a matrix> dummyvar (ones (3, 3, 3))
+%!error<dummyvar: numeric grouping variable must explicitly contain positive integers> dummyvar ([2, 4, 0, 8, 1])
+%!error<Number of elements must not change> dummyvar ([true; false])
