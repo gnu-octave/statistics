@@ -385,7 +385,7 @@ endfunction
 ## Test 15: Categorical (Undefined Values / NaN)
 %!test
 %! g = categorical ({'Red', 'Blue', 'Red'});
-%! g(2) = NaN;
+%! g(2) = missing;
 %! gh = categorical ({'Red', 'Blue', 'Red'});
 %! [C, order] = confusionmat (g, gh);
 %! assert (C, [0 0; 0 2]);
