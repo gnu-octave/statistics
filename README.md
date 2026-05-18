@@ -21,7 +21,11 @@ As of 10.6.2022, the development of the **statistics** package was moved from [S
 - Keep a single dependency to the last two major point releases of GNU Octave.
 - Deprecate old functions once their fully Matlab compatible equivalents are implemented.
 
-Since then (moving to GitHub), more than 3 years have passed. During this period, after 2356 individual commits, 197 merged PRs, and 63 closed issues, 19 package releases were made, introducing considerable improvements to the **statistics** package. As of 19.10.2025, landmarked by point [release 1.7.6](https://github.com/gnu-octave/statistics/releases/tag/release-1.7.6), a new road map is laid out for future development, since there are no remaining old functions to deprecate and, most importantly, the rule of a single dependency to core Octave is prohibiting further improvements with respect to MATLAB compatibility. To this end, the next major release of the statistics package (**1.8.0**), which will (hopefully, but most likely) coincide with the release of Octave 11, it will introduce a package dependency to the [`datatypes`](https://github.com/pr0m1th3as/datatypes) package in order to keep advancing the functionality of existing functions (and enhancing their MATLAB compatibility) as well as introduce new functionality, which requires new datatypes essential to statistical analysis, such as categorical values.
+As of 19.10.2025, landmarked by point [release 1.7.6](https://github.com/gnu-octave/statistics/releases/tag/release-1.7.6), a new road map was laid out for future development. During this 3.5 years period, after 2356 individual commits, 197 merged PRs, and 63 closed issues, 19 package releases were made, introducing considerable improvements to the **statistics** package. More importantly, there were no longer remaining old functions to deprecate and the rule of a single dependency to core Octave was prohibiting further improvements with respect to MATLAB compatibility. Hence, it was decided to introduce a package dependency to the [`datatypes`](https://github.com/pr0m1th3as/datatypes) package in order to keep advancing the functionality of existing functions (and enhancing their MATLAB compatibility) as well as introduce new functionality, which requires new datatypes essential to statistical analysis, such as categorical values.
+
+As of 30.11.2025, landmarked by [release 1.8.0](https://github.com/gnu-octave/statistics/releases/tag/release-1.8.0), the `datatypes` package is a required dependency.
+
+As of 18.05.2026, landmarked by [release 1.8.3](https://github.com/gnu-octave/statistics/releases/tag/release-1.8.3), **Octave 11.1** is required and it has been decided that the **statistics** package will update its Octave dependency to the latest major release at least 3 months after its official release to allow sufficient time for users to upgrade their core Octave installation.
 
 ## 3. Documentation
 All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of methods of classdefs objects. For example:
@@ -36,9 +40,9 @@ package_texi2html ("statistics")
 
 ## 4. Install statistics
 
-To install the latest release, you need Octave (>=8.1.0) installed on your system. Install it by typing:
+To install the latest release, you need Octave (>=11.1.0) installed on your system. Install it by typing:
 
-  `pkg install -forge statistics`
+  `pkg install statistics`
 
 You can automatically download and install the latest development version of the **statistics** package found [here](https://github.com/gnu-octave/statistics/archive/refs/heads/main.zip) by typing:
 
