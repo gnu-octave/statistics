@@ -803,6 +803,8 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>Y</var> = <b>cmdscale</b> (<var>D</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>Y</var>, <var>e</var>] = <b>cmdscale</b> (<var>D</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>Y</var> = <b>cmdscale</b> (<var>D</var>, <var>p</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>Y</var>, <var>e</var>] = <b>cmdscale</b> (<var>D</var>, <var>p</var>)</code></h5></dt>
 </dl>
 
 <p> Classical multidimensional scaling of a matrix.
@@ -817,6 +819,12 @@
  <code>J = eye(<var>n</var>) - ones(<var>n</var>,<var>n</var>)/<var>n</var></code>. <var>p</var>, the number
  of columns of <var>Y</var>, is equal to the number of positive real eigenvalues of
  <var>B</var>.
+</p>
+<p> The optional argument <var>p</var> is a positive integer between 1 and <var>n</var>
+ that specifies the maximum dimensionality of the desired embedding <var>Y</var>.
+ If specified, <var>Y</var> will have at most <var>p</var> columns, and the returned
+ eigenvalues <var>e</var> will be a vector of exactly length <var>p</var>. Specifying
+ <var>p</var> can be useful for reducing dimensions for visualization (e.g., <code><var>p</var> = 2</code>).
 </p>
 <p> <var>D</var> can be a full or sparse matrix or a vector of length
  <code><var>n</var>*(<var>n</var>-1)/2</code> containing the upper triangular elements (like

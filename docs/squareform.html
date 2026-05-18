@@ -801,10 +801,10 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><code><h5 class="fs">statistics: <var>z</var> = <b>squareform</b> (<var>y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>y</var> = <b>squareform</b> (<var>z</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>z</var> = <b>squareform</b> (<var>y</var>, <code>&quot;tovector&quot;</code>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>y</var> = <b>squareform</b> (<var>z</var>, <code>&quot;tomatrix&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>zOut</var> = <b>squareform</b> (<var>yIn</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>yOut</var> = <b>squareform</b> (<var>zIn</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>zOut</var> = <b>squareform</b> (<var>yIn</var>, <code>'tovector'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>yOut</var> = <b>squareform</b> (<var>zIn</var>, <code>'tomatrix'</code>)</code></h5></dt>
 </dl>
 
 <p> Interchange between distance matrix and distance vector formats.
@@ -817,17 +817,19 @@
  <code>pdist</code> into a distance matrix.  It performs the opposite operation
  if input is a matrix.
 </p>
-<p> If <var>x</var> is a vector, its number of elements must fit into the
- triangular part of a matrix (main diagonal excluded).  In other words,
- <code>numel (<var>x</var>) = <var>n</var> * (<var>n</var> - 1) / 2</code> for some integer
+<p> If <var>x</var> is a numeric or logical vector, its number of elements must fit
+ into the triangular part of a matrix (main diagonal excluded).  In other
+ words, <code>numel (<var>x</var>) = <var>n</var> * (<var>n</var> - 1) / 2</code> for some integer
  <var>n</var>.  The resulting matrix will be <var>n</var> by <var>n</var>.
 </p>
-<p> If <var>x</var> is a distance matrix, it must be square and the diagonal entries
- of <var>x</var> must all be zeros.  If <var>x</var> is not symmetric, only the lower
- triangular part is used.
+<p> If <var>x</var> is a numeric or logical distance matrix, it must be square and the
+ diagonal entries of <var>x</var> must all be zeros.  If <var>x</var> is not symmetric,
+ only the lower triangular part is used.
 </p>
-<p> The second argument is used to specify the output type in case there
- is a single element.  It will default to <code>&quot;tomatrix&quot;</code> otherwise.
+<p> The second argument is used to specify the output type in case the distance
+ input is a scalar.  Accepted values are <code>'tomatrix'</code> (or <code>'tom'</code>)
+ and <code>'tovector'</code> (or <code>'tov'</code>).  If not specified, it defaults to
+ <code>&quot;tomatrix&quot;</code> otherwise.
 </p>
 <p> <strong>See also: </strong>
   <a href="pdist.html">pdist</a>
