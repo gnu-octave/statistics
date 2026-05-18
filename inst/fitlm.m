@@ -1,4 +1,5 @@
 ## Copyright (C) 2022 Andrew Penn <A.C.Penn@sussex.ac.uk>
+## Copyright (C) 2025 Swayam Shah <swayamshah66@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
@@ -109,8 +110,10 @@
 ##
 ## @qcode{fitlm} can return up to two output arguments:
 ##
-## [@var{tab}] = fitlm (@dots{}) returns a cell array containing a
-## table of model parameters
+## [@var{tab}] = fitlm (@dots{}) returns a table object containing the
+## model parameters with rows corresponding to coefficients and columns for
+## Estimate, SE (standard error), Lower.CI, Upper.CI (confidence intervals),
+## t-statistic, and Prob>|t| (p-value).
 ##
 ## [@var{tab}, @var{stats}] = fitlm (@dots{}) returns a structure
 ## containing additional statistics, including degrees of freedom and effect
@@ -141,19 +144,45 @@ function [T, STATS] = fitlm (X, y, varargin)
       error ("fitlm: invalid number of output arguments requested");
     endif
 
-    ## Evaluate input data
-    [n, N] = size (X);
-    msg = strcat ("fitlm: do not include the intercept column", ...
-                  " in X - it will be added automatically");
-    if (iscell (X))
-      if (~ iscell (X{:,1}))
-        if (all (X{:,1} == 1))
-          error (msg)
+    ## Accept table input for X (predictors) and optionally y (response)
+    if (istable (X))
+      ## If X is a table, extract predictor matrix and variable names
+      predictorVars = X.Properties.VariableNames;
+      Xmat = table2array (X);
+      [n, N] = size (Xmat);
+      msg = strcat ("fitlm: do not include the intercept column", ...
+                    " in X - it will be added automatically");
+      if (all (Xmat(:,1) == 1))
+        error (msg)
+      endif
+      ## If y is a string or char, treat as column name in X
+      if (ischar (y) || isstring (y))
+        yname = char (y);
+        idx = find (strcmp (predictorVars, yname));
+        if (! isempty (idx))
+          y = Xmat(:, idx);
+          Xmat(:, idx) = [];
+          predictorVars(idx) = [];
+          N = N - 1;
+        else
+          error ("fitlm: specified response variable not found in table X");
         endif
       endif
+      X = Xmat;
     else
-      if (all (X(:,1) == 1))
-        error (msg)
+      [n, N] = size (X);
+      msg = strcat ("fitlm: do not include the intercept column", ...
+                    " in X - it will be added automatically");
+      if (iscell (X))
+        if (~ iscell (X{:,1}))
+          if (all (X{:,1} == 1))
+            error (msg)
+          endif
+        endif
+      else
+        if (all (X(:,1) == 1))
+          error (msg)
+        endif
       endif
     endif
 
@@ -275,13 +304,23 @@ function [T, STATS] = fitlm (X, y, varargin)
                             "continuous", CONTINUOUS, ...
                             "sstype", SSTYPE);
 
-    ## Create table of regression coefficients
+    ## Create table of regression coefficients using the table class
+    ## Extract coefficient information
     ncoeff = sum (STATS.df);
-    T = cell (2 + ncoeff, 7);
-    T(1,:) = {"Parameter", "Estimate", "SE", ...
-              "Lower.CI", "Upper.CI", "t", "Prob>|t|"};
-    T(2:end,1) = STATS.coeffnames;
-    T(2:end,2:7) = num2cell (STATS.coeffs);
+    
+    ## Prepare data for table
+    Estimate = STATS.coeffs(:, 1);
+    SE = STATS.coeffs(:, 2);
+    Lower_CI = STATS.coeffs(:, 3);
+    Upper_CI = STATS.coeffs(:, 4);
+    t_stat = STATS.coeffs(:, 5);
+    p_value = STATS.coeffs(:, 6);
+    
+    ## Create table object
+    T = table (Estimate, SE, Lower_CI, Upper_CI, t_stat, p_value, ...
+               "RowNames", STATS.coeffnames, ...
+               "VariableNames", {"Estimate", "SE", "Lower.CI", "Upper.CI", ...
+                                 "t", "Prob>|t|"});
 
     ## Update STATS structure
     STATS.source = "fitlm";
@@ -325,25 +364,25 @@ endfunction
 %! [TAB,STATS] = fitlm (X,y,"constant","categorical",1,"display","off");
 %! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off");
 %! [TAB,STATS] = fitlm (X,y,[0,0;1,0],"categorical",1,"display","off");
-%! assert (TAB{2,2}, 10, 1e-04);
-%! assert (TAB{3,2}, 7.99999999999999, 1e-09);
-%! assert (TAB{4,2}, 8.99999999999999, 1e-09);
-%! assert (TAB{5,2}, 11.0001428571429, 1e-09);
-%! assert (TAB{6,2}, 19.0001111111111, 1e-09);
-%! assert (TAB{2,3}, 1.01775379540949, 1e-09);
-%! assert (TAB{3,3}, 1.64107868458008, 1e-09);
-%! assert (TAB{4,3}, 1.43932122062479, 1e-09);
-%! assert (TAB{5,3}, 1.48983900477565, 1e-09);
-%! assert (TAB{6,3}, 1.3987687997822, 1e-09);
-%! assert (TAB{2,6}, 9.82555903510687, 1e-09);
-%! assert (TAB{3,6}, 4.87484242844031, 1e-09);
-%! assert (TAB{4,6}, 6.25294748040552, 1e-09);
-%! assert (TAB{5,6}, 7.38344399756088, 1e-09);
-%! assert (TAB{6,6}, 13.5834536158296, 1e-09);
-%! assert (TAB{3,7}, 2.85812420217862e-05, 1e-12);
-%! assert (TAB{4,7}, 5.22936741204002e-07, 1e-06);
-%! assert (TAB{5,7}, 2.12794763209106e-08, 1e-07);
-%! assert (TAB{6,7}, 7.82091664406755e-15, 1e-08);
+%! assert (TAB{"(Intercept)", "Estimate"}, 10, 1e-04);
+%! assert (TAB{2, "Estimate"}, 7.99999999999999, 1e-09);
+%! assert (TAB{3, "Estimate"}, 8.99999999999999, 1e-09);
+%! assert (TAB{4, "Estimate"}, 11.0001428571429, 1e-09);
+%! assert (TAB{5, "Estimate"}, 19.0001111111111, 1e-09);
+%! assert (TAB{1, "SE"}, 1.01775379540949, 1e-09);
+%! assert (TAB{2, "SE"}, 1.64107868458008, 1e-09);
+%! assert (TAB{3, "SE"}, 1.43932122062479, 1e-09);
+%! assert (TAB{4, "SE"}, 1.48983900477565, 1e-09);
+%! assert (TAB{5, "SE"}, 1.3987687997822, 1e-09);
+%! assert (TAB{1, "t"}, 9.82555903510687, 1e-09);
+%! assert (TAB{2, "t"}, 4.87484242844031, 1e-09);
+%! assert (TAB{3, "t"}, 6.25294748040552, 1e-09);
+%! assert (TAB{4, "t"}, 7.38344399756088, 1e-09);
+%! assert (TAB{5, "t"}, 13.5834536158296, 1e-09);
+%! assert (TAB{2, "Prob>|t|"}, 2.85812420217862e-05, 1e-12);
+%! assert (TAB{3, "Prob>|t|"}, 5.22936741204002e-07, 1e-06);
+%! assert (TAB{4, "Prob>|t|"}, 2.12794763209106e-08, 1e-07);
+%! assert (TAB{5, "Prob>|t|"}, 7.82091664406755e-15, 1e-08);
 
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
@@ -353,30 +392,30 @@ endfunction
 %!
 %! [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
 %!                          "categoricalvars",[1,2],"display","off");
-%! assert (TAB{2,2}, 5.66666666666667, 1e-09);
-%! assert (TAB{3,2}, -1.33333333333333, 1e-09);
-%! assert (TAB{4,2}, -2.16666666666667, 1e-09);
-%! assert (TAB{5,2}, 1.16666666666667, 1e-09);
-%! assert (TAB{6,2}, -0.333333333333334, 1e-09);
-%! assert (TAB{7,2}, -0.166666666666667, 1e-09);
-%! assert (TAB{2,3}, 0.215165741455965, 1e-09);
-%! assert (TAB{3,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{4,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{5,3}, 0.304290309725089, 1e-09);
-%! assert (TAB{6,3}, 0.43033148291193, 1e-09);
-%! assert (TAB{7,3}, 0.43033148291193, 1e-09);
-%! assert (TAB{2,6}, 26.3362867542108, 1e-09);
-%! assert (TAB{3,6}, -4.38178046004138, 1e-09);
-%! assert (TAB{4,6}, -7.12039324756724, 1e-09);
-%! assert (TAB{5,6}, 3.83405790253621, 1e-09);
-%! assert (TAB{6,6}, -0.774596669241495, 1e-09);
-%! assert (TAB{7,6}, -0.387298334620748, 1e-09);
-%! assert (TAB{2,7}, 5.49841502258254e-12, 1e-09);
-%! assert (TAB{3,7}, 0.000893505495903642, 1e-09);
-%! assert (TAB{4,7}, 1.21291454302428e-05, 1e-09);
-%! assert (TAB{5,7}, 0.00237798044119407, 1e-09);
-%! assert (TAB{6,7}, 0.453570536021938, 1e-09);
-%! assert (TAB{7,7}, 0.705316781644046, 1e-09);
+%! assert (TAB{1, "Estimate"}, 5.66666666666667, 1e-09);
+%! assert (TAB{2, "Estimate"}, -1.33333333333333, 1e-09);
+%! assert (TAB{3, "Estimate"}, -2.16666666666667, 1e-09);
+%! assert (TAB{4, "Estimate"}, 1.16666666666667, 1e-09);
+%! assert (TAB{5, "Estimate"}, -0.333333333333334, 1e-09);
+%! assert (TAB{6, "Estimate"}, -0.166666666666667, 1e-09);
+%! assert (TAB{1, "SE"}, 0.215165741455965, 1e-09);
+%! assert (TAB{2, "SE"}, 0.304290309725089, 1e-09);
+%! assert (TAB{3, "SE"}, 0.304290309725089, 1e-09);
+%! assert (TAB{4, "SE"}, 0.304290309725089, 1e-09);
+%! assert (TAB{5, "SE"}, 0.43033148291193, 1e-09);
+%! assert (TAB{6, "SE"}, 0.43033148291193, 1e-09);
+%! assert (TAB{1, "t"}, 26.3362867542108, 1e-09);
+%! assert (TAB{2, "t"}, -4.38178046004138, 1e-09);
+%! assert (TAB{3, "t"}, -7.12039324756724, 1e-09);
+%! assert (TAB{4, "t"}, 3.83405790253621, 1e-09);
+%! assert (TAB{5, "t"}, -0.774596669241495, 1e-09);
+%! assert (TAB{6, "t"}, -0.387298334620748, 1e-09);
+%! assert (TAB{1, "Prob>|t|"}, 5.49841502258254e-12, 1e-09);
+%! assert (TAB{2, "Prob>|t|"}, 0.000893505495903642, 1e-09);
+%! assert (TAB{3, "Prob>|t|"}, 1.21291454302428e-05, 1e-09);
+%! assert (TAB{4, "Prob>|t|"}, 0.00237798044119407, 1e-09);
+%! assert (TAB{5, "Prob>|t|"}, 0.453570536021938, 1e-09);
+%! assert (TAB{6, "Prob>|t|"}, 0.705316781644046, 1e-09);
 %! ## Test with string ids for categorical variables
 %! brands = {'Gourmet', 'National', 'Generic'; ...
 %!           'Gourmet', 'National', 'Generic'; ...
@@ -394,19 +433,52 @@ endfunction
 %! X = [Weight,Horsepower,Acceleration];
 %! [TAB, STATS] = fitlm (X, MPG,"constant","display","off");
 %! [TAB, STATS] = fitlm (X, MPG,"linear","display","off");
-%! assert (TAB{2,2}, 47.9767628118615, 1e-09);
-%! assert (TAB{3,2}, -0.00654155878851796, 1e-09);
-%! assert (TAB{4,2}, -0.0429433065881864, 1e-09);
-%! assert (TAB{5,2}, -0.0115826516894871, 1e-09);
-%! assert (TAB{2,3}, 3.87851641748551, 1e-09);
-%! assert (TAB{3,3}, 0.00112741016370336, 1e-09);
-%! assert (TAB{4,3}, 0.0243130608813806, 1e-09);
-%! assert (TAB{5,3}, 0.193325043113178, 1e-09);
-%! assert (TAB{2,6}, 12.369874881944, 1e-09);
-%! assert (TAB{3,6}, -5.80228828790225, 1e-09);
-%! assert (TAB{4,6}, -1.76626492228599, 1e-09);
-%! assert (TAB{5,6}, -0.0599128364487485, 1e-09);
-%! assert (TAB{2,7}, 4.89570341688996e-21, 1e-09);
-%! assert (TAB{3,7}, 9.87424814144e-08, 1e-09);
-%! assert (TAB{4,7}, 0.0807803098213114, 1e-09);
-%! assert (TAB{5,7}, 0.952359384151778, 1e-09);
+%! assert (TAB{1, "Estimate"}, 47.9767628118615, 1e-09);
+%! assert (TAB{2, "Estimate"}, -0.00654155878851796, 1e-09);
+%! assert (TAB{3, "Estimate"}, -0.0429433065881864, 1e-09);
+%! assert (TAB{4, "Estimate"}, -0.0115826516894871, 1e-09);
+%! assert (TAB{1, "SE"}, 3.87851641748551, 1e-09);
+%! assert (TAB{2, "SE"}, 0.00112741016370336, 1e-09);
+%! assert (TAB{3, "SE"}, 0.0243130608813806, 1e-09);
+%! assert (TAB{4, "SE"}, 0.193325043113178, 1e-09);
+%! assert (TAB{1, "t"}, 12.369874881944, 1e-09);
+%! assert (TAB{2, "t"}, -5.80228828790225, 1e-09);
+%! assert (TAB{3, "t"}, -1.76626492228599, 1e-09);
+%! assert (TAB{4, "t"}, -0.0599128364487485, 1e-09);
+%! assert (TAB{1, "Prob>|t|"}, 4.89570341688996e-21, 1e-09);
+%! assert (TAB{2, "Prob>|t|"}, 9.87424814144e-08, 1e-09);
+%! assert (TAB{3, "Prob>|t|"}, 0.0807803098213114, 1e-09);
+%! assert (TAB{4, "Prob>|t|"}, 0.952359384151778, 1e-09);
+
+## Table input for predictors and response
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], 'VariableNames', {'A', 'B'});
+%! ytab = table ([102; 198; 305; 398; 512], 'VariableNames', {'Y'});
+%! [TAB, STATS] = fitlm (Xtab, ytab.Y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
+%! assert (any (strcmp (TAB.Properties.RowNames, '(Intercept)')));
+
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], [102; 198; 305; 398; 512], 'VariableNames', {'A', 'B', 'Y'});
+%! [TAB, STATS] = fitlm (Xtab, 'Y', 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (any (strcmp (TAB.Properties.VariableNames, 'Estimate')));
+%! assert (any (strcmp (TAB.Properties.RowNames, '(Intercept)')));
+
+%!test
+%! pkg load datatypes
+%! Xtab = table ([1; 2; 3; 4; 5], [10; 15; 32; 45; 51], 'VariableNames', {'A', 'B'});
+%! y = [102; 198; 305; 398; 512];
+%! [TAB, STATS] = fitlm (Xtab, y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
+%! assert (isfield (STATS, 'coeffs'));
+%! assert (size (TAB,2) == 6);
+
+%!test
+%! X = [1; 2; 3; 4; 5];
+%! y = [102; 198; 305; 398; 512];
+%! [TAB, STATS] = fitlm (X, y, 'linear', 'display', 'off');
+%! assert (istable (TAB));
