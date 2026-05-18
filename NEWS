@@ -111,7 +111,7 @@
  Summary of important user-visible changes for statistics 1.8.2:
 -------------------------------------------------------------------
 
- Important Notice: 1) Update dependency to datatypes 1.2.0.
+ Important Notice: 1) Update dependency to datatypes 1.2.0
                    2) Incompatibility with the `nan` package
                    3) Using `tablicious` as a drop in replacement
                       for `datatypes` might cause issues.
@@ -133,3 +133,38 @@
  ** sampsizepwr: fix computations for single-tailed distributions
 
  ** signtest: properly handle NaN values
+
+
+ Summary of important user-visible changes for statistics 1.8.3:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Minimum Octave version required is 11.1.0
+                   2) Update dependency to datatypes 1.2.2
+                   3) Incompatibility with the `nan` package
+                   4) Using `tablicious` as a drop in replacement
+                      for `datatypes` might cause issues.
+
+
+ Improvements:
+ =============
+
+ ** ClusterCriterion: improve speed
+
+ ** cmdscale: add support for second argument
+
+ ** DaviesBouldinEvaluation: fix index
+
+ ** harmmean, trimmean: improve MATLAB compatibility
+
+ ** linkage: improve speed and fix unused variable
+
+ ** pca, princomp: improve speed
+
+ ** randsample: fix edge cases
+
+ ** stepwisefit: improve speed
+
+ ** squareform, tabulate: improve MATLAB compatibility
+
+ ** RegressionGAM.predict: correct ySD computation using residual variance
+
