@@ -1,0 +1,545 @@
+# doc-cache created by Octave 11.1.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 7
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+editDistance
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4852
+ -- statistics: D = editDistance (STR)
+ -- statistics: D = editDistance (DOC)
+ -- statistics: C = editDistance (..., MINDIST)
+ -- statistics: [C, IA, IC] = editDistance  (..., MINDIST)
+ -- statistics: [C, IA, IC] = editDistance  (..., MINDIST,
+          "OutputAllIndices", VALUE)
+ -- statistics: D = editDistance (STR1, STR2)
+ -- statistics: D = editDistance (DOC1, DOC2)
+
+     Compute the edit (Levenshtein) distance between strings or
+     documents.
+
+     ‘D = editDistance (STR)’ takes a cell array of character vectors
+     and computes the Levenshtein distance between each pair of strings
+     in STR as the lowest number of grapheme insertions, deletions, and
+     substitutions required to convert string STR{1} to string STR{2}.
+     If STR is a cellstr vector with N elements, the returned distance D
+     is an (N * (N-1)) / 2) column vector of doubles.  If STR is an
+     array (that is ‘all (size (str) > 1) = true’), then it is
+     transformed to a column vector as in ‘str = str(:)’.
+     ‘editDistance’ expects STR to be a column vector, if it is row
+     vector, it is transformed to a column vector.
+
+     ‘D = editDistance (DOC)’ can also take a cell array containing cell
+     arrays of character vectors, in which case each element of DOC is
+     regarded as a document, and the character vector in each element of
+     the cell string array is regarded a token.  ‘editDistance’ computes
+     the Levenshtein distance between each pair of cell elements in DOC
+     as the lowest number of token insertions, deletions, and
+     substitutions required to convert document DOC{1} to document
+     DOC{2}.  If DOC is a cell vector with N elements, the distance D is
+     an (N * (N-1)) / 2) column vector of doubles.  If DOC is an array
+     (that is ‘all (size (doc) > 1) = true’), then it is converted to a
+     column vector as in ‘doc = doc(:)’.
+
+     ‘C = editDistance (..., MINDIST)’ specifies a minimum distance,
+     MINDIST, which is regarded as a similarity threshold between each
+     pair of strings or documents, defined in the previous syntaxes.  In
+     this case, ‘editDistance’ resembles the functionality of the
+     ‘uniquetol’ function and returns the unique strings or documents
+     that are similar up to MINDIST distance.  C is either a cellstring
+     array or a cell array of cellstrings, depending on the first input
+     argument.
+
+     ‘[C, IA, IC] = editDistance (..., MINDIST)’ also returns index
+     vectors IA and IC.  Assuming A contains either strings STR or
+     documents DOC as defined above, IA is a column vector of indices to
+     the first occurrence of similar elements such that C = A(IA), and
+     IC is a column vector of indices such that A ~ C(IC) where ~ means
+     that the strings or documents are within the specified distance
+     MINDIST of each other.
+
+     ‘[C, IA, IC] = editDistance (..., MINDIST, "OutputAllIndices",
+     VALUE)’ specifies the type of the second output index IA.  VALUE
+     must be a logical scalar.  When set to ‘true’, IA is a cell array
+     containing the vectors of indices for ALL elements in A that are
+     within the specified distance MINDIST of each other.  Each cell in
+     IA corresponds to a value in C and the values in each cell
+     correspond to locations in A.  If VALUE is set to ‘false’, then IA
+     is returned as an index vector described in the previous syntax.
+
+     ‘D = editDistance (STR1, STR2)’ can also take two character
+     vectors, STR1 and STR2 and compute the Levenshtein distance D as
+     the lowest number of grapheme insertions, deletions, and
+     substitutions required to convert STR1 to STR2.  STR1 and STR2 may
+     also be cellstring arrays, in which case the pairwise distance is
+     computed between STR1{n} and STR1{n}.  The cellstring arrays must
+     be of the same size or scalars, in which case the scalar is
+     expanded to the size of the other cellstring input.  The returned
+     distance D is a column vector with the same number of elements as
+     the cellstring arrays.  If STR1 or STR2 is an array, then it is
+     transformed to a column vector.  ‘editDistance’ expects both STR1
+     and STR2 to be a column vectors, if not, they are transformed into
+     column vectors.
+
+     ‘D = editDistance (DOC1, DOC2)’ can also take two cell array
+     containing cell arrays of character vectors, in which case each
+     element of DOC1 and DOC2 is regarded as a document, and the
+     character vector in each element of the cell string array is
+     regarded a token.  ‘editDistance’ computes the pairwise Levenshtein
+     distance between the of cell elements in DOC1 and DOC2 as the
+     lowest number of token insertions, deletions, and substitutions
+     required to convert document DOC1{n} to document DOC1{n}.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Compute the edit (Levenshtein) distance between strings or documents.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+fcnnpredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1636
+ -- statistics: PRED_Y = fcnnpredict (MDL, XC)
+ -- statistics: PRED_Y = fcnnpredict  (MDL, XC, NUMTHREADS)
+ -- statistics: [PRED_Y, SCORES] = fcnnpredict (...)
+
+     Make predictions from a fully connected Neural Network.
+
+     ‘PRED_Y = fcnnpredict (MDL, XC)’ requires the following input
+     arguments.
+
+        • MDL : A structure containing the trained model parameters as
+          generated by the ‘fcnntrain’ function.
+
+        • XC : An NxM matrix containing the data set to be predicted
+          upon.  Rows N correspond to individual samples and columns M
+          correspond to features (dimensions).  Type of XC must be
+          double and the number of features must correspond to those of
+          the trained model.
+     ‘fcnnpredict’ can also be called with a third input argument, in
+     which case, NUMTHREADS, a positive scalar integer value, defines
+     the number of threads to be used when computing the activation
+     layers.  For layers with less than 1000 neurons, NUMTHREADS always
+     defaults to 1.  ‘fcnnpredict’ returns the predicted labels, PRED_Y,
+     and if a second output argument is requested, it also returns the
+     corresponding values of the neural networks output in SCORES.
+
+     Installation Note: in order to support parallel processing on
+     MacOS, users have to manually add support for OpenMP by adding the
+     following flags to CFLAGS and CXXFLAGS prior to installing the
+     statistics package:
+
+     ‘setenv ("CPPFLAGS", "-I/opt/homebrew/opt/libomp/include -Xclang
+     -fopenmp")’
+
+     See also: fcnntrain, fitcnet, ClassificationNeuralNetwork.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Make predictions from a fully connected Neural Network.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+fcnntrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3603
+ -- statistics: MDL = fcnntrain (X, Y,  LAYERSIZES, ACTIVATIONS,
+          NUMTHREADS, ALPHA,  LEARNINGRATE, EPOCHS, DISPLAYINFO)
+
+     Train a fully connected Neural Network.
+
+     ‘MDL = fcnntrain (...)’ requires the following input arguments.
+
+        • X : An NxM matrix containing the data set to be trained upon.
+          Rows N correspond to individual samples and columns M
+          correspond to features (dimensions).  Type of X must be
+          double.
+
+        • Y : An Nx1 column vector containing the labels of the training
+          dataset.  The labels must be natural numbers (positive
+          integers) starting from 1 up to the number of classes,
+          similarly as returned by the 'grp2idx' function.  Type of Y
+          must be double.
+
+        • LAYERSIZES : A numeric row vector of integer values defining
+          the size of the hidden layers of the network.  Input and
+          output layers are automatically determined by the training
+          data and their labels.
+
+        • ACTIVATIONS : A numeric row vector of integer values defining
+          the activation functions to be used at each layer including
+          the output layer.  The corresponding codes to activation
+          functions is:
+             • ‘0’ : 'Linear'
+             • ‘1’ : 'Sigmoid'
+             • ‘2’ : 'Rectified Linear Unit (ReLU)'
+             • ‘3’ : 'Hyperbolic tangent (tanh)'
+             • ‘4’ : 'Softmax'
+             • ‘5’ : 'Parametric or Leaky ReLU'
+             • ‘6’ : 'Exponential Linear Unit (ELU)'
+             • ‘7’ : 'Gaussian Error Linear Unit (GELU)'
+
+        • NUMTHREADS : A positive scalar integer value defining the
+          number of threads used for computing the activation layers.
+          For layers with less than 1000 neurons, NUMTHREADS always
+          defaults to 1.
+
+        • ALPHA : A positive scalar value defining the parameter alpha
+          used in ReLU and ELU activation layers.
+
+        • LEARNINGRATE : A positive scalar value defining the learning
+          rate used by the gradient descend algorithm during training.
+
+        • EPOCHS : A positive scalar value defining the number of epochs
+          for training the model.
+
+        • DISPLAYINFO : A boolean scalar indicating whether to print
+          information during training.
+
+     ‘fcnntrain’ returns the trained model, MDL, as a structure
+     containing the following fields:
+
+        • ‘LayerWeights’ : A cell array with each element containing a
+          matrix with the Weights and Biases of each layer including the
+          output layer.
+
+        • ‘Activations’ : A numeric row vector of integer values
+          defining the activation functions to be used at each layer
+          including the output layer.
+
+        • ‘Accuracy’ : The prediction accuracy at each iteration during
+          the neural network model's training process.
+
+        • ‘Loss’ : The loss value recorded at each iteration during the
+          neural network model's training process.
+
+        • ‘Alpha’ : The value of the Alpha parameter used in ReLU and
+          ELU activation layers.
+
+     Installation Note: in order to support parallel processing on
+     MacOS, users have to manually add support for OpenMP by adding the
+     following flags to CFLAGS and CXXFLAGS prior to installing the
+     statistics package:
+
+     ‘setenv ("CPPFLAGS", "-I/opt/homebrew/opt/libomp/include -Xclang
+     -fopenmp")’
+
+     See also: fcnnpredict, fitcnet, ClassificationNeuralNetwork.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Train a fully connected Neural Network.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+libsvmread
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 299
+ -- statistics: [LABELS, DATA] = libsvmread (FILENAME)
+
+     This function reads the labels and the corresponding
+     instance_matrix from a LIBSVM data file and stores them in LABELS
+     and DATA respectively.  These can then be used as inputs to
+     ‘svmtrain’ or ‘svmpredict’ function.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+This function reads the labels and the corresponding instance_matrix
+from a L...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+libsvmwrite
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 244
+ -- statistics: libsvmwrite (FILENAME, LABELS, DATA)
+
+     This function saves the labels and the corresponding
+     instance_matrix in a file specified by FILENAME.  DATA must be a
+     sparse matrix.  Both LABELS, DATA must be of double type.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+This function saves the labels and the corresponding instance_matrix in
+a fil...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+svmpredict
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2643
+ -- statistics: PREDICTED_LABEL = svmpredict (LABELS, DATA, MODEL)
+ -- statistics: PREDICTED_LABEL = svmpredict (LABELS, DATA, MODEL,
+          "libsvm_options")
+ -- statistics: [PREDICTED_LABEL, ACCURACY, DECISION_VALUES] =
+          svmpredict (LABELS, DATA, MODEL, "libsvm_options")
+ -- statistics: [PREDICTED_LABEL, ACCURACY, PROB_ESTIMATES] = svmpredict
+          (LABELS, DATA, MODEL, "libsvm_options")
+
+     This function predicts new labels from a testing instance matrix
+     based on an SVM MODEL created with ‘svmtrain’.
+
+        • LABELS : An m by 1 vector of prediction labels.  If labels of
+          test data are unknown, simply use any random values.  (type
+          must be double)
+
+        • DATA : An m by n matrix of m testing instances with n
+          features.  It can be dense or sparse.  (type must be double)
+
+        • MODEL : The output of ‘svmtrain’ function.
+
+        • ‘libsvm_options’ : A string of testing options in the same
+          format as that of LIBSVM.
+
+     ‘libsvm_options’ :
+
+        • ‘-b’ : probability_estimates; whether to predict probability
+          estimates.
+
+             0       return decision values.  (default)
+                     
+             1       return probability estimates.
+                     
+
+        • ‘-q’ : quiet mode.  (no outputs)
+
+     The ‘svmpredict’ function has three outputs.  The first one,
+     PREDICTED_LABEL, is a vector of predicted labels.  The second
+     output, ACCURACY, is a vector including accuracy (for
+     classification), mean squared error, and squared correlation
+     coefficient (for regression).  The third is a matrix containing
+     decision values or probability estimates (if ‘-b 1’' is specified).
+     If k is the number of classes in training data, for decision
+     values, each row includes results of predicting k(k-1)/2
+     binary-class SVMs.  For classification, k = 1 is a special case.
+     Decision value +1 is returned for each testing instance, instead of
+     an empty vector.  For probabilities, each row contains k values
+     indicating the probability that the testing instance is in each
+     class.  Note that the order of classes here is the same as ‘Label’
+     field in the MODEL structure.
+
+     _Note on LIBSVM 3.36 Update_: This implementation is based on
+     LIBSVM 3.36 (2025) and now supports probability estimates for
+     One-Class SVM (‘-s 2’) when combined with the probability flag (‘-b
+     1’).  For One-Class SVM, the PROB_ESTIMATES output is a single
+     column vector containing the probability of the instance being an
+     inlier.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+This function predicts new labels from a testing instance matrix based
+on an ...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+svmtrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4523
+ -- statistics: MODEL = svmtrain (LABELS, DATA, "libsvm_options")
+
+     This function trains an SVM MODEL based on known LABELS and their
+     corresponding DATA which comprise an instance matrix.
+
+        • LABELS : An m by 1 vector of prediction labels.  (type must be
+          double)
+
+        • DATA : An m by n matrix of m testing instances with n
+          features.  It can be dense or sparse.  (type must be double)
+
+        • ‘libsvm_options’ : A string of testing options in the same
+          format as that of LIBSVM.
+
+     ‘libsvm_options’ :
+
+        • ‘-s’ : svm_type; set type of SVM (default 0)
+
+             0       C-SVC (multi-class classification)
+                     
+             1       nu-SVC (multi-class classification)
+                     
+             2       one-class SVM
+                     
+             3       epsilon-SVR (regression)
+                     
+             4       nu-SVR (regression)
+                     
+        • ‘-t’ : kernel_type; set type of kernel function (default 2)
+
+             0       linear: u'*v
+                     
+             1       polynomial: (gamma * u' * v + coef0) ^ degree
+                     
+             2       radial basis function: exp(-gamma * |u-v| ^ 2)
+                     
+             3       sigmoid: tanh(gamma * u' * v + coef0)
+                     
+             4       precomputed kernel (kernel values in
+                     training_instance_matrix)
+                     
+        • ‘-d’ : degree; set degree in kernel function (default 3)
+
+        • ‘-g’ : gamma; set gamma in kernel function (default
+          1/num_features)
+
+        • ‘-r’ : coef0; set coef0 in kernel function (default 0)
+
+        • ‘-c’ : cost; set the parameter C of C-SVC, epsilon-SVR, and
+          nu-SVR (default 1)
+
+        • ‘-n’ : nu; set the parameter nu of nu-SVC, one-class SVM, and
+          nu-SVR (default 0.5)
+
+        • ‘-p’ : epsilon; set the epsilon in loss function of
+          epsilon-SVR (default 0.1)
+
+        • ‘-m’ : cachesize; set cache memory size in MB (default 100)
+
+        • ‘-e’ : epsilon; set tolerance of termination criterion
+          (default 0.001)
+
+        • ‘-h’ : shrinking; whether to use the shrinking heuristics, 0
+          or 1 (default 1)
+
+        • ‘-b’ : probability_estimates; whether to train a SVC or SVR
+          model for probability estimates, 0 or 1 (default 0)
+
+        • ‘-w’ : weight; set the parameter C of class i to weight*C, for
+          C-SVC (default 1)
+
+        • ‘-v’ : n; n-fold cross validation mode
+
+        • ‘-q’ : quiet mode (no outputs)
+
+     The function ‘svmtrain’ function returns a MODEL structure which
+     can be used for future prediction and it contains the following
+     fields:
+
+        • ‘Parameters’ : parameters
+
+        • ‘nr_class’ : number of classes; = 2 for regression/one-class
+          svm
+
+        • ‘totalSV’ : total #SV
+
+        • ‘rho’ : -b of the decision function(s) wx+b
+
+        • ‘Label’ : label of each class; empty for regression/one-class
+          SVM
+
+        • ‘sv_indices’ : values in [1,...,num_training_data] to indicate
+          SVs in the training set
+
+        • ‘ProbA’ : pairwise probability information; empty if ‘-b 0’ or
+          in one-class SVM
+
+        • ‘ProbB’ : pairwise probability information; empty if ‘-b 0’ or
+          in one-class SVM
+
+        • ‘ProbDensityMarks’ : density marks for one-class SVM
+          probability estimates; empty if ‘-b 0’ or not one-class SVM.
+
+        • ‘nSV’ : number of SVs for each class; empty for
+          regression/one-class SVM
+
+        • ‘sv_coef’ : coefficients for SVs in decision functions
+
+        • ‘SVs’ : support vectors
+
+     If you do not use the option ‘-b 1’, ProbA and ProbB are empty
+     matrices.  If the '-v' option is specified, cross validation is
+     conducted and the returned model is just a scalar: cross-validation
+     accuracy for classification and mean-squared error for regression.
+
+     _Note on LIBSVM 3.36 Update_: This implementation is based on
+     LIBSVM 3.36 (2025) and now supports probability estimates for
+     One-Class SVM (‘-s 2’) when combined with the probability flag (‘-b
+     1’).  For One-Class SVM, the PROB_ESTIMATES output is a single
+     column vector containing the probability of the instance being an
+     inlier.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+This function trains an SVM MODEL based on known LABELS and their
+correspondi...
+
+
+
+
+

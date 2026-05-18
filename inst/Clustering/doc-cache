@@ -1,0 +1,355 @@
+# doc-cache created by Octave 11.1.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 9
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+CalinskiHarabaszEvaluation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 843
+ -- statistics: CalinskiHarabaszEvaluation
+
+     Calinski-Harabasz clustering evaluation.
+
+     A ‘CalinskiHarabaszEvaluation’ object contains the results of
+     evaluating clustering solutions using the Calinski-Harabasz
+     criterion.
+
+     The Calinski-Harabasz index (also known as the Variance Ratio
+     Criterion) is determined by the ratio of the between-cluster sum of
+     squares (SSB) to the within-cluster sum of squares (SSW). A higher
+     Calinski-Harabasz index value indicates a better clustering
+     solution, implying that clusters are dense and well-separated.
+
+     Create a ‘CalinskiHarabaszEvaluation’ object by using the
+     ‘evalclusters’ function with the "CalinskiHarabasz" criterion.
+
+     See also: evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
+     GapEvaluation, SilhouetteEvaluation.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Calinski-Harabasz clustering evaluation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+ClusterCriterion
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 389
+ -- statistics: ClusterCriterion
+
+     A clustering evaluation object.
+
+     The ‘ClusterCriterion’ is a superclass for clustering evaluation
+     objects, which are created by the ‘evalclusters’ function.  It is
+     not meant to be instantiated directly.
+
+     See also: evalclusters, CalinskiHarabaszEvaluation,
+     DaviesBouldinEvaluation, GapEvaluation, SilhouetteEvaluation.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+A clustering evaluation object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+DaviesBouldinEvaluation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 724
+ -- statistics: DaviesBouldinEvaluation
+
+     Davies-Bouldin object to evaluate clustering solutions
+
+     A ‘DaviesBouldinEvaluation’ object is a ‘ClusterCriterion’ object
+     used to evaluate clustering solutions using the Davies-Bouldin
+     criterion.
+
+     The Davies-Bouldin criterion is based on the ratio between the
+     distances between clusters and within clusters — distances between
+     centroids and distances between each datapoint and its centroid.
+
+     The best solution according to the Davies-Bouldin criterion is the
+     one that produces the lowest Davies-Bouldin value.
+
+     See also: evalclusters, ClusterCriterion,
+     CalinskiHarabaszEvaluation, GapEvaluation, SilhouetteEvaluation.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Davies-Bouldin object to evaluate clustering solutions
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+ExhaustiveSearcher
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 811
+ -- statistics: ExhaustiveSearcher
+
+     Exhaustive nearest neighbor searcher
+
+     The ‘ExhaustiveSearcher’ class implements an exhaustive search
+     algorithm for nearest neighbor queries.  It stores training data
+     and supports various distance metrics along with their parameter
+     values for performing an exhaustive search.  The exhaustive search
+     algorithm computes the distance from each query point to all the
+     points in the training data and facilitates a nearest neighbor
+     search using ‘knnsearch’ or a radius search using ‘rangesearch’.
+
+     You can either use the ‘ExhaustiveSearcher’ class constructor or
+     the ‘createns’ function to create an ExhaustiveSearcher object.
+
+     See also: createns, KDTreeSearcher, hnswSearcher, knnsearch,
+     rangesearch.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Exhaustive nearest neighbor searcher
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+GapEvaluation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 739
+ -- statistics: GapEvaluation
+
+     Gap evaluation for clustering solutions
+
+     The ‘GapEvaluation’ class implements the gap statistic criterion
+     for evaluating clustering solutions.  A ‘GapEvaluation’ object is a
+     specialization of ‘ClusterCriterion’ and contains fields and
+     methods to compute the gap statistic, its Monte-Carlo reference
+     expectations, and to select the optimal number of clusters
+     according to a chosen search method.
+
+     Create a ‘GapEvaluation’ object by using the ‘evalclusters’
+     function or by calling the class constructor directly.
+
+     See also: evalclusters, ClusterCriterion,
+     CalinskiHarabaszEvaluation, DaviesBouldinEvaluation,
+     SilhouetteEvaluation.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Gap evaluation for clustering solutions
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+KDTreeSearcher
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 864
+ -- statistics: KDTreeSearcher
+
+     KD-tree nearest neighbor searcher
+
+     The ‘KDTreeSearcher’ class implements a KD-tree search algorithm
+     for nearest neighbor queries.  It stores training data and supports
+     various distance metrics along with their parameter values for
+     performing a KD-tree search.  The KD-tree algorithm partitions the
+     training data into a hierarchical tree structure and performs
+     search operations by traversing the tree to reduce the number of
+     distance computations.  It facilitates nearest neighbor queries
+     using ‘knnsearch’ and radius queries using ‘rangesearch’.
+
+     You can either use the ‘KDTreeSearcher’ class constructor or the
+     ‘createns’ function to create an KDTreeSearcher object.
+
+     See also: createns, ExhaustiveSearcher, hnswSearcher, knnsearch,
+     rangesearch.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+KD-tree nearest neighbor searcher
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+SilhouetteEvaluation
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1493
+ -- statistics: SilhouetteEvaluation
+
+     Silhouette evaluation for clustering
+
+     The ‘SilhouetteEvaluation’ class implements an object to evaluate
+     clustering solutions using the silhouette criterion.  A
+     ‘SilhouetteEvaluation’ object is a ‘ClusterCriterion’ object that
+     computes silhouette values for clustering solutions and selects the
+     best number of clusters as the one with the highest average
+     silhouette value.
+
+     Create a ‘SilhouetteEvaluation’ object by using the ‘evalclusters’
+     function or the class constructor.
+
+     List of public properties specific to ‘SilhouetteEvaluation’:
+     ‘Distance’
+          A valid distance metric name (string), a function handle, or a
+          numeric vector as returned by ‘pdist’.  This specifies how
+          pairwise distances are computed.
+
+     ‘ClusterPriors’
+          A character vector specifying how to evaluate silhouette
+          values across clusters: "empirical" (default) uses empirical
+          cluster priors, or "equal" treats clusters equally.
+
+     ‘ClusterSilhouettes’
+          A cell array containing silhouette values for each observation
+          for each inspected cluster number.
+
+     The best clustering solution according to the silhouette criterion
+     is the one that yields the highest average silhouette value.
+
+     See also: evalclusters, ClusterCriterion,
+     CalinskiHarabaszEvaluation, DaviesBouldinEvaluation, GapEvaluation.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Silhouette evaluation for clustering
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+cvpartition
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 292
+ -- statistics: cvpartition
+
+     Partition data for cross-validation
+
+     The ‘cvpartition’ class generates a partitioning scheme on a
+     dataset to facilitate cross-validation of statistical models
+     utilizing training and testing subsets of the dataset.
+
+     See also: crossval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+Partition data for cross-validation
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+hnswSearcher
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 762
+ -- statistics: hnswSearcher
+
+     Hierarchical Navigable Small World (HNSW) nearest neighbor searcher
+     class.
+
+     The ‘hnswSearcher’ class implements the HNSW algorithm for
+     efficient nearest neighbor queries.  It stores training data and
+     supports various distance metrics for performing searches.  The
+     HNSW algorithm builds a multilayer graph structure that enables
+     fast approximate nearest neighbor searches by navigating through
+     the graph.  It facilitates nearest neighbor queries search using
+     ‘knnsearch’.
+
+     You can either use the ‘hnswSearcher’ class constructor or the
+     ‘createns’ function to create an hnswSearcher object.
+
+     See also: createns, ExhaustiveSearcher, KDTreeSearcher, knnsearch.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 74
+Hierarchical Navigable Small World (HNSW) nearest neighbor searcher
+class.
+
+
+
+
+

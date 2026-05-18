@@ -1,0 +1,435 @@
+# doc-cache created by Octave 11.1.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 11
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+ClassificationDiscriminant
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 781
+ -- statistics: ClassificationDiscriminant
+
+     Discriminant analysis classification
+
+     The ‘ClassificationDiscriminant’ class implements a linear
+     discriminant analysis classifier object, which can predict
+     responses for new data using the ‘predict’ method.
+
+     Discriminant analysis classification is a statistical method used
+     to classify observations into predefined groups based on their
+     characteristics.  It estimates the parameters of different
+     distributions for each class and predicts the class of new
+     observations by finding the one with the smallest misclassification
+     cost.
+
+     Create a ‘ClassificationDiscriminant’ object by using the
+     ‘fitcdiscr’ function or the class constructor.
+
+     See also: fitcdiscr.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Discriminant analysis classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 828
+ -- statistics: ClassificationGAM
+
+     Generalized additive model classification
+
+     The ‘ClassificationGAM’ class implements a gradient boosting
+     algorithm for classification, using spline fitting as the weak
+     learner.  This approach allows the model to capture non-linear
+     relationships between predictors and the binary response variable.
+
+     Generalized additive model classification is a statistical method
+     that extends linear models by allowing non-linear relationships
+     between each predictor and the response variable through smooth
+     functions.  It combines the interpretability of linear models with
+     the flexibility of non-parametric methods.
+
+     Create a ‘ClassificationGAM’ object by using the ‘fitcgam’ function
+     or the class constructor.
+
+     See also: fitcgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Generalized additive model classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationKNN
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 803
+ -- statistics: ClassificationKNN
+
+     K-nearest neighbors classification
+
+     The ‘ClassificationKNN’ class implements a K-nearest neighbor
+     classifier object, which can predict responses for new data using
+     the ‘predict’ method.  The implemented algorithm allows you choose
+     a range of different distance metrics, the number of nearest
+     neighbors, as well as the searching algorithm.
+
+     The K-nearest neighbors (k-NN) classifier is a simple,
+     non-parametric machine learning algorithm used for classification
+     tasks.  It classifies a data point based on the majority class of
+     its k closest neighbors in the feature space.
+
+     Create a ‘ClassificationKNN’ object by using the ‘fitcknn’ function
+     or the class constructor.
+
+     See also: fitcknn.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+K-nearest neighbors classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+ClassificationNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 676
+ -- statistics: ClassificationNeuralNetwork
+
+     Neural network classification
+
+     The ‘ClassificationNeuralNetwork’ class implements a neural network
+     classifier object, which can predict responses for new data using
+     the ‘predict’ method.
+
+     Neural network classification is a machine learning method that
+     uses interconnected nodes in multiple layers to learn complex
+     patterns in data.  It processes inputs through hidden layers with
+     activation functions to produce classification outputs.
+
+     Create a ‘ClassificationNeuralNetwork’ object by using the
+     ‘fitcnet’ function or the class constructor.
+
+     See also: fitcnet.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+Neural network classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 30
+ClassificationPartitionedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 476
+ -- statistics: ClassificationPartitionedModel
+
+     Cross-validated classification model
+
+     The ‘ClassificationPartitionedModel’ class stores cross-validated
+     classification models trained on different partitions of the data.
+     It can predict responses for observations not used for training
+     using the ‘kfoldPredict’ method.
+
+     Create a ‘ClassificationPartitionedModel’ object by using the
+     ‘crossval’ function.
+
+     See also: crossval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 36
+Cross-validated classification model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ClassificationSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 805
+ -- statistics: ClassificationSVM
+
+     Support Vector Machine classification
+
+     The ‘ClassificationSVM’ class implements a Support Vector Machine
+     classifier object for one-class or two-class problems, which can
+     predict responses for new data using the ‘predict’ method.
+
+     Support Vector Machine classification is a supervised learning
+     method used for classification tasks.  It works by finding the
+     optimal hyperplane that separates classes in the feature space with
+     the maximum margin.  For non-linearly separable data, it uses
+     kernel functions to map data to a higher-dimensional space where
+     separation is possible.
+
+     Create a ‘ClassificationSVM’ object by using the ‘fitcsvm’ function
+     or the class constructor.
+
+     See also: fitcsvm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Support Vector Machine classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+CompactClassificationDiscriminant
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1030
+ -- statistics: CompactClassificationDiscriminant
+
+     Compact discriminant analysis classification
+
+     The ‘CompactClassificationDiscriminant’ class implements a compact
+     version of a linear discriminant analysis classifier object, which
+     can predict responses for new data using the ‘predict’ method but
+     does not store the training data.
+
+     A ‘CompactClassificationDiscriminant’ object is a compact version
+     of a discriminant analysis model, ‘ClassificationDiscriminant’.  It
+     does not include the training data resulting in a smaller
+     classifier size, which can be used for making predictions from new
+     data, but not for tasks such as cross validation.  It can only be
+     created from a ‘ClassificationDiscriminant’ model by using the
+     ‘compact’ object method.
+
+     Create a ‘CompactClassificationDiscriminant’ object by using the
+     ‘compact’ method of a ‘ClassificationDiscriminant’ object.
+
+     See also: fitcdiscr, ClassificationDiscriminant.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Compact discriminant analysis classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+CompactClassificationGAM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 618
+ -- statistics: CompactClassificationGAM
+
+     Compact generalized additive model classification
+
+     The ‘CompactClassificationGAM’ class is a compact version of a
+     Generalized Additive Model classifier, ‘ClassificationGAM’.  It
+     does not include the training data, resulting in a smaller
+     classifier size that can be used for making predictions from new
+     data, but not for tasks such as cross validation.
+
+     A ‘CompactClassificationGAM’ object can only be created from a
+     ‘ClassificationGAM’ model by using the ‘compact’ method.
+
+     See also: ClassificationGAM, fitcgam.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Compact generalized additive model classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+CompactClassificationNeuralNetwork
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 865
+ -- statistics: CompactClassificationNeuralNetwork
+
+     Compact neural network classification
+
+     The ‘CompactClassificationNeuralNetwork’ class implements a compact
+     version of the neural network classifier object, which can predict
+     responses for new data using the ‘predict’ method, but does not
+     store the training data.
+
+     A compact neural network classification model is a smaller version
+     of the full ‘ClassificationNeuralNetwork’ model that does not
+     include the training data.  It consumes less memory than the full
+     model, but cannot perform tasks that require the training data,
+     such as cross-validation.
+
+     Create a ‘CompactClassificationNeuralNetwork’ object by using the
+     ‘compact’ method on a ‘ClassificationNeuralNetwork’ object.
+
+     See also: ClassificationNeuralNetwork, fitcnet.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Compact neural network classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+CompactClassificationSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 808
+ -- statistics: CompactClassificationSVM
+
+     Compact Support Vector Machine classification
+
+     The ‘CompactClassificationSVM’ class implements a compact version
+     of a Support Vector Machine classifier object for one-class or
+     two-class problems, which can predict responses for new data using
+     the ‘predict’ method.
+
+     A ‘CompactClassificationSVM’ object is a compact version of a
+     support vector machine model, ‘ClassificationSVM’.  It does not
+     include the training data resulting in a smaller classifier size,
+     which can be used for making predictions from new data, but not for
+     tasks such as cross validation.  It can only be created from a
+     ‘ClassificationSVM’ model by using the ‘compact’ object method.
+
+     See also: ClassificationSVM.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Compact Support Vector Machine classification
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+ConfusionMatrixChart
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 854
+ -- statistics: ConfusionMatrixChart
+
+     Confusion matrix chart for classification results
+
+     The ‘ConfusionMatrixChart’ class implements a confusion matrix
+     chart object, which displays the classification performance of a
+     classifier by showing the counts of true positive, true negative,
+     false positive, and false negative predictions.
+
+     A confusion matrix chart is a visual representation of the
+     performance of a classification algorithm.  The rows represent the
+     true classes and the columns represent the predicted classes.  The
+     diagonal elements represent the correctly classified observations,
+     while the off-diagonal elements represent the misclassified
+     observations.
+
+     Create a ‘ConfusionMatrixChart’ object by using the
+     ‘confusionchart’ function.
+
+     See also: confusionchart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Confusion matrix chart for classification results
+
+
+
+
+

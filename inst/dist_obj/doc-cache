@@ -1,0 +1,1476 @@
+# doc-cache created by Octave 11.1.0
+# name: cache
+# type: cell
+# rows: 3
+# columns: 27
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+BetaDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1566
+ -- statistics: BetaDistribution
+
+     Beta probability distribution object.
+
+     A ‘BetaDistribution’ object consists of parameters, a model
+     description, and sample data for a beta probability distribution.
+
+     The beta distribution is a family of continuous probability
+     distributions defined on the interval [0, 1] in terms of two
+     positive parameters, denoted by alpha (A) and beta (B), that appear
+     as exponents of the variable and its complement to 1, respectively,
+     and control the shape of the distribution.
+
+     There are several ways to create a ‘BetaDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor BetaDistribution (A, B) to create a beta
+          distribution with fixed parameter values A and B.
+        • Use the static method BetaDistribution.fit (X, ALPHA, FREQ,
+          OPTIONS) to fit a distribution to the data in X using the same
+          input arguments as the ‘betafit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the beta distribution can be found at
+     <https://en.wikipedia.org/wiki/Beta_distribution>
+
+     See also: fitdist, makedist, betacdf, betainv, betapdf, betarnd,
+     betafit, betalike, betastat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Beta probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+BinomialDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1473
+ -- statistics: BinomialDistribution
+
+     Binomial probability distribution object.
+
+     A ‘BinomialDistribution’ object consists of parameters, a model
+     description, and sample data for a binomial probability
+     distribution.
+
+     The binomial distribution is a discrete probability distribution
+     that models the number of successes in a sequence of N independent
+     trials, each with a probability of success P.
+
+     There are several ways to create a ‘BinomialDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor BinomialDistribution (N, P) to create a
+          binomial distribution with fixed parameter values N and P.
+        • Use the static method BinomialDistribution.fit (X, NTRIALS,
+          ALPHA) to fit a distribution to the data in X using the same
+          input arguments as the ‘binofit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the binomial distribution can be found at
+     <https://en.wikipedia.org/wiki/Binomial_distribution>
+
+     See also: fitdist, makedist, binocdf, binoinv, binopdf, binornd,
+     binofit, binolike, binostat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Binomial probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+BirnbaumSaundersDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1667
+ -- statistics: BirnbaumSaundersDistribution
+
+     Birnbaum-Saunders probability distribution object.
+
+     A ‘BirnbaumSaundersDistribution’ object consists of parameters, a
+     model description, and sample data for a Birnbaum-Saunders
+     probability distribution.
+
+     The Birnbaum-Saunders distribution is a continuous probability
+     distribution that models the time to failure of materials subjected
+     to cyclic loading.  It is defined by scale parameter BETA and shape
+     parameter GAMMA.
+
+     There are several ways to create a ‘BirnbaumSaundersDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor BirnbaumSaundersDistribution (BETA, GAMMA)
+          to create a Birnbaum-Saunders distribution with fixed
+          parameter values BETA and GAMMA.
+        • Use the static method BirnbaumSaundersDistribution.fit (X,
+          ALPHA, CENSOR, FREQ, OPTIONS) to fit a distribution to the
+          data in X using the same input arguments as the ‘bisafit’
+          function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Birnbaum-Saunders distribution can be
+     found at
+     <https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution>
+
+     See also: fitdist, makedist, bisacdf, bisainv, bisapdf, bisarnd,
+     bisafit, bisalike, bisastat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Birnbaum-Saunders probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+BurrDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1508
+ -- statistics: BurrDistribution
+
+     Burr probability distribution object.
+
+     A ‘BurrDistribution’ object consists of parameters, a model
+     description, and sample data for a Burr probability distribution.
+
+     The Burr distribution is a continuous probability distribution that
+     models a non-negative random variable, commonly used to model
+     household income.  It is defined by a scale parameter ALPHA and two
+     shape parameters C and K.
+
+     There are several ways to create a ‘BurrDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor BurrDistribution (ALPHA, C, K) to create a
+          Burr distribution with fixed parameter values ALPHA, C, and K.
+        • Use the static method BurrDistribution.fit (X, ALPHA, CENSOR,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘burrfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Burr distribution can be found at
+     <https://en.wikipedia.org/wiki/Burr_distribution>
+
+     See also: fitdist, makedist, burrcdf, burrinv, burrpdf, burrrnd,
+     burrfit, burrlike, burrstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Burr probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+ExponentialDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1479
+ -- statistics: ExponentialDistribution
+
+     Exponential probability distribution object.
+
+     A ‘ExponentialDistribution’ object consists of parameters, a model
+     description, and sample data for a exponential probability
+     distribution.
+
+     The exponential distribution is a continuous probability
+     distribution with mean parameter MU that models the time between
+     events in a Poisson process.
+
+     There are several ways to create a ‘ExponentialDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor ExponentialDistribution (MU) to create a
+          exponential distribution with fixed parameter value MU.
+        • Use the static method ExponentialDistribution.fit (X, ALPHA,
+          CENSOR, FREQ, OPTIONS) to fit a distribution to the data in X
+          using the same input arguments as the ‘expfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the exponential distribution can be found
+     at <https://en.wikipedia.org/wiki/Exponential_distribution>
+
+     See also: fitdist, makedist, expcdf, expinv, exppdf, exprnd,
+     expfit, explike, expstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Exponential probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 24
+ExtremeValueDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1613
+ -- statistics: ExtremeValueDistribution
+
+     Extreme value probability distribution object.
+
+     A ‘ExtremeValueDistribution’ object consists of parameters, a model
+     description, and sample data for an extreme value probability
+     distribution.
+
+     The extreme value distribution is also known as the Gumbel
+     distribution for maxima, and it is a limiting distribution for the
+     maximum of a large number of samples from a continuous
+     distribution.  It is defined by location parameter MU and scale
+     parameter SIGMA.
+
+     There are several ways to create a ‘ExtremeValueDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with specified parameter values using
+          the ‘makedist’ function.
+        • Use the constructor ExtremeValueDistribution (MU, SIGMA) to
+          create an extreme value distribution with specified parameter
+          values.
+        • Use the static method ExtremeValueDistribution.fit (X, ALPHA,
+          CENSOR, FREQ, OPTIONS) to fit a distribution to the data in X
+          using the same input arguments as the ‘evfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the
+     constructor and the aforementioned static method.
+
+     Further information about the Gumbel distribution can be found at
+     <https://en.wikipedia.org/wiki/Gumbel_distribution>
+
+     See also: fitdist, makedist, evcdf, evinv, evpdf, evrnd, evfit,
+     evlike, evstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Extreme value probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+GammaDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1435
+ -- statistics: GammaDistribution
+
+     Gamma probability distribution object.
+
+     A ‘GammaDistribution’ object consists of parameters, a model
+     description, and sample data for a gamma probability distribution.
+
+     The gamma distribution is a continuous probability distribution
+     that models the time to failure of a process.  It is defined by
+     shape parameter A and scale parameter B.
+
+     There are several ways to create a ‘GammaDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor GammaDistribution (A, B) to create a gamma
+          distribution with fixed parameter values A and B.
+        • Use the static method GammaDistribution.fit (X, ALPHA, CENSOR,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘gamfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the gamma distribution can be found at
+     <https://en.wikipedia.org/wiki/Gamma_distribution>
+
+     See also: fitdist, makedist, gamcdf, gaminv, gampdf, gamrnd,
+     gamfit, gamlike, gamstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 38
+Gamma probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 35
+GeneralizedExtremeValueDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1694
+ -- statistics: GeneralizedExtremeValueDistribution
+
+     Generalized extreme value probability distribution object.
+
+     A ‘GeneralizedExtremeValueDistribution’ object consists of
+     parameters, a model description, and sample data for a generalized
+     extreme value probability distribution.
+
+     The generalized extreme value distribution is a continuous
+     probability distribution that models extreme values.  It is defined
+     by shape parameter K, scale parameter SIGMA, and location parameter
+     MU.
+
+     There are several ways to create a
+     ‘GeneralizedExtremeValueDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor GeneralizedExtremeValueDistribution (K,
+          SIGMA, MU) to create a generalized extreme value distribution
+          with fixed parameter values K, SIGMA, and MU.
+        • Use the static method GeneralizedExtremeValueDistribution.fit
+          (X, ALPHA, FREQ, OPTIONS) to fit a distribution to the data in
+          X using the same input arguments as the ‘gevfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the generalized extreme value
+     distribution can be found at
+     <https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution>
+
+     See also: fitdist, makedist, gevcdf, gevinv, gevpdf, gevrnd,
+     gevfit, gevlike, gevstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Generalized extreme value probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 29
+GeneralizedParetoDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1698
+ -- statistics: GeneralizedParetoDistribution
+
+     Generalized Pareto probability distribution object.
+
+     A ‘GeneralizedParetoDistribution’ object consists of parameters, a
+     model description, and sample data for a Generalized Pareto
+     probability distribution.
+
+     The Generalized Pareto distribution is a continuous probability
+     distribution that models the tail behavior of other distributions,
+     commonly used for extreme value analysis.  It is defined by shape
+     parameter K, scale parameter SIGMA, and location parameter THETA.
+
+     There are several ways to create a ‘GeneralizedParetoDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor GeneralizedParetoDistribution (K, SIGMA,
+          THETA) to create a Generalized Pareto distribution with fixed
+          parameter values K, SIGMA, and THETA.
+        • Use the static method GeneralizedParetoDistribution.fit (X,
+          THETA, ALPHA, FREQ, OPTIONS) to fit a distribution to the data
+          in X using the same input arguments as the ‘gpfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Generalized Pareto distribution can
+     be found at
+     <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
+
+     See also: fitdist, makedist, gpcdf, gpinv, gppdf, gprnd, gpfit,
+     gplike, gpstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Generalized Pareto probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+HalfNormalDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1534
+ -- statistics: HalfNormalDistribution
+
+     Half-normal probability distribution object.
+
+     A ‘HalfNormalDistribution’ object consists of parameters, a model
+     description, and sample data for a half-normal probability
+     distribution.
+
+     The half-normal distribution is a continuous probability
+     distribution that models the time to failure of materials subjected
+     to cyclic loading.  It is defined by location parameter MU and
+     scale parameter SIGMA.
+
+     There are several ways to create a ‘HalfNormalDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor HalfNormalDistribution (MU, SIGMA) to
+          create a half-normal distribution with fixed parameter values
+          MU and SIGMA.
+        • Use the static method HalfNormalDistribution.fit (X, MU, FREQ)
+          to fit a distribution to the data in X using the same input
+          arguments as the ‘hnfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the half-normal distribution can be found
+     at <https://en.wikipedia.org/wiki/Half-normal_distribution>
+
+     See also: fitdist, makedist, hncdf, hninv, hnpdf, hnrnd, hnfit,
+     hnlike, hnstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Half-normal probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+InverseGaussianDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1637
+ -- statistics: InverseGaussianDistribution
+
+     Inverse Gaussian probability distribution object.
+
+     A ‘InverseGaussianDistribution’ object consists of parameters, a
+     model description, and sample data for a Inverse Gaussian
+     probability distribution.
+
+     The Inverse Gaussian distribution is a continuous probability
+     distribution, which is often used to model non-negative positively
+     skewed data.  Is is defined by mean parameter MU and shape
+     parameter LAMBDA.
+
+     There are several ways to create a ‘InverseGaussianDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor InverseGaussianDistribution (MU, LAMBDA)
+          to create a Inverse Gaussian distribution with fixed parameter
+          values MU and LAMBDA.
+        • Use the static method InverseGaussianDistribution.fit (X,
+          ALPHA, CENSOR, FREQ, OPTIONS) to fit a distribution to the
+          data in X using the same input arguments as the ‘invgfit’
+          function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Inverse Gaussian distribution can be
+     found at
+     <https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution>
+
+     See also: fitdist, makedist, invgcdf, invginv, invgpdf, invgrnd,
+     invgfit, invglike, invgstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Inverse Gaussian probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+LogisticDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1548
+ -- statistics: LogisticDistribution
+
+     Logistic probability distribution object.
+
+     A ‘LogisticDistribution’ object consists of parameters, a model
+     description, and sample data for a logistic probability
+     distribution.
+
+     The logistic distribution is a continuous probability distribution,
+     which is commonly used in logistic regression and feedforward
+     neural networks.  It is defined by location parameter MU and scale
+     parameter SIGMA.
+
+     There are several ways to create a ‘LogisticDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor LogisticDistribution (MU, SIGMA) to create
+          a logistic distribution with fixed parameter values MU and
+          SIGMA.
+        • Use the static method LogisticDistribution.fit (X, ALPHA,
+          CENSOR, FREQ, OPTIONS) to fit a distribution to the data in X
+          using the same input arguments as the ‘logifit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the logistic distribution can be found at
+     <https://en.wikipedia.org/wiki/Logistic_distribution>
+
+     See also: fitdist, makedist, logicdf, logiinv, logipdf, logirnd,
+     logifit, logilike, logistat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Logistic probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+LoglogisticDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1598
+ -- statistics: LoglogisticDistribution
+
+     Log-logistic probability distribution object.
+
+     A ‘LoglogisticDistribution’ object consists of parameters, a model
+     description, and sample data for a log-logistic probability
+     distribution.
+
+     The log-logistic distribution is a continuous probability
+     distribution that models non-negative random variables whose
+     logarithm follows the logistic distribution.  It is defined by
+     location parameter MU and scale parameter SIGMA.
+
+     There are several ways to create a ‘LoglogisticDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor LoglogisticDistribution (MU, SIGMA) to
+          create a log-logistic distribution with fixed parameter values
+          MU and SIGMA.
+        • Use the static method LoglogisticDistribution.fit (X, CENSOR,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘loglfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the log-logistic distribution can be
+     found at <https://en.wikipedia.org/wiki/Log-logistic_distribution>
+
+     See also: fitdist, makedist, loglcdf, loglinv, loglpdf, loglrnd,
+     loglfit, logllike, loglstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Log-logistic probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+LognormalDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1549
+ -- statistics: LognormalDistribution
+
+     Lognormal probability distribution object.
+
+     A ‘LognormalDistribution’ object consists of parameters, a model
+     description, and sample data for a lognormal probability
+     distribution.
+
+     The lognormal distribution is a continuous probability distribution
+     whose logarithm is normally distributed.  It is defined by mean
+     parameter MU and standard deviation parameter SIGMA of the
+     logarithmic values.
+
+     There are several ways to create a ‘LognormalDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor LognormalDistribution (MU, SIGMA) to
+          create a lognormal distribution with fixed parameter values MU
+          and SIGMA.
+        • Use the static method LognormalDistribution.fit (X, CENSOR,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘lognfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the lognormal distribution can be found
+     at <https://en.wikipedia.org/wiki/Log-normal_distribution>
+
+     See also: fitdist, makedist, logncdf, logninv, lognpdf, lognrnd,
+     lognfit, lognlike, lognstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Lognormal probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+LoguniformDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1065
+ -- statistics: LoguniformDistribution
+
+     Log-uniform probability distribution object.
+
+     A ‘LoguniformDistribution’ object consists of parameters and a
+     model description for a log-uniform probability distribution.
+
+     The log-uniform distribution is a continuous probability
+     distribution that is constant between locations LOWER and UPPER on
+     a logarithmic scale.
+
+     There are several ways to create a ‘LoguniformDistribution’ object.
+
+        • Create a distribution with specified parameter values using
+          the ‘makedist’ function.
+        • Use the constructor LoguniformDistribution (LOWER, UPPER) to
+          create a log-uniform distribution with specified parameter
+          values LOWER and UPPER.
+
+     It is highly recommended to use ‘makedist’ function to create
+     probability distribution objects, instead of the class constructor.
+
+     Further information about the log-uniform distribution can be found
+     at <https://en.wikipedia.org/wiki/Reciprocal_distribution>
+
+     See also: makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Log-uniform probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 23
+MultinomialDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1227
+ -- statistics: MultinomialDistribution
+
+     Multinomial probability distribution object.
+
+     A ‘MultinomialDistribution’ object consists of parameters, a model
+     description, and sample data for a multinomial probability
+     distribution.
+
+     The multinomial distribution is a discrete probability distribution
+     that models the outcomes of n independent trials of a k-category
+     system, where each trial has a probability of falling into each
+     category.  It is defined by the vector of probabilities for each
+     outcome.
+
+     There are several ways to create a ‘MultinomialDistribution’
+     object.
+
+        • Create a distribution with specified parameter values using
+          the ‘makedist’ function.
+        • Use the constructor MultinomialDistribution (PROBABILITIES) to
+          create a multinomial distribution with specified parameter
+          values.
+
+     It is highly recommended to use the ‘makedist’ function to create
+     probability distribution objects, instead of the constructor.
+
+     Further information about the multinomial distribution can be found
+     at <https://en.wikipedia.org/wiki/Multinomial_distribution>
+
+     See also: makedist, mnpdf, mnrnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 44
+Multinomial probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+NakagamiDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1546
+ -- statistics: NakagamiDistribution
+
+     Nakagami probability distribution object.
+
+     A ‘NakagamiDistribution’ object consists of parameters, a model
+     description, and sample data for a Nakagami probability
+     distribution.
+
+     The Nakagami distribution is a continuous probability distribution
+     that models the amplitude of received signals after maximum ratio
+     diversity combining.  It is defined by shape parameter MU and
+     spread parameter OMEGA.
+
+     There are several ways to create a ‘NakagamiDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor NakagamiDistribution (MU, OMEGA) to create
+          a Nakagami distribution with fixed parameter values MU and
+          OMEGA.
+        • Use the static method NakagamiDistribution.fit (X, CENSOR,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘nakafit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Nakagami distribution can be found at
+     <https://en.wikipedia.org/wiki/Nakagami_distribution>
+
+     See also: fitdist, makedist, nakacdf, nakainv, nakapdf, nakarnd,
+     nakafit, nakalike, nakastat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Nakagami probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 28
+NegativeBinomialDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1730
+ -- statistics: NegativeBinomialDistribution
+
+     Negative binomial probability distribution object.
+
+     A ‘NegativeBinomialDistribution’ object consists of parameters, a
+     model description, and sample data for a negative binomial
+     probability distribution.
+
+     The negative binomial distribution is a discrete probability
+     distribution that models the number of failures in a sequence of
+     independent and identically distributed Bernoulli trials before a
+     specified (non-random) number of successes occurs.  It is defined
+     by the number of successes R and the probability of success P.
+
+     There are several ways to create a ‘NegativeBinomialDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor NegativeBinomialDistribution (R, P) to
+          create a negative binomial distribution with fixed parameter
+          values R and P.
+        • Use the static method NegativeBinomialDistribution.fit (X,
+          FREQ, OPTIONS) to fit a distribution to the data in X using
+          the same input arguments as the ‘nbinfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the negative binomial distribution can be
+     found at
+     <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
+
+     See also: fitdist, makedist, nbincdf, nbininv, nbinpdf, nbinrnd,
+     nbinfit, nbinlike, nbinstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 50
+Negative binomial probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+NormalDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1476
+ -- statistics: NormalDistribution
+
+     Normal probability distribution object.
+
+     A ‘NormalDistribution’ object consists of parameters, a model
+     description, and sample data for a normal probability distribution.
+
+     The normal distribution is a continuous probability distribution
+     that is symmetric about the mean, MU, showing that data near the
+     mean are more frequent in occurrence than data far from the mean.
+     It is defined by location parameter MU and scale parameter SIGMA.
+
+     There are several ways to create a ‘NormalDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor NormalDistribution (MU, SIGMA) to create a
+          normal distribution with fixed parameter values MU and SIGMA.
+        • Use the static method NormalDistribution.fit (X, CENSOR, FREQ,
+          OPTIONS) to fit a distribution to data X.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the normal distribution can be found at
+     <https://en.wikipedia.org/wiki/Normal_distribution>
+
+     See also: fitdist, makedist, normcdf, norminv, normpdf, normrnd,
+     normfit, normlike, normstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Normal probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+PiecewiseLinearDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1336
+ -- statistics: PiecewiseLinearDistribution
+
+     Piecewise linear probability distribution object.
+
+     A ‘PiecewiseLinearDistribution’ object consists of parameters, a
+     model description, and sample data for a piecewise linear
+     probability distribution.
+
+     The piecewise linear distribution is a continuous probability
+     distribution that is defined by a set of points where the
+     cumulative distribution function (CDF) changes slope.  It is
+     defined by a vector of x values and a corresponding vector of CDF
+     values FX.
+
+     There are several ways to create a ‘PiecewiseLinearDistribution’
+     object.
+
+        • Create a distribution with specified parameter values using
+          the ‘makedist’ function.
+        • Use the constructor PiecewiseLinearDistribution (X, FX) to
+          create a piecewise linear distribution with specified
+          parameter values X and FX.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the piecewise linear distribution can be
+     found at <https://en.wikipedia.org/wiki/Piecewise_linear_function>
+
+     See also: makedist, plcdf, plinv, plpdf, plrnd, plstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Piecewise linear probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+PoissonDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1522
+ -- statistics: PoissonDistribution
+
+     Poisson probability distribution object.
+
+     A ‘PoissonDistribution’ object consists of parameters, a model
+     description, and sample data for a Poisson probability
+     distribution.
+
+     The Poisson distribution is a discrete probability distribution
+     that models the number of events occurring in a fixed interval of
+     time or space, given a constant average rate of occurrence.  It is
+     defined by the rate parameter LAMBDA.
+
+     There are several ways to create a ‘PoissonDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor PoissonDistribution (LAMBDA) to create a
+          Poisson distribution with fixed parameter value LAMBDA.
+        • Use the static method PoissonDistribution.fit (X, FREQ) to fit
+          a distribution to the data in X using the same input arguments
+          as the ‘poissfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Poisson distribution can be found at
+     <https://en.wikipedia.org/wiki/Poisson_distribution>
+
+     See also: fitdist, makedist, poisscdf, poissinv, poisspdf,
+     poissrnd, poissfit, poisslike, poisstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Poisson probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 20
+RayleighDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1595
+ -- statistics: RayleighDistribution
+
+     Rayleigh probability distribution object.
+
+     A ‘RayleighDistribution’ object consists of parameters, a model
+     description, and sample data for a Rayleigh probability
+     distribution.
+
+     The Rayleigh distribution is a continuous probability distribution
+     for nonnegative random variables.  It is often used to model the
+     magnitude of a vector in two dimensions where the components are
+     normally distributed with zero mean and equal variance.  It is
+     defined by scale parameter SIGMA.
+
+     There are several ways to create a ‘RayleighDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor RayleighDistribution (SIGMA) to create a
+          Rayleigh distribution with fixed parameter value SIGMA.
+        • Use the static method RayleighDistribution.fit (X, CENSOR,
+          FREQ) to fit a distribution to the data in X using the same
+          input arguments as the ‘raylfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Rayleigh distribution can be found at
+     <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     See also: fitdist, makedist, raylcdf, raylinv, raylpdf, raylrnd,
+     raylfit, rayllike, raylstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 41
+Rayleigh probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+RicianDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1419
+ -- statistics: RicianDistribution
+
+     Rician probability distribution object.
+
+     A ‘RicianDistribution’ object consists of parameters, a model
+     description, and sample data for a Rician probability distribution.
+
+     The Rician distribution is a continuous probability distribution
+     that models the magnitude of a signal in the presence of Gaussian
+     noise.  It is defined by noncentrality parameter S and scale
+     parameter SIGMA.
+
+     There are several ways to create a ‘RicianDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor RicianDistribution (S, SIGMA) to create a
+          Rician distribution with fixed parameter values S and SIGMA.
+        • Use the static method RicianDistribution.fit (X, CENSOR, FREQ,
+          OPTIONS) to fit a distribution to data X.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Rician distribution can be found at
+     <https://en.wikipedia.org/wiki/Rice_distribution>
+
+     See also: fitdist, makedist, ricecdf, riceinv, ricepdf, ricernd,
+     ricefit, ricelike, ricestat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Rician probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+TriangularDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1434
+ -- statistics: TriangularDistribution
+
+     Triangular probability distribution object.
+
+     A ‘TriangularDistribution’ object consists of parameters, a model
+     description, and sample data for a triangular probability
+     distribution.
+
+     The triangular distribution uses the following parameters.
+
+     PARAMETER          DESCRIPTION                         SUPPORT
+                                                            
+     ---------------------------------------------------------------------------
+     A                  Lower limit                         -Inf < A < Inf
+     B                  Peak location                       A <= B <= C
+     C                  Upper limit                         C > A
+
+     There are several ways to create a ‘TriangularDistribution’ object.
+
+        • Create a distribution with specified parameter values using
+          the ‘makedist’ function.
+        • Use the constructor TriangularDistribution (A, B, C) to create
+          a triangular distribution with specified parameter values A,
+          B, and C.
+
+     It is highly recommended to use ‘makedist’ function to create
+     probability distribution objects, instead of the constructor.
+
+     Further information about the triangular distribution can be found
+     at <https://en.wikipedia.org/wiki/Triangular_distribution>
+
+     See also: makedist, tricdf, triinv, tripdf, trirnd, tristat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Triangular probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+UniformDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1329
+ -- statistics: UniformDistribution
+
+     Continuous uniform probability distribution object.
+
+     A ‘UniformDistribution’ object consists of parameters, a model
+     description, and sample data for a uniform probability
+     distribution.
+
+     The uniform distribution is a continuous probability distribution
+     that models random variables that are equally likely to take any
+     value within a specified interval defined by the lower limit LOWER
+     and upper limit UPPER.
+
+     There are several ways to create a ‘UniformDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor UniformDistribution (LOWER, UPPER) to
+          create a uniform distribution with fixed parameter values
+          LOWER and UPPER.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor.
+
+     Further information about the continuous uniform distribution can
+     be found at
+     <https://en.wikipedia.org/wiki/Continuous_uniform_distribution>
+
+     See also: fitdist, makedist, unifcdf, unifinv, unifpdf, unifrnd,
+     unifit, unifstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Continuous uniform probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 19
+WeibullDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1521
+ -- statistics: WeibullDistribution
+
+     Weibull probability distribution object.
+
+     A ‘WeibullDistribution’ object consists of parameters, a model
+     description, and sample data for a Weibull probability
+     distribution.
+
+     The Weibull distribution is a continuous probability distribution
+     that models the time to failure of materials or the lifetime of
+     mechanical systems.  It is defined by scale parameter LAMBDA and
+     shape parameter K.
+
+     There are several ways to create a ‘WeibullDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor WeibullDistribution (LAMBDA, K) to create
+          a Weibull distribution with fixed parameter values LAMBDA and
+          K.
+        • Use the static method WeibullDistribution.fit (X, ALPHA,
+          CENSOR, FREQ) to fit a distribution to the data in X using the
+          same input arguments as the ‘wblfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the Weibull distribution can be found at
+     <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     See also: fitdist, makedist, wblcdf, wblinv, wblpdf, wblrnd,
+     wblfit, wbllike, wblstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Weibull probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 26
+tLocationScaleDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1755
+ -- statistics: tLocationScaleDistribution
+
+     Location-Scale Student's T probability distribution object.
+
+     A ‘tLocationScaleDistribution’ object consists of parameters, a
+     model description, and sample data for a location-scale Student's T
+     probability distribution.
+
+     The location-scale Student's T distribution is a continuous
+     probability distribution that generalizes the standard Student's T
+     distribution by including location and scale parameters.  It is
+     defined by location parameter MU, scale parameter SIGMA, and
+     degrees of freedom NU.
+
+     There are several ways to create a ‘tLocationScaleDistribution’
+     object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the
+          ‘makedist’ function.
+        • Use the constructor tLocationScaleDistribution (MU, SIGMA, NU)
+          to create a location-scale Student's T distribution with fixed
+          parameter values MU, SIGMA, and NU.
+        • Use the static method tLocationScaleDistribution.fit (X,
+          CENSOR, FREQ, OPTIONS) to fit a distribution to the data in X
+          using the same input arguments as the ‘tlsfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions
+     to create probability distribution objects, instead of the class
+     constructor or the aforementioned static method.
+
+     Further information about the location-scale Student's T
+     distribution can be found at
+     <https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution>
+
+     See also: fitdist, makedist, tlscdf, tlsinv, tlspdf, tlsrnd,
+     tlsfit, tlslike, tlsstat.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Location-Scale Student's T probability distribution object.
+
+
+
+
+
