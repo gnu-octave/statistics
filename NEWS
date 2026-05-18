@@ -139,7 +139,7 @@
 -------------------------------------------------------------------
 
  Important Notice: 1) Minimum Octave version required is 11.1.0
-                   2) Update dependency to datatypes 1.2.2
+                   2) Update dependency to datatypes 1.2.3
                    3) Incompatibility with the `nan` package
                    4) Using `tablicious` as a drop in replacement
                       for `datatypes` might cause issues.
