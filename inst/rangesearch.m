@@ -384,20 +384,20 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
 endfunction
 
 %!demo
-%! ## Generate 1000 random 2D points from each of five distinct multivariate
+%! ## Generate 100 random 2D points from each of five distinct multivariate
 %! ## normal distributions that form five separate classes
-%! N = 1000;
+%! N = 100;
 %! d = 10;
 %! randn ("seed", 5);
-%! X1 = mvnrnd (d * [0, 0], eye (2), 1000);
+%! X1 = mvnrnd (d * [0, 0], eye (2), N);
 %! randn ("seed", 6);
-%! X2 = mvnrnd (d * [1, 1], eye (2), 1000);
+%! X2 = mvnrnd (d * [1, 1], eye (2), N);
 %! randn ("seed", 7);
-%! X3 = mvnrnd (d * [-1, -1], eye (2), 1000);
+%! X3 = mvnrnd (d * [-1, -1], eye (2), N);
 %! randn ("seed", 8);
-%! X4 = mvnrnd (d * [1, -1], eye (2), 1000);
+%! X4 = mvnrnd (d * [1, -1], eye (2), N);
 %! randn ("seed", 8);
-%! X5 = mvnrnd (d * [-1, 1], eye (2), 1000);
+%! X5 = mvnrnd (d * [-1, 1], eye (2), N);
 %! X = [X1; X2; X3; X4; X5];
 %!
 %! ## For each point in X, find the points in X that are within a radius d
@@ -422,9 +422,9 @@ endfunction
 %! ## its nearest neighbors within the radius d.  Display these points in
 %! ## one color and the remaining points in a different color.
 %! x = X(end,:);
-%! nearestPoints = X (Idx{1},:);
+%! nearestPoints = X (Idx{end},:);
 %! nonNearestIdx = true (size (X, 1), 1);
-%! nonNearestIdx(Idx{1}) = false;
+%! nonNearestIdx(Idx{end}) = false;
 %!
 %! figure
 %! scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
