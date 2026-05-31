@@ -836,7 +836,7 @@ function schema = run_schema_builder (expanded)
   [~, unique_idx] = unique (M, 'rows');
   terms_mat = terms_mat (unique_idx, :);
 
-  [~, sort_idx] = sortrows ([sum(terms_mat, 2), terms_mat]);
+  [~, sort_idx] = sortrows ([sum(terms_mat, 2), -terms_mat]);
   schema.Terms = terms_mat (sort_idx, :);
 
 endfunction
@@ -1659,6 +1659,12 @@ endfunction
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string('y = c1');
 %! assert (isequal (eq, expected));
+%!test
+%! ## Test : term row sorting.
+%! eq = parseWilkinsonFormula ('Y ~ x1 * x2 * x3', 'matrix');
+%! expected_terms = [0, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 1, 0; 0, 1, 0, 1; 0, 0, 1, 1; 0, 1, 1, 1];
+%! assert (eq.VariableNames, {'Y', 'x1', 'x2', 'x3'});
+%! assert (eq.Terms, expected_terms);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
