@@ -20,7 +20,7 @@
 ##
 ## Full factorial design.
 ##
-## @code{@var{A} =} fullfact (@var{levels}) returns a numeric matrix @var{A}
+## @code{@var{A} = fullfact (@var{levels})} returns a numeric matrix @var{A}
 ## with the treatments of a full factorial design specified by @var{levels},
 ## which must be a numeric vector of real positive integer values with each
 ## value specifying the number of levels of each individual factor.
@@ -28,7 +28,7 @@
 ## Each row of @var{A} corresponds to a single treatment and each column to a
 ## single factor.  For binary full factorial design, use @code{ff2n}.
 ##
-## @seealso {ff2n}
+## @seealso{ff2n}
 ## @end deftypefn
 
 function A = fullfact (levels)

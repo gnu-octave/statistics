@@ -38,9 +38,10 @@
 ## @strong{Reference}
 ## Jain, A., and R. Dubes. Algorithms for Clustering Data.
 ## Upper Saddle River, NJ: Prentice-Hall, 1988.
-## @end deftypefn
 ##
 ## @seealso{cluster, clusterdata, dendrogram, linkage, pdist, squareform}
+##
+## @end deftypefn
 
 function Y = inconsistent (Z, d = 2)
 

@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} [@var{h}] = __plot__ (@var{pd}, @var{Discrete}, @var{varargin})
+## @deftypefn {Private Function} {@var{h} =} __plot__ (@var{pd}, @var{Discrete}, @var{varargin})
 ##
 ## Plot a probability distribution object.
 ##

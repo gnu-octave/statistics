@@ -27,7 +27,7 @@
 ## corresponds to a single treatment.  Each column contains the settings for a
 ## single factor, with values of 0 and 1 for the two levels.
 ##
-## @seealso {fullfact}
+## @seealso{fullfact}
 ## @end deftypefn
 
 function A = ff2n (n)

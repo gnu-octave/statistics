@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} [@var{nlogl}, @var{param}, @var{other}] = __paramci__ (@var{pd}, @var{varargin})
+## @deftypefn {Private Function} {@var{ci} =} __paramci__ (@var{pd}, @var{varargin})
 ##
 ## Compute the confidence intervals for the selected parameters of a
 ## probability distribution object.

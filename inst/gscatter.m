@@ -63,9 +63,9 @@
 ## Output @var{h} is an array of graphics handles to the @code{line} object of
 ## each group.
 ##
-## @end deftypefn
-##
 ## @seealso{scatter}
+##
+## @end deftypefn
 
 function h = gscatter (varargin)
   ## optional axes handle

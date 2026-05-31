@@ -218,6 +218,7 @@ classdef BinomialDistribution
     ## containing the frequency information corresponding to the elements of the
     ## data used for distribution fitting. If no frequency vector was used for
     ## distribution fitting, then this field defaults to an empty array.
+    ## @end itemize
     ##
     ## @end deftp
     InputData

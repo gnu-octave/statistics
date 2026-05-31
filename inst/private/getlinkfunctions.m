@@ -14,7 +14,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} [@var{flink}, @var{dlink}, @var{ilink}, @var{errmsg}] = getlinkfunctions (@var{linkArg})
+## @deftypefn {Private Function} {[@var{flink}, @var{dlink}, @var{ilink}, @var{errmsg}] =} getlinkfunctions (@var{linkArg})
 ##
 ## Return the link function and its derivative and inverse base.
 ##
