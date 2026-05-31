@@ -71,9 +71,9 @@
 ## @strong{Reference}
 ## Peter J. Rousseeuw, Silhouettes: a Graphical Aid to the Interpretation and
 ## Validation of Cluster Analysis. 1987. doi:10.1016/0377-0427(87)90125-7
-## @end deftypefn
 ##
 ## @seealso{dendrogram, evalclusters, kmeans, linkage, pdist}
+## @end deftypefn
 
 function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
   ## check the input parameters

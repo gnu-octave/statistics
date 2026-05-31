@@ -47,9 +47,9 @@
 ## @end table
 ##
 ##
-## @end deftypefn
-##
 ## @seealso{rand, randi, randperm, randsample}
+##
+## @end deftypefn
 
 function [y, idcs] = datasample (data, k, varargin)
 

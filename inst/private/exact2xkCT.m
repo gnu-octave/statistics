@@ -16,7 +16,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} [@var{p_net}, @var{p_val}] = exact2xkCT (@var{ct}, @var{weights}, @var{rsstat})
+## @deftypefn {Private Function} {[@var{p_net}, @var{p_val}] =} exact2xkCT (@var{ct}, @var{weights}, @var{rsstat})
 ##
 ## Compute the exact p-value for a 2-by-K contingency table based on the
 ## network algorithm.

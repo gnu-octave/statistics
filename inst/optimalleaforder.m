@@ -54,9 +54,10 @@
 ## @strong{Reference}
 ## Bar-Joseph, Z., Gifford, D.K., and Jaakkola, T.S. Fast optimal leaf ordering
 ## for hierarchical clustering. Bioinformatics vol. 17 suppl. 1, 2001.
-## @end deftypefn
 ##
 ## @seealso{dendrogram,linkage,pdist}
+##
+## @end deftypefn
 
 function leafOrder = optimalleaforder ( varargin )
 

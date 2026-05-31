@@ -17,7 +17,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} [@var{nlogl}, @var{param}, @var{other}] = __proflik__ (@var{pd}, @var{pnum}, @var{varargin})
+## @deftypefn {Private Function} {[@var{nlogl}, @var{param}] =} __proflik__ (@var{pd}, @var{pnum}, @var{varargin})
 ##
 ## Compute the negative log likelihood for a range of the selected parameter of
 ## a probability distribution object.

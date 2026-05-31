@@ -117,10 +117,10 @@
 ##
 ## Output @var{eva} is a clustering evaluation object.
 ##
-## @end deftypefn
-##
 ## @seealso{CalinskiHarabaszEvaluation, DaviesBouldinEvaluation, GapEvaluation,
 ## SilhouetteEvaluation}
+##
+## @end deftypefn
 
 function cc = evalclusters (x, clust, criterion, varargin)
 
