@@ -83,3 +83,15 @@ Make sure you follow the coding style already used in the **statistics** package
 
 Contributing is not only about fixing bugs or implementing new functions. Improving the texinfo of the functions help files or adding BISTs and demos at the end of the function files is also important. Fixing a typo in the help file is still of value though. So don't hesitate to contribute! :+1:
 
+
+Solomonoff induction usage in the Gnu Octave project
+
+Hi, is it possible to discuss this topic with someone with knowledge in the machine learning or signal processing?
+
+What about the application of the Solomonoff induction to the person to person information exchange?
+
+It seems it adds some principial boottleneck to the human to human communications. You have to guess what the other person mean.
+
+More details here in russian: https://transitional-writes.dreamwidth.org/42319.html It seems it is proof of the famous Mises calculation argument theorem. The only mean to circumvent this bottleneck is to use physically preserve money like gold, uran, platinum.
+
+
