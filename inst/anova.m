@@ -131,9 +131,6 @@ classdef anova < handle
       obj.dirty_ = true;
     endfunction
 
-    ## Public fit trigger. Idempotent. Future public methods
-    ## (summary, multcompare, ...) will call ensureFit_() internally;
-    ## this provides an explicit entry point in the meantime.
     function fit (obj)
       obj.ensureFit_ ();
     endfunction
@@ -142,7 +139,6 @@ classdef anova < handle
 
   methods (Access = private)
 
-    ## Validate model-spec property values that the constructor accepts.
     function validateSpec_ (obj)
       if (! (isnumeric (obj.SSType) && isscalar (obj.SSType) ...
              && any (obj.SSType == [1, 2, 3])))
@@ -255,9 +251,9 @@ classdef anova < handle
 
     function fitAnova1_ (obj)
       if (isvector (obj.Y))
-        [~, atab, stats] = anova1 (obj.Y, obj.GROUP, 'off');
+        [~, atab, stats] = anova1 (obj.Y, obj.GROUP, obj.Display);
       else
-        [~, atab, stats] = anova1 (obj.Y, [], 'off');
+        [~, atab, stats] = anova1 (obj.Y, [], obj.Display);
       endif
       obj.AnovaTable = atab;
       obj.Stats      = stats;
@@ -272,7 +268,7 @@ classdef anova < handle
       if (ischar (obj.ModelType))
         modelarg = obj.ModelType;
       endif
-      [~, atab, stats] = anova2 (obj.Y, obj.reps_, 'off', modelarg);
+      [~, atab, stats] = anova2 (obj.Y, obj.reps_, obj.Display, modelarg);
       obj.AnovaTable = atab;
       obj.Stats      = stats;
       obj.DFE        = stats.df;
@@ -319,9 +315,8 @@ classdef anova < handle
       endif
     endfunction
 
-    ## Build the name-value cell anovan expects from current spec props.
     function nv = buildAnovanArgs_ (obj)
-      nv = {'display', 'off', 'sstype', obj.SSType, 'alpha', obj.Alpha};
+      nv = {'display', obj.Display, 'sstype', obj.SSType, 'alpha', obj.Alpha};
       if (ischar (obj.ModelType) || isnumeric (obj.ModelType))
         if (! (isnumeric (obj.ModelType) && isempty (obj.ModelType)))
           nv = [nv, {'model', obj.ModelType}];
