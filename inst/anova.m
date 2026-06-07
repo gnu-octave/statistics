@@ -118,6 +118,8 @@ classdef anova < handle
             obj.Weights = value;
           case {'display', 'displayopt'}
             obj.Display = value;
+          case 'reps'
+            obj.reps_ = value;
           otherwise
             error ("anova: parameter '%s' is not supported.", name);
         endswitch
@@ -127,6 +129,13 @@ classdef anova < handle
       obj.nFactors_ = obj.countFactors_ ();
       obj.selectBackend_ ();
       obj.dirty_ = true;
+    endfunction
+
+    ## Public fit trigger. Idempotent. Future public methods
+    ## (summary, multcompare, ...) will call ensureFit_() internally;
+    ## this provides an explicit entry point in the meantime.
+    function fit (obj)
+      obj.ensureFit_ ();
     endfunction
 
   endmethods
@@ -165,6 +174,11 @@ classdef anova < handle
       if (! isempty (obj.Weights) && ! isnumeric (obj.Weights))
         error ("anova: Weights must be numeric.");
       endif
+      if (! isempty (obj.reps_) ...
+          && ! (isnumeric (obj.reps_) && isscalar (obj.reps_) ...
+                && obj.reps_ > 0 && obj.reps_ == fix (obj.reps_)))
+        error ("anova: Reps must be a positive integer scalar.");
+      endif
     endfunction
 
     ## Infer the number of factors implied by GROUP / Y.
@@ -190,33 +204,143 @@ classdef anova < handle
       endif
     endfunction
 
-    ## Backend heuristic (verbatim from the proposal):
+    ## Backend heuristic.
+    ##   anova2  : user passed 'reps' AND Y is a non-vector matrix
+    ##             (Y carries the factor structure; reps is required)
     ##   anova1  : 1 factor, no continuous, no weights, SSType == 3
-    ##   anova2  : 2 factors, no continuous, Y is a matrix, no NaN, no weights
-    ##   anovan  : everything else
+    ##   anovan  : everything else (full generality)
     function selectBackend_ (obj)
-      if (obj.nFactors_ == 1 && isempty (obj.Continuous) ...
-          && isempty (obj.Weights) && obj.SSType == 3)
-        obj.backend_ = 'anova1';
-      elseif (obj.nFactors_ == 2 && isempty (obj.Continuous) ...
-              && ismatrix (obj.Y) && ! any (isnan (obj.Y(:))) ...
-              && isempty (obj.Weights))
+      if (! isempty (obj.reps_) && ismatrix (obj.Y) ...
+          && ! isvector (obj.Y) && ! any (isnan (obj.Y(:))) ...
+          && isempty (obj.Continuous) && isempty (obj.Weights))
         obj.backend_ = 'anova2';
+      elseif (obj.nFactors_ == 1 && isempty (obj.Continuous) ...
+              && isempty (obj.Weights) && obj.SSType == 3)
+        obj.backend_ = 'anova1';
       else
         obj.backend_ = 'anovan';
       endif
     endfunction
 
-    ## Stubs for Week 2 — declared so the structure is visible but they
-    ## intentionally do not synthesize results in Week 1.
-    function fit_ (obj)
-      error ("anova.fit_: not implemented yet (scheduled for Week 2).");
-    endfunction
-
+    ## Lazy refit guard: only fits when never-fit or spec changed.
     function ensureFit_ (obj)
       if (! obj.fitted_ || obj.dirty_)
         obj.selectBackend_ ();
         obj.fit_ ();
+      endif
+    endfunction
+
+    ## Dispatch to the selected backend; populate result properties.
+    function fit_ (obj)
+      switch (obj.backend_)
+        case 'anova1'
+          ## Fall back to anovan if anova1 raises (e.g. core Octave
+          ## is missing iscategorical, which grp2idx depends on).
+          ## Reconciliation lives inside the classdef — anova1.m is
+          ## not edited.
+          try
+            obj.fitAnova1_ ();
+          catch
+            obj.backend_ = 'anovan';
+            obj.fitAnovan_ ();
+          end_try_catch
+        case 'anova2'
+          obj.fitAnova2_ ();
+        case 'anovan'
+          obj.fitAnovan_ ();
+      endswitch
+      obj.fitted_ = true;
+      obj.dirty_  = false;
+    endfunction
+
+    function fitAnova1_ (obj)
+      if (isvector (obj.Y))
+        [~, atab, stats] = anova1 (obj.Y, obj.GROUP, 'off');
+      else
+        [~, atab, stats] = anova1 (obj.Y, [], 'off');
+      endif
+      obj.AnovaTable = atab;
+      obj.Stats      = stats;
+      obj.DFE        = stats.df;
+      obj.MSE        = stats.s ^ 2;     ## anova1 reports sqrt(MSE) as s
+      ## Coefficients / Residuals / DesignMatrix / FittedValues are not
+      ## exposed by anova1's stats; they remain at their empty defaults.
+    endfunction
+
+    function fitAnova2_ (obj)
+      modelarg = 'interaction';
+      if (ischar (obj.ModelType))
+        modelarg = obj.ModelType;
+      endif
+      [~, atab, stats] = anova2 (obj.Y, obj.reps_, 'off', modelarg);
+      obj.AnovaTable = atab;
+      obj.Stats      = stats;
+      obj.DFE        = stats.df;
+      obj.MSE        = stats.sigmasq;
+      ## anova2 does not return coeffs / resid / X.
+    endfunction
+
+    function fitAnovan_ (obj)
+      ## Unroll a matrix Y with no GROUP into a vector + synthetic
+      ## column index — needed for the anova1-matrix-form fallback.
+      if (isempty (obj.GROUP) && ! isvector (obj.Y))
+        [n, m] = size (obj.Y);
+        y_vec  = obj.Y(:);
+        g_vec  = reshape (repmat ((1:m), n, 1), [], 1);
+        group_arg = {g_vec};
+      else
+        y_vec = obj.Y(:);
+        group_arg = obj.GROUP;
+        if (isempty (group_arg))
+          group_arg = {};
+        endif
+      endif
+      [~, atab, stats] = anovan (y_vec, group_arg, ...
+                                 obj.buildAnovanArgs_(){:});
+      obj.AnovaTable = atab;
+      obj.Stats      = stats;
+      if (isfield (stats, 'coeffs'))
+        obj.Coefficients = stats.coeffs;
+      endif
+      if (isfield (stats, 'resid'))
+        obj.Residuals = stats.resid;
+      endif
+      if (isfield (stats, 'X'))
+        obj.DesignMatrix = stats.X;
+      endif
+      if (isfield (stats, 'dfe'))
+        obj.DFE = stats.dfe;
+      endif
+      if (isfield (stats, 'mse'))
+        obj.MSE = stats.mse;
+      endif
+      if (! isempty (obj.DesignMatrix) && ! isempty (obj.Coefficients))
+        obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients(:, 1);
+      endif
+    endfunction
+
+    ## Build the name-value cell anovan expects from current spec props.
+    function nv = buildAnovanArgs_ (obj)
+      nv = {'display', 'off', 'sstype', obj.SSType, 'alpha', obj.Alpha};
+      if (ischar (obj.ModelType) || isnumeric (obj.ModelType))
+        if (! (isnumeric (obj.ModelType) && isempty (obj.ModelType)))
+          nv = [nv, {'model', obj.ModelType}];
+        endif
+      endif
+      if (! isempty (obj.VarNames))
+        nv = [nv, {'varnames', obj.VarNames}];
+      endif
+      if (! isempty (obj.Continuous))
+        nv = [nv, {'continuous', obj.Continuous}];
+      endif
+      if (! isempty (obj.Random))
+        nv = [nv, {'random', obj.Random}];
+      endif
+      if (! isempty (obj.Weights))
+        nv = [nv, {'weights', obj.Weights}];
+      endif
+      if (! isempty (obj.Contrasts))
+        nv = [nv, {'contrasts', obj.Contrasts}];
       endif
     endfunction
 
@@ -316,15 +440,21 @@ endclassdef
 %! assert (a.getNumFactors (), 1);
 %! assert (a.getBackend (), 'anova1');
 
-## Backend selection: two-way balanced matrix -> anova2
+## Backend selection: matrix Y + explicit 'reps' -> anova2
 %!test
 %! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! g1 = repmat ([1;2], 3, 1);
-%! g2 = [1;1;1;2;2;2];
+%! a = anova (y, [], 'reps', 3);
+%! assert (a.getBackend (), 'anova2');
+
+## Backend selection: two-factor cell groups without reps -> anovan
+%!test
+%! y = (1:12)';
+%! g1 = repmat ([1;2;3], 4, 1);
+%! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova (y, {g1, g2});
 %! assert (a.getNumFactors (), 2);
-%! assert (a.getBackend (), 'anova2');
+%! assert (a.getBackend (), 'anovan');
 
 ## Backend selection: three factors -> anovan
 %!test
@@ -394,3 +524,74 @@ endclassdef
 ## Invalid input: parameter name must be a string
 %!error <anova: parameter name must be a character vector.> ...
 %!  anova ([1;2;3;4], [1;1;2;2], 1, 2)
+
+## Invalid input: bad Reps value
+%!error <anova: Reps must be a positive integer scalar.> ...
+%!  anova (magic (4), [], 'reps', -2)
+
+## --- Week 2: fit delegation smoke tests --------------------------------
+
+## fit_(): one-way fixture (anova1 backend; falls back to anovan on
+## Octave 10.3 where iscategorical is missing — both paths populate
+## the unified result surface)
+%!test
+%! y = [1; 2; 3; 4; 5; 6];
+%! g = [1; 1; 2; 2; 3; 3];
+%! a = anova (y, g);
+%! a.fit ();
+%! assert (! isempty (a.AnovaTable));
+%! assert (isstruct (a.Stats));
+%! assert (! isempty (a.DFE));
+%! assert (! isempty (a.MSE));
+
+## fit_(): two-way balanced fixture (anova2 backend, popcorn data)
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! a = anova (popcorn, [], 'reps', 3);
+%! assert (a.getBackend (), 'anova2');
+%! a.fit ();
+%! assert (! isempty (a.AnovaTable));
+%! assert (isfield (a.Stats, 'sigmasq'));
+%! assert (a.MSE, a.Stats.sigmasq);
+
+## fit_(): N-way fixture (anovan backend, three factors)
+%!test
+%! y = (1:24)';
+%! g1 = repmat ([1;2], 12, 1);
+%! g2 = repmat ([1;1;2;2], 6, 1);
+%! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
+%! a = anova (y, {g1, g2, g3});
+%! assert (a.getBackend (), 'anovan');
+%! a.fit ();
+%! assert (! isempty (a.AnovaTable));
+%! assert (! isempty (a.Coefficients));
+%! assert (! isempty (a.Residuals));
+%! assert (! isempty (a.DesignMatrix));
+%! assert (rows (a.Residuals), numel (y));
+
+## fit_(): FittedValues = DesignMatrix * Coefficients(:,1) for anovan
+%!test
+%! y  = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g  = [1;1;1;2;2;2;3;3;3];
+%! a  = anova (y, {g});
+%! a.fit ();
+%! assert (numel (a.FittedValues), numel (y));
+%! assert (a.FittedValues + a.Residuals, y, 1e-9);
+
+## ensureFit_(): fit() is idempotent (second call does nothing)
+%!test
+%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3]);
+%! a.fit ();
+%! first_table = a.AnovaTable;
+%! a.fit ();
+%! assert (isequal (a.AnovaTable, first_table));
+
+## buildAnovanArgs_(): SSType and Alpha are forwarded to anovan
+%!test
+%! y = (1:12)';
+%! g = repmat ([1;2;3], 4, 1);
+%! a = anova (y, {g}, 'SSType', 2, 'Alpha', 0.10);
+%! a.fit ();
+%! assert (a.getBackend (), 'anovan');
+%! assert (a.Stats.alpha, 0.10, 1e-12);
