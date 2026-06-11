@@ -142,14 +142,14 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
 
   ## Check that x and group are the same size
-  if (! all (numel (x) == numel (group)))
+  if (numel (x) != prod (size (group)))
     error ("anova1: GROUP must be a vector with the same number of rows as x.");
   endif
 
   ## Convert group to indices and separate names first
   [group_id, group_names] = grp2idx (group);
   group_id = group_id(:);
-  x = x(:); 
+  x = x(:);
 
   ## identify NaN values in x or missing/empty categories in the group and remove them.
   valid_data = !isnan (x) & !isnan (group_id);
@@ -361,14 +361,44 @@ endfunction
 %! assert (tbl{2,3}, 2, 0);
 %! assert (tbl{2,4}, 7.5786897, 1e-6);
 
+## testing against one-way ANOVA example dataset from GraphPad Prism 8
+## using categorical array as a grouping variable
+%!test
+%! y = [54, 87, 45; 23, 98, 39; 45, 64, 51; ...
+%!      54, 77, 49; 45, 89, 50; 47, NaN, 55];
+%! g = categorical ([1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3]);
+%! [p, tbl] = anova1 (y(:), g(:), "off", "equal");
+%! assert (p, 0.00004163, 1e-6);
+%! assert (tbl{2,5}, 22.573418, 1e-6);
+%! assert (tbl{2,3}, 2, 0);
+%! assert (tbl{3,3}, 14, 0);
+%! [p, tbl] = anova1 (y(:), g(:), "off", "unequal");
+%! assert (p, 0.00208877, 1e-8);
+%! assert (tbl{2,5}, 15.523192, 1e-6);
+%! assert (tbl{2,3}, 2, 0);
+%! assert (tbl{2,4}, 7.5786897, 1e-6);
+
 ## testing handling of missing values in both data and grouping variables
 %!test
 %! y = [10; 20; 9999; NaN; 40; 50];
 %! g = [1; 1; NaN; 1; 2; 2];
 %! [p, tbl, stats] = anova1 (y, g, "off");
 %! assert (p, 0.051317, 1e-6);
-%! assert (tbl{2,5}, 18, 1e-6);      
-%! assert (tbl{2,3}, 1, 0);          
-%! assert (tbl{3,3}, 2, 0);         
-%! assert (tbl{4,3}, 3, 0);         
-%! assert (stats.n, [2, 2], 0);      
+%! assert (tbl{2,5}, 18, 1e-6);
+%! assert (tbl{2,3}, 1, 0);
+%! assert (tbl{3,3}, 2, 0);
+%! assert (tbl{4,3}, 3, 0);
+%! assert (stats.n, [2, 2], 0);
+
+## testing handling of missing values in both data and grouping variables
+## using categorical array as a grouping variable
+%!test
+%! y = [10; 20; 9999; NaN; 40; 50];
+%! g = categorical ([1; 1; NaN; 1; 2; 2]);
+%! [p, tbl, stats] = anova1 (y, g, "off");
+%! assert (p, 0.051317, 1e-6);
+%! assert (tbl{2,5}, 18, 1e-6);
+%! assert (tbl{2,3}, 1, 0);
+%! assert (tbl{3,3}, 2, 0);
+%! assert (tbl{4,3}, 3, 0);
+%! assert (stats.n, [2, 2], 0);
