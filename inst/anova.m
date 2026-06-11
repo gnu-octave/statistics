@@ -230,16 +230,7 @@ classdef anova < handle
     function fit_ (obj)
       switch (obj.backend_)
         case 'anova1'
-          ## Fall back to anovan if anova1 raises (e.g. core Octave
-          ## is missing iscategorical, which grp2idx depends on).
-          ## Reconciliation lives inside the classdef — anova1.m is
-          ## not edited.
-          try
-            obj.fitAnova1_ ();
-          catch
-            obj.backend_ = 'anovan';
-            obj.fitAnovan_ ();
-          end_try_catch
+          obj.fitAnova1_ ();
         case 'anova2'
           obj.fitAnova2_ ();
         case 'anovan'
@@ -569,7 +560,7 @@ endclassdef
 %!test
 %! y  = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g  = [1;1;1;2;2;2;3;3;3];
-%! a  = anova (y, {g});
+%! a  = anova (y, g, 'SSType', 2);
 %! a.fit ();
 %! assert (numel (a.FittedValues), numel (y));
 %! assert (a.FittedValues + a.Residuals, y, 1e-9);
