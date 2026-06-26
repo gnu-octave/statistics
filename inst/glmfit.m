@@ -316,7 +316,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
   endif
   if (rankX < cx)
     warning ("glmfit: X is ill-conditioned.");
-    P = P(1:rankx);
+    P = P(1:rankX);
     X = X(:,P);
   else
     P = [1:cx];
