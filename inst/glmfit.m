@@ -316,7 +316,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
   endif
   if (rankX < cx)
     warning ("glmfit: X is ill-conditioned.");
-    P = P(1:rankx);
+    P = P(1:rankX);
     X = X(:,P);
   else
     P = [1:cx];
@@ -416,7 +416,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
   ## Compute stats
   if (nargout > 2)
     ## Store coefficient estimates
-    stats.beta = bb;
+    stats.beta = b;
 
     ## Compute degrees of freedom for error
     stats.dfe = max (nx - numc, 0);
@@ -477,7 +477,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       stats.coeffcorr(P,P) = C;
       stats.t(P) = b ./ se;
       if (estDisp)
-        stats.p = 2 * tcdf (-abs (stats.t), dfe);
+        stats.p = 2 * tcdf (-abs (stats.t), stats.dfe);
       else
         stats.p = 2 * normcdf (-abs (stats.t));
       endif
@@ -495,7 +495,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       stats.resid(! xymissing)  = y - mu;
       stats.residp(! xymissing) = (y - mu) ./ (varFun (mu) + (y == mu));
     end
-    stats.residd(! xymissing) = sign (y - mu) .* sqrt (max (0, divn));
+    stats.residd(! xymissing) = sign (y - mu) .* sqrt (max (0, devn));
     switch (tolower (distribution))
       case "normal"
         stats.resida(! xymissing) = y - mu;
