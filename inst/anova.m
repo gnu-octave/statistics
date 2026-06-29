@@ -162,6 +162,15 @@ classdef anova < handle
       fprintf ("    Alpha    : %g\n\n", obj.Alpha);
     endfunction
 
+    function varargout = multcompare (obj, varargin)
+      obj.ensureFit_ ();
+      if (isempty (fieldnames (obj.Stats)))
+        error ("anova.multcompare: model has no stats to compare.");
+      endif
+      varargout = cell (1, max (nargout, 1));
+      [varargout{:}] = multcompare (obj.Stats, varargin{:});
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -674,3 +683,30 @@ endclassdef
 %! a2 = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
 %! assert (! isempty (strfind (evalc ('summary (a1)'), 'Type I sums')));
 %! assert (! isempty (strfind (evalc ('summary (a2)'), 'Type II sums')));
+
+## --- Week 4: multcompare pass-through ----------------------------------
+
+## multcompare(): anovan backend returns a pairwise comparison matrix
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, 'SSType', 2);
+%! C = multcompare (a, 'display', 'off');
+%! assert (! isempty (C));
+%! assert (size (C, 1), 3);              ## 3 pairwise comparisons for 3 groups
+%! assert (size (C, 2) >= 6);            ## at least i,j,diff,lo,hi,p
+
+## multcompare(): two-way balanced via anova2 backend
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! a = anova (popcorn, [], 'reps', 3);
+%! C = multcompare (a, 'display', 'off', 'estimate', 'column');
+%! assert (! isempty (C));
+%! assert (size (C, 2) >= 6);
+
+## multcompare(): runs after a fresh construction (triggers ensureFit_)
+%!test
+%! a = anova ((1:6)', [1;1;2;2;3;3], 'SSType', 2);
+%! C = multcompare (a, 'display', 'off');
+%! assert (! isempty (C));
