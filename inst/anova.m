@@ -135,6 +135,33 @@ classdef anova < handle
       obj.ensureFit_ ();
     endfunction
 
+    function summary (obj)
+      obj.ensureFit_ ();
+      atab = obj.AnovaTable;
+      if (isempty (atab))
+        fprintf ("  anova: no results to display.\n");
+        return;
+      endif
+      sstype_char = obj.sstypeLabel_ ();
+      fprintf ("\nANOVA TABLE (Type %s sums-of-squares, backend = %s):\n\n", ...
+               sstype_char, obj.backend_);
+      obj.printAtab_ (atab);
+      if (! isempty (obj.MSE))
+        fprintf ("\nMSE: %g    DFE: %g    Alpha: %g\n", ...
+                 obj.MSE, obj.DFE, obj.Alpha);
+      endif
+      fprintf ("\n");
+    endfunction
+
+    function disp (obj)
+      fprintf ("\n  anova object\n");
+      fprintf ("    backend  : %s\n", obj.backend_);
+      fprintf ("    fitted   : %d\n", obj.fitted_);
+      fprintf ("    nFactors : %d\n", obj.nFactors_);
+      fprintf ("    SSType   : %d\n", obj.SSType);
+      fprintf ("    Alpha    : %g\n\n", obj.Alpha);
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -304,6 +331,42 @@ classdef anova < handle
       if (! isempty (obj.DesignMatrix) && ! isempty (obj.Coefficients))
         obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients(:, 1);
       endif
+    endfunction
+
+    function s = sstypeLabel_ (obj)
+      switch (obj.SSType)
+        case 1; s = "I";
+        case 2; s = "II";
+        otherwise; s = "III";
+      endswitch
+    endfunction
+
+    function printAtab_ (obj, atab)
+      [nrows, ncols] = size (atab);
+      col_w = max (12, ceil (80 / max (ncols, 1)));
+      for j = 1:ncols
+        fprintf ("%-*s", col_w, char (atab{1, j}));
+      endfor
+      fprintf ("\n%s\n", repmat ("-", 1, col_w * ncols));
+      for i = 2:nrows
+        for j = 1:ncols
+          v = atab{i, j};
+          if (ischar (v))
+            fprintf ("%-*s", col_w, v);
+          elseif (isnumeric (v) && ! isempty (v) && isscalar (v))
+            if (isnan (v))
+              fprintf ("%-*s", col_w, "NaN");
+            elseif (v == fix (v) && abs (v) < 1e6)
+              fprintf ("%-*d", col_w, v);
+            else
+              fprintf ("%-*.*g", col_w, 5, v);
+            endif
+          else
+            fprintf ("%-*s", col_w, "");
+          endif
+        endfor
+        fprintf ("\n");
+      endfor
     endfunction
 
     function nv = buildAnovanArgs_ (obj)
@@ -581,3 +644,33 @@ endclassdef
 %! a.fit ();
 %! assert (a.getBackend (), 'anovan');
 %! assert (a.Stats.alpha, 0.10, 1e-12);
+
+## --- Week 3: summary / disp ---------------------------------------------
+
+## summary(): runs ensureFit_ and prints a table
+%!test
+%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! str = evalc ('summary (a)');
+%! assert (! isempty (strfind (str, 'ANOVA TABLE')));
+%! assert (! isempty (strfind (str, 'backend = anovan')));
+
+## summary(): includes MSE / DFE / Alpha line
+%!test
+%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2, 'Alpha', 0.10);
+%! str = evalc ('summary (a)');
+%! assert (! isempty (strfind (str, 'Alpha: 0.1')));
+
+## disp(): one-line overview of key fields
+%!test
+%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! str = evalc ('disp (a)');
+%! assert (! isempty (strfind (str, 'anova object')));
+%! assert (! isempty (strfind (str, 'backend')));
+%! assert (! isempty (strfind (str, 'SSType')));
+
+## summary(): SSType label appears in the header (Type I / II / III)
+%!test
+%! a1 = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 1);
+%! a2 = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! assert (! isempty (strfind (evalc ('summary (a1)'), 'Type I sums')));
+%! assert (! isempty (strfind (evalc ('summary (a2)'), 'Type II sums')));
