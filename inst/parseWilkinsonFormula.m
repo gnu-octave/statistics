@@ -852,15 +852,17 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     n_total = height (data);
     valid_mask = true (n_total, 1);
   else
-    if (! ismember (req_vars{1}, table_vars))
+    base0 = regexprep (req_vars{1}, '\^.*$', '');
+    if (! ismember (base0, table_vars))
       error ("parseWilkinsonFormula: Unknown variable '%s' in Data Table.", ...
              req_vars{1});
     endif
 
-    n_total = length (data.(req_vars{1}));
+    n_total = length (data.(base0));
     valid_mask = true (n_total, 1);
     for i = 1:length (req_vars)
-      col = data.(req_vars{i});
+      base_i = regexprep (req_vars{i}, '\^.*$', '');
+      col    = data.(base_i);
       if (isnumeric (col))
         valid_mask = valid_mask & ! isnan (col);
       endif
@@ -897,15 +899,26 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
   ## Process predictors
   var_info = struct ();
   for i = 1:length (req_vars)
-    vname = req_vars{i};
-    raw = data.(vname);
+    vname    = req_vars{i};
+    hat_pos  = strfind (vname, '^');
+    if (! isempty (hat_pos))
+      base_name = vname(1:hat_pos(1)-1);
+      exp_val   = str2double (vname(hat_pos(1)+1:end));
+    else
+      base_name = vname;
+      exp_val   = 1;
+    endif
+    raw = data.(base_name);
 
     if (iscell (raw)), raw = raw(valid_mask);
     else, raw = raw(valid_mask, :); endif
 
     if (isnumeric (raw))
       var_info.(vname).type = 'numeric';
-      var_info.(vname).data = raw;
+      var_info.(vname).data = raw .^ exp_val;
+    elseif (exp_val != 1)
+      error (strcat ("parseWilkinsonFormula: Power operator '^' is", ...
+                     " only valid on numeric variables."));
     elseif (isa (raw, 'categorical'))
       var_info.(vname).type = 'categorical';
       var_info.(vname).levels = categories (raw);
@@ -1665,6 +1678,19 @@ endfunction
 %! expected_terms = [0, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 1, 0; 0, 1, 0, 1; 0, 0, 1, 1; 0, 1, 1, 1];
 %! assert (eq.VariableNames, {'Y', 'x1', 'x2', 'x3'});
 %! assert (eq.Terms, expected_terms);
+%!test
+%! ## Test : polynomial term Weight^2 resolves from base column not as table variable name
+%! Weight = [2000; 2500; 3000; 3500; 4000];
+%! MPG    = [30; 28; 25; 22; 18];
+%! d = table (Weight, MPG);
+%! [X, yout, names] = parseWilkinsonFormula ('MPG ~ Weight^2', 'model_matrix', d);
+%! assert (size (X), [5, 3]);
+%! assert (names{1}, '(Intercept)');
+%! assert (any (strcmp (names, 'Weight')));
+%! assert (any (strcmp (names, 'Weight^2')));
+%! w2i = find (strcmp (names, 'Weight^2'));
+%! assert (X(:, w2i), Weight .^ 2, 1e-10);
+%! assert (yout, MPG);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
