@@ -126,6 +126,10 @@ classdef LinearModel
   ## 95% confidence interval of each predictor, evaluated between its
   ## observed minimum and maximum with all other predictors held at their
   ## observed means.
+  ##
+  ## @item @code{plotAdjustedResponse} @tab @tab Plot the fitted response
+  ## against a single predictor, with the other predictors averaged out by
+  ## averaging the fitted values over the observations used in the fit.
   ## @end multitable
   ##
   ## Create a @code{LinearModel} object by using the @code{fitlm} function or
@@ -3137,6 +3141,224 @@ classdef LinearModel
       xlabel (ax, 'Main Effect');
       ylabel (ax, '');
       title  (ax, 'Main Effects Plot');
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {} plotAdjustedResponse (@var{mdl}, @var{var})
+    ## @deftypefnx {LinearModel} {} plotAdjustedResponse (@var{mdl}, @var{var}, @var{Name}, @var{Value})
+    ## @deftypefnx {LinearModel} {} plotAdjustedResponse (@var{ax}, @dots{})
+    ## @deftypefnx {LinearModel} {@var{h} =} plotAdjustedResponse (@dots{})
+    ##
+    ## Plot the adjusted response of a fitted linear regression model against
+    ## a single predictor.
+    ##
+    ## @code{plotAdjustedResponse (@var{mdl}, @var{var})} creates an adjusted
+    ## response plot for the predictor @var{var} in the linear regression
+    ## model @var{mdl}.  @var{var} is a character vector or string naming a
+    ## predictor in @code{mdl.PredictorNames}, or a positive integer indexing
+    ## into @code{mdl.VariableNames}.
+    ##
+    ## An adjusted response function describes the fitted response as a
+    ## function of a single predictor, with the other predictors averaged out
+    ## by averaging the fitted values over the observations used in the fit.
+    ## For a model @math{y_i = f (x_{1i}, x_{2i}, @dots{}, x_{pi}) + r_i}, the
+    ## adjusted response function for @math{x_1} is
+    ## @math{g (x_1) = (1/n) \sum_{i=1}^n f (x_1, x_{2i}, x_{3i}, @dots{},
+    ## x_{pi})}, where @math{n} is the number of observations used to fit the
+    ## model.  The adjusted response data value for observation @math{i} is
+    ## @math{\tilde y_i = g (x_{1i}) + r_i}.
+    ##
+    ## For a numeric predictor, the adjusted response function is evaluated
+    ## on an evenly spaced grid of 100 points spanning the minimum to the
+    ## maximum observed value of @var{var}.  For a categorical predictor, the
+    ## adjusted response function is evaluated at each category level.
+    ##
+    ## Excluded or missing observations appear as @code{NaN} in the adjusted
+    ## data and produce gaps in the plotted data points.
+    ##
+    ## @code{plotAdjustedResponse (@var{mdl}, @var{var}, @var{Name}, @var{Value})}
+    ## specifies additional Name-Value arguments applied to the adjusted data
+    ## points (@code{h(1)}).  The following are accepted:
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.70
+    ## @headitem Name @tab @tab Description and default
+    ##
+    ## @item @qcode{"Color"} @tab @tab
+    ## Marker color.  Default: @code{[0.1490 0.5490 0.8660]}.
+    ##
+    ## @item @qcode{"Marker"} @tab @tab
+    ## Marker symbol.  Default: @qcode{"x"}.
+    ##
+    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## Marker size in points.  Default: @code{6}.
+    ##
+    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
+    ## Marker edge color.  Default: @qcode{"auto"}.
+    ##
+    ## @item @qcode{"MarkerFaceColor"} @tab @tab
+    ## Marker fill color.  Default: @qcode{"none"}.
+    ##
+    ## @item @qcode{"LineWidth"} @tab @tab
+    ## Width of the marker edge in points.  Default: @code{0.5}.
+    ## @end multitable
+    ##
+    ## @code{plotAdjustedResponse (@var{ax}, @dots{})} plots into the axes
+    ## object @var{ax} instead of the current axes returned by @code{gca}.
+    ##
+    ## @code{@var{h} = plotAdjustedResponse (@dots{})} returns a 2-by-1
+    ## vector of line handles.  @code{h(1)} corresponds to the adjusted
+    ## response data points and @code{h(2)} corresponds to the adjusted
+    ## response function.  Name-Value arguments only affect @code{h(1)}.
+    ##
+    ## @seealso{fitlm, plotEffects, plotResiduals, LinearModel}
+    ## @end deftypefn
+    function h = plotAdjustedResponse (this, varargin)
+      [ax, mdl, args] = lm_plot_axes (this, varargin);
+
+      if (isempty (args))
+        error ('plotAdjustedResponse: Not enough input arguments.');
+      endif
+
+      var  = args{1};
+      args = args(2:end);
+
+      vnames = mdl.VariableNames;
+      pred   = mdl.PredictorNames;
+
+      if (ischar (var) || isstring (var))
+        vname = char (var);
+        if (isempty (find (strcmp (vnames, vname))))
+          error ('plotAdjustedResponse: ''%s'' is not a variable for this fit.', vname);
+        endif
+      elseif (isnumeric (var) && isscalar (var))
+        if (var != fix (var) || var < 1)
+          error (['plotAdjustedResponse: Variable must be specified as a ', ...
+                  'name or a positive integer.']);
+        endif
+        if (var > numel (vnames))
+          error ('plotAdjustedResponse: This model only contains %d variables.', ...
+                 numel (vnames));
+        endif
+        vname = vnames{var};
+      else
+        error (['plotAdjustedResponse: Variable must be specified as a ', ...
+                'name or a positive integer.']);
+      endif
+
+      if (strcmp (vname, mdl.ResponseName))
+        error ('plotAdjustedResponse: The variable ''%s'' is the response in this model.', ...
+               vname);
+      endif
+
+      j     = find (strcmp (pred, vname));
+      pname = pred{j};
+
+      act   = mdl.ObservationInfo.Subset;
+      cinfo = mdl.CatLevelInfo;
+      n_act = sum (act);
+      p     = numel (pred);
+
+      X_act    = zeros (n_act, p);
+      is_cat   = false (1, p);
+      cat_lvls = cell (1, p);
+
+      for k = 1:p
+        ci = [];
+        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+            && ! isempty (cinfo.names))
+          ci = find (strcmp (cinfo.names, pred{k}));
+        endif
+        col = mdl.Variables{act, pred{k}};
+        if (! isempty (ci))
+          is_cat(k)   = true;
+          levels_k    = cinfo.levels{ci};
+          cat_lvls{k} = levels_k;
+          if (iscell (col))
+            col_str = col;
+          elseif (isa (col, 'categorical'))
+            col_str = cellstr (col);
+          else
+            col_str = cellstr (num2str (col(:)));
+          endif
+          codes = zeros (n_act, 1);
+          for L = 1:numel (levels_k)
+            codes (strcmp (col_str, char (levels_k{L}))) = L;
+          endfor
+          X_act(:,k) = codes;
+        else
+          X_act(:,k) = double (col(:));
+        endif
+      endfor
+
+      props = lm_plot_props (args);
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+
+      FIT_COLOR = [0.9600, 0.4660, 0.1600];
+      n_total   = numel (act);
+      beta      = mdl.Coefficients.Estimate;
+      resid     = mdl.Residuals.Raw;
+
+      xdata = NaN (n_total, 1);
+      ydata = NaN (n_total, 1);
+      xdata(act) = X_act(:, j);
+
+      if (is_cat(j))
+        levels = cat_lvls{j};
+        n_lvl  = numel (levels);
+        fit_y  = zeros (n_lvl, 1);
+        for L = 1:n_lvl
+          X_rows      = X_act;
+          X_rows(:,j) = L;
+          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          D     = LinearModel.lm_build_design (mdl.TermsMatrix, X_enc);
+          fit_y(L) = mean (D * beta);
+        endfor
+        fit_x = (1:n_lvl)';
+        ydata(act) = fit_y(X_act(:, j)) + resid(act);
+      else
+        x_active = X_act(:, j);
+        g_active = zeros (n_act, 1);
+        for i = 1:n_act
+          X_rows      = X_act;
+          X_rows(:,j) = x_active(i);
+          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          D     = LinearModel.lm_build_design (mdl.TermsMatrix, X_enc);
+          g_active(i) = mean (D * beta);
+        endfor
+        ydata(act) = g_active + resid(act);
+
+        fit_x = linspace (min (x_active), max (x_active), 100)';
+        fit_y = zeros (100, 1);
+        for k = 1:100
+          X_rows      = X_act;
+          X_rows(:,j) = fit_x(k);
+          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          D     = LinearModel.lm_build_design (mdl.TermsMatrix, X_enc);
+          fit_y(k) = mean (D * beta);
+        endfor
+      endif
+
+      hold (ax, 'on');
+      h(1) = lm_plot_data (ax, xdata, ydata, props);
+      h(2) = line (fit_x, fit_y, 'Color', FIT_COLOR, 'LineStyle', '-', ...
+                   'Marker', 'none', 'Parent', ax);
+      hold (ax, 'off');
+
+      if (is_cat(j))
+        set (ax, 'XTick', 1:n_lvl, 'XTickLabel', levels);
+      endif
+
+      xlabel (ax, pname);
+      ylabel (ax, ['Adjusted ', mdl.ResponseName]);
+      title  (ax, 'Adjusted Response Plot');
 
       if (nargout == 0)
         clear h;
@@ -6248,34 +6470,142 @@ endfunction
 %! close (fig);
 
 %!test
-%! ## robust fit on the hald dataset down weights the influential outlier and matches matlab
-%! Xr = [7 26 6 60; 1 29 15 52; 11 56 8 20; 11 31 8 47; 7 52 6 33; ...
-%!      11 55 9 22; 3 71 17 6; 1 31 22 44; 2 54 18 22; 21 47 4 26; ...
-%!      1 40 23 34; 11 66 9 12; 10 68 8 12];
-%! yr = [78.5;74.3;104.3;87.6;95.9;109.2;102.7;72.5;93.1;115.9;83.8;113.3;109.4];
-%! mr = fitlm (Xr, yr, 'RobustOpts', 'on');
-%! assert (class (mr), 'LinearModel');
-%! assert (! isempty (mr.Robust));
-%! assert (mr.Robust.Tune, 4.685, 1e-10);
-%! assert (numel (mr.Robust.Weights), 13);
-%! assert (mr.Coefficients.Estimate, ...
-%!         [60.0897358816096; 1.57529551556915; 0.532199192097796; ...
-%!          0.133455378556458; -0.120521170556001], 1e-7);
-%! assert (mr.Coefficients.SE, ...
-%!         [75.8175597390933; 0.805849306629754; 0.783146694256936; ...
-%!          0.816603608044244; 0.767202244491812], 1e-7);
-%! assert (mr.SSE, 56.0362670671825, 1e-6);
-%! assert (mr.SSR, 2650.68247260864, 1e-5);
-%! assert (mr.SST, 2706.71873967582, 1e-5);
-%! assert (mr.DFE, 8);
-%! assert (mr.RMSE, 2.64660790133291, 1e-8);
-%! assert (mr.Rsquared.Ordinary, 0.97929734395902, 1e-8);
-%! assert (mr.Rsquared.Adjusted, 0.96894601593853, 1e-8);
-%! assert (mr.ModelFitVsNullModel.Fstat, 94.6059618650438, 1e-5);
-%! assert (mr.ModelFitVsNullModel.Pvalue, 9.0327751881622e-07, 1e-12);
-%! assert (mr.Robust.Weights(1), 0.999991395159739, 1e-8);
-%! assert (mr.Robust.Weights(6), 0.877841934872095, 1e-8);
-%! assert (mr.Robust.Weights(8), 0.874854854809619, 1e-8);
+%! ## numeric predictor adjusted data
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mdl, 'x1');
+%! assert (get (h(1), 'XData'), X(:,1)', 1e-10);
+%! assert (get (h(1), 'YData'), ...
+%!   [-6.70590752804287, -6.54551694016554, -6.5544435914624,  -6.59143572669715, ...
+%!    -6.49138418414686, -6.21712299745016, -5.89359961368025, -5.69299878673044, ...
+%!    -5.67643670865536, -5.73777106454765, -5.70118778736348, -5.48284370035446, ...
+%!    -5.16795154710756, -4.93243578806991, -4.88118846293094, -4.95163193306634, ...
+%!    -4.97125247389768, -4.81620859768203, -4.52519034621851, -4.26384784484646], 1e-8);
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert (numel (xf), 100);
+%! assert (xf(1:5), ...
+%!   [0.05, 0.0595959595959596, 0.0691919191919192, 0.0787878787878788, 0.0883838383838384], 1e-10);
+%! assert (yf(1:5), ...
+%!   [-6.78153223917696, -6.75746124002502, -6.73339024087308, -6.70931924172113, -6.68524824256919], 1e-8);
+%! assert (xf(end-4:end), ...
+%!   [0.961616161616162, 0.971212121212121, 0.980808080808081, 0.99040404040404, 1], 1e-10);
+%! assert (yf(end-4:end), ...
+%!   [-4.49478731974241, -4.47071632059047, -4.44664532143853, -4.42257432228658, -4.39850332313464], 1e-8);
+%! close (fig);
+
+%!test
+%! ## title and axis labels follow the standard convention
+%! fig = figure ('visible', 'off');
+%! plotAdjustedResponse (mdl, 'x1');
+%! assert (get (get (gca, 'Title'),  'String'), 'Adjusted Response Plot');
+%! assert (get (get (gca, 'XLabel'), 'String'), 'x1');
+%! assert (get (get (gca, 'YLabel'), 'String'), 'Adjusted y');
+%! close (fig);
+
+%!test
+%! ## ax routing and a second predictor
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h   = plotAdjustedResponse (ax, mdl, 'x2');
+%! assert (isequal (get (h(1), 'Parent'), ax));
+%! assert (get (h(1), 'XData'), X(:,2)', 1e-8);
+%! assert (get (h(1), 'YData'), ...
+%!   [1.45980865498274,  1.34795136885775,  0.968893310576047, 0.463886235373945, ...
+%!    -0.00196069502564064, -0.391481514261341, -0.829623669406342, -1.48857191435397, ...
+%!    -2.42944244115883, -3.5460929349136, -4.66270932857441, -5.6954484453929, ...
+%!    -6.72952302895603, -7.94085753971093, -9.43434401734702, -11.14740482324, ...
+%!    -12.9075262328114, -14.5908667583184, -16.23611644156, -18.0089254078756], 1e-7);
+%! close (fig);
+
+%!test
+%! ## name-value arguments style the data points only
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mdl, 'x1', 'Marker', 's', 'MarkerSize', 10, 'Color', 'r');
+%! assert (get (h(1), 'Marker'), 's');
+%! assert (get (h(1), 'MarkerSize'), 10);
+%! assert (get (h(1), 'Color'), [1 0 0]);
+%! assert (get (h(2), 'Marker'), 'none');
+%! close (fig);
+
+%!test
+%! yn = y;
+%! yn(3) = NaN;
+%! mn = fitlm (X, yn);
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mn, 'x1');
+%! xd = get (h(1), 'XData');
+%! yd = get (h(1), 'YData');
+%! assert (isnan (xd(3)));
+%! assert (isnan (yd(3)));
+%! assert (yd([1 2 4]), [-7.04679028889336, -6.88651148335619, -6.93287739924846], 1e-8);
+%! close (fig);
+
+%!test
+%! w  = mod ((1:n)', 3) + 1;
+%! mw = fitlm (X, y, 'Weights', w);
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mw, 'x1');
+%! assert (get (h(1), 'YData'), ...
+%!   [-6.66184168801736, -6.5023788020353,  -6.51285162315763, -6.55200839614801, ...
+%!    -6.45473995928354, -6.18388034620285, -5.86437700397912, -5.66841468650568, ...
+%!    -5.65710958583715, -5.72431938706618, -5.69423002314892, -5.482998317337,   ...
+%!    -5.17583701321739, -4.9486705712372,  -4.90639103108588, -4.98642075413911, ...
+%!    -5.01624601581846, -4.87202532838101, -4.59244873362587, -4.34316635689238], 1e-7);
+%! close (fig);
+
+%!test
+%! ## robust regression 
+%! mr = fitlm (X, y, 'RobustOpts', 'on');
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mr, 'x1');
+%! assert (get (h(1), 'YData'), ...
+%!   [-6.69986109212516, -6.53959779763556, -6.54873660457867, -6.58602575771814, ...
+%!    -6.48635609533107, -6.2125616510561,  -5.88958987196639, -5.68962551195529, ...
+%!    -5.67378476307741, -5.7359253104254,  -5.70023308695542, -5.48286491591908, ...
+%!    -5.16903354090336, -4.93466342235539, -4.88464659996458, -4.95640543510664, ...
+%!    -4.97742620320314, -4.82386741651113, -4.53441911682976, -4.27473142949835], 1e-7);
+%! close (fig);
+
+%!test
+%! ## numeric predictor averaged over a categorical predictor
+%! wt = [3504;3693;3436;3433;3449;3672;3705;3288;3092;2500;2700;3100];
+%! yr = categorical ([70;70;70;70;70;76;76;76;82;82;82;82]);
+%! mg = [18;15;18;16;17;20;22;24;30;32;28;26];
+%! tc = table (mg, wt, yr, 'VariableNames', {'MPG','Weight','Year'});
+%! mc = fitlm (tc, 'MPG ~ Year + Weight');
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mc, 'Weight');
+%! assert (get (h(1), 'XData'), wt', 1e-10);
+%! assert (get (h(1), 'YData'), ...
+%!   [22.1247351073949, 19.1247351073949, 22.1247351073949, 20.1247351073949, ...
+%!    21.1247351073949, 18.6102199722546, 20.6102199722546, 22.6102199722546, ...
+%!    25.8864161365654, 27.8864161365654, 23.8864161365654, 21.8864161365654], 1e-8);
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert (xf(1:5), ...
+%!   [2500, 2512.17171717172, 2524.34343434343, 2536.51515151515, 2548.68686868687], 1e-8);
+%! assert (yf(1:5), ...
+%!   [26.9912481948118, 26.9176291703666, 26.8440101459214, 26.7703911214761, 26.6967720970309], 1e-8);
+%! close (fig);
+
+%!test
+%! ## categorical predictor evaluated per level
+%! wt = [3504;3693;3436;3433;3449;3672;3705;3288;3092;2500;2700;3100];
+%! yr = categorical ([70;70;70;70;70;76;76;76;82;82;82;82]);
+%! mg = [18;15;18;16;17;20;22;24;30;32;28;26];
+%! tc = table (mg, wt, yr, 'VariableNames', {'MPG','Weight','Year'});
+%! mc = fitlm (tc, 'MPG ~ Year + Weight');
+%! fig = figure ('visible', 'off');
+%! h = plotAdjustedResponse (mc, 'Year');
+%! assert (get (h(1), 'XData'), [1 1 1 1 1 2 2 2 3 3 3 3]);
+%! assert (get (h(1), 'YData'), ...
+%!   [19.2479799272553, 17.3911214761304, 18.8366909043795, 16.8185458004291, ...
+%!    17.9153196881646, 22.2641057484776, 24.463701891932,  23.9415324428265, ...
+%!    28.7560523180671, 27.1754184718549, 24.3850920685482, 24.8044392619348], 1e-7);
+%! assert (get (h(2), 'XData'), [1 2 3]);
+%! assert (get (h(2), 'YData'), [18.0419315592718, 23.5564466944121, 26.2802505301012], 1e-8);
+%! assert (get (gca, 'XTickLabel'), {'70'; '76'; '82'});
+%! close (fig);
 
 %!test
 %! load hald
@@ -6533,3 +6863,9 @@ endfunction
 %!error <Model has no predictors> plotEffects (fitlm (X(:,1), y, 'constant'))
 %!error <unrecognised RobustWgtFun> fitlm (X, y, 'RobustOpts', 'notarealfunction')
 %!error <invalid RobustOpts value> fitlm (X, y, 'RobustOpts', 42)
+%!error <Not enough input arguments> plotAdjustedResponse (mdl)
+%!error <is not a variable for this fit> plotAdjustedResponse (mdl, 'z')
+%!error <is the response in this model> plotAdjustedResponse (mdl, 3)
+%!error <This model only contains> plotAdjustedResponse (mdl, 99)
+%!error <Variable must be specified as a name or a positive integer> plotAdjustedResponse (mdl, 1.5)
+%!error <unrecognized property> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
