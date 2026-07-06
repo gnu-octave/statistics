@@ -829,14 +829,22 @@ function schema = run_schema_builder (expanded)
     terms_mat(i, idx) = 1;
   endfor
 
-  ## sorting : order by order.
-  term_orders = sum (terms_mat, 2);
+  ## sorting : order by true polynomial degree, not raw presence count.
+  var_degree = ones (1, n_vars);
+  for v = 1:n_vars
+    tok = regexp (all_vars{v}, '\^(\d+)$', 'tokens');
+    if (! isempty (tok))
+      var_degree(v) = str2double (tok{1}{1});
+    endif
+  endfor
+
+  term_orders = terms_mat * var_degree';
   M = [term_orders, terms_mat];
 
   [~, unique_idx] = unique (M, 'rows');
   terms_mat = terms_mat (unique_idx, :);
 
-  [~, sort_idx] = sortrows ([sum(terms_mat, 2), -terms_mat]);
+  [~, sort_idx] = sortrows ([terms_mat * var_degree', -terms_mat]);
   schema.Terms = terms_mat (sort_idx, :);
 
 endfunction
@@ -1691,6 +1699,16 @@ endfunction
 %! w2i = find (strcmp (names, 'Weight^2'));
 %! assert (X(:, w2i), Weight .^ 2, 1e-10);
 %! assert (yout, MPG);
+%!test
+%! ## Test : squared term sorts after a categorical term
+%! Weight = [2000;2500;3000;3500;4000;4500;2200;2700;3200;3700;4200;4700];
+%! MPG    = [30;28;25;22;18;16;29;26;23;20;17;15];
+%! Year   = {'70';'70';'70';'70';'76';'76';'76';'76';'82';'82';'82';'82'};
+%! d = table (MPG, Weight, Year);
+%! [~, ~, n1] = parseWilkinsonFormula ('MPG ~ Year + Weight^2', 'model_matrix', d);
+%! [~, ~, n2] = parseWilkinsonFormula ('MPG ~ Weight^2 + Year', 'model_matrix', d);
+%! assert (n1, {'(Intercept)'; 'Weight'; 'Year_76'; 'Year_82'; 'Weight^2'});
+%! assert (n2, n1);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')
