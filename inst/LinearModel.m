@@ -130,6 +130,10 @@ classdef LinearModel
   ## @item @code{plotAdjustedResponse} @tab @tab Plot the fitted response
   ## against a single predictor, with the other predictors averaged out by
   ## averaging the fitted values over the observations used in the fit.
+  ##
+  ## @item @code{plotAdded} @tab @tab Plot the incremental effect of one or
+  ## more terms on the response, after removing the effects of all other
+  ## terms, along with the fitted line and its 95% confidence bounds.
   ## @end multitable
   ##
   ## Create a @code{LinearModel} object by using the @code{fitlm} function or
@@ -3348,8 +3352,10 @@ classdef LinearModel
 
       hold (ax, 'on');
       h(1) = lm_plot_data (ax, xdata, ydata, props);
+      set (h(1), 'DisplayName', 'Adjusted data');
       h(2) = line (fit_x, fit_y, 'Color', FIT_COLOR, 'LineStyle', '-', ...
-                   'Marker', 'none', 'Parent', ax);
+                   'Marker', 'none', 'Parent', ax, ...
+                   'DisplayName', 'Adjusted fit');
       hold (ax, 'off');
 
       if (is_cat(j))
@@ -3359,6 +3365,271 @@ classdef LinearModel
       xlabel (ax, pname);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
       title  (ax, 'Adjusted Response Plot');
+      
+      hleg = legend (ax, 'show');
+      set (hleg, 'Location', lm_legend_corner (xdata, ydata));
+
+      if (nargout == 0)
+        clear h;
+      endif
+
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {LinearModel} {} plotAdded (@var{mdl})
+    ## @deftypefnx {LinearModel} {} plotAdded (@var{mdl}, @var{coef})
+    ## @deftypefnx {LinearModel} {} plotAdded (@var{mdl}, @var{coef}, @var{Name}, @var{Value})
+    ## @deftypefnx {LinearModel} {} plotAdded (@var{ax}, @dots{})
+    ## @deftypefnx {LinearModel} {@var{h} =} plotAdded (@dots{})
+    ##
+    ## Create an added variable plot for a fitted linear regression model.
+    ##
+    ## @code{plotAdded (@var{mdl})} creates an added variable plot for the
+    ## whole model @var{mdl} except the constant (intercept) term.
+    ##
+    ## @code{plotAdded (@var{mdl}, @var{coef})} creates an added variable
+    ## plot for the coefficients specified by @var{coef}.  @var{coef} is a
+    ## character vector or string naming a single coefficient in
+    ## @code{mdl.CoefficientNames}, the name of a categorical predictor in
+    ## @code{mdl.PredictorNames} (which selects that predictor's whole group
+    ## of indicator coefficients), or a vector of positive integers indexing
+    ## into @code{mdl.CoefficientNames}.
+    ##
+    ## An added variable plot, also known as a partial regression leverage
+    ## plot, illustrates the incremental effect on the response of the
+    ## selected terms after removing the effects of all other terms.  For a
+    ## single selected predictor @math{x_1}, the response @math{y} and
+    ## @math{x_1} are each fit to all other terms:
+    ## @math{y_i = g_y (x_{2i}, @dots{}, x_{pi}) + r_{yi}},
+    ## @math{x_{1i} = g_x (x_{2i}, @dots{}, x_{pi}) + r_{xi}}.  The adjusted
+    ## values are @math{\tilde y_i = \bar y + r_{yi}} and
+    ## @math{\tilde x_{1i} = \bar x_1 + r_{xi}}.  When @var{coef} selects
+    ## more than one coefficient, the selected columns of the design matrix
+    ## are combined into a single direction using the unit vector
+    ## @math{u = \beta / \lVert \beta \rVert}, and the added variable plot is
+    ## created for that combined direction.
+    ##
+    ## Excluded or missing observations appear as @code{NaN} in the adjusted
+    ## data and produce gaps in the plotted data points.
+    ##
+    ## @code{plotAdded (@var{mdl}, @var{coef}, @var{Name}, @var{Value})}
+    ## specifies additional Name-Value arguments applied to the adjusted data
+    ## points (@code{h(1)}).  The following are accepted:
+    ##
+    ## @multitable @columnfractions 0.28 0.02 0.70
+    ## @headitem Name @tab @tab Description and default
+    ##
+    ## @item @qcode{"Color"} @tab @tab
+    ## Marker color.  Default: @code{[0.1490 0.5490 0.8660]}.
+    ##
+    ## @item @qcode{"Marker"} @tab @tab
+    ## Marker symbol.  Default: @qcode{"x"}.
+    ##
+    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## Marker size in points.  Default: @code{6}.
+    ##
+    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
+    ## Marker edge color.  Default: @qcode{"auto"}.
+    ##
+    ## @item @qcode{"MarkerFaceColor"} @tab @tab
+    ## Marker fill color.  Default: @qcode{"none"}.
+    ##
+    ## @item @qcode{"LineWidth"} @tab @tab
+    ## Width of the marker edge in points.  Default: @code{0.5}.
+    ## @end multitable
+    ##
+    ## @code{plotAdded (@var{ax}, @dots{})} plots into the axes object
+    ## @var{ax} instead of the current axes returned by @code{gca}.
+    ##
+    ## @code{@var{h} = plotAdded (@dots{})} returns a 3-by-1 vector of line
+    ## handles.  @code{h(1)}, @code{h(2)}, and @code{h(3)} correspond to the
+    ## adjusted data points, the fitted line, and the 95% confidence bounds
+    ## of the fitted line, respectively.  Name-Value arguments only affect
+    ## @code{h(1)}.
+    ##
+    ## @seealso{fitlm, plotAdjustedResponse, plotEffects, plotInteraction, plotSlice, LinearModel}
+    ## @end deftypefn
+    function h = plotAdded (this, varargin)
+      [ax, mdl, args] = lm_plot_axes (this, varargin);
+
+      cnames = mdl.CoefficientNames;
+      pred   = mdl.PredictorNames;
+      ncoef  = numel (cnames);
+
+      if (isempty (args) || ! (ischar (args{1}) || isstring (args{1}) ...
+          || isnumeric (args{1})))
+        J = 2:ncoef;
+        label = 'Whole Model';
+      else
+        coefarg = args{1};
+        args    = args(2:end);
+
+        if (ischar (coefarg) || isstring (coefarg))
+          cname = char (coefarg);
+          k = find (strcmp (cnames, cname));
+          if (! isempty (k))
+            J = k;
+          else
+            cinfo = mdl.CatLevelInfo;
+            ci = [];
+            if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+                && ! isempty (cinfo.names))
+              ci = find (strcmp (cinfo.names, cname));
+            endif
+            if (isempty (ci))
+              error ('plotAdded: Bad coefficient name.');
+            endif
+            levels_ci = cinfo.levels{ci};
+            J = zeros (1, numel (levels_ci) - 1);
+            for L = 2:numel (levels_ci)
+              cn = sprintf ('%s_%s', cname, char (levels_ci{L}));
+              J(L-1) = find (strcmp (cnames, cn));
+            endfor
+          endif
+        else
+          J = coefarg(:)';
+          if (any (J != fix (J)) || any (J < 1) || any (J > ncoef))
+            error ('plotAdded: Bad coefficient number.');
+          endif
+        endif
+
+        if (numel (J) == 1)
+          label = cnames{J};
+        else
+          label  = 'Specified Terms';
+          cinfo  = mdl.CatLevelInfo;
+          if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+              && ! isempty (cinfo.names))
+            for ci = 1:numel (cinfo.names)
+              levels_ci = cinfo.levels{ci};
+              Jc = zeros (1, numel (levels_ci) - 1);
+              for L = 2:numel (levels_ci)
+                cn = sprintf ('%s_%s', cinfo.names{ci}, char (levels_ci{L}));
+                Jc(L-1) = find (strcmp (cnames, cn));
+              endfor
+              if (isequal (sort (J), sort (Jc)))
+                label = cinfo.names{ci};
+                break;
+              endif
+            endfor
+          endif
+        endif
+      endif
+
+      if (isempty (J))
+        error ('plotAdded: Bad coefficient number.');
+      endif
+
+      act   = mdl.ObservationInfo.Subset;
+      cinfo = mdl.CatLevelInfo;
+      n_act = sum (act);
+      p     = numel (pred);
+
+      X_act = zeros (n_act, p);
+      for k = 1:p
+        ci = [];
+        if (! isempty (cinfo) && isfield (cinfo, 'names') ...
+            && ! isempty (cinfo.names))
+          ci = find (strcmp (cinfo.names, pred{k}));
+        endif
+        col = mdl.Variables{act, pred{k}};
+        if (! isempty (ci))
+          levels_k = cinfo.levels{ci};
+          if (iscell (col))
+            col_str = col;
+          elseif (isa (col, 'categorical'))
+            col_str = cellstr (col);
+          else
+            col_str = cellstr (num2str (col(:)));
+          endif
+          codes = zeros (n_act, 1);
+          for L = 1:numel (levels_k)
+            codes (strcmp (col_str, char (levels_k{L}))) = L;
+          endfor
+          X_act(:,k) = codes;
+        else
+          X_act(:,k) = double (col(:));
+        endif
+      endfor
+
+      D = LinearModel.lm_predict (X_act, pred, cinfo, mdl.EncPredictorNames);
+      D = LinearModel.lm_build_design (mdl.TermsMatrix, D);
+
+      beta  = mdl.Coefficients.Estimate;
+      y_act = mdl.Variables{act, mdl.ResponseName};
+
+      Jc = setdiff (1:ncoef, J);
+
+      if (numel (J) == 1)
+        x1_act = D(:, J);
+        slope  = beta(J);
+      else
+        u      = beta(J) / norm (beta(J));
+        x1_act = D(:, J) * u;
+        slope  = norm (beta(J));
+      endif
+
+      bx = D(:,Jc) \ x1_act;
+      rx = x1_act - D(:,Jc) * bx;
+
+      if (! isempty (mdl.Robust))
+        w_act = mdl.Robust.Weights(act);
+      else
+        w_act = mdl.ObservationInfo.Weights(act);
+      endif
+
+      x1bar_w = sum (w_act .* x1_act) / sum (w_act);
+      ybar_w  = sum (w_act .* y_act)  / sum (w_act);
+
+      ry = mdl.Residuals.Raw(act) + slope * rx;
+
+      xtilde = x1bar_w + rx;
+      ytilde = ybar_w  + ry;
+
+      intercept_avp = mean (ytilde) - slope * mean (xtilde);
+
+      props = lm_plot_props (args);
+
+      if (isempty (ax))
+        ax = gca ();
+      endif
+
+      FIT_COLOR = [0.9600, 0.4660, 0.1600];
+      n_total   = numel (act);
+
+      xdata = NaN (n_total, 1);
+      ydata = NaN (n_total, 1);
+      xdata(act) = xtilde;
+      ydata(act) = ytilde;
+
+      fit_x = linspace (min (xtilde), max (xtilde), 100)';
+      fit_y = intercept_avp + slope * fit_x;
+
+      Sxx    = sum ((xtilde - mean (xtilde)) .^ 2);
+      tcrit  = tinv (0.975, mdl.DFE);
+      se_pred = sqrt (mdl.MSE * (1/n_act + (fit_x - mean (xtilde)).^2 / Sxx));
+      halfw   = tcrit * se_pred;
+
+      bound_x = [fit_x; NaN; fit_x];
+      bound_y = [fit_y + halfw; NaN; fit_y - halfw];
+
+      hold (ax, 'on');
+      h(1) = lm_plot_data (ax, xdata, ydata, props);
+      set (h(1), 'DisplayName', 'Adjusted data');
+      h(2) = line (fit_x, fit_y, 'Color', FIT_COLOR, 'LineStyle', '-', ...
+                   'Marker', 'none', 'Parent', ax, ...
+                   'DisplayName', sprintf ('Fit: y = %g*x', slope));
+      h(3) = line (bound_x, bound_y, 'Color', FIT_COLOR, 'LineStyle', ':', ...
+                   'Marker', 'none', 'Parent', ax, ...
+                   'DisplayName', '95% conf. bounds');
+      hold (ax, 'off');
+
+      xlabel (ax, ['Adjusted ', label]);
+      ylabel (ax, ['Adjusted ', mdl.ResponseName]);
+      title  (ax, ['Added Variable Plot for ', label]);
+      
+      hleg = legend (ax, 'show');
+      set (hleg, 'Location', lm_legend_corner (xdata, ydata));
 
       if (nargout == 0)
         clear h;
@@ -3539,35 +3810,48 @@ classdef LinearModel
 
     function X_enc = lm_predict (X_raw, pred_names, cat_info, enc_names)
       if (nargin < 4)
-        enc_names = {};
+        enc_names = pred_names;
       endif
       n     = rows (X_raw);
-      X_enc = zeros (n, 0);
-      for j = 1:numel (pred_names)
-        cat_idx = [];
-        if (! isempty (cat_info.names))
-          cat_idx = find (strcmp (cat_info.names, pred_names{j}));
+      X_enc = zeros (n, numel (enc_names));
+      for c = 1:numel (enc_names)
+        name = enc_names{c};
+
+        j = find (strcmp (pred_names, name), 1);
+        if (! isempty (j))
+          X_enc(:, c) = X_raw(:, j);
+          continue;
         endif
-        if (isempty (cat_idx))
-          X_enc = [X_enc, X_raw(:, j)];
-          if (! isempty (enc_names))
-            k = 2;
-            while (true)
-              pname = sprintf ('%s^%d', pred_names{j}, k);
-              if (any (strcmp (enc_names, pname)))
-                X_enc = [X_enc, X_raw(:, j) .^ k];
-                k = k + 1;
-              else
-                break;
-              endif
-            endwhile
+
+        tok = regexp (name, '^(.+)\^(\d+)$', 'tokens');
+        if (! isempty (tok))
+          j = find (strcmp (pred_names, tok{1}{1}), 1);
+          k = str2double (tok{1}{2});
+          X_enc(:, c) = X_raw(:, j) .^ k;
+          continue;
+        endif
+
+        found = false;
+        for j = 1:numel (pred_names)
+          ci = [];
+          if (! isempty (cat_info.names))
+            ci = find (strcmp (cat_info.names, pred_names{j}));
           endif
-        else
-          levels_j = cat_info.levels{cat_idx};
+          if (isempty (ci))
+            continue;
+          endif
+          levels_j = cat_info.levels{ci};
           for L = 2:numel (levels_j)
-            X_enc = [X_enc, double(X_raw(:, j) == L)];
+            if (strcmp (name, sprintf ('%s_%s', pred_names{j}, char (levels_j{L}))))
+              X_enc(:, c) = double (X_raw(:, j) == L);
+              found = true;
+              break;
+            endif
           endfor
-        endif
+          if (found)
+            break;
+          endif
+        endfor
       endfor
     endfunction
 
@@ -3922,6 +4206,18 @@ function h = lm_plot_data (ax, xdata, ydata, props)
             'MarkerEdgeColor', props.MarkerEdgeColor, ...
             'MarkerFaceColor', props.MarkerFaceColor, ...
             'LineWidth',      props.LineWidth);
+endfunction
+
+function loc = lm_legend_corner (xdata, ydata)
+  xr   = xdata(! isnan (xdata));
+  yr   = ydata(! isnan (ydata));
+  xmid = (min (xr) + max (xr)) / 2;
+  ymid = (min (yr) + max (yr)) / 2;
+  counts = [sum(xr >= xmid & yr >= ymid), sum(xr < xmid & yr >= ymid), ...
+            sum(xr >= xmid & yr < ymid),  sum(xr < xmid & yr < ymid)];
+  locs = {'northeast', 'northwest', 'southeast', 'southwest'};
+  [~, best_idx] = min (counts);
+  loc = locs{best_idx};
 endfunction
 
 function fit = lm_robust_fit (X, y, w, wgtfun, tune)
@@ -6608,6 +6904,177 @@ endfunction
 %! close (fig);
 
 %!test
+%! ## added variable plot for the whole model
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mdl);
+%! assert (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for Whole Model');
+%! assert (get (get (gca, 'XLabel'), 'String'), 'Adjusted Whole Model');
+%! assert (get (h(1), 'XData'), ...
+%!   [0.0284033824838481, 0.0204548552857604, -0.0238455815942649, -0.104497928156226, ...
+%!    -0.221502184400124, -0.374858350325959, -0.564566425933731, -0.79062641122344, ...
+%!    -1.05303830619508, -1.35180211084867, -1.68691782518418, -2.05838544920164, ...
+%!    -2.46620498290103, -2.91037642628236, -3.39089977934563, -3.90777504209083, ...
+%!    -4.46100221451797, -5.05058129662704, -5.67651228841805, -6.338795189891], 1e-7);
+%! assert (get (h(1), 'YData'), ...
+%!   [0.268294196961578, 0.281859485365135, 0.0282240016119717, -0.351360499061586, ...
+%!    -0.691784854932629, -0.955883099639786, -1.26860268025624, -1.80212835067532, ...
+%!    -2.61757630295165, -3.60880422217788, -4.59999804131014, -5.50731458360009, ...
+%!    -6.41596659263467, -7.50187852886103, -8.86994243196858, -10.457580663333, ...
+%!    -12.0922794983759, -13.6501974493543, -15.1700245580674, -16.8174109498545], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 2.69267*x');
+%! close (fig);
+
+%!test
+%! ## added variable plot for just the intercept term
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mdl, 1);
+%! assert (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for (Intercept)');
+%! assert (get (h(1), 'YData'), ...
+%!   [-5.41993222738086, -5.40485070721962, -5.55724508427077, -5.73586360329798, ...
+%!    -5.77559710257835, -5.63927961575051, -5.45185858988763, -5.38551877888305, ...
+%!    -5.50137637479139, -5.6932890627053,  -5.78544277558092, -5.6939943366699,  ...
+%!    -5.50415648955918, -5.3918536946959,  -5.4619779917695,  -5.65195174215564, ...
+%!    -5.78926122127593, -5.75006494138741, -5.57305294428921, -5.42387535532067], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 0.116189*x');
+%! close (fig);
+
+%!test
+%! ## added variable plot for one predictor picked by index
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mdl, 2);
+%! assert (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for x1');
+%! assert (get (h(1), 'YData'), ...
+%!   [-5.90289714234183, -5.75941203626873, -5.79651449057265, -5.87295275001727, ...
+%!    -5.82361765287968, -5.6113432327985,  -5.36107693684693, -5.24500351891828, ...
+%!    -5.32423917106718, -5.49264157838629, -5.57439667383173, -5.48566128065516, ...
+%!    -5.31164814244354, -5.22828171964398, -5.34045405194592, -5.58558750072505, ...
+%!    -5.79116834140295, -5.83335508623668, -5.75083777702536, -5.70926653910833], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 2.50845*x');
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert (xf(1:3), [0.370121951219512, 0.372449462532903, 0.374776973846294], 1e-9);
+%! assert (yf(1:3), [-5.97852185347592, -5.97268340425253, -5.96684495502913], 1e-7);
+%! close (fig);
+
+%!test
+%! ## added variable plot for the other predictor, a negative slope this time
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mdl, 3);
+%! assert (get (get (gca, 'Title'), 'String'), 'Added Variable Plot for x2');
+%! assert (get (h(1), 'YData'), ...
+%!   [-8.3040737600235,  -7.38815394983204, -6.7394349117973,  -6.21666489068295, ...
+%!    -5.65473472476609, -5.01647844768535, -4.4268435065139,  -4.05801465514508, ...
+%!    -3.9711080856335,  -4.05998148307182, -4.14882078041619, -4.15378280091823, ...
+%!    -4.16008028816491, -4.34363770260337, -4.80934708392301, -5.49463079349955, ...
+%!    -6.22697510675454, -6.88253853594507, -7.50001112287024, -8.2450429928694], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = -0.978835*x');
+%! close (fig);
+
+%!test
+%! ## ax argument sends the plot to that axes
+%! fig = figure ('visible', 'off');
+%! ax  = axes (fig);
+%! h   = plotAdded (ax, mdl, 2);
+%! assert (isequal (get (h(1), 'Parent'), ax));
+%! close (fig);
+
+%!test
+%! ## name-value styling only changes the data points, not the fit line
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mdl, 2, 'Marker', 's', 'MarkerSize', 10, 'Color', 'r');
+%! assert (get (h(1), 'Marker'), 's');
+%! assert (get (h(1), 'MarkerSize'), 10);
+%! assert (get (h(1), 'Color'), [1 0 0]);
+%! assert (get (h(2), 'Marker'), 'none');
+%! close (fig);
+
+%!test
+%! ## a missing observation leaves a gap in the adjusted data
+%! yn = y;
+%! yn(3) = NaN;
+%! mn = fitlm (X, yn);
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mn, 2);
+%! xd = get (h(1), 'XData');
+%! yd = get (h(1), 'YData');
+%! assert (isnan (xd(3)));
+%! assert (isnan (yd(3)));
+%! close (fig);
+
+%!test
+%! ## weighted fit still gives a proper added variable plot
+%! w  = mod ((1:n)', 3) + 1;
+%! mw = fitlm (X, y, 'Weights', w);
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mw, 2);
+%! assert (get (h(1), 'YData'), ...
+%!   [-6.04899282212585, -5.90562605001686, -5.9429257275943,  -6.01964009962184, ...
+%!    -5.97066000437658, -5.75881947549715, -5.50906596005672, -5.39358421194863, ...
+%!    -5.4734904232275,  -5.64264227898597, -5.7252257121802,  -5.63739754606181, ...
+%!    -5.46437052421778, -5.38206910709522, -5.49538533438357, -5.74174156745852, ...
+%!    -5.94862408174164, -5.99219138949,    -5.91113353250271, -5.87110063611913], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 2.38836*x');
+%! close (fig);
+
+%!test
+%! ## robust fit still gives a proper added variable plot
+%! mr = fitlm (X, y, 'RobustOpts', 'on');
+%! fig = figure ('visible', 'off');
+%! h = plotAdded (mr, 2);
+%! assert (get (h(1), 'YData'), ...
+%!   [-5.89409568732029, -5.75060102429134, -5.78768755033552, -5.86410351021651, ...
+%!    -5.81473974221138, -5.60243027995878, -5.35212257053188, -5.23600136782402, ...
+%!    -5.31518286388981, -5.4835247438219,  -5.56521294057644, -5.47640427740507, ...
+%!    -5.30231149789475, -5.2188590624926,  -5.33093901088806, -5.5759737044568,  ...
+%!    -5.78144941862042, -5.82352466563597, -5.74088948730258, -5.69919400895959], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 2.48815*x');
+%! close (fig);
+
+%!test
+%! ## added variable plot for the whole model
+%! load carsmall
+%! Year = categorical (Model_Year);
+%! tbl  = table (MPG, Weight, Year);
+%! mdl1  = fitlm (tbl, 'MPG ~ Year + Weight^2');
+%! fig  = figure ('visible', 'off');
+%! h    = plotAdded (mdl1);
+%! assert (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for Whole Model');
+%! assert (get (get (gca, 'XLabel'), 'String'), 'Adjusted Whole Model');
+%! xd = get (h(1), 'XData');
+%! yd = get (h(1), 'YData');
+%! assert (xd(1:5), ...
+%!   [-4.54006581304461, -4.65629283432076, -4.49502736854252, ...
+%!    -4.49300111649177, -4.50376945388336], 1e-7);
+%! assert (yd(1:5), [18, 15, 18, 16, 17], 1e-8);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 8.44866*x');
+%! xf = get (h(2), 'XData');
+%! yf = get (h(2), 'YData');
+%! assert (xf(1:3), [-5.06005142297709, -5.03050027197254, -5.000949120968], 1e-7);
+%! assert (yf(1:3), [11.4556384009199, 11.7053059986795, 11.9549735964392], 1e-7);
+%! close (fig);
+
+%!test
+%! ## added variable plot for the weight terms picked as a pair
+%! load carsmall
+%! Year = categorical (Model_Year);
+%! tbl  = table (MPG, Weight, Year);
+%! mdl1  = fitlm (tbl, 'MPG ~ Year + Weight^2');
+%! fig  = figure ('visible', 'off');
+%! h    = plotAdded (mdl1, [2 5]);
+%! assert (get (get (gca, 'Title'),  'String'), 'Added Variable Plot for Specified Terms');
+%! assert (get (get (gca, 'XLabel'), 'String'), 'Adjusted Specified Terms');
+%! xd = get (h(1), 'XData');
+%! yd = get (h(1), 'YData');
+%! assert (xd(1:5), ...
+%!   [-2181.48546848357, -2241.34798193195, -2158.28850051435, ...
+%!    -2157.24488312395, -2162.79109548355], 1e-6);
+%! assert (yd(1:5), ...
+%!   [24.0284299339692, 21.0284299339692, 24.0284299339692, ...
+%!    22.0284299339692, 23.0284299339692], 1e-7);
+%! assert (get (h(2), 'DisplayName'), 'Fit: y = 0.0164036*x');
+%! close (fig);
+
+%!test
 %! load hald
 %! Xh = ingredients;
 %! yh = heat;
@@ -6869,3 +7336,7 @@ endfunction
 %!error <This model only contains> plotAdjustedResponse (mdl, 99)
 %!error <Variable must be specified as a name or a positive integer> plotAdjustedResponse (mdl, 1.5)
 %!error <unrecognized property> plotAdjustedResponse (mdl, 'x1', 'BadOption', 5)
+%!error <Bad coefficient number> plotAdded (mdl, 99)
+%!error <Bad coefficient name> plotAdded (mdl, 'NotACoef')
+%!error <unrecognized property> plotAdded (mdl, 2, 'BadOpt', 5)
+%!error <Bad coefficient number> mdl0 = fitlm (ones (n, 1), y, 'Intercept', false); plotAdded (mdl0)
