@@ -131,22 +131,22 @@ endfunction
 %! x = [-Inf, -1, 0, 1/2, 1, Inf];
 %! p1 = [0, 0, 0, 0.3650, 0.6681, 1];
 %! p1u = [1, 1, 1, 0.6350, 0.3319, 0];
-%!assert (invgcdf (x, ones (1,6), ones (1,6)), p1, 1e-4)
-%!assert (invgcdf (x, 1, 1), p1, 1e-4)
-%!assert (invgcdf (x, 1, ones (1,6)), p1, 1e-4)
-%!assert (invgcdf (x, ones (1,6), 1), p1, 1e-4)
-%!assert (invgcdf (x, 1, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (invgcdf (x, [1, 1, 1, NaN, 1, 1], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (invgcdf ([x(1:3), NaN, x(5:6)], 1, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (invgcdf (x, ones (1,6), ones (1,6), 'upper'), p1u, 1e-4)
-%!assert (invgcdf (x, 1, 1, 'upper'), p1u, 1e-4)
-%!assert (invgcdf (x, 1, ones (1,6), 'upper'), p1u, 1e-4)
-%!assert (invgcdf (x, ones (1,6), 1, 'upper'), p1u, 1e-4)
+%!assert_equal (invgcdf (x, ones (1,6), ones (1,6)), p1, 1e-4)
+%!assert_equal (invgcdf (x, 1, 1), p1, 1e-4)
+%!assert_equal (invgcdf (x, 1, ones (1,6)), p1, 1e-4)
+%!assert_equal (invgcdf (x, ones (1,6), 1), p1, 1e-4)
+%!assert_equal (invgcdf (x, 1, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (invgcdf (x, [1, 1, 1, NaN, 1, 1], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (invgcdf ([x(1:3), NaN, x(5:6)], 1, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (invgcdf (x, ones (1,6), ones (1,6), 'upper'), p1u, 1e-4)
+%!assert_equal (invgcdf (x, 1, 1, 'upper'), p1u, 1e-4)
+%!assert_equal (invgcdf (x, 1, ones (1,6), 'upper'), p1u, 1e-4)
+%!assert_equal (invgcdf (x, ones (1,6), 1, 'upper'), p1u, 1e-4)
 
 ## Test class of input preserved
-%!assert (class (invgcdf (single ([x, NaN]), 1, 1)), "single")
-%!assert (class (invgcdf ([x, NaN], 1, single (1))), "single")
-%!assert (class (invgcdf ([x, NaN], single (1), 1)), "single")
+%!assert_equal (class (invgcdf (single ([x, NaN]), 1, 1)), "single")
+%!assert_equal (class (invgcdf ([x, NaN], 1, single (1))), "single")
+%!assert_equal (class (invgcdf ([x, NaN], single (1), 1)), "single")
 
 ## Test input validation
 %!error<invgcdf: function called with too few input arguments.> invgcdf ()

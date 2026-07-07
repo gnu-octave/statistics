@@ -766,32 +766,32 @@ endclassdef
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = ExhaustiveSearcher (X);
-%! assert (obj.X, X)
-%! assert (obj.Distance, "euclidean")
-%! assert (isempty (obj.DistParameter))
+%! assert_equal (obj.X, X)
+%! assert_equal (obj.Distance, "euclidean")
+%! assert_equal (isempty (obj.DistParameter), true)
 
 %!test
 %! ## Minkowski distance with custom P
 %! X = [1, 2; 3, 4];
 %! obj = ExhaustiveSearcher (X, 'Distance', 'minkowski', 'P', 3);
-%! assert (obj.Distance, "minkowski")
-%! assert (obj.DistParameter, 3)
+%! assert_equal (obj.Distance, "minkowski")
+%! assert_equal (obj.DistParameter, 3)
 
 %!test
 %! ## Seuclidean distance with custom Scale
 %! X = [1, 2; 3, 4; 5, 6];
 %! S = [1, 2];
 %! obj = ExhaustiveSearcher (X, 'Distance', 'seuclidean', 'Scale', S);
-%! assert (obj.Distance, "seuclidean")
-%! assert (obj.DistParameter, S)
+%! assert_equal (obj.Distance, "seuclidean")
+%! assert_equal (obj.DistParameter, S)
 
 %!test
 %! ## Mahalanobis distance with custom Cov
 %! X = [1, 2; 3, 4; 5, 6];
 %! C = [1, 0; 0, 1];
 %! obj = ExhaustiveSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
-%! assert (obj.Distance, "mahalanobis")
-%! assert (obj.DistParameter, C)
+%! assert_equal (obj.Distance, "mahalanobis")
+%! assert_equal (obj.DistParameter, C)
 
 %!test
 %! ## knnsearch with Euclidean distance
@@ -799,8 +799,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 1)
-%! assert (D, sqrt (2), 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, sqrt (2), 1e-10)
 
 %!test
 %! ## knnsearch with Cityblock distance
@@ -808,8 +808,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'cityblock');
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 1)
-%! assert (D, 1, 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 1, 1e-10)
 
 %!test
 %! ## knnsearch with Chebychev distance
@@ -817,8 +817,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'chebychev');
 %! Y = [2, 2];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, 1, 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 1, 1e-10)
 
 %!test
 %! ## knnsearch with Cosine distance
@@ -826,8 +826,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'cosine');
 %! Y = [1, 0.5];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 3)
-%! assert (D < 0.1, true)
+%! assert_equal (idx, 3)
+%! assert_equal (D < 0.1, true)
 
 %!test
 %! ## knnsearch with Minkowski P=1 (Manhattan)
@@ -835,9 +835,9 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'minkowski', 'P', 1);
 %! Y = [0.5, 0.5];
 %! [idx, D] = knnsearch (obj, Y, 'K', 2, 'IncludeTies', true);
-%! assert (iscell (idx))
-%! assert (idx{1}, [1, 2, 3])
-%! assert (D{1}, [1, 1, 1], 1e-10)
+%! assert_equal (iscell (idx), true)
+%! assert_equal (idx{1}, [1, 2, 3])
+%! assert_equal (D{1}, [1, 1, 1], 1e-10)
 
 %!test
 %! ## rangesearch with Seuclidean
@@ -846,8 +846,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'seuclidean', 'Scale', S);
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 2);
-%! assert (idx{1}, [1])
-%! assert (D{1}, [sqrt(2)], 1e-10)
+%! assert_equal (idx{1}, [1])
+%! assert_equal (D{1}, [sqrt(2)], 1e-10)
 
 %!test
 %! ## rangesearch with Mahalanobis
@@ -856,8 +856,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 3, 'SortIndices', false);
-%! assert (idx{1}, [1, 2])
-%! assert (D{1}, [sqrt(2), sqrt(8)], 1e-10)
+%! assert_equal (idx{1}, [1, 2])
+%! assert_equal (D{1}, [sqrt(2), sqrt(8)], 1e-10)
 
 %!test
 %! ## rangesearch with Hamming distance
@@ -865,8 +865,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'hamming');
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 0.5);
-%! assert (idx{1}, [1, 2])
-%! assert (D{1}, [0.5, 0.5], 1e-10)
+%! assert_equal (idx{1}, [1, 2])
+%! assert_equal (D{1}, [0.5, 0.5], 1e-10)
 
 %!test
 %! ## Custom distance function
@@ -875,8 +875,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', custom_dist);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, 2, 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 2, 1e-10)
 
 %!test
 %! ## IncludeTies returns all tied neighbors
@@ -884,8 +884,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X);
 %! Y = 1;
 %! [idx, D] = knnsearch (obj, Y, 'K', 2, 'IncludeTies', true);
-%! assert (idx{1}, [2, 1, 3])
-%! assert (D{1}, [0, 1, 1])
+%! assert_equal (idx{1}, [2, 1, 3])
+%! assert_equal (D{1}, [0, 1, 1])
 
 %!test
 %! ## Custom distance function with vectorized output
@@ -894,8 +894,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', f);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, 2)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 2)
 
 %!test
 %! ## Euclidean with high-dimensional data
@@ -903,8 +903,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X);
 %! Y = [5, 6, 7];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 2)
-%! assert (D, sqrt (3), 1e-10)
+%! assert_equal (idx, 2)
+%! assert_equal (D, sqrt (3), 1e-10)
 
 %!test
 %! ## Minkowski P=3 with scaled data
@@ -912,8 +912,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = [20, 30];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 2)
-%! assert (D, 0, 1e-10)
+%! assert_equal (idx, 2)
+%! assert_equal (D, 0, 1e-10)
 
 %!test
 %! ## Seuclidean with custom scales on diverse data
@@ -922,8 +922,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'seuclidean', 'Scale', S);
 %! Y = [1.5, 15];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, sqrt ((0.5/1)^2 + (5/5)^2), 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, sqrt ((0.5/1)^2 + (5/5)^2), 1e-10)
 
 %!test
 %! ## Mahalanobis with correlated data
@@ -932,8 +932,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
 %! Y = [2, 1.5];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 2)
-%! assert (D, 0, 1e-10)
+%! assert_equal (idx, 2)
+%! assert_equal (D, 0, 1e-10)
 
 %!test
 %! ## Cityblock with sparse data
@@ -941,8 +941,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'cityblock');
 %! Y = [0, 0, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (idx{1}, [1, 2, 3])
-%! assert (D{1}, [1, 1, 1], 1e-10)
+%! assert_equal (idx{1}, [1, 2, 3])
+%! assert_equal (D{1}, [1, 1, 1], 1e-10)
 
 %!test
 %! ## Chebychev with extreme values
@@ -950,8 +950,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'chebychev');
 %! Y = [60, 60];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 2)
-%! assert (D, 10, 1e-10)
+%! assert_equal (idx, 2)
+%! assert_equal (D, 10, 1e-10)
 
 %!test
 %! ## Cosine with normalized data
@@ -959,8 +959,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'cosine');
 %! Y = [1, 1];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 3)
-%! assert (D < 0.1, true)
+%! assert_equal (idx, 3)
+%! assert_equal (D < 0.1, true)
 
 %!test
 %! ## Correlation with time-series-like data
@@ -968,8 +968,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'correlation');
 %! Y = [1.5, 3, 4.5];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D < 0.1, true)
+%! assert_equal (idx, 1)
+%! assert_equal (D < 0.1, true)
 
 %!test
 %! ## Spearman with ranked data
@@ -977,8 +977,8 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'spearman');
 %! Y = [1, 2, 3];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, 0, 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 0, 1e-10)
 
 %!test
 %! ## Jaccard with binary sparse data
@@ -986,34 +986,34 @@ endclassdef
 %! obj = ExhaustiveSearcher (X, 'Distance', 'jaccard');
 %! Y = [1, 0, 0];
 %! [idx, D] = knnsearch (obj, Y);
-%! assert (idx, 1)
-%! assert (D, 0, 1e-10)
+%! assert_equal (idx, 1)
+%! assert_equal (D, 0, 1e-10)
 
 %!test
 %! obj = ExhaustiveSearcher (ones (3,2));
-%! assert (obj.X, ones (3,2))
-%! assert (obj.Distance, "euclidean")
-%! assert (isempty (obj.DistParameter))
+%! assert_equal (obj.X, ones (3,2))
+%! assert_equal (obj.Distance, "euclidean")
+%! assert_equal (isempty (obj.DistParameter), true)
 
 %!test
 %! obj = ExhaustiveSearcher (ones (3,2));
 %! obj.Distance = 'minkowski';
-%! assert (obj.Distance, "minkowski")
+%! assert_equal (obj.Distance, "minkowski")
 
 %!test
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'minkowski');
 %! obj.DistParameter = 3;
-%! assert (obj.DistParameter, 3)
+%! assert_equal (obj.DistParameter, 3)
 
 %!test
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'seuclidean');
 %! obj.DistParameter = [1, 2];
-%! assert (obj.DistParameter, [1, 2])
+%! assert_equal (obj.DistParameter, [1, 2])
 
 %!test
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'mahalanobis');
 %! obj.DistParameter = eye (2);
-%! assert (obj.DistParameter, eye (2))
+%! assert_equal (obj.DistParameter, eye (2))
 
 ## Test Input Validation
 

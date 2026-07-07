@@ -557,455 +557,455 @@ endfunction
 ## Test output
 %!test
 %! pd = makedist ('beta');
-%! assert (class (pd), "BetaDistribution");
-%! assert (pd.a, 1);
-%! assert (pd.b, 1);
+%! assert_equal (class (pd), "BetaDistribution");
+%! assert_equal (pd.a, 1);
+%! assert_equal (pd.b, 1);
 %!test
 %! pd = makedist ('beta', 'a', 5);
-%! assert (pd.a, 5);
-%! assert (pd.b, 1);
+%! assert_equal (pd.a, 5);
+%! assert_equal (pd.b, 1);
 %!test
 %! pd = makedist ('beta', 'b', 5);
-%! assert (pd.a, 1);
-%! assert (pd.b, 5);
+%! assert_equal (pd.a, 1);
+%! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('beta', 'a', 3, 'b', 5);
-%! assert (pd.a, 3);
-%! assert (pd.b, 5);
+%! assert_equal (pd.a, 3);
+%! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('binomial');
-%! assert (class (pd), "BinomialDistribution");
-%! assert (pd.N, 1);
-%! assert (pd.p, 0.5);
+%! assert_equal (class (pd), "BinomialDistribution");
+%! assert_equal (pd.N, 1);
+%! assert_equal (pd.p, 0.5);
 %!test
 %! pd = makedist ('binomial', 'N', 5);
-%! assert (pd.N, 5);
-%! assert (pd.p, 0.5);
+%! assert_equal (pd.N, 5);
+%! assert_equal (pd.p, 0.5);
 %!test
 %! pd = makedist ('binomial', 'p', 0.2);
-%! assert (pd.N, 1);
-%! assert (pd.p, 0.2);
+%! assert_equal (pd.N, 1);
+%! assert_equal (pd.p, 0.2);
 %!test
 %! pd = makedist ('binomial', 'N', 3, 'p', 0.3);
-%! assert (pd.N, 3);
-%! assert (pd.p, 0.3);
+%! assert_equal (pd.N, 3);
+%! assert_equal (pd.p, 0.3);
 %!test
 %! pd = makedist ('birnbaumsaunders');
-%! assert (class (pd), "BirnbaumSaundersDistribution");
-%! assert (pd.beta, 1);
-%! assert (pd.gamma, 1);
+%! assert_equal (class (pd), "BirnbaumSaundersDistribution");
+%! assert_equal (pd.beta, 1);
+%! assert_equal (pd.gamma, 1);
 %!test
 %! pd = makedist ('birnbaumsaunders', 'beta', 5);
-%! assert (pd.beta, 5);
-%! assert (pd.gamma, 1);
+%! assert_equal (pd.beta, 5);
+%! assert_equal (pd.gamma, 1);
 %!test
 %! pd = makedist ('birnbaumsaunders', 'gamma', 5);
-%! assert (pd.beta, 1);
-%! assert (pd.gamma, 5);
+%! assert_equal (pd.beta, 1);
+%! assert_equal (pd.gamma, 5);
 %!test
 %! pd = makedist ('birnbaumsaunders', 'beta', 3, 'gamma', 5);
-%! assert (pd.beta, 3);
-%! assert (pd.gamma, 5);
+%! assert_equal (pd.beta, 3);
+%! assert_equal (pd.gamma, 5);
 %!test
 %! pd = makedist ('burr');
-%! assert (class (pd), "BurrDistribution");
-%! assert (pd.alpha, 1);
-%! assert (pd.c, 1);
-%! assert (pd.k, 1);
+%! assert_equal (class (pd), "BurrDistribution");
+%! assert_equal (pd.alpha, 1);
+%! assert_equal (pd.c, 1);
+%! assert_equal (pd.k, 1);
 %!test
 %! pd = makedist ('burr', 'k', 5);
-%! assert (pd.alpha, 1);
-%! assert (pd.c, 1);
-%! assert (pd.k, 5);
+%! assert_equal (pd.alpha, 1);
+%! assert_equal (pd.c, 1);
+%! assert_equal (pd.k, 5);
 %!test
 %! pd = makedist ('burr', 'c', 5);
-%! assert (pd.alpha, 1);
-%! assert (pd.c, 5);
-%! assert (pd.k, 1);
+%! assert_equal (pd.alpha, 1);
+%! assert_equal (pd.c, 5);
+%! assert_equal (pd.k, 1);
 %!test
 %! pd = makedist ('burr', 'alpha', 3, 'c', 5);
-%! assert (pd.alpha, 3);
-%! assert (pd.c, 5);
-%! assert (pd.k, 1);
+%! assert_equal (pd.alpha, 3);
+%! assert_equal (pd.c, 5);
+%! assert_equal (pd.k, 1);
 %!test
 %! pd = makedist ('burr', 'k', 3, 'c', 5);
-%! assert (pd.alpha, 1);
-%! assert (pd.c, 5);
-%! assert (pd.k, 3);
+%! assert_equal (pd.alpha, 1);
+%! assert_equal (pd.c, 5);
+%! assert_equal (pd.k, 3);
 %!test
 %! pd = makedist ('exponential');
-%! assert (class (pd), "ExponentialDistribution");
-%! assert (pd.mu, 1);
+%! assert_equal (class (pd), "ExponentialDistribution");
+%! assert_equal (pd.mu, 1);
 %!test
 %! pd = makedist ('exponential', 'mu', 5);
-%! assert (pd.mu, 5);
+%! assert_equal (pd.mu, 5);
 %!test
 %! pd = makedist ('extremevalue');
-%! assert (class (pd), "ExtremeValueDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('extremevalue', 'mu', 5);
-%! assert (class (pd), "ExtremeValueDistribution");
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('ev', 'sigma', 5);
-%! assert (class (pd), "ExtremeValueDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('ev', 'mu', -3, 'sigma', 5);
-%! assert (class (pd), "ExtremeValueDistribution");
-%! assert (pd.mu, -3);
-%! assert (pd.sigma, 5);
+%! assert_equal (class (pd), "ExtremeValueDistribution");
+%! assert_equal (pd.mu, -3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('gamma');
-%! assert (class (pd), "GammaDistribution");
-%! assert (pd.a, 1);
-%! assert (pd.b, 1);
+%! assert_equal (class (pd), "GammaDistribution");
+%! assert_equal (pd.a, 1);
+%! assert_equal (pd.b, 1);
 %!test
 %! pd = makedist ('gamma', 'a', 5);
-%! assert (pd.a, 5);
-%! assert (pd.b, 1);
+%! assert_equal (pd.a, 5);
+%! assert_equal (pd.b, 1);
 %!test
 %! pd = makedist ('gamma', 'b', 5);
-%! assert (pd.a, 1);
-%! assert (pd.b, 5);
+%! assert_equal (pd.a, 1);
+%! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('gamma', 'a', 3, 'b', 5);
-%! assert (pd.a, 3);
-%! assert (pd.b, 5);
+%! assert_equal (pd.a, 3);
+%! assert_equal (pd.b, 5);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue');
-%! assert (class (pd), "GeneralizedExtremeValueDistribution");
-%! assert (pd.k, 0);
-%! assert (pd.sigma, 1);
-%! assert (pd.mu, 0);
+%! assert_equal (class (pd), "GeneralizedExtremeValueDistribution");
+%! assert_equal (pd.k, 0);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.mu, 0);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue', 'k', 5);
-%! assert (pd.k, 5);
-%! assert (pd.sigma, 1);
-%! assert (pd.mu, 0);
+%! assert_equal (pd.k, 5);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.mu, 0);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue', 'sigma', 5);
-%! assert (pd.k, 0);
-%! assert (pd.sigma, 5);
-%! assert (pd.mu, 0);
+%! assert_equal (pd.k, 0);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue', 'k', 3, 'sigma', 5);
-%! assert (pd.k, 3);
-%! assert (pd.sigma, 5);
-%! assert (pd.mu, 0);
+%! assert_equal (pd.k, 3);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
 %!test
 %! pd = makedist ('GeneralizedExtremeValue', 'mu', 3, 'sigma', 5);
-%! assert (pd.k, 0);
-%! assert (pd.sigma, 5);
-%! assert (pd.mu, 3);
+%! assert_equal (pd.k, 0);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.mu, 3);
 %!test
 %! pd = makedist ('GeneralizedPareto');
-%! assert (class (pd), "GeneralizedParetoDistribution");
-%! assert (pd.k, 1);
-%! assert (pd.sigma, 1);
-%! assert (pd.theta, 1);
+%! assert_equal (class (pd), "GeneralizedParetoDistribution");
+%! assert_equal (pd.k, 1);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.theta, 1);
 %!test
 %! pd = makedist ('GeneralizedPareto', 'k', 5);
-%! assert (pd.k, 5);
-%! assert (pd.sigma, 1);
-%! assert (pd.theta, 1);
+%! assert_equal (pd.k, 5);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.theta, 1);
 %!test
 %! pd = makedist ('GeneralizedPareto', 'sigma', 5);
-%! assert (pd.k, 1);
-%! assert (pd.sigma, 5);
-%! assert (pd.theta, 1);
+%! assert_equal (pd.k, 1);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.theta, 1);
 %!test
 %! pd = makedist ('GeneralizedPareto', 'k', 3, 'sigma', 5);
-%! assert (pd.k, 3);
-%! assert (pd.sigma, 5);
-%! assert (pd.theta, 1);
+%! assert_equal (pd.k, 3);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.theta, 1);
 %!test
 %! pd = makedist ('GeneralizedPareto', 'theta', 3, 'sigma', 5);
-%! assert (pd.k, 1);
-%! assert (pd.sigma, 5);
-%! assert (pd.theta, 3);
+%! assert_equal (pd.k, 1);
+%! assert_equal (pd.sigma, 5);
+%! assert_equal (pd.theta, 3);
 %!test
 %! pd = makedist ('HalfNormal');
-%! assert (class (pd), "HalfNormalDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "HalfNormalDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('HalfNormal', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('HalfNormal', 'sigma', 5);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('HalfNormal', 'mu', 3, 'sigma', 5);
-%! assert (pd.mu, 3);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('InverseGaussian');
-%! assert (class (pd), "InverseGaussianDistribution");
-%! assert (pd.mu, 1);
-%! assert (pd.lambda, 1);
+%! assert_equal (class (pd), "InverseGaussianDistribution");
+%! assert_equal (pd.mu, 1);
+%! assert_equal (pd.lambda, 1);
 %!test
 %! pd = makedist ('InverseGaussian', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.lambda, 1);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.lambda, 1);
 %!test
 %! pd = makedist ('InverseGaussian', 'lambda', 5);
-%! assert (pd.mu, 1);
-%! assert (pd.lambda, 5);
+%! assert_equal (pd.mu, 1);
+%! assert_equal (pd.lambda, 5);
 %!test
 %! pd = makedist ('InverseGaussian', 'mu', 3, 'lambda', 5);
-%! assert (pd.mu, 3);
-%! assert (pd.lambda, 5);
+%! assert_equal (pd.mu, 3);
+%! assert_equal (pd.lambda, 5);
 %!test
 %! pd = makedist ('logistic');
-%! assert (class (pd), "LogisticDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "LogisticDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('logistic', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('logistic', 'sigma', 5);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('logistic', 'mu', 3, 'sigma', 5);
-%! assert (pd.mu, 3);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('loglogistic');
-%! assert (class (pd), "LoglogisticDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "LoglogisticDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('loglogistic', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('loglogistic', 'sigma', 5);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('loglogistic', 'mu', 3, 'sigma', 5);
-%! assert (pd.mu, 3);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Lognormal');
-%! assert (class (pd), "LognormalDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "LognormalDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Lognormal', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Lognormal', 'sigma', 5);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Lognormal', 'mu', -3, 'sigma', 5);
-%! assert (pd.mu, -3);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.mu, -3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Loguniform');
-%! assert (class (pd), "LoguniformDistribution");
-%! assert (pd.Lower, 1);
-%! assert (pd.Upper, 4);
+%! assert_equal (class (pd), "LoguniformDistribution");
+%! assert_equal (pd.Lower, 1);
+%! assert_equal (pd.Upper, 4);
 %!test
 %! pd = makedist ('Loguniform', 'Lower', 2);
-%! assert (pd.Lower, 2);
-%! assert (pd.Upper, 4);
+%! assert_equal (pd.Lower, 2);
+%! assert_equal (pd.Upper, 4);
 %!test
 %! pd = makedist ('Loguniform', 'Lower', 1, 'Upper', 3);
-%! assert (pd.Lower, 1);
-%! assert (pd.Upper, 3);
+%! assert_equal (pd.Lower, 1);
+%! assert_equal (pd.Upper, 3);
 %!test
 %! pd = makedist ('Multinomial');
-%! assert (class (pd), "MultinomialDistribution");
-%! assert (pd.Probabilities, [0.5, 0.5]);
+%! assert_equal (class (pd), "MultinomialDistribution");
+%! assert_equal (pd.Probabilities, [0.5, 0.5]);
 %!test
 %! pd = makedist ('Multinomial', 'Probabilities', [0.2, 0.3, 0.1, 0.4]);
-%! assert (class (pd), "MultinomialDistribution");
-%! assert (pd.Probabilities, [0.2, 0.3, 0.1, 0.4]);
+%! assert_equal (class (pd), "MultinomialDistribution");
+%! assert_equal (pd.Probabilities, [0.2, 0.3, 0.1, 0.4]);
 %!test
 %! pd = makedist ('Nakagami');
-%! assert (class (pd), "NakagamiDistribution");
-%! assert (pd.mu, 1);
-%! assert (pd.omega, 1);
+%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (pd.mu, 1);
+%! assert_equal (pd.omega, 1);
 %!test
 %! pd = makedist ('Nakagami', 'mu', 5);
-%! assert (class (pd), "NakagamiDistribution");
-%! assert (pd.mu, 5);
-%! assert (pd.omega, 1);
+%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.omega, 1);
 %!test
 %! pd = makedist ('Nakagami', 'omega', 0.3);
-%! assert (class (pd), "NakagamiDistribution");
-%! assert (pd.mu, 1);
-%! assert (pd.omega, 0.3);
+%! assert_equal (class (pd), "NakagamiDistribution");
+%! assert_equal (pd.mu, 1);
+%! assert_equal (pd.omega, 0.3);
 %!test
 %! pd = makedist ('NegativeBinomial');
-%! assert (class (pd), "NegativeBinomialDistribution");
-%! assert (pd.R, 1);
-%! assert (pd.P, 0.5);
+%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (pd.R, 1);
+%! assert_equal (pd.P, 0.5);
 %!test
 %! pd = makedist ('NegativeBinomial', 'R', 5);
-%! assert (class (pd), "NegativeBinomialDistribution");
-%! assert (pd.R, 5);
-%! assert (pd.P, 0.5);
+%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (pd.R, 5);
+%! assert_equal (pd.P, 0.5);
 %!test
 %! pd = makedist ('NegativeBinomial', 'p', 0.3);
-%! assert (class (pd), "NegativeBinomialDistribution");
-%! assert (pd.R, 1);
-%! assert (pd.P, 0.3);
+%! assert_equal (class (pd), "NegativeBinomialDistribution");
+%! assert_equal (pd.R, 1);
+%! assert_equal (pd.P, 0.3);
 %!test
 %! pd = makedist ('Normal');
-%! assert (class (pd), "NormalDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Normal', 'mu', 5);
-%! assert (class (pd), "NormalDistribution");
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Normal', 'sigma', 5);
-%! assert (class (pd), "NormalDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 5);
+%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Normal', 'mu', -3, 'sigma', 5);
-%! assert (class (pd), "NormalDistribution");
-%! assert (pd.mu, -3);
-%! assert (pd.sigma, 5);
+%! assert_equal (class (pd), "NormalDistribution");
+%! assert_equal (pd.mu, -3);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('PiecewiseLinear');
-%! assert (class (pd), "PiecewiseLinearDistribution");
-%! assert (pd.x, [0; 1]);
-%! assert (pd.Fx, [0; 1]);
+%! assert_equal (class (pd), "PiecewiseLinearDistribution");
+%! assert_equal (pd.x, [0; 1]);
+%! assert_equal (pd.Fx, [0; 1]);
 %!test
 %! pd = makedist ('PiecewiseLinear', 'x', [0, 1, 2], 'Fx', [0, 0.5, 1]);
-%! assert (pd.x, [0; 1; 2]);
-%! assert (pd.Fx, [0; 0.5; 1]);
+%! assert_equal (pd.x, [0; 1; 2]);
+%! assert_equal (pd.Fx, [0; 0.5; 1]);
 %!test
 %! pd = makedist ('Poisson');
-%! assert (class (pd), "PoissonDistribution");
-%! assert (pd.lambda, 1);
+%! assert_equal (class (pd), "PoissonDistribution");
+%! assert_equal (pd.lambda, 1);
 %!test
 %! pd = makedist ('Poisson', 'lambda', 5);
-%! assert (pd.lambda, 5);
+%! assert_equal (pd.lambda, 5);
 %!test
 %! pd = makedist ('Rayleigh');
-%! assert (class (pd), "RayleighDistribution");
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "RayleighDistribution");
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Rayleigh', 'sigma', 5);
-%! assert (pd.sigma, 5);
+%! assert_equal (pd.sigma, 5);
 %!test
 %! pd = makedist ('Rician');
-%! assert (class (pd), "RicianDistribution");
-%! assert (pd.s, 1);
-%! assert (pd.sigma, 1);
+%! assert_equal (class (pd), "RicianDistribution");
+%! assert_equal (pd.s, 1);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Rician', 's', 3);
-%! assert (pd.s, 3);
-%! assert (pd.sigma, 1);
+%! assert_equal (pd.s, 3);
+%! assert_equal (pd.sigma, 1);
 %!test
 %! pd = makedist ('Rician', 'sigma', 3);
-%! assert (pd.s, 1);
-%! assert (pd.sigma, 3);
+%! assert_equal (pd.s, 1);
+%! assert_equal (pd.sigma, 3);
 %!test
 %! pd = makedist ('Rician', 's', 2, 'sigma', 3);
-%! assert (pd.s, 2);
-%! assert (pd.sigma, 3);
+%! assert_equal (pd.s, 2);
+%! assert_equal (pd.sigma, 3);
 %!warning
 %! pd = makedist ('stable');
-%! assert (class (pd), "double");
-%! assert (isempty (pd), true);
+%! assert_equal (class (pd), "double");
+%! assert_equal (isempty (pd), true);
 %!test
 %! pd = makedist ('tlocationscale');
-%! assert (class (pd), "tLocationScaleDistribution");
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 1);
-%! assert (pd.nu, 5);
+%! assert_equal (class (pd), "tLocationScaleDistribution");
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.nu, 5);
 %!test
 %! pd = makedist ('tlocationscale', 'mu', 5);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 1);
-%! assert (pd.nu, 5);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 1);
+%! assert_equal (pd.nu, 5);
 %!test
 %! pd = makedist ('tlocationscale', 'sigma', 2);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 2);
-%! assert (pd.nu, 5);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 2);
+%! assert_equal (pd.nu, 5);
 %!test
 %! pd = makedist ('tlocationscale', 'mu', 5, 'sigma', 2);
-%! assert (pd.mu, 5);
-%! assert (pd.sigma, 2);
-%! assert (pd.nu, 5);
+%! assert_equal (pd.mu, 5);
+%! assert_equal (pd.sigma, 2);
+%! assert_equal (pd.nu, 5);
 %!test
 %! pd = makedist ('tlocationscale', 'nu', 1, 'sigma', 2);
-%! assert (pd.mu, 0);
-%! assert (pd.sigma, 2);
-%! assert (pd.nu, 1);
+%! assert_equal (pd.mu, 0);
+%! assert_equal (pd.sigma, 2);
+%! assert_equal (pd.nu, 1);
 %!test
 %! pd = makedist ('tlocationscale', 'mu', -2, 'sigma', 3, 'nu', 1);
-%! assert (pd.mu, -2);
-%! assert (pd.sigma, 3);
-%! assert (pd.nu, 1);
+%! assert_equal (pd.mu, -2);
+%! assert_equal (pd.sigma, 3);
+%! assert_equal (pd.nu, 1);
 %!test
 %! pd = makedist ('Triangular');
-%! assert (class (pd), "TriangularDistribution");
-%! assert (pd.A, 0);
-%! assert (pd.B, 0.5);
-%! assert (pd.C, 1);
+%! assert_equal (class (pd), "TriangularDistribution");
+%! assert_equal (pd.A, 0);
+%! assert_equal (pd.B, 0.5);
+%! assert_equal (pd.C, 1);
 %!test
 %! pd = makedist ('Triangular', 'A', -2);
-%! assert (pd.A, -2);
-%! assert (pd.B, 0.5);
-%! assert (pd.C, 1);
+%! assert_equal (pd.A, -2);
+%! assert_equal (pd.B, 0.5);
+%! assert_equal (pd.C, 1);
 %!test
 %! pd = makedist ('Triangular', 'A', 0.5, 'B', 0.9);
-%! assert (pd.A, 0.5);
-%! assert (pd.B, 0.9);
-%! assert (pd.C, 1);
+%! assert_equal (pd.A, 0.5);
+%! assert_equal (pd.B, 0.9);
+%! assert_equal (pd.C, 1);
 %!test
 %! pd = makedist ('Triangular', 'A', 1, 'B', 2, 'C', 5);
-%! assert (pd.A, 1);
-%! assert (pd.B, 2);
-%! assert (pd.C, 5);
+%! assert_equal (pd.A, 1);
+%! assert_equal (pd.B, 2);
+%! assert_equal (pd.C, 5);
 %!test
 %! pd = makedist ('Uniform');
-%! assert (class (pd), "UniformDistribution");
-%! assert (pd.Lower, 0);
-%! assert (pd.Upper, 1);
+%! assert_equal (class (pd), "UniformDistribution");
+%! assert_equal (pd.Lower, 0);
+%! assert_equal (pd.Upper, 1);
 %!test
 %! pd = makedist ('Uniform', 'Lower', -2);
-%! assert (pd.Lower, -2);
-%! assert (pd.Upper, 1);
+%! assert_equal (pd.Lower, -2);
+%! assert_equal (pd.Upper, 1);
 %!test
 %! pd = makedist ('Uniform', 'Lower', 1, 'Upper', 3);
-%! assert (pd.Lower, 1);
-%! assert (pd.Upper, 3);
+%! assert_equal (pd.Lower, 1);
+%! assert_equal (pd.Upper, 3);
 %!test
 %! pd = makedist ('Weibull');
-%! assert (class (pd), "WeibullDistribution");
-%! assert (pd.lambda, 1);
-%! assert (pd.k, 1);
+%! assert_equal (class (pd), "WeibullDistribution");
+%! assert_equal (pd.lambda, 1);
+%! assert_equal (pd.k, 1);
 %!test
 %! pd = makedist ('Weibull', 'lambda', 3);
-%! assert (pd.lambda, 3);
-%! assert (pd.k, 1);
+%! assert_equal (pd.lambda, 3);
+%! assert_equal (pd.k, 1);
 %!test
 %! pd = makedist ('Weibull', 'lambda', 3, 'k', 2);
-%! assert (pd.lambda, 3);
-%! assert (pd.k, 2);
+%! assert_equal (pd.lambda, 3);
+%! assert_equal (pd.k, 2);
 
 ## Test input validation
 %!error <makedist: DISTNAME must be a character vector.> makedist (1)

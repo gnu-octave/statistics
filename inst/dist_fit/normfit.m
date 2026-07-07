@@ -434,16 +434,16 @@ endfunction
 %! idx = find (lightbulb(:,2) == 0);
 %! censoring = lightbulb(idx,3) == 1;
 %! [muHat, sigmaHat] = normfit (lightbulb(idx,1), [], censoring);
-%! assert (muHat, 9496.59586737857, 1e-11);
-%! assert (sigmaHat, 3064.021012796456, 2e-12);
+%! assert_equal (muHat, 9496.59586737857, 1e-11);
+%! assert_equal (sigmaHat, 3064.021012796456, 2e-12);
 %!test
 %! randn ('seed', 234);
 %! x = normrnd (3, 5, [1000, 1]);
 %! [muHat, sigmaHat, muCI, sigmaCI] = normfit (x, 0.01);
-%! assert (muCI(1) < 3);
-%! assert (muCI(2) > 3);
-%! assert (sigmaCI(1) < 5);
-%! assert (sigmaCI(2) > 5);
+%! assert_equal (muCI(1) < 3, true);
+%! assert_equal (muCI(2) > 3, true);
+%! assert_equal (sigmaCI(1) < 5, true);
+%! assert_equal (sigmaCI(2) > 5, true);
 
 ## Test input validation
 %!error<normfit: X must not be a multi-dimensional array.> ...

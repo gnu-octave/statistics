@@ -99,12 +99,12 @@ endfunction
 %! [m, v] = gamstat (a, b);
 %! expected_m = [1.00, 2.40, 4.20,  6.40,  9.00, 12.00];
 %! expected_v = [1.00, 2.88, 5.88, 10.24, 16.20, 24.00];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! a = 1:6;
 %! [m, v] = gamstat (a, 1.5);
 %! expected_m = [1.50, 3.00, 4.50, 6.00,  7.50,  9.00];
 %! expected_v = [2.25, 4.50, 6.75, 9.00, 11.25, 13.50];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);

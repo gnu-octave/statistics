@@ -80,15 +80,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.3934693402873666 1 2];
-%!assert (chi2inv (p, 2*ones (1,5)), [NaN 0 1 Inf NaN], 5*eps)
-%!assert (chi2inv (p, 2), [NaN 0 1 Inf NaN], 5*eps)
-%!assert (chi2inv (p, 2*[0 1 NaN 1 1]), [NaN 0 NaN Inf NaN], 5*eps)
-%!assert (chi2inv ([p(1:2) NaN p(4:5)], 2), [NaN 0 NaN Inf NaN], 5*eps)
+%!assert_equal (chi2inv (p, 2*ones (1,5)), [NaN 0 1 Inf NaN], 5*eps)
+%!assert_equal (chi2inv (p, 2), [NaN 0 1 Inf NaN], 5*eps)
+%!assert_equal (chi2inv (p, 2*[0 1 NaN 1 1]), [NaN 0 NaN Inf NaN], 5*eps)
+%!assert_equal (chi2inv ([p(1:2) NaN p(4:5)], 2), [NaN 0 NaN Inf NaN], 5*eps)
 
 ## Test class of input preserved
-%!assert (chi2inv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], 5*eps)
-%!assert (chi2inv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
-%!assert (chi2inv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
+%!assert_equal (chi2inv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], 5*eps)
+%!assert_equal (chi2inv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
+%!assert_equal (chi2inv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
 
 ## Test input validation
 %!error<chi2inv: function called with too few input arguments.> chi2inv ()

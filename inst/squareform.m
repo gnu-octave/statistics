@@ -117,41 +117,41 @@ endfunction
 
 ## make sure that it can go both directions automatically
 %!test
-%!assert (squareform (v), m)
-%!assert (squareform (squareform (v)), v)
-%!assert (squareform (m), v)
+%!assert_equal (squareform (v), m)
+%!assert_equal (squareform (squareform (v)), v)
+%!assert_equal (squareform (m), v)
 
 ## treat row and column vectors equally
 %!test
-%!assert (squareform (v'), m)
+%!assert_equal (squareform (v'), m)
 
 ## handle 1 element input properly
 %!test
-%!assert (squareform (1), [0 1;1 0])
-%!assert (squareform (1, 'tomatrix'), [0 1; 1 0])
-%!assert (squareform (0, 'tovector'), zeros (1, 0))
+%!assert_equal (squareform (1), [0 1;1 0])
+%!assert_equal (squareform (1, 'tomatrix'), [0 1; 1 0])
+%!assert_equal (squareform (0, 'tovector'), zeros (1, 0))
 
 ## confirm that it respects input class
 %!test
 %! for c = {@single, @double, @uint8, @uint16, @uint32, @uint64, @logical}
 %!   f = c{1};
-%!   assert (squareform (f(v)), f(m))
-%!   assert (squareform (f(m)), f(v))
+%!   assert_equal (squareform (f(v)), f(m))
+%!   assert_equal (squareform (f(m)), f(v))
 %! endfor
 
 ## test logical inputs.
 %!test
 %! v_log = [true, false, true];
 %! m_log = [false, true, false; true, false, true; false, true, false];
-%! assert (squareform (v_log), m_log);
-%! assert (squareform (m_log), v_log);
+%! assert_equal (squareform (v_log), m_log);
+%! assert_equal (squareform (m_log), v_log);
 
 ## test partial string matching and case insensitivity
-%!assert (squareform (v, 'tom'), m);
-%!assert (squareform (m, 'tov'), v);
-%!assert (squareform (v, 'TOMATRIX'), m);
-%!assert (squareform (v, string ('tomatrix')), m);
-%!assert (squareform (m, string ('tovector')), v);
+%!assert_equal (squareform (v, 'tom'), m);
+%!assert_equal (squareform (m, 'tov'), v);
+%!assert_equal (squareform (v, 'TOMATRIX'), m);
+%!assert_equal (squareform (v, string ('tomatrix')), m);
+%!assert_equal (squareform (m, string ('tovector')), v);
 
 ## input validations
 %!error <squareform: distance input must be either numeric or logical.> ...

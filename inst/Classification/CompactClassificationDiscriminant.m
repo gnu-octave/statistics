@@ -981,14 +981,14 @@ endclassdef
 %! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
-%! assert (class (CMdl), "CompactClassificationDiscriminant");
-%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
-%! assert ({CMdl.Gamma, CMdl.MinGamma}, {0, 0}, 1e-15)
-%! assert (CMdl.ClassNames, unique (species))
-%! assert (CMdl.Sigma, sigma, 1e-6)
-%! assert (CMdl.Mu, mu, 1e-14)
-%! assert (CMdl.LogDetSigma, -9.9585, 1e-4)
-%! assert (CMdl.PredictorNames, PredictorNames)
+%! assert_equal (class (CMdl), "CompactClassificationDiscriminant");
+%! assert_equal ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
+%! assert_equal ({CMdl.Gamma, CMdl.MinGamma}, {0, 0}, 1e-15)
+%! assert_equal (CMdl.ClassNames, unique (species))
+%! assert_equal (CMdl.Sigma, sigma, 1e-6)
+%! assert_equal (CMdl.Mu, mu, 1e-14)
+%! assert_equal (CMdl.LogDetSigma, -9.9585, 1e-4)
+%! assert_equal (CMdl.PredictorNames, PredictorNames)
 %!test
 %! load fisheriris
 %! x = meas;
@@ -1005,13 +1005,13 @@ endclassdef
 %! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
-%! assert (class (CMdl), "CompactClassificationDiscriminant");
-%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
-%! assert ({CMdl.Gamma, CMdl.MinGamma}, {0.5, 0})
-%! assert (CMdl.ClassNames, unique (species))
-%! assert (CMdl.Sigma, sigma, 1e-6)
-%! assert (CMdl.Mu, mu, 1e-14)
-%! assert (CMdl.LogDetSigma, -8.6884, 1e-4)
+%! assert_equal (class (CMdl), "CompactClassificationDiscriminant");
+%! assert_equal ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
+%! assert_equal ({CMdl.Gamma, CMdl.MinGamma}, {0.5, 0})
+%! assert_equal (CMdl.ClassNames, unique (species))
+%! assert_equal (CMdl.Sigma, sigma, 1e-6)
+%! assert_equal (CMdl.Mu, mu, 1e-14)
+%! assert_equal (CMdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation for constructor
 %!error<CompactClassificationDiscriminant: invalid classification object.> ...
@@ -1025,13 +1025,13 @@ endclassdef
 %! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
 %! CMdl = compact (Mdl);
 %! [label, score, cost] = predict (CMdl, [2, 2, 2, 2]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.9999, 0.0001], 1e-4)
-%! assert (cost, [1, 0.0001, 0.9999], 1e-4)
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.9999, 0.0001], 1e-4)
+%! assert_equal (cost, [1, 0.0001, 0.9999], 1e-4)
 %! [label, score, cost] = predict (CMdl, [2.5, 2.5, 2.5, 2.5]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.6368, 0.3632], 1e-4)
-%! assert (cost, [1, 0.3632, 0.6368], 1e-4)
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.6368, 0.3632], 1e-4)
+%! assert_equal (cost, [1, 0.3632, 0.6368], 1e-4)
 %!test
 %! load fisheriris
 %! x = meas;
@@ -1043,9 +1043,9 @@ endclassdef
 %! l = {'setosa'; 'versicolor'; 'virginica'};
 %! s = [1, 0, 0; 0, 1, 0; 0, 0, 1];
 %! c = [0, 1, 1; 1, 0, 1; 1, 1, 0];
-%! assert (label, l)
-%! assert (score, s, 1e-4)
-%! assert (cost, c, 1e-4)
+%! assert_equal (label, l)
+%! assert_equal (score, s, 1e-4)
+%! assert_equal (cost, c, 1e-4)
 
 %!shared MODEL
 %! X = rand (10,2);
@@ -1067,7 +1067,7 @@ endclassdef
 %! x = mean (meas);
 %! y = {'versicolor'};
 %! L = loss (model, x, y);
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1075,7 +1075,7 @@ endclassdef
 %! x_test = [1, 6; 3, 3];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_test, y_test);
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1083,7 +1083,7 @@ endclassdef
 %! x_test = [3, 3];
 %! y_test = ['1'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'quadratic');
-%! assert (L, 0.2423, 1e-4)
+%! assert_equal (L, 0.2423, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1091,7 +1091,7 @@ endclassdef
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'classifcost');
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1099,7 +1099,7 @@ endclassdef
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'hinge');
-%! assert (L, 0.5886, 1e-4)
+%! assert_equal (L, 0.5886, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1108,7 +1108,7 @@ endclassdef
 %! y_test = ['1'; '2'];
 %! W = [1; 2];
 %! L = loss (model, x_test, y_test, 'LossFun', 'logit', 'Weights', W);
-%! assert (L, 0.5107, 1e-4)
+%! assert_equal (L, 0.5107, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1116,7 +1116,7 @@ endclassdef
 %! x_with_nan = [1, 2; NaN, 4];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_with_nan, y_test);
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1124,20 +1124,20 @@ endclassdef
 %! x_with_nan = [1, 2; NaN, 4];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_with_nan, y_test, 'LossFun', 'logit');
-%! assert (isnan (L))
+%! assert_equal (isnan (L), true)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
 %! model = fitcdiscr (x, y);
 %! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
 %! L = loss (model, x, y, 'LossFun', customLossFun);
-%! assert (L, 0.8889, 1e-4)
+%! assert_equal (L, 0.8889, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = [1; 2; 1];
 %! model = fitcdiscr (x, y);
 %! L = loss (model, x, y, 'LossFun', 'classiferror');
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 
 ## Test input validation for loss method
 %!error<CompactClassificationDiscriminant.loss: too few input arguments.> ...
@@ -1159,13 +1159,13 @@ endclassdef
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! m = margin (mdl, X, Y);
-%! assert (m, 1, 1e-6)
+%! assert_equal (m, 1, 1e-6)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 1];
 %! mdl = fitcdiscr (X, Y, 'gamma', 0.5);
 %! m = margin (mdl, X, Y);
-%! assert (m, [0.3333; -0.3333; 0.3333], 1e-4)
+%! assert_equal (m, [0.3333; -0.3333; 0.3333], 1e-4)
 
 ## Test input validation for margin method
 %!error<CompactClassificationDiscriminant.margin: too few input arguments.> ...

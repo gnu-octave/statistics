@@ -316,16 +316,16 @@ endfunction
 ## Test output
 %!test
 %! nlogL = nakalike ([0.735504, 858.5], [1:50]);
-%! assert (nlogL, 202.8689, 1e-4);
+%! assert_equal (nlogL, 202.8689, 1e-4);
 %!test
 %! nlogL = nakalike ([1.17404, 11], [1:5]);
-%! assert (nlogL, 8.6976, 1e-4);
+%! assert_equal (nlogL, 8.6976, 1e-4);
 %!test
 %! nlogL = nakalike ([1.17404, 11], [1:5], [], [1, 1, 1, 1, 1]);
-%! assert (nlogL, 8.6976, 1e-4);
+%! assert_equal (nlogL, 8.6976, 1e-4);
 %!test
 %! nlogL = nakalike ([1.17404, 11], [1:6], [], [1, 1, 1, 1, 1, 0]);
-%! assert (nlogL, 8.6976, 1e-4);
+%! assert_equal (nlogL, 8.6976, 1e-4);
 
 ## Test input validation
 %!error<nakalike: function called with too few input arguments.> nakalike (3.25)

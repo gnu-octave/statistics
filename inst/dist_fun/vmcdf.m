@@ -118,17 +118,17 @@ endfunction
 %! x = [-pi:pi/2:pi];
 %! p0 = [0, 0.10975, 0.5, 0.89025, 1];
 %! p1 = [0, 0.03752, 0.5, 0.99622, 1];
-%!assert (vmcdf (x, 0, 1), p0, 1e-5)
-%!assert (vmcdf (x, 0, 1, 'upper'), 1 - p0, 1e-5)
-%!assert (vmcdf (x, zeros (1,5), ones (1,5)), p0, 1e-5)
-%!assert (vmcdf (x, zeros (1,5), ones (1,5), 'upper'), 1 - p0, 1e-5)
-%!assert (vmcdf (x, 0, [1 2 3 4 5]), p1, 1e-5)
-%!assert (vmcdf (x, 0, [1 2 3 4 5], 'upper'), 1 - p1, 1e-5)
+%!assert_equal (vmcdf (x, 0, 1), p0, 1e-5)
+%!assert_equal (vmcdf (x, 0, 1, 'upper'), 1 - p0, 1e-5)
+%!assert_equal (vmcdf (x, zeros (1,5), ones (1,5)), p0, 1e-5)
+%!assert_equal (vmcdf (x, zeros (1,5), ones (1,5), 'upper'), 1 - p0, 1e-5)
+%!assert_equal (vmcdf (x, 0, [1 2 3 4 5]), p1, 1e-5)
+%!assert_equal (vmcdf (x, 0, [1 2 3 4 5], 'upper'), 1 - p1, 1e-5)
 
 ## Test class of input preserved
-%!assert (isa (vmcdf (single (pi), 0, 1), 'single'), true)
-%!assert (isa (vmcdf (pi, single (0), 1), 'single'), true)
-%!assert (isa (vmcdf (pi, 0, single (1)), 'single'), true)
+%!assert_equal (isa (vmcdf (single (pi), 0, 1), 'single'), true)
+%!assert_equal (isa (vmcdf (pi, single (0), 1), 'single'), true)
+%!assert_equal (isa (vmcdf (pi, 0, single (1)), 'single'), true)
 
 ## Test input validation
 %!error<vmcdf: function called with too few input arguments.> vmcdf ()

@@ -161,10 +161,10 @@ endfunction
 ## Test results
 %!test
 %! nlogL = bisalike ([16.2649, 1.0156], [1:50]);
-%! assert (nlogL, 215.5905, 1e-4);
+%! assert_equal (nlogL, 215.5905, 1e-4);
 %!test
 %! nlogL = bisalike ([2.5585, 0.5839], [1:5]);
-%! assert (nlogL, 8.9950, 1e-4);
+%! assert_equal (nlogL, 8.9950, 1e-4);
 
 ## Test input validation
 %!error<bisalike: function called with too few input arguments.> bisalike (3.25)

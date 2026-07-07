@@ -226,6 +226,6 @@ endfunction
 %! x = [1, 2, 5, 4, 6];
 %! mu = [2, 0, -1, 1, 4];
 %! sigma = [2, 2, 2, 2, 2];
-%!assert (mvnpdf (x), 1.579343404440977e-20, 1e-30);
-%!assert (mvnpdf (x, mu), 1.899325144348102e-14, 1e-25);
-%!assert (mvnpdf (x, mu, sigma), 2.449062307156273e-09, 1e-20);
+%!assert_equal (mvnpdf (x), 1.579343404440977e-20, 1e-30);
+%!assert_equal (mvnpdf (x, mu), 1.899325144348102e-14, 1e-25);
+%!assert_equal (mvnpdf (x, mu, sigma), 2.449062307156273e-09, 1e-20);

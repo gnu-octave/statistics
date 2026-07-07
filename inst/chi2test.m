@@ -379,54 +379,54 @@ endfunction
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
 %! p = chi2test (x);
-%! assert (p, 0.017787, 1e-6);
+%! assert_equal (p, 0.017787, 1e-6);
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
 %! [p, chisq] = chi2test (x);
-%! assert (chisq, 11.9421, 1e-4);
+%! assert_equal (chisq, 11.9421, 1e-4);
 %!test
 %! x = [11, 3, 8; 2, 9, 14; 12, 13, 28];
 %! [p, chisq, df] = chi2test (x);
-%! assert (df, 4);
+%! assert_equal (df, 4);
 %!test
 %!shared x
 %! x(:,:,1) = [59, 32; 9,16];
 %! x(:,:,2) = [55, 24;12,33];
 %! x(:,:,3) = [107,80;17,56];%!
-%!assert (chi2test (x), 2.282063427117009e-11, 1e-14);
-%!assert (chi2test (x, 'mutual', []), 2.282063427117009e-11, 1e-14);
-%!assert (chi2test (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
-%!assert (chi2test (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
-%!assert (chi2test (x, 'joint', 3), 0.07151361728026107, 1e-14);
-%!assert (chi2test (x, 'marginal', 1), 0, 1e-14);
-%!assert (chi2test (x, 'marginal', 2), 6.347555814301131e-11, 1e-14);
-%!assert (chi2test (x, 'marginal', 3), 0, 1e-14);
-%!assert (chi2test (x, 'conditional', 1), 0.2303114201312508, 1e-14);
-%!assert (chi2test (x, 'conditional', 2), 0.0958810684407079, 1e-14);
-%!assert (chi2test (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
-%!assert (chi2test (x, 'homogeneous', []), 0.4485579470993741, 1e-14);
+%!assert_equal (chi2test (x), 2.282063427117009e-11, 1e-14);
+%!assert_equal (chi2test (x, 'mutual', []), 2.282063427117009e-11, 1e-14);
+%!assert_equal (chi2test (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
+%!assert_equal (chi2test (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
+%!assert_equal (chi2test (x, 'joint', 3), 0.07151361728026107, 1e-14);
+%!assert_equal (chi2test (x, 'marginal', 1), 0, 1e-14);
+%!assert_equal (chi2test (x, 'marginal', 2), 6.347555814301131e-11, 1e-14);
+%!assert_equal (chi2test (x, 'marginal', 3), 0, 1e-14);
+%!assert_equal (chi2test (x, 'conditional', 1), 0.2303114201312508, 1e-14);
+%!assert_equal (chi2test (x, 'conditional', 2), 0.0958810684407079, 1e-14);
+%!assert_equal (chi2test (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
+%!assert_equal (chi2test (x, 'homogeneous', []), 0.4485579470993741, 1e-14);
 %!test
 %! [pval, chisq, df, E] = chi2test (x);
-%! assert (chisq, 64.0982, 1e-4);
-%! assert (df, 7);
-%! assert (E(:,:,1), [42.903, 39.921; 17.185, 15.991], ones (2, 2) * 1e-3);
+%! assert_equal (chisq, 64.0982, 1e-4);
+%! assert_equal (df, 7);
+%! assert_equal (E(:,:,1), [42.903, 39.921; 17.185, 15.991], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'joint', 2);
-%! assert (chisq, 56.0943, 1e-4);
-%! assert (df, 5);
-%! assert (E(:,:,2), [40.922, 23.310; 38.078, 21.690], ones (2, 2) * 1e-3);
+%! assert_equal (chisq, 56.0943, 1e-4);
+%! assert_equal (df, 5);
+%! assert_equal (E(:,:,2), [40.922, 23.310; 38.078, 21.690], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'marginal', 3);
-%! assert (chisq, 146.6058, 1e-4);
-%! assert (df, 9);
-%! assert (E(:,1,1), [61.642; 57.358], ones (2, 1) * 1e-3);
+%! assert_equal (chisq, 146.6058, 1e-4);
+%! assert_equal (df, 9);
+%! assert_equal (E(:,1,1), [61.642; 57.358], ones (2, 1) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'conditional', 3);
-%! assert (chisq, 52.2509, 1e-4);
-%! assert (df, 3);
-%! assert (E(:,:,1), [53.345, 37.655; 14.655, 10.345], ones (2, 2) * 1e-3);
+%! assert_equal (chisq, 52.2509, 1e-4);
+%! assert_equal (df, 3);
+%! assert_equal (E(:,:,1), [53.345, 37.655; 14.655, 10.345], ones (2, 2) * 1e-3);
 %!test
 %! [pval, chisq, df, E] = chi2test (x, 'homogeneous', []);
-%! assert (chisq, 1.6034, 1e-4);
-%! assert (df, 2);
-%! assert (E(:,:,1), [60.827, 31.382; 7.173, 16.618], ones (2, 2) * 1e-3);
+%! assert_equal (chisq, 1.6034, 1e-4);
+%! assert_equal (df, 2);
+%! assert_equal (E(:,:,1), [60.827, 31.382; 7.173, 16.618], ones (2, 2) * 1e-3);

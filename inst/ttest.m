@@ -169,16 +169,16 @@ endfunction
 %!test
 %! x = 8:0.1:12;
 %! [h, pval, ci] = ttest (x, 10);
-%! assert (h, 0)
-%! assert (pval, 1, 10*eps)
-%! assert (ci, [9.6219 10.3781], 1E-5)
+%! assert_equal (h, 0)
+%! assert_equal (pval, 1, 10*eps)
+%! assert_equal (ci, [9.6219 10.3781], 1E-5)
 %! [h, pval, ci0] = ttest (x, 0);
-%! assert (h, 1)
-%! assert (pval, 0)
-%! assert (ci0, ci, 2e-15)
+%! assert_equal (h, 1)
+%! assert_equal (pval, 0)
+%! assert_equal (ci0, ci, 2e-15)
 %! [h, pval, ci] = ttest (x, 10, 'tail', 'right', 'dim', 2, 'alpha', 0.05);
-%! assert (h, 0)
-%! assert (pval, 0.5, 10*eps)
-%! assert (ci, [9.68498 Inf], 1E-5)
+%! assert_equal (h, 0)
+%! assert_equal (pval, 0.5, 10*eps)
+%! assert_equal (ci, [9.68498 Inf], 1E-5)
 %!error ttest ([8:0.1:12], 10, 'tail', 'invalid');
 %!error ttest ([8:0.1:12], 10, 'tail', 25);

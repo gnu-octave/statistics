@@ -116,24 +116,24 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 2] + 1;
 %! y = [0 0 0.5 1 1];
-%!assert (unifcdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (unifcdf (x, ones (1,5), 2*ones (1,5), 'upper'), 1 - y)
-%!assert (unifcdf (x, 1, 2*ones (1,5)), y)
-%!assert (unifcdf (x, 1, 2*ones (1,5), 'upper'), 1 - y)
-%!assert (unifcdf (x, ones (1,5), 2), y)
-%!assert (unifcdf (x, ones (1,5), 2, 'upper'), 1 - y)
-%!assert (unifcdf (x, [2 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
-%!assert (unifcdf (x, [2 1 NaN 1 1], 2, 'upper'), 1 - [NaN 0 NaN 1 1])
-%!assert (unifcdf (x, 1, 2*[0 1 NaN 1 1]), [NaN 0 NaN 1 1])
-%!assert (unifcdf (x, 1, 2*[0 1 NaN 1 1], 'upper'), 1 - [NaN 0 NaN 1 1])
-%!assert (unifcdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
-%!assert (unifcdf ([x(1:2) NaN x(4:5)], 1, 2, 'upper'), 1 - [y(1:2) NaN y(4:5)])
+%!assert_equal (unifcdf (x, ones (1,5), 2*ones (1,5)), y)
+%!assert_equal (unifcdf (x, ones (1,5), 2*ones (1,5), 'upper'), 1 - y)
+%!assert_equal (unifcdf (x, 1, 2*ones (1,5)), y)
+%!assert_equal (unifcdf (x, 1, 2*ones (1,5), 'upper'), 1 - y)
+%!assert_equal (unifcdf (x, ones (1,5), 2), y)
+%!assert_equal (unifcdf (x, ones (1,5), 2, 'upper'), 1 - y)
+%!assert_equal (unifcdf (x, [2 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
+%!assert_equal (unifcdf (x, [2 1 NaN 1 1], 2, 'upper'), 1 - [NaN 0 NaN 1 1])
+%!assert_equal (unifcdf (x, 1, 2*[0 1 NaN 1 1]), [NaN 0 NaN 1 1])
+%!assert_equal (unifcdf (x, 1, 2*[0 1 NaN 1 1], 'upper'), 1 - [NaN 0 NaN 1 1])
+%!assert_equal (unifcdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
+%!assert_equal (unifcdf ([x(1:2) NaN x(4:5)], 1, 2, 'upper'), 1 - [y(1:2) NaN y(4:5)])
 
 ## Test class of input preserved
-%!assert (unifcdf ([x, NaN], 1, 2), [y, NaN])
-%!assert (unifcdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
-%!assert (unifcdf ([x, NaN], single (1), 2), single ([y, NaN]))
-%!assert (unifcdf ([x, NaN], 1, single (2)), single ([y, NaN]))
+%!assert_equal (unifcdf ([x, NaN], 1, 2), [y, NaN])
+%!assert_equal (unifcdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
+%!assert_equal (unifcdf ([x, NaN], single (1), 2), single ([y, NaN]))
+%!assert_equal (unifcdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
 %!error<unifcdf: function called with too few input arguments.> unifcdf ()

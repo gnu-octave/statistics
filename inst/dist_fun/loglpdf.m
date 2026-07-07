@@ -105,14 +105,14 @@ endfunction
 %!shared out1, out2
 %! out1 = [0, 0, 1, 0.2500, 0.1111, 0.0625, 0.0400, 0.0278, 0];
 %! out2 = [0, 0, 0.0811, 0.0416, 0.0278, 0.0207, 0.0165, 0];
-%!assert (loglpdf ([-1,0,realmin,1:5,Inf], 0, 1), out1, 1e-4)
-%!assert (loglpdf ([-1,0,realmin,1:5,Inf], 0, 1), out1, 1e-4)
-%!assert (loglpdf ([-1:5,Inf], 1, 3), out2, 1e-4)
+%!assert_equal (loglpdf ([-1,0,realmin,1:5,Inf], 0, 1), out1, 1e-4)
+%!assert_equal (loglpdf ([-1,0,realmin,1:5,Inf], 0, 1), out1, 1e-4)
+%!assert_equal (loglpdf ([-1:5,Inf], 1, 3), out2, 1e-4)
 
 ## Test class of input preserved
-%!assert (class (loglpdf (single (1), 2, 3)), "single")
-%!assert (class (loglpdf (1, single (2), 3)), "single")
-%!assert (class (loglpdf (1, 2, single (3))), "single")
+%!assert_equal (class (loglpdf (single (1), 2, 3)), "single")
+%!assert_equal (class (loglpdf (1, single (2), 3)), "single")
+%!assert_equal (class (loglpdf (1, 2, single (3))), "single")
 
 ## Test input validation
 %!error<loglpdf: function called with too few input arguments.> loglpdf (1)

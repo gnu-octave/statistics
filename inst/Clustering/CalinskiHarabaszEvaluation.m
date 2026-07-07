@@ -246,7 +246,7 @@ endclassdef
 %!test
 %! load fisheriris
 %! eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6]);
-%! assert (class (eva), "CalinskiHarabaszEvaluation");
+%! assert_equal (class (eva), "CalinskiHarabaszEvaluation");
 
 %!function C = count_calls_calinskiharabasz (X, k)
 %!  global count_calls_calinskiharabasz_n;
@@ -259,5 +259,5 @@ endclassdef
 %! count_calls_calinskiharabasz_n = 0;
 %! evalclusters (rand (20, 2), @count_calls_calinskiharabasz, ...
 %!               'CalinskiHarabasz', 'KList', [2, 3]);
-%! assert (count_calls_calinskiharabasz_n, 2);
+%! assert_equal (count_calls_calinskiharabasz_n, 2);
 %! clear -global count_calls_calinskiharabasz_n;

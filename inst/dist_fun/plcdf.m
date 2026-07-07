@@ -118,23 +118,23 @@ endfunction
 %!test
 %! data = 0:0.2:1;
 %! p = plcdf (data, [0, 1], [0, 1]);
-%! assert (p, data);
+%! assert_equal (p, data);
 %!test
 %! data = 0:0.2:1;
 %! p = plcdf (data, [0, 2], [0, 1]);
-%! assert (p, 0.5 * data);
+%! assert_equal (p, 0.5 * data);
 %!test
 %! data = 0:0.2:1;
 %! p = plcdf (data, [0, 1], [0, 0.5]);
-%! assert (p, 0.5 * data);
+%! assert_equal (p, 0.5 * data);
 %!test
 %! data = 0:0.2:1;
 %! p = plcdf (data, [0, 0.5], [0, 1]);
-%! assert (p, [0, 0.4, 0.8, 1, 1, 1]);
+%! assert_equal (p, [0, 0.4, 0.8, 1, 1, 1]);
 %!test
 %! data = 0:0.2:1;
 %! p = plcdf (data, [0, 1], [0, 1], 'upper');
-%! assert (p, 1 - data);
+%! assert_equal (p, 1 - data);
 
 ## Test input validation
 %!error<plcdf: function called with too few input arguments.> plcdf ()

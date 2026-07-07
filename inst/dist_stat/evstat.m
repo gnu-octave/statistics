@@ -93,6 +93,6 @@ endfunction
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [NaN, NaN, 0.4228, 0.8456, 1.2684];
 %! y1 = [-5.5772, -3.4633, -3.0405, -2.6177, -2.1949];
-%!assert (evstat (x, x), y0, 1e-4)
-%!assert (evstat (x, x+6), y1, 1e-4)
-%!assert (evstat (x, x-6), NaN (1,5))
+%!assert_equal (evstat (x, x), y0, 1e-4)
+%!assert_equal (evstat (x, x+6), y1, 1e-4)
+%!assert_equal (evstat (x, x-6), NaN (1,5))

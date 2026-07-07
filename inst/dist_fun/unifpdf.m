@@ -89,18 +89,18 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 2] + 1;
 %! y = [0 1 1 1 0];
-%!assert (unifpdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (unifpdf (x, 1, 2*ones (1,5)), y)
-%!assert (unifpdf (x, ones (1,5), 2), y)
-%!assert (unifpdf (x, [2 NaN 1 1 1], 2), [NaN NaN y(3:5)])
-%!assert (unifpdf (x, 1, 2*[0 NaN 1 1 1]), [NaN NaN y(3:5)])
-%!assert (unifpdf ([x, NaN], 1, 2), [y, NaN])
-%!assert (unifpdf (x, 0, 1), [1 1 0 0 0])
+%!assert_equal (unifpdf (x, ones (1,5), 2*ones (1,5)), y)
+%!assert_equal (unifpdf (x, 1, 2*ones (1,5)), y)
+%!assert_equal (unifpdf (x, ones (1,5), 2), y)
+%!assert_equal (unifpdf (x, [2 NaN 1 1 1], 2), [NaN NaN y(3:5)])
+%!assert_equal (unifpdf (x, 1, 2*[0 NaN 1 1 1]), [NaN NaN y(3:5)])
+%!assert_equal (unifpdf ([x, NaN], 1, 2), [y, NaN])
+%!assert_equal (unifpdf (x, 0, 1), [1 1 0 0 0])
 
 ## Test class of input preserved
-%!assert (unifpdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
-%!assert (unifpdf (single ([x, NaN]), single (1), 2), single ([y, NaN]))
-%!assert (unifpdf ([x, NaN], 1, single (2)), single ([y, NaN]))
+%!assert_equal (unifpdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
+%!assert_equal (unifpdf (single ([x, NaN]), single (1), 2), single ([y, NaN]))
+%!assert_equal (unifpdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
 %!error<unifpdf: function called with too few input arguments.> unifpdf ()

@@ -127,23 +127,23 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (hygeinv (p, 4*ones (1,5), 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (hygeinv (p, 4*ones (1,5), 2, 2), [NaN 0 1 2 NaN])
-%!assert (hygeinv (p, 4, 2*ones (1,5), 2), [NaN 0 1 2 NaN])
-%!assert (hygeinv (p, 4, 2, 2*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (hygeinv (p, 4*[1 -1 NaN 1.1 1], 2, 2), [NaN NaN NaN NaN NaN])
-%!assert (hygeinv (p, 4, 2*[1 -1 NaN 1.1 1], 2), [NaN NaN NaN NaN NaN])
-%!assert (hygeinv (p, 4, 5, 2), [NaN NaN NaN NaN NaN])
-%!assert (hygeinv (p, 4, 2, 2*[1 -1 NaN 1.1 1]), [NaN NaN NaN NaN NaN])
-%!assert (hygeinv (p, 4, 2, 5), [NaN NaN NaN NaN NaN])
-%!assert (hygeinv ([p(1:2) NaN p(4:5)], 4, 2, 2), [NaN 0 NaN 2 NaN])
+%!assert_equal (hygeinv (p, 4*ones (1,5), 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert_equal (hygeinv (p, 4*ones (1,5), 2, 2), [NaN 0 1 2 NaN])
+%!assert_equal (hygeinv (p, 4, 2*ones (1,5), 2), [NaN 0 1 2 NaN])
+%!assert_equal (hygeinv (p, 4, 2, 2*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert_equal (hygeinv (p, 4*[1 -1 NaN 1.1 1], 2, 2), [NaN NaN NaN NaN NaN])
+%!assert_equal (hygeinv (p, 4, 2*[1 -1 NaN 1.1 1], 2), [NaN NaN NaN NaN NaN])
+%!assert_equal (hygeinv (p, 4, 5, 2), [NaN NaN NaN NaN NaN])
+%!assert_equal (hygeinv (p, 4, 2, 2*[1 -1 NaN 1.1 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (hygeinv (p, 4, 2, 5), [NaN NaN NaN NaN NaN])
+%!assert_equal (hygeinv ([p(1:2) NaN p(4:5)], 4, 2, 2), [NaN 0 NaN 2 NaN])
 
 ## Test class of input preserved
-%!assert (hygeinv ([p, NaN], 4, 2, 2), [NaN 0 1 2 NaN NaN])
-%!assert (hygeinv (single ([p, NaN]), 4, 2, 2), single ([NaN 0 1 2 NaN NaN]))
-%!assert (hygeinv ([p, NaN], single (4), 2, 2), single ([NaN 0 1 2 NaN NaN]))
-%!assert (hygeinv ([p, NaN], 4, single (2), 2), single ([NaN 0 1 2 NaN NaN]))
-%!assert (hygeinv ([p, NaN], 4, 2, single (2)), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (hygeinv ([p, NaN], 4, 2, 2), [NaN 0 1 2 NaN NaN])
+%!assert_equal (hygeinv (single ([p, NaN]), 4, 2, 2), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (hygeinv ([p, NaN], single (4), 2, 2), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (hygeinv ([p, NaN], 4, single (2), 2), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (hygeinv ([p, NaN], 4, 2, single (2)), single ([NaN 0 1 2 NaN NaN]))
 
 ## Test input validation
 %!error<hygeinv: function called with too few input arguments.> hygeinv ()

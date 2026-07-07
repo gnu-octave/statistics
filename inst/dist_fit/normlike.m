@@ -142,29 +142,29 @@ endfunction
 %! x = 1:50;
 %! [nlogL, avar] = normlike ([2.3, 1.2], x);
 %! avar_out = [7.5767e-01, -1.8850e-02; -1.8850e-02, 4.8750e-04];
-%! assert (nlogL, 13014.95883783327, 1e-10);
-%! assert (avar, avar_out, 1e-4);
+%! assert_equal (nlogL, 13014.95883783327, 1e-10);
+%! assert_equal (avar, avar_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = normlike ([2.3, 1.2], x * 0.5);
 %! avar_out = [3.0501e-01, -1.5859e-02; -1.5859e-02, 9.1057e-04];
-%! assert (nlogL, 2854.802587833265, 1e-10);
-%! assert (avar, avar_out, 1e-4);
+%! assert_equal (nlogL, 2854.802587833265, 1e-10);
+%! assert_equal (avar, avar_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = normlike ([21, 15], x);
 %! avar_out = [5.460474308300396, -1.600790513833993; ...
 %!             -1.600790513833993, 2.667984189723321];
-%! assert (nlogL, 206.738325604233, 1e-12);
-%! assert (avar, avar_out, 1e-14);
+%! assert_equal (nlogL, 206.738325604233, 1e-12);
+%! assert_equal (avar, avar_out, 1e-14);
 %!test
 %! x = 1:50;
 %! censor = ones (1, 50);
 %! censor([2, 4, 6, 8, 12, 14]) = 0;
 %! [nlogL, avar] = normlike ([2.3, 1.2], x, censor);
 %! avar_out = [3.0501e-01, -1.5859e-02; -1.5859e-02, 9.1057e-04];
-%! assert (nlogL, Inf);
-%! assert (avar, [NaN, NaN; NaN, NaN]);
+%! assert_equal (nlogL, Inf);
+%! assert_equal (avar, [NaN, NaN; NaN, NaN]);
 %!test
 %! x = 1:50;
 %! censor = ones (1, 50);
@@ -172,5 +172,5 @@ endfunction
 %! [nlogL, avar] = normlike ([21, 15], x, censor);
 %! avar_out = [24.4824488866131, -10.6649544179636; ...
 %!             -10.6649544179636, 6.22827849965737];
-%! assert (nlogL, 86.9254371829733, 1e-12);
-%! assert (avar, avar_out, 8e-14);
+%! assert_equal (nlogL, 86.9254371829733, 1e-12);
+%! assert_equal (avar, avar_out, 8e-14);

@@ -116,4 +116,4 @@ endfunction
 %! data = 1:50;
 %! [pfit, pci] = gevfit_lmom (data);
 %! expected_p = [-0.28 15.01 20.22]';
-%! assert (pfit, expected_p, 0.1);
+%! assert_equal (pfit, expected_p, 0.1);

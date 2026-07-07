@@ -91,12 +91,12 @@ endfunction
 %! [m, v] = bisastat (beta, gamma);
 %! expected_m = [1.50, 3.44, 5.94,  9.12,  13.10, 18];
 %! expected_v = [2.25, 16.128, 60.858, 172.032, 409.050, 864];
-%! assert (m, expected_m, 1e-2);
-%! assert (v, expected_v, 1e-3);
+%! assert_equal (m, expected_m, 1e-2);
+%! assert_equal (v, expected_v, 1e-3);
 %!test
 %! beta = 1:6;
 %! [m, v] = bisastat (beta, 1.5);
 %! expected_m = [2.125, 4.25, 6.375, 8.5, 10.625, 12.75];
 %! expected_v = [8.5781, 34.3125, 77.2031, 137.2500, 214.4531, 308.8125];
-%! assert (m, expected_m, 1e-3);
-%! assert (v, expected_v, 1e-4);
+%! assert_equal (m, expected_m, 1e-3);
+%! assert_equal (v, expected_v, 1e-4);

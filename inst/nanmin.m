@@ -165,45 +165,45 @@ endfunction
 %! y = nanmin (x, [], 'all')
 
 ## Test output
-%!assert (nanmin ([2, 4, NaN, 7]), 2)
-%!assert (nanmin ([2, 4, NaN, -Inf]), -Inf)
-%!assert (nanmin ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]), [1, 5, 3])
-%!assert (nanmin ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]'), [1, 5, 7])
-%!assert (nanmin (single ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN])), single ([1, 5, 3]))
+%!assert_equal (nanmin ([2, 4, NaN, 7]), 2)
+%!assert_equal (nanmin ([2, 4, NaN, -Inf]), -Inf)
+%!assert_equal (nanmin ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]), [1, 5, 3])
+%!assert_equal (nanmin ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN]'), [1, 5, 7])
+%!assert_equal (nanmin (single ([1, NaN, 3; NaN, 5, 6; 7, 8, NaN])), single ([1, 5, 3]))
 %!shared x, y
 %! x(:,:,1) = [1.77, -0.005, NaN, -2.95; NaN, 0.34, NaN, 0.19];
 %! x(:,:,2) = [1.77, -0.005, NaN, -2.95; NaN, 0.34, NaN, 0.19] + 5;
 %! y = x;
 %! y(2,3,1) = 0.51;
-%!assert (nanmin (x, [], [1, 2])(:), [-2.95; 2.05])
-%!assert (nanmin (x, [], [1, 3])(:), [1.77; -0.005; NaN; -2.95])
-%!assert (nanmin (x, [], [2, 3])(:), [-2.95; 0.19])
-%!assert (nanmin (x, [], [1, 2, 3]), -2.95)
-%!assert (nanmin (x, [], 'all'), -2.95)
-%!assert (nanmin (y, [], [1, 3])(:), [1.77; -0.005; 0.51; -2.95])
-%!assert (nanmin (x(1,:,1), x(2,:,1)), [1.77, -0.005, NaN, -2.95])
-%!assert (nanmin (x(1,:,2), x(2,:,2)), [6.77, 4.995, NaN, 2.05])
-%!assert (nanmin (y(1,:,1), y(2,:,1)), [1.77, -0.005, 0.51, -2.95])
-%!assert (nanmin (y(1,:,2), y(2,:,2)), [6.77, 4.995, NaN, 2.05])
+%!assert_equal (nanmin (x, [], [1, 2])(:), [-2.95; 2.05])
+%!assert_equal (nanmin (x, [], [1, 3])(:), [1.77; -0.005; NaN; -2.95])
+%!assert_equal (nanmin (x, [], [2, 3])(:), [-2.95; 0.19])
+%!assert_equal (nanmin (x, [], [1, 2, 3]), -2.95)
+%!assert_equal (nanmin (x, [], 'all'), -2.95)
+%!assert_equal (nanmin (y, [], [1, 3])(:), [1.77; -0.005; 0.51; -2.95])
+%!assert_equal (nanmin (x(1,:,1), x(2,:,1)), [1.77, -0.005, NaN, -2.95])
+%!assert_equal (nanmin (x(1,:,2), x(2,:,2)), [6.77, 4.995, NaN, 2.05])
+%!assert_equal (nanmin (y(1,:,1), y(2,:,1)), [1.77, -0.005, 0.51, -2.95])
+%!assert_equal (nanmin (y(1,:,2), y(2,:,2)), [6.77, 4.995, NaN, 2.05])
 
 ## Test dimension indexing with vecdim in N-dimensional arrays
 %!test
 %! xx = repmat ([1:20;6:25], [5 2 6 3]);
-%! assert (size (nanmin (xx, [], [3, 2])), [10, 1, 1, 3]);
-%! assert (size (nanmin (xx, [], [1, 2])), [1, 1, 6, 3]);
-%! assert (size (nanmin (xx, [], [1, 2, 4])), [1, 1, 6]);
-%! assert (size (nanmin (xx, [], [1, 4, 3])), [1, 40]);
-%! assert (size (nanmin (xx, [], [1, 2, 3, 4])), [1, 1]);
+%! assert_equal (size (nanmin (xx, [], [3, 2])), [10, 1, 1, 3]);
+%! assert_equal (size (nanmin (xx, [], [1, 2])), [1, 1, 6, 3]);
+%! assert_equal (size (nanmin (xx, [], [1, 2, 4])), [1, 1, 6]);
+%! assert_equal (size (nanmin (xx, [], [1, 4, 3])), [1, 40]);
+%! assert_equal (size (nanmin (xx, [], [1, 2, 3, 4])), [1, 1]);
 
 ## Test exceeding dimensions
-%!assert (nanmin (ones (2), [], 3), ones (2, 2))
-%!assert (nanmin (ones (2, 2, 2), [], 99), ones (2, 2, 2))
-%!assert (nanmin (magic (3), [], 3), magic (3))
-%!assert (nanmin (magic (3), [], [1, 3]), [3, 1, 2])
-%!assert (nanmin (magic (3), [], [1, 99]), [3, 1, 2])
+%!assert_equal (nanmin (ones (2), [], 3), ones (2, 2))
+%!assert_equal (nanmin (ones (2, 2, 2), [], 99), ones (2, 2, 2))
+%!assert_equal (nanmin (magic (3), [], 3), magic (3))
+%!assert_equal (nanmin (magic (3), [], [1, 3]), [3, 1, 2])
+%!assert_equal (nanmin (magic (3), [], [1, 99]), [3, 1, 2])
 
 ## Test comparisons
-%!assert (nanmin (ones (2), 3), ones (2,2))
+%!assert_equal (nanmin (ones (2), 3), ones (2,2))
 
 ## Test input validation
 %!error <nanmin: VECDIM must contain non-repeating positive integers.> ...

@@ -98,65 +98,65 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = tlsstat (0, 1, 0);
-%! assert (m, NaN);
-%! assert (v, NaN);
+%! assert_equal (m, NaN);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (0, 1, 1);
-%! assert (m, NaN);
-%! assert (v, NaN);
+%! assert_equal (m, NaN);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (2, 1, 1);
-%! assert (m, NaN);
-%! assert (v, NaN);
+%! assert_equal (m, NaN);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (-2, 1, 1);
-%! assert (m, NaN);
-%! assert (v, NaN);
+%! assert_equal (m, NaN);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (0, 1, 2);
-%! assert (m, 0);
-%! assert (v, NaN);
+%! assert_equal (m, 0);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (2, 1, 2);
-%! assert (m, 2);
-%! assert (v, NaN);
+%! assert_equal (m, 2);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (-2, 1, 2);
-%! assert (m, -2);
-%! assert (v, NaN);
+%! assert_equal (m, -2);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (0, 2, 2);
-%! assert (m, 0);
-%! assert (v, NaN);
+%! assert_equal (m, 0);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (2, 2, 2);
-%! assert (m, 2);
-%! assert (v, NaN);
+%! assert_equal (m, 2);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (-2, 2, 2);
-%! assert (m, -2);
-%! assert (v, NaN);
+%! assert_equal (m, -2);
+%! assert_equal (v, NaN);
 %!test
 %! [m, v] = tlsstat (0, 1, 3);
-%! assert (m, 0);
-%! assert (v, 3);
+%! assert_equal (m, 0);
+%! assert_equal (v, 3);
 %!test
 %! [m, v] = tlsstat (0, 2, 3);
-%! assert (m, 0);
-%! assert (v, 6);
+%! assert_equal (m, 0);
+%! assert_equal (v, 6);
 %!test
 %! [m, v] = tlsstat (2, 1, 3);
-%! assert (m, 2);
-%! assert (v, 3);
+%! assert_equal (m, 2);
+%! assert_equal (v, 3);
 %!test
 %! [m, v] = tlsstat (2, 2, 3);
-%! assert (m, 2);
-%! assert (v, 6);
+%! assert_equal (m, 2);
+%! assert_equal (v, 6);
 %!test
 %! [m, v] = tlsstat (-2, 1, 3);
-%! assert (m, -2);
-%! assert (v, 3);
+%! assert_equal (m, -2);
+%! assert_equal (v, 3);
 %!test
 %! [m, v] = tlsstat (-2, 2, 3);
-%! assert (m, -2);
-%! assert (v, 6);
+%! assert_equal (m, -2);
+%! assert_equal (v, 6);

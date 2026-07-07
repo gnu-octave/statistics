@@ -111,11 +111,11 @@ endfunction
 %!shared x, Fx
 %! x = [0, 1, 3, 4, 7, 10];
 %! Fx = [0, 0.2, 0.5, 0.6, 0.7, 1];
-%!assert (plpdf (0.5, x, Fx), 0.2, eps);
-%!assert (plpdf (1.5, x, Fx), 0.15, eps);
-%!assert (plpdf (3.5, x, Fx), 0.1, eps);
-%!assert (plpdf (5, x, Fx), 0.1/3, eps);
-%!assert (plpdf (8, x, Fx), 0.1, eps);
+%!assert_equal (plpdf (0.5, x, Fx), 0.2, eps);
+%!assert_equal (plpdf (1.5, x, Fx), 0.15, eps);
+%!assert_equal (plpdf (3.5, x, Fx), 0.1, eps);
+%!assert_equal (plpdf (5, x, Fx), 0.1/3, eps);
+%!assert_equal (plpdf (8, x, Fx), 0.1, eps);
 
 ## Test input validation
 %!error<plpdf: function called with too few input arguments.> plpdf ()

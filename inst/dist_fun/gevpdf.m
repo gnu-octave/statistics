@@ -112,7 +112,7 @@ endfunction
 %! mu = 0;
 %! y = gevpdf (x, k, sigma, mu);
 %! expected_y = [0.367879   0.143785   0.088569   0.063898   0.049953   0.040997];
-%! assert (y, expected_y, 0.001);
+%! assert_equal (y, expected_y, 0.001);
 %!test
 %! x = -0.5:0.5:2.5;
 %! sigma = 0.5;
@@ -120,7 +120,7 @@ endfunction
 %! mu = 0;
 %! y = gevpdf (x, k, sigma, mu);
 %! expected_y = [0 0.735759   0.303265   0.159229   0.097350   0.065498   0.047027];
-%! assert (y, expected_y, 0.001);
+%! assert_equal (y, expected_y, 0.001);
 %!test # check for continuity for k near 0
 %! x = 1;
 %! sigma = 0.5;
@@ -128,7 +128,7 @@ endfunction
 %! mu = 0;
 %! y = gevpdf (x, k, sigma, mu);
 %! expected_y = [0.23820   0.23764   0.23704   0.23641   0.23576   0.23508   0.23438];
-%! assert (y, expected_y, 0.001);
+%! assert_equal (y, expected_y, 0.001);
 
 ## Test input validation
 %!error<gevpdf: function called with too few input arguments.> gevpdf ()

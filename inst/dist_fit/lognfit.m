@@ -184,10 +184,10 @@ endfunction
 %! randn ('seed', 1);
 %! x = lognrnd (3, 5, [1000, 1]);
 %! [paramhat, paramci] = lognfit (x, 0.01);
-%! assert (paramci(1,1) < 3);
-%! assert (paramci(1,2) > 3);
-%! assert (paramci(2,1) < 5);
-%! assert (paramci(2,2) > 5);
+%! assert_equal (paramci(1,1) < 3, true);
+%! assert_equal (paramci(1,2) > 3, true);
+%! assert_equal (paramci(2,1) < 5, true);
+%! assert_equal (paramci(2,2) > 5, true);
 
 ## Test input validation
 %!error<lognfit: X must be a numeric vector of positive values.> ...

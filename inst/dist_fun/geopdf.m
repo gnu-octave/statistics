@@ -97,14 +97,14 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 Inf];
 %! y = [0, 1/2, 1/4, NaN];
-%!assert (geopdf (x, 0.5*ones (1,4)), y)
-%!assert (geopdf (x, 0.5), y)
-%!assert (geopdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN y(4)])
-%!assert (geopdf ([x, NaN], 0.5), [y, NaN])
+%!assert_equal (geopdf (x, 0.5*ones (1,4)), y)
+%!assert_equal (geopdf (x, 0.5), y)
+%!assert_equal (geopdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN y(4)])
+%!assert_equal (geopdf ([x, NaN], 0.5), [y, NaN])
 
 ## Test class of input preserved
-%!assert (geopdf (single ([x, NaN]), 0.5), single ([y, NaN]), 5*eps ('single'))
-%!assert (geopdf ([x, NaN], single (0.5)), single ([y, NaN]), 5*eps ('single'))
+%!assert_equal (geopdf (single ([x, NaN]), 0.5), single ([y, NaN]), 5*eps ('single'))
+%!assert_equal (geopdf ([x, NaN], single (0.5)), single ([y, NaN]), 5*eps ('single'))
 
 ## Test input validation
 %!error geopdf ()

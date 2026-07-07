@@ -143,81 +143,81 @@ function A = standardizeMissing (A, indicator)
 endfunction
 
 ## numeric tests
-%!assert (standardizeMissing (1, 1), NaN)
-%!assert (standardizeMissing (1, 0), 1)
-%!assert (standardizeMissing (eye (2), 1), [NaN 0;0 NaN])
-%!assert (standardizeMissing ([1:3;4:6], [2 3 4 5]), [1, NaN, NaN; NaN, NaN, 6])
-%!assert (standardizeMissing (cat (3,1,2,3,4), 3), cat (3,1,2,NaN,4))
+%!assert_equal (standardizeMissing (1, 1), NaN)
+%!assert_equal (standardizeMissing (1, 0), 1)
+%!assert_equal (standardizeMissing (eye (2), 1), [NaN 0;0 NaN])
+%!assert_equal (standardizeMissing ([1:3;4:6], [2 3 4 5]), [1, NaN, NaN; NaN, NaN, 6])
+%!assert_equal (standardizeMissing (cat (3,1,2,3,4), 3), cat (3,1,2,NaN,4))
 
 ## char and cellstr tests
-%!assert (standardizeMissing ('foo', 'a'), 'foo')
-%!assert (standardizeMissing ('foo', 'f'), 'foo')
-%!assert (standardizeMissing ('foo', 'o'), 'foo')
-%!assert (standardizeMissing ('foo', 'oo'), 'foo')
+%!assert_equal (standardizeMissing ('foo', 'a'), 'foo')
+%!assert_equal (standardizeMissing ('foo', 'f'), 'foo')
+%!assert_equal (standardizeMissing ('foo', 'o'), 'foo')
+%!assert_equal (standardizeMissing ('foo', 'oo'), 'foo')
 
-%!assert (standardizeMissing ({'foo'}, 'f'), {'foo'})
-%!assert (standardizeMissing ({'foo'}, {'f'}), {'foo'})
-%!assert (standardizeMissing ({'foo'}, 'test'), {'foo'})
-%!assert (standardizeMissing ({'foo'}, {'test'}), {'foo'})
-%!assert (standardizeMissing ({'foo'}, 'foo'), {''})
-%!assert (standardizeMissing ({'foo'}, {'foo'}), {''})
+%!assert_equal (standardizeMissing ({'foo'}, 'f'), {'foo'})
+%!assert_equal (standardizeMissing ({'foo'}, {'f'}), {'foo'})
+%!assert_equal (standardizeMissing ({'foo'}, 'test'), {'foo'})
+%!assert_equal (standardizeMissing ({'foo'}, {'test'}), {'foo'})
+%!assert_equal (standardizeMissing ({'foo'}, 'foo'), {''})
+%!assert_equal (standardizeMissing ({'foo'}, {'foo'}), {''})
 
 ## char and cellstr array tests
-%!assert (standardizeMissing (['foo';'bar'], 'oar'), ['foo';'bar'])
-%!assert (standardizeMissing (['foo';'bar'], ['o';'a';'r']), ['foo';'bar'])
-%!assert (standardizeMissing (['foo';'bar'], ['o ';'ar']), ['foo';'bar'])
+%!assert_equal (standardizeMissing (['foo';'bar'], 'oar'), ['foo';'bar'])
+%!assert_equal (standardizeMissing (['foo';'bar'], ['o';'a';'r']), ['foo';'bar'])
+%!assert_equal (standardizeMissing (['foo';'bar'], ['o ';'ar']), ['foo';'bar'])
 
-%!assert (standardizeMissing ({'foo','bar'}, 'foo'), {'','bar'})
-%!assert (standardizeMissing ({'foo','bar'}, 'f'), {'foo','bar'})
-%!assert (standardizeMissing ({'foo','bar'}, {'foo', 'a'}), {'','bar'})
-%!assert (standardizeMissing ({'foo'}, {'f', 'oo'}), {'foo'})
-%!assert (standardizeMissing ({'foo','bar'}, {'foo'}), {'','bar'})
-%!assert (standardizeMissing ({'foo','bar'}, {'foo', 'a'}), {'','bar'})
+%!assert_equal (standardizeMissing ({'foo','bar'}, 'foo'), {'','bar'})
+%!assert_equal (standardizeMissing ({'foo','bar'}, 'f'), {'foo','bar'})
+%!assert_equal (standardizeMissing ({'foo','bar'}, {'foo', 'a'}), {'','bar'})
+%!assert_equal (standardizeMissing ({'foo'}, {'f', 'oo'}), {'foo'})
+%!assert_equal (standardizeMissing ({'foo','bar'}, {'foo'}), {'','bar'})
+%!assert_equal (standardizeMissing ({'foo','bar'}, {'foo', 'a'}), {'','bar'})
 
 ## numeric type preservation tests
-%!assert (standardizeMissing (double (1), single (1)), double (NaN))
-%!assert (standardizeMissing (single (1), single (1)), single (NaN))
-%!assert (standardizeMissing (single (1), double (1)), single (NaN))
-%!assert (standardizeMissing (single (1), uint8 (1)), single (NaN))
-%!assert (standardizeMissing (double (1), int32 (1)), double (NaN))
+%!assert_equal (standardizeMissing (double (1), single (1)), double (NaN))
+%!assert_equal (standardizeMissing (single (1), single (1)), single (NaN))
+%!assert_equal (standardizeMissing (single (1), double (1)), single (NaN))
+%!assert_equal (standardizeMissing (single (1), uint8 (1)), single (NaN))
+%!assert_equal (standardizeMissing (double (1), int32 (1)), double (NaN))
 
 ## pass-trough tests
-%!assert (standardizeMissing (true, true), true)
-%!assert (standardizeMissing (true, 1), true)
-%!assert (standardizeMissing (int32 (1), int32 (1)), int32 (1))
-%!assert (standardizeMissing (int32 (1), 1), int32 (1))
-%!assert (standardizeMissing (uint32 (1), uint32 (1)), uint32 (1))
-%!assert (standardizeMissing (uint32 (1), 1), uint32 (1))
-%!assert (standardizeMissing ({'abc', 1}, 1), {'abc', 1})
-%!assert (standardizeMissing (struct ('a','b'), 1), struct ('a','b'))
+%!assert_equal (standardizeMissing (true, true), true)
+%!assert_equal (standardizeMissing (true, 1), true)
+%!assert_equal (standardizeMissing (int32 (1), int32 (1)), int32 (1))
+%!assert_equal (standardizeMissing (int32 (1), 1), int32 (1))
+%!assert_equal (standardizeMissing (uint32 (1), uint32 (1)), uint32 (1))
+%!assert_equal (standardizeMissing (uint32 (1), 1), uint32 (1))
+%!assert_equal (standardizeMissing ({'abc', 1}, 1), {'abc', 1})
+%!assert_equal (standardizeMissing (struct ('a','b'), 1), struct ('a','b'))
 
 ## categorical array tests
-%!assert (double (standardizeMissing (categorical (1), categorical (1))), NaN)
-%!assert (double (standardizeMissing (categorical (1), '1')), NaN)
-%!assert (class (standardizeMissing (categorical (1), categorical (1))), 'categorical')
-%!assert (double (standardizeMissing (categorical (1), categorical (2))), 1)
-%!assert (double (standardizeMissing (categorical (1), '2')), 1)
-%!assert (class (standardizeMissing (categorical (1), categorical (2))), 'categorical')
+%!assert_equal (double (standardizeMissing (categorical (1), categorical (1))), NaN)
+%!assert_equal (double (standardizeMissing (categorical (1), '1')), NaN)
+%!assert_equal (class (standardizeMissing (categorical (1), categorical (1))), 'categorical')
+%!assert_equal (double (standardizeMissing (categorical (1), categorical (2))), 1)
+%!assert_equal (double (standardizeMissing (categorical (1), '2')), 1)
+%!assert_equal (class (standardizeMissing (categorical (1), categorical (2))), 'categorical')
 
 ## fix GitHub PR #419, requires datatypes 1.2.0+
 %!test
 %! A = categorical ({'a', 'b', 'c'});
 %! indicator = 'b';
 %! a = standardizeMissing (A , indicator);
-%! assert (class (a), 'categorical');
-%! assert (double (a), [1, NaN, 3]);
+%! assert_equal (class (a), 'categorical');
+%! assert_equal (double (a), [1, NaN, 3]);
 
 ## datetime array tests
-%!assert (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
-%!assert (isnat (standardizeMissing (datetime ('today'), datetime ('yesterday'))), false)
+%!assert_equal (isnat (standardizeMissing (datetime ('today'), datetime ('today'))), true)
+%!assert_equal (isnat (standardizeMissing (datetime ('today'), datetime ('yesterday'))), false)
 
 ## duration array tests
-%!assert (days (standardizeMissing (days (1), days (1))), NaN)
-%!assert (days (standardizeMissing (days (1), days (2))), 1)
+%!assert_equal (days (standardizeMissing (days (1), days (1))), NaN)
+%!assert_equal (days (standardizeMissing (days (1), days (2))), 1)
 
 ## string array tests
-%!assert (cellstr (standardizeMissing (string (1), string (1))), {''})
-%!assert (cellstr (standardizeMissing (string (1), string (2))), {'1'})
+%!assert_equal (cellstr (standardizeMissing (string (1), string (1))), {''})
+%!assert_equal (cellstr (standardizeMissing (string (1), string (2))), {'1'})
 
 ## Test input validation
 %!error <Invalid call> standardizeMissing ();

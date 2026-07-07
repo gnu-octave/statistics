@@ -287,49 +287,49 @@ endfunction
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades);
-%! assert (h, 1);
-%! assert (pval, 9.523239714592791e-07, 1e-14);
-%! assert (W, 8.59529, 1e-5);
-%! assert (df, [4, 595]);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 9.523239714592791e-07, 1e-14);
+%! assert_equal (W, 8.59529, 1e-5);
+%! assert_equal (df, [4, 595]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades, [], 'quadratic');
-%! assert (h, 1);
-%! assert (pval, 9.523239714592791e-07, 1e-14);
-%! assert (W, 8.59529, 1e-5);
-%! assert (df, [4, 595]);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 9.523239714592791e-07, 1e-14);
+%! assert_equal (W, 8.59529, 1e-5);
+%! assert_equal (df, [4, 595]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades, [], 'median');
-%! assert (h, 1);
-%! assert (pval, 1.312093241723211e-06, 1e-14);
-%! assert (W, 8.415969, 1e-6);
-%! assert (df, [4, 595]);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 1.312093241723211e-06, 1e-14);
+%! assert_equal (W, 8.415969, 1e-6);
+%! assert_equal (df, [4, 595]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[1:3]));
-%! assert (h, 1);
-%! assert (pval, 0.004349390980463497, 1e-14);
-%! assert (W, 5.52139, 1e-5);
-%! assert (df, [2, 357]);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.004349390980463497, 1e-14);
+%! assert_equal (W, 5.52139, 1e-5);
+%! assert_equal (df, [2, 357]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[1:3]), 'median');
-%! assert (h, 1);
-%! assert (pval, 0.004355216763951453, 1e-14);
-%! assert (W, 5.52001, 1e-5);
-%! assert (df, [2, 357]);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.004355216763951453, 1e-14);
+%! assert_equal (W, 5.52001, 1e-5);
+%! assert_equal (df, [2, 357]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[3,4]), 'quadratic');
-%! assert (h, 0);
-%! assert (pval, 0.1807494957440653, 2e-14);
-%! assert (W, 1.80200, 1e-5);
-%! assert (df, [1, 238]);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.1807494957440653, 2e-14);
+%! assert_equal (W, 1.80200, 1e-5);
+%! assert_equal (df, [1, 238]);
 %!test
 %! load examgrades
 %! [h, pval, W, df] = levene_test (grades(:,[3,4]), 'median');
-%! assert (h, 0);
-%! assert (pval, 0.1978225622063785, 2e-14);
-%! assert (W, 1.66768, 1e-5);
-%! assert (df, [1, 238]);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.1978225622063785, 2e-14);
+%! assert_equal (W, 1.66768, 1e-5);
+%! assert_equal (df, [1, 238]);

@@ -2278,54 +2278,54 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y, 'NSMethod', 'exhaustive');
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = ones (4, 11);
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'NSMethod', 'exhaustive');
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'Distance', 'hamming');
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
+%! assert_equal ({a.BucketSize}, {50})
 
 ## Test constructor with Standardize and DistParameter parameters
 %!test
@@ -2333,130 +2333,130 @@ endfunction
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! weights = ones (4,1);
 %! a = ClassificationKNN (x, y, 'Standardize', 1);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.Standardize}, {true})
-%! assert ({a.Sigma}, {std(x, [], 1)})
-%! assert ({a.Mu}, {[3.75, 4.25, 4.75]})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.Standardize}, {true})
+%! assert_equal ({a.Sigma}, {std(x, [], 1)})
+%! assert_equal ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! weights = ones (4,1);
 %! a = ClassificationKNN (x, y, 'Standardize', false);
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.Standardize}, {false})
-%! assert ({a.Sigma}, {[]})
-%! assert ({a.Mu}, {[]})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.Standardize}, {false})
+%! assert_equal ({a.Sigma}, {[]})
+%! assert_equal ({a.Mu}, {[]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! s = ones (1, 3);
 %! a = ClassificationKNN (x, y, 'Scale' , s, 'Distance', 'seuclidean');
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.DistParameter}, {s})
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'seuclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.DistParameter}, {s})
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'seuclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y, 'Exponent' , 5, 'Distance', 'minkowski');
-%! assert (class (a), "ClassificationKNN");
-%! assert (a.DistParameter, 5)
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'minkowski'})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal (a.DistParameter, 5)
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'minkowski'})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y, 'Exponent' , 5, 'Distance', 'minkowski', ...
 %!                        'NSMethod', 'exhaustive');
-%! assert (class (a), "ClassificationKNN");
-%! assert (a.DistParameter, 5)
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'minkowski'})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal (a.DistParameter, 5)
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'minkowski'})
 
 ## Test constructor with BucketSize and IncludeTies parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y, 'BucketSize' , 20, 'distance', 'mahalanobis');
-%! assert (class (a), "ClassificationKNN");
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'mahalanobis'})
-%! assert ({a.BucketSize}, {20})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'mahalanobis'})
+%! assert_equal ({a.BucketSize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y, 'IncludeTies', true);
-%! assert (class (a), "ClassificationKNN");
-%! assert (a.IncludeTies, true);
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal (a.IncludeTies, true);
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
-%! assert (class (a), "ClassificationKNN");
-%! assert (a.IncludeTies, false);
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal (class (a), "ClassificationKNN");
+%! assert_equal (a.IncludeTies, false);
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 
 ## Test constructor with Prior and Cost parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Prior, [0.5; 0.5])
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Prior, [0.5; 0.5])
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! prior = [0.5; 0.5];
 %! a = ClassificationKNN (x, y, 'Prior', 'empirical');
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Prior, prior)
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
 %! prior = [0.75; 0.25];
 %! a = ClassificationKNN (x, y, 'Prior', 'empirical');
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Prior, prior)
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'a'; 'b'];
 %! prior = [0.5; 0.5];
 %! a = ClassificationKNN (x, y, 'Prior', 'uniform');
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Prior, prior)
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! cost = eye (2);
 %! a = ClassificationKNN (x, y, 'Cost', cost);
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Cost, [1, 0; 0, 1])
-%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = ['a'; 'a'; 'b'; 'b'];
 %! cost = eye (2);
 %! a = ClassificationKNN (x, y, 'Cost', cost, 'Distance', 'hamming' );
-%! assert (class (a), "ClassificationKNN")
-%! assert (a.Cost, [1, 0; 0, 1])
-%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
-%! assert ({a.BucketSize}, {50})
+%! assert_equal (class (a), "ClassificationKNN")
+%! assert_equal (a.Cost, [1, 0; 0, 1])
+%! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
+%! assert_equal ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2; 3, 4; 5,6; 5, 8];
 %! y = {'9'; '9'; '6'; '7'};
 %! a = ClassificationKNN (x, y);
-%! assert (a.Prior, [0.25; 0.25; 0.5])
+%! assert_equal (a.Prior, [0.25; 0.25; 0.5])
 
 ## Test constructor with ClassNames parameter
 %!test
@@ -2465,7 +2465,7 @@ endfunction
 %! y = species;
 %! ClassNames = {'setosa', 'versicolor', 'virginica'};
 %! a = ClassificationKNN (x, y, 'ClassNames', ClassNames);
-%! assert (a.ClassNames, ClassNames')
+%! assert_equal (a.ClassNames, ClassNames')
 
 ## Test input validation for constructor
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
@@ -2607,142 +2607,142 @@ endfunction
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
-%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
-%! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
+%! assert_equal (l, {'setosa'; 'versicolor'; 'virginica'})
+%! assert_equal (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
+%! assert_equal (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'; 'versicolor'; 'virginica'})
-%! assert (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
-%! assert (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
+%! assert_equal (l, {'versicolor'; 'versicolor'; 'virginica'})
+%! assert_equal (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
+%! assert_equal (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'mahalanobis');
 %! [l, s, c] = predict (obj, xc);
-%! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
-%! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
+%! assert_equal (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
+%! assert_equal (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cosine');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
-%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
-%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
+%! assert_equal (l, {'setosa'; 'versicolor'; 'virginica'})
+%! assert_equal (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
+%! assert_equal (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
 %!test
 %! xc = [5.2, 4.1, 1.5, 0.1; 5.1, 3.8, 1.9, 0.4; ...
 %!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'; 'setosa'; 'setosa'; 'setosa'})
-%! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
-%! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
+%! assert_equal (l, {'setosa'; 'setosa'; 'setosa'; 'setosa'})
+%! assert_equal (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
+%! assert_equal (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 0.6, 0.4], 1e-4)
-%! assert (c, [1, 0.4, 0.6], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.6, 0.4], 1e-4)
+%! assert_equal (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', 'Exponent', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 0.5, 0.5], 1e-4)
-%! assert (c, [1, 0.5, 0.5], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.5, 0.5], 1e-4)
+%! assert_equal (c, [1, 0.5, 0.5], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'jaccard');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'})
-%! assert (s, [0.9, 0.1, 0], 1e-4)
-%! assert (c, [0.1, 0.9, 1], 1e-4)
+%! assert_equal (l, {'setosa'})
+%! assert_equal (s, [0.9, 0.1, 0], 1e-4)
+%! assert_equal (c, [0.1, 0.9, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'mahalanobis');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0.1000, 0.5000, 0.4000], 1e-4)
-%! assert (c, [0.9000, 0.5000, 0.6000], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0.1000, 0.5000, 0.4000], 1e-4)
+%! assert_equal (c, [0.9000, 0.5000, 0.6000], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'jaccard');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'})
-%! assert (s, [0.8, 0.2, 0], 1e-4)
-%! assert (c, [0.2, 0.8, 1], 1e-4)
+%! assert_equal (l, {'setosa'})
+%! assert_equal (s, [0.8, 0.2, 0], 1e-4)
+%! assert_equal (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'seuclidean');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 1, 0], 1e-4)
-%! assert (c, [1, 0, 1], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 1, 0], 1e-4)
+%! assert_equal (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'chebychev');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 0.7, 0.3], 1e-4)
-%! assert (c, [1, 0.3, 0.7], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.7, 0.3], 1e-4)
+%! assert_equal (c, [1, 0.3, 0.7], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cityblock');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 0.6, 0.4], 1e-4)
-%! assert (c, [1, 0.4, 0.6], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 0.6, 0.4], 1e-4)
+%! assert_equal (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cosine');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'virginica'})
-%! assert (s, [0, 0.1, 0.9], 1e-4)
-%! assert (c, [1, 0.9, 0.1], 1e-4)
+%! assert_equal (l, {'virginica'})
+%! assert_equal (s, [0, 0.1, 0.9], 1e-4)
+%! assert_equal (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'correlation');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'virginica'})
-%! assert (s, [0, 0.1, 0.9], 1e-4)
-%! assert (c, [1, 0.9, 0.1], 1e-4)
+%! assert_equal (l, {'virginica'})
+%! assert_equal (s, [0, 0.1, 0.9], 1e-4)
+%! assert_equal (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 30, 'distance', 'spearman');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'versicolor'})
-%! assert (s, [0, 1, 0], 1e-4)
-%! assert (c, [1, 0, 1], 1e-4)
+%! assert_equal (l, {'versicolor'})
+%! assert_equal (s, [0, 1, 0], 1e-4)
+%! assert_equal (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 30, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'})
-%! assert (s, [0.4333, 0.3333, 0.2333], 1e-4)
-%! assert (c, [0.5667, 0.6667, 0.7667], 1e-4)
+%! assert_equal (l, {'setosa'})
+%! assert_equal (s, [0.4333, 0.3333, 0.2333], 1e-4)
+%! assert_equal (c, [0.5667, 0.6667, 0.7667], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
 %! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'})
-%! assert (s, [0.8, 0.2, 0], 1e-4)
-%! assert (c, [0.2, 0.8, 1], 1e-4)
+%! assert_equal (l, {'setosa'})
+%! assert_equal (s, [0.8, 0.2, 0], 1e-4)
+%! assert_equal (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'correlation');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
-%! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
-%! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
+%! assert_equal (l, {'setosa'; 'versicolor'; 'virginica'})
+%! assert_equal (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
+%! assert_equal (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {'setosa';'setosa';'setosa'})
-%! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
-%! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
+%! assert_equal (l, {'setosa';'setosa';'setosa'})
+%! assert_equal (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
+%! assert_equal (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
 
 ## Test input validation for predict method
 %!error<ClassificationKNN.predict: too few input arguments.> ...
@@ -2759,17 +2759,17 @@ endfunction
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! L = loss (model, X, Y);
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! load fisheriris
 %! model = fitcknn (meas, species, 'NumNeighbors', 5);
 %! L = loss (model, meas, species, 'LossFun', 'binodeviance');
-%! assert (L, 0.1413, 1e-4)
+%! assert_equal (L, 0.1413, 1e-4)
 %!test
 %! load fisheriris
 %! model = fitcknn (meas, species);
 %! L = loss (model, meas, species, 'LossFun', 'binodeviance');
-%! assert (L, 0.1269, 1e-4)
+%! assert_equal (L, 0.1269, 1e-4)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = {'A'; 'B'; 'A'};
@@ -2777,7 +2777,7 @@ endfunction
 %! X_test = [1, 6; 3, 3];
 %! Y_test = {'A'; 'B'};
 %! L = loss (model, X_test, Y_test);
-%! assert (abs (L - 0.6667) > 1e-5)
+%! assert_equal (abs (L - 0.6667) > 1e-5, true)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = {'A'; 'B'; 'A'};
@@ -2785,7 +2785,7 @@ endfunction
 %! X_with_nan = [1, 2; NaN, 4];
 %! Y_test = {'A'; 'B'};
 %! L = loss (model, X_with_nan, Y_test);
-%! assert (abs (L - 0.3333) < 1e-4)
+%! assert_equal (abs (L - 0.3333) < 1e-4, true)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = {'A'; 'B'; 'A'};
@@ -2793,32 +2793,32 @@ endfunction
 %! X_with_nan = [1, 2; NaN, 4];
 %! Y_test = {'A'; 'B'};
 %! L = loss (model, X_with_nan, Y_test, 'LossFun', 'logit');
-%! assert (isnan (L))
+%! assert_equal (isnan (L), true)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = {'A'; 'B'; 'A'};
 %! model = fitcknn (X, Y);
 %! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
 %! L = loss (model, X, Y, 'LossFun', customLossFun);
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 1];
 %! model = fitcknn (X, Y);
 %! L = loss (model, X, Y, 'LossFun', 'classiferror');
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [true; false; true];
 %! model = fitcknn (X, Y);
 %! L = loss (model, X, Y, 'LossFun', 'binodeviance');
-%! assert (abs (L - 0.1269) < 1e-4)
+%! assert_equal (abs (L - 0.1269) < 1e-4, true)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = ['1'; '2'; '1'];
 %! model = fitcknn (X, Y);
 %! L = loss (model, X, Y, 'LossFun', 'classiferror');
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = ['1'; '2'; '3'];
@@ -2826,7 +2826,7 @@ endfunction
 %! X_test = [3, 3];
 %! Y_test = ['1'];
 %! L = loss (model, X_test, Y_test, 'LossFun', 'quadratic');
-%! assert (L, 1)
+%! assert_equal (L, 1)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = ['1'; '2'; '3'];
@@ -2834,7 +2834,7 @@ endfunction
 %! X_test = [3, 3; 5, 7];
 %! Y_test = ['1'; '2'];
 %! L = loss (model, X_test, Y_test, 'LossFun', 'classifcost');
-%! assert (L, 1)
+%! assert_equal (L, 1)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = ['1'; '2'; '3'];
@@ -2842,7 +2842,7 @@ endfunction
 %! X_test = [3, 3; 5, 7];
 %! Y_test = ['1'; '2'];
 %! L = loss (model, X_test, Y_test, 'LossFun', 'hinge');
-%! assert (L, 1)
+%! assert_equal (L, 1)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = ['1'; '2'; '3'];
@@ -2851,7 +2851,7 @@ endfunction
 %! Y_test = ['1'; '2'];
 %! W = [1; 2];
 %! L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);
-%! assert (abs (L - 0.6931) < 1e-4)
+%! assert_equal (abs (L - 0.6931) < 1e-4, true)
 
 ## Test input validation for loss method
 %!error<ClassificationKNN.loss: too few input arguments.> ...
@@ -2881,25 +2881,25 @@ endfunction
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! m = margin (mdl, X, Y);
-%! assert (m, 1)
+%! assert_equal (m, 1)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 3];
 %! mdl = fitcknn (X, Y);
 %! m = margin (mdl, X, Y);
-%! assert (m, [1; 1; 1])
+%! assert_equal (m, [1; 1; 1])
 %!test
 %! X = [7, 8; 9, 10];
 %! Y = ['1'; '2'];
 %! mdl = fitcknn (X, Y);
 %! m = margin (mdl, X, Y);
-%! assert (m, [1; 1])
+%! assert_equal (m, [1; 1])
 %!test
 %! X = [11, 12];
 %! Y = {'1'};
 %! mdl = fitcknn (X, Y);
 %! m = margin (mdl, X, Y);
-%! assert (isnan (m))
+%! assert_equal (isnan (m), true)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 3];
@@ -2907,7 +2907,7 @@ endfunction
 %! X1 = [15, 16];
 %! Y1 = [1];
 %! m = margin (mdl, X1, Y1);
-%! assert (m, -1)
+%! assert_equal (m, -1)
 
 ## Test input validation for margin method
 %!error<ClassificationKNN.margin: too few input arguments.> ...
@@ -2942,7 +2942,7 @@ endfunction
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! Vars = 1;
 %! Labels = 2;
@@ -2953,7 +2953,7 @@ endfunction
 %! 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
 %! 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
 %! 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-%! assert (abs (pdm - pd) < 1)
+%! assert_equal (all ((abs (pdm - pd) < 1)(:)), true)
 %!test
 %! Vars = 1;
 %! Labels = 2;
@@ -2970,7 +2970,7 @@ endfunction
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! Vars = [1, 2];
 %! Labels = 1;
@@ -2978,7 +2978,7 @@ endfunction
 %! [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
 %!                            queryPoints, 'UseParallel', true);
 %! pdm = [0, 0, 0; 0, 0, 0; 0, 0, 0];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! Vars = 1;
 %! Labels = [1; 2];
@@ -3006,7 +3006,7 @@ endfunction
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, ...
 %! 0.5000, 0.5000, 0.5000];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! Vars = [1, 2];
 %! Labels = [1; 2];
@@ -3015,7 +3015,7 @@ endfunction
 %! pdm(:,:,1) = [0, 0, 0; 1, 1, 1];
 %! pdm(:,:,2) = [0, 0, 0; 1, 1, 1];
 %! pdm(:,:,3) = [0, 0, 0; 1, 1, 1];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! X1 = [1; 2; 4; 5; 7; 8; 3; 2];
 %! X2 = ['2'; '3'; '1'; '3'; '1'; '3'; '2'; '2'];
@@ -3033,7 +3033,7 @@ endfunction
 %! 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, ...
 %! 0.3750, 0.3750, 0.3750, 0.3750, 0.7500, 0.7500, 0.7500, 0.7500, 0.7500, ...
 %! 0.7500, 0.7500, 0.7500];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! X1 = [1; 2; 4; 5; 7; 8; 3; 2];
 %! X2 = ['2'; '3'; '1'; '3'; '1'; '3'; '2'; '2'];
@@ -3052,7 +3052,7 @@ endfunction
 %! 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, 0.3750, ...
 %! 0.3750, 0.3750, 0.3750, 0.3750, 0.7500, 0.7500, 0.7500, 0.7500, 0.7500, ...
 %! 0.7500, 0.7500, 0.7500];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 %!test
 %! X1 = [1; 2; 4; 5; 7; 8; 3; 2];
 %! X2 = ['2'; '3'; '1'; '3'; '1'; '3'; '2'; '2'];
@@ -3072,7 +3072,7 @@ endfunction
 %! 1.0000, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
 %! 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
 %! 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-%! assert (pd, pdm)
+%! assert_equal (pd, pdm)
 
 ## Test input validation for partialDependence method
 %!error<ClassificationKNN.partialDependence: too few input arguments.> ...
@@ -3100,38 +3100,38 @@ endfunction
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 10)
-%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
-%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (! CVMdl.ModelParameters.Standardize)
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 10, true)
+%! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
+%! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
+%! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert_equal (! CVMdl.ModelParameters.Standardize, true)
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'KFold', 5);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 5)
-%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
-%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 5, true)
+%! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
+%! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
+%! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
-%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.ModelParameters.NumNeighbors == 5, true)
+%! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'), true)
+%! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
 %!test
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
@@ -3140,12 +3140,12 @@ endfunction
 %! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
 %! CVMdl = crossval (obj, 'LeaveOut', 'on');
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.ModelParameters.NumNeighbors == 10)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'))
-%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.ModelParameters.NumNeighbors == 10, true)
+%! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'), true)
+%! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
 %!test
 %! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
@@ -3154,12 +3154,12 @@ endfunction
 %! partition = cvpartition (y, 'KFold', 3);
 %! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 3)
-%! assert (CVMdl.ModelParameters.NumNeighbors == 10)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'))
-%! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal (CVMdl.KFold == 3, true)
+%! assert_equal (CVMdl.ModelParameters.NumNeighbors == 10, true)
+%! assert_equal (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'), true)
+%! assert_equal (class (CVMdl.Trained{1}), "ClassificationKNN")
+%! assert_equal (CVMdl.ModelParameters.Standardize == obj.Standardize, true)
 
 ## Test input validation for crossval method
 %!error<ClassificationKNN.crossval: Name-Value arguments must be in pairs.> ...

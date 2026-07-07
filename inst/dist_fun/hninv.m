@@ -90,15 +90,15 @@ endfunction
 %!shared p, x
 %! p = [0, 0.3829, 0.6827, 1];
 %! x = [0, 1/2, 1, Inf];
-%!assert (hninv (p, 0, 1), x, 1e-4);
-%!assert (hninv (p, 5, 1), x + 5, 1e-4);
-%!assert (hninv (p, 0, ones (1,4)), x, 1e-4);
-%!assert (hninv (p, 0, [-1, 0, 1, 1]), [NaN, NaN, x(3:4)], 1e-4)
+%!assert_equal (hninv (p, 0, 1), x, 1e-4);
+%!assert_equal (hninv (p, 5, 1), x + 5, 1e-4);
+%!assert_equal (hninv (p, 0, ones (1,4)), x, 1e-4);
+%!assert_equal (hninv (p, 0, [-1, 0, 1, 1]), [NaN, NaN, x(3:4)], 1e-4)
 
 ## Test class of input preserved
-%!assert (class (hninv (single ([p, NaN]), 0, 1)), "single")
-%!assert (class (hninv ([p, NaN], single (0), 1)), "single")
-%!assert (class (hninv ([p, NaN], 0, single (1))), "single")
+%!assert_equal (class (hninv (single ([p, NaN]), 0, 1)), "single")
+%!assert_equal (class (hninv ([p, NaN], single (0), 1)), "single")
+%!assert_equal (class (hninv ([p, NaN], 0, single (1))), "single")
 
 ## Test input validation
 %!error<hninv: function called with too few input arguments.> hninv (1)

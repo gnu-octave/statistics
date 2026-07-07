@@ -173,11 +173,11 @@ endfunction
 %! b = 6:10;
 %! b(5) = NaN;
 %! [h,p,ci,stats] = ttest2 (a,b);
-%! assert (h, 1);
-%! assert (p, 0.002535996080258229, 1e-14);
-%! assert (ci, [-6.822014919225481, -2.17798508077452], 1e-14);
-%! assert (stats.tstat, -4.582575694955839, 1e-14);
-%! assert (stats.df, 7);
-%! assert (stats.sd, 1.4638501094228, 1e-13);
+%! assert_equal (h, 1);
+%! assert_equal (p, 0.002535996080258229, 1e-14);
+%! assert_equal (ci, [-6.822014919225481, -2.17798508077452], 1e-14);
+%! assert_equal (stats.tstat, -4.582575694955839, 1e-14);
+%! assert_equal (stats.df, 7);
+%! assert_equal (stats.sd, 1.4638501094228, 1e-13);
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 'invalid');
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 25);

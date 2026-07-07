@@ -123,9 +123,9 @@ endfunction
 %!           0.7309, -0.1085, -0.4684, 0.4844];
 %! l_out = [517.7969; 67.4964; 12.4054; 0.2372];
 %! e_out = [ 86.5974; 11.2882;  2.0747; 0.0397];
-%! assert (coeff, c_out, 1e-4);
-%! assert (latent, l_out, 1e-4);
-%! assert (explained, e_out, 1e-4);
+%! assert_equal (coeff, c_out, 1e-4);
+%! assert_equal (latent, l_out, 1e-4);
+%! assert_equal (explained, e_out, 1e-4);
 
 ## Test input validation
 %!error <pcacov: K must be a square matrix.> pcacov (ones (2, 3))

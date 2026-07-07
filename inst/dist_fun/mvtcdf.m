@@ -420,19 +420,19 @@ endfunction
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
 %! a = [-1, 0];
-%! assert (mvtcdf (a, x, rho, df), 0.294196905339283, 1e-14);
+%! assert_equal (mvtcdf (a, x, rho, df), 0.294196905339283, 1e-14);
 %!test
 %! x = [1, 2;2, 4;1, 5];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
 %! p =[0.790285178602166; 0.938703291727784; 0.81222737321336];
-%! assert (mvtcdf (x, rho, df), p, 1e-14);
+%! assert_equal (mvtcdf (x, rho, df), p, 1e-14);
 %!test
 %! x = [1, 2, 2, 4, 1, 5];
 %! rho = eye (6);
 %! rho(rho == 0) = 0.5;
 %! df = 4;
-%! assert (mvtcdf (x, rho, df), 0.6874, 1e-4);
+%! assert_equal (mvtcdf (x, rho, df), 0.6874, 1e-4);
 
 %!error mvtcdf (1)
 %!error mvtcdf (1, 2)

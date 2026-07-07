@@ -615,10 +615,10 @@ endfunction
 %! k = 2;
 %! [cls, c, d, z] = kmeans (rand (samples,dims), k, 'start', rand (k,dims, 5),
 %!                          'emptyAction', 'singleton');
-%! assert (size (cls), [samples, 1]);
-%! assert (size (c), [k, dims]);
-%! assert (size (d), [k, 1]);
-%! assert (size (z), [samples, k]);
+%! assert_equal (size (cls), [samples, 1]);
+%! assert_equal (size (c), [k, dims]);
+%! assert_equal (size (d), [k, 1]);
+%! assert_equal (size (z), [samples, k]);
 
 %!test
 %! samples = 4;
@@ -626,15 +626,15 @@ endfunction
 %! k = 2;
 %! [cls, c, d, z] = kmeans (rand (samples,dims), [], 'start', rand (k,dims, 5),
 %!                          'emptyAction', 'singleton');
-%! assert (size (cls), [samples, 1]);
-%! assert (size (c), [k, dims]);
-%! assert (size (d), [k, 1]);
-%! assert (size (z), [samples, k]);
+%! assert_equal (size (cls), [samples, 1]);
+%! assert_equal (size (c), [k, dims]);
+%! assert_equal (size (d), [k, 1]);
+%! assert_equal (size (z), [samples, k]);
 
 %!test
 %! [cls, c] = kmeans ([1 0; 2 0], 2, 'start', [8,0;0,8], 'emptyaction', 'drop');
-%! assert (cls, [1; 1]);
-%! assert (c, [1.5, 0; NA, NA]);
+%! assert_equal (cls, [1; 1]);
+%! assert_equal (c, [1.5, 0; NA, NA]);
 
 %!test
 %! kmeans (rand (4,3), 2, 'start', rand (2,3, 5), 'replicates', 5,

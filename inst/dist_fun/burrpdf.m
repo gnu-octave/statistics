@@ -107,18 +107,18 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 1, 1/4, 1/9, 0];
-%!assert (burrpdf (x, ones (1,5), ones (1,5), ones (1,5)), y)
-%!assert (burrpdf (x, 1, 1, 1), y)
-%!assert (burrpdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)])
-%!assert (burrpdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)])
-%!assert (burrpdf (x, 1, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)])
-%!assert (burrpdf ([x, NaN], 1, 1, 1), [y, NaN])
+%!assert_equal (burrpdf (x, ones (1,5), ones (1,5), ones (1,5)), y)
+%!assert_equal (burrpdf (x, 1, 1, 1), y)
+%!assert_equal (burrpdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)])
+%!assert_equal (burrpdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)])
+%!assert_equal (burrpdf (x, 1, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)])
+%!assert_equal (burrpdf ([x, NaN], 1, 1, 1), [y, NaN])
 
 ## Test class of input preserved
-%!assert (burrpdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]))
-%!assert (burrpdf ([x, NaN], single (1), 1, 1), single ([y, NaN]))
-%!assert (burrpdf ([x, NaN], 1, single (1), 1), single ([y, NaN]))
-%!assert (burrpdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]))
+%!assert_equal (burrpdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]))
+%!assert_equal (burrpdf ([x, NaN], single (1), 1, 1), single ([y, NaN]))
+%!assert_equal (burrpdf ([x, NaN], 1, single (1), 1), single ([y, NaN]))
+%!assert_equal (burrpdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
 %!error<burrpdf: function called with too few input arguments.> burrpdf ()

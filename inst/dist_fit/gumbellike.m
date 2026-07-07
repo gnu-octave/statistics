@@ -125,21 +125,21 @@ endfunction
 %! x = 1:50;
 %! [nlogL, avar] = gumbellike ([2.3, 1.2], x);
 %! avar_out = [-1.2778e-13, 3.1859e-15; 3.1859e-15, -7.9430e-17];
-%! assert (nlogL, 3.242264755689906e+17, 1e-14);
-%! assert (avar, avar_out, 1e-3);
+%! assert_equal (nlogL, 3.242264755689906e+17, 1e-14);
+%! assert_equal (avar, avar_out, 1e-3);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = gumbellike ([2.3, 1.2], x * 0.5);
 %! avar_out = [-7.6094e-05, 3.9819e-06; 3.9819e-06, -2.0836e-07];
-%! assert (nlogL, 481898704.0472211, 1e-6);
-%! assert (avar, avar_out, 1e-3);
+%! assert_equal (nlogL, 481898704.0472211, 1e-6);
+%! assert_equal (avar, avar_out, 1e-3);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = gumbellike ([21, 15], x);
 %! avar_out = [11.73913876598908, -5.9546128523121216; ...
 %!             -5.954612852312121, 3.708060045170236];
-%! assert (nlogL, 223.7612479380652, 1e-13);
-%! assert (avar, avar_out, 1e-14);
+%! assert_equal (nlogL, 223.7612479380652, 1e-13);
+%! assert_equal (avar, avar_out, 1e-14);
 
 ## Test input validation
 %!error<gumbellike: too few input arguments.> gumbellike ([12, 15]);

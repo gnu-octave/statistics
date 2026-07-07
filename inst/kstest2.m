@@ -171,20 +171,20 @@ endfunction
 %!test
 %! load examgrades
 %! [h, p] = kstest2 (grades(:,1), grades(:,2));
-%! assert (h, false);
-%! assert (p, 0.1222791870137312, 1e-14);
+%! assert_equal (h, false);
+%! assert_equal (p, 0.1222791870137312, 1e-14);
 %!test
 %! load examgrades
 %! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'larger');
-%! assert (h, false);
-%! assert (p, 0.1844421391011258, 1e-14);
+%! assert_equal (h, false);
+%! assert_equal (p, 0.1844421391011258, 1e-14);
 %!test
 %! load examgrades
 %! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'smaller');
-%! assert (h, false);
-%! assert (p, 0.06115357930171663, 1e-14);
+%! assert_equal (h, false);
+%! assert_equal (p, 0.06115357930171663, 1e-14);
 %!test
 %! load examgrades
 %! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'smaller', 'alpha', 0.1);
-%! assert (h, true);
-%! assert (p, 0.06115357930171663, 1e-14);
+%! assert_equal (h, true);
+%! assert_equal (p, 0.06115357930171663, 1e-14);

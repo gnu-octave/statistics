@@ -118,36 +118,36 @@ endfunction
 %! x = 1:50;
 %! [nlogL, avar] = lognlike ([0, 0.25], x);
 %! avar_out = [-5.4749e-03, 2.8308e-04; 2.8308e-04, -1.1916e-05];
-%! assert (nlogL, 3962.330333301793, 1e-10);
-%! assert (avar, avar_out, 1e-7);
+%! assert_equal (nlogL, 3962.330333301793, 1e-10);
+%! assert_equal (avar, avar_out, 1e-7);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = lognlike ([0, 0.25], x * 0.5);
 %! avar_out = [-7.6229e-03, 4.8722e-04; 4.8722e-04, -2.6754e-05];
-%! assert (nlogL, 2473.183051225747, 1e-10);
-%! assert (avar, avar_out, 1e-7);
+%! assert_equal (nlogL, 2473.183051225747, 1e-10);
+%! assert_equal (avar, avar_out, 1e-7);
 %!test
 %! x = 1:50;
 %! [nlogL, avar] = lognlike ([0, 0.5], x);
 %! avar_out = [-2.1152e-02, 2.2017e-03; 2.2017e-03, -1.8535e-04];
-%! assert (nlogL, 1119.072424020455, 1e-12);
-%! assert (avar, avar_out, 1e-6);
+%! assert_equal (nlogL, 1119.072424020455, 1e-12);
+%! assert_equal (avar, avar_out, 1e-6);
 %!test
 %! x = 1:50;
 %! censor = ones (1, 50);
 %! censor([2, 4, 6, 8, 12, 14]) = 0;
 %! [nlogL, avar] = lognlike ([0, 0.5], x, censor);
 %! avar_out = [-1.9823e-02, 2.0370e-03; 2.0370e-03, -1.6618e-04];
-%! assert (nlogL, 1091.746371145497, 1e-12);
-%! assert (avar, avar_out, 1e-6);
+%! assert_equal (nlogL, 1091.746371145497, 1e-12);
+%! assert_equal (avar, avar_out, 1e-6);
 %!test
 %! x = 1:50;
 %! censor = ones (1, 50);
 %! censor([2, 4, 6, 8, 12, 14]) = 0;
 %! [nlogL, avar] = lognlike ([0, 1], x, censor);
 %! avar_out = [-6.8634e-02, 1.3968e-02; 1.3968e-02, -2.1664e-03];
-%! assert (nlogL, 349.3969104144271, 1e-12);
-%! assert (avar, avar_out, 1e-6);
+%! assert_equal (nlogL, 349.3969104144271, 1e-12);
+%! assert_equal (avar, avar_out, 1e-6);
 
 ## Test input validation
 %!error<lognlike: function called with too few input arguments.> ...

@@ -117,17 +117,17 @@ endfunction
 %! sigma = 1:6;
 %! p = raylcdf (x, sigma);
 %! expected_p = [0.0000, 0.0308, 0.0540, 0.0679, 0.0769, 0.0831];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test
 %! x = 0:0.5:2.5;
 %! p = raylcdf (x, 0.5);
 %! expected_p = [0.0000, 0.3935, 0.8647, 0.9889, 0.9997, 1.0000];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!shared x, p
 %! x = [-1, 0, 1, 2, Inf];
 %! p = [0, 0, 0.39346934028737, 0.86466471676338, 1];
-%!assert (raylcdf (x, 1), p, 1e-14)
-%!assert (raylcdf (x, 1, 'upper'), 1 - p, 1e-14)
+%!assert_equal (raylcdf (x, 1), p, 1e-14)
+%!assert_equal (raylcdf (x, 1, 'upper'), 1 - p, 1e-14)
 
 ## Test input validation
 %!error<raylcdf: function called with too few input arguments.> raylcdf ()

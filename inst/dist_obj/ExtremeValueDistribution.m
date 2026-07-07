@@ -788,31 +788,31 @@ endfunction
 %!shared pd, t
 %! pd = ExtremeValueDistribution (0, 1);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0:5]), [0.6321, 0.9340, 0.9994, 1, 1, 1], 1e-4);
-%!assert (cdf (t, [0:5]), [0, 0, 0, 1, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.9887, 0.9994, 1, 1], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 1, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [-Inf, -1.4999, -0.6717, -0.0874, 0.4759, Inf], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2.0298, 2.0668, 2.1169, 2.1971, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, -0.6717, -0.0874, 0.4759, Inf, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.0668, 2.1169, 2.1971, 4, NaN], 1e-4);
-%!assert (iqr (pd), 1.5725, 1e-4);
-%!assert (iqr (t), 0.1338, 1e-4);
-%!assert (mean (pd), -0.5772, 1e-4);
-%!assert (mean (t), 2.1206, 1e-4);
-%!assert (median (pd), -0.3665, 1e-4);
-%!assert (median (t), 2.0897, 1e-4);
-%!assert (pdf (pd, [0:5]), [0.3679, 0.1794, 0.0046, 0, 0, 0], 1e-4);
-%!assert (pdf (t, [0:5]), [0, 0, 7.3891, 0.0001, 0, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0.2546, 0.1794, 0.0046, 0, 0, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 7.3891, 0.0001, 0, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 1.2825, 1e-4);
-%!assert (std (t), 0.1091, 1e-4);
-%!assert (var (pd), 1.6449, 1e-4);
-%!assert (var (t), 0.0119, 1e-4);
+%!assert_equal (cdf (pd, [0:5]), [0.6321, 0.9340, 0.9994, 1, 1, 1], 1e-4);
+%!assert_equal (cdf (t, [0:5]), [0, 0, 0, 1, 1, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.9887, 0.9994, 1, 1], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0, 1, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [-Inf, -1.4999, -0.6717, -0.0874, 0.4759, Inf], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2.0298, 2.0668, 2.1169, 2.1971, 4], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, -0.6717, -0.0874, 0.4759, Inf, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.0668, 2.1169, 2.1971, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 1.5725, 1e-4);
+%!assert_equal (iqr (t), 0.1338, 1e-4);
+%!assert_equal (mean (pd), -0.5772, 1e-4);
+%!assert_equal (mean (t), 2.1206, 1e-4);
+%!assert_equal (median (pd), -0.3665, 1e-4);
+%!assert_equal (median (t), 2.0897, 1e-4);
+%!assert_equal (pdf (pd, [0:5]), [0.3679, 0.1794, 0.0046, 0, 0, 0], 1e-4);
+%!assert_equal (pdf (t, [0:5]), [0, 0, 7.3891, 0.0001, 0, 0], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1:4, NaN]), [0.2546, 0.1794, 0.0046, 0, 0, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1:4, NaN]), [0, 0, 7.3891, 0.0001, 0, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), 1.2825, 1e-4);
+%!assert_equal (std (t), 0.1091, 1e-4);
+%!assert_equal (var (pd), 1.6449, 1e-4);
+%!assert_equal (var (t), 0.0119, 1e-4);
 
 ## Test input validation
 ## 'ExtremeValueDistribution' constructor

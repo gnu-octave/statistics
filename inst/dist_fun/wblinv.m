@@ -113,18 +113,18 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.63212055882855778 1 2];
-%!assert (wblinv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
-%!assert (wblinv (p, [1 -1 NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
-%!assert (wblinv (p, 1, [1 -1 NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (wblinv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!assert_equal (wblinv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (wblinv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (wblinv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (wblinv (p, [1 -1 NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
+%!assert_equal (wblinv (p, 1, [1 -1 NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (wblinv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (wblinv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (wblinv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
-%!assert (wblinv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
-%!assert (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
+%!assert_equal (wblinv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
+%!assert_equal (wblinv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
+%!assert_equal (wblinv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
+%!assert_equal (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
 
 ## Test input validation
 %!error<wblinv: invalid number of input arguments.> wblinv ()

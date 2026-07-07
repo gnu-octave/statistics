@@ -140,14 +140,14 @@ endfunction
 %!test
 %! x = 0:5;
 %! [pshat, psci] = geofit (x);
-%! assert (pshat, 0.2857, 1e-4);
-%! assert (psci, [0.092499; 0.478929], 1e-5);
+%! assert_equal (pshat, 0.2857, 1e-4);
+%! assert_equal (psci, [0.092499; 0.478929], 1e-5);
 %!test
 %! x = 0:5;
 %! [pshat, psci] = geofit (x, [], [1 1 1 1 1 1]);
-%! assert (pshat, 0.2857, 1e-4);
-%! assert (psci, [0.092499; 0.478929], 1e-5);
-%!assert (geofit ([1 1 2 3]), geofit ([1 2 3], [] ,[2 1 1]))
+%! assert_equal (pshat, 0.2857, 1e-4);
+%! assert_equal (psci, [0.092499; 0.478929], 1e-5);
+%!assert_equal (geofit ([1 1 2 3]), geofit ([1 2 3], [] ,[2 1 1]))
 
 ## Test input validation
 %!error<geofit: function called with too few input arguments.> geofit ()

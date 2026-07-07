@@ -289,16 +289,16 @@ endfunction
 ## Test output
 %!test
 %! [nlogL, acov] = gamlike ([2, 3], [2, 3, 4, 5, 6, 7, 8, 9]);
-%! assert (nlogL, 19.4426, 1e-4);
-%! assert (acov, [2.7819, -5.0073; -5.0073, 9.6882], 1e-4);
+%! assert_equal (nlogL, 19.4426, 1e-4);
+%! assert_equal (acov, [2.7819, -5.0073; -5.0073, 9.6882], 1e-4);
 %!test
 %! [nlogL, acov] = gamlike ([2, 3], [5:45]);
-%! assert (nlogL, 305.8070, 1e-4);
-%! assert (acov, [0.0423, -0.0087; -0.0087, 0.0167], 1e-4);
+%! assert_equal (nlogL, 305.8070, 1e-4);
+%! assert_equal (acov, [0.0423, -0.0087; -0.0087, 0.0167], 1e-4);
 %!test
 %! [nlogL, acov] = gamlike ([2, 13], [5:45]);
-%! assert (nlogL, 163.2261, 1e-4);
-%! assert (acov, [0.2362, -1.6631; -1.6631, 13.9440], 1e-4);
+%! assert_equal (nlogL, 163.2261, 1e-4);
+%! assert_equal (acov, [0.2362, -1.6631; -1.6631, 13.9440], 1e-4);
 
 ## Test input validation
 %!error<gamlike: function called with too few input arguments.> ...

@@ -238,12 +238,12 @@ endfunction
 %! transprob = [0.8, 0.2; 0.4, 0.6];
 %! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
 %! [sequence, states] = hmmgenerate (len, transprob, outprob);
-%! assert (length (sequence), len);
-%! assert (length (states), len);
-%! assert (min (sequence) >= 1);
-%! assert (max (sequence) <= columns (outprob));
-%! assert (min (states) >= 1);
-%! assert (max (states) <= rows (transprob));
+%! assert_equal (length (sequence), len);
+%! assert_equal (length (states), len);
+%! assert_equal (all ((min (sequence) >= 1)(:)), true);
+%! assert_equal (all ((max (sequence) <= columns (outprob))(:)), true);
+%! assert_equal (all ((min (states) >= 1)(:)), true);
+%! assert_equal (all ((max (states) <= rows (transprob))(:)), true);
 
 %!test
 %! len = 25;
@@ -253,8 +253,8 @@ endfunction
 %! statenames = {'One', 'Two'};
 %! [sequence, states] = hmmgenerate (len, transprob, outprob, ...
 %!                      'symbols', symbols, 'statenames', statenames);
-%! assert (length (sequence), len);
-%! assert (length (states), len);
-%! assert (strcmp (sequence, 'A') + strcmp (sequence, 'B') + ...
-%!                                  strcmp (sequence, 'C') == ones (1, len));
-%! assert (strcmp (states, 'One') + strcmp (states, 'Two') == ones (1, len));
+%! assert_equal (length (sequence), len);
+%! assert_equal (length (states), len);
+%! assert_equal (all ((strcmp (sequence, 'A') + strcmp (sequence, 'B') + ...
+%!                                  strcmp (sequence, 'C') == ones (1, len))(:)), true);
+%! assert_equal (all ((strcmp (states, 'One') + strcmp (states, 'Two') == ones (1, len))(:)), true);

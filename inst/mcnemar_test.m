@@ -131,51 +131,51 @@ endfunction
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([101,121;59,33]);
-%! assert (h, 1);
-%! assert (pval, 3.8151e-06, 1e-10);
-%! assert (chisq, 21.356, 1e-3);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 3.8151e-06, 1e-10);
+%! assert_equal (chisq, 21.356, 1e-3);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80]);
-%! assert (h, 1);
-%! assert (pval, 0.034690, 1e-6);
-%! assert (isempty (chisq), true);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.034690, 1e-6);
+%! assert_equal (isempty (chisq), true);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 0.01);
-%! assert (h, 0);
-%! assert (pval, 0.034690, 1e-6);
-%! assert (isempty (chisq), true);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.034690, 1e-6);
+%! assert_equal (isempty (chisq), true);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'mid-p');
-%! assert (h, 1);
-%! assert (pval, 0.034690, 1e-6);
-%! assert (isempty (chisq), true);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.034690, 1e-6);
+%! assert_equal (isempty (chisq), true);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'asymptotic');
-%! assert (h, 1);
-%! assert (pval, 0.033006, 1e-6);
-%! assert (chisq, 4.5455, 1e-4);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.033006, 1e-6);
+%! assert_equal (chisq, 4.5455, 1e-4);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'exact');
-%! assert (h, 0);
-%! assert (pval, 0.052479, 1e-6);
-%! assert (isempty (chisq), true);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.052479, 1e-6);
+%! assert_equal (isempty (chisq), true);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'corrected');
-%! assert (h, 0);
-%! assert (pval, 0.055009, 1e-6);
-%! assert (chisq, 3.6818, 1e-4);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.055009, 1e-6);
+%! assert_equal (chisq, 3.6818, 1e-4);
 
 %!test
 %! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 0.1, 'corrected');
-%! assert (h, 1);
-%! assert (pval, 0.055009, 1e-6);
-%! assert (chisq, 3.6818, 1e-4);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.055009, 1e-6);
+%! assert_equal (chisq, 3.6818, 1e-4);
 
 %!error<mcnemar_test: too many input arguments.> mcnemar_test (59, 6, 16, 80)
 %!error<mcnemar_test: X must be a 2x2 matrix.> mcnemar_test (ones (3, 3))

@@ -114,7 +114,7 @@ endfunction
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
 %! c = gevcdf (x, k, sigma, mu);
-%! assert (c, p, 0.001);
+%! assert_equal (c, p, 0.001);
 %!test
 %! p = 0.1:0.1:0.9;
 %! k = 1;
@@ -122,7 +122,7 @@ endfunction
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
 %! c = gevcdf (x, k, sigma, mu);
-%! assert (c, p, 0.001);
+%! assert_equal (c, p, 0.001);
 %!test
 %! p = 0.1:0.1:0.9;
 %! k = 0.3;
@@ -130,7 +130,7 @@ endfunction
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
 %! c = gevcdf (x, k, sigma, mu);
-%! assert (c, p, 0.001);
+%! assert_equal (c, p, 0.001);
 
 ## Test input validation
 %!error<gevinv: function called with too few input arguments.> gevinv ()

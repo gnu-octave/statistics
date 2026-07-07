@@ -211,205 +211,205 @@ endfunction
 # test for one output argument
 %!test
 %! g = grp2idx ([3 2 1 2 3 1]);
-%! assert (g, [3; 2; 1; 2; 3; 1]);
+%! assert_equal (g, [3; 2; 1; 2; 3; 1]);
 
 # test for two output arguments
 %!test
 %! [g, gn] = grp2idx (['b'; 'a'; 'c'; 'a']);
-%! assert (g, [1; 2; 3; 2]);
-%! assert (gn, {'b'; 'a'; 'c'});
+%! assert_equal (g, [1; 2; 3; 2]);
+%! assert_equal (gn, {'b'; 'a'; 'c'});
 
 ## test boolean input and note that row or column vector makes no difference
 %!test
 %! in = [true, false, false, true];
 %! out = {[2; 1; 1; 2] {'0'; '1'} [false; true]};
-%! assert (nthargout (1:3, @grp2idx, in), out)
-%! assert (nthargout (1:3, @grp2idx, in), nthargout (1:3, @grp2idx, in'))
+%! assert_equal (nthargout (1:3, @grp2idx, in), out)
+%! assert_equal (nthargout (1:3, @grp2idx, in), nthargout (1:3, @grp2idx, in'))
 
 ## test that boolean groups are ordered in order of appearance
 %!test
-%! assert (nthargout (1:3, @grp2idx, [false, true]),
+%! assert_equal (nthargout (1:3, @grp2idx, [false, true]),
 %!         {[1; 2] {'0'; '1'} [false; true]});
-%! assert (nthargout (1:3, @grp2idx, [true, false]),
+%! assert_equal (nthargout (1:3, @grp2idx, [true, false]),
 %!         {[2; 1] {'0'; '1'} [false; true]});
 
 ## test char matrix and cell array of strings
-%!assert (nthargout (1:3, @grp2idx, ['oct'; 'sci'; 'oct'; 'oct'; 'sci']),
+%!assert_equal (nthargout (1:3, @grp2idx, ['oct'; 'sci'; 'oct'; 'oct'; 'sci']),
 %!        {[1; 2; 1; 1; 2] {'oct'; 'sci'} ['oct'; 'sci']})
 ## and cell array of strings
-%!assert (nthargout (1:3, @grp2idx, {'oct'; 'sci'; 'oct'; 'oct'; 'sci'}),
+%!assert_equal (nthargout (1:3, @grp2idx, {'oct'; 'sci'; 'oct'; 'oct'; 'sci'}),
 %!        {[1; 2; 1; 1; 2] {'oct'; 'sci'} {'oct'; 'sci'}})
 
 ## test numeric arrays
-%!assert (nthargout (1:3, @grp2idx, [1, -3, -2, -3, -3,  2,  1, -1,  3, -3]),
+%!assert_equal (nthargout (1:3, @grp2idx, [1, -3, -2, -3, -3,  2,  1, -1,  3, -3]),
 %!        {[4; 1; 2; 1; 1; 5; 4; 3; 6; 1], {'-3'; '-2'; '-1'; '1'; '2'; '3'}, ...
 %!         [-3; -2; -1; 1; 2; 3]})
 
 %!test
 %! s = [1e6, 2e6, 1e6, 3e6];
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; 2; 1; 3]);
-%! assert (gn, {'1000000'; '2000000'; '3000000'});
-%! assert (gl, [1000000; 2000000; 3000000]);
+%! assert_equal (g, [1; 2; 1; 3]);
+%! assert_equal (gn, {'1000000'; '2000000'; '3000000'});
+%! assert_equal (gl, [1000000; 2000000; 3000000]);
 
 %!test
 %! s = [0.1, 0.2, 0.3, 0.1, 0.2];
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; 2; 3; 1; 2]);
-%! assert (gn, {'0.1'; '0.2'; '0.3'});
-%! assert (gl, [0.1; 0.2; 0.3]);
+%! assert_equal (g, [1; 2; 3; 1; 2]);
+%! assert_equal (gn, {'0.1'; '0.2'; '0.3'});
+%! assert_equal (gl, [0.1; 0.2; 0.3]);
 
 %!test
 %! s = [-5 -10 0 5 10 -5];
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [2; 1; 3; 4; 5; 2]);
-%! assert (gn, {'-10'; '-5'; '0'; '5'; '10'});
-%! assert (gl, [-10; -5; 0; 5; 10]);
+%! assert_equal (g, [2; 1; 3; 4; 5; 2]);
+%! assert_equal (gn, {'-10'; '-5'; '0'; '5'; '10'});
+%! assert_equal (gl, [-10; -5; 0; 5; 10]);
 
 
 ## test for NaN and empty strings
-%!assert (nthargout (1:3, @grp2idx, [2, 2, 3, NaN, 2, 3]), ...
+%!assert_equal (nthargout (1:3, @grp2idx, [2, 2, 3, NaN, 2, 3]), ...
 %!        {[1; 1; 2; NaN; 1; 2] {'2'; '3'} [2; 3]})
-%!assert (nthargout (1:3, @grp2idx, {'et', 'sa', 'sa', '', 'et'}), ...
+%!assert_equal (nthargout (1:3, @grp2idx, {'et', 'sa', 'sa', '', 'et'}), ...
 %!        {[1; 2; 2; NaN; 1] {'et'; 'sa'} {'et'; 'sa'}})
 
-%!assert (nthargout (1:3, @grp2idx, [2, 2, 3, NaN, 2, 4]), ...
+%!assert_equal (nthargout (1:3, @grp2idx, [2, 2, 3, NaN, 2, 4]), ...
 %!        {[1; 1; 2; NaN; 1; 3] {'2'; '3'; '4'} [2; 3; 4]})
 
 %!test
 %! s = [NaN, NaN, NaN];
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (gl, zeros (0,1));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (gl, zeros (0,1));
 
 %!test
 %! s = single ([NaN, NaN, NaN]);
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (gl, single (zeros (0,1)));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (gl, single (zeros (0,1)));
 
 %!test
 %! s = {''; ''; ''; ''};
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (gl, cell (0,1));
+%! assert_equal (g, [NaN; NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (gl, cell (0,1));
 
 %!test
 %! s = {'', '', '', ''};
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (gl, cell (0,1));
+%! assert_equal (g, [NaN; NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (gl, cell (0,1));
 
 %!test
 %! s = {'a'; ''; 'b'; ''; 'c'};
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [1; NaN; 2; NaN; 3]);
-%! assert (gn, {'a'; 'b'; 'c'});
-%! assert (gl, {'a'; 'b'; 'c'});
+%! assert_equal (g, [1; NaN; 2; NaN; 3]);
+%! assert_equal (gn, {'a'; 'b'; 'c'});
+%! assert_equal (gl, {'a'; 'b'; 'c'});
 
 %!test
 %! s = categorical ({''; ''; ''; ''});
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (isequaln (gl, categorical (cell (0,1))));
+%! assert_equal (g, [NaN; NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (isequaln (gl, categorical (cell (0,1))), true);
 
 %!test
 %! s = string ({missing, missing, missing});
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (isequal (gl, string (cell (0,1))));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (isequal (gl, string (cell (0,1))), true);
 
 %!test
 %! s = [duration(NaN, 0, 0), duration(NaN, 0, 0), duration(NaN, 0, 0)];
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (isequal (gl, duration (NaN (0,3))));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (isequal (gl, duration (NaN (0,3))), true);
 
 %!test
 %! [g, gn, gl] = grp2idx (duration (NaN (3, 1), 0, 0));
-%! assert (g, [NaN; NaN; NaN]);
-%! assert (gn, cell (0,1));
-%! assert (isequal (gl, duration (NaN (0,3))));
+%! assert_equal (g, [NaN; NaN; NaN]);
+%! assert_equal (gn, cell (0,1));
+%! assert_equal (isequal (gl, duration (NaN (0,3))), true);
 
 ## Test that order when handling strings is by order of appearance
-%!test assert (nthargout (1:3, @grp2idx, ['sci'; 'oct'; 'sci'; 'oct'; 'oct']),
+%!test assert_equal (nthargout (1:3, @grp2idx, ['sci'; 'oct'; 'sci'; 'oct'; 'oct']),
 %!        {[1; 2; 1; 2; 2] {'sci'; 'oct'} ['sci'; 'oct']});
-%!test assert (nthargout (1:3, @grp2idx, {'sci'; 'oct'; 'sci'; 'oct'; 'oct'}),
+%!test assert_equal (nthargout (1:3, @grp2idx, {'sci'; 'oct'; 'sci'; 'oct'; 'oct'}),
 %!        {[1; 2; 1; 2; 2] {'sci'; 'oct'} {'sci'; 'oct'}});
-%!test assert (nthargout (1:3, @grp2idx, {'sa' 'et' 'et' '' 'sa'}),
+%!test assert_equal (nthargout (1:3, @grp2idx, {'sa' 'et' 'et' '' 'sa'}),
 %!        {[1; 2; 2; NaN; 1] {'sa'; 'et'} {'sa'; 'et'}})
 
 ## test for categorical arrays
 %!test
 %! [g, gn, gl] = grp2idx (categorical ({'low', 'med', 'high', 'low'}));
-%! assert (g, [2; 3; 1; 2]);
-%! assert (gn, {'high'; 'low'; 'med'});
-%! assert (isequal (gl, categorical ({'high'; 'low'; 'med'})));
+%! assert_equal (g, [2; 3; 1; 2]);
+%! assert_equal (gn, {'high'; 'low'; 'med'});
+%! assert_equal (isequal (gl, categorical ({'high'; 'low'; 'med'})), true);
 
 %!test
 %! [g, gn, gl] = grp2idx (categorical ([10, 20, 10, 30, 20]));
-%! assert (g, [1; 2; 1; 3; 2]);
-%! assert (gn, {'10'; '20'; '30'});
-%! assert (isequal (gl, categorical ([10; 20; 30])));
+%! assert_equal (g, [1; 2; 1; 3; 2]);
+%! assert_equal (gn, {'10'; '20'; '30'});
+%! assert_equal (isequal (gl, categorical ([10; 20; 30])), true);
 
 %!test
 %! cats = categorical ({'high', '<undefined>', 'low', '<undefined>'});
 %! [g, gn, gl] = grp2idx (cats);
-%! assert (g, [2; 1; 3; 1]);
-%! assert (gn, {'<undefined>'; 'high'; 'low'});
-%! assert (isequal (gl, categorical ({'<undefined>'; 'high'; 'low'})));
+%! assert_equal (g, [2; 1; 3; 1]);
+%! assert_equal (gn, {'<undefined>'; 'high'; 'low'});
+%! assert_equal (isequal (gl, categorical ({'<undefined>'; 'high'; 'low'})), true);
 
 %!test
 %! s = categorical ({''; ''; ''; ''}, {'1', '2', '3'}, {'1', '2', '3'});
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, nan (4, 1));
-%! assert (gn, {'1'; '2'; '3'});
-%! assert (iscategorical (gl), true);
-%! assert (cellstr (gl), gn);
+%! assert_equal (g, nan (4, 1));
+%! assert_equal (gn, {'1'; '2'; '3'});
+%! assert_equal (iscategorical (gl), true);
+%! assert_equal (cellstr (gl), gn);
 
 %!test
 %! s = categorical ({''; '1'; ''; '2'}, {'1', '2', '3'}, {'1', '2', '3'});
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; 1; NaN; 2]);
-%! assert (gn, {'1'; '2'; '3'});
-%! assert (iscategorical (gl), true);
-%! assert (cellstr (gl), gn);
+%! assert_equal (g, [NaN; 1; NaN; 2]);
+%! assert_equal (gn, {'1'; '2'; '3'});
+%! assert_equal (iscategorical (gl), true);
+%! assert_equal (cellstr (gl), gn);
 
 %!test
 %! s = categorical ({''; '2'; ''; '1'}, {'1', '2', '3'}, {'1', '2', '3'});
 %! [g, gn, gl] = grp2idx (s);
-%! assert (g, [NaN; 2; NaN; 1]);
-%! assert (gn, {'1'; '2'; '3'});
-%! assert (iscategorical (gl), true);
-%! assert (cellstr (gl), gn);
+%! assert_equal (g, [NaN; 2; NaN; 1]);
+%! assert_equal (gn, {'1'; '2'; '3'});
+%! assert_equal (iscategorical (gl), true);
+%! assert_equal (cellstr (gl), gn);
 
 ## test for duration arrays
 %!test
 %! g = gn = gl = [];
 %! [g, gn, gl] = grp2idx (seconds ([1.234, 1.234, 2.5, 3.000]));
-%! assert (g, [1; 1; 2; 3]);
-%! assert (gn, {'1.234 sec'; '2.5 sec'; '3 sec'});
-%! assert (isequal (gl, seconds ([1.234; 2.5; 3.000])));
+%! assert_equal (g, [1; 1; 2; 3]);
+%! assert_equal (gn, {'1.234 sec'; '2.5 sec'; '3 sec'});
+%! assert_equal (isequal (gl, seconds ([1.234; 2.5; 3.000])), true);
 
 %!test
 %! [g, gn, gl] = grp2idx ([hours(1); hours(2); hours(1); hours(3)]);
-%! assert (g, [1; 2; 1; 3]);
-%! assert (gn, {'1 hr'; '2 hr'; '3 hr'});
-%! assert (isequal (gl, [hours(1); hours(2); hours(3)]));
+%! assert_equal (g, [1; 2; 1; 3]);
+%! assert_equal (gn, {'1 hr'; '2 hr'; '3 hr'});
+%! assert_equal (isequal (gl, [hours(1); hours(2); hours(3)]), true);
 
 %!test
 %! in = [duration(1, 30, 0); duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)];
 %! [g, gn, gl] = grp2idx (in);
-%! assert (g, [2; 1; 2; 3]);
-%! assert (gn, {'00:45:30'; '01:30:00'; '02:15:15'});
-%! assert (isequal (gl, [duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)]));
+%! assert_equal (g, [2; 1; 2; 3]);
+%! assert_equal (gn, {'00:45:30'; '01:30:00'; '02:15:15'});
+%! assert_equal (isequal (gl, [duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)]), true);
 
 ## Inconsistency Note: following test is inconsistent with MATLAB due to a
 ## probable bug in their implementation, where they include multiple NaNs
@@ -417,35 +417,35 @@ endfunction
 %!test
 %! in = [hours(1); NaN; minutes(30); hours(1); NaN; seconds(90)];
 %! [g, gn, gl] = grp2idx (in);
-%! assert (g, [3; NaN; 2; 3; NaN; 1]);
-%! assert (gn, {'0.025 hr'; '0.5 hr'; '1 hr'});
-%! assert (isequal (gl, [seconds(90); minutes(30);  hours(1)]));
+%! assert_equal (g, [3; NaN; 2; 3; NaN; 1]);
+%! assert_equal (gn, {'0.025 hr'; '0.5 hr'; '1 hr'});
+%! assert_equal (isequal (gl, [seconds(90); minutes(30);  hours(1)]), true);
 
 ## test for string arrays
 %!test
 %! [g, gn, gl] = grp2idx (string ({'123', 'erw', missing, '', '234'}));
-%! assert (g, [1; 2; NaN; NaN; 3]);
-%! assert (gn, {'123'; 'erw'; '234'});
-%! assert (isequal (gl, string ({'123'; 'erw'; '234'})));
+%! assert_equal (g, [1; 2; NaN; NaN; 3]);
+%! assert_equal (gn, {'123'; 'erw'; '234'});
+%! assert_equal (isequal (gl, string ({'123'; 'erw'; '234'})), true);
 
 %!test
 %! [g, gn, gl] = grp2idx (string ({'medium', 'low', 'high', 'medium', 'medium'}));
-%! assert (g, [1; 2; 3; 1; 1]);
-%! assert (gn, {'medium'; 'low'; 'high'});
-%! assert (isequal (gl, string ({'medium'; 'low'; 'high'})));
+%! assert_equal (g, [1; 2; 3; 1; 1]);
+%! assert_equal (gn, {'medium'; 'low'; 'high'});
+%! assert_equal (isequal (gl, string ({'medium'; 'low'; 'high'})), true);
 
 %!test
 %! [g, gn, gl] = grp2idx (string ({'', 'high', 'low', ''}));
-%! assert (g, [NaN; 1; 2; NaN]);
-%! assert (gn, {'high'; 'low'});
-%! assert (isequal (gl, string ({'high'; 'low'})));
+%! assert_equal (g, [NaN; 1; 2; NaN]);
+%! assert_equal (gn, {'high'; 'low'});
+%! assert_equal (isequal (gl, string ({'high'; 'low'})), true);
 
 %!test
 %! [g, gn, gl] = grp2idx (string ({'a', 'a', 'b', 'c'}));
-%! assert (g, [1; 1; 2; 3]);
-%! assert (gn, {'a'; 'b'; 'c'});
-%! assert (isstring (gl), true);
-%! assert (cellstr (gl), gn);
+%! assert_equal (g, [1; 1; 2; 3]);
+%! assert_equal (gn, {'a'; 'b'; 'c'});
+%! assert_equal (isstring (gl), true);
+%! assert_equal (cellstr (gl), gn);
 
 ## Test input validation
 %!error <grp2idx: S must be either a vector or a matrix.> grp2idx (ones (3, 3, 3))

@@ -133,23 +133,23 @@ endfunction
 %!test
 %! load carbig
 %! [t, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (t(2,3,1), 38);
-%! assert (labels{3,3}, "Japan");
+%! assert_equal (t(2,3,1), 38);
+%! assert_equal (labels{3,3}, "Japan");
 %!test
 %! load carbig
 %! [t, chisq, p, labels] = crosstab (cyl4, when, org);
-%! assert (t(2,3,2), 17);
-%! assert (labels{1,3}, "USA");
+%! assert_equal (t(2,3,2), 17);
+%! assert_equal (labels{1,3}, "USA");
 %!test
 %! x = [1, 1, 2, 3, 1];
 %! y = [1, 2, 5, 3, 1];
 %! t = crosstab (x, y);
-%! assert (t, [2, 1, 0, 0; 0, 0, 0, 1; 0, 0, 1, 0]);
+%! assert_equal (t, [2, 1, 0, 0; 0, 0, 0, 1; 0, 0, 1, 0]);
 %!test
 %! x = [1, 1, 2, 3, 1];
 %! y = [1, 2, 3, 5, 1];
 %! t = crosstab (x, y);
-%! assert (t, [2, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1]);
+%! assert_equal (t, [2, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1]);
 %!test
 %! x1 = [1, 3, 7, 7, 8];
 %! x2 = [4, 2, 1, 1, 1];
@@ -160,32 +160,32 @@ endfunction
 %! T(:,:,1) = T1;
 %! T(:,:,2) = T2;
 %! t = crosstab (x1, x2, x3);
-%! assert (t, T);
+%! assert_equal (t, T);
 %!test
 %! x = [1, 2, NaN, 1];
 %! y = [1, 2, 3, NaN];
 %! t = crosstab (x, y);
-%! assert (t, [1, 0, 0; 0, 1, 0]);
+%! assert_equal (t, [1, 0, 0; 0, 1, 0]);
 
 ## Test categorical input
 %!test
 %! x = categorical ({'A', 'B', 'A', 'C', 'B'});
 %! y = [1, 2, 1, 3, 2];
 %! t = crosstab (x, y);
-%! assert (size (t), [3, 3]);
-%! assert (t(1, 1), 2);  # A with 1
-%! assert (t(2, 2), 2);  # B with 2
+%! assert_equal (size (t), [3, 3]);
+%! assert_equal (t(1, 1), 2);  # A with 1
+%! assert_equal (t(2, 2), 2);  # B with 2
 %!test
 %! x = categorical ({'low', 'med', 'high', 'low', 'med'});
 %! y = categorical ({'X', 'Y', 'X', 'Y', 'X'});
 %! t = crosstab (x, y);
-%! assert (size (t), [3, 2]);
+%! assert_equal (size (t), [3, 2]);
 %!test
 %! ## Test categorical with numeric
 %! x = categorical ([10, 20, 10, 30, 20]);
 %! y = [1, 2, 1, 3, 2];
 %! t = crosstab (x, y);
-%! assert (t, [2, 0, 0; 0, 2, 0; 0, 0, 1]);
+%! assert_equal (t, [2, 0, 0; 0, 2, 0; 0, 0, 1]);
 %!test
 %! smoker = [1 1 0 0 1 0 1 1 0 0 1 0]';
 %! gender = [1 0 1 0 1 1 0 0 1 0 0 1]';
@@ -193,13 +193,13 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p, labels] = crosstab (smoker, gender);
 %! warning (w);
-%! assert (t, [2 4; 4 2]);
-%! assert (chisq, 1.33333333, 1e-8);
-%! assert (p, 0.24821308, 1e-8);
-%! assert (labels{1,1}, '0');
-%! assert (labels{1,2}, '0');
-%! assert (labels{2,1}, '1');
-%! assert (labels{2,2}, '1');
+%! assert_equal (t, [2 4; 4 2]);
+%! assert_equal (chisq, 1.33333333, 1e-8);
+%! assert_equal (p, 0.24821308, 1e-8);
+%! assert_equal (labels{1,1}, '0');
+%! assert_equal (labels{1,2}, '0');
+%! assert_equal (labels{2,1}, '1');
+%! assert_equal (labels{2,2}, '1');
 %!test
 %! ## Test for categorical
 %! smk_cat = categorical ([0 0 1 1 0 1 0 0 1 1 0 1]');
@@ -208,9 +208,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (smk_cat, gen_cat);
 %! warning (w);
-%! assert (t, [2 4; 4 2]);
-%! assert (chisq, 1.33333333, 1e-6);
-%! assert (p, 0.24821308, 1e-6);
+%! assert_equal (t, [2 4; 4 2]);
+%! assert_equal (chisq, 1.33333333, 1e-6);
+%! assert_equal (p, 0.24821308, 1e-6);
 %!test
 %! x = [1 1 1 2 2 2 3 3 3]';
 %! y = [1 1 1 2 2 2 3 3 3]';
@@ -218,9 +218,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p, labels] = crosstab (x, y);
 %! warning (w);
-%! assert (t, diag ([3 3 3]));
-%! assert (chisq, 18.00000000);
-%! assert (p, 0.00123410, 1e-8);
+%! assert_equal (t, diag ([3 3 3]));
+%! assert_equal (chisq, 18.00000000);
+%! assert_equal (p, 0.00123410, 1e-8);
 %!test
 %! ## Test for Partial NaN giving NaN for chisq/p
 %! x7 = [1 2 3 4 NaN NaN]';
@@ -229,21 +229,21 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p, labels] = crosstab (x7, y7);
 %! warning (w);
-%! assert (t, [eye(4), zeros(4, 2)]);
-%! assert (isnan (chisq));
-%! assert (isnan (p));
-%! assert (labels{1,1}, '1');
-%! assert (labels{1,2}, '10');
-%! assert (labels{2,1}, '2');
-%! assert (labels{2,2}, '20');
-%! assert (labels{3,1}, '3');
-%! assert (labels{3,2}, '30');
-%! assert (labels{4,1}, '4');
-%! assert (labels{4,2}, '40');
-%! assert (isempty (labels{5,1}));
-%! assert (labels{5,2}, '50');
-%! assert (isempty (labels{6,1}));
-%! assert (labels{6,2}, '60');
+%! assert_equal (t, [eye(4), zeros(4, 2)]);
+%! assert_equal (isnan (chisq), true);
+%! assert_equal (isnan (p), true);
+%! assert_equal (labels{1,1}, '1');
+%! assert_equal (labels{1,2}, '10');
+%! assert_equal (labels{2,1}, '2');
+%! assert_equal (labels{2,2}, '20');
+%! assert_equal (labels{3,1}, '3');
+%! assert_equal (labels{3,2}, '30');
+%! assert_equal (labels{4,1}, '4');
+%! assert_equal (labels{4,2}, '40');
+%! assert_equal (isempty (labels{5,1}), true);
+%! assert_equal (labels{5,2}, '50');
+%! assert_equal (isempty (labels{6,1}), true);
+%! assert_equal (labels{6,2}, '60');
 %!test
 %! a = ones (15,1);
 %! b = ones (15,1);
@@ -251,9 +251,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (a, b);
 %! warning (w);
-%! assert (t, 15);
-%! assert (isnan (chisq));
-%! assert (isnan (p));
+%! assert_equal (t, 15);
+%! assert_equal (isnan (chisq), true);
+%! assert_equal (isnan (p), true);
 %!test
 %! ## all NaN → empty table + NaN stats
 %! na = NaN (6,1);
@@ -262,20 +262,20 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (na, nb);
 %! warning (w);
-%! assert (all (t(:) == 0));
-%! assert (isnan (chisq));
-%! assert (isnan (p));
+%! assert_equal (all (t(:) == 0), true);
+%! assert_equal (isnan (chisq), true);
+%! assert_equal (isnan (p), true);
 %!test
 %! ## single observation → 1×1 table, NaN statistic
 %! w = warning ();
 %! warning ('off');
 %! [t, chisq, p, labels] = crosstab (5, 'Z');
 %! warning (w);
-%! assert (t, 1);
-%! assert (isnan (chisq));
-%! assert (isnan (p));
-%! assert (labels{1,1}, '5');
-%! assert (labels{1,2}, 'Z');
+%! assert_equal (t, 1);
+%! assert_equal (isnan (chisq), true);
+%! assert_equal (isnan (p), true);
+%! assert_equal (labels{1,1}, '5');
+%! assert_equal (labels{1,2}, 'Z');
 %!test
 %! xx = [1 1 1 1 2 2 2 2]';
 %! yy = [10 10 10 10 20 20 20 20]';
@@ -283,9 +283,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (xx, yy);
 %! warning (w);
-%! assert (t, [4 0; 0 4]);
-%! assert (chisq, 8.00000000);
-%! assert (p, 0.00467773, 1e-8);
+%! assert_equal (t, [4 0; 0 4]);
+%! assert_equal (chisq, 8.00000000);
+%! assert_equal (p, 0.00467773, 1e-8);
 %!test
 %! set1 = repmat ((1:5)', 20, 1);
 %! set2 = repmat ([1; 2], 50, 1);
@@ -293,9 +293,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (set1, set2);
 %! warning (w);
-%! assert (t, 10 * ones (5,2));
-%! assert (chisq, 0);
-%! assert (p, 1);
+%! assert_equal (t, 10 * ones (5,2));
+%! assert_equal (chisq, 0);
+%! assert_equal (p, 1);
 %!test
 %! ## 3-way table with NaN
 %! a = [1 1 2 2 3 3 1]';
@@ -307,9 +307,9 @@ endfunction
 %! warning (w);
 %! expected(:,:,1) = [1 1; 0 0; 0 1];
 %! expected(:,:,2) = [1 0; 0 1; 1 0];
-%! assert (t, expected);
-%! assert (chisq, 6.00000000);
-%! assert (p, 0.53974935, 1e-9);
+%! assert_equal (t, expected);
+%! assert_equal (chisq, 6.00000000);
+%! assert_equal (p, 0.53974935, 1e-9);
 %!test
 %! ## sparse cellstr
 %! g = [1 5 7 12 1 5 19]';
@@ -318,9 +318,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (g, h);
 %! warning (w);
-%! assert (sum (t(:)), 7);
-%! assert (chisq, 16.33333333, 1e-8);
-%! assert (p, 0.42994852, 1e-8);
+%! assert_equal (sum (t(:)), 7);
+%! assert_equal (chisq, 16.33333333, 1e-8);
+%! assert_equal (p, 0.42994852, 1e-8);
 %!test
 %! ## string array
 %! str1 = ['low'; 'high'; 'med'; 'low'; 'high'];
@@ -329,9 +329,9 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (str1, str2);
 %! warning (w);
-%! assert (t, [1 1; 1 1; 1 0]);
-%! assert (chisq, 0.83333333, 1e-8);
-%! assert (p, 0.659240631, 1e-9);
+%! assert_equal (t, [1 1; 1 1; 1 0]);
+%! assert_equal (chisq, 0.83333333, 1e-8);
+%! assert_equal (p, 0.659240631, 1e-9);
 %!test
 %! ## cellstr
 %! c1 = {'A','B','A','C','B','A'}';
@@ -340,6 +340,6 @@ endfunction
 %! warning ('off');
 %! [t, chisq, p] = crosstab (c1, c2);
 %! warning (w);
-%! assert (t, [3 0 0; 0 2 0; 0 0 1]);
-%! assert (chisq, 12.00000000, 1e-14);
-%! assert (p, 0.01735127, 1e-8);
+%! assert_equal (t, [3 0 0; 0 2 0; 0 0 1]);
+%! assert_equal (chisq, 12.00000000, 1e-14);
+%! assert_equal (p, 0.01735127, 1e-8);

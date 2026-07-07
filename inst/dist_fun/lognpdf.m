@@ -104,17 +104,17 @@ endfunction
 %!shared x, y
 %! x = [-1 0 e Inf];
 %! y = [0, 0, 1/(e*sqrt(2*pi)) * exp(-1/2), 0];
-%!assert (lognpdf (x, zeros (1,4), ones (1,4)), y, eps)
-%!assert (lognpdf (x, 0, ones (1,4)), y, eps)
-%!assert (lognpdf (x, zeros (1,4), 1), y, eps)
-%!assert (lognpdf (x, [0 1 NaN 0], 1), [0 0 NaN y(4)], eps)
-%!assert (lognpdf (x, 0, [0 NaN Inf 1]), [NaN NaN NaN y(4)], eps)
-%!assert (lognpdf ([x, NaN], 0, 1), [y, NaN], eps)
+%!assert_equal (lognpdf (x, zeros (1,4), ones (1,4)), y, eps)
+%!assert_equal (lognpdf (x, 0, ones (1,4)), y, eps)
+%!assert_equal (lognpdf (x, zeros (1,4), 1), y, eps)
+%!assert_equal (lognpdf (x, [0 1 NaN 0], 1), [0 0 NaN y(4)], eps)
+%!assert_equal (lognpdf (x, 0, [0 NaN Inf 1]), [NaN NaN NaN y(4)], eps)
+%!assert_equal (lognpdf ([x, NaN], 0, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (lognpdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
-%!assert (lognpdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
-%!assert (lognpdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (lognpdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (lognpdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (lognpdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error lognpdf ()

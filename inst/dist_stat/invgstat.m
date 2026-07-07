@@ -84,21 +84,21 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = invgstat (1, 1);
-%! assert (m, 1);
-%! assert (v, 1);
+%! assert_equal (m, 1);
+%! assert_equal (v, 1);
 %!test
 %! [m, v] = invgstat (2, 1);
-%! assert (m, 2);
-%! assert (v, 8);
+%! assert_equal (m, 2);
+%! assert_equal (v, 8);
 %!test
 %! [m, v] = invgstat (2, 2);
-%! assert (m, 2);
-%! assert (v, 4);
+%! assert_equal (m, 2);
+%! assert_equal (v, 4);
 %!test
 %! [m, v] = invgstat (2, 2.5);
-%! assert (m, 2);
-%! assert (v, 3.2);
+%! assert_equal (m, 2);
+%! assert_equal (v, 3.2);
 %!test
 %! [m, v] = invgstat (1.5, 0.5);
-%! assert (m, 1.5);
-%! assert (v, 6.75);
+%! assert_equal (m, 1.5);
+%! assert_equal (v, 6.75);

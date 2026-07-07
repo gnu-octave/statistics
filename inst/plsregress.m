@@ -431,10 +431,10 @@ endfunction
 %!                -0.2067,  0.0457,  0.1565, 0.0706, -0.1471];
 %! yscore1_out = [-12.4635, -15.0003,  0.0638,  0.0652, -0.0070, ...
 %!                 -0.0634,   0.0062, -0.0012, -0.0151, -0.0173];
-%! assert (xload(1,:), xload1_out, 1e-4);
-%! assert (yload, yload_out, 1e-4);
-%! assert (xscore(1,:), xscore1_out, 1e-4);
-%! assert (yscore(1,:), yscore1_out, 1e-4);
+%! assert_equal (xload(1,:), xload1_out, 1e-4);
+%! assert_equal (yload, yload_out, 1e-4);
+%! assert_equal (xscore(1,:), xscore1_out, 1e-4);
+%! assert_equal (yscore(1,:), yscore1_out, 1e-4);
 %!test
 %! load spectra
 %! [xload, yload, xscore, yscore, coef, pctVar] = plsregress (NIR, octane, 5);
@@ -442,10 +442,10 @@ endfunction
 %! yload_out = [6.6384, 9.3106, 2.0505, 0.6471, 0.9625];
 %! xscore1_out = [-0.0401, -0.1764, -0.0340, 0.1669, 0.1041];
 %! yscore1_out = [-12.4635, -15.0003, 0.0638, 0.0652, -0.0070];
-%! assert (xload(1,:), xload1_out, 1e-4);
-%! assert (yload, yload_out, 1e-4);
-%! assert (xscore(1,:), xscore1_out, 1e-4);
-%! assert (yscore(1,:), yscore1_out, 1e-4);
+%! assert_equal (xload(1,:), xload1_out, 1e-4);
+%! assert_equal (yload, yload_out, 1e-4);
+%! assert_equal (xscore(1,:), xscore1_out, 1e-4);
+%! assert_equal (yscore(1,:), yscore1_out, 1e-4);
 
 ## Test input validation
 %!error<plsregress: function called with too few input arguments.>

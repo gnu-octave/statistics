@@ -219,11 +219,11 @@ endfunction
 %! x = [6 7 7 9 10 12 13 14 15 17];
 %! y = [19 22 27 25 30 28 30 29 25 32];
 %! [h, pval, stats] = correlation_test (x, y);
-%! assert (stats.corrcoef, corr (x', y'), 1e-14);
-%! assert (pval, 0.0223, 1e-4);
+%! assert_equal (stats.corrcoef, corr (x', y'), 1e-14);
+%! assert_equal (pval, 0.0223, 1e-4);
 %!test
 %! x = [6 7 7 9 10 12 13 14 15 17]';
 %! y = [19 22 27 25 30 28 30 29 25 32]';
 %! [h, pval, stats] = correlation_test (x, y);
-%! assert (stats.corrcoef, corr (x, y), 1e-14);
-%! assert (pval, 0.0223, 1e-4);
+%! assert_equal (stats.corrcoef, corr (x, y), 1e-14);
+%! assert_equal (pval, 0.0223, 1e-4);

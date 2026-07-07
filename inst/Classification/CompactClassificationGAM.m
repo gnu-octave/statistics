@@ -694,18 +694,18 @@ endfunction
 ## Test constructor
 %!test
 %! Mdl = CompactClassificationGAM ();
-%! assert (class (Mdl), "CompactClassificationGAM")
+%! assert_equal (class (Mdl), "CompactClassificationGAM")
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
 %! Mdl = fitcgam (x, y, 'PredictorNames', PredictorNames);
 %! CMdl = compact (Mdl);
-%! assert (class (CMdl), "CompactClassificationGAM");
-%! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert (CMdl.ClassNames, {'0'; '1'})
-%! assert (CMdl.PredictorNames, PredictorNames)
-%! assert (CMdl.BaseModel.Intercept, 0)
+%! assert_equal (class (CMdl), "CompactClassificationGAM");
+%! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
+%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.PredictorNames, PredictorNames)
+%! assert_equal (CMdl.BaseModel.Intercept, 0)
 %!test
 %! load fisheriris
 %! inds = strcmp (species,'versicolor') | strcmp (species,'virginica');
@@ -714,25 +714,25 @@ endfunction
 %! Y = strcmp (Y, 'virginica')';
 %! Mdl = fitcgam (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! CMdl = compact (Mdl);
-%! assert (class (CMdl), "CompactClassificationGAM");
-%! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {4, 'Y'})
-%! assert (CMdl.ClassNames, {'0'; '1'})
-%! assert (CMdl.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
-%! assert (CMdl.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
-%! assert (CMdl.ModelwInt.Intercept, 0)
+%! assert_equal (class (CMdl), "CompactClassificationGAM");
+%! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {4, 'Y'})
+%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
+%! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
+%! assert_equal (CMdl.ModelwInt.Intercept, 0)
 %!test
 %! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
 %! Y = [0; 1; 0; 1; 1];
 %! Mdl = fitcgam (X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
 %! CMdl = compact (Mdl);
-%! assert (class (CMdl), "CompactClassificationGAM");
-%! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert (CMdl.ClassNames, {'0'; '1'})
-%! assert (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
-%! assert (CMdl.Knots, [4, 4, 4])
-%! assert (CMdl.Order, [3, 3, 3])
-%! assert (CMdl.DoF, [7, 7, 7])
-%! assert (CMdl.BaseModel.Intercept, 0.4055, 1e-1)
+%! assert_equal (class (CMdl), "CompactClassificationGAM");
+%! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
+%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
+%! assert_equal (CMdl.Knots, [4, 4, 4])
+%! assert_equal (CMdl.Order, [3, 3, 3])
+%! assert_equal (CMdl.DoF, [7, 7, 7])
+%! assert_equal (CMdl.BaseModel.Intercept, 0.4055, 1e-1)
 
 ## Test input validation for constructor
 %!error<CompactClassificationGAM: invalid classification object.> ...
@@ -748,13 +748,13 @@ endfunction
 %! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
 %!      0.4259, 0.5741; 0.3760, 0.6240];
 %! [labels, scores] = predict (CMdl, x);
-%! assert (class (CMdl), "CompactClassificationGAM");
-%! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {2, 'Y'})
-%! assert (CMdl.ClassNames, {'0'; '1'})
-%! assert (CMdl.PredictorNames, {'x1', 'x2'})
-%! assert (CMdl.ModelwInt.Intercept, 0.4055, 1e-1)
-%! assert (labels, l)
-%! assert (scores, s, 1e-1)
+%! assert_equal (class (CMdl), "CompactClassificationGAM");
+%! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {2, 'Y'})
+%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.PredictorNames, {'x1', 'x2'})
+%! assert_equal (CMdl.ModelwInt.Intercept, 0.4055, 1e-1)
+%! assert_equal (labels, l)
+%! assert_equal (scores, s, 1e-1)
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
@@ -764,13 +764,13 @@ endfunction
 %! [label, score] = predict (CMdl, x, 'includeinteractions', true);
 %! l = {'0'; '0'; '1'; '1'};
 %! s = [0.5106, 0.4894; 0.5135, 0.4865; 0.4864, 0.5136; 0.4847, 0.5153];
-%! assert (class (CMdl), "CompactClassificationGAM");
-%! assert ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
-%! assert (CMdl.ClassNames, {'0'; '1'})
-%! assert (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
-%! assert (CMdl.ModelwInt.Intercept, 0)
-%! assert (label, l)
-%! assert (score, s, 1e-1)
+%! assert_equal (class (CMdl), "CompactClassificationGAM");
+%! assert_equal ({CMdl.NumPredictors, CMdl.ResponseName}, {3, 'Y'})
+%! assert_equal (CMdl.ClassNames, {'0'; '1'})
+%! assert_equal (CMdl.PredictorNames, {'x1', 'x2', 'x3'})
+%! assert_equal (CMdl.ModelwInt.Intercept, 0)
+%! assert_equal (label, l)
+%! assert_equal (score, s, 1e-1)
 
 ## Test input validation for predict method
 %!shared CMdl

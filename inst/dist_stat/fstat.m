@@ -98,12 +98,12 @@ endfunction
 %! [m, v] = fstat (df1, df2);
 %! expected_mn = [1.6667, 1.5000, 1.4000, 1.3333, 1.2857, 1.2500];
 %! expected_v = [22.2222, 6.7500, 3.4844, 2.2222, 1.5869, 1.2153];
-%! assert (m, expected_mn, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_mn, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! df1 = 1:6;
 %! [m, v] = fstat (df1, 5);
 %! expected_mn = [1.6667, 1.6667, 1.6667, 1.6667, 1.6667, 1.6667];
 %! expected_v = [22.2222, 13.8889, 11.1111, 9.7222, 8.8889, 8.3333];
-%! assert (m, expected_mn, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_mn, 0.001);
+%! assert_equal (v, expected_v, 0.001);

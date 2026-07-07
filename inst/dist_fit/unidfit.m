@@ -136,14 +136,14 @@ endfunction
 %!test
 %! x = 0:5;
 %! [Nhat, Nci] = unidfit (x);
-%! assert (Nhat, 5);
-%! assert (Nci, [5; 9]);
+%! assert_equal (Nhat, 5);
+%! assert_equal (Nci, [5; 9]);
 %!test
 %! x = 0:5;
 %! [Nhat, Nci] = unidfit (x, [], [1 1 1 1 1 1]);
-%! assert (Nhat, 5);
-%! assert (Nci, [5; 9]);
-%!assert (unidfit ([1 1 2 3]), unidfit ([1 2 3], [] ,[2 1 1]))
+%! assert_equal (Nhat, 5);
+%! assert_equal (Nci, [5; 9]);
+%!assert_equal (unidfit ([1 1 2 3]), unidfit ([1 2 3], [] ,[2 1 1]))
 
 ## Test input validation
 %!error<unidfit: function called with too few input arguments.> unidfit ()

@@ -231,9 +231,9 @@ endfunction
 
 %!test
 %! dat = randn (10, 4);
-%! assert (size (datasample (dat, 3, 1)), [3 4]);
+%! assert_equal (size (datasample (dat, 3, 1)), [3 4]);
 
 %!test
 %! dat = randn (10, 4);
-%! assert (size (datasample (dat, 3, 2)), [10 3]);
+%! assert_equal (size (datasample (dat, 3, 2)), [10 3]);
 

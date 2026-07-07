@@ -146,11 +146,11 @@ endfunction
 %!test
 %! x = 0:3;
 %! [pshat, psci] = binofit (x, 3);
-%! assert (pshat, [0, 0.3333, 0.6667, 1], 1e-4);
-%! assert (psci(1,:), [0, 0.7076], 1e-4);
-%! assert (psci(2,:), [0.0084, 0.9057], 1e-4);
-%! assert (psci(3,:), [0.0943, 0.9916], 1e-4);
-%! assert (psci(4,:), [0.2924, 1.0000], 1e-4);
+%! assert_equal (pshat, [0, 0.3333, 0.6667, 1], 1e-4);
+%! assert_equal (psci(1,:), [0, 0.7076], 1e-4);
+%! assert_equal (psci(2,:), [0.0084, 0.9057], 1e-4);
+%! assert_equal (psci(3,:), [0.0943, 0.9916], 1e-4);
+%! assert_equal (psci(4,:), [0.2924, 1.0000], 1e-4);
 
 ## Test input validation
 %!error<binofit: function called with too few input arguments.> ...

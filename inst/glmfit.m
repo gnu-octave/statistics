@@ -529,7 +529,7 @@ endfunction
 %! X = meas(51:end,:);
 %! y = strcmp ('versicolor', species(51:end));
 %! b = glmfit (X, y, 'binomial', 'link', 'logit');
-%! assert (b, [42.6379; 2.4652; 6.6809; -9.4294; -18.2861], 1e-4);
+%! assert_equal (b, [42.6379; 2.4652; 6.6809; -9.4294; -18.2861], 1e-4);
 
 %!test
 %! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
@@ -537,8 +537,8 @@ endfunction
 %! [Bnew, dev] = glmfit (X, y, 'gamma', 'link', 'log');
 %! b_matlab = [-0.7631; 0.1113];
 %! dev_matlab = 0.0111;
-%! assert (Bnew, b_matlab, 0.001);
-%! assert (dev, dev_matlab, 0.001);
+%! assert_equal (Bnew, b_matlab, 0.001);
+%! assert_equal (dev, dev_matlab, 0.001);
 
 %!test
 %! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
@@ -547,8 +547,8 @@ endfunction
 %! [Bnew, dev] = glmfit (X, y, 'inverse gaussian', 'link', p_input);
 %! b_matlab = [0.3813; 0.0950];
 %! dev_matlab = 0.0051;
-%! assert (Bnew, b_matlab, 0.001);
-%! assert (dev, dev_matlab, 0.001);
+%! assert_equal (Bnew, b_matlab, 0.001);
+%! assert_equal (dev, dev_matlab, 0.001);
 
 ## Test input validation
 %!error <glmfit: too few input arguments.> glmfit ()

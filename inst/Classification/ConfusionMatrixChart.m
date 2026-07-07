@@ -1214,7 +1214,7 @@ endclassdef
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   cm = ConfusionMatrixChart (gca, [1 2; 1 2], {'A','B'}, {'XLabel','LABEL A'});
-%!   assert (isa (cm, 'ConfusionMatrixChart'), true);
+%!   assert_equal (isa (cm, 'ConfusionMatrixChart'), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

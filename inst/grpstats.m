@@ -703,18 +703,18 @@ endfunction
 %!test
 %! load carsmall
 %! means = grpstats (Acceleration, Origin);
-%! assert (means, [14.4377; 18.0500; 15.8867; 16.3778; 16.6000; 15.5000], 0.001);
+%! assert_equal (means, [14.4377; 18.0500; 15.8867; 16.3778; 16.6000; 15.5000], 0.001);
 %!test
 %! load carsmall
 %! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', ...
 %!                                                          'gname'});
-%! assert (grpMin, [8.0; 15.3; 13.9; 12.2; 15.7; 15.5]);
-%! assert (grpMax, [22.2; 21.9; 18.2; 24.6; 17.5; 15.5]);
+%! assert_equal (grpMin, [8.0; 15.3; 13.9; 12.2; 15.7; 15.5]);
+%! assert_equal (grpMax, [22.2; 21.9; 18.2; 24.6; 17.5; 15.5]);
 %!test
 %! load carsmall
 %! [grpMin, grpMax, grp] = grpstats (Acceleration, Origin, {'min', 'max', ...
 %!                                                          'gname'});
-%! assert (grp', {'USA', 'France', 'Japan', 'Germany', 'Sweden', 'Italy'});
+%! assert_equal (grp', {'USA', 'France', 'Japan', 'Germany', 'Sweden', 'Italy'});
 %!test
 %! load carsmall
 %! [m, p, g] = grpstats ([Acceleration, Weight/1000], Cylinders, ...
@@ -722,135 +722,135 @@ endfunction
 %! ## check meanci lower bounds (first slice) with tolerance
 %! expected_lower = [15.9163; 15.6622; 10.7968];
 %! expected_upper = [17.4249; 17.2907; 12.4845];
-%! assert (abs (p(:,1,1)), expected_lower, 1e-3);
-%! assert (abs (p(:,1,2)), expected_upper, 1e-3);
+%! assert_equal (abs (p(:,1,1)), expected_lower, 1e-3);
+%! assert_equal (abs (p(:,1,2)), expected_upper, 1e-3);
 %!test
 %! [mC, g] = grpstats ([], []);
-%! assert (isempty (mC), true);
-%! assert (isempty (g), true);
+%! assert_equal (isempty (mC), true);
+%! assert_equal (isempty (g), true);
 %!test
 %! ## column vector, no group
 %! x = [1; 2; 3; 4; 5];
 %! m = grpstats (x);
 %! expected = 3;
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## row vector, no group
 %! x = [1 2 3 4 5];
 %! m = grpstats (x);
 %! expected = 3;
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## matrix, no group
 %! x = [1 2; 3 4; 5 6];
 %! m = grpstats (x);
 %! expected = [3 4];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## vector, numeric groups
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! m = grpstats (x, g);
 %! expected = [15; 35; 55];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## vector, cellstr groups
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = {'A'; 'A'; 'B'; 'B'; 'C'; 'C'};
 %! m = grpstats (x, g);
 %! expected = [15; 35; 55];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## matrix, numeric groups
 %! x = [1 10; 2 20; 3 30; 4 40; 5 50; 6 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! m = grpstats (x, g);
 %! expected = [1.5 15; 3.5 35; 5.5 55];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## NaN handling
 %! x = [1; NaN; 3; 4; NaN; 6];
 %! g = [1; 1; 2; 2; 3; 3];
 %! m = grpstats (x, g);
 %! expected = [1; 3.5; 6];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## single group
 %! x = [1; 2; 3; 4; 5];
 %! g = ones (5, 1);
 %! m = grpstats (x, g);
 %! expected = 3;
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! m = grpstats (x, g, 'mean');
 %! expected = [15; 35; 55];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! m = grpstats (x, g, 'median');
 %! expected = [15; 35; 55];
-%! assert (m, expected);
+%! assert_equal (m, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! s = grpstats (x, g, 'std');
 %! expected = [7.07106781186548; 7.07106781186548; 7.07106781186548];
-%! assert (s, expected, 1e-14);
+%! assert_equal (s, expected, 1e-14);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! v = grpstats (x, g, 'var');
 %! expected = [50; 50; 50];
-%! assert (v, expected);
+%! assert_equal (v, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! s = grpstats (x, g, 'sem');
 %! expected = [5; 5; 5];
-%! assert (s, expected);
+%! assert_equal (s, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! mn = grpstats (x, g, 'min');
 %! expected = [10; 30; 50];
-%! assert (mn, expected);
+%! assert_equal (mn, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! mx = grpstats (x, g, 'max');
 %! expected = [20; 40; 60];
-%! assert (mx, expected);
+%! assert_equal (mx, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! r = grpstats (x, g, 'range');
 %! expected = [10; 10; 10];
-%! assert (r, expected);
+%! assert_equal (r, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = [1; 1; 2; 2; 3; 3];
 %! n = grpstats (x, g, 'numel');
 %! expected = [2; 2; 2];
-%! assert (n, expected);
+%! assert_equal (n, expected);
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
 %! g = {'A'; 'A'; 'B'; 'B'; 'C'; 'C'};
 %! names = grpstats (x, g, 'gname');
 %! expected = {'A'; 'B'; 'C'};
-%! assert (names, expected);
+%! assert_equal (names, expected);
 %!test
 %! ## single statistic (default alpha)
 %! x = [10; 20; 30; 40; 50; 60];
@@ -858,7 +858,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci');
 %! expected = [-48.5310236808735 78.5310236808735; -28.5310236808735 ...
 %!             98.5310236808735; -8.53102368087348 118.531023680873];
-%! assert (ci, expected, 1e-12);
+%! assert_equal (ci, expected, 1e-12);
 %!test
 %! ## single statistic (default alpha)
 %! x = [10; 20; 30; 40; 50; 60];
@@ -866,7 +866,7 @@ endfunction
 %! ci = grpstats (x, g, 'predci');
 %! expected = [-95.0389608721344 125.038960872134; -75.0389608721344 ...
 %!             145.038960872134; -55.0389608721344 165.038960872134];
-%! assert (ci, expected, 1e-12);
+%! assert_equal (ci, expected, 1e-12);
 %!test
 %! ## mean + std
 %! x = [10; 20; 30; 40; 50; 60];
@@ -874,8 +874,8 @@ endfunction
 %! [m, s] = grpstats (x, g, {'mean', 'std'});
 %! expected_m = [15; 35; 55];
 %! expected_s = [7.07106781186548; 7.07106781186548; 7.07106781186548];
-%! assert (m, expected_m, 1e-14);
-%! assert (s, expected_s, 1e-14);
+%! assert_equal (m, expected_m, 1e-14);
+%! assert_equal (s, expected_s, 1e-14);
 %!test
 %! ## min + max + range
 %! x = [10; 20; 30; 40; 50; 60];
@@ -884,9 +884,9 @@ endfunction
 %! expected_mn = [10; 30; 50];
 %! expected_mx = [20; 40; 60];
 %! expected_r  = [10; 10; 10];
-%! assert (mn, expected_mn);
-%! assert (mx, expected_mx);
-%! assert (r, expected_r);
+%! assert_equal (mn, expected_mn);
+%! assert_equal (mx, expected_mx);
+%! assert_equal (r, expected_r);
 %!test
 %! ## mean + median + numel + gname
 %! x = [10; 20; 30; 40; 50; 60];
@@ -896,10 +896,10 @@ endfunction
 %! expected_med = [15; 35; 55];
 %! expected_n   = [2; 2; 2];
 %! expected_names = {'A'; 'B'; 'C'};
-%! assert (m, expected_m);
-%! assert (med, expected_med);
-%! assert (n, expected_n);
-%! assert (names, expected_names);
+%! assert_equal (m, expected_m);
+%! assert_equal (med, expected_med);
+%! assert_equal (n, expected_n);
+%! assert_equal (names, expected_names);
 %!test
 %! ## all basic statistics
 %! x = [10; 20; 30; 40; 50; 60; 70; 80];
@@ -917,15 +917,15 @@ endfunction
 %! expected_mx  = [20; 60; 80];
 %! expected_r   = [10; 30; 10];
 %! expected_n   = [2; 4; 2];
-%! assert (m,   expected_m);
-%! assert (med, expected_med);
-%! assert (s,   expected_s, 1e-13);
-%! assert (v,   expected_v, 1e-12);
-%! assert (se,  expected_se, 1e-14);
-%! assert (mn,  expected_mn);
-%! assert (mx,  expected_mx);
-%! assert (r,   expected_r);
-%! assert (n,   expected_n);
+%! assert_equal (m,   expected_m);
+%! assert_equal (med, expected_med);
+%! assert_equal (s,   expected_s, 1e-13);
+%! assert_equal (v,   expected_v, 1e-12);
+%! assert_equal (se,  expected_se, 1e-14);
+%! assert_equal (mn,  expected_mn);
+%! assert_equal (mx,  expected_mx);
+%! assert_equal (r,   expected_r);
+%! assert_equal (n,   expected_n);
 %!test
 %! ## meanci-alpha-0.1
 %! x = [10; 20; 30; 40; 50; 60];
@@ -933,7 +933,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci', 0.1);
 %! expected = [-16.5687575733752 46.5687575733752; 3.4312424266248 ...
 %!             66.5687575733752; 23.4312424266248 86.5687575733752];
-%! assert (ci, expected, 1e-13);
+%! assert_equal (ci, expected, 1e-13);
 %!test
 %! ## predci-alpha-0.1
 %! x = [10; 20; 30; 40; 50; 60];
@@ -941,7 +941,7 @@ endfunction
 %! ci = grpstats (x, g, 'predci', 0.1);
 %! expected = [-39.6786920489106 69.6786920489106; -19.6786920489106 ...
 %!             89.6786920489106; 0.321307951089366 109.678692048911];
-%! assert (ci, expected, 1e-12);
+%! assert_equal (ci, expected, 1e-12);
 %!test
 %! ## meanci-alpha-0.01
 %! x = [10; 20; 30; 40; 50; 60];
@@ -949,7 +949,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci', 0.01);
 %! expected = [-303.283705814358 333.283705814358; -283.283705814358 ...
 %!             353.283705814358; -263.283705814358 373.283705814358];
-%! assert (ci, expected, 3e-8);
+%! assert_equal (ci, expected, 3e-8);
 %!test
 %! ## predci-alpha-0.01
 %! x = [10; 20; 30; 40; 50; 60];
@@ -957,7 +957,7 @@ endfunction
 %! ci = grpstats (x, g, 'predci', 0.01);
 %! expected = [-536.283549691775 566.283549691775; -516.283549691775 ...
 %!             586.283549691775; -496.283549691775 606.283549691775];
-%! assert (ci, expected, 3e-8);
+%! assert_equal (ci, expected, 3e-8);
 %!test
 %! ## meanci-alpha-0.2
 %! x = [10; 20; 30; 40; 50; 60];
@@ -965,7 +965,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci', 0.2);
 %! expected = [-0.388417685876263 30.3884176858763; 19.6115823141237 ...
 %!             50.3884176858763; 39.6115823141237 70.3884176858763];
-%! assert (ci, expected, 1e-13);
+%! assert_equal (ci, expected, 1e-13);
 %!test
 %! ## predci-alpha-0.2
 %! x = [10; 20; 30; 40; 50; 60];
@@ -973,7 +973,7 @@ endfunction
 %! ci = grpstats (x, g, 'predci', 0.2);
 %! expected = [-11.6535212800292 41.6535212800292; 8.34647871997083 ...
 %!             61.6535212800292; 28.3464787199708 81.6535212800292];
-%! assert (ci, expected, 1e-13);
+%! assert_equal (ci, expected, 1e-13);
 %!test
 %! ## meanci, name-value alpha=0.2
 %! x = [10; 20; 30; 40; 50; 60];
@@ -981,7 +981,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci', 'alpha', 0.2);
 %! expected = [-0.388417685876263 30.3884176858763; 19.6115823141237 ...
 %!             50.3884176858763; 39.6115823141237 70.3884176858763];
-%! assert (ci, expected, 1e-13);
+%! assert_equal (ci, expected, 1e-13);
 %!test
 %! ## meanci + predci, alpha=0.01
 %! x = [10; 20; 30; 40; 50; 60];
@@ -991,8 +991,8 @@ endfunction
 %!               353.283705814358; -263.283705814358 373.283705814358];
 %! expected_p = [-536.283549691775 566.283549691775; -516.283549691775 ...
 %!               586.283549691775; -496.283549691775 606.283549691775];
-%! assert (ci_m, expected_m, 3e-8);
-%! assert (ci_p, expected_p, 3e-8);
+%! assert_equal (ci_m, expected_m, 3e-8);
+%! assert_equal (ci_p, expected_p, 3e-8);
 %!test
 %! ## matrix, mean+std+numel
 %! x = [1 10; 2 20; 3 30; 4 40; 5 50; 6 60];
@@ -1002,9 +1002,9 @@ endfunction
 %! expected_s = [0.707106781186548 7.07106781186548; 0.707106781186548 ...
 %!               7.07106781186548; 0.707106781186548 7.07106781186548];
 %! expected_n = [2 2; 2 2; 2 2];
-%! assert (m, expected_m);
-%! assert (s, expected_s, 1e-14);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (s, expected_s, 1e-14);
+%! assert_equal (n, expected_n);
 %!test
 %! ## matrix with NaN, mean+numel
 %! x = [1 10; NaN 20; 3 NaN; 4 40; 5 50; 6 60];
@@ -1012,8 +1012,8 @@ endfunction
 %! [m, n] = grpstats (x, g, {'mean', 'numel'});
 %! expected_m = [1   15; 3.5 40; 5.5 55];
 %! expected_n = [1 2; 2 1; 2 2];
-%! assert (m, expected_m);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (n, expected_n);
 %!test
 %! ## 3-column matrix, mean+min+max
 %! x = [1 100 1000; 2 200 2000; 3 300 3000; 4 400 4000];
@@ -1022,9 +1022,9 @@ endfunction
 %! expected_m  = [1.5 150 1500; 3.5 350 3500];
 %! expected_mn = [1 100 1000; 3 300 3000];
 %! expected_mx = [2 200 2000; 4 400 4000];
-%! assert (m,  expected_m);
-%! assert (mn, expected_mn);
-%! assert (mx, expected_mx);
+%! assert_equal (m,  expected_m);
+%! assert_equal (mn, expected_mn);
+%! assert_equal (mx, expected_mx);
 %!test
 %! ## one element per group
 %! x = [1; 2; 3];
@@ -1033,9 +1033,9 @@ endfunction
 %! expected_m = [1; 2; 3];
 %! expected_s = [0; 0; 0];
 %! expected_n = [1; 1; 1];
-%! assert (m, expected_m);
-%! assert (s, expected_s);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (s, expected_s);
+%! assert_equal (n, expected_n);
 %!test
 %! ## group with all NaN
 %! x = [1; 2; NaN; NaN; 5; 6];
@@ -1044,9 +1044,9 @@ endfunction
 %! expected_m = [1.5; NaN; 5.5];
 %! expected_s = [0.707106781186548; NaN; 0.707106781186548];
 %! expected_n = [2; 0; 2];
-%! assert (m, expected_m);
-%! assert (s, expected_s, 1e-14);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (s, expected_s, 1e-14);
+%! assert_equal (n, expected_n);
 %!test
 %! ## unequal group sizes
 %! x = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
@@ -1055,9 +1055,9 @@ endfunction
 %! expected_m = [2.5; 6; 9];
 %! expected_v = [1.66666666666667; 1; 1];
 %! expected_n = [4; 3; 3];
-%! assert (m, expected_m);
-%! assert (v, expected_v, 1e-14);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (v, expected_v, 1e-14);
+%! assert_equal (n, expected_n);
 %!test
 %! ## non-consecutive numeric groups
 %! x = [10; 20; 30; 40; 50; 60];
@@ -1065,8 +1065,8 @@ endfunction
 %! [m, names] = grpstats (x, g, {'mean', 'gname'});
 %! expected_m = [15; 35; 55];
 %! expected_names = {'1'; '5'; '10'};
-%! assert (m, expected_m);
-%! assert (names, expected_names);
+%! assert_equal (m, expected_m);
+%! assert_equal (names, expected_names);
 %!test
 %! ## unsorted string groups
 %! x = [30; 10; 40; 20; 60; 50];
@@ -1074,8 +1074,8 @@ endfunction
 %! [m, names] = grpstats (x, g, {'mean', 'gname'});
 %! expected_m = [35; 15; 55];
 %! expected_names = {'C'; 'A'; 'B'};
-%! assert (m, expected_m);
-%! assert (names, expected_names);
+%! assert_equal (m, expected_m);
+%! assert_equal (names, expected_names);
 %!test
 %! ## 20 groups, one element each
 %! x = (1:20)';
@@ -1083,8 +1083,8 @@ endfunction
 %! [m, n] = grpstats (x, g, {'mean', 'numel'});
 %! expected_m = (1:20)';
 %! expected_n = ones (20, 1);
-%! assert (m, expected_m);
-%! assert (n, expected_n);
+%! assert_equal (m, expected_m);
+%! assert_equal (n, expected_n);
 %!test
 %! ## large sample meanci
 %! x = (1:50)';
@@ -1092,7 +1092,7 @@ endfunction
 %! ci = grpstats (x, g, 'meanci');
 %! expected = [9.96202357522388 16.0379764247761; 34.9620235752239 ...
 %!             41.0379764247761];
-%! assert (ci, expected, 1e-13);
+%! assert_equal (ci, expected, 1e-13);
 %!test
 %! ## large sample predci
 %! x = (1:50)';
@@ -1100,34 +1100,34 @@ endfunction
 %! ci = grpstats (x, g, 'predci');
 %! expected = [-2.49070107176829 28.4907010717683; 22.5092989282317 ...
 %!             53.4907010717683];
-%! assert (ci, expected, 2e-14);
+%! assert_equal (ci, expected, 2e-14);
 %!test
 %! Y = [5; 6; 7; 4; 9; 8];
 %! X = [1; 2; 3; 4; 5; 6];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, X, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y', 'numel_Y', ...
 %!                                              'mean_X', 'numel_X'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
-%! assert (stats_tbl.numel_Y, [2; 2; 2]);
-%! assert (stats_tbl.mean_X, [1.5; 3.5; 5.5]);
-%! assert (stats_tbl.numel_X, [2; 2; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
+%! assert_equal (stats_tbl.numel_Y, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_X, [1.5; 3.5; 5.5]);
+%! assert_equal (stats_tbl.numel_X, [2; 2; 2]);
 %!test
 %! Y = [5; 6; 7; 4; 9; 8];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [5.5; 5.5; 8.5]);
 %!test
 %! Y = [10; 20; 30; 40];
 %! X = [100; 200; 300; 400];
@@ -1135,99 +1135,99 @@ endfunction
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'});
 %! tbl = table (Y, X, Z, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!         'mean_Y', 'numel_Y', 'mean_X', 'numel_X', 'mean_Z', 'numel_Z'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [2; 2]);
-%! assert (stats_tbl.mean_Y, [15; 35]);
-%! assert (stats_tbl.numel_Y, [2; 2]);
-%! assert (stats_tbl.mean_X, [150; 350]);
-%! assert (stats_tbl.numel_X, [2; 2]);
-%! assert (stats_tbl.mean_Z, [1500; 3500]);
-%! assert (stats_tbl.numel_Z, [2; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [15; 35]);
+%! assert_equal (stats_tbl.numel_Y, [2; 2]);
+%! assert_equal (stats_tbl.mean_X, [150; 350]);
+%! assert_equal (stats_tbl.numel_X, [2; 2]);
+%! assert_equal (stats_tbl.mean_Z, [1500; 3500]);
+%! assert_equal (stats_tbl.numel_Z, [2; 2]);
 %!test
 %! Y = [1; 2; 3; 4; 5; 6; 7; 8];
 %! Group = categorical ({'A'; 'A'; 'A'; 'A'; 'B'; 'B'; 'B'; 'B'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [4; 4]);
-%! assert (stats_tbl.mean_Y, [2.5; 6.5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [4; 4]);
+%! assert_equal (stats_tbl.mean_Y, [2.5; 6.5]);
 %!test
 %! Y = [1; 2; 3; 4; 5; 6; 7];
 %! Group = categorical ({'A'; 'A'; 'A'; 'A'; 'A'; 'B'; 'B'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y', 'numel_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [5; 2]);
-%! assert (stats_tbl.mean_Y, [3; 6.5]);
-%! assert (stats_tbl.numel_Y, [5; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [5; 2]);
+%! assert_equal (stats_tbl.mean_Y, [3; 6.5]);
+%! assert_equal (stats_tbl.numel_Y, [5; 2]);
 %!test
 %! Y = [10; 20; 30];
 %! Group = categorical ({'A'; 'B'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [1; 1; 1]);
-%! assert (stats_tbl.mean_Y, [10; 20; 30]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [1; 1; 1]);
+%! assert_equal (stats_tbl.mean_Y, [10; 20; 30]);
 %!test
 %! Y = [5; 5; 5; 5];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [2; 2]);
-%! assert (stats_tbl.mean_Y, [5; 5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [5; 5]);
 %!test
 %! Y = [1; NaN; 3; 4; NaN; 6];
 %! X = [10; 20; NaN; 40; 50; NaN];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, X, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y', 'mean_X'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [1; 3.5; 6]);
-%! assert (stats_tbl.mean_X, [15; 40; 50]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [1; 3.5; 6]);
+%! assert_equal (stats_tbl.mean_X, [15; 40; 50]);
 %!test
 %! Y = [1; NaN; 3; 4; 5; 6];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y', 'numel_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [1; 3.5; 5.5]);
-%! assert (stats_tbl.numel_Y, [1; 2; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [1; 3.5; 5.5]);
+%! assert_equal (stats_tbl.numel_Y, [1; 2; 2]);
 %!test
 %! Y = [100; 200; 300; 400; 500; 600];
 %! Group = categorical ({'Group1'; 'Group1'; 'Group2'; 'Group2'; ...
 %!                       'Group3'; 'Group3'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'Group1'; 'Group2'; 'Group3'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [150; 350; 550]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'Group1'; 'Group2'; 'Group3'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [150; 350; 550]);
 %!test
 %! Var1 = [1; 2; 3; 4];
 %! Var2 = [10; 20; 30; 40];
@@ -1236,203 +1236,203 @@ endfunction
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'});
 %! tbl = table (Var1, Var2, Var3, Var4, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!         'mean_Var1', 'mean_Var2', 'mean_Var3', 'mean_Var4'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [2; 2]);
-%! assert (stats_tbl.mean_Var1, [1.5; 3.5]);
-%! assert (stats_tbl.mean_Var2, [15; 35]);
-%! assert (stats_tbl.mean_Var3, [150; 350]);
-%! assert (stats_tbl.mean_Var4, [1500; 3500]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2]);
+%! assert_equal (stats_tbl.mean_Var1, [1.5; 3.5]);
+%! assert_equal (stats_tbl.mean_Var2, [15; 35]);
+%! assert_equal (stats_tbl.mean_Var3, [150; 350]);
+%! assert_equal (stats_tbl.mean_Var4, [1500; 3500]);
 %!test
 %! Y = [1.5; 2.5; 3.5; 4.5; 5.5; 6.5];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [2; 4; 6]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [2; 4; 6]);
 %!test
 %! Y = [-10; -20; 30; 40; 50; 60];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [-15; 35; 55]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [-15; 35; 55]);
 %!test
 %! Y = [0; 0; 0; 0; 0; 0];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [0; 0; 0]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [0; 0; 0]);
 %!test
 %! Y = [1e6; 2e6; 3e6; 4e6; 5e6; 6e6];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Y, [1.5e6; 3.5e6; 5.5e6]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Y, [1.5e6; 3.5e6; 5.5e6]);
 %!test
 %! Y = (1:10)';
 %! Group = categorical (repmat ({'A'; 'B'}, 5, 1));
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, ...
 %!   {'Group', 'GroupCount', 'mean_Y', 'numel_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [5; 5]);
-%! assert (stats_tbl.mean_Y, [5; 6]);
-%! assert (stats_tbl.numel_Y, [5; 5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [5; 5]);
+%! assert_equal (stats_tbl.mean_Y, [5; 6]);
+%! assert_equal (stats_tbl.numel_Y, [5; 5]);
 %!test
 %! Y = (1:20)';
 %! Group = categorical (repmat ({'A'; 'B'; 'C'; 'D'}, 5, 1));
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'; 'D'});
-%! assert (stats_tbl.GroupCount, [5; 5; 5; 5]);
-%! assert (stats_tbl.mean_Y, [9; 10; 11; 12]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'; 'D'});
+%! assert_equal (stats_tbl.GroupCount, [5; 5; 5; 5]);
+%! assert_equal (stats_tbl.mean_Y, [9; 10; 11; 12]);
 %!test
 %! Y = [1; 2; 3; 4; 5];
 %! Group = categorical ({'A'; 'B'; 'C'; 'D'; 'E'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'; 'D'; 'E'});
-%! assert (stats_tbl.GroupCount, [1; 1; 1; 1; 1]);
-%! assert (stats_tbl.mean_Y, [1; 2; 3; 4; 5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'; 'D'; 'E'});
+%! assert_equal (stats_tbl.GroupCount, [1; 1; 1; 1; 1]);
+%! assert_equal (stats_tbl.mean_Y, [1; 2; 3; 4; 5]);
 %!test
 %! Score1 = [85; 90; 78; 92; 88; 76];
 %! Score2 = [82; 88; 75; 90; 85; 73];
 %! Group = categorical ({'High'; 'High'; 'Med'; 'Med'; 'Low'; 'Low'});
 %! tbl = table (Score1, Score2, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Score1', 'mean_Score2'});
-%! assert (stats_tbl.Properties.RowNames, {'High'; 'Low'; 'Med'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Score1, [87.5; 82; 85]);
-%! assert (stats_tbl.mean_Score2, [85; 79; 82.5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'High'; 'Low'; 'Med'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Score1, [87.5; 82; 85]);
+%! assert_equal (stats_tbl.mean_Score2, [85; 79; 82.5]);
 %!test
 %! Height = [170; 175; 165; 180; 160; 185];
 %! Weight = [70; 75; 65; 80; 60; 85];
 %! Category = categorical ({'M'; 'M'; 'F'; 'F'; 'M'; 'M'});
 %! tbl = table (Height, Weight, Category);
 %! stats_tbl = grpstats (tbl, 'Category', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Category', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Category', 'GroupCount', ...
 %!         'mean_Height', 'numel_Height', 'mean_Weight', 'numel_Weight'});
-%! assert (stats_tbl.Properties.RowNames, {'F'; 'M'});
-%! assert (stats_tbl.GroupCount, [2; 4]);
-%! assert (stats_tbl.mean_Height, [172.5; 172.5]);
-%! assert (stats_tbl.numel_Height, [2; 4]);
-%! assert (stats_tbl.mean_Weight, [72.5; 72.5]);
-%! assert (stats_tbl.numel_Weight, [2; 4]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'F'; 'M'});
+%! assert_equal (stats_tbl.GroupCount, [2; 4]);
+%! assert_equal (stats_tbl.mean_Height, [172.5; 172.5]);
+%! assert_equal (stats_tbl.numel_Height, [2; 4]);
+%! assert_equal (stats_tbl.mean_Weight, [72.5; 72.5]);
+%! assert_equal (stats_tbl.numel_Weight, [2; 4]);
 %!test
 %! Value = [10.5; 11.2; 9.8; 10.1; 11.5; 10.8];
 %! Type = categorical ({'A'; 'A'; 'A'; 'B'; 'B'; 'B'});
 %! tbl = table (Value, Type);
 %! stats_tbl = grpstats (tbl, 'Type', 'numel');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Type', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Type', 'GroupCount', ...
 %!                                              'numel_Value'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [3; 3]);
-%! assert (stats_tbl.numel_Value, [3; 3]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [3; 3]);
+%! assert_equal (stats_tbl.numel_Value, [3; 3]);
 %!test
 %! Data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
 %! Label = categorical ({'A'; 'A'; 'A'; 'A'; 'A'; 'B'; 'B'; 'B'; 'B'; 'B'});
 %! tbl = table (Data, Label);
 %! stats_tbl = grpstats (tbl, 'Label', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Label', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Label', 'GroupCount', ...
 %!                                              'mean_Data', 'numel_Data'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [5; 5]);
-%! assert (stats_tbl.mean_Data, [3; 8]);
-%! assert (stats_tbl.numel_Data, [5; 5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [5; 5]);
+%! assert_equal (stats_tbl.mean_Data, [3; 8]);
+%! assert_equal (stats_tbl.numel_Data, [5; 5]);
 %!test
 %! X1 = [1; 2; 3; 4];
 %! X2 = [5; 6; 7; 8];
 %! G = categorical ({'A'; 'A'; 'B'; 'B'});
 %! tbl = table (X1, X2, G);
 %! stats_tbl = grpstats (tbl, 'G', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'G', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'G', 'GroupCount', ...
 %!                                              'mean_X1', 'mean_X2'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'});
-%! assert (stats_tbl.GroupCount, [2; 2]);
-%! assert (stats_tbl.mean_X1, [1.5; 3.5]);
-%! assert (stats_tbl.mean_X2, [5.5; 7.5]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2]);
+%! assert_equal (stats_tbl.mean_X1, [1.5; 3.5]);
+%! assert_equal (stats_tbl.mean_X2, [5.5; 7.5]);
 %!test
 %! Measurement = [100; 150; 200; 250; 300; 350];
 %! GroupVar = categorical ({'Control'; 'Control'; 'Treatment'; 'Treatment'; ...
 %!                          'Placebo'; 'Placebo'});
 %! tbl = table (Measurement, GroupVar);
 %! stats_tbl = grpstats (tbl, 'GroupVar', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'GroupVar', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'GroupVar', 'GroupCount', ...
 %!                                              'mean_Measurement'});
-%! assert (stats_tbl.Properties.RowNames, {'Control'; 'Placebo'; 'Treatment'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_Measurement, [125; 325; 225]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'Control'; 'Placebo'; 'Treatment'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_Measurement, [125; 325; 225]);
 %!test
 %! Y = [NaN; NaN; 3; 4; 5; 6];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', 'mean');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (isequaln (stats_tbl.mean_Y, [NaN; 3.5; 5.5]));
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (isequaln (stats_tbl.mean_Y, [NaN; 3.5; 5.5]), true);
 %!test
 %! Y = [1; 2; NaN; NaN; NaN; NaN];
 %! Group = categorical ({'A'; 'A'; 'B'; 'B'; 'C'; 'C'});
 %! tbl = table (Y, Group);
 %! stats_tbl = grpstats (tbl, 'Group', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Group', 'GroupCount', ...
 %!                                              'mean_Y', 'numel_Y'});
-%! assert (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (isequaln (stats_tbl.mean_Y, [1.5; NaN; NaN]));
-%! assert (stats_tbl.numel_Y, [2; 0; 0]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'A'; 'B'; 'C'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (isequaln (stats_tbl.mean_Y, [1.5; NaN; NaN]), true);
+%! assert_equal (stats_tbl.numel_Y, [2; 0; 0]);
 %!test
 %! Val = [5.5; 6.5; 7.5; 8.5];
 %! Cat = categorical ({'X'; 'X'; 'Y'; 'Y'});
 %! tbl = table (Val, Cat);
 %! stats_tbl = grpstats (tbl, 'Cat', 'numel');
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Cat', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Cat', 'GroupCount', ...
 %!                                              'numel_Val'});
-%! assert (stats_tbl.Properties.RowNames, {'X'; 'Y'});
-%! assert (stats_tbl.GroupCount, [2; 2]);
-%! assert (stats_tbl.numel_Val, [2; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'X'; 'Y'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2]);
+%! assert_equal (stats_tbl.numel_Val, [2; 2]);
 %!test
 %! A = [1; 2; 3; 4; 5; 6];
 %! B = [10; 20; 30; 40; 50; 60];
@@ -1440,27 +1440,27 @@ endfunction
 %! Grp = categorical ({'G1'; 'G1'; 'G2'; 'G2'; 'G3'; 'G3'});
 %! tbl = table (A, B, C, Grp);
 %! stats_tbl = grpstats (tbl, 'Grp', {'mean', 'numel'});
-%! assert (istable (stats_tbl));
-%! assert (stats_tbl.Properties.VariableNames, {'Grp', 'GroupCount', ...
+%! assert_equal (istable (stats_tbl), true);
+%! assert_equal (stats_tbl.Properties.VariableNames, {'Grp', 'GroupCount', ...
 %!         'mean_A', 'numel_A', 'mean_B', 'numel_B', 'mean_C', 'numel_C'});
-%! assert (stats_tbl.Properties.RowNames, {'G1'; 'G2'; 'G3'});
-%! assert (stats_tbl.GroupCount, [2; 2; 2]);
-%! assert (stats_tbl.mean_A, [1.5; 3.5; 5.5]);
-%! assert (stats_tbl.numel_A, [2; 2; 2]);
-%! assert (stats_tbl.mean_B, [15; 35; 55]);
-%! assert (stats_tbl.numel_B, [2; 2; 2]);
-%! assert (stats_tbl.mean_C, [150; 350; 550]);
-%! assert (stats_tbl.numel_C, [2; 2; 2]);
+%! assert_equal (stats_tbl.Properties.RowNames, {'G1'; 'G2'; 'G3'});
+%! assert_equal (stats_tbl.GroupCount, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_A, [1.5; 3.5; 5.5]);
+%! assert_equal (stats_tbl.numel_A, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_B, [15; 35; 55]);
+%! assert_equal (stats_tbl.numel_B, [2; 2; 2]);
+%! assert_equal (stats_tbl.mean_C, [150; 350; 550]);
+%! assert_equal (stats_tbl.numel_C, [2; 2; 2]);
 %!test
 %! x = [1; NaN; 3; 4];
 %! g = [1; 1; 2; 2];
 %! muci = grpstats (x, g, 'meanci');
-%! assert (muci, [NaN, NaN; -2.8531, 9.8531], 1e-4);
+%! assert_equal (muci, [NaN, NaN; -2.8531, 9.8531], 1e-4);
 %!test
 %! x = [1; NaN; 3; 4; 5; 6];
 %! g = [1; 1; 1; 2; 2; 2];
 %! predci = grpstats (x, g, 'predci');
-%! assert (predci, [-20.0078, 24.0078; 0.0317, 9.9683], 1e-4);
+%! assert_equal (predci, [-20.0078, 24.0078; 0.0317, 9.9683], 1e-4);
 
 ## Test input validation
 %!error <grpstats: X must be a matrix or a table.> grpstats (ones (2, 2, 2))

@@ -94,25 +94,25 @@ endfunction
 %! [m, v] = betastat (a, b);
 %! expected_m = [NaN NaN NaN 1/2 2/3.2 3/4.4 4/5.6 5/6.8 6/8];
 %! expected_v = [NaN NaN NaN 0.0833, 0.0558, 0.0402, 0.0309, 0.0250, 0.0208];
-%! assert (m, expected_m, eps*100);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, eps*100);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! a = -2:1:6;
 %! [m, v] = betastat (a, 1.5);
 %! expected_m = [NaN NaN NaN 1/2.5 2/3.5 3/4.5 4/5.5 5/6.5 6/7.5];
 %! expected_v = [NaN NaN NaN 0.0686, 0.0544, 0.0404, 0.0305, 0.0237, 0.0188];
-%! assert (m, expected_m);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! a = [14  Inf   10  NaN  10];
 %! b = [12    9  NaN  Inf  12];
 %! [m, v] = betastat (a, b);
 %! expected_m = [14/26 NaN NaN NaN 10/22];
 %! expected_v = [168/18252 NaN NaN NaN 120/11132];
-%! assert (m, expected_m);
-%! assert (v, expected_v);
-%!assert (nthargout (1:2, @betastat, 5, []), {[], []})
-%!assert (nthargout (1:2, @betastat, [], 5), {[], []})
-%!assert (size (betastat (rand (10, 5, 4), rand (10, 5, 4))), [10 5 4])
-%!assert (size (betastat (rand (10, 5, 4), 7)), [10 5 4])
+%! assert_equal (m, expected_m);
+%! assert_equal (v, expected_v);
+%!assert_equal (nthargout (1:2, @betastat, 5, []), {[], []})
+%!assert_equal (nthargout (1:2, @betastat, [], 5), {[], []})
+%!assert_equal (size (betastat (rand (10, 5, 4), rand (10, 5, 4))), [10 5 4])
+%!assert_equal (size (betastat (rand (10, 5, 4), 7)), [10 5 4])
 

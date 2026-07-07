@@ -1709,38 +1709,38 @@ endclassdef
 %! 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4; 2; 3; 4; 2; 3; 4; 2; 3; 4];
 %! a = ClassificationSVM (x, y, 'ClassNames', [1, 2]);
-%! assert (class (a), "ClassificationSVM");
-%! assert (a.RowsUsed, [1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]');
-%! assert ({a.X, a.Y}, {x, y})
-%! assert (a.NumObservations, 5)
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
-%! assert ({a.ClassNames, a.ModelParameters.SVMtype}, {[1; 2], 'c_svc'})
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal (a.RowsUsed, [1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]');
+%! assert_equal ({a.X, a.Y}, {x, y})
+%! assert_equal (a.NumObservations, 5)
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
+%! assert_equal ({a.ClassNames, a.ModelParameters.SVMtype}, {[1; 2], 'c_svc'})
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = ClassificationSVM (x, y);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
-%! assert (a.ModelParameters.BoxConstraint, 1)
-%! assert (a.ClassNames, [-1; 1])
-%! assert (a.ModelParameters.KernelOffset, 0)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
+%! assert_equal (a.ModelParameters.BoxConstraint, 1)
+%! assert_equal (a.ClassNames, [-1; 1])
+%! assert_equal (a.ModelParameters.KernelOffset, 0)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = ClassificationSVM (x, y, 'KernelFunction', 'rbf', 'BoxConstraint', 2, ...
 %! 'KernelOffset', 2);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
-%! assert (a.ModelParameters.BoxConstraint, 2)
-%! assert (a.ModelParameters.KernelOffset, 2)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
+%! assert_equal (a.ModelParameters.BoxConstraint, 2)
+%! assert_equal (a.ModelParameters.KernelOffset, 2)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = ClassificationSVM (x, y, 'KernelFunction', 'polynomial', ...
 %! 'PolynomialOrder', 3);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
-%! assert (a.ModelParameters.PolynomialOrder, 3)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
+%! assert_equal (a.ModelParameters.PolynomialOrder, 3)
 
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
@@ -1844,21 +1844,21 @@ endclassdef
 %!test
 %! xc = [min(x); mean(x); max(x)];
 %! obj = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
-%! assert (isempty (obj.Alpha), true)
-%! assert (sum (obj.IsSupportVector), numel (obj.Beta))
+%! assert_equal (isempty (obj.Alpha), true)
+%! assert_equal (sum (obj.IsSupportVector), numel (obj.Beta))
 %! [label, score] = predict (obj, xc);
-%! assert (label, [1; 2; 2]);
-%! assert (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
-%! assert (score(:,1), -score(:,2), eps)
+%! assert_equal (label, [1; 2; 2]);
+%! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 2e-5);
+%! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! obj = fitcsvm (x, y);
-%! assert (isempty (obj.Beta), true)
-%! assert (sum (obj.IsSupportVector), numel (obj.Alpha))
-%! assert (numel (obj.Alpha), 24)
-%! assert (obj.Bias, -14.415, 1e-3)
+%! assert_equal (isempty (obj.Beta), true)
+%! assert_equal (sum (obj.IsSupportVector), numel (obj.Alpha))
+%! assert_equal (numel (obj.Alpha), 24)
+%! assert_equal (obj.Bias, -14.415, 1e-3)
 %! xc = [min(x); mean(x); max(x)];
 %! label = predict (obj, xc);
-%! assert (label, [1; 2; 2]);
+%! assert_equal (label, [1; 2; 2]);
 
 ## Test input validation for predict method
 %!error<ClassificationSVM.predict: too few input arguments.> ...
@@ -1887,7 +1887,7 @@ endclassdef
 %!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
 %!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
 %! computed_margin = margin (obj, x(testInds,:), y(testInds,:));
-%! assert (computed_margin, expected_margin, 1e-4);
+%! assert_equal (computed_margin, expected_margin, 1e-4);
 
 ## Test input validation for margin method
 %!error<ClassificationSVM.margin: too few input arguments.> ...
@@ -1915,12 +1915,12 @@ endclassdef
 %! L4 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (obj, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! assert (L1, 2.8711, 1e-4);
-%! assert (L2, 0.5333, 1e-4);
-%! assert (L3, 10.9685, 1e-4);
-%! assert (L4, 1.9827, 1e-4);
-%! assert (L5, 1.5849, 1e-4);
-%! assert (L6, 7.6739, 1e-4);
+%! assert_equal (L1, 2.8711, 1e-4);
+%! assert_equal (L2, 0.5333, 1e-4);
+%! assert_equal (L3, 10.9685, 1e-4);
+%! assert_equal (L4, 1.9827, 1e-4);
+%! assert_equal (L5, 1.5849, 1e-4);
+%! assert_equal (L6, 7.6739, 1e-4);
 
 ## Test input validation for loss method
 %!error<ClassificationSVM.loss: too few input arguments.> ...
@@ -1986,11 +1986,11 @@ endclassdef
 %! rand ('seed', 23);
 %! CVMdl = crossval (SVMModel, 'KFold', 5);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 5)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 5, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
 %!test
 %! obj = fitcsvm (x, y);
 %! status = warning;
@@ -1998,10 +1998,10 @@ endclassdef
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
 %!test
 %! obj = fitcsvm (x, y);
 %! status = warning;
@@ -2009,10 +2009,10 @@ endclassdef
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'LeaveOut', 'on');
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationSVM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationSVM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationSVM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationSVM")
 
 ## Test input validation for crossval method
 %!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...

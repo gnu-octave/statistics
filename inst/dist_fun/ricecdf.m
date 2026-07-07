@@ -180,28 +180,28 @@ endfunction
 %! s = 1:6;
 %! p = ricecdf (x, s, 1);
 %! expected_p = [0.0000, 0.0179, 0.0108, 0.0034, 0.0008, 0.0001];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test
 %! x = 0:0.5:2.5;
 %! sigma = 1:6;
 %! p = ricecdf (x, 1, sigma);
 %! expected_p = [0.0000, 0.0272, 0.0512, 0.0659, 0.0754, 0.0820];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test
 %! x = 0:0.5:2.5;
 %! p = ricecdf (x, 0, 1);
 %! expected_p = [0.0000, 0.1175, 0.3935, 0.6753, 0.8647, 0.9561];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test
 %! x = 0:0.5:2.5;
 %! p = ricecdf (x, 1, 1);
 %! expected_p = [0.0000, 0.0735, 0.2671, 0.5120, 0.7310, 0.8791];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!shared x, p
 %! x = [-1, 0, 1, 2, Inf];
 %! p = [0, 0, 0.26712019620318, 0.73098793996409, 1];
-%!assert (ricecdf (x, 1, 1), p, 1e-14)
-%!assert (ricecdf (x, 1, 1, 'upper'), 1 - p, 1e-14)
+%!assert_equal (ricecdf (x, 1, 1), p, 1e-14)
+%!assert_equal (ricecdf (x, 1, 1, 'upper'), 1 - p, 1e-14)
 
 ## Test input validation
 %!error<ricecdf: function called with too few input arguments.> ricecdf ()

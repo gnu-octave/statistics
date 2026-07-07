@@ -98,21 +98,21 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = loglstat (0, 1);
-%! assert (m, Inf, 0.001);
-%! assert (v, Inf, 0.001);
+%! assert_equal (m, Inf, 0.001);
+%! assert_equal (v, Inf, 0.001);
 %!test
 %! [m, v] = loglstat (0, 0.8);
-%! assert (m, 4.2758, 0.001);
-%! assert (v, Inf, 0.001);
+%! assert_equal (m, 4.2758, 0.001);
+%! assert_equal (v, Inf, 0.001);
 %!test
 %! [m, v] = loglstat (0, 0.6);
-%! assert (m, 1.9820, 0.001);
-%! assert (v, Inf, 0.001);
+%! assert_equal (m, 1.9820, 0.001);
+%! assert_equal (v, Inf, 0.001);
 %!test
 %! [m, v] = loglstat (0, 0.4);
-%! assert (m, 1.3213, 0.001);
-%! assert (v, 2.5300, 0.001);
+%! assert_equal (m, 1.3213, 0.001);
+%! assert_equal (v, 2.5300, 0.001);
 %!test
 %! [m, v] = loglstat (0, 0.2);
-%! assert (m, 1.0690, 0.001);
-%! assert (v, 0.1786, 0.001);
+%! assert_equal (m, 1.0690, 0.001);
+%! assert_equal (v, 0.1786, 0.001);

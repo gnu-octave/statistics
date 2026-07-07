@@ -185,22 +185,22 @@ endfunction
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
 %! a = fitcgam (x, y, 'PredictorNames', PredictorNames);
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, PredictorNames)
-%! assert (a.BaseModel.Intercept, 0)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, PredictorNames)
+%! assert_equal (a.BaseModel.Intercept, 0)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
 %! a = fitcgam (x, y, 'interactions', 'all');
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
-%! assert ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, {'x1', 'x2'})
-%! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, {'x1', 'x2'})
+%! assert_equal (a.ModelwInt.Intercept, 0.4055, 1e-1)
 %!test
 %! load fisheriris
 %! inds = strcmp (species,'versicolor') | strcmp (species,'virginica');
@@ -208,13 +208,13 @@ endfunction
 %! Y = species(inds, :)';
 %! Y = strcmp (Y, 'virginica')';
 %! a = fitcgam (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
-%! assert ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
-%! assert (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
-%! assert (a.ModelwInt.Intercept, 0)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
+%! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
+%! assert_equal (a.ModelwInt.Intercept, 0)
 
 ## Test input validation
 %!error<fitcgam: too few arguments.> fitcgam ()

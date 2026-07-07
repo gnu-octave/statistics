@@ -79,12 +79,12 @@ endfunction
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [nlogL, avar] = poisslike (3.25, x);
-%! assert (nlogL, 13.9533, 1e-4)
+%! assert_equal (nlogL, 13.9533, 1e-4)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [nlogL, avar] = poisslike (3.25, x, f);
-%! assert (nlogL, 13.9533, 1e-4)
+%! assert_equal (nlogL, 13.9533, 1e-4)
 
 ## Test input validation
 %!error<poisslike: function called with too few input arguments.> poisslike (1)

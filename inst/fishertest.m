@@ -191,19 +191,19 @@ endfunction
 %! [h, p, stats] = fishertest (x)
 
 ## Test output against MATLAB R2018
-%!assert (fishertest ([3, 4; 5, 7]), false);
-%!assert (isa (fishertest ([3, 4; 5, 7]), 'logical'), true);
+%!assert_equal (fishertest ([3, 4; 5, 7]), false);
+%!assert_equal (isa (fishertest ([3, 4; 5, 7]), 'logical'), true);
 %!test
 %! [h, pval, stats] = fishertest ([3, 4; 5, 7]);
-%! assert (pval, 1, 1e-14);
-%! assert (stats.OddsRatio, 1.05);
+%! assert_equal (pval, 1, 1e-14);
+%! assert_equal (stats.OddsRatio, 1.05);
 %! CI = [0.159222057151289, 6.92429189601808];
-%! assert (stats.ConfidenceInterval, CI, 1e-14)
+%! assert_equal (stats.ConfidenceInterval, CI, 1e-14)
 %!test
 %! [h, pval, stats] = fishertest ([3, 4; 5, 0]);
-%! assert (pval, 0.08080808080808080, 1e-14);
-%! assert (stats.OddsRatio, 0);
-%! assert (stats.ConfidenceInterval, [-Inf, Inf])
+%! assert_equal (pval, 0.08080808080808080, 1e-14);
+%! assert_equal (stats.OddsRatio, 0);
+%! assert_equal (stats.ConfidenceInterval, [-Inf, Inf])
 
 
 ## Test input validation

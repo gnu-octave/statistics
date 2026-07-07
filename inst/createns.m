@@ -149,33 +149,33 @@ endfunction
 %! ## Default ExhaustiveSearcher
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = createns (X);
-%! assert (isa (obj, 'ExhaustiveSearcher'));
-%! assert (obj.X, X);
-%! assert (obj.Distance, "euclidean");
+%! assert_equal (isa (obj, 'ExhaustiveSearcher'), true);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "euclidean");
 
 %!test
 %! ## KDTreeSearcher with default parameters
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = createns (X, 'NSMethod', 'kdtree');
-%! assert (isa (obj, 'KDTreeSearcher'));
-%! assert (obj.X, X);
-%! assert (obj.Distance, "euclidean");
+%! assert_equal (isa (obj, 'KDTreeSearcher'), true);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "euclidean");
 
 %!test
 %! ## hnswSearcher with custom parameters
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = createns (X, 'NSMethod', 'hnsw', 'MaxNumLinksPerNode', 2, 'TrainSetSize', 3);
-%! assert (isa (obj, 'hnswSearcher'));
-%! assert (obj.X, X);
-%! assert (obj.MaxNumLinksPerNode, 2);
-%! assert (obj.TrainSetSize, 3);
+%! assert_equal (isa (obj, 'hnswSearcher'), true);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.MaxNumLinksPerNode, 2);
+%! assert_equal (obj.TrainSetSize, 3);
 
 %!test
 %! ## ExhaustiveSearcher with custom distance
 %! X = [1, 2; 3, 4];
 %! obj = createns (X, 'NSMethod', 'exhaustive', 'Distance', 'cityblock');
-%! assert (isa (obj, 'ExhaustiveSearcher'));
-%! assert (obj.Distance, "cityblock");
+%! assert_equal (isa (obj, 'ExhaustiveSearcher'), true);
+%! assert_equal (obj.Distance, "cityblock");
 
 %!error<createns: too few input arguments.>
 %! createns ()

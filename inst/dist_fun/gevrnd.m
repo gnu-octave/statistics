@@ -123,25 +123,25 @@ function r = gevrnd (k, sigma, mu, varargin)
 endfunction
 
 ## Test output
-%!assert (size (gevrnd (1, 2, 1)), [1, 1]);
-%!assert (size (gevrnd (ones (2, 1), 2, 1)), [2, 1]);
-%!assert (size (gevrnd (ones (2, 2), 2, 1)), [2, 2]);
-%!assert (size (gevrnd (1, 2 * ones (2, 1), 1)), [2, 1]);
-%!assert (size (gevrnd (1, 2 * ones (2, 2), 1)), [2, 2]);
-%!assert (size (gevrnd (1, 2, 1, 3)), [3, 3]);
-%!assert (size (gevrnd (1, 2, 1, [4, 1])), [4, 1]);
-%!assert (size (gevrnd (1, 2, 1, 4, 1)), [4, 1]);
-%!assert (size (gevrnd (1, 2, 1, [])), [0, 0])
-%!assert (size (gevrnd (1, 2, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (gevrnd (1, 2, 1)), [1, 1]);
+%!assert_equal (size (gevrnd (ones (2, 1), 2, 1)), [2, 1]);
+%!assert_equal (size (gevrnd (ones (2, 2), 2, 1)), [2, 2]);
+%!assert_equal (size (gevrnd (1, 2 * ones (2, 1), 1)), [2, 1]);
+%!assert_equal (size (gevrnd (1, 2 * ones (2, 2), 1)), [2, 2]);
+%!assert_equal (size (gevrnd (1, 2, 1, 3)), [3, 3]);
+%!assert_equal (size (gevrnd (1, 2, 1, [4, 1])), [4, 1]);
+%!assert_equal (size (gevrnd (1, 2, 1, 4, 1)), [4, 1]);
+%!assert_equal (size (gevrnd (1, 2, 1, [])), [0, 0])
+%!assert_equal (size (gevrnd (1, 2, 1, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
-%!assert (class (gevrnd (1,1,1)), "double")
-%!assert (class (gevrnd (single (1),1,1)), "single")
-%!assert (class (gevrnd (single ([1 1]),1,1)), "single")
-%!assert (class (gevrnd (1,single (1),1)), "single")
-%!assert (class (gevrnd (1,single ([1 1]),1)), "single")
-%!assert (class (gevrnd (1,1,single (1))), "single")
-%!assert (class (gevrnd (1,1,single ([1 1]))), "single")
+%!assert_equal (class (gevrnd (1,1,1)), "double")
+%!assert_equal (class (gevrnd (single (1),1,1)), "single")
+%!assert_equal (class (gevrnd (single ([1 1]),1,1)), "single")
+%!assert_equal (class (gevrnd (1,single (1),1)), "single")
+%!assert_equal (class (gevrnd (1,single ([1 1]),1)), "single")
+%!assert_equal (class (gevrnd (1,1,single (1))), "single")
+%!assert_equal (class (gevrnd (1,1,single ([1 1]))), "single")
 
 ## Test input validation
 %!error<gevrnd: function called with too few input arguments.> gevrnd ()

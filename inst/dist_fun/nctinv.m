@@ -161,24 +161,24 @@ endfunction
 ## Test output
 %!test
 %! x = [-Inf,-0.3347,0.1756,0.5209,0.8279,1.1424,1.5021,1.9633,2.6571,4.0845,Inf];
-%! assert (nctinv ([0:0.1:1], 2, 1), x, 1e-4);
+%! assert_equal (nctinv ([0:0.1:1], 2, 1), x, 1e-4);
 %!test
 %! x = [-Inf,1.5756,2.0827,2.5343,3.0043,3.5406,4.2050,5.1128,6.5510,9.6442,Inf];
-%! assert (nctinv ([0:0.1:1], 2, 3), x, 1e-4);
+%! assert_equal (nctinv ([0:0.1:1], 2, 3), x, 1e-4);
 %!test
 %! x = [-Inf,2.2167,2.9567,3.7276,4.6464,5.8455,7.5619,10.3327,15.7569,31.8159,Inf];
-%! assert (nctinv ([0:0.1:1], 1, 4), x, 1e-4);
+%! assert_equal (nctinv ([0:0.1:1], 1, 4), x, 1e-4);
 %!test
 %! x = [1.7791   1.9368   2.0239   2.0801   2.1195   2.1489];
-%! assert (nctinv (0.05, [1, 2, 3, 4, 5, 6], 4), x, 1e-4);
+%! assert_equal (nctinv (0.05, [1, 2, 3, 4, 5, 6], 4), x, 1e-4);
 %!test
 %! x = [-0.7755, 0.3670, 1.2554, 2.0239, 2.7348, 3.4154];
-%! assert (nctinv (0.05, 3, [1, 2, 3, 4, 5, 6]), x, 1e-4);
+%! assert_equal (nctinv (0.05, 3, [1, 2, 3, 4, 5, 6]), x, 1e-4);
 %!test
 %! x = [-0.7183, 0.3624, 1.2878, 2.1195, -3.5413, 3.6430];
-%! assert (nctinv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
+%! assert_equal (nctinv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
 %!test
-%! assert (nctinv (0.996, 5, 8), 30.02610554063658, 2e-11);
+%! assert_equal (nctinv (0.996, 5, 8), 30.02610554063658, 2e-11);
 
 ## Test input validation
 %!error<nctinv: function called with too few input arguments.> nctinv ()

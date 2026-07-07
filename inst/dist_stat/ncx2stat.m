@@ -94,11 +94,11 @@ endfunction
 %!shared df, d1
 %! df = [2, 0, -1, 1, 4];
 %! d1 = [1, NaN, 3, -1, 2];
-%!assert (ncx2stat (df, d1), [3, NaN, NaN, NaN, 6]);
-%!assert (ncx2stat ([df(1:2), df(4:5)], 1), [3, NaN, 2, 5]);
-%!assert (ncx2stat ([df(1:2), df(4:5)], 3), [5, NaN, 4, 7]);
-%!assert (ncx2stat ([df(1:2), df(4:5)], 2), [4, NaN, 3, 6]);
-%!assert (ncx2stat (2, [d1(1), d1(3:5)]), [3, 5, NaN, 4]);
-%!assert (ncx2stat (0, [d1(1), d1(3:5)]), [NaN, NaN, NaN, NaN]);
-%!assert (ncx2stat (1, [d1(1), d1(3:5)]), [2, 4, NaN, 3]);
-%!assert (ncx2stat (4, [d1(1), d1(3:5)]), [5, 7, NaN, 6]);
+%!assert_equal (ncx2stat (df, d1), [3, NaN, NaN, NaN, 6]);
+%!assert_equal (ncx2stat ([df(1:2), df(4:5)], 1), [3, NaN, 2, 5]);
+%!assert_equal (ncx2stat ([df(1:2), df(4:5)], 3), [5, NaN, 4, 7]);
+%!assert_equal (ncx2stat ([df(1:2), df(4:5)], 2), [4, NaN, 3, 6]);
+%!assert_equal (ncx2stat (2, [d1(1), d1(3:5)]), [3, 5, NaN, 4]);
+%!assert_equal (ncx2stat (0, [d1(1), d1(3:5)]), [NaN, NaN, NaN, NaN]);
+%!assert_equal (ncx2stat (1, [d1(1), d1(3:5)]), [2, 4, NaN, 3]);
+%!assert_equal (ncx2stat (4, [d1(1), d1(3:5)]), [5, 7, NaN, 6]);

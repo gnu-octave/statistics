@@ -282,45 +282,45 @@ endfunction
 %! load gradespaired.mat
 %! [p, h, stats] = signrank (gradespaired(:,1), ...
 %!                           gradespaired(:,2), 'tail', 'left');
-%! assert (p, 0.0047, 1e-4);
-%! assert (h, true);
-%! assert (stats.zval, -2.5982, 1e-4);
-%! assert (stats.signedrank, 2017.5);
+%! assert_equal (p, 0.0047, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (stats.zval, -2.5982, 1e-4);
+%! assert_equal (stats.signedrank, 2017.5);
 %!test
 %! load ('gradespaired.mat');
 %! [p, h, stats] = signrank (gradespaired(:,1), gradespaired(:,2), ...
 %!                           'tail', 'left', 'method', 'exact');
-%! assert (p, 0.0045, 1e-4);
-%! assert (h, true);
-%! assert (stats.zval, NaN);
-%! assert (stats.signedrank, 2017.5);
+%! assert_equal (p, 0.0045, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (stats.zval, NaN);
+%! assert_equal (stats.signedrank, 2017.5);
 %!test
 %! load mileage
 %! [p, h, stats] = signrank (mileage(:,2), 33);
-%! assert (p, 0.0312, 1e-4);
-%! assert (h, true);
-%! assert (stats.zval, NaN);
-%! assert (stats.signedrank, 21);
+%! assert_equal (p, 0.0312, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (stats.zval, NaN);
+%! assert_equal (stats.signedrank, 21);
 %!test
 %! load mileage
 %! [p, h, stats] = signrank (mileage(:,2), 33, 'tail', 'right');
-%! assert (p, 0.0156, 1e-4);
-%! assert (h, true);
-%! assert (stats.zval, NaN);
-%! assert (stats.signedrank, 21);
+%! assert_equal (p, 0.0156, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (stats.zval, NaN);
+%! assert_equal (stats.signedrank, 21);
 %!test
 %! load mileage
 %! [p, h, stats] = signrank (mileage(:,2), 33, 'tail', 'right', ...
 %!                           'alpha', 0.01, 'method', 'approximate');
-%! assert (p, 0.0180, 1e-4);
-%! assert (h, false);
-%! assert (stats.zval, 2.0966, 1e-4);
-%! assert (stats.signedrank, 21);
+%! assert_equal (p, 0.0180, 1e-4);
+%! assert_equal (h, false);
+%! assert_equal (stats.zval, 2.0966, 1e-4);
+%! assert_equal (stats.signedrank, 21);
 %!test
 %! x = [1, 2, 3, NaN, 4, 5];
 %! p_clean = signrank ([1, 2, 3, 4, 5]);
 %! p_nan   = signrank (x);
-%! assert (p_nan, p_clean);
+%! assert_equal (p_nan, p_clean);
 
 ## Test input validation
 %!error <signrank: X must be a vector.> signrank (ones (2))

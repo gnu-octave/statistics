@@ -170,10 +170,10 @@ endfunction
 ## Test results
 %!test
 %! nlogL = invglike ([25.5, 19.6973], [1:50]);
-%! assert (nlogL, 219.1516, 1e-4);
+%! assert_equal (nlogL, 219.1516, 1e-4);
 %!test
 %! nlogL = invglike ([3, 8.1081], [1:5]);
-%! assert (nlogL, 9.0438, 1e-4);
+%! assert_equal (nlogL, 9.0438, 1e-4);
 
 ## Test input validation
 %!error<invglike: function called with too few input arguments.> invglike (3.25)

@@ -509,142 +509,142 @@ endfunction
 %! Y = [1, 2, 2, 3; 2, 3, 3, 4];
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'euclidean');
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * sqrt (2));
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * sqrt (2));
 %!test
 %! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = knnsearch (X, Y, 'Distance', eucldist);
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * sqrt (2));
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'euclidean', 'includeties', true);
-%! assert (iscell (idx), true);
-%! assert (iscell (D), true)
-%! assert (idx {1}, [1]);
-%! assert (idx {2}', [1, 2]);
-%! assert (D{1}, ones (1, 1) * sqrt (2));
-%! assert (D{2}', ones (1, 2) * sqrt (2));
+%! assert_equal (iscell (idx), true);
+%! assert_equal (iscell (D), true)
+%! assert_equal (idx {1}, [1]);
+%! assert_equal (idx {2}', [1, 2]);
+%! assert_equal (D{1}, ones (1, 1) * sqrt (2));
+%! assert_equal (D{2}', ones (1, 2) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'euclidean', 'k', 2);
-%! assert (idx, [1, 2; 1, 2]);
-%! assert (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
+%! assert_equal (idx, [1, 2; 1, 2]);
+%! assert_equal (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'seuclidean');
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * sqrt (2));
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'seuclidean', 'k', 2);
-%! assert (idx, [1, 2; 1, 2]);
-%! assert (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
+%! assert_equal (idx, [1, 2; 1, 2]);
+%! assert_equal (D, [sqrt(2), 3.162277660168380; sqrt(2), sqrt(2)], 1e-14);
 %!test
 %! xx = [1, 2; 1, 3; 2, 4; 3, 6];
 %! yy = [2, 4; 2, 6];
 %! [idx, D] = knnsearch (xx, yy, 'Distance', 'mahalanobis');
-%! assert (idx, [3; 2]);
-%! assert (D, [0; 3.162277660168377], 1e-14);
+%! assert_equal (idx, [3; 2]);
+%! assert_equal (D, [0; 3.162277660168377], 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'minkowski');
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * sqrt (2));
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * sqrt (2));
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'minkowski', 'p', 3);
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * 1.259921049894873, 1e-14);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * 1.259921049894873, 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'cityblock');
-%! assert (idx, [1; 1]);
-%! assert (D, [2; 2]);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, [2; 2]);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'chebychev');
-%! assert (idx, [1; 1]);
-%! assert (D, [1; 1]);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, [1; 1]);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'cosine');
-%! assert (idx, [2; 3]);
-%! assert (D, [0.005674536395645; 0.002911214328620], 1e-14);
+%! assert_equal (idx, [2; 3]);
+%! assert_equal (D, [0.005674536395645; 0.002911214328620], 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'correlation');
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * 0.051316701949486, 1e-14);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * 0.051316701949486, 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'spearman');
-%! assert (idx, [1; 1]);
-%! assert (D, ones (2, 1) * 0.051316701949486, 1e-14);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, ones (2, 1) * 0.051316701949486, 1e-14);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'hamming');
-%! assert (idx, [1; 1]);
-%! assert (D, [0.5; 0.5]);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, [0.5; 0.5]);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'jaccard');
-%! assert (idx, [1; 1]);
-%! assert (D, [0.5; 0.5]);
+%! assert_equal (idx, [1; 1]);
+%! assert_equal (D, [0.5; 0.5]);
 %!test
 %! [idx, D] = knnsearch (X, Y, 'Distance', 'jaccard', 'k', 2);
-%! assert (idx, [1, 2; 1, 2]);
-%! assert (D, [0.5, 1; 0.5, 0.5]);
+%! assert_equal (idx, [1, 2; 1, 2]);
+%! assert_equal (D, [0.5, 1; 0.5, 0.5]);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree', 'includeties', true);
-%! assert (iscell (idx), true);
-%! assert (iscell (D), true)
-%! assert (cell2mat (idx)', [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert (cell2mat (D)', [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
+%! assert_equal (iscell (idx), true);
+%! assert_equal (iscell (D), true)
+%! assert_equal (cell2mat (idx)', [4, 2, 3, 6, 1, 5, 7, 9]);
+%! assert_equal (cell2mat (D)', [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'exhaustive', 'includeties', true);
-%! assert (iscell (idx), true);
-%! assert (iscell (D), true)
-%! assert (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
-%! assert (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
+%! assert_equal (iscell (idx), true);
+%! assert_equal (iscell (D), true)
+%! assert_equal (cell2mat (idx), [4, 2, 3, 6, 1, 5, 7, 9]);
+%! assert_equal (cell2mat (D), [0.7071, 1.0000, 1.4142, 2.5447, 4.0000, 4.0000, 4.0000, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree', 'includeties', false);
-%! assert (iscell (idx), false);
-%! assert (iscell (D), false)
-%! assert (idx, [4, 2, 3, 6, 1]);
-%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
+%! assert_equal (iscell (idx), false);
+%! assert_equal (iscell (D), false)
+%! assert_equal (idx, [4, 2, 3, 6, 1]);
+%! assert_equal (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
 %!test
 %! a = [1, 5; 1, 2; 2, 2; 1.5, 1.5; 5, 1; 2 -1.34; 1, -3; 4, -4; -3, 1; 8, 9];
 %! b = [1, 1];
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'exhaustive', 'includeties', false);
-%! assert (iscell (idx), false);
-%! assert (iscell (D), false)
-%! assert (idx, [4, 2, 3, 6, 1]);
-%! assert (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
+%! assert_equal (iscell (idx), false);
+%! assert_equal (iscell (D), false)
+%! assert_equal (idx, [4, 2, 3, 6, 1]);
+%! assert_equal (D, [0.7071, 1.0000, 1.4142, 2.5447, 4.0000], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = min (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
-%! assert (idx, [42, 9, 14, 39, 13]);
-%! assert (D, [0.5099, 0.9950, 1.0050, 1.0536, 1.1874], 1e-4);
+%! assert_equal (idx, [42, 9, 14, 39, 13]);
+%! assert_equal (D, [0.5099, 0.9950, 1.0050, 1.0536, 1.1874], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = mean (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
-%! assert (idx, [65, 83, 89, 72, 100]);
-%! assert (D, [0.3451, 0.3869, 0.4354, 0.4481, 0.4625], 1e-4);
+%! assert_equal (idx, [65, 83, 89, 72, 100]);
+%! assert_equal (D, [0.3451, 0.3869, 0.4354, 0.4481, 0.4625], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = max (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
-%! assert (idx, [118, 132, 110, 106, 136]);
-%! assert (D, [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
+%! assert_equal (idx, [118, 132, 110, 106, 136]);
+%! assert_equal (D, [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
 %!
 %!test
 %! load fisheriris
 %! a = meas;
 %! b = max (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'includeties', true);
-%! assert (iscell (idx), true);
-%! assert (iscell (D), true);
-%! assert (cell2mat (idx)', [118, 132, 110, 106, 136]);
-%! assert (cell2mat (D)', [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
+%! assert_equal (iscell (idx), true);
+%! assert_equal (iscell (D), true);
+%! assert_equal (cell2mat (idx)', [118, 132, 110, 106, 136]);
+%! assert_equal (cell2mat (D)', [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
 
 ## Test input validation
 %!error<knnsearch: too few input arguments.> knnsearch (1)

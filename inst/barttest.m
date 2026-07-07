@@ -104,9 +104,9 @@ endfunction
 %!test
 %! x = [2, 3, 4, 5, 6, 7, 8, 9; 1, 2, 3, 4, 5, 6, 7, 8]';
 %! [ndim, pval, chisq] = barttest (x);
-%! assert (ndim, 2);
-%! assert (pval, 0);
-%! ## assert (chisq, 512.0558, 1e-4); Result differs between octave 6 and 7 ?
+%! assert_equal (ndim, 2);
+%! assert_equal (pval, 0);
+%! ## assert_equal (chisq, 512.0558, 1e-4); Result differs between octave 6 and 7 ?
 %!test
 %! x = [0.53767,  0.62702,   -0.10224,   -0.25485,   1.4193,   1.5237  ; ...
 %!      1.8339,   1.6452,    -0.24145,   -0.23444,   0.29158,  0.1634  ; ...
@@ -129,7 +129,7 @@ endfunction
 %!      1.409,    1.5882,    -0.22558,   -0.24835,  -0.43897, -0.46247 ; ...
 %!      1.4172,   1.1616,     1.1174,     1.0785,   -1.7947,  -1.9471  ];
 %! [ndim, pval, chisq] = barttest (x);
-%! assert (ndim, 3);
-%! assert (pval, [0; 0; 0; 0.52063; 0.34314], 1e-5);
+%! assert_equal (ndim, 3);
+%! assert_equal (pval, [0; 0; 0; 0.52063; 0.34314], 1e-5);
 %! chisq_out = [251.6802; 210.2670; 153.1773; 4.2026; 2.1392];
-%! assert (chisq, chisq_out, 1e-4);
+%! assert_equal (chisq, chisq_out, 1e-4);

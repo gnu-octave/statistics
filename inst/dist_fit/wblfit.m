@@ -180,13 +180,13 @@ endfunction
 %! [paramhat, paramci] = wblfit (x);
 %! paramhat_out = [28.3636, 1.7130];
 %! paramci_out = [23.9531, 1.3551; 33.5861, 2.1655];
-%! assert (paramhat, paramhat_out, 1e-4);
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = wblfit (x, 0.01);
 %! paramci_out = [22.7143, 1.2589; 35.4179, 2.3310];
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 
 ## Test input validation
 %!error<wblfit: X must be a vector.> wblfit (ones (2,5));

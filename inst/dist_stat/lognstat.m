@@ -93,12 +93,12 @@ endfunction
 %! [m, v] = lognstat (mu, sigma);
 %! expected_m = [1.0202, 1.3231, 1.7860, 2.5093,  3.6693,   5.5845];
 %! expected_v = [0.0425, 0.3038, 1.3823, 5.6447, 23.1345, 100.4437];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! sigma = 0.2:0.2:1.2;
 %! [m, v] = lognstat (0, sigma);
 %! expected_m = [1.0202, 1.0833, 1.1972, 1.3771, 1.6487,  2.0544];
 %! expected_v = [0.0425, 0.2036, 0.6211, 1.7002, 4.6708, 13.5936];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);

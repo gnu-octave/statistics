@@ -123,21 +123,21 @@ endfunction
 %!shared x, Fx
 %! x = [0, 1, 3, 4, 7, 10];
 %! Fx = [0, 0.2, 0.5, 0.6, 0.7, 1];
-%!assert (size (plrnd (x, Fx)), [1, 1])
-%!assert (size (plrnd (x, Fx, 3)), [3, 3])
-%!assert (size (plrnd (x, Fx, [4, 1])), [4, 1])
-%!assert (size (plrnd (x, Fx, 4, 1)), [4, 1])
-%!assert (size (plrnd (x, Fx, 4, 1, 5)), [4, 1, 5])
-%!assert (size (plrnd (x, Fx, 0, 1)), [0, 1])
-%!assert (size (plrnd (x, Fx, 1, 0)), [1, 0])
-%!assert (size (plrnd (x, Fx, 1, 2, 0, 5)), [1, 2, 0, 5])
-%!assert (size (plrnd (x, Fx, [])), [0, 0])
-%!assert (size (plrnd (x, Fx, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (plrnd (x, Fx)), [1, 1])
+%!assert_equal (size (plrnd (x, Fx, 3)), [3, 3])
+%!assert_equal (size (plrnd (x, Fx, [4, 1])), [4, 1])
+%!assert_equal (size (plrnd (x, Fx, 4, 1)), [4, 1])
+%!assert_equal (size (plrnd (x, Fx, 4, 1, 5)), [4, 1, 5])
+%!assert_equal (size (plrnd (x, Fx, 0, 1)), [0, 1])
+%!assert_equal (size (plrnd (x, Fx, 1, 0)), [1, 0])
+%!assert_equal (size (plrnd (x, Fx, 1, 2, 0, 5)), [1, 2, 0, 5])
+%!assert_equal (size (plrnd (x, Fx, [])), [0, 0])
+%!assert_equal (size (plrnd (x, Fx, [2, 0, 2, 1])), [2, 0, 2])
 
 ## Test class of input preserved
-%!assert (class (plrnd (x, Fx)), "double")
-%!assert (class (plrnd (x, single (Fx))), "single")
-%!assert (class (plrnd (single (x), Fx)), "single")
+%!assert_equal (class (plrnd (x, Fx)), "double")
+%!assert_equal (class (plrnd (x, single (Fx))), "single")
+%!assert_equal (class (plrnd (single (x), Fx)), "single")
 
 ## Test input validation
 %!error<plrnd: function called with too few input arguments.> plrnd ()

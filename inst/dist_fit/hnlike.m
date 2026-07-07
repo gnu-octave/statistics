@@ -113,12 +113,12 @@ endfunction
 %! x = 1:20;
 %! paramhat = hnfit (x, 0);
 %! [nlogL, acov] = hnlike (paramhat, x);
-%! assert (nlogL, 64.179177404891300, 1e-14);
+%! assert_equal (nlogL, 64.179177404891300, 1e-14);
 %!test
 %! x = 1:20;
 %! paramhat = hnfit (x, 0);
 %! [nlogL, acov] = hnlike (paramhat, x, ones (1, 20));
-%! assert (nlogL, 64.179177404891300, 1e-14);
+%! assert_equal (nlogL, 64.179177404891300, 1e-14);
 
 ## Test input validation
 %!error<hnlike: function called with too few input arguments.> ...

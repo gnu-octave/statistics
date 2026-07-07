@@ -116,16 +116,16 @@ endfunction
 %!shared p, y
 %! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 0.83255461115769769, Inf, NaN, NaN];
-%!assert (nakainv (p, ones (1,7), ones (1,7)), y, eps)
-%!assert (nakainv (p, 1, 1), y, eps)
-%!assert (nakainv (p, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
-%!assert (nakainv (p, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
-%!assert (nakainv ([p, NaN], 1, 1), [y, NaN], eps)
+%!assert_equal (nakainv (p, ones (1,7), ones (1,7)), y, eps)
+%!assert_equal (nakainv (p, 1, 1), y, eps)
+%!assert_equal (nakainv (p, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
+%!assert_equal (nakainv (p, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
+%!assert_equal (nakainv ([p, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (nakainv (single ([p, NaN]), 1, 1), single ([y, NaN]))
-%!assert (nakainv ([p, NaN], single (1), 1), single ([y, NaN]))
-%!assert (nakainv ([p, NaN], 1, single (1)), single ([y, NaN]))
+%!assert_equal (nakainv (single ([p, NaN]), 1, 1), single ([y, NaN]))
+%!assert_equal (nakainv ([p, NaN], single (1), 1), single ([y, NaN]))
+%!assert_equal (nakainv ([p, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
 %!error<nakainv: function called with too few input arguments.> nakainv ()

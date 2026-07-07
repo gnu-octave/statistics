@@ -766,19 +766,19 @@ endfunction
 %! load examgrades
 %! x = grades(:,1);
 %! [h, pval, adstat, cv] = adtest (x);
-%! assert (h, false);
-%! assert (pval, 0.1854, 1e-4);
-%! assert (adstat, 0.5194, 1e-4);
-%! assert (cv, 0.7470, 1e-4);
+%! assert_equal (h, false);
+%! assert_equal (pval, 0.1854, 1e-4);
+%! assert_equal (adstat, 0.5194, 1e-4);
+%! assert_equal (cv, 0.7470, 1e-4);
 %!test
 %! load examgrades
 %! x = grades(:,1);
 %! [h, pval, adstat, cv] = adtest (x, 'Distribution', 'ev');
-%! assert (h, false);
-%! assert (pval, 0.071363, 1e-6);
+%! assert_equal (h, false);
+%! assert_equal (pval, 0.071363, 1e-6);
 %!test
 %! load examgrades
 %! x = grades(:,1);
 %! [h, pval, adstat, cv] = adtest (x, 'Distribution', {'norm', 75, 10});
-%! assert (h, false);
-%! assert (pval, 0.4687, 1e-4);
+%! assert_equal (h, false);
+%! assert_equal (pval, 0.4687, 1e-4);

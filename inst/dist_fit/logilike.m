@@ -174,10 +174,10 @@ endfunction
 ## Test results
 %!test
 %! nlogL = logilike ([25.5, 8.7725], [1:50]);
-%! assert (nlogL, 206.6769, 1e-4);
+%! assert_equal (nlogL, 206.6769, 1e-4);
 %!test
 %! nlogL = logilike ([3, 0.8645], [1:5]);
-%! assert (nlogL, 9.0699, 1e-4);
+%! assert_equal (nlogL, 9.0699, 1e-4);
 
 ## Test input validation
 %!error<logilike: function called with too few input arguments.> logilike (3.25)

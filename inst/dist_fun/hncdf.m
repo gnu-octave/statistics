@@ -130,22 +130,22 @@ endfunction
 %! x = [-Inf, -1, 0, 1/2, 1, Inf];
 %! p1 = [0, 0, 0, 0.3829, 0.6827, 1];
 %! p1u = [1, 1, 1, 0.6171, 0.3173, 0];
-%!assert (hncdf (x, zeros (1,6), ones (1,6)), p1, 1e-4)
-%!assert (hncdf (x, 0, 1), p1, 1e-4)
-%!assert (hncdf (x, 0, ones (1,6)), p1, 1e-4)
-%!assert (hncdf (x, zeros (1,6), 1), p1, 1e-4)
-%!assert (hncdf (x, 0, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (hncdf (x, [0, 0, 0, NaN, 0, 0], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (hncdf ([x(1:3), NaN, x(5:6)], 0, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (hncdf (x, zeros (1,6), ones (1,6), 'upper'), p1u, 1e-4)
-%!assert (hncdf (x, 0, 1, 'upper'), p1u, 1e-4)
-%!assert (hncdf (x, 0, ones (1,6), 'upper'), p1u, 1e-4)
-%!assert (hncdf (x, zeros (1,6), 1, 'upper'), p1u, 1e-4)
+%!assert_equal (hncdf (x, zeros (1,6), ones (1,6)), p1, 1e-4)
+%!assert_equal (hncdf (x, 0, 1), p1, 1e-4)
+%!assert_equal (hncdf (x, 0, ones (1,6)), p1, 1e-4)
+%!assert_equal (hncdf (x, zeros (1,6), 1), p1, 1e-4)
+%!assert_equal (hncdf (x, 0, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (hncdf (x, [0, 0, 0, NaN, 0, 0], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (hncdf ([x(1:3), NaN, x(5:6)], 0, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
+%!assert_equal (hncdf (x, zeros (1,6), ones (1,6), 'upper'), p1u, 1e-4)
+%!assert_equal (hncdf (x, 0, 1, 'upper'), p1u, 1e-4)
+%!assert_equal (hncdf (x, 0, ones (1,6), 'upper'), p1u, 1e-4)
+%!assert_equal (hncdf (x, zeros (1,6), 1, 'upper'), p1u, 1e-4)
 
 ## Test class of input preserved
-%!assert (class (hncdf (single ([x, NaN]), 0, 1)), "single")
-%!assert (class (hncdf ([x, NaN], 0, single (1))), "single")
-%!assert (class (hncdf ([x, NaN], single (0), 1)), "single")
+%!assert_equal (class (hncdf (single ([x, NaN]), 0, 1)), "single")
+%!assert_equal (class (hncdf ([x, NaN], 0, single (1))), "single")
+%!assert_equal (class (hncdf ([x, NaN], single (0), 1)), "single")
 
 ## Test input validation
 %!error<hncdf: function called with too few input arguments.> hncdf ()

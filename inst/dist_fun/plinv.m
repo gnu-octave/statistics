@@ -109,21 +109,21 @@ endfunction
 %!test
 %! p = 0:0.2:1;
 %! data = plinv (p, [0, 1], [0, 1]);
-%! assert (data, p);
+%! assert_equal (data, p);
 %!test
 %! p = 0:0.2:1;
 %! data = plinv (p, [0, 2], [0, 1]);
-%! assert (data, 2 * p);
+%! assert_equal (data, 2 * p);
 %!test
 %! p = 0:0.2:1;
 %! data_out = 1:6;
 %! data = plinv (p, [0, 1], [0, 0.5]);
-%! assert (data, [0, 0.4, 0.8, NA, NA, NA]);
+%! assert_equal (data, [0, 0.4, 0.8, NA, NA, NA]);
 %!test
 %! p = 0:0.2:1;
 %! data_out = 1:6;
 %! data = plinv (p, [0, 0.5], [0, 1]);
-%! assert (data, [0:0.1:0.5]);
+%! assert_equal (data, [0:0.1:0.5]);
 
 ## Test input validation
 %!error<plinv: function called with too few input arguments.> plinv ()

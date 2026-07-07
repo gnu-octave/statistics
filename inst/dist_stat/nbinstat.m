@@ -95,12 +95,12 @@ endfunction
 %! [m, v] = nbinstat (r, ps);
 %! expected_m = [ 4.0000, 3.0000, 2.0000, 1.0000];
 %! expected_v = [20.0000, 7.5000, 3.3333, 1.2500];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! r = 1:4;
 %! [m, v] = nbinstat (r, 0.5);
 %! expected_m = [1, 2, 3, 4];
 %! expected_v = [2, 4, 6, 8];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);

@@ -155,13 +155,13 @@ function D = dummyvar (g)
 endfunction
 
 ## Test output
-%!assert (dummyvar ([]), [])
-%!assert (dummyvar (ones (2, 0)), ones (2, 0))
+%!assert_equal (dummyvar ([]), [])
+%!assert_equal (dummyvar (ones (2, 0)), ones (2, 0))
 %!test
 %! ## numeric grouping vector
 %! g = [1; 2; 1; 3; 2];
 %! D = dummyvar (g);
-%! assert (D, [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0]);
+%! assert_equal (D, [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0]);
 %!test
 %! g = categorical ({'a'; 'b'; 'a'}, {'a', 'b', 'c'});
 %! D = dummyvar (g);
@@ -169,49 +169,49 @@ endfunction
 %! g_str = cellstr (g);
 %! for k = 1:numel (cats)
 %!   mask = strcmp (g_str, cats{k});
-%!   assert (all (D(mask, k) == 1), true);
-%!   assert (all (D(! mask, k) == 0), true);
+%!   assert_equal (all (D(mask, k) == 1), true);
+%!   assert_equal (all (D(! mask, k) == 0), true);
 %! endfor
 %!test
 %! g = categorical ({'a'; ''; 'b'}, {'a', 'b', 'c'});
 %! D = dummyvar (g);
-%! assert (D, [1, 0, 0; NaN, NaN, NaN; 0, 1, 0]);
+%! assert_equal (D, [1, 0, 0; NaN, NaN, NaN; 0, 1, 0]);
 %!test
 %! colors = categorical ({'Red'; 'Blue'; 'Green'; 'Red'; 'Green'; 'Blue'});
 %! D = dummyvar (colors);
-%! assert (D, [0, 0, 1; 1, 0, 0; 0, 1, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0]);
+%! assert_equal (D, [0, 0, 1; 1, 0, 0; 0, 1, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0]);
 %!test
 %! g1 = [1; 1; 1; 1; 2; 2; 2; 2];
 %! g2 = [1; 2; 3; 1; 2; 3; 1; 2];
 %! D = dummyvar ([g1, g2]);
 %! D1 = [1, 0, 1, 0, 0; 1, 0, 0, 1, 0; 1, 0, 0, 0, 1; 1, 0, 1, 0, 0; ...
 %!       0, 1, 0, 1, 0; 0, 1, 0, 0, 1; 0, 1, 1, 0, 0; 0, 1, 0, 1, 0];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 %!test
 %! phone = {'mob'; 'land'; 'mob';'mob';'mob';'land';'land'};
 %! codes = categorical ([202; 202; 103; 103; 202; 103; 202]);
 %! D = dummyvar ({phone, codes});
 %! D1 = [1, 0, 0, 1; 0, 1, 0, 1; 1, 0, 1, 0; 1, 0, 1, 0; ...
 %!       1, 0, 0, 1; 0, 1, 1, 0; 0, 1, 0, 1];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 %!test
 %! colors = {'red'; 'blue'; 'red'; 'green'; 'yellow'; 'blue'};
 %! D = dummyvar (categorical (colors));
 %! D1 = [0, 0, 1, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 1, 0, 0; 0, 0, 0, 1; 1, 0, 0, 0];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 %!test
 %! colors = {'red'; 'blue'; 'red'; 'green'; 'yellow'; 'blue'};
 %! D = dummyvar (colors);
 %! D1 = [1, 0, 0, 0; 0, 1, 0, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 0, 0];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 %! D = dummyvar ({colors});
 %! D1 = [1, 0, 0, 0; 0, 1, 0, 0; 1, 0, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 0, 0];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 %!test
 %! g = [1, 2, 1, 2, 1, 3, 2, 1];
 %! D = dummyvar (g);
 %! D1 = [1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1; 0, 1, 0; 1, 0, 0];
-%! assert (D, D1);
+%! assert_equal (D, D1);
 
 ## Test input validation
 %!error dummyvar ()

@@ -84,21 +84,21 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = logistat (0, 1);
-%! assert (m, 0);
-%! assert (v, 3.2899, 0.001);
+%! assert_equal (m, 0);
+%! assert_equal (v, 3.2899, 0.001);
 %!test
 %! [m, v] = logistat (0, 0.8);
-%! assert (m, 0);
-%! assert (v, 2.1055, 0.001);
+%! assert_equal (m, 0);
+%! assert_equal (v, 2.1055, 0.001);
 %!test
 %! [m, v] = logistat (1, 0.6);
-%! assert (m, 1);
-%! assert (v, 1.1844, 0.001);
+%! assert_equal (m, 1);
+%! assert_equal (v, 1.1844, 0.001);
 %!test
 %! [m, v] = logistat (0, 0.4);
-%! assert (m, 0);
-%! assert (v, 0.5264, 0.001);
+%! assert_equal (m, 0);
+%! assert_equal (v, 0.5264, 0.001);
 %!test
 %! [m, v] = logistat (-1, 0.2);
-%! assert (m, -1);
-%! assert (v, 0.1316, 0.001);
+%! assert_equal (m, -1);
+%! assert_equal (v, 0.1316, 0.001);

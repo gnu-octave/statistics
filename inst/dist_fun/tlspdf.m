@@ -95,23 +95,23 @@ endfunction
 %!test
 %! x = rand (10,1);
 %! y = 1./(pi * (1 + x.^2));
-%! assert (tlspdf (x, 0, 1, 1), y, 5*eps);
-%! assert (tlspdf (x+5, 5, 1, 1), y, 5*eps);
-%! assert (tlspdf (x.*2, 0, 2, 1), y./2, 5*eps);
+%! assert_equal (tlspdf (x, 0, 1, 1), y, 5*eps);
+%! assert_equal (tlspdf (x+5, 5, 1, 1), y, 5*eps);
+%! assert_equal (tlspdf (x.*2, 0, 2, 1), y./2, 5*eps);
 %!shared x, y
 %! x = [-Inf 0 0.5 1 Inf];
 %! y = 1./(pi * (1 + x.^2));
-%!assert (tlspdf (x, 0, 1, ones (1,5)), y, eps)
-%!assert (tlspdf (x, 0, 1, 1), y, eps)
-%!assert (tlspdf (x, 0, 1, [0 NaN 1 1 1]), [NaN NaN y(3:5)], eps)
-%!assert (tlspdf (x, 0, 1, Inf), normpdf (x))
+%!assert_equal (tlspdf (x, 0, 1, ones (1,5)), y, eps)
+%!assert_equal (tlspdf (x, 0, 1, 1), y, eps)
+%!assert_equal (tlspdf (x, 0, 1, [0 NaN 1 1 1]), [NaN NaN y(3:5)], eps)
+%!assert_equal (tlspdf (x, 0, 1, Inf), normpdf (x))
 
 ## Test class of input preserved
-%!assert (class (tlspdf ([x, NaN], 1, 1, 1)), "double")
-%!assert (class (tlspdf (single ([x, NaN]), 1, 1, 1)), "single")
-%!assert (class (tlspdf ([x, NaN], single (1), 1, 1)), "single")
-%!assert (class (tlspdf ([x, NaN], 1, single (1), 1)), "single")
-%!assert (class (tlspdf ([x, NaN], 1, 1, single (1))), "single")
+%!assert_equal (class (tlspdf ([x, NaN], 1, 1, 1)), "double")
+%!assert_equal (class (tlspdf (single ([x, NaN]), 1, 1, 1)), "single")
+%!assert_equal (class (tlspdf ([x, NaN], single (1), 1, 1)), "single")
+%!assert_equal (class (tlspdf ([x, NaN], 1, single (1), 1)), "single")
+%!assert_equal (class (tlspdf ([x, NaN], 1, 1, single (1))), "single")
 
 ## Test input validation
 %!error<tlspdf: function called with too few input arguments.> tlspdf ()

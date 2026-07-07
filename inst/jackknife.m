@@ -157,4 +157,4 @@ endfunction
 %! ##Example from Quenouille, Table 1
 %! d=[0.18 4.00 1.04 0.85 2.14 1.01 3.01 2.33 1.57 2.19];
 %! jackstat = jackknife ( @(x) 1/mean (x), d );
-%! assert ( 10 / mean (d) - 9 * mean (jackstat), 0.5240, 1e-5 );
+%! assert_equal ( 10 / mean (d) - 9 * mean (jackstat), 0.5240, 1e-5 );

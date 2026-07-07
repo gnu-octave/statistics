@@ -359,8 +359,8 @@ endfunction
 %! [L, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.75942;
 %! expected_C = [-0.12547 1.77884 1.06731; 1.77884 16.40761 8.48877; 1.06731 8.48877 0.27979];
-%! assert (L, expected_L, 0.001);
-%! assert (C, inv (expected_C), 0.001);
+%! assert_equal (L, expected_L, 0.001);
+%! assert_equal (C, inv (expected_C), 0.001);
 %!test
 %! x = 1;
 %! k = 0;
@@ -369,8 +369,8 @@ endfunction
 %! [L, C] = gevlike ([k sigma mu], x);
 %! expected_L = 0.65157;
 %! expected_C = [0.090036 3.41229 2.047337; 3.412229 24.760027 12.510190; 2.047337 12.510190 2.098618];
-%! assert (L, expected_L, 0.001);
-%! assert (C, inv (expected_C), 0.001);
+%! assert_equal (L, expected_L, 0.001);
+%! assert_equal (C, inv (expected_C), 0.001);
 %!test
 %! x = -5:-1;
 %! k = -0.2;
@@ -381,8 +381,8 @@ endfunction
 %! expected_C = [1.6802e-07, 4.6110e-06, 8.7297e-05; ...
 %!               4.6110e-06, 7.5693e-06, 1.2034e-05; ...
 %!               8.7297e-05, 1.2034e-05, -0.0019125];
-%! assert (L, expected_L, -0.001);
-%! assert (C, expected_C, -0.001);
+%! assert_equal (L, expected_L, -0.001);
+%! assert_equal (C, expected_C, -0.001);
 %!test
 %! x = -5:0;
 %! k = -0.2;
@@ -393,8 +393,8 @@ endfunction
 %! expected_C = [1.6802e-07, 4.6110e-06, 8.7297e-05; ...
 %!               4.6110e-06, 7.5693e-06, 1.2034e-05; ...
 %!               8.7297e-05, 1.2034e-05, -0.0019125];
-%! assert (L, expected_L, -0.001);
-%! assert (C, expected_C, -0.001);
+%! assert_equal (L, expected_L, -0.001);
+%! assert_equal (C, expected_C, -0.001);
 
 ## Test input validation
 %!error<gevlike: function called with too few input arguments.> gevlike (3.25)

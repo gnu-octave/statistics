@@ -1021,36 +1021,36 @@ endfunction
 ## Results validation
 %!test
 %! mu1 = sampsizepwr ('t', [100, 10], [], 0.8, 60);
-%! assert (mu1, 103.67704316, 1e-8);
+%! assert_equal (mu1, 103.67704316, 1e-8);
 %!test
 %! [N1,N2] = sampsizepwr ('t2', [100, 10], 110, 0.6, [], 'ratio', 1.5);
-%! assert (N1, 9);
-%! assert (N2, 14);
+%! assert_equal (N1, 9);
+%! assert_equal (N2, 14);
 %!test
 %! nn = 1:250;
 %! pwr = sampsizepwr ('p', 0.2, 0.26, [], nn);
 %! pwr_out = [0, 0.0676, 0.0176, 0.0566, 0.0181, 0.0431, 0.0802, 0.0322];
-%! assert (pwr([1:8]), pwr_out, 1e-4 * ones (1,8));
+%! assert_equal (pwr([1:8]), pwr_out, 1e-4 * ones (1,8));
 %! pwr_out = [0.59275, 0.6073, 0.62166, 0.6358, 0.6497, 0.6087, 0.6229, 0.6369];
-%! assert (pwr([243:end]), pwr_out, 1e-4 * ones (1,8));
+%! assert_equal (pwr([243:end]), pwr_out, 1e-4 * ones (1,8));
 %!test
 %! nout = sampsizepwr ('t', [100, 5], 102, 0.80);
-%! assert (nout, 52);
+%! assert_equal (nout, 52);
 %!test
 %! power = sampsizepwr ('t', [20, 5], 25, [], 5, 'Tail', 'right');
-%! assert (power, 0.5797373588621888, 1e-14);
+%! assert_equal (power, 0.5797373588621888, 1e-14);
 %!test
 %! nout = sampsizepwr ('t', [20, 5], 25, 0.99, [], 'Tail', 'right');
-%! assert (nout, 18);
+%! assert_equal (nout, 18);
 %!test
 %! p1out = sampsizepwr ('t', [20, 5], [], 0.95, 10, 'Tail', 'right');
-%! assert (p1out, 25.65317979360237, 5e-14);
+%! assert_equal (p1out, 25.65317979360237, 5e-14);
 %!test
 %! pwr = sampsizepwr ('t2', [1.4, 0.2], 1.7, [], 5, 'Ratio', 2);
-%! assert (pwr, 0.716504004686586, 1e-14);
+%! assert_equal (pwr, 0.716504004686586, 1e-14);
 %!test
 %! n = sampsizepwr ('t2', [1.4, 0.2], 1.7, 0.9, []);
-%! assert (n, 11);
+%! assert_equal (n, 11);
 %!test
 %! [n1, n2] = sampsizepwr ('t2', [1.4, 0.2], 1.7, 0.9, [], 'Ratio', 2);
-%! assert ([n1, n2], [8, 16]);
+%! assert_equal ([n1, n2], [8, 16]);

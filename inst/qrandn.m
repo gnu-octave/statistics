@@ -109,4 +109,4 @@ endfunction
 %! q = 1.5;
 %! s = [2, 3];
 %! z = qrandn (q, s);
-%! assert (isnumeric (z) && isequal (size (z), s));
+%! assert_equal (isnumeric (z) && isequal (size (z), s), true);

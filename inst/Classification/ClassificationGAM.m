@@ -1435,12 +1435,12 @@ endfunction
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
 %! a = ClassificationGAM (x, y, 'PredictorNames', PredictorNames);
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, PredictorNames)
-%! assert (a.BaseModel.Intercept, 0)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, PredictorNames)
+%! assert_equal (a.BaseModel.Intercept, 0)
 %!test
 %! load fisheriris
 %! inds = strcmp (species,'versicolor') | strcmp (species,'virginica');
@@ -1448,26 +1448,26 @@ endfunction
 %! Y = species(inds, :)';
 %! Y = strcmp (Y, 'virginica')';
 %! a = ClassificationGAM (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
-%! assert ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
-%! assert (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
-%! assert (a.ModelwInt.Intercept, 0)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
+%! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
+%! assert_equal (a.ModelwInt.Intercept, 0)
 %!test
 %! X = [2, 3, 5; 4, 6, 8; 1, 2, 3; 7, 8, 9; 5, 4, 3];
 %! Y = [0; 1; 0; 1; 1];
 %! a = ClassificationGAM (X, Y, 'Knots', [4, 4, 4], 'Order', [3, 3, 3]);
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
-%! assert ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, {'x1', 'x2', 'x3'})
-%! assert (a.Knots, [4, 4, 4])
-%! assert (a.Order, [3, 3, 3])
-%! assert (a.DoF, [7, 7, 7])
-%! assert (a.BaseModel.Intercept, 0.4055, 1e-1)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {X, Y, 5})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3'})
+%! assert_equal (a.Knots, [4, 4, 4])
+%! assert_equal (a.Order, [3, 3, 3])
+%! assert_equal (a.DoF, [7, 7, 7])
+%! assert_equal (a.BaseModel.Intercept, 0.4055, 1e-1)
 
 ## Test Prior calculation
 %!test
@@ -1475,31 +1475,31 @@ endfunction
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = [0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', 'uniform');
-%! assert (a.Prior, [0.5, 0.5], 1e-6);
+%! assert_equal (a.Prior, [0.5, 0.5], 1e-6);
 %!test
 %! ## Test empirical prior
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [0; 0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', 'empirical');
-%! assert (a.Prior, [0.6; 0.4], 1e-6);
+%! assert_equal (a.Prior, [0.6; 0.4], 1e-6);
 %!test
 %! ## Test numeric prior
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = [0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', [0.7, 0.3]);
-%! assert (a.Prior, [0.7, 0.3], 1e-6);
+%! assert_equal (a.Prior, [0.7, 0.3], 1e-6);
 %!test
 %! ## Test default prior (empirical)
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10; 11, 12];
 %! y = [0; 0; 0; 1; 1; 1];
 %! a = ClassificationGAM (x, y);
-%! assert (a.Prior, [0.5; 0.5], 1e-6);
+%! assert_equal (a.Prior, [0.5; 0.5], 1e-6);
 %!test
 %! ## Test prior normalization
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = [0; 0; 1; 1];
 %! a = ClassificationGAM (x, y, 'Prior', [2, 1]);
-%! assert (a.Prior, [2/3, 1/3], 1e-6);
+%! assert_equal (a.Prior, [2/3, 1/3], 1e-6);
 
 ## Test input validation for Prior
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
@@ -1555,14 +1555,14 @@ endfunction
 %! s = [0.3760, 0.6240; 0.4259, 0.5741; 0.3760, 0.6240; ...
 %!      0.4259, 0.5741; 0.3760, 0.6240];
 %! [labels, scores] = predict (a, x);
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
-%! assert ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, {'x1', 'x2'})
-%! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
-%! assert (labels, l)
-%! assert (scores, s, 1e-1)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 5})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, {'x1', 'x2'})
+%! assert_equal (a.ModelwInt.Intercept, 0.4055, 1e-1)
+%! assert_equal (labels, l)
+%! assert_equal (scores, s, 1e-1)
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
@@ -1571,14 +1571,14 @@ endfunction
 %! [label, score] = predict (a, x, 'includeinteractions', true);
 %! l = {'0'; '0'; '1'; '1'};
 %! s = [0.5106, 0.4894; 0.5135, 0.4865; 0.4864, 0.5136; 0.4847, 0.5153];
-%! assert (class (a), "ClassificationGAM");
-%! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
-%! assert (a.ClassNames, {'0'; '1'})
-%! assert (a.PredictorNames, {'x1', 'x2', 'x3'})
-%! assert (a.ModelwInt.Intercept, 0)
-%! assert (label, l)
-%! assert (score, s, 1e-1)
+%! assert_equal (class (a), "ClassificationGAM");
+%! assert_equal ({a.X, a.Y, a.NumObservations}, {x, y, 4})
+%! assert_equal ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
+%! assert_equal (a.ClassNames, {'0'; '1'})
+%! assert_equal (a.PredictorNames, {'x1', 'x2', 'x3'})
+%! assert_equal (a.ModelwInt.Intercept, 0)
+%! assert_equal (label, l)
+%! assert_equal (score, s, 1e-1)
 
 ## Test input validation for predict method
 %!error<ClassificationGAM.predict: too few input arguments.> ...
@@ -1599,32 +1599,32 @@ endfunction
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 5)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 5, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'KFold', 2);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 2)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 2, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -1632,10 +1632,10 @@ endfunction
 %! partition = cvpartition (y, 'KFold', 3);
 %! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationGAM")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationGAM")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal (CVMdl.KFold == 3, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationGAM")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationGAM")
 
 ## Test input validation for crossval method
 %!error<ClassificationGAM.crossval: Name-Value arguments must be in pairs.> ...

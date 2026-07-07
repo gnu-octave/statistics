@@ -94,17 +94,17 @@ endfunction
 ## Test output
 %!test
 %! p = [0.01:0.01:0.99];
-%! assert (logiinv (p, 0, 1), log (p ./ (1-p)), 25*eps);
+%! assert_equal (logiinv (p, 0, 1), log (p ./ (1-p)), 25*eps);
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (logiinv (p, 0, 1), [NaN -Inf 0 Inf NaN])
-%!assert (logiinv (p, 0, [-1, 0, 1, 2, 3]), [NaN NaN 0 Inf NaN])
+%!assert_equal (logiinv (p, 0, 1), [NaN -Inf 0 Inf NaN])
+%!assert_equal (logiinv (p, 0, [-1, 0, 1, 2, 3]), [NaN NaN 0 Inf NaN])
 
 ## Test class of input preserved
-%!assert (logiinv ([p, NaN], 0, 1), [NaN -Inf 0 Inf NaN NaN])
-%!assert (logiinv (single ([p, NaN]), 0, 1), single ([NaN -Inf 0 Inf NaN NaN]))
-%!assert (logiinv ([p, NaN], single (0), 1), single ([NaN -Inf 0 Inf NaN NaN]))
-%!assert (logiinv ([p, NaN], 0, single (1)), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert_equal (logiinv ([p, NaN], 0, 1), [NaN -Inf 0 Inf NaN NaN])
+%!assert_equal (logiinv (single ([p, NaN]), 0, 1), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert_equal (logiinv ([p, NaN], single (0), 1), single ([NaN -Inf 0 Inf NaN NaN]))
+%!assert_equal (logiinv ([p, NaN], 0, single (1)), single ([NaN -Inf 0 Inf NaN NaN]))
 
 ## Test input validation
 %!error<logiinv: function called with too few input arguments.> logiinv ()

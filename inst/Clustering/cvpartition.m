@@ -1505,451 +1505,451 @@ endclassdef
 %!test
 %! custom = [1, 1, 1, 2, 2, 2, 1, 2, 3, 2, 3, 3, 2, 1, 3]';
 %! cv = cvpartition ('CustomPartition', custom);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 15);
-%! assert (cv.NumTestSets, 3);
-%! assert (cv.TrainSize, [10, 9, 11]);
-%! assert (cv.TestSize, [5, 6, 4]);
-%! assert (cv.IsCustom, true);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 15);
+%! assert_equal (cv.NumTestSets, 3);
+%! assert_equal (cv.TrainSize, [10, 9, 11]);
+%! assert_equal (cv.TestSize, [5, 6, 4]);
+%! assert_equal (cv.IsCustom, true);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
 %! idx = training (cv, 1);
-%! assert (idx, custom != 1);
+%! assert_equal (idx, custom != 1);
 %! idx = test (cv, 1);
-%! assert (idx, custom == 1);
+%! assert_equal (idx, custom == 1);
 %! idx = training (cv, 2);
-%! assert (idx, custom != 2);
+%! assert_equal (idx, custom != 2);
 %! idx = test (cv, 2);
-%! assert (idx, custom == 2);
+%! assert_equal (idx, custom == 2);
 %! idx = training (cv, 3);
-%! assert (idx, custom != 3);
+%! assert_equal (idx, custom != 3);
 %! idx = test (cv, 3);
-%! assert (idx, custom == 3);
+%! assert_equal (idx, custom == 3);
 %! idx1 = training (cv, 'all');
 %! idx2 = test (cv, 'all');
-%! assert (idx1, ! idx2);
+%! assert_equal (idx1, ! idx2);
 %!test
 %! custom = logical ([1, 1, 1, 0, 0, 0, 1, 0, 1, 1])';
 %! cv = cvpartition ('CustomPartition', custom);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 4);
-%! assert (cv.TestSize, 6);
-%! assert (cv.IsCustom, true);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 4);
+%! assert_equal (cv.TestSize, 6);
+%! assert_equal (cv.IsCustom, true);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
 %! idx = training (cv, 1);
-%! assert (idx, custom != 1);
-%! assert (idx, training (cv, 'all'));
+%! assert_equal (idx, custom != 1);
+%! assert_equal (idx, training (cv, 'all'));
 %! idx = test (cv, 1);
-%! assert (idx, custom == 1);
-%! assert (idx, test (cv, 'all'));
+%! assert_equal (idx, custom == 1);
+%! assert_equal (idx, test (cv, 'all'));
 %!test
 %! custom = logical ([1, 0, 0; 0, 1, 0; 1, 0, 0; 0, 0, 1]);
 %! cv = cvpartition ('CustomPartition', custom);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 4);
-%! assert (cv.NumTestSets, 3);
-%! assert (cv.TrainSize, [2, 3, 3]);
-%! assert (cv.TestSize, [2, 1, 1]);
-%! assert (cv.IsCustom, true);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 4);
+%! assert_equal (cv.NumTestSets, 3);
+%! assert_equal (cv.TrainSize, [2, 3, 3]);
+%! assert_equal (cv.TestSize, [2, 1, 1]);
+%! assert_equal (cv.IsCustom, true);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
 %! idx = training (cv, 1);
-%! assert (idx, custom(:,1) == false);
+%! assert_equal (idx, custom(:,1) == false);
 %! idx = test (cv, 1);
-%! assert (idx, custom(:,1) == true);
+%! assert_equal (idx, custom(:,1) == true);
 %! idx = training (cv, 2);
-%! assert (idx, custom(:,2) == false);
+%! assert_equal (idx, custom(:,2) == false);
 %! idx = test (cv, 2);
-%! assert (idx, custom(:,2) == true);
-%! assert (! custom, training (cv, 'all'));
-%! assert (custom, test (cv, 'all'));
+%! assert_equal (idx, custom(:,2) == true);
+%! assert_equal (! custom, training (cv, 'all'));
+%! assert_equal (custom, test (cv, 'all'));
 %!test
 %! cv = cvpartition ('CustomPartition', [1:8]);
-%! assert (cv.Type, 'leaveout');
-%! assert (cv.NumObservations, 8);
-%! assert (cv.NumTestSets, 8);
-%! assert (cv.TrainSize, [7, 7, 7, 7, 7, 7, 7, 7]);
-%! assert (cv.TestSize, [1, 1, 1, 1, 1, 1, 1, 1]);
-%! assert (cv.IsCustom, true);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 7);
-%! assert (sum (training (cv, 'all')), cv.TrainSize);
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 1);
-%! assert (sum (test (cv, 'all')), cv.TestSize);
-%! assert (! training (cv, 'all'), test (cv, 'all'));
+%! assert_equal (cv.Type, 'leaveout');
+%! assert_equal (cv.NumObservations, 8);
+%! assert_equal (cv.NumTestSets, 8);
+%! assert_equal (cv.TrainSize, [7, 7, 7, 7, 7, 7, 7, 7]);
+%! assert_equal (cv.TestSize, [1, 1, 1, 1, 1, 1, 1, 1]);
+%! assert_equal (cv.IsCustom, true);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 7);
+%! assert_equal (sum (training (cv, 'all')), cv.TrainSize);
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 1);
+%! assert_equal (sum (test (cv, 'all')), cv.TestSize);
+%! assert_equal (! training (cv, 'all'), test (cv, 'all'));
 %!test
 %! cv = cvpartition ('CustomPartition', logical (eye (8)));
-%! assert (cv.Type, 'leaveout');
-%! assert (cv.NumObservations, 8);
-%! assert (cv.NumTestSets, 8);
-%! assert (cv.TrainSize, [7, 7, 7, 7, 7, 7, 7, 7]);
-%! assert (cv.TestSize, [1, 1, 1, 1, 1, 1, 1, 1]);
-%! assert (cv.IsCustom, true);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 7);
-%! assert (sum (training (cv, 'all')), cv.TrainSize);
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 1);
-%! assert (sum (test (cv, 'all')), cv.TestSize);
-%! assert (! training (cv, 'all'), test (cv, 'all'));
+%! assert_equal (cv.Type, 'leaveout');
+%! assert_equal (cv.NumObservations, 8);
+%! assert_equal (cv.NumTestSets, 8);
+%! assert_equal (cv.TrainSize, [7, 7, 7, 7, 7, 7, 7, 7]);
+%! assert_equal (cv.TestSize, [1, 1, 1, 1, 1, 1, 1, 1]);
+%! assert_equal (cv.IsCustom, true);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 7);
+%! assert_equal (sum (training (cv, 'all')), cv.TrainSize);
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 1);
+%! assert_equal (sum (test (cv, 'all')), cv.TestSize);
+%! assert_equal (! training (cv, 'all'), test (cv, 'all'));
 
 ## Test output results for scalar input N
 %!test
 %! cv = cvpartition (10, 'resubstitution');
-%! assert (cv.Type, 'resubstitution');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 10);
-%! assert (cv.TestSize, 10);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 10);
-%! assert (training (cv, 'all'), logical (ones (10, 1)));
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 10);
-%! assert (test (cv, 'all'), logical (ones (10, 1)));
-%! assert (test (cv), training (cv));
+%! assert_equal (cv.Type, 'resubstitution');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 10);
+%! assert_equal (cv.TestSize, 10);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 10);
+%! assert_equal (training (cv, 'all'), logical (ones (10, 1)));
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 10);
+%! assert_equal (test (cv, 'all'), logical (ones (10, 1)));
+%! assert_equal (test (cv), training (cv));
 %!test
 %! cv = cvpartition (10, 'leaveout');
-%! assert (cv.Type, 'leaveout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 10);
-%! assert (cv.TrainSize, ones (1, 10) * 9);
-%! assert (cv.TestSize, ones (1, 10));
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 9);
-%! assert (training (cv, 'all'), ! logical (eye (10)));
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 1);
-%! assert (test (cv, 'all'), logical (eye (10)));
-%! assert (test (cv), ! training (cv));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (cv.Type, 'leaveout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 10);
+%! assert_equal (cv.TrainSize, ones (1, 10) * 9);
+%! assert_equal (cv.TestSize, ones (1, 10));
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 9);
+%! assert_equal (training (cv, 'all'), ! logical (eye (10)));
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 1);
+%! assert_equal (test (cv, 'all'), logical (eye (10)));
+%! assert_equal (test (cv), ! training (cv));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
 %!test
 %! rand ('seed', 5);  # for reproducibility
 %! cv = cvpartition (10, 'holdout', 0.3);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 7);
-%! assert (cv.TestSize, 3);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 7);
-%! assert (training (cv, 'all'), logical ([1, 0, 1, 1, 0, 1, 1, 1, 0, 1])');
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 3);
-%! assert (test (cv, 'all'), logical ([0, 1, 0, 0, 1, 0, 0, 0, 1, 0])');
-%! assert (test (cv), ! training (cv));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 7);
+%! assert_equal (cv.TestSize, 3);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 7);
+%! assert_equal (training (cv, 'all'), logical ([1, 0, 1, 1, 0, 1, 1, 1, 0, 1])');
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 3);
+%! assert_equal (test (cv, 'all'), logical ([0, 1, 0, 0, 1, 0, 0, 0, 1, 0])');
+%! assert_equal (test (cv), ! training (cv));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
 %!test
 %! cv = cvpartition (10, 'holdout', 4);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 6);
-%! assert (cv.TestSize, 4);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (class (training (cv, 1)), 'logical');
-%! assert (sum (training (cv, 1)), 6);
-%! assert (class (test (cv, 1)), 'logical');
-%! assert (sum (test (cv, 1)), 4);
-%! assert (test (cv), ! training (cv));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 6);
+%! assert_equal (cv.TestSize, 4);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (class (training (cv, 1)), 'logical');
+%! assert_equal (sum (training (cv, 1)), 6);
+%! assert_equal (class (test (cv, 1)), 'logical');
+%! assert_equal (sum (test (cv, 1)), 4);
+%! assert_equal (test (cv), ! training (cv));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
 %!test
 %! cv = cvpartition (5, 'holdout', 4);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 5);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 1);
-%! assert (cv.TestSize, 4);
-%! assert (sum (test (cv, 1)), 4);
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 5);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 1);
+%! assert_equal (cv.TestSize, 4);
+%! assert_equal (sum (test (cv, 1)), 4);
 %!test
 %! cv = cvpartition (5, 'holdout', 1);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 5);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 4);
-%! assert (cv.TestSize, 1);
-%! assert (sum (test (cv, 1)), 1);
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 5);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 4);
+%! assert_equal (cv.TestSize, 1);
+%! assert_equal (sum (test (cv, 1)), 1);
 %!test
 %! cv = cvpartition (5, 'kfold');
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 5);
-%! assert (cv.NumTestSets, 5);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 5);
+%! assert_equal (cv.NumTestSets, 5);
 %!test
 %! cv = cvpartition (20, 'kfold');
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 20);
-%! assert (cv.NumTestSets, 10);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 20);
+%! assert_equal (cv.NumTestSets, 10);
 %!test
 %! cv = cvpartition (10, 'kfold', 5);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 5);
-%! assert (cv.TrainSize, [8, 8, 8, 8, 8]);
-%! assert (cv.TestSize, [2, 2, 2, 2, 2]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [10, 5]);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 5);
+%! assert_equal (cv.TrainSize, [8, 8, 8, 8, 8]);
+%! assert_equal (cv.TestSize, [2, 2, 2, 2, 2]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [10, 5]);
 %!test
 %! grpvar = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 5];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 5, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 5);
-%! assert (cv.TrainSize, [10, 10, 10, 8, 10]);
-%! assert (cv.TestSize, [2, 2, 2, 4, 2]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 5]);
-%! assert (sum (test (cv, 'all')), [2, 2, 2, 4, 2]);
-%! assert (sum (training (cv, 'all')), [10, 10, 10, 8, 10]);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 5);
+%! assert_equal (cv.TrainSize, [10, 10, 10, 8, 10]);
+%! assert_equal (cv.TestSize, [2, 2, 2, 4, 2]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 5]);
+%! assert_equal (sum (test (cv, 'all')), [2, 2, 2, 4, 2]);
+%! assert_equal (sum (training (cv, 'all')), [10, 10, 10, 8, 10]);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 3, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 3);
-%! assert (cv.TrainSize, [9, 10, 5]);
-%! assert (cv.TestSize, [3, 2, 7]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 3]);
-%! assert (sum (test (cv, 'all')), [3, 2, 7]);
-%! assert (sum (training (cv, 'all')), [9, 10, 5]);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 3);
+%! assert_equal (cv.TrainSize, [9, 10, 5]);
+%! assert_equal (cv.TestSize, [3, 2, 7]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 3]);
+%! assert_equal (sum (test (cv, 'all')), [3, 2, 7]);
+%! assert_equal (sum (training (cv, 'all')), [9, 10, 5]);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [6, 6]);
-%! assert (cv.TestSize, [6, 6]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [6, 6]);
-%! assert (sum (training (cv, 'all')), [6, 6]);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [6, 6]);
+%! assert_equal (cv.TestSize, [6, 6]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 2]);
+%! assert_equal (sum (test (cv, 'all')), [6, 6]);
+%! assert_equal (sum (training (cv, 'all')), [6, 6]);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, NaN, 2, 3, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [6, 5]);
-%! assert (cv.TestSize, [5, 6]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [6, 5]);
+%! assert_equal (cv.TestSize, [5, 6]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
 %! idx = ! isnan (grpvar);
-%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
-%! assert (test (cv, 'all')(idx, :), ! training (cv, 'all')(idx, :));
-%! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [5, 6]);
-%! assert (sum (training (cv, 'all')), [6, 5]);
+%! assert_equal (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert_equal (test (cv, 'all')(idx, :), ! training (cv, 'all')(idx, :));
+%! assert_equal (size (test (cv, 'all')), [12, 2]);
+%! assert_equal (sum (test (cv, 'all')), [5, 6]);
+%! assert_equal (sum (training (cv, 'all')), [6, 5]);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [5, 7]);
-%! assert (cv.TestSize, [7, 5]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [7, 5]);
-%! assert (sum (training (cv, 'all')), [5, 7]);
-%! assert (test (cv, 1)', grpvar == 2);
-%! assert (test (cv, 2)', grpvar != 2);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [5, 7]);
+%! assert_equal (cv.TestSize, [7, 5]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 2]);
+%! assert_equal (sum (test (cv, 'all')), [7, 5]);
+%! assert_equal (sum (training (cv, 'all')), [5, 7]);
+%! assert_equal (test (cv, 1)', grpvar == 2);
+%! assert_equal (test (cv, 2)', grpvar != 2);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [7, 5]);
-%! assert (cv.TestSize, [5, 7]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [5, 7]);
-%! assert (sum (training (cv, 'all')), [7, 5]);
-%! assert (test (cv, 1)', grpvar == 2);
-%! assert (test (cv, 2)', grpvar != 2);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [7, 5]);
+%! assert_equal (cv.TestSize, [5, 7]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 2]);
+%! assert_equal (sum (test (cv, 'all')), [5, 7]);
+%! assert_equal (sum (training (cv, 'all')), [7, 5]);
+%! assert_equal (test (cv, 1)', grpvar == 2);
+%! assert_equal (test (cv, 2)', grpvar != 2);
 %!test
 %! grpvar = [1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3];
 %! rand ('seed', 5);
 %! cv = cvpartition (12, 'kfold', 2, 'GroupingVariables', grpvar);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 12);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [7, 5]);
-%! assert (cv.TestSize, [5, 7]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (size (test (cv, 'all')), [12, 2]);
-%! assert (sum (test (cv, 'all')), [5, 7]);
-%! assert (sum (training (cv, 'all')), [7, 5]);
-%! assert (test (cv, 1)', grpvar == 3);
-%! assert (test (cv, 2)', grpvar != 3);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 12);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [7, 5]);
+%! assert_equal (cv.TestSize, [5, 7]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (size (test (cv, 'all')), [12, 2]);
+%! assert_equal (sum (test (cv, 'all')), [5, 7]);
+%! assert_equal (sum (training (cv, 'all')), [7, 5]);
+%! assert_equal (test (cv, 1)', grpvar == 3);
+%! assert_equal (test (cv, 2)', grpvar != 3);
 %!test
 %! status = warning;
 %! warning ('off');
 %! cv = cvpartition (5, 'kfold', 5, 'GroupingVariables', {'a';'a';'b';'b';''});
 %! warning (status);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 5);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [2, 2]);
-%! assert (cv.TestSize, [2, 2]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, true);
-%! assert (cv.IsStratified, false);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 5);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [2, 2]);
+%! assert_equal (cv.TestSize, [2, 2]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, true);
+%! assert_equal (cv.IsStratified, false);
 %! idx = ! ismissing ({'a';'a';'b';'b';''});
-%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
-%! assert (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
-%! assert (size (test (cv, 'all')), [5, 2]);
-%! assert (sum (test (cv, 'all')), [2, 2]);
-%! assert (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
+%! assert_equal (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert_equal (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
+%! assert_equal (size (test (cv, 'all')), [5, 2]);
+%! assert_equal (sum (test (cv, 'all')), [2, 2]);
+%! assert_equal (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
 
 ## Test output results for vector input X
 %!test
 %! rand ('seed', 5);
 %! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 3);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 7);
-%! assert (cv.TestSize, 3);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, true);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv), logical ([0, 0, 0, 0, 1, 0, 1, 0, 0, 1])');
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 7);
+%! assert_equal (cv.TestSize, 3);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, true);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv), logical ([0, 0, 0, 0, 1, 0, 1, 0, 0, 1])');
 %!test
 %! cv = cvpartition ([1, 1, 1, 1, 1, 2, 2, 2, 2, 2], 'holdout', 4);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 6);
-%! assert (cv.TestSize, 4);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, true);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (sum (test (cv)(1:5)), 2);
-%! assert (sum (test (cv)(6:10)), 2);
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 6);
+%! assert_equal (cv.TestSize, 4);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, true);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (sum (test (cv)(1:5)), 2);
+%! assert_equal (sum (test (cv)(6:10)), 2);
 %!test
 %! grpvar = [1, 1, 1, 1, 1, 2, 2, 2, 2, 2];
 %! rand ('seed', 5);
 %! cv = cvpartition (grpvar, 'holdout', 4, 'Stratify', false);
-%! assert (cv.Type, 'holdout');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 1);
-%! assert (cv.TrainSize, 6);
-%! assert (cv.TestSize, 4);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (sum (test (cv)(1:5)), 3);
-%! assert (sum (test (cv)(6:10)), 1);
+%! assert_equal (cv.Type, 'holdout');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 1);
+%! assert_equal (cv.TrainSize, 6);
+%! assert_equal (cv.TestSize, 4);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (sum (test (cv)(1:5)), 3);
+%! assert_equal (sum (test (cv)(6:10)), 1);
 %!test
 %! cv = cvpartition ([1 1 1 1 1 2 2 2 2 1], 'kfold', 2);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [5, 5]);
-%! assert (cv.TestSize, [5, 5]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, true);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (sum (test (cv, 1)(1:5)), 3);
-%! assert (sum (test (cv, 2)(1:5)), 2);
-%! assert (sum (test (cv, 1)(6:10)), 2);
-%! assert (sum (test (cv, 2)(6:10)), 3);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [5, 5]);
+%! assert_equal (cv.TestSize, [5, 5]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, true);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (sum (test (cv, 1)(1:5)), 3);
+%! assert_equal (sum (test (cv, 2)(1:5)), 2);
+%! assert_equal (sum (test (cv, 1)(6:10)), 2);
+%! assert_equal (sum (test (cv, 2)(6:10)), 3);
 %!test
 %! grpvar = [1 1 1 1 1 2 2 2 2 1];
 %! rand ('seed', 5);
 %! cv = cvpartition (grpvar, 'kfold', 2, 'Stratify', false);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 10);
-%! assert (cv.NumTestSets, 2);
-%! assert (cv.TrainSize, [5, 5]);
-%! assert (cv.TestSize, [5, 5]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, false);
-%! assert (test (cv, 1), ! training (cv, 1));
-%! assert (test (cv, 'all'), ! training (cv, 'all'));
-%! assert (sum (test (cv, 1)(1:5)), 4);
-%! assert (sum (test (cv, 2)(1:5)), 1);
-%! assert (sum (test (cv, 1)(6:10)), 1);
-%! assert (sum (test (cv, 2)(6:10)), 4);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 10);
+%! assert_equal (cv.NumTestSets, 2);
+%! assert_equal (cv.TrainSize, [5, 5]);
+%! assert_equal (cv.TestSize, [5, 5]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, false);
+%! assert_equal (test (cv, 1), ! training (cv, 1));
+%! assert_equal (test (cv, 'all'), ! training (cv, 'all'));
+%! assert_equal (sum (test (cv, 1)(1:5)), 4);
+%! assert_equal (sum (test (cv, 2)(1:5)), 1);
+%! assert_equal (sum (test (cv, 1)(6:10)), 1);
+%! assert_equal (sum (test (cv, 2)(6:10)), 4);
 %!test
 %! status = warning;
 %! warning ('off');
 %! cv = cvpartition ({'a','a','b','b',''}, 'kfold');
 %! warning (status);
-%! assert (cv.Type, 'kfold');
-%! assert (cv.NumObservations, 5);
-%! assert (cv.NumTestSets, 4);
-%! assert (cv.TrainSize, [3, 3, 3, 3]);
-%! assert (cv.TestSize, [1, 1, 1, 1]);
-%! assert (cv.IsCustom, false);
-%! assert (cv.IsGrouped, false);
-%! assert (cv.IsStratified, true);
+%! assert_equal (cv.Type, 'kfold');
+%! assert_equal (cv.NumObservations, 5);
+%! assert_equal (cv.NumTestSets, 4);
+%! assert_equal (cv.TrainSize, [3, 3, 3, 3]);
+%! assert_equal (cv.TestSize, [1, 1, 1, 1]);
+%! assert_equal (cv.IsCustom, false);
+%! assert_equal (cv.IsGrouped, false);
+%! assert_equal (cv.IsStratified, true);
 %! idx = ! ismissing ({'a','a','b','b',''});
-%! assert (test (cv, 1)(idx), ! training (cv, 1)(idx));
-%! assert (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
-%! assert (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
+%! assert_equal (test (cv, 1)(idx), ! training (cv, 1)(idx));
+%! assert_equal (test (cv, 'all')(idx,:), ! training (cv, 'all')(idx,:));
+%! assert_equal (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
 
 ## Test input validation
 %!error <cvpartition: too few input arguments.> cvpartition (2)
@@ -2109,28 +2109,28 @@ endclassdef
 %! rand ('state', 42);
 %! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! assert (height (T), 10);
-%! assert (all (ismember ({'Set', 'SetSize', 'StratificationLabel', ...
+%! assert_equal (height (T), 10);
+%! assert_equal (all (ismember ({'Set', 'SetSize', 'StratificationLabel', ...
 %!                        'StratificationCount', 'PercentInSet'}, ...
-%!                        T.Properties.VariableNames)));
+%!                        T.Properties.VariableNames)), true);
 %!
 %! ## Check Output Type (String Array) and Counts
 %! if (exist ('string', 'class'))
-%!   assert (isa (T.Set, 'string'));
-%!   assert (isa (T.StratificationLabel, 'string'));
+%!   assert_equal (isa (T.Set, 'string'), true);
+%!   assert_equal (isa (T.StratificationLabel, 'string'), true);
 %!   mask = (T.Set == 'all') & (T.StratificationLabel == 'Setosa');
 %! else
 %!   ## Fallback for older environments
 %!   mask = strcmp (T.Set, 'all') & strcmp (T.StratificationLabel, 'Setosa');
 %! endif
-%! assert (T.StratificationCount(mask), 10);
+%! assert_equal (T.StratificationCount(mask), 10);
 %!test
 %! ## 2. Grouped K-Fold: Basic Numeric Labels
 %! groups = [1; 1; 1; 2; 2; 3; 3; 3; 3; 3];
 %! rand ('state', 100);
 %! c = cvpartition (numel (groups), 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! assert (any (strcmp ('GroupLabel', T.Properties.VariableNames)));
+%! assert_equal (any (strcmp ('GroupLabel', T.Properties.VariableNames)), true);
 %!
 %! ## Verify Group Integrity
 %! if (iscell (T.GroupLabel))
@@ -2147,7 +2147,7 @@ endclassdef
 %! endif
 %!
 %! count_g3 = T.GroupCount(mask_g3 & mask_t1);
-%! assert (count_g3 == 5 || count_g3 == 0);
+%! assert_equal (count_g3 == 5 || count_g3 == 0, true);
 %!test
 %! ## 3. Grouped K-Fold: Matrix Grouping
 %! g1 = [1; 1; 1; 2; 2; 2];
@@ -2156,14 +2156,14 @@ endclassdef
 %! c = cvpartition (6, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! ## 4 unique groups * 5 sets (all + 2 train + 2 test)
-%! assert (height (T), 20);
+%! assert_equal (height (T), 20);
 %!test
 %! ## 4. Stratified Holdout: Basic
 %! species = [repmat({'A'}, 10, 1); repmat({'B'}, 10, 1)];
 %! c = cvpartition (species, 'Holdout', 0.5);
 %! T = summary (c);
 %! sets = unique (T.Set);
-%! assert (numel (sets), 3); ## all, train1, test1
+%! assert_equal (numel (sets), 3); ## all, train1, test1
 %!test
 %! ## 5. Mathematical Consistency: Percentages
 %! classes = [1; 1; 2; 2; 3; 3];
@@ -2178,8 +2178,8 @@ endclassdef
 %!   mask_tr1 = strcmp (T.Set, 'train1');
 %! endif
 %!
-%! assert (sum (T.PercentInSet(mask_all)), 100, 1e-10);
-%! assert (sum (T.PercentInSet(mask_tr1)), 100, 1e-10);
+%! assert_equal (sum (T.PercentInSet(mask_all)), 100, 1e-10);
+%! assert_equal (sum (T.PercentInSet(mask_tr1)), 100, 1e-10);
 %!test
 %! ## 6. Mathematical Consistency: Set Sizes
 %! N = 20;
@@ -2196,26 +2196,26 @@ endclassdef
 %!
 %! size_tr1 = T.SetSize(find (mask_tr1, 1));
 %! size_ts1 = T.SetSize(find (mask_ts1, 1));
-%! assert (size_tr1 + size_ts1, N);
+%! assert_equal (size_tr1 + size_ts1, N);
 %!test
 %! ## 7. Logical Grouping Variables
 %! groups = [true; true; true; false; false];
 %! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! assert (height (T), 2 * 5);
+%! assert_equal (height (T), 2 * 5);
 %! if (iscell (T.GroupLabel))
 %!   u_labels = unique (cell2mat (T.GroupLabel));
 %! else
 %!   u_labels = unique (T.GroupLabel);
 %! endif
-%! assert (numel (u_labels), 2);
+%! assert_equal (numel (u_labels), 2);
 %!test
 %! ## 8. Char Array Grouping Variables
 %! groups = ['A'; 'A'; 'B'; 'B'; 'C'];
 %! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! assert (height (T), 3 * 5);
-%! assert (any (strcmp ('GroupLabel', T.Properties.VariableNames)));
+%! assert_equal (height (T), 3 * 5);
+%! assert_equal (any (strcmp ('GroupLabel', T.Properties.VariableNames)), true);
 %!test
 %! ## 9. Floating Point Grouping Variables
 %! groups = [1.1; 1.1; 2.2; 2.2];
@@ -2226,14 +2226,14 @@ endclassdef
 %! else
 %!   vals = T.GroupLabel;
 %! endif
-%! assert (any (abs (vals - 1.1) < 1e-10));
-%! assert (any (abs (vals - 2.2) < 1e-10));
+%! assert_equal (any (abs (vals - 1.1) < 1e-10), true);
+%! assert_equal (any (abs (vals - 2.2) < 1e-10), true);
 %!test
 %! ## 10. Negative Numeric Grouping
 %! groups = [-5; -5; -10; -10];
 %! c = cvpartition (4, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! assert (height (T), 2 * 5);
+%! assert_equal (height (T), 2 * 5);
 %!test
 %! ## 11. Missing Values in Stratification (NaN)
 %! classes = [1; 1; 2; 2; NaN; NaN];
@@ -2245,7 +2245,7 @@ endclassdef
 %!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! total_obs = T.SetSize(find (mask_all, 1));
-%! assert (total_obs, 4);
+%! assert_equal (total_obs, 4);
 %!test
 %! ## 12. Missing Values in Grouping (NaN)
 %! groups = [1; 1; 2; 2; NaN];
@@ -2256,7 +2256,7 @@ endclassdef
 %! else
 %!   mask_all = strcmp (T.Set, 'all');
 %! endif
-%! assert (T.SetSize(find (mask_all, 1)), 4);
+%! assert_equal (T.SetSize(find (mask_all, 1)), 4);
 %!test
 %! ## 13. Unbalanced Stratification
 %! species = [repmat({'C1'}, 90, 1); repmat({'C2'}, 10, 1)];
@@ -2273,8 +2273,8 @@ endclassdef
 %!   c1_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C1'));
 %!   c2_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C2'));
 %! endif
-%! assert (c1_count == 45);
-%! assert (c2_count == 5);
+%! assert_equal (c1_count == 45, true);
+%! assert_equal (c2_count == 5, true);
 %!test
 %! ## 14. Single Observation per Group (Edge Case)
 %! groups = [1; 2; 3; 4];
@@ -2286,8 +2286,8 @@ endclassdef
 %!   mask_ts1 = strcmp (T.Set, 'test1');
 %! endif
 %! counts = T.GroupCount(mask_ts1);
-%! assert (sum (counts == 1), 2);
-%! assert (sum (counts == 0), 2);
+%! assert_equal (sum (counts == 1), 2);
+%! assert_equal (sum (counts == 0), 2);
 %!test
 %! ## 15. Set Name Generation Verification
 %! species = [1; 1; 2; 2];
@@ -2297,9 +2297,9 @@ endclassdef
 %! expected = {'all'; 'train1'; 'test1'; 'train2'; 'test2'};
 %! if (exist ('string', 'class'))
 %!   ## Convert string array to cell for sort comparison
-%!   assert (sort (cellstr (set_names)), sort (expected));
+%!   assert_equal (sort (cellstr (set_names)), sort (expected));
 %! else
-%!   assert (sort (set_names), sort (expected));
+%!   assert_equal (sort (set_names), sort (expected));
 %! endif
 %!test
 %! ## 16. Label Column Consistency
@@ -2307,9 +2307,9 @@ endclassdef
 %! c = cvpartition (2, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! if (exist ('string', 'class'))
-%!   assert (isa (T.GroupLabel, 'string'));
+%!   assert_equal (isa (T.GroupLabel, 'string'), true);
 %! else
-%!   assert (iscellstr (T.GroupLabel));
+%!   assert_equal (iscellstr (T.GroupLabel), true);
 %! endif
 %!test
 %! ## 17. Valid "Blank" Labels (Space) - FIX APPLIED
@@ -2319,15 +2319,15 @@ endclassdef
 %! if (exist ('string', 'class'))
 %!   labels = cellstr (T.StratificationLabel);
 %!   sets = cellstr (T.Set);
-%!   assert (any (strcmp (labels, ' ')));
+%!   assert_equal (any (strcmp (labels, ' ')), true);
 %!   mask_space = strcmp (labels, ' ');
 %!   mask_all = strcmp (sets, 'all');
 %! else
-%!   assert (any (strcmp (T.StratificationLabel, ' ')));
+%!   assert_equal (any (strcmp (T.StratificationLabel, ' ')), true);
 %!   mask_space = strcmp (T.StratificationLabel, ' ');
 %!   mask_all = strcmp (T.Set, 'all');
 %! endif
-%! assert (sum (T.StratificationCount(mask_space & mask_all)), 2);
+%! assert_equal (sum (T.StratificationCount(mask_space & mask_all)), 2);
 %!test
 %! ## 18. Large K (Leave-One-Out Simulation) - FIX APPLIED
 %! species = [1; 1; 2; 2];
@@ -2335,13 +2335,13 @@ endclassdef
 %! c = cvpartition (species, 'KFold', 4);
 %! warning (warn_state);
 %! T = summary (c);
-%! assert (height (T), 18);
+%! assert_equal (height (T), 18);
 %! if (exist ('string', 'class'))
 %!   mask_test = startsWith (cellstr(T.Set), 'test');
 %! else
 %!   mask_test = strncmp (T.Set, 'test', 4);
 %! endif
-%! assert (all (T.SetSize(mask_test) == 1));
+%! assert_equal (all (T.SetSize(mask_test) == 1), true);
 %!test
 %! ## 19. Repeated Holdout Integrity
 %! species = [1; 1; 2; 2];
@@ -2354,21 +2354,21 @@ endclassdef
 %!   mask_ts1 = strcmp (T.Set, 'test1');
 %! endif
 %! size_ts1 = T.SetSize(find (mask_ts1, 1));
-%! assert (size_ts1, 2);
+%! assert_equal (size_ts1, 2);
 %!test
 %! ## 20. Empty String Handling (Missing Data)
 %! species = {'A'; 'A'; ''; ''};
 %! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
 %! if (exist ('string', 'class'))
-%!   assert (! any (T.StratificationLabel == ''));
+%!   assert_equal (! any (T.StratificationLabel == ''), true);
 %!   mask_all = (T.Set == 'all');
 %! else
-%!   assert (! any (strcmp (T.StratificationLabel, '')));
+%!   assert_equal (! any (strcmp (T.StratificationLabel, '')), true);
 %!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! total_rows = T.SetSize(find (mask_all, 1));
-%! assert (total_rows, 2);
+%! assert_equal (total_rows, 2);
 %!test
 %! ## 21. Basic Unstacking (Stratified K-Fold)
 %! species = [repmat({'Alpha'}, 10, 1); repmat({'Beta'}, 10, 1)];
@@ -2376,9 +2376,9 @@ endclassdef
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## Check dimensions: 3 sets (all, train1, test1, etc) x (Set+SetSize + 2 Labels)
-%! assert (height (T_wide), 5);
-%! assert (width (T_wide), 4);
-%! assert (all (ismember ({'Alpha', 'Beta'}, T_wide.Properties.VariableNames)));
+%! assert_equal (height (T_wide), 5);
+%! assert_equal (width (T_wide), 4);
+%! assert_equal (all (ismember ({'Alpha', 'Beta'}, T_wide.Properties.VariableNames)), true);
 %!test
 %! ## 22. Data Integrity Check (Row Sums)
 %! species = [repmat({'Control'}, 20, 1); repmat({'Treatment'}, 80, 1)];
@@ -2386,7 +2386,7 @@ endclassdef
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! row_sums = T_wide.Control + T_wide.Treatment;
-%! assert (all (row_sums == T_wide.SetSize));
+%! assert_equal (all (row_sums == T_wide.SetSize), true);
 %!test
 %! ## 23. Unstacking Grouped Data (Numeric Labels)
 %! groups = [1; 1; 2; 2; 2];
@@ -2395,8 +2395,8 @@ endclassdef
 %! T_wide = unstack (T(:, 1:4), 'GroupCount', 'GroupLabel');
 %! ## Check if numeric columns were created successfully
 %! col_names = T_wide.Properties.VariableNames;
-%! assert (any (cellfun (@(x) ! isempty (strfind (x, '1')), col_names)));
-%! assert (any (cellfun (@(x) ! isempty (strfind (x, '2')), col_names)));
+%! assert_equal (any (cellfun (@(x) ! isempty (strfind (x, '1')), col_names)), true);
+%! assert_equal (any (cellfun (@(x) ! isempty (strfind (x, '2')), col_names)), true);
 %!test
 %! ## 24. Unstacking with Missing/NaN Groups
 %! groups = [1; 1; 2; 2; NaN];
@@ -2404,7 +2404,7 @@ endclassdef
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'GroupCount', 'GroupLabel');
 %! ## Should only have columns for 1 and 2, not NaN or 'undefined'
-%! assert (width (T_wide), 4); ## Set, SetSize, x1, x2
+%! assert_equal (width (T_wide), 4); ## Set, SetSize, x1, x2
 %!test
 %! ## 25. Unstacking String Array Inputs
 %! species = {'Red'; 'Blue'; 'Red'; 'Blue'};
@@ -2412,11 +2412,11 @@ endclassdef
 %! T = summary (c);
 %! ## Verify input is actually string before unstacking checks
 %! if (exist ('string', 'class'))
-%!   assert (isa (T.Set, 'string'));
+%!   assert_equal (isa (T.Set, 'string'), true);
 %! endif
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## Check the 'all' row count for Red
-%! assert (T_wide.Red(strcmp(cellstr(T_wide.Set), 'all')) == 2);
+%! assert_equal (T_wide.Red(strcmp(cellstr(T_wide.Set), 'all')) == 2, true);
 %!test
 %! ## 26. Large K Unstacking (Many Rows)
 %! species = [repmat({'High'}, 10, 1); repmat({'Low'}, 10, 1)];
@@ -2424,7 +2424,7 @@ endclassdef
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## 10 folds * 2 (train/test) + 1 (all) = 21 rows
-%! assert (height (T_wide), 21);
+%! assert_equal (height (T_wide), 21);
 %!test
 %! ## 27. Unstacking with Special Characters in Labels
 %! species = {'Type A'; 'Type A'; 'Type-B'; 'Type-B'};
@@ -2433,7 +2433,7 @@ endclassdef
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! vnames = T_wide.Properties.VariableNames;
 %! ## Check if spaces/dashes were handled/preserved in some valid form
-%! assert (numel (vnames), 4);
+%! assert_equal (numel (vnames), 4);
 %!test
 %! ## 28. Verification of 'all' row logic after Unstacking
 %! species = [repmat({'Yes'}, 50, 1); repmat({'No'}, 50, 1)];
@@ -2441,8 +2441,8 @@ endclassdef
 %! T = summary (c);
 %! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! mask = strcmp (cellstr (T_wide.Set), 'all');
-%! assert (T_wide.Yes(mask) == 50);
-%! assert (T_wide.No(mask) == 50);
+%! assert_equal (T_wide.Yes(mask) == 50, true);
+%! assert_equal (T_wide.No(mask) == 50, true);
 %!test
 %! ## 29. Robustness against re-ordering
 %! species = {'Left'; 'Left'; 'Right'; 'Right'};
@@ -2451,7 +2451,7 @@ endclassdef
 %! T_shuffled = T([3, 1, 2], :);
 %! T_wide = unstack (T_shuffled(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! mask = strcmp (cellstr (T_wide.Set), 'all');
-%! assert (T_wide.Left(mask) == 2);
+%! assert_equal (T_wide.Left(mask) == 2, true);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
 %! c = cvpartition (20, 'KFold', 5);
 %! summary (c);

@@ -144,19 +144,19 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 0.76024993890652337, 1];
-%!assert (bisacdf (x, ones (1,5), ones (1,5)), y, eps)
-%!assert (bisacdf (x, 1, 1), y, eps)
-%!assert (bisacdf (x, 1, ones (1,5)), y, eps)
-%!assert (bisacdf (x, ones (1,5), 1), y, eps)
-%!assert (bisacdf (x, 1, 1), y, eps)
-%!assert (bisacdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisacdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisacdf ([x, NaN], 1, 1), [y, NaN], eps)
+%!assert_equal (bisacdf (x, ones (1,5), ones (1,5)), y, eps)
+%!assert_equal (bisacdf (x, 1, 1), y, eps)
+%!assert_equal (bisacdf (x, 1, ones (1,5)), y, eps)
+%!assert_equal (bisacdf (x, ones (1,5), 1), y, eps)
+%!assert_equal (bisacdf (x, 1, 1), y, eps)
+%!assert_equal (bisacdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (bisacdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (bisacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bisacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (bisacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
-%!assert (bisacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisacdf: function called with too few input arguments.> bisacdf ()

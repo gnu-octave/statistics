@@ -375,20 +375,20 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab, stats] = anova2 (popcorn, 3, 'off');
-%! assert (p(1), 7.678957383294716e-07, 1e-14);
-%! assert (p(2), 0.0001003738963050171, 1e-14);
-%! assert (p(3), 0.7462153966366274, 1e-14);
-%! assert (atab{2,5}, 56.700, 1e-14);
-%! assert (atab{2,3}, 2, 0);
-%! assert (atab{4,2}, 0.08333333333333348, 1e-14);
-%! assert (atab{5,4}, 0.1388888888888889, 1e-14);
-%! assert (atab{5,2}, 1.666666666666667, 1e-14);
-%! assert (atab{6,2}, 22);
-%! assert (stats.source, "anova2");
-%! assert (stats.colmeans, [6.25, 4.75, 4]);
-%! assert (stats.inter, true);
-%! assert (stats.pval, 0.7462153966366274, 1e-14);
-%! assert (stats.df, 12);
+%! assert_equal (p(1), 7.678957383294716e-07, 1e-14);
+%! assert_equal (p(2), 0.0001003738963050171, 1e-14);
+%! assert_equal (p(3), 0.7462153966366274, 1e-14);
+%! assert_equal (atab{2,5}, 56.700, 1e-14);
+%! assert_equal (atab{2,3}, 2, 0);
+%! assert_equal (atab{4,2}, 0.08333333333333348, 1e-14);
+%! assert_equal (atab{5,4}, 0.1388888888888889, 1e-14);
+%! assert_equal (atab{5,2}, 1.666666666666667, 1e-14);
+%! assert_equal (atab{6,2}, 22);
+%! assert_equal (stats.source, "anova2");
+%! assert_equal (stats.colmeans, [6.25, 4.75, 4]);
+%! assert_equal (stats.inter, true);
+%! assert_equal (stats.pval, 0.7462153966366274, 1e-14);
+%! assert_equal (stats.df, 12);
 
 %!test
 %! ## Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
@@ -398,17 +398,17 @@ endfunction
 %!         31, 33, 36, 35;
 %!         15, 25, 30, 26];
 %! [p, atab, stats] = anova2 (data, 1, 'off', 'linear');
-%! assert (atab{2,2}, 2174.95, 1e-10);
-%! assert (atab{3,2}, 8371.7, 1e-10);
-%! assert (atab{4,2}, 2404.3, 1e-10);
-%! assert (atab{5,2}, 12950.95, 1e-10);
-%! assert (atab{2,4}, 724.983333333333, 1e-10);
-%! assert (atab{3,4}, 2092.925, 1e-10);
-%! assert (atab{4,4}, 200.358333333333, 1e-10);
-%! assert (atab{2,5}, 3.61843363972882, 1e-10);
-%! assert (atab{3,5}, 10.445909412303, 1e-10);
-%! assert (atab{2,6}, 0.087266112738617, 1e-10);
-%! assert (atab{3,6}, 0.000698397753556, 1e-10);
+%! assert_equal (atab{2,2}, 2174.95, 1e-10);
+%! assert_equal (atab{3,2}, 8371.7, 1e-10);
+%! assert_equal (atab{4,2}, 2404.3, 1e-10);
+%! assert_equal (atab{5,2}, 12950.95, 1e-10);
+%! assert_equal (atab{2,4}, 724.983333333333, 1e-10);
+%! assert_equal (atab{3,4}, 2092.925, 1e-10);
+%! assert_equal (atab{4,4}, 200.358333333333, 1e-10);
+%! assert_equal (atab{2,5}, 3.61843363972882, 1e-10);
+%! assert_equal (atab{3,5}, 10.445909412303, 1e-10);
+%! assert_equal (atab{2,6}, 0.087266112738617, 1e-10);
+%! assert_equal (atab{3,6}, 0.000698397753556, 1e-10);
 
 %!test
 %! ## Test for anova2 ("nested") - comparison with results from GraphPad Prism 8
@@ -417,14 +417,14 @@ endfunction
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
 %! [p, atab, stats] = anova2 (data, 4, 'off', 'nested');
-%! assert (atab{2,2}, 745.360306290833, 1e-10);
-%! assert (atab{3,2}, 278.01854140125, 1e-10);
-%! assert (atab{4,2}, 180.180377467501, 1e-10);
-%! assert (atab{5,2}, 1203.55922515958, 1e-10);
-%! assert (atab{2,4}, 372.680153145417, 1e-10);
-%! assert (atab{3,4}, 92.67284713375, 1e-10);
-%! assert (atab{4,4}, 10.0100209704167, 1e-10);
-%! assert (atab{2,5}, 4.02146005730833, 1e-10);
-%! assert (atab{3,5}, 9.25800729165627, 1e-10);
-%! assert (atab{2,6}, 0.141597630656771, 1e-10);
-%! assert (atab{3,6}, 0.000636643812875719, 1e-10);
+%! assert_equal (atab{2,2}, 745.360306290833, 1e-10);
+%! assert_equal (atab{3,2}, 278.01854140125, 1e-10);
+%! assert_equal (atab{4,2}, 180.180377467501, 1e-10);
+%! assert_equal (atab{5,2}, 1203.55922515958, 1e-10);
+%! assert_equal (atab{2,4}, 372.680153145417, 1e-10);
+%! assert_equal (atab{3,4}, 92.67284713375, 1e-10);
+%! assert_equal (atab{4,4}, 10.0100209704167, 1e-10);
+%! assert_equal (atab{2,5}, 4.02146005730833, 1e-10);
+%! assert_equal (atab{3,5}, 9.25800729165627, 1e-10);
+%! assert_equal (atab{2,6}, 0.141597630656771, 1e-10);
+%! assert_equal (atab{3,6}, 0.000636643812875719, 1e-10);

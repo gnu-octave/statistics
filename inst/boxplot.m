@@ -943,10 +943,10 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   [a, b] = boxplot (rand (10, 3));
-%!   assert (size (a), [7, 3]);
-%!   assert (numel (b.box), 3);
-%!   assert (numel (b.whisker), 12);
-%!   assert (numel (b.median), 3);
+%!   assert_equal (size (a), [7, 3]);
+%!   assert_equal (numel (b.box), 3);
+%!   assert_equal (numel (b.whisker), 12);
+%!   assert_equal (numel (b.median), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -954,7 +954,7 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   [~, b] = boxplot (rand (10, 3), 'BoxStyle', 'filled', 'colors', 'ybc');
-%!   assert (numel (b.box_fill), 3);
+%!   assert_equal (numel (b.box_fill), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -963,7 +963,7 @@ endfunction
 %! unwind_protect
 %!   hold on
 %!   [a, b] = boxplot (rand (10, 3));
-%!   assert (ishold, true);
+%!   assert_equal (ishold, true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
@@ -976,7 +976,7 @@ endfunction
 %!   g2 = string ({'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'; 'A'; 'B'});
 %!   g3 = categorical ({'X'; 'X'; 'Y'; 'Y'; 'Z'; 'Z'; 'X'; 'X'; 'Y'; 'Y'; 'Z'; 'Z'});
 %!   [a, b] = boxplot (data, {g1, g2, g3});
-%!   assert (size (a, 2), 6);
+%!   assert_equal (size (a, 2), 6);
 %! unwind_protect_cleanup
 %!     close (hf);
 %! end_unwind_protect
@@ -988,7 +988,7 @@ endfunction
 %!   g1 = [1; 1; 2; 2];
 %!   g2 = string ({'A'; 'A'; 'B'; 'B'});
 %!   [a, b] = boxplot (data, {g1, g2});
-%!   assert (size (a, 2), 2);
+%!   assert_equal (size (a, 2), 2);
 %! unwind_protect_cleanup
 %!     close (hf);
 %! end_unwind_protect

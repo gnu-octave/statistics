@@ -496,39 +496,39 @@ endfunction
 %! t = 1e-3;
 %! eucl = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! x = [1 2 3; 4 5 6; 7 8 9; 3 2 1];
-%!assert (pdist (xy),                 [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, eucl),           [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, 'euclidean'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, 'seuclidean'),   [0.380 2.735 2.363 2.486 2.070 0.561], t);
-%!assert (pdist (xy, 'mahalanobis'),  [1.384 1.967 2.446 2.384 1.535 2.045], t);
-%!assert (pdist (xy, 'cityblock'),    [1.000 12.00 10.00 11.00 9.000 2.000], t);
-%!assert (pdist (xy, 'minkowski'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, 'minkowski', 3), [1.000 7.763 6.299 7.410 5.738 2.000], t);
-%!assert (pdist (xy, 'cosine'),       [0.000 0.349 0.231 0.349 0.231 0.013], t);
-%!assert (pdist (xy, 'correlation'),  [0.000 2.000 0.000 2.000 0.000 2.000], t);
-%!assert (pdist (xy, 'spearman'),     [0.000 2.000 0.000 2.000 0.000 2.000], t);
-%!assert (pdist (xy, 'hamming'),      [0.500 1.000 1.000 1.000 1.000 0.500], t);
-%!assert (pdist (xy, 'jaccard'),      [1.000 1.000 1.000 1.000 1.000 0.500], t);
-%!assert (pdist (xy, 'chebychev'),    [1.000 7.000 5.000 7.000 5.000 2.000], t);
-%!assert (pdist (x), [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, 'euclidean'), ...
+%!assert_equal (pdist (xy),                 [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert_equal (pdist (xy, eucl),           [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert_equal (pdist (xy, 'euclidean'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert_equal (pdist (xy, 'seuclidean'),   [0.380 2.735 2.363 2.486 2.070 0.561], t);
+%!assert_equal (pdist (xy, 'mahalanobis'),  [1.384 1.967 2.446 2.384 1.535 2.045], t);
+%!assert_equal (pdist (xy, 'cityblock'),    [1.000 12.00 10.00 11.00 9.000 2.000], t);
+%!assert_equal (pdist (xy, 'minkowski'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert_equal (pdist (xy, 'minkowski', 3), [1.000 7.763 6.299 7.410 5.738 2.000], t);
+%!assert_equal (pdist (xy, 'cosine'),       [0.000 0.349 0.231 0.349 0.231 0.013], t);
+%!assert_equal (pdist (xy, 'correlation'),  [0.000 2.000 0.000 2.000 0.000 2.000], t);
+%!assert_equal (pdist (xy, 'spearman'),     [0.000 2.000 0.000 2.000 0.000 2.000], t);
+%!assert_equal (pdist (xy, 'hamming'),      [0.500 1.000 1.000 1.000 1.000 0.500], t);
+%!assert_equal (pdist (xy, 'jaccard'),      [1.000 1.000 1.000 1.000 1.000 0.500], t);
+%!assert_equal (pdist (xy, 'chebychev'),    [1.000 7.000 5.000 7.000 5.000 2.000], t);
+%!assert_equal (pdist (x), [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
+%!assert_equal (pdist (x, 'euclidean'), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, eucl), ...
+%!assert_equal (pdist (x, eucl), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, 'squaredeuclidean'), [27, 108, 8, 27, 35, 116]);
-%!assert (pdist (x, 'seuclidean'), ...
+%!assert_equal (pdist (x, 'squaredeuclidean'), [27, 108, 8, 27, 35, 116]);
+%!assert_equal (pdist (x, 'seuclidean'), ...
 %!        [1.8071, 3.6142, 0.9831, 1.8071, 1.8143, 3.4854], 1e-4);
 %!warning<pdist: matrix is close to singular> ...
 %! pdist (x, 'mahalanobis');
-%!assert (pdist (x, 'cityblock'), [9, 18, 4, 9, 9, 18]);
-%!assert (pdist (x, 'minkowski'), ...
+%!assert_equal (pdist (x, 'cityblock'), [9, 18, 4, 9, 9, 18]);
+%!assert_equal (pdist (x, 'minkowski'), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, 'minkowski', 3), ...
+%!assert_equal (pdist (x, 'minkowski', 3), ...
 %!        [4.3267, 8.6535, 2.5198, 4.3267, 5.3485, 9.2521], 1e-4);
-%!assert (pdist (x, 'cosine'), ...
+%!assert_equal (pdist (x, 'cosine'), ...
 %!        [0.0254, 0.0406, 0.2857, 0.0018, 0.1472, 0.1173], 1e-4);
-%!assert (pdist (x, 'correlation'), [0, 0, 2, 0, 2, 2], 1e-14);
-%!assert (pdist (x, 'spearman'), [0, 0, 2, 0, 2, 2], 1e-14);
-%!assert (pdist (x, 'hamming'), [1, 1, 2/3, 1, 1, 1]);
-%!assert (pdist (x, 'jaccard'), [1, 1, 2/3, 1, 1, 1]);
-%!assert (pdist (x, 'chebychev'), [3, 6, 2, 3, 5, 8]);
+%!assert_equal (pdist (x, 'correlation'), [0, 0, 2, 0, 2, 2], 1e-14);
+%!assert_equal (pdist (x, 'spearman'), [0, 0, 2, 0, 2, 2], 1e-14);
+%!assert_equal (pdist (x, 'hamming'), [1, 1, 2/3, 1, 1, 1]);
+%!assert_equal (pdist (x, 'jaccard'), [1, 1, 2/3, 1, 1, 1]);
+%!assert_equal (pdist (x, 'chebychev'), [3, 6, 2, 3, 5, 8]);

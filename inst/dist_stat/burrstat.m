@@ -107,13 +107,13 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = burrstat (1, 2, 5);
-%! assert (m, 0.4295, 1e-4);
-%! assert (v, 0.0655, 1e-4);
+%! assert_equal (m, 0.4295, 1e-4);
+%! assert_equal (v, 0.0655, 1e-4);
 %!test
 %! [m, v] = burrstat (1, 1, 1);
-%! assert (m, Inf);
-%! assert (v, Inf);
+%! assert_equal (m, Inf);
+%! assert_equal (v, Inf);
 %!test
 %! [m, v] = burrstat (2, 4, 1);
-%! assert (m, 2.2214, 1e-4);
-%! assert (v, 1.3484, 1e-4);
+%! assert_equal (m, 2.2214, 1e-4);
+%! assert_equal (v, 1.3484, 1e-4);

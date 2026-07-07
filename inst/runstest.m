@@ -312,30 +312,30 @@ endfunction
 %! expected_h = 1;
 %! expected_p = 0.008562;
 %! expected_z = 2.6229;
-%! assert (h, expected_h);
-%! assert (p, expected_p, 1E-6);
-%! assert (stats.z, expected_z, 1E-4);
+%! assert_equal (h, expected_h);
+%! assert_equal (p, expected_p, 1E-6);
+%! assert_equal (stats.z, expected_z, 1E-4);
 
 %!shared x
 %! x = [45, -60, 1.225, 55.4, -9 27];
 %!test
 %! [h, p, stats] = runstest (x);
-%! assert (h, 0);
-%! assert (p, 0.6, 1e-14);
-%! assert (stats.nruns, 5);
-%! assert (stats.n1, 3);
-%! assert (stats.n0, 3);
-%! assert (stats.z, 0.456435464587638, 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (p, 0.6, 1e-14);
+%! assert_equal (stats.nruns, 5);
+%! assert_equal (stats.n1, 3);
+%! assert_equal (stats.n0, 3);
+%! assert_equal (stats.z, 0.456435464587638, 1e-14);
 %!test
 %! [h, p, stats] = runstest (x, [], 'method', 'approximate');
-%! assert (h, 0);
-%! assert (p, 0.6481, 1e-4);
-%! assert (stats.z, 0.456435464587638, 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (p, 0.6481, 1e-4);
+%! assert_equal (stats.z, 0.456435464587638, 1e-14);
 %!test
 %! [h, p, stats] = runstest (x, [], 'tail', 'left');
-%! assert (h, 0);
-%! assert (p, 0.9, 1e-14);
-%! assert (stats.z, 1.369306393762915, 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (p, 0.9, 1e-14);
+%! assert_equal (stats.z, 1.369306393762915, 1e-14);
 
 %!error<runstest: X must be a vector a scalar values.> runstest (ones (2,20))
 %!error<runstest: X must be a vector a scalar values.> runstest (['asdasda'])

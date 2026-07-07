@@ -181,20 +181,20 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0 1/2 3/4 7/8 1];
-%!assert (nbincdf (x, ones (1,5), 0.5*ones (1,5)), y)
-%!assert (nbincdf (x, 1, 0.5*ones (1,5)), y)
-%!assert (nbincdf (x, ones (1,5), 0.5), y)
-%!assert (nbincdf (x, ones (1,5), 0.5, 'upper'), 1 - y, eps)
-%!assert (nbincdf ([x(1:3) 0 x(5)], [0 1 NaN 1.5 Inf], 0.5), ...
+%!assert_equal (nbincdf (x, ones (1,5), 0.5*ones (1,5)), y)
+%!assert_equal (nbincdf (x, 1, 0.5*ones (1,5)), y)
+%!assert_equal (nbincdf (x, ones (1,5), 0.5), y)
+%!assert_equal (nbincdf (x, ones (1,5), 0.5, 'upper'), 1 - y, eps)
+%!assert_equal (nbincdf ([x(1:3) 0 x(5)], [0 1 NaN 1.5 Inf], 0.5), ...
 %! [NaN 1/2 NaN nbinpdf(0,1.5,0.5) NaN], eps)
-%!assert (nbincdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
-%!assert (nbincdf ([x(1:2) NaN x(4:5)], 1, 0.5), [y(1:2) NaN y(4:5)])
+%!assert_equal (nbincdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
+%!assert_equal (nbincdf ([x(1:2) NaN x(4:5)], 1, 0.5), [y(1:2) NaN y(4:5)])
 
 ## Test class of input preserved
-%!assert (nbincdf ([x, NaN], 1, 0.5), [y, NaN])
-%!assert (nbincdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))
-%!assert (nbincdf ([x, NaN], single (1), 0.5), single ([y, NaN]))
-%!assert (nbincdf ([x, NaN], 1, single (0.5)), single ([y, NaN]))
+%!assert_equal (nbincdf ([x, NaN], 1, 0.5), [y, NaN])
+%!assert_equal (nbincdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))
+%!assert_equal (nbincdf ([x, NaN], single (1), 0.5), single ([y, NaN]))
+%!assert_equal (nbincdf ([x, NaN], 1, single (0.5)), single ([y, NaN]))
 
 ## Test input validation
 %!error<nbincdf: function called with too few input arguments.> nbincdf ()

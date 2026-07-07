@@ -108,16 +108,16 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.73575888234288467, 0.073262555554936715, 0];
-%!assert (nakapdf (x, ones (1,5), ones (1,5)), y, eps)
-%!assert (nakapdf (x, 1, 1), y, eps)
-%!assert (nakapdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (nakapdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (nakapdf ([x, NaN], 1, 1), [y, NaN], eps)
+%!assert_equal (nakapdf (x, ones (1,5), ones (1,5)), y, eps)
+%!assert_equal (nakapdf (x, 1, 1), y, eps)
+%!assert_equal (nakapdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (nakapdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (nakapdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (nakapdf (single ([x, NaN]), 1, 1), single ([y, NaN]))
-%!assert (nakapdf ([x, NaN], single (1), 1), single ([y, NaN]))
-%!assert (nakapdf ([x, NaN], 1, single (1)), single ([y, NaN]))
+%!assert_equal (nakapdf (single ([x, NaN]), 1, 1), single ([y, NaN]))
+%!assert_equal (nakapdf ([x, NaN], single (1), 1), single ([y, NaN]))
+%!assert_equal (nakapdf ([x, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
 %!error<nakapdf: function called with too few input arguments.> nakapdf ()

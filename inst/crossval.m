@@ -325,7 +325,7 @@ endfunction
 %! X = [ones(length(y),1) data(:,1:3)];
 %! rand ('seed', 3);
 %! cvMSE = crossval ('mse',X,y,'Predfun',@regf);
-%! assert (cvMSE, 18.720, 1e-3);
+%! assert_equal (cvMSE, 18.720, 1e-3);
 
 ## Test input validation
 %!error <crossval: criterion must be 'mse' or 'mcr'.> ...

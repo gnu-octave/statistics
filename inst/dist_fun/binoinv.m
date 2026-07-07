@@ -191,26 +191,26 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (binoinv (p, 2*ones (1,5), 0.5*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (binoinv (p, 2, 0.5*ones (1,5)), [NaN 0 1 2 NaN])
-%!assert (binoinv (p, 2*ones (1,5), 0.5), [NaN 0 1 2 NaN])
-%!assert (binoinv (p, 2*[0 -1 NaN 1.1 1], 0.5), [NaN NaN NaN NaN NaN])
-%!assert (binoinv (p, 2, 0.5*[0 -1 NaN 3 1]), [NaN NaN NaN NaN NaN])
-%!assert (binoinv ([p(1:2) NaN p(4:5)], 2, 0.5), [NaN 0 NaN 2 NaN])
+%!assert_equal (binoinv (p, 2*ones (1,5), 0.5*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert_equal (binoinv (p, 2, 0.5*ones (1,5)), [NaN 0 1 2 NaN])
+%!assert_equal (binoinv (p, 2*ones (1,5), 0.5), [NaN 0 1 2 NaN])
+%!assert_equal (binoinv (p, 2*[0 -1 NaN 1.1 1], 0.5), [NaN NaN NaN NaN NaN])
+%!assert_equal (binoinv (p, 2, 0.5*[0 -1 NaN 3 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (binoinv ([p(1:2) NaN p(4:5)], 2, 0.5), [NaN 0 NaN 2 NaN])
 
 ## Test class of input preserved
-%!assert (binoinv ([p, NaN], 2, 0.5), [NaN 0 1 2 NaN NaN])
-%!assert (binoinv (single ([p, NaN]), 2, 0.5), single ([NaN 0 1 2 NaN NaN]))
-%!assert (binoinv ([p, NaN], single (2), 0.5), single ([NaN 0 1 2 NaN NaN]))
-%!assert (binoinv ([p, NaN], 2, single (0.5)), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (binoinv ([p, NaN], 2, 0.5), [NaN 0 1 2 NaN NaN])
+%!assert_equal (binoinv (single ([p, NaN]), 2, 0.5), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (binoinv ([p, NaN], single (2), 0.5), single ([NaN 0 1 2 NaN NaN]))
+%!assert_equal (binoinv ([p, NaN], 2, single (0.5)), single ([NaN 0 1 2 NaN NaN]))
 
 ## Test accuracy, to within +/- 1 since it is a discrete distribution
 %!shared x, tol
 %! x = magic (3) + 1;
 %! tol = 1;
-%!assert (binoinv (binocdf (1:10, 11, 0.1), 11, 0.1), 1:10, tol)
-%!assert (binoinv (binocdf (1:10, 2*(1:10), 0.1), 2*(1:10), 0.1), 1:10, tol)
-%!assert (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x, tol)
+%!assert_equal (binoinv (binocdf (1:10, 11, 0.1), 11, 0.1), 1:10, tol)
+%!assert_equal (binoinv (binocdf (1:10, 2*(1:10), 0.1), 2*(1:10), 0.1), 1:10, tol)
+%!assert_equal (binoinv (binocdf (x, 2*x, 1./x), 2*x, 1./x), x, tol)
 
 ## Test input validation
 %!error<binoinv: function called with too few input arguments.> binoinv ()

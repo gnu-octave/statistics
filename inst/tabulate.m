@@ -278,153 +278,153 @@ endfunction
 %!test
 %! load patients
 %! table = tabulate (Gender);
-%! assert (table{1,1}, "Male");
-%! assert (table{2,1}, "Female");
-%! assert (table{1,2}, 47);
-%! assert (table{2,2}, 53);
+%! assert_equal (table{1,1}, "Male");
+%! assert_equal (table{2,1}, "Female");
+%! assert_equal (table{1,2}, 47);
+%! assert_equal (table{2,2}, 53);
 %!test
 %! load patients
 %! table = tabulate (Height);
-%! assert (table(end-4,:), [68, 15, 15]);
-%! assert (table(end-3,:), [69, 8, 8]);
-%! assert (table(end-2,:), [70, 11, 11]);
-%! assert (table(end-1,:), [71, 10, 10]);
-%! assert (table(end,:), [72, 4, 4]);
+%! assert_equal (table(end-4,:), [68, 15, 15]);
+%! assert_equal (table(end-3,:), [69, 8, 8]);
+%! assert_equal (table(end-2,:), [70, 11, 11]);
+%! assert_equal (table(end-1,:), [71, 10, 10]);
+%! assert_equal (table(end,:), [72, 4, 4]);
 %!test
 %! ## Test numeric vector including NaNs
 %! x = [1; 1; 2; 3; 1; NaN; 2];
 %! tbl = tabulate (x);
-%! assert (isnumeric (tbl));
-%! assert (size (tbl), [3, 3]);
-%! assert (tbl(:,1), [1; 2; 3]);
-%! assert (tbl(:,2), [3; 2; 1]);
-%! assert (tbl(:,3), [50; 33.3333; 16.6667], 3e-4);
+%! assert_equal (isnumeric (tbl), true);
+%! assert_equal (size (tbl), [3, 3]);
+%! assert_equal (tbl(:,1), [1; 2; 3]);
+%! assert_equal (tbl(:,2), [3; 2; 1]);
+%! assert_equal (tbl(:,3), [50; 33.3333; 16.6667], 3e-4);
 %!test
 %! ## Test positive integers with gaps
 %! x = [1; 3; 3];
 %! tbl = tabulate (x);
-%! assert (isnumeric (tbl));
-%! assert (size (tbl), [3, 3]);
-%! assert (tbl(:,1), [1; 2; 3]);
-%! assert (tbl(:,2), [1; 0; 2]);
-%! assert (tbl(:,3), [33.3333; 0; 66.6667], 3e-4);
+%! assert_equal (isnumeric (tbl), true);
+%! assert_equal (size (tbl), [3, 3]);
+%! assert_equal (tbl(:,1), [1; 2; 3]);
+%! assert_equal (tbl(:,2), [1; 0; 2]);
+%! assert_equal (tbl(:,3), [33.3333; 0; 66.6667], 3e-4);
 %!test
 %! ## Test logical inputs (should return cell array with '0'/'1')
 %! x = [true; false; true; true];
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'0'; '1'});
-%! assert ([tbl{:,2}]', [1; 3]);
-%! assert ([tbl{:,3}]', [25; 75]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'0'; '1'});
+%! assert_equal ([tbl{:,2}]', [1; 3]);
+%! assert_equal ([tbl{:,3}]', [25; 75]);
 %!test
 %! ## Test character array
 %! x = ['a'; 'b'; 'a'];
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'a'; 'b'});
-%! assert ([tbl{:,2}]', [2; 1]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'a'; 'b'});
+%! assert_equal ([tbl{:,2}]', [2; 1]);
 %!test
 %! ## Test cell array of character vectors
 %! x = {'a', 'b', 'a'};
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'a'; 'b'});
-%! assert ([tbl{:,2}]', [2; 1]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'a'; 'b'});
+%! assert_equal ([tbl{:,2}]', [2; 1]);
 %!test
 %! ## Test string array with missing values
 %! x = string ({'a', 'b', 'a'});
 %! x(4) = missing;
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'a'; 'b'});
-%! assert ([tbl{:,2}]', [2; 1]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'a'; 'b'});
+%! assert_equal ([tbl{:,2}]', [2; 1]);
 %!test
 %! ## Test categorical array with undefined values and vacuous levels
 %! x = categorical ({'a', 'a', 'b'}, {'a', 'b', 'c'});
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [3, 3]);
-%! assert (tbl(:,1), {'a'; 'b'; 'c'});
-%! assert ([tbl{:,2}]', [2; 1; 0]);
-%! assert ([tbl{:,3}]', [66.6667; 33.3333; 0], 1e-3);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [3, 3]);
+%! assert_equal (tbl(:,1), {'a'; 'b'; 'c'});
+%! assert_equal ([tbl{:,2}]', [2; 1; 0]);
+%! assert_equal ([tbl{:,3}]', [66.6667; 33.3333; 0], 1e-3);
 %!test
 %! ## Test empty input
 %! tbl = tabulate ([]);
-%! assert (isempty (tbl));
+%! assert_equal (isempty (tbl), true);
 %!test
 %! ## fisheriris (Categorical/CellStr)
 %! load fisheriris;
 %! tbl = tabulate (species);
-%! assert (size (tbl), [3, 3]);
-%! assert (tbl(:,1), {'setosa'; 'versicolor'; 'virginica'});
-%! assert ([tbl{:,2}]', [50; 50; 50]);
-%! assert ([tbl{:,3}]', [33.3333; 33.3333; 33.3333], 1e-4);
+%! assert_equal (size (tbl), [3, 3]);
+%! assert_equal (tbl(:,1), {'setosa'; 'versicolor'; 'virginica'});
+%! assert_equal ([tbl{:,2}]', [50; 50; 50]);
+%! assert_equal ([tbl{:,3}]', [33.3333; 33.3333; 33.3333], 1e-4);
 %!test
 %! ## carsmall (Char/CellStr)
 %! load carsmall;
 %! tbl = tabulate (Origin);
 %! origins = tbl(:,1);
 %! counts = [tbl{:,2}];
-%! assert (counts(strcmp (origins, 'USA')), 69);
-%! assert (counts(strcmp (origins, 'Japan')), 15);
-%! assert (counts(strcmp (origins, 'Germany')), 9);
-%! assert (counts(strcmp (origins, 'France')), 4);
-%! assert (counts(strcmp (origins, 'Sweden')), 2);
-%! assert (counts(strcmp (origins, 'Italy')), 1);
+%! assert_equal (counts(strcmp (origins, 'USA')), 69);
+%! assert_equal (counts(strcmp (origins, 'Japan')), 15);
+%! assert_equal (counts(strcmp (origins, 'Germany')), 9);
+%! assert_equal (counts(strcmp (origins, 'France')), 4);
+%! assert_equal (counts(strcmp (origins, 'Sweden')), 2);
+%! assert_equal (counts(strcmp (origins, 'Italy')), 1);
 %!test
 %! ## patients (Logical)
 %! load patients;
 %! tbl = tabulate (Smoker);
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'0'; '1'});
-%! assert ([tbl{:,2}]', [66; 34]);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'0'; '1'});
+%! assert_equal ([tbl{:,2}]', [66; 34]);
 %!test
 %! ## patients (String)
 %! load patients;
 %! tbl = tabulate (Gender);
 %! vals = tbl(:,1);
 %! counts = [tbl{:,2}];
-%! assert (counts(strcmp (vals, 'Male')), 47);
-%! assert (counts(strcmp (vals, 'Female')), 53);
+%! assert_equal (counts(strcmp (vals, 'Male')), 47);
+%! assert_equal (counts(strcmp (vals, 'Female')), 53);
 
 ## Test categorical with all undefined values (should return zero counts/percents)
 %!test
 %! x = categorical ({'a','b','c'});
 %! x(:) = categorical (missing);
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert ([tbl{:,2}]', [0; 0; 0]);
-%! assert ([tbl{:,3}]', [0; 0; 0]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal ([tbl{:,2}]', [0; 0; 0]);
+%! assert_equal ([tbl{:,3}]', [0; 0; 0]);
 
 ## Test categorical with defined categories but no data
 %!test
 %! x = categorical ({}, {'low','med','high'});
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert ([tbl{:,2}]', [0; 0; 0]);
-%! assert ([tbl{:,3}]', [0; 0; 0]);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal ([tbl{:,2}]', [0; 0; 0]);
+%! assert_equal ([tbl{:,3}]', [0; 0; 0]);
 
 ## Test string array with all missing values (should return empty table)
 %!test
 %! x = string ({'a','b'});
 %! x(:) = missing;
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (isempty (tbl));
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (isempty (tbl), true);
 
 ## Test 2D character matrices.
 %!test
 %! x = ['yes'; 'no'; 'yes'];
 %! tbl = tabulate (x);
-%! assert (iscell (tbl));
-%! assert (size (tbl), [2, 3]);
-%! assert (tbl(:,1), {'yes'; 'no'});
-%! assert ([tbl{:,2}]', [2; 1]);
-%! assert ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
+%! assert_equal (iscell (tbl), true);
+%! assert_equal (size (tbl), [2, 3]);
+%! assert_equal (tbl(:,1), {'yes'; 'no'});
+%! assert_equal ([tbl{:,2}]', [2; 1]);
+%! assert_equal ([tbl{:,3}]', [66.6667; 33.3333], 1e-4);
 
 ## Test input validation
 %!error<tabulate: char array input must be a matrix.> ...

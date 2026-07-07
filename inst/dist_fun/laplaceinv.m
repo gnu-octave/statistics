@@ -92,14 +92,14 @@ endfunction
 %!shared p, x
 %! p = [-1 0 0.5 1 2];
 %! x = [NaN, -Inf, 0, Inf, NaN];
-%!assert (laplaceinv (p, 0, 1), x)
-%!assert (laplaceinv (p, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), Inf, NaN])
-%!assert (laplaceinv ([p, NaN], 0, 1), [x, NaN])
+%!assert_equal (laplaceinv (p, 0, 1), x)
+%!assert_equal (laplaceinv (p, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), Inf, NaN])
+%!assert_equal (laplaceinv ([p, NaN], 0, 1), [x, NaN])
 
 ## Test class of input preserved
-%!assert (laplaceinv (single ([p, NaN]), 0, 1), single ([x, NaN]))
-%!assert (laplaceinv ([p, NaN], single (0), 1), single ([x, NaN]))
-%!assert (laplaceinv ([p, NaN], 0, single (1)), single ([x, NaN]))
+%!assert_equal (laplaceinv (single ([p, NaN]), 0, 1), single ([x, NaN]))
+%!assert_equal (laplaceinv ([p, NaN], single (0), 1), single ([x, NaN]))
+%!assert_equal (laplaceinv ([p, NaN], 0, single (1)), single ([x, NaN]))
 
 ## Test input validation
 %!error<laplaceinv: function called with too few input arguments.> laplaceinv ()

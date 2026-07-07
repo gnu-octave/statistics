@@ -115,48 +115,48 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (finv (p, 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 Inf NaN])
-%!assert (finv (p, 2, 2*ones (1,5)), [NaN 0 1 Inf NaN])
-%!assert (finv (p, 2*ones (1,5), 2), [NaN 0 1 Inf NaN])
-%!assert (finv (p, [2 -Inf NaN Inf 2], 2), [NaN NaN NaN Inf NaN])
-%!assert (finv (p, 2, [2 -Inf NaN Inf 2]), [NaN NaN NaN Inf NaN])
-%!assert (finv ([p(1:2) NaN p(4:5)], 2, 2), [NaN 0 NaN Inf NaN])
+%!assert_equal (finv (p, 2*ones (1,5), 2*ones (1,5)), [NaN 0 1 Inf NaN])
+%!assert_equal (finv (p, 2, 2*ones (1,5)), [NaN 0 1 Inf NaN])
+%!assert_equal (finv (p, 2*ones (1,5), 2), [NaN 0 1 Inf NaN])
+%!assert_equal (finv (p, [2 -Inf NaN Inf 2], 2), [NaN NaN NaN Inf NaN])
+%!assert_equal (finv (p, 2, [2 -Inf NaN Inf 2]), [NaN NaN NaN Inf NaN])
+%!assert_equal (finv ([p(1:2) NaN p(4:5)], 2, 2), [NaN 0 NaN Inf NaN])
 
 ## Test for bug #66034 (savannah)
-%!assert (finv (0.025, 10, 1e6), 0.3247, 1e-4)
-%!assert (finv (0.025, 10, 1e7), 0.3247, 1e-4)
-%!assert (finv (0.025, 10, 1e10), 0.3247, 1e-4)
-%!assert (finv (0.025, 10, 1e255), 0.3247, 1e-4)
-%!assert (finv (0.025, 10, Inf), 0.3247, 1e-4)
+%!assert_equal (finv (0.025, 10, 1e6), 0.3247, 1e-4)
+%!assert_equal (finv (0.025, 10, 1e7), 0.3247, 1e-4)
+%!assert_equal (finv (0.025, 10, 1e10), 0.3247, 1e-4)
+%!assert_equal (finv (0.025, 10, 1e255), 0.3247, 1e-4)
+%!assert_equal (finv (0.025, 10, Inf), 0.3247, 1e-4)
 
 ## Test for issue #203 (Github)
 %!test
 %! x = finv (0.35, Inf, 4);
-%! assert (x, 0.9014, 1e-4)
+%! assert_equal (x, 0.9014, 1e-4)
 %!test
 %! x = finv (0, Inf, 4);
-%! assert (x, 0)
+%! assert_equal (x, 0)
 %!test
 %! x = finv (1, Inf, 4);
-%! assert (x, Inf)
+%! assert_equal (x, Inf)
 %!test
 %! x = finv (0.35, 4, Inf);
-%! assert (x, 0.6175, 1e-4)
+%! assert_equal (x, 0.6175, 1e-4)
 %!test
 %! x = finv (0, 4, Inf);
-%! assert (x, 0)
+%! assert_equal (x, 0)
 %!test
 %! x = finv (1, 4, Inf);
-%! assert (x, Inf)
+%! assert_equal (x, Inf)
 %!test
 %! x = finv ([0, 0.000001, 0.35, 1, 1.2], Inf, Inf);
-%! assert (x, [0, 1, 1, 1, NaN]);
+%! assert_equal (x, [0, 1, 1, 1, NaN]);
 
 ## Test class of input preserved
-%!assert (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])
-%!assert (finv (single ([p, NaN]), 2, 2), single ([NaN 0 1 Inf NaN NaN]))
-%!assert (finv ([p, NaN], single (2), 2), single ([NaN 0 1 Inf NaN NaN]))
-%!assert (finv ([p, NaN], 2, single (2)), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (finv ([p, NaN], 2, 2), [NaN 0 1 Inf NaN NaN])
+%!assert_equal (finv (single ([p, NaN]), 2, 2), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (finv ([p, NaN], single (2), 2), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (finv ([p, NaN], 2, single (2)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
 %!error<finv: function called with too few input arguments.> finv ()

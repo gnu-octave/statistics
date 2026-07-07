@@ -76,9 +76,9 @@ endfunction
 %!test
 %! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
 %! [yCDF, xCDF, n, emsg, eid] = cdfcalc (x);
-%! assert (yCDF, [0, 0.3, 0.5, 0.8, 0.9, 1]');
-%! assert (xCDF, [2, 3, 4, 5, 6]');
-%! assert (n, 10);
+%! assert_equal (yCDF, [0, 0.3, 0.5, 0.8, 0.9, 1]');
+%! assert_equal (xCDF, [2, 3, 4, 5, 6]');
+%! assert_equal (n, 10);
 %!shared x
 %! x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
 %!error yCDF = cdfcalc (x);

@@ -248,7 +248,7 @@ endfunction
 %! y = [n:-1:1]';
 %! D = [x y];
 %! N = hist3 (D, [4 5]);
-%! assert (N, N_exp);
+%! assert_equal (N, N_exp);
 
 %!test
 %! N_exp = [0  0  0  0  1
@@ -263,7 +263,7 @@ endfunction
 %! C{1} = [1 1.7 3 4];
 %! C{2} = [1:5];
 %! N = hist3 (D, C);
-%! assert (N, N_exp);
+%! assert_equal (N, N_exp);
 
 ## bug 44987
 %!test
@@ -271,12 +271,12 @@ endfunction
 %! [c, nn] = hist3 (D, {0:4, 0:4});
 %! exp_c = zeros (5);
 %! exp_c([7 9 19]) = [1 2 1];
-%! assert (c, exp_c);
-%! assert (nn, {0:4, 0:4});
+%! assert_equal (c, exp_c);
+%! assert_equal (nn, {0:4, 0:4});
 
 %!test
 %! for i = 10
-%!   assert (size (hist3 (rand (9, 2), 'Edges', {[0:.2:1]; [0:.2:1]})), [6 6])
+%!   assert_equal (size (hist3 (rand (9, 2), 'Edges', {[0:.2:1]; [0:.2:1]})), [6 6])
 %! endfor
 
 %!test
@@ -285,10 +285,10 @@ endfunction
 %! [c, nn] = hist3 ([1:10; 1:5:50]', 'Edges', {edge_1, edge_2});
 %! exp_c = zeros (10, 10);
 %! exp_c([1 12 13 24 35 46 57 68 79 90]) = 1;
-%! assert (c, exp_c);
+%! assert_equal (c, exp_c);
 %!
-%! assert (nn{1}, edge_1 + edge_1(2)/2, eps*10^4)
-%! assert (nn{2}, edge_2 + edge_2(2)/2, eps*10^4)
+%! assert_equal (nn{1}, edge_1 + edge_1(2)/2, eps*10^4)
+%! assert_equal (nn{2}, edge_2 + edge_2(2)/2, eps*10^4)
 
 %!shared X
 %! X = [
@@ -307,32 +307,32 @@ endfunction
 %! N = zeros (10);
 %! N([1 10 53 56 60 91 98 100]) = [1 1 1 1 3 1 1 1];
 %! C = {(1.2:0.4:4.8), (2.1:0.2:3.9)};
-%! assert (nthargout ([1 2], @hist3, X), {N C}, eps*10^3)
+%! assert_equal (nthargout ([1 2], @hist3, X), {N C}, eps*10^3)
 
 %!test
 %! N = zeros (5, 7);
 %! N([1 5 17 18 20 31 34 35]) = [1 1 1 1 3 1 1 1];
 %! C = {(1.4:0.8:4.6), ((2+(1/7)):(2/7):(4-(1/7)))};
-%! assert (nthargout ([1 2], @hist3, X, [5 7]), {N C}, eps*10^3)
-%! assert (nthargout ([1 2], @hist3, X, 'Nbins', [5 7]), {N C}, eps*10^3)
+%! assert_equal (nthargout ([1 2], @hist3, X, [5 7]), {N C}, eps*10^3)
+%! assert_equal (nthargout ([1 2], @hist3, X, 'Nbins', [5 7]), {N C}, eps*10^3)
 
 %!test
 %! N = [0 1 0; 0 1 0; 0 0 1; 0 0 0];
 %! C = {(2:5), (2.5:1:4.5)};
-%! assert (nthargout ([1 2], @hist3, X, 'Edges', {(1.5:4.5), (2:4)}), {N C})
+%! assert_equal (nthargout ([1 2], @hist3, X, 'Edges', {(1.5:4.5), (2:4)}), {N C})
 
 %!test
 %! N = [0 0 1 0 1 0; 0 0 0 1 0 0; 0 0 1 4 2 0];
 %! C = {(1.2:3.2), (0:5)};
-%! assert (nthargout ([1 2], @hist3, X, 'Ctrs', C), {N C})
-%! assert (nthargout ([1 2], @hist3, X, C), {N C})
+%! assert_equal (nthargout ([1 2], @hist3, X, 'Ctrs', C), {N C})
+%! assert_equal (nthargout ([1 2], @hist3, X, C), {N C})
 
 %!test
 %! [~, C] = hist3 (rand (10, 2), 'Edges', {[0 .05 .15 .35 .55 .95],
 %!                                         [-1 .05 .07 .2 .3 .5 .89 1.2]});
 %! C_exp = {[ 0.025  0.1   0.25   0.45  0.75  1.15], ...
 %!          [-0.475  0.06  0.135  0.25  0.4   0.695  1.045  1.355]};
-%! assert (C, C_exp, eps*10^2)
+%! assert_equal (C, C_exp, eps*10^2)
 
 ## Test how handling of out of borders is different whether we are
 ## defining Centers or Edges.
@@ -340,42 +340,42 @@ endfunction
 %! Xv = repmat ([1:10]', [1 2]);
 %!
 %! ## Test Centers
-%! assert (hist3 (Xv, 'Ctrs', {1:10, 1:10}), eye (10))
+%! assert_equal (hist3 (Xv, 'Ctrs', {1:10, 1:10}), eye (10))
 %!
 %! N_exp = eye (6);
 %! N_exp([1 end]) = 3;
-%! assert (hist3 (Xv, 'Ctrs', {3:8, 3:8}), N_exp)
+%! assert_equal (hist3 (Xv, 'Ctrs', {3:8, 3:8}), N_exp)
 %!
 %! N_exp = zeros (8, 6);
 %! N_exp([1 2 11 20 29 38 47 48]) = [2 1 1 1 1 1 1 2];
-%! assert (hist3 (Xv, 'Ctrs', {2:9, 3:8}), N_exp)
+%! assert_equal (hist3 (Xv, 'Ctrs', {2:9, 3:8}), N_exp)
 %!
 %! ## Test Edges
-%! assert (hist3 (Xv, 'Edges', {1:10, 1:10}), eye (10))
-%! assert (hist3 (Xv, 'Edges', {3:8, 3:8}), eye (6))
-%! assert (hist3 (Xv, 'Edges', {2:9, 3:8}), [zeros(1, 6); eye(6); zeros(1, 6)])
+%! assert_equal (hist3 (Xv, 'Edges', {1:10, 1:10}), eye (10))
+%! assert_equal (hist3 (Xv, 'Edges', {3:8, 3:8}), eye (6))
+%! assert_equal (hist3 (Xv, 'Edges', {2:9, 3:8}), [zeros(1, 6); eye(6); zeros(1, 6)])
 %!
 %! N_exp = zeros (14);
 %! N_exp(3:12, 3:12) = eye (10);
-%! assert (hist3 (Xv, 'Edges', {-1:12, -1:12}), N_exp)
+%! assert_equal (hist3 (Xv, 'Edges', {-1:12, -1:12}), N_exp)
 %!
 %! ## Test for Nbins
-%! assert (hist3 (Xv), eye (10))
-%! assert (hist3 (Xv, [10 10]), eye (10))
-%! assert (hist3 (Xv, 'nbins', [10 10]), eye (10))
-%! assert (hist3 (Xv, [5 5]), eye (5) * 2)
+%! assert_equal (hist3 (Xv), eye (10))
+%! assert_equal (hist3 (Xv, [10 10]), eye (10))
+%! assert_equal (hist3 (Xv, 'nbins', [10 10]), eye (10))
+%! assert_equal (hist3 (Xv, [5 5]), eye (5) * 2)
 %!
 %! N_exp = zeros (7, 5);
 %! N_exp([1 9 10 18 26 27 35]) = [2 1 1 2 1 1 2];
-%! assert (hist3 (Xv, [7 5]), N_exp)
+%! assert_equal (hist3 (Xv, [7 5]), N_exp)
 
 %!test # bug #51059
 %! D = [1 1; NaN 2; 3 1; 3 3; 1 NaN; 3 1];
 %! [c, nn] = hist3 (D, {0:4, 0:4});
 %! exp_c = zeros (5);
 %! exp_c([7 9 19]) = [1 2 1];
-%! assert (c, exp_c)
-%! assert (nn, {0:4, 0:4})
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, {0:4, 0:4})
 
 ## Single row of data or cases where all elements have the same value
 ## on one side of the histogram.
@@ -384,15 +384,15 @@ endfunction
 %! exp_c = zeros (10, 10);
 %! exp_c(6, 6) = 1;
 %! exp_nn = {-4:5, 3:12};
-%! assert (c, exp_c)
-%! assert (nn, exp_nn, eps)
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, exp_nn, eps)
 %!
 %! [c, nn] = hist3 ([1 8], [10 11]);
 %! exp_c = zeros (10, 11);
 %! exp_c(6, 6) = 1;
 %! exp_nn = {-4:5, 3:13};
-%! assert (c, exp_c)
-%! assert (nn, exp_nn, eps)
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, exp_nn, eps)
 
 ## NaNs paired with values defining the histogram edges.
 %!test
@@ -401,8 +401,8 @@ endfunction
 %! exp_c(2, 1) = 1;
 %! exp_c(8, 10) = 1;
 %! exp_nn = {linspace(1.35, 7.65, 10) linspace(3.3, 8.7, 10)};
-%! assert (c, exp_c)
-%! assert (nn, exp_nn, eps*100)
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, exp_nn, eps*100)
 
 ## Columns full of NaNs (recent Matlab versions seem to throw an error
 ## but this did work like this on R2010b at least).
@@ -410,13 +410,13 @@ endfunction
 %! [c, nn] = hist3 ([1 NaN; 2 NaN; 6 NaN; 8 NaN]);
 %! exp_c = zeros (10, 10);
 %! exp_nn = {linspace(1.35, 7.65, 10) NaN(1, 10)};
-%! assert (c, exp_c)
-%! assert (nn, exp_nn, eps*100)
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, exp_nn, eps*100)
 
 ## Behaviour of an empty X after removal of rows with NaN.
 %!test
 %! [c, nn] = hist3 ([1 NaN; NaN 3; NaN 9; 8 NaN]);
 %! exp_c = zeros (10, 10);
 %! exp_nn = {linspace(1.35, 7.65, 10) linspace(3.3, 8.7, 10)};
-%! assert (c, exp_c)
-%! assert (nn, exp_nn, eps*100)
+%! assert_equal (c, exp_c)
+%! assert_equal (nn, exp_nn, eps*100)

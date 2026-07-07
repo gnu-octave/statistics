@@ -209,18 +209,18 @@ endfunction
 %!test
 %! load carsmall
 %! [h, pval, ci] = vartest (MPG, 7^2);
-%! assert (h, 1);
-%! assert (pval, 0.04335086742174443, 1e-14);
-%! assert (ci, [49.397; 88.039], 1e-3);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.04335086742174443, 1e-14);
+%! assert_equal (ci, [49.397; 88.039], 1e-3);
 %!test
 %! load carsmall
 %! [h, pval, ci] = vartest (MPG, 7^2, 'tail', 'left');
-%! assert (h, 0);
-%! assert (pval, 0.978324566289128, 1e-14);
-%! assert (ci, [0; 83.685], 1e-3);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.978324566289128, 1e-14);
+%! assert_equal (ci, [0; 83.685], 1e-3);
 %!test
 %! load carsmall
 %! [h, pval, ci] = vartest (MPG, 7^2, 'tail', 'right');
-%! assert (h, 1);
-%! assert (pval, 0.021675433710872, 1e-14);
-%! assert (ci, [51.543; Inf], 1e-3);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.021675433710872, 1e-14);
+%! assert_equal (ci, [51.543; Inf], 1e-3);

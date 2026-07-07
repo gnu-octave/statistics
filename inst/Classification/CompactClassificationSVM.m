@@ -730,22 +730,22 @@ endclassdef
 %! xc = [min(x); mean(x); max(x)];
 %! Mdl = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
 %! CMdl = compact (Mdl);
-%! assert (isempty (CMdl.Alpha), true)
-%! assert (sum (CMdl.IsSupportVector), numel (CMdl.Beta))
+%! assert_equal (isempty (CMdl.Alpha), true)
+%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Beta))
 %! [label, score] = predict (CMdl, xc);
-%! assert (label, [1; 2; 2]);
-%! assert (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
-%! assert (score(:,1), -score(:,2), eps)
+%! assert_equal (label, [1; 2; 2]);
+%! assert_equal (score(:,1), [0.99285; -0.080296; -0.93694], 1e-5);
+%! assert_equal (score(:,1), -score(:,2), eps)
 %!test
 %! Mdl = fitcsvm (x, y);
 %! CMdl = compact (Mdl);
-%! assert (isempty (CMdl.Beta), true)
-%! assert (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
-%! assert (numel (CMdl.Alpha), 24)
-%! assert (CMdl.Bias, -14.415, 1e-3)
+%! assert_equal (isempty (CMdl.Beta), true)
+%! assert_equal (sum (CMdl.IsSupportVector), numel (CMdl.Alpha))
+%! assert_equal (numel (CMdl.Alpha), 24)
+%! assert_equal (CMdl.Bias, -14.415, 1e-3)
 %! xc = [min(x); mean(x); max(x)];
 %! label = predict (CMdl, xc);
-%! assert (label, [1; 2; 2]);
+%! assert_equal (label, [1; 2; 2]);
 
 ## Test input validation for predict method
 %!error<CompactClassificationSVM.predict: too few input arguments.> ...
@@ -771,7 +771,7 @@ endclassdef
 %!                    2.6605;  3.5251; -4.0000; -6.3411; -6.4511; ...
 %!                   -3.0532; -7.5054; -1.6700; -5.6227; -7.3640];
 %! computed_margin = margin (CMdl, x(testInds,:), y(testInds,:));
-%! assert (computed_margin, expected_margin, 1e-4);
+%! assert_equal (computed_margin, expected_margin, 1e-4);
 
 ## Test input validation for margin method
 %!error<CompactClassificationSVM.margin: too few input arguments.> ...
@@ -801,12 +801,12 @@ endclassdef
 %! L4 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'hinge');
 %! L5 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'logit');
 %! L6 = loss (CMdl, x(testInds,:), y(testInds,:), 'LossFun', 'quadratic');
-%! assert (L1, 2.8711, 1e-4);
-%! assert (L2, 0.5333, 1e-4);
-%! assert (L3, 10.9685, 1e-4);
-%! assert (L4, 1.9827, 1e-4);
-%! assert (L5, 1.5849, 1e-4);
-%! assert (L6, 7.6739, 1e-4);
+%! assert_equal (L1, 2.8711, 1e-4);
+%! assert_equal (L2, 0.5333, 1e-4);
+%! assert_equal (L3, 10.9685, 1e-4);
+%! assert_equal (L4, 1.9827, 1e-4);
+%! assert_equal (L5, 1.5849, 1e-4);
+%! assert_equal (L6, 7.6739, 1e-4);
 
 ## Test input validation for loss method
 %!error<CompactClassificationSVM.loss: too few input arguments.> ...

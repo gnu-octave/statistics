@@ -278,11 +278,11 @@ endfunction
 %!      -0.11875465773681024, 0.5512305689880763];
 %! Y = [1,1,1,1,1,0,0,0,0,0]';
 %! [INTERCEPT, SLOPE, DEV, DL, D2L, P] = logistic_regression (Y, X, false);
-#%! assert (DEV, 5.680728861124, 1e-05);
-#%! assert (INTERCEPT(1), -1.10999599948243, 1e-05);
-#%! assert (SLOPE(1), -9.12480634225699, 1e-05);
-#%! assert (SLOPE(2), -2.18746124517476, 1e-05);
-#%! assert (corr(P(:,1),Y), -0.786673288976468, 1e-05);
+#%! assert_equal (DEV, 5.680728861124, 1e-05);
+#%! assert_equal (INTERCEPT(1), -1.10999599948243, 1e-05);
+#%! assert_equal (SLOPE(1), -9.12480634225699, 1e-05);
+#%! assert_equal (SLOPE(2), -2.18746124517476, 1e-05);
+#%! assert_equal (corr(P(:,1),Y), -0.786673288976468, 1e-05);
 
 %!test
 %! # Output compared to following MATLAB commands
@@ -303,11 +303,11 @@ endfunction
 %!          2,2,2,2,3,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,NaN,3,2,2,2,2,2,1,2, ...
 %!          2,3,3,3,2,2,2,3,3,3,3,3,3,3,3,3,3,3,2,3,2,2,3,3,2,2,4,3,2,3]';
 %! [INTERCEPT, SLOPE, DEV, DL, D2L, P] = logistic_regression (miles, X, false);
-%! assert (DEV, 433.197174495549, 1e-05);
-%! assert (INTERCEPT(1), -16.6895155618903, 1e-05);
-%! assert (INTERCEPT(2), -11.7207818178493, 1e-05);
-%! assert (INTERCEPT(3), -8.0605768506075, 1e-05);
-%! assert (SLOPE(1), 0.104762463756714, 1e-05);
-%! assert (SLOPE(2), 0.0103357623191891, 1e-05);
-%! assert (SLOPE(3), 0.0645199313242276, 1e-05);
-%! assert (SLOPE(4), 0.00166377028388103, 1e-05);
+%! assert_equal (DEV, 433.197174495549, 1e-05);
+%! assert_equal (INTERCEPT(1), -16.6895155618903, 1e-05);
+%! assert_equal (INTERCEPT(2), -11.7207818178493, 1e-05);
+%! assert_equal (INTERCEPT(3), -8.0605768506075, 1e-05);
+%! assert_equal (SLOPE(1), 0.104762463756714, 1e-05);
+%! assert_equal (SLOPE(2), 0.0103357623191891, 1e-05);
+%! assert_equal (SLOPE(3), 0.0645199313242276, 1e-05);
+%! assert_equal (SLOPE(4), 0.00166377028388103, 1e-05);

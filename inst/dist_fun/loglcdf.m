@@ -124,17 +124,17 @@ endfunction
 %!shared out1, out2
 %! out1 = [0, 0.5, 0.66666667, 0.75, 0.8, 0.83333333];
 %! out2 = [0, 0.4174, 0.4745, 0.5082, 0.5321, 0.5506];
-%!assert (loglcdf ([0:5], 0, 1), out1, 1e-8)
-%!assert (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
-%!assert (loglcdf ([0:5], 0, 1), out1, 1e-8)
-%!assert (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
-%!assert (loglcdf ([0:5], 1, 3), out2, 1e-4)
-%!assert (loglcdf ([0:5], 1, 3, 'upper'), 1 - out2, 1e-4)
+%!assert_equal (loglcdf ([0:5], 0, 1), out1, 1e-8)
+%!assert_equal (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
+%!assert_equal (loglcdf ([0:5], 0, 1), out1, 1e-8)
+%!assert_equal (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
+%!assert_equal (loglcdf ([0:5], 1, 3), out2, 1e-4)
+%!assert_equal (loglcdf ([0:5], 1, 3, 'upper'), 1 - out2, 1e-4)
 
 ## Test class of input preserved
-%!assert (class (loglcdf (single (1), 2, 3)), "single")
-%!assert (class (loglcdf (1, single (2), 3)), "single")
-%!assert (class (loglcdf (1, 2, single (3))), "single")
+%!assert_equal (class (loglcdf (single (1), 2, 3)), "single")
+%!assert_equal (class (loglcdf (1, single (2), 3)), "single")
+%!assert_equal (class (loglcdf (1, 2, single (3))), "single")
 
 ## Test input validation
 %!error<loglcdf: function called with too few input arguments.> loglcdf (1)

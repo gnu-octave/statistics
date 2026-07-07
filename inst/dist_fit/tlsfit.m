@@ -219,13 +219,13 @@ endfunction
 %! [paramhat, paramci] = tlsfit (x);
 %! paramhat_out = [0.035893, 0.862711, 0.649261];
 %! paramci_out = [-0.949034, 0.154655, 0.181080; 1.02082, 4.812444, 2.327914];
-%! assert (paramhat, paramhat_out, 1e-6);
-%! assert (paramci, paramci_out, 1e-5);
+%! assert_equal (paramhat, paramhat_out, 1e-6);
+%! assert_equal (paramci, paramci_out, 1e-5);
 %!test
 %! x = [-1.2352, -0.2741, 0.1726, 7.4356, 1.0392, 16.4165];
 %! [paramhat, paramci] = tlsfit (x, 0.01);
 %! paramci_out = [-1.2585, 0.0901, 0.1212; 1.3303, 8.2591, 3.4771];
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 
 ## Test input validation
 %!error<tlsfit: X must be a vector.> tlsfit (ones (2,5));

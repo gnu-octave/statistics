@@ -121,13 +121,13 @@ endfunction
 %!shared x, y
 %! x = [-Inf, -log(2), 0, log(2), Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
-%!assert (laplacecdf ([x, NaN], 0, 1), [y, NaN])
-%!assert (laplacecdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
+%!assert_equal (laplacecdf ([x, NaN], 0, 1), [y, NaN])
+%!assert_equal (laplacecdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1])
 
 ## Test class of input preserved
-%!assert (laplacecdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
-%!assert (laplacecdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
-%!assert (laplacecdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (laplacecdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (laplacecdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (laplacecdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<laplacecdf: function called with too few input arguments.> laplacecdf ()

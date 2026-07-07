@@ -329,8 +329,8 @@ endfunction
 %! [transprobest, outprobest] = hmmestimate (sequence, states);
 %! expectedtransprob = [0.88889, 0.11111; 0.28571, 0.71429];
 %! expectedoutprob = [0.16667, 0.33333, 0.50000; 1.00000, 0.00000, 0.00000];
-%! assert (transprobest, expectedtransprob, 0.001);
-%! assert (outprobest, expectedoutprob, 0.001);
+%! assert_equal (transprobest, expectedtransprob, 0.001);
+%! assert_equal (outprobest, expectedoutprob, 0.001);
 
 %!test
 %! sequence = {'A', 'B', 'A', 'A', 'A', 'B', 'B', 'A', 'B', 'C', 'C', 'C', ...
@@ -344,8 +344,8 @@ endfunction
 %!                                           symbols, 'statenames', statenames);
 %! expectedtransprob = [0.88889, 0.11111; 0.28571, 0.71429];
 %! expectedoutprob = [0.16667, 0.33333, 0.50000; 1.00000, 0.00000, 0.00000];
-%! assert (transprobest, expectedtransprob, 0.001);
-%! assert (outprobest, expectedoutprob, 0.001);
+%! assert_equal (transprobest, expectedtransprob, 0.001);
+%! assert_equal (outprobest, expectedoutprob, 0.001);
 
 %!test
 %! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, ...
@@ -359,5 +359,5 @@ endfunction
 %! expectedtransprob = [0.85714, 0.14286; 0.35294, 0.64706];
 %! expectedoutprob = [0.178571, 0.357143, 0.464286; ...
 %!                    0.823529, 0.117647, 0.058824];
-%! assert (transprobest, expectedtransprob, 0.001);
-%! assert (outprobest, expectedoutprob, 0.001);
+%! assert_equal (transprobest, expectedtransprob, 0.001);
+%! assert_equal (outprobest, expectedoutprob, 0.001);

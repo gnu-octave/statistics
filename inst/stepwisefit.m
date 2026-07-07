@@ -505,16 +505,16 @@ endfunction
 %! y = [78.5; 74.3; 104.3; 87.6; 95.9; 109.2;
 %!      102.7; 72.5; 93.1; 115.9; 83.8; 113.3; 109.4];
 %! [b,se,pval,finalmodel,stats] = stepwisefit (X,y);
-%! assert (finalmodel, [true false false true]);
-%! assert (b, [1.4400; 0.4161; -0.4100; -0.6140], 1e-4);
-%! assert (se, [0.1384; 0.1856; 0.1992; 0.0486], 1e-4);
-%! assert (pval, [0; 0.0517; 0.0697; 0], 1e-4);
-%! assert (stats.rmse, 2.7343, 1e-4);
-%! assert (stats.SStotal, 2715.7631, 1e-3);
-%! assert (stats.SSresid, 74.7621, 1e-4);
-%! assert (stats.df0, 2);
-%! assert (stats.dfe, 10);
-%! assert (stats.intercept, 103.0974, 1e-4);
+%! assert_equal (finalmodel, [true false false true]);
+%! assert_equal (b, [1.4400; 0.4161; -0.4100; -0.6140], 1e-4);
+%! assert_equal (se, [0.1384; 0.1856; 0.1992; 0.0486], 1e-4);
+%! assert_equal (pval, [0; 0.0517; 0.0697; 0], 1e-4);
+%! assert_equal (stats.rmse, 2.7343, 1e-4);
+%! assert_equal (stats.SStotal, 2715.7631, 1e-3);
+%! assert_equal (stats.SSresid, 74.7621, 1e-4);
+%! assert_equal (stats.df0, 2);
+%! assert_equal (stats.dfe, 10);
+%! assert_equal (stats.intercept, 103.0974, 1e-4);
 %!test
 %! X = [
 %!   12.0 4 120 95 2600;
@@ -532,14 +532,14 @@ endfunction
 %!
 %! [b,se,pval,finalmodel,stats] = stepwisefit (X,y);
 %!
-%! assert (islogical (finalmodel));
-%! assert (numel (finalmodel) == 5);
-%! assert (sum (finalmodel) >= 1);
-%! assert (isnumeric (b));
-%! assert (isnumeric (se));
-%! assert (isnumeric (pval));
-%! assert (stats.rmse > 0);
-%! assert (isfinite (stats.intercept));
+%! assert_equal (islogical (finalmodel), true);
+%! assert_equal (numel (finalmodel) == 5, true);
+%! assert_equal (sum (finalmodel) >= 1, true);
+%! assert_equal (isnumeric (b), true);
+%! assert_equal (isnumeric (se), true);
+%! assert_equal (isnumeric (pval), true);
+%! assert_equal (stats.rmse > 0, true);
+%! assert_equal (isfinite (stats.intercept), true);
 %!test
 %! X = randn (30, 4);
 %! y = randn (30, 1);
@@ -552,7 +552,7 @@ endfunction
 %! };
 %!
 %! for k = 1:numel (required_fields)
-%!   assert (isfield (stats, required_fields{k}));
+%!   assert_equal (isfield (stats, required_fields{k}), true);
 %! endfor
 %!test
 %! X = randn (40, 5);
@@ -562,22 +562,22 @@ endfunction
 %! p = columns (X);
 %! n = rows (X(! stats.wasnan, :));
 %!
-%! assert (size (stats.yr), [n, 1]);
-%! assert (rows (stats.B) == p);
-%! assert (rows (stats.SE) == p);
-%! assert (rows (stats.TSTAT) == p);
-%! assert (rows (stats.PVAL) == p);
-%! assert (size (stats.covb), [p+1, p+1]);
+%! assert_equal (size (stats.yr), [n, 1]);
+%! assert_equal (rows (stats.B) == p, true);
+%! assert_equal (rows (stats.SE) == p, true);
+%! assert_equal (rows (stats.TSTAT) == p, true);
+%! assert_equal (rows (stats.PVAL) == p, true);
+%! assert_equal (size (stats.covb), [p+1, p+1]);
 %!test
 %! X = randn (25, 3);
 %! y = randn (25, 1);
 %! [~,~,~,~,stats] = stepwisefit (X, y);
 %!
 %! SSresid_calc = sum (stats.yr .^ 2);
-%! assert (SSresid_calc, stats.SSresid, 1e-10);
+%! assert_equal (SSresid_calc, stats.SSresid, 1e-10);
 %!
 %! rmse_calc = sqrt (stats.SSresid / stats.dfe);
-%! assert (rmse_calc, stats.rmse, 1e-10);
+%! assert_equal (rmse_calc, stats.rmse, 1e-10);
 %!test
 %! X = randn (50, 6);
 %! y = randn (50, 1);
@@ -587,11 +587,11 @@ endfunction
 %!   F_calc = ((stats.SStotal - stats.SSresid) / stats.df0) ...
 %!            / (stats.SSresid / stats.dfe);
 %!
-%!   assert (F_calc, stats.fstat, 1e-10);
-%!   assert (stats.pval >= 0 && stats.pval <= 1);
+%!   assert_equal (F_calc, stats.fstat, 1e-10);
+%!   assert_equal (stats.pval >= 0 && stats.pval <= 1, true);
 %! else
-%!   assert (isnan (stats.fstat));
-%!   assert (isnan (stats.pval));
+%!   assert_equal (isnan (stats.fstat), true);
+%!   assert_equal (isnan (stats.pval), true);
 %! endif
 %!test
 %! X = randn (35, 4);
@@ -599,8 +599,8 @@ endfunction
 %! [~,~,~,finalmodel,stats] = stepwisefit (X, y);
 %! p = columns (X);
 %! k = sum (finalmodel);
-%! assert (size (stats.xr, 2) == p - k);
-%! assert (all (isfinite (stats.xr(:))));
+%! assert_equal (size (stats.xr, 2) == p - k, true);
+%! assert_equal (all (isfinite (stats.xr(:))), true);
 %!test
 %! X = randn (35, 4);
 %! y = randn (35, 1);
@@ -611,23 +611,23 @@ endfunction
 %!
 %! for j = 1:columns (stats.xr)
 %!   ortho = Xfinal' * stats.xr(:,j);
-%!   assert (max (abs (ortho(:))) < 1e-6);
+%!   assert_equal (max (abs (ortho(:))) < 1e-6, true);
 %! endfor
 %!test
 %! X = randn (40, 5);
 %! y = randn (40, 1);
 %! [~,~,~,finalmodel,stats,nextstep,history] = stepwisefit (X, y);
 %!
-%! assert (nextstep == 0);
-%! assert (isstruct (history));
-%! assert (isfield (history, 'in'));
-%! assert (isfield (history, 'df0'));
-%! assert (isfield (history, 'rmse'));
-%! assert (isfield (history, 'B'));
-%! assert (isequal (history.in, finalmodel));
-%! assert (history.df0 == stats.df0);
-%! assert (history.rmse == stats.rmse);
-%! assert (rows (history.B) == columns (X));
+%! assert_equal (nextstep == 0, true);
+%! assert_equal (isstruct (history), true);
+%! assert_equal (isfield (history, 'in'), true);
+%! assert_equal (isfield (history, 'df0'), true);
+%! assert_equal (isfield (history, 'rmse'), true);
+%! assert_equal (isfield (history, 'B'), true);
+%! assert_equal (isequal (history.in, finalmodel), true);
+%! assert_equal (history.df0 == stats.df0, true);
+%! assert_equal (history.rmse == stats.rmse, true);
+%! assert_equal (rows (history.B) == columns (X), true);
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
@@ -637,18 +637,18 @@ endfunction
 %! y = randn (30, 1);
 %! keep = [true false false false];
 %! [~,~,~,finalmodel] = stepwisefit (X, y, 'Keep', keep);
-%! assert (finalmodel(1) == true);
+%! assert_equal (finalmodel(1) == true, true);
 %!test
 %! X = randn (40, 6);
 %! y = randn (40, 1);
 %! [~,~,~,finalmodel] = stepwisefit (X, y, 'MaxIter', 1);
-%! assert (islogical (finalmodel));
+%! assert_equal (islogical (finalmodel), true);
 %!test
 %! X = randn (50, 5);
 %! y = randn (50, 1);
 %! [b1] = stepwisefit (X, y);
 %! [b2] = stepwisefit (X, y, 'Scale', 'on');
-%! assert (rows (b1) == rows (b2));
+%! assert_equal (rows (b1) == rows (b2), true);
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);

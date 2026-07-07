@@ -82,16 +82,16 @@ endfunction
 
 %!test
 %! c = combnk (1:3, 2);
-%! assert (c, [1, 2; 1, 3; 2, 3]);
+%! assert_equal (c, [1, 2; 1, 3; 2, 3]);
 
 %!test
 %! c = combnk (1:3, 6);
-%! assert (isempty (c));
+%! assert_equal (isempty (c), true);
 
 %!test
 %! c = combnk ({1, 2, 3}, 2);
-%! assert (c, {1, 2; 1, 3; 2, 3});
+%! assert_equal (c, {1, 2; 1, 3; 2, 3});
 
 %!test
 %! c = combnk ('hello', 2);
-%! assert (c, ['lo'; 'lo'; 'll'; 'eo'; 'el'; 'el'; 'ho'; 'hl'; 'hl'; 'he']);
+%! assert_equal (c, ['lo'; 'lo'; 'll'; 'eo'; 'el'; 'el'; 'ho'; 'hl'; 'hl'; 'he']);

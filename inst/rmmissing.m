@@ -163,52 +163,52 @@ function [R, TF] = rmmissing (A, varargin)
 
 endfunction
 
-%!assert (rmmissing ([1, NaN, 3]), [1, 3])
-%!assert (rmmissing ('abcd f'), 'abcd f')
-%!assert (rmmissing ({'xxx', '', 'xyz'}), {'xxx', 'xyz'})
-%!assert (rmmissing ({'xxx', ''; 'xyz', 'yyy'}), {'xyz', 'yyy'})
-%!assert (rmmissing ({'xxx', ''; 'xyz', 'yyy'}, 2), {'xxx'; 'xyz'})
-%!assert (rmmissing ([1, 2; NaN, 2]), [1, 2])
-%!assert (rmmissing ([1, 2; NaN, 2], 2), [2, 2]')
-%!assert (rmmissing ([1, 2; NaN, 4; NaN, NaN],'MinNumMissing', 2), [1, 2; NaN, 4])
+%!assert_equal (rmmissing ([1, NaN, 3]), [1, 3])
+%!assert_equal (rmmissing ('abcd f'), 'abcd f')
+%!assert_equal (rmmissing ({'xxx', '', 'xyz'}), {'xxx', 'xyz'})
+%!assert_equal (rmmissing ({'xxx', ''; 'xyz', 'yyy'}), {'xyz', 'yyy'})
+%!assert_equal (rmmissing ({'xxx', ''; 'xyz', 'yyy'}, 2), {'xxx'; 'xyz'})
+%!assert_equal (rmmissing ([1, 2; NaN, 2]), [1, 2])
+%!assert_equal (rmmissing ([1, 2; NaN, 2], 2), [2, 2]')
+%!assert_equal (rmmissing ([1, 2; NaN, 4; NaN, NaN],'MinNumMissing', 2), [1, 2; NaN, 4])
 
 ## Test second output
 %!test
 %! x = [1:6];
 %! x([2,4]) = NaN;
 %! [~, idx] = rmmissing (x);
-%! assert (idx, logical ([0, 1, 0, 1, 0, 0]));
-%! assert (class (idx), 'logical');
+%! assert_equal (idx, logical ([0, 1, 0, 1, 0, 0]));
+%! assert_equal (class (idx), 'logical');
 %! x = reshape (x, [2, 3]);
 %! [~, idx] = rmmissing (x);
-%! assert (idx, logical ([0; 1]));
-%! assert (class (idx), 'logical');
+%! assert_equal (idx, logical ([0; 1]));
+%! assert_equal (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 2);
-%! assert (idx, logical ([1, 1, 0]));
-%! assert (class (idx), 'logical');
+%! assert_equal (idx, logical ([1, 1, 0]));
+%! assert_equal (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 1, 'MinNumMissing', 2);
-%! assert (idx, logical ([0; 1]));
-%! assert (class (idx), 'logical');
+%! assert_equal (idx, logical ([0; 1]));
+%! assert_equal (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 2, 'MinNumMissing', 2);
-%! assert (idx, logical ([0, 0, 0]));
-%! assert (class (idx), 'logical');
+%! assert_equal (idx, logical ([0, 0, 0]));
+%! assert_equal (class (idx), 'logical');
 
 ## Test data type handling
-%!assert (rmmissing (single ([1, 2, NaN; 3, 4, 5])), single ([3, 4, 5]))
-%!assert (rmmissing (logical (ones (3))), logical (ones (3)))
-%!assert (rmmissing (int32 (ones (3))), int32 (ones (3)))
-%!assert (rmmissing (uint32 (ones (3))), uint32 (ones (3)))
-%!assert (rmmissing ({1, 2, 3}), {1, 2, 3})
-%!assert (rmmissing ([struct, struct, struct]), [struct, struct, struct])
+%!assert_equal (rmmissing (single ([1, 2, NaN; 3, 4, 5])), single ([3, 4, 5]))
+%!assert_equal (rmmissing (logical (ones (3))), logical (ones (3)))
+%!assert_equal (rmmissing (int32 (ones (3))), int32 (ones (3)))
+%!assert_equal (rmmissing (uint32 (ones (3))), uint32 (ones (3)))
+%!assert_equal (rmmissing ({1, 2, 3}), {1, 2, 3})
+%!assert_equal (rmmissing ([struct, struct, struct]), [struct, struct, struct])
 
 ## Test empty input handling
-%!assert (rmmissing ([]), [])
-%!assert (rmmissing (ones (1, 0)), ones (1, 0))
-%!assert (rmmissing (ones (1, 0), 1), ones (1, 0))
-%!assert (rmmissing (ones (1, 0), 2), ones (1, 0))
-%!assert (rmmissing (ones (0, 1)), ones (0, 1))
-%!assert (rmmissing (ones (0, 1), 1), ones (0, 1))
-%!assert (rmmissing (ones (0, 1), 2), ones (0, 1))
+%!assert_equal (rmmissing ([]), [])
+%!assert_equal (rmmissing (ones (1, 0)), ones (1, 0))
+%!assert_equal (rmmissing (ones (1, 0), 1), ones (1, 0))
+%!assert_equal (rmmissing (ones (1, 0), 2), ones (1, 0))
+%!assert_equal (rmmissing (ones (0, 1)), ones (0, 1))
+%!assert_equal (rmmissing (ones (0, 1), 1), ones (0, 1))
+%!assert_equal (rmmissing (ones (0, 1), 2), ones (0, 1))
 %!error <rmmissing: A must be a matrix; no more than 2 dimensions allowed.> ...
 %!       rmmissing (ones (0, 1, 2))
 

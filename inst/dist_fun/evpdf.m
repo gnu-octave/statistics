@@ -103,9 +103,9 @@ endfunction
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [0.0067, 0.3679, 0.1794, 0.0046, 0];
 %! y1 = [0.0025, 0.2546, 0.3679, 0.1794, 0.0046];
-%!assert (evpdf (x), y0, 1e-4)
-%!assert (evpdf (x, zeros (1,5), ones (1,5)), y0, 1e-4)
-%!assert (evpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
+%!assert_equal (evpdf (x), y0, 1e-4)
+%!assert_equal (evpdf (x, zeros (1,5), ones (1,5)), y0, 1e-4)
+%!assert_equal (evpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
 
 ## Test input validation
 %!error<evpdf: function called with too few input arguments.> evpdf ()

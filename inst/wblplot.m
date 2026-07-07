@@ -364,10 +364,10 @@ endfunction
 %! unwind_protect
 %!   x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
 %!   [h, p] = wblplot (x, [], [], 0.05);
-%!   assert (numel (h), 4)
-%!   assert (p(1), 146.2545, 1E-4)
-%!   assert (p(2), 1.1973, 1E-4)
-%!   assert (p(3), 0.9999, 5E-5)
+%!   assert_equal (numel (h), 4)
+%!   assert_equal (p(1), 146.2545, 1E-4)
+%!   assert_equal (p(2), 1.1973, 1E-4)
+%!   assert_equal (p(3), 0.9999, 5E-5)
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

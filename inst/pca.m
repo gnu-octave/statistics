@@ -490,11 +490,11 @@ endfunction
 %! [V, lambda] = eig (R);
 %! [~, i] = sort (diag (lambda), 'descend'); #arrange largest PC first
 %! S = V(:, i) * diag (sqrt (diag (lambda)(i)));
-%!assert (diag (S(:, 1:2) * S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
+%!assert_equal (diag (S(:, 1:2) * S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
 %! B = V(:, i) * diag ( 1./ sqrt (diag (lambda)(i)));
 %! F = zscore (x) * B;
 %! [COEFF, SCORE, latent, tsquare] = pca (zscore (x, 1));
-%!assert (tsquare, sumsq (F, 2), 1E4*eps);
+%!assert_equal (tsquare, sumsq (F, 2), 1E4*eps);
 
 %!test
 %! x = [1, 2, 3; 2, 1, 3]';
@@ -503,22 +503,22 @@ endfunction
 %! m(:,1) = m(:,1) * sign (COEFF(1,1));
 %! m(:,2) = m(:,2) * sign (COEFF(1,2));
 
-%!assert (COEFF, m(1:2,:), 10*eps);
-%!assert (SCORE, -m, 10*eps);
-%!assert (latent, [1.5;.5], 10*eps);
-%!assert (tsquare, [4;4;4]/3, 10*eps);
+%!assert_equal (COEFF, m(1:2,:), 10*eps);
+%!assert_equal (SCORE, -m, 10*eps);
+%!assert_equal (latent, [1.5;.5], 10*eps);
+%!assert_equal (tsquare, [4;4;4]/3, 10*eps);
 
 ## Test with observation weights (using Matlab's results as a reference)
 %! [COEFF, SCORE, latent, tsquare] = pca (x, 'Economy', false, 'weights', ...
 %!                                        [1 2 1], 'variableweights', ...
 %!                                        'variance');
-%!assert (COEFF, [0.632455532033676, -0.632455532033676; ...
+%!assert_equal (COEFF, [0.632455532033676, -0.632455532033676; ...
 %!                0.741619848709566, 0.741619848709566], 10 * eps);
-%!assert (SCORE, [-0.622019449426284, 0.959119380657905; ...
+%!assert_equal (SCORE, [-0.622019449426284, 0.959119380657905; ...
 %!                -0.505649896847432, -0.505649896847431;
 %!                1.633319243121148, 0.052180413036957], 10 * eps);
-%!assert (latent, [1.783001790889027; 0.716998209110974], 10 * eps);
-%!test assert (tsquare, [1.5; 0.5; 1.5], 10 * eps);
+%!assert_equal (latent, [1.783001790889027; 0.716998209110974], 10 * eps);
+%!test assert_equal (tsquare, [1.5; 0.5; 1.5], 10 * eps);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -529,10 +529,10 @@ endfunction
 %! SCORE_exp = [-0.7836, -0.4813; -0.9071, 0.9071; 1.2372, 0.0277];
 %! latent_exp = [2.5562; 0.6438];
 %! tsquare_exp = [0.6000; 1.6000; 0.6000];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -543,10 +543,10 @@ endfunction
 %! SCORE_exp = [-0.8358, 1.0411; -0.6473, -0.3792; 1.3889, 0.0482];
 %! latent_exp = [2.9067; 0.7599];
 %! tsquare_exp = [1.6667; 0.3333; 0.6667];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -557,10 +557,10 @@ endfunction
 %! SCORE_exp = [-0.9657, -0.4713; -1.0915, 0.8862; 1.0076, 0.0188];
 %! latent_exp = [1.5257; 0.3077];
 %! tsquare_exp = [1.3333; 3.3333; 0.6667];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -571,10 +571,10 @@ endfunction
 %! SCORE_exp = [-0.7836, -0.4813; -0.9071, 0.9071; 1.2372, 0.0277];
 %! latent_exp = [2.5562; 0.6438];
 %! tsquare_exp = [0.6000; 1.6000; 0.6000];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -585,10 +585,10 @@ endfunction
 %! SCORE_exp = [-0.8358, 1.0411; -0.6473, -0.3792; 1.3889, 0.0482];
 %! latent_exp = [2.9067; 0.7599];
 %! tsquare_exp = [1.6667; 0.3333; 0.6667];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = [1,2,3;2,1,3]';
@@ -599,10 +599,10 @@ endfunction
 %! SCORE_exp = [-0.9657, -0.4713; -1.0915, 0.8862; 1.0076, 0.0188];
 %! latent_exp = [1.5257; 0.3077];
 %! tsquare_exp = [1.3333; 3.3333; 0.6667];
-%! assert (COEFF, COEFF_exp, 1e-4);
-%! assert (SCORE, SCORE_exp, 1e-4);
-%! assert (latent, latent_exp, 1e-4);
-%! assert (tsquare, tsquare_exp, 1e-4);
+%! assert_equal (COEFF, COEFF_exp, 1e-4);
+%! assert_equal (SCORE, SCORE_exp, 1e-4);
+%! assert_equal (latent, latent_exp, 1e-4);
+%! assert_equal (tsquare, tsquare_exp, 1e-4);
 
 %!test
 %! x = x';
@@ -612,19 +612,19 @@ endfunction
 %! m(:,2) = m(:,2) * sign (COEFF(1,2));
 %! m(:,3) = m(:,3) * sign (COEFF(3,3));
 
-%!assert (COEFF, m, 10*eps);
-%!assert (SCORE(:,1), -m(1:2,1), 10*eps);
-%!assert (SCORE(:,2:3), zeros (2), 10*eps);
-%!assert (latent, [1;0;0], 10*eps);
-%!assert (tsquare, [0.5;0.5], 10*eps)
+%!assert_equal (COEFF, m, 10*eps);
+%!assert_equal (SCORE(:,1), -m(1:2,1), 10*eps);
+%!assert_equal (SCORE(:,2:3), zeros (2), 10*eps);
+%!assert_equal (latent, [1;0;0], 10*eps);
+%!assert_equal (tsquare, [0.5;0.5], 10*eps)
 
 %!test
 %! [COEFF, SCORE, latent, tsquare] = pca (x);
 
-%!assert (COEFF, m(:, 1), 10*eps);
-%!assert (SCORE, -m(1:2,1), 10*eps);
-%!assert (latent, [1], 10*eps);
-%!assert (tsquare, [0.5;0.5], 10*eps)
+%!assert_equal (COEFF, m(:, 1), 10*eps);
+%!assert_equal (SCORE, -m(1:2,1), 10*eps);
+%!assert_equal (latent, [1], 10*eps);
+%!assert_equal (tsquare, [0.5;0.5], 10*eps)
 
 %!error <invalid algorithm> pca ([1 2; 3 4], 'Algorithm', 'xxx')
 %!error <'centered' requires a boolean value> pca ([1 2; 3 4], 'Centered', 'xxx')

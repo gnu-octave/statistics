@@ -105,13 +105,13 @@ endfunction
 %!shared x, y
 %! x = [-Inf, -1, 0, 1/2, 1, Inf];
 %! y = [0, 0, 0, 0.8788, 0.3989, 0];
-%!assert (invgpdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
-%!assert (invgpdf (x, 1, [-2, -1, 0, 1, 1, 1]), [nan(1,3), y([4:6])], 1e-4)
+%!assert_equal (invgpdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
+%!assert_equal (invgpdf (x, 1, [-2, -1, 0, 1, 1, 1]), [nan(1,3), y([4:6])], 1e-4)
 
 ## Test class of input preserved
-%!assert (class (hncdf (single ([x, NaN]), 1, 1)), "single")
-%!assert (class (hncdf ([x, NaN], 1, single (1))), "single")
-%!assert (class (hncdf ([x, NaN], single (1), 1)), "single")
+%!assert_equal (class (hncdf (single ([x, NaN]), 1, 1)), "single")
+%!assert_equal (class (hncdf ([x, NaN], 1, single (1))), "single")
+%!assert_equal (class (hncdf ([x, NaN], single (1), 1)), "single")
 
 ## Test input validation
 %!error<invgpdf: function called with too few input arguments.> invgpdf ()

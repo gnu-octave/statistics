@@ -1633,16 +1633,16 @@ endclassdef
 %! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
-%! assert (class (Mdl), "ClassificationDiscriminant");
-%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
-%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
-%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0, 0}, 1e-15)
-%! assert (Mdl.ClassNames, unique (species))
-%! assert (Mdl.Sigma, sigma, 1e-6)
-%! assert (Mdl.Mu, mu, 1e-14)
-%! assert (Mdl.XCentered([1:3],:), xCentered, 1e-14)
-%! assert (Mdl.LogDetSigma, -9.9585, 1e-4)
-%! assert (Mdl.PredictorNames, PredictorNames)
+%! assert_equal (class (Mdl), "ClassificationDiscriminant");
+%! assert_equal ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
+%! assert_equal ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
+%! assert_equal ({Mdl.Gamma, Mdl.MinGamma}, {0, 0}, 1e-15)
+%! assert_equal (Mdl.ClassNames, unique (species))
+%! assert_equal (Mdl.Sigma, sigma, 1e-6)
+%! assert_equal (Mdl.Mu, mu, 1e-14)
+%! assert_equal (Mdl.XCentered([1:3],:), xCentered, 1e-14)
+%! assert_equal (Mdl.LogDetSigma, -9.9585, 1e-4)
+%! assert_equal (Mdl.PredictorNames, PredictorNames)
 %!test
 %! load fisheriris
 %! x = meas;
@@ -1658,15 +1658,15 @@ endclassdef
 %! xCentered = [ 9.4000e-02,  7.2000e-02, -6.2000e-02, -4.6000e-02; ...
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
-%! assert (class (Mdl), "ClassificationDiscriminant");
-%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
-%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
-%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
-%! assert (Mdl.ClassNames, unique (species))
-%! assert (Mdl.Sigma, sigma, 1e-6)
-%! assert (Mdl.Mu, mu, 1e-14)
-%! assert (Mdl.XCentered([1:3],:), xCentered, 1e-14)
-%! assert (Mdl.LogDetSigma, -8.6884, 1e-4)
+%! assert_equal (class (Mdl), "ClassificationDiscriminant");
+%! assert_equal ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {x, y, 150})
+%! assert_equal ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
+%! assert_equal ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
+%! assert_equal (Mdl.ClassNames, unique (species))
+%! assert_equal (Mdl.Sigma, sigma, 1e-6)
+%! assert_equal (Mdl.Mu, mu, 1e-14)
+%! assert_equal (Mdl.XCentered([1:3],:), xCentered, 1e-14)
+%! assert_equal (Mdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation for constructor
 %!shared X, Y, MODEL
@@ -1730,13 +1730,13 @@ endclassdef
 %! y = species;
 %! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
 %! [label, score, cost] = predict (Mdl, [2, 2, 2, 2]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.9999, 0.0001], 1e-4)
-%! assert (cost, [1, 0.0001, 0.9999], 1e-4)
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.9999, 0.0001], 1e-4)
+%! assert_equal (cost, [1, 0.0001, 0.9999], 1e-4)
 %! [label, score, cost] = predict (Mdl, [2.5, 2.5, 2.5, 2.5]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.6368, 0.3632], 1e-4)
-%! assert (cost, [1, 0.3632, 0.6368], 1e-4)
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.6368, 0.3632], 1e-4)
+%! assert_equal (cost, [1, 0.3632, 0.6368], 1e-4)
 %!test
 %! load fisheriris
 %! x = meas;
@@ -1747,9 +1747,9 @@ endclassdef
 %! l = {'setosa'; 'versicolor'; 'virginica'};
 %! s = [1, 0, 0; 0, 1, 0; 0, 0, 1];
 %! c = [0, 1, 1; 1, 0, 1; 1, 1, 0];
-%! assert (label, l)
-%! assert (score, s, 1e-4)
-%! assert (cost, c, 1e-4)
+%! assert_equal (label, l)
+%! assert_equal (score, s, 1e-4)
+%! assert_equal (cost, c, 1e-4)
 
 ## Test input validation for predict method
 %!error<ClassificationDiscriminant.predict: too few input arguments.> ...
@@ -1766,7 +1766,7 @@ endclassdef
 %! x = mean (meas);
 %! y = {'versicolor'};
 %! L = loss (model, x, y);
-%! assert (L, 0)
+%! assert_equal (L, 0)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1774,7 +1774,7 @@ endclassdef
 %! x_test = [1, 6; 3, 3];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_test, y_test);
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1782,7 +1782,7 @@ endclassdef
 %! x_test = [3, 3];
 %! y_test = ['1'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'quadratic');
-%! assert (L, 0.2423, 1e-4)
+%! assert_equal (L, 0.2423, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1790,7 +1790,7 @@ endclassdef
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'classifcost');
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1798,7 +1798,7 @@ endclassdef
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'hinge');
-%! assert (L, 0.5886, 1e-4)
+%! assert_equal (L, 0.5886, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
@@ -1807,7 +1807,7 @@ endclassdef
 %! y_test = ['1'; '2'];
 %! W = [1; 2];
 %! L = loss (model, x_test, y_test, 'LossFun', 'logit', 'Weights', W);
-%! assert (L, 0.5107, 1e-4)
+%! assert_equal (L, 0.5107, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1815,7 +1815,7 @@ endclassdef
 %! x_with_nan = [1, 2; NaN, 4];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_with_nan, y_test);
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
@@ -1823,20 +1823,20 @@ endclassdef
 %! x_with_nan = [1, 2; NaN, 4];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_with_nan, y_test, 'LossFun', 'logit');
-%! assert (isnan (L))
+%! assert_equal (isnan (L), true)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
 %! model = fitcdiscr (x, y);
 %! customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
 %! L = loss (model, x, y, 'LossFun', customLossFun);
-%! assert (L, 0.8889, 1e-4)
+%! assert_equal (L, 0.8889, 1e-4)
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = [1; 2; 1];
 %! model = fitcdiscr (x, y);
 %! L = loss (model, x, y, 'LossFun', 'classiferror');
-%! assert (L, 0.3333, 1e-4)
+%! assert_equal (L, 0.3333, 1e-4)
 
 ## Test input validation for loss method
 %!error<ClassificationDiscriminant.loss: too few input arguments.> ...
@@ -1862,13 +1862,13 @@ endclassdef
 %! X = mean (meas);
 %! Y = {'versicolor'};
 %! m = margin (mdl, X, Y);
-%! assert (m, 1, 1e-6)
+%! assert_equal (m, 1, 1e-6)
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 1];
 %! mdl = fitcdiscr (X, Y, 'gamma', 0.5);
 %! m = margin (mdl, X, Y);
-%! assert (m, [0.3333; -0.3333; 0.3333], 1e-4)
+%! assert_equal (m, [0.3333; -0.3333; 0.3333], 1e-4)
 
 ## Test input validation for margin method
 %!error<ClassificationDiscriminant.margin: too few input arguments.> ...
@@ -1894,42 +1894,42 @@ endclassdef
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 10)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 10, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'KFold', 3);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (CVMdl.KFold == 3, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! status = warning;
 %! warning ('off');
 %! rand ('seed', 23);
 %! CVMdl = crossval (obj, 'LeaveOut', 'on');
 %! warning (status);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert ({CVMdl.X, CVMdl.Y}, {x, y})
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal ({CVMdl.X, CVMdl.Y}, {x, y})
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 %!test
 %! status = warning;
 %! warning ('off');
@@ -1937,10 +1937,10 @@ endclassdef
 %! partition = cvpartition (y, 'KFold', 3);
 %! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
-%! assert (class (CVMdl), "ClassificationPartitionedModel")
-%! assert (CVMdl.KFold == 3)
-%! assert (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
-%! assert (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
+%! assert_equal (class (CVMdl), "ClassificationPartitionedModel")
+%! assert_equal (CVMdl.KFold == 3, true)
+%! assert_equal (class (CVMdl.Trained{1}), "CompactClassificationDiscriminant")
+%! assert_equal (CVMdl.CrossValidatedModel, "ClassificationDiscriminant")
 
 ## Test input validation for crossval method
 %!error<ClassificationDiscriminant.crossval: Name-Value arguments must be in pairs.> ...

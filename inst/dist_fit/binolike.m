@@ -115,14 +115,14 @@ function [nlogL, acov] = binolike (params, x, freq)
 endfunction
 
 ## Test output
-%!assert (binolike ([3, 0.333], [0:3]), 6.8302, 1e-4)
-%!assert (binolike ([3, 0.333], 0), 1.2149, 1e-4)
-%!assert (binolike ([3, 0.333], 1), 0.8109, 1e-4)
-%!assert (binolike ([3, 0.333], 2), 1.5056, 1e-4)
-%!assert (binolike ([3, 0.333], 3), 3.2988, 1e-4)
+%!assert_equal (binolike ([3, 0.333], [0:3]), 6.8302, 1e-4)
+%!assert_equal (binolike ([3, 0.333], 0), 1.2149, 1e-4)
+%!assert_equal (binolike ([3, 0.333], 1), 0.8109, 1e-4)
+%!assert_equal (binolike ([3, 0.333], 2), 1.5056, 1e-4)
+%!assert_equal (binolike ([3, 0.333], 3), 3.2988, 1e-4)
 %!test
 %! [nlogL, acov] = binolike ([3, 0.333], 3);
-%! assert (acov(4), 0.0740, 1e-4)
+%! assert_equal (acov(4), 0.0740, 1e-4)
 
 ## Test input validation
 %!error<binolike: function called with too few input arguments.> binolike (3.25)

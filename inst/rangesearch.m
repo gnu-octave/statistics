@@ -443,95 +443,95 @@ endfunction
 %! Y = [1, 2, 2, 3; 2, 3, 3, 4];
 %!test
 %! [idx, D] = rangesearch (x, y, 4);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'exhaustive');
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree');
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'SortIndices', true);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'SortIndices', false);
-%! assert (idx, {[1, 2, 4]; [1, 4]});
-%! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 2, 4]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'exhaustive', ...
 %!                         'SortIndices', false);
-%! assert (idx, {[1, 2, 4]; [1, 4]});
-%! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 2, 4]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist, ...
 %!                         'NSMethod', 'exhaustive');
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 1.5, 'Distance', 'seuclidean', ...
 %!                         'NSMethod', 'exhaustive');
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[0.6024, 1.0079, 1.2047]; [0.6963, 1.2047]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[0.6024, 1.0079, 1.2047]; [0.6963, 1.2047]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 1.5, 'Distance', 'seuclidean', ...
 %!                         'NSMethod', 'exhaustive', 'SortIndices', false);
-%! assert (idx, {[1, 2, 4]; [1, 4]});
-%! assert (D, {[0.6024, 1.2047, 1.0079]; [0.6963, 1.2047]}, 1e-4);
+%! assert_equal (idx, {[1, 2, 4]; [1, 4]});
+%! assert_equal (D, {[0.6024, 1.2047, 1.0079]; [0.6963, 1.2047]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4);
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert_equal (idx, {[1, 2]; [1, 2, 3]});
+%! assert_equal (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 2);
-%! assert (idx, {[1]; [1, 2]});
-%! assert (D, {[1.4142]; [1.4142, 1.4142]}, 1e-4);
+%! assert_equal (idx, {[1]; [1, 2]});
+%! assert_equal (D, {[1.4142]; [1.4142, 1.4142]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (X, Y, 4, 'Distance', eucldist);
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert_equal (idx, {[1, 2]; [1, 2, 3]});
+%! assert_equal (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4, 'SortIndices', false);
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert_equal (idx, {[1, 2]; [1, 2, 3]});
+%! assert_equal (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (X, Y, 4, 'Distance', 'seuclidean', ...
 %!                         'NSMethod', 'exhaustive');
-%! assert (idx, {[1, 2]; [1, 2, 3]});
-%! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
+%! assert_equal (idx, {[1, 2]; [1, 2, 3]});
+%! assert_equal (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! X = ones (10, 2);
 %! [idx, D] = rangesearch (X, X, 0.1, 'NSMethod', 'kdtree');
-%! assert (numel (idx), 10);
+%! assert_equal (numel (idx), 10);
 %!test
 %! X = ones (3, 2);
 %! [idx, D] = rangesearch (X, X, 0.1, 'NSMethod', 'kdtree', 'BucketSize', 1);
-%! assert (numel (idx), 3);
-%! assert (cellfun (@numel, idx) == 3, [true; true; true]);
-%! assert (idx{1}, [1, 2, 3]);
-%! assert (idx{2}, [1, 2, 3]);
-%! assert (idx{3}, [1, 2, 3]);
-%! assert (D{1}, [0, 0, 0]);
-%! assert (D{2}, [0, 0, 0]);
-%! assert (D{3}, [0, 0, 0]);
+%! assert_equal (numel (idx), 3);
+%! assert_equal (cellfun (@numel, idx) == 3, [true; true; true]);
+%! assert_equal (idx{1}, [1, 2, 3]);
+%! assert_equal (idx{2}, [1, 2, 3]);
+%! assert_equal (idx{3}, [1, 2, 3]);
+%! assert_equal (D{1}, [0, 0, 0]);
+%! assert_equal (D{2}, [0, 0, 0]);
+%! assert_equal (D{3}, [0, 0, 0]);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree', 'SortIndices', true);
-%! assert (idx, {[1, 4, 2]; [1, 4]});
-%! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 4, 2]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree', 'SortIndices', false);
-%! assert (idx, {[1, 2, 4]; [1, 4]});
-%! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
+%! assert_equal (idx, {[1, 2, 4]; [1, 4]});
+%! assert_equal (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 
 ## Test input validation
 %!error<rangesearch: too few input arguments.> rangesearch (1)

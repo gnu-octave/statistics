@@ -112,5 +112,5 @@ endfunction
 %! [m, v] = gevstat (k, sigma, mu);
 %! expected_m = [1, 1.4551, 2.1544, 2.6423, 3.4460, 4.0898, Inf];
 %! expected_v = [4, 3.4336, 6.5797, 13.3761, 59.3288, Inf, Inf];
-%! assert (m, expected_m, -0.001);
-%! assert (v, expected_v, -0.001);
+%! assert_equal (m, expected_m, -0.001);
+%! assert_equal (v, expected_v, -0.001);

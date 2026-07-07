@@ -238,30 +238,30 @@ endfunction
 %!test
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76));
-%! assert (h, 0);
-%! assert (pval, 0.6288022362718455, 1e-13);
-%! assert (ci, [0.4139; 1.7193], 1e-4);
-%! assert (stat.fstat, 0.8384, 1e-4);
-%! assert (stat.df1, 30);
-%! assert (stat.df2, 33);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.6288022362718455, 1e-13);
+%! assert_equal (ci, [0.4139; 1.7193], 1e-4);
+%! assert_equal (stat.fstat, 0.8384, 1e-4);
+%! assert_equal (stat.df1, 30);
+%! assert_equal (stat.df2, 33);
 %!test
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
 %!                                 'tail', 'left');
-%! assert (h, 0);
-%! assert (pval, 0.314401118135922, 1e-13);
-%! assert (ci, [0; 1.5287], 1e-4);
-%! assert (stat.fstat, 0.8384, 1e-4);
-%! assert (stat.df1, 30);
-%! assert (stat.df2, 33);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.314401118135922, 1e-13);
+%! assert_equal (ci, [0; 1.5287], 1e-4);
+%! assert_equal (stat.fstat, 0.8384, 1e-4);
+%! assert_equal (stat.df1, 30);
+%! assert_equal (stat.df2, 33);
 %!test
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
 %!                                 'tail', 'right');
-%! assert (h, 0);
-%! assert (pval, 0.685598881864077, 1e-13);
-%! assert (ci, [0.4643; Inf], 1e-4);
-%! assert (stat.fstat, 0.8384, 1e-4);
-%! assert (stat.df1, 30);
-%! assert (stat.df2, 33);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.685598881864077, 1e-13);
+%! assert_equal (ci, [0.4643; Inf], 1e-4);
+%! assert_equal (stat.fstat, 0.8384, 1e-4);
+%! assert_equal (stat.df1, 30);
+%! assert_equal (stat.df2, 33);
 

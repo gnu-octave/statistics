@@ -145,28 +145,28 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
 %! [label, score, cost] = predict (Mdl, [2, 2, 2, 2]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.9999, 0.0001], 1e-4)
-%! assert (cost, [1, 0.0001, 0.9999], 1e-4)
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.9999, 0.0001], 1e-4)
+%! assert_equal (cost, [1, 0.0001, 0.9999], 1e-4)
 %! [label, score, cost] = predict (Mdl, [2.5, 2.5, 2.5, 2.5]);
-%! assert (label, {'versicolor'})
-%! assert (score, [0, 0.6368, 0.3632], 1e-4)
-%! assert (cost, [1, 0.3632, 0.6368], 1e-4)
-%! assert (class (Mdl), "ClassificationDiscriminant");
-%! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {meas, species, 150})
-%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
-%! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
-%! assert (Mdl.ClassNames, unique (species))
+%! assert_equal (label, {'versicolor'})
+%! assert_equal (score, [0, 0.6368, 0.3632], 1e-4)
+%! assert_equal (cost, [1, 0.3632, 0.6368], 1e-4)
+%! assert_equal (class (Mdl), "ClassificationDiscriminant");
+%! assert_equal ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {meas, species, 150})
+%! assert_equal ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
+%! assert_equal ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
+%! assert_equal (Mdl.ClassNames, unique (species))
 %! sigma = [0.265008, 0.046361, 0.083757, 0.019201; ...
 %!          0.046361, 0.115388, 0.027622, 0.016355; ...
 %!          0.083757, 0.027622, 0.185188, 0.021333; ...
 %!          0.019201, 0.016355, 0.021333, 0.041882];
-%! assert (Mdl.Sigma, sigma, 1e-6)
+%! assert_equal (Mdl.Sigma, sigma, 1e-6)
 %! mu = [5.0060, 3.4280, 1.4620, 0.2460; ...
 %!       5.9360, 2.7700, 4.2600, 1.3260; ...
 %!       6.5880, 2.9740, 5.5520, 2.0260];
-%! assert (Mdl.Mu, mu, 1e-14)
-%! assert (Mdl.LogDetSigma, -8.6884, 1e-4)
+%! assert_equal (Mdl.Mu, mu, 1e-14)
+%! assert_equal (Mdl.LogDetSigma, -8.6884, 1e-4)
 
 ## Test input validation
 %!error<fitcdiscr: too few arguments.> fitcdiscr ()

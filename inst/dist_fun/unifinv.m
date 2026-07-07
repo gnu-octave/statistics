@@ -85,19 +85,19 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (unifinv (p, ones (1,5), 2*ones (1,5)), [NaN 1 1.5 2 NaN])
-%!assert (unifinv (p, 0, 1), [NaN 1 1.5 2 NaN] - 1)
-%!assert (unifinv (p, 1, 2*ones (1,5)), [NaN 1 1.5 2 NaN])
-%!assert (unifinv (p, ones (1,5), 2), [NaN 1 1.5 2 NaN])
-%!assert (unifinv (p, [1 2 NaN 1 1], 2), [NaN NaN NaN 2 NaN])
-%!assert (unifinv (p, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 2 NaN])
-%!assert (unifinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 1 NaN 2 NaN])
+%!assert_equal (unifinv (p, ones (1,5), 2*ones (1,5)), [NaN 1 1.5 2 NaN])
+%!assert_equal (unifinv (p, 0, 1), [NaN 1 1.5 2 NaN] - 1)
+%!assert_equal (unifinv (p, 1, 2*ones (1,5)), [NaN 1 1.5 2 NaN])
+%!assert_equal (unifinv (p, ones (1,5), 2), [NaN 1 1.5 2 NaN])
+%!assert_equal (unifinv (p, [1 2 NaN 1 1], 2), [NaN NaN NaN 2 NaN])
+%!assert_equal (unifinv (p, 1, 2*[1 0 NaN 1 1]), [NaN NaN NaN 2 NaN])
+%!assert_equal (unifinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN 1 NaN 2 NaN])
 
 ## Test class of input preserved
-%!assert (unifinv ([p, NaN], 1, 2), [NaN 1 1.5 2 NaN NaN])
-%!assert (unifinv (single ([p, NaN]), 1, 2), single ([NaN 1 1.5 2 NaN NaN]))
-%!assert (unifinv ([p, NaN], single (1), 2), single ([NaN 1 1.5 2 NaN NaN]))
-%!assert (unifinv ([p, NaN], 1, single (2)), single ([NaN 1 1.5 2 NaN NaN]))
+%!assert_equal (unifinv ([p, NaN], 1, 2), [NaN 1 1.5 2 NaN NaN])
+%!assert_equal (unifinv (single ([p, NaN]), 1, 2), single ([NaN 1 1.5 2 NaN NaN]))
+%!assert_equal (unifinv ([p, NaN], single (1), 2), single ([NaN 1 1.5 2 NaN NaN]))
+%!assert_equal (unifinv ([p, NaN], 1, single (2)), single ([NaN 1 1.5 2 NaN NaN]))
 
 ## Test input validation
 %!error<unifinv: function called with too few input arguments.> unifinv ()

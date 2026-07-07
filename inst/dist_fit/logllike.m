@@ -179,12 +179,12 @@ endfunction
 ## Test output
 %!test
 %! [nlogL, acov] = logllike ([3.09717, 0.468525], [1:50]);
-%! assert (nlogL, 211.2965, 1e-4);
-%! assert (acov, [0.0131, -0.0007; -0.0007, 0.0031], 1e-4);
+%! assert_equal (nlogL, 211.2965, 1e-4);
+%! assert_equal (acov, [0.0131, -0.0007; -0.0007, 0.0031], 1e-4);
 %!test
 %! [nlogL, acov] = logllike ([1.01124, 0.336449], [1:5]);
-%! assert (nlogL, 9.2206, 1e-4);
-%! assert (acov, [0.0712, -0.0032; -0.0032, 0.0153], 1e-4);
+%! assert_equal (nlogL, 9.2206, 1e-4);
+%! assert_equal (acov, [0.0712, -0.0032; -0.0032, 0.0153], 1e-4);
 
 ## Test input validation
 %!error<logllike: function called with too few input arguments.> logllike (3.25)

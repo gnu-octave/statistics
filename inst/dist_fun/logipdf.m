@@ -94,13 +94,13 @@ endfunction
 %!shared x, y
 %! x = [-Inf -log(4) 0 log(4) Inf];
 %! y = [0, 0.16, 1/4, 0.16, 0];
-%!assert (logipdf ([x, NaN], 0, 1), [y, NaN], eps)
-%!assert (logipdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
+%!assert_equal (logipdf ([x, NaN], 0, 1), [y, NaN], eps)
+%!assert_equal (logipdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
 
 ## Test class of input preserved
-%!assert (logipdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
-%!assert (logipdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
-%!assert (logipdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (logipdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (logipdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (logipdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<logipdf: function called with too few input arguments.> logipdf ()

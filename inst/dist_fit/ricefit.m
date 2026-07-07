@@ -245,33 +245,33 @@ endfunction
 ## Test output
 %!test
 %! [paramhat, paramci] = ricefit ([1:50]);
-%! assert (paramhat, [15.3057, 17.6668], 1e-4);
-%! assert (paramci, [9.5468, 11.7802; 24.5383, 26.4952], 1e-4);
+%! assert_equal (paramhat, [15.3057, 17.6668], 1e-4);
+%! assert_equal (paramci, [9.5468, 11.7802; 24.5383, 26.4952], 1e-4);
 %!test
 %! [paramhat, paramci] = ricefit ([1:50], 0.01);
-%! assert (paramhat, [15.3057, 17.6668], 1e-4);
-%! assert (paramci, [8.2309, 10.3717; 28.4615, 30.0934], 1e-4);
+%! assert_equal (paramhat, [15.3057, 17.6668], 1e-4);
+%! assert_equal (paramci, [8.2309, 10.3717; 28.4615, 30.0934], 1e-4);
 %!test
 %! [paramhat, paramci] = ricefit ([1:5]);
-%! assert (paramhat, [2.3123, 1.6812], 1e-4);
-%! assert (paramci, [1.0819, 0.6376; 4.9424, 4.4331], 1e-4);
+%! assert_equal (paramhat, [2.3123, 1.6812], 1e-4);
+%! assert_equal (paramci, [1.0819, 0.6376; 4.9424, 4.4331], 1e-4);
 %!test
 %! [paramhat, paramci] = ricefit ([1:5], 0.01);
-%! assert (paramhat, [2.3123, 1.6812], 1e-4);
-%! assert (paramci, [0.8521, 0.4702; 6.2747, 6.0120], 1e-4);
+%! assert_equal (paramhat, [2.3123, 1.6812], 1e-4);
+%! assert_equal (paramci, [0.8521, 0.4702; 6.2747, 6.0120], 1e-4);
 %!test
 %! freq = [1 1 1 1 5];
 %! [paramhat, paramci] = ricefit ([1:5], [], [], freq);
-%! assert (paramhat, [3.5181, 1.5565], 1e-4);
-%! assert (paramci, [2.5893, 0.9049; 4.7801, 2.6772], 1e-4);
+%! assert_equal (paramhat, [3.5181, 1.5565], 1e-4);
+%! assert_equal (paramci, [2.5893, 0.9049; 4.7801, 2.6772], 1e-4);
 %!test
 %! censor = [1 0 0 0 0];
 %! [paramhat, paramci] = ricefit ([1:5], [], censor);
-%! assert (paramhat, [3.2978, 1.1527], 1e-4);
-%! assert (paramci, [2.3192, 0.5476; 4.6895, 2.4261], 1e-4);
+%! assert_equal (paramhat, [3.2978, 1.1527], 1e-4);
+%! assert_equal (paramci, [2.3192, 0.5476; 4.6895, 2.4261], 1e-4);
 
 ## Test class of input preserved
-%!assert (class (ricefit (single ([1:50]))), "single")
+%!assert_equal (class (ricefit (single ([1:50]))), "single")
 
 ## Test input validation
 %!error<ricefit: X must be a vector.> ricefit (ones (2))

@@ -163,12 +163,12 @@ endfunction
 %!test
 %! x = 1:20;
 %! [paramhat, paramci] = hnfit (x, 0);
-%! assert (paramhat, [0, 11.9791], 1e-4);
-%! assert (paramci, [0, 9.1648; 0, 17.2987], 1e-4);
+%! assert_equal (paramhat, [0, 11.9791], 1e-4);
+%! assert_equal (paramci, [0, 9.1648; 0, 17.2987], 1e-4);
 %!test
 %! x = 1:20;
 %! [paramhat, paramci] = hnfit (x, 0, 0.01);
-%! assert (paramci, [0, 8.4709; 0, 19.6487], 1e-4);
+%! assert_equal (paramci, [0, 8.4709; 0, 19.6487], 1e-4);
 
 ## Test input validation
 %!error<hnfit: function called with too few input arguments.> hnfit ()

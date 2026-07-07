@@ -143,25 +143,25 @@ endfunction
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [lhat, lci] = poissfit (x);
-%! assert (lhat, 3.25)
-%! assert (lci, [2.123007901949543; 4.762003010390628], 1e-14)
+%! assert_equal (lhat, 3.25)
+%! assert_equal (lci, [2.123007901949543; 4.762003010390628], 1e-14)
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [lhat, lci] = poissfit (x, 0.01);
-%! assert (lhat, 3.25)
-%! assert (lci, [1.842572740234582; 5.281369033298528], 1e-14)
+%! assert_equal (lhat, 3.25)
+%! assert_equal (lci, [1.842572740234582; 5.281369033298528], 1e-14)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [lhat, lci] = poissfit (x, [], f);
-%! assert (lhat, 3.25)
-%! assert (lci, [2.123007901949543; 4.762003010390628], 1e-14)
+%! assert_equal (lhat, 3.25)
+%! assert_equal (lci, [2.123007901949543; 4.762003010390628], 1e-14)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [lhat, lci] = poissfit (x, 0.01, f);
-%! assert (lhat, 3.25)
-%! assert (lci, [1.842572740234582; 5.281369033298528], 1e-14)
+%! assert_equal (lhat, 3.25)
+%! assert_equal (lci, [1.842572740234582; 5.281369033298528], 1e-14)
 
 ## Test input validation
 %!error<poissfit: X cannot have negative values.> poissfit ([1 2 -1 3])

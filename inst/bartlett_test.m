@@ -217,36 +217,36 @@ endfunction
 %!test
 %! load examgrades
 %! [h, pval, chisq, df] = bartlett_test (grades);
-%! assert (h, 1);
-%! assert (pval, 7.908647337018238e-08, 1e-14);
-%! assert (chisq, 38.73324, 1e-5);
-%! assert (df, 4);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 7.908647337018238e-08, 1e-14);
+%! assert_equal (chisq, 38.73324, 1e-5);
+%! assert_equal (df, 4);
 %!test
 %! load examgrades
 %! [h, pval, chisq, df] = bartlett_test (grades(:,[2:4]));
-%! assert (h, 1);
-%! assert (pval, 0.01172, 1e-5);
-%! assert (chisq, 8.89274, 1e-5);
-%! assert (df, 2);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.01172, 1e-5);
+%! assert_equal (chisq, 8.89274, 1e-5);
+%! assert_equal (df, 2);
 %!test
 %! load examgrades
 %! [h, pval, chisq, df] = bartlett_test (grades(:,[1,4]));
-%! assert (h, 0);
-%! assert (pval, 0.88118, 1e-5);
-%! assert (chisq, 0.02234, 1e-5);
-%! assert (df, 1);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.88118, 1e-5);
+%! assert_equal (chisq, 0.02234, 1e-5);
+%! assert_equal (df, 1);
 %!test
 %! load examgrades
 %! grades = [grades; nan(10, 5)];
 %! [h, pval, chisq, df] = bartlett_test (grades(:,[1,4]));
-%! assert (h, 0);
-%! assert (pval, 0.88118, 1e-5);
-%! assert (chisq, 0.02234, 1e-5);
-%! assert (df, 1);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.88118, 1e-5);
+%! assert_equal (chisq, 0.02234, 1e-5);
+%! assert_equal (df, 1);
 %!test
 %! load examgrades
 %! [h, pval, chisq, df] = bartlett_test (grades(:,[2,5]), 0.01);
-%! assert (h, 0);
-%! assert (pval, 0.01791, 1e-5);
-%! assert (chisq, 5.60486, 1e-5);
-%! assert (df, 1);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 0.01791, 1e-5);
+%! assert_equal (chisq, 5.60486, 1e-5);
+%! assert_equal (df, 1);

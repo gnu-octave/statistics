@@ -296,8 +296,8 @@ endfunction
 %! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
 %!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
 %! [hat, ci] = gpfit (x, theta);
-%! assert (hat, [k, sigma, theta], 1e-4);
-%! assert (ci, [-0.7750, 0.2437, 1; 2.5624, 7.1820, 1], 1e-4);
+%! assert_equal (hat, [k, sigma, theta], 1e-4);
+%! assert_equal (ci, [-0.7750, 0.2437, 1; 2.5624, 7.1820, 1], 1e-4);
 
 ## Test input validation
 %!error<gpfit: function called with too few input arguments.> gpfit ()

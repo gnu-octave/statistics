@@ -368,7 +368,7 @@ endfunction
 %!test
 %! load fisheriris;
 %! eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6]);
-%! assert (isa (eva, 'CalinskiHarabaszEvaluation'));
-%! assert (eva.NumObservations, 150);
-%! assert (eva.OptimalK, 3);
-%! assert (eva.InspectedK, [1 2 3 4 5 6]);
+%! assert_equal (isa (eva, 'CalinskiHarabaszEvaluation'), true);
+%! assert_equal (eva.NumObservations, 150);
+%! assert_equal (eva.OptimalK, 3);
+%! assert_equal (eva.InspectedK, [1 2 3 4 5 6]);

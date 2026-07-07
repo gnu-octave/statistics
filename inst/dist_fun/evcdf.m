@@ -206,19 +206,19 @@ endfunction
 %!shared x, y
 %! x = [-Inf, 1, 2, Inf];
 %! y = [0, 0.6321, 0.9340, 1];
-%!assert (evcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
-%!assert (evcdf (x, 1, ones (1,4)), y, 1e-4)
-%!assert (evcdf (x, ones (1,4), 1), y, 1e-4)
-%!assert (evcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
-%!assert (evcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
-%!assert (evcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
-%!assert (evcdf (x, 'upper'), [1, 0.0660, 0.0006, 0], 1e-4)
+%!assert_equal (evcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
+%!assert_equal (evcdf (x, 1, ones (1,4)), y, 1e-4)
+%!assert_equal (evcdf (x, ones (1,4), 1), y, 1e-4)
+%!assert_equal (evcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
+%!assert_equal (evcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
+%!assert_equal (evcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
+%!assert_equal (evcdf (x, 'upper'), [1, 0.0660, 0.0006, 0], 1e-4)
 
 ## Test class of input preserved
-%!assert (evcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
-%!assert (evcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
-%!assert (evcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
-%!assert (evcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)
+%!assert_equal (evcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
+%!assert_equal (evcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
+%!assert_equal (evcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
+%!assert_equal (evcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)
 
 ## Test input validation
 %!error<evcdf: invalid number of input arguments.> evcdf ()

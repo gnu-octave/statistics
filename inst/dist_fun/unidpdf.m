@@ -95,14 +95,14 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 2 10 11];
 %! y = [0 0 0.1 0.1 0.1 0];
-%!assert (unidpdf (x, 10*ones (1,6)), y)
-%!assert (unidpdf (x, 10), y)
-%!assert (unidpdf (x, 10*[0 NaN 1 1 1 1]), [NaN NaN y(3:6)])
-%!assert (unidpdf ([x, NaN], 10), [y, NaN])
+%!assert_equal (unidpdf (x, 10*ones (1,6)), y)
+%!assert_equal (unidpdf (x, 10), y)
+%!assert_equal (unidpdf (x, 10*[0 NaN 1 1 1 1]), [NaN NaN y(3:6)])
+%!assert_equal (unidpdf ([x, NaN], 10), [y, NaN])
 
 ## Test class of input preserved
-%!assert (unidpdf (single ([x, NaN]), 10), single ([y, NaN]))
-%!assert (unidpdf ([x, NaN], single (10)), single ([y, NaN]))
+%!assert_equal (unidpdf (single ([x, NaN]), 10), single ([y, NaN]))
+%!assert_equal (unidpdf ([x, NaN], single (10)), single ([y, NaN]))
 
 ## Test input validation
 %!error<unidpdf: function called with too few input arguments.> unidpdf ()

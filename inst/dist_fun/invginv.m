@@ -173,15 +173,15 @@ endfunction
 %!shared p, x
 %! p = [0, 0.3829, 0.6827, 1];
 %! x = [0, 0.5207, 1.0376, Inf];
-%!assert (invginv (p, 1, 1), x, 1e-4);
-%!assert (invginv (p, 1, ones (1,4)), x, 1e-4);
-%!assert (invginv (p, 1, [-1, 0, 1, 1]), [NaN, NaN, x(3:4)], 1e-4)
-%!assert (invginv (p, [-1, 0, 1, 1], 1), [NaN, NaN, x(3:4)], 1e-4)
+%!assert_equal (invginv (p, 1, 1), x, 1e-4);
+%!assert_equal (invginv (p, 1, ones (1,4)), x, 1e-4);
+%!assert_equal (invginv (p, 1, [-1, 0, 1, 1]), [NaN, NaN, x(3:4)], 1e-4)
+%!assert_equal (invginv (p, [-1, 0, 1, 1], 1), [NaN, NaN, x(3:4)], 1e-4)
 
 ## Test class of input preserved
-%!assert (class (invginv (single ([p, NaN]), 0, 1)), "single")
-%!assert (class (invginv ([p, NaN], single (0), 1)), "single")
-%!assert (class (invginv ([p, NaN], 0, single (1))), "single")
+%!assert_equal (class (invginv (single ([p, NaN]), 0, 1)), "single")
+%!assert_equal (class (invginv ([p, NaN], single (0), 1)), "single")
+%!assert_equal (class (invginv ([p, NaN], 0, single (1))), "single")
 
 ## Test input validation
 %!error<invginv: function called with too few input arguments.> invginv (1)

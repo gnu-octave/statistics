@@ -195,30 +195,30 @@ endfunction
 %!shared x, p
 %! x = [-1 0 0.5 1 Inf];
 %! p = [0, 1 - exp(-x(2:end)/2)];
-%!assert (expcdf (x, 2 * ones (1, 5)), p, 1e-16)
-%!assert (expcdf (x, 2), p, 1e-16)
-%!assert (expcdf (x, 2 * [1, 0, NaN, 1, 1]), [0, NaN, NaN, p(4:5)], 1e-16)
-%!assert (expcdf ([x, NaN], 2), [p, NaN], 1e-16)
+%!assert_equal (expcdf (x, 2 * ones (1, 5)), p, 1e-16)
+%!assert_equal (expcdf (x, 2), p, 1e-16)
+%!assert_equal (expcdf (x, 2 * [1, 0, NaN, 1, 1]), [0, NaN, NaN, p(4:5)], 1e-16)
+%!assert_equal (expcdf ([x, NaN], 2), [p, NaN], 1e-16)
 ## Test class of input preserved
-%!assert (expcdf (single ([x, NaN]), 2), single ([p, NaN]))
-%!assert (expcdf ([x, NaN], single (2)), single ([p, NaN]))
+%!assert_equal (expcdf (single ([x, NaN]), 2), single ([p, NaN]))
+%!assert_equal (expcdf ([x, NaN], single (2)), single ([p, NaN]))
 
 ## Test values against MATLAB output
 %!test
 %! [p, plo, pup] = expcdf (1, 2, 3);
-%! assert (p, 0.39346934028737, 1e-14);
-%! assert (plo, 0.08751307220484, 1e-14);
-%! assert (pup, 0.93476821257933, 1e-14);
+%! assert_equal (p, 0.39346934028737, 1e-14);
+%! assert_equal (plo, 0.08751307220484, 1e-14);
+%! assert_equal (pup, 0.93476821257933, 1e-14);
 %!test
 %! [p, plo, pup] = expcdf (1, 2, 2, 0.1);
-%! assert (p, 0.39346934028737, 1e-14);
-%! assert (plo, 0.14466318041675, 1e-14);
-%! assert (pup, 0.79808291849140, 1e-14);
+%! assert_equal (p, 0.39346934028737, 1e-14);
+%! assert_equal (plo, 0.14466318041675, 1e-14);
+%! assert_equal (pup, 0.79808291849140, 1e-14);
 %!test
 %! [p, plo, pup] = expcdf (1, 2, 2, 0.1, 'upper');
-%! assert (p, 0.60653065971263, 1e-14);
-%! assert (plo, 0.20191708150860, 1e-14);
-%! assert (pup, 0.85533681958325, 1e-14);
+%! assert_equal (p, 0.60653065971263, 1e-14);
+%! assert_equal (plo, 0.20191708150860, 1e-14);
+%! assert_equal (pup, 0.85533681958325, 1e-14);
 
 ## Test input validation
 %!error<expcdf: invalid number of input arguments.> expcdf ()

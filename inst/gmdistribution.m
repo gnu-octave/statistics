@@ -331,28 +331,28 @@ endclassdef
 %! Sigma = eye (2);
 %! GM = gmdistribution (mu, Sigma);
 %! density = GM.pdf ([0 0; 1 1]);
-%! assert (density(1) - density(2), 0, 1e-6);
+%! assert_equal (density(1) - density(2), 0, 1e-6);
 %!
 %! [idx, nlogl, P, logpdf,M] = cluster (GM, eye (2));
-%! assert (idx, [1; 2]);
+%! assert_equal (idx, [1; 2]);
 %! [idx2,nlogl2,P2,logpdf2] = GM.cluster (eye (2));
-%! assert (nlogl - nlogl2, 0, 1e-6);
+%! assert_equal (nlogl - nlogl2, 0, 1e-6);
 %! [idx3,nlogl3,P3] = cluster (GM, eye (2));
-%! assert (P - P3, zeros (2), 1e-6);
+%! assert_equal (P - P3, zeros (2), 1e-6);
 %! [idx4,nlogl4] = cluster (GM, eye (2));
-%! assert (size (nlogl4), [1 1]);
+%! assert_equal (size (nlogl4), [1 1]);
 %! idx5 = cluster (GM, eye (2));
-%! assert (idx - idx5, zeros (2,1));
+%! assert_equal (idx - idx5, zeros (2,1));
 %!
 %! D = GM.mahal ([1;0]);
-%! assert (D - M(1,:), zeros (1,2), 1e-6);
+%! assert_equal (D - M(1,:), zeros (1,2), 1e-6);
 %!
 %! P = GM.posterior ([0 1]);
-%! assert (P - P2(2,:), zeros (1,2), 1e-6);
+%! assert_equal (P - P2(2,:), zeros (1,2), 1e-6);
 %!
 %! R = GM.random(20);
-%! assert (size (R), [20, 2]);
+%! assert_equal (size (R), [20, 2]);
 %!
 %! R = GM.random();
-%! assert (size (R), [1, 2]);
+%! assert_equal (size (R), [1, 2]);
 

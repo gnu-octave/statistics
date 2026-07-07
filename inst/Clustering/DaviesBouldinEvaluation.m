@@ -245,14 +245,14 @@ endclassdef
 %!test
 %! load fisheriris
 %! eva = evalclusters (meas, 'kmeans', 'DaviesBouldin', 'KList', [1:6]);
-%! assert (class (eva), "DaviesBouldinEvaluation");
+%! assert_equal (class (eva), "DaviesBouldinEvaluation");
 
 %!test
 %! ## Verify DB index for a known 2-cluster case
 %! X = [ones(5,1); 5 * ones(5,1)];
 %! clust = [ones(5,1); 2 * ones(5,1)];
 %! eva = evalclusters (X, clust, 'DaviesBouldin', 'KList', 2);
-%! assert (eva.CriterionValues, 0, 1);
+%! assert_equal (eva.CriterionValues, 0, 1);
 
 %!test
 %! ## Deterministic 1-D example; expected value is 7/30 (matches MATLAB)
@@ -260,7 +260,7 @@ endclassdef
 %! randn ('seed', 1);
 %! X = [0; 1; 4; 5; 9; 10];
 %! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 3);
-%! assert (eva.CriterionValues, 7 / 30, 1e-12);
+%! assert_equal (eva.CriterionValues, 7 / 30, 1e-12);
 
 %!test
 %! ## Verify aggregation uses all cluster rows in Dij
@@ -285,7 +285,7 @@ endclassdef
 %! endfor
 %! Dij = Dij + Dij';
 %! expected = sum (max (Dij, [], 2)) / k;
-%! assert (eva.CriterionValues, expected, 1e-12);
+%! assert_equal (eva.CriterionValues, expected, 1e-12);
 
 %!test
 %! ## MATLAB reference case: well-separated tight clusters
@@ -294,7 +294,7 @@ endclassdef
 %! X = [0; 0.1; 0.2; 5; 5.1; 5.2];
 %! X = horzcat (X, zeros (rows (X), 1));
 %! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 2);
-%! assert (eva.CriterionValues, 0.0267, 1e-4);
+%! assert_equal (eva.CriterionValues, 0.0267, 1e-4);
 
 %!test
 %! ## MATLAB reference case: uneven spread clusters
@@ -303,4 +303,4 @@ endclassdef
 %! X = [0; 0.1; 0.2; 10; 20; 30];
 %! X = horzcat (X, zeros (rows (X), 1));
 %! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 2);
-%! assert (eva.CriterionValues, 0.3885, 1e-4);
+%! assert_equal (eva.CriterionValues, 0.3885, 1e-4);

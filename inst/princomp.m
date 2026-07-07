@@ -141,11 +141,11 @@ endfunction
 %! [~, i] = sort (diag (lambda), 'descend'); #arrange largest PC first
 %! S = V(:, i) * diag (sqrt (diag (lambda)(i)));
 %! ## contribution of first 2 PCs to each original variable
-%!assert (diag (S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
+%!assert_equal (diag (S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
 %! B = V(:, i) * diag ( 1./ sqrt (diag (lambda)(i)));
 %! F = zscore (x)*B;
 %! [COEFF,SCORE,latent,tsquare] = princomp (zscore (x, 1));
-%!assert (tsquare,sumsq (F, 2),1E4*eps);
+%!assert_equal (tsquare,sumsq (F, 2),1E4*eps);
 
 %!test
 %! x=[1,2,3;2,1,3]';
@@ -154,10 +154,10 @@ endfunction
 %! m(:,1) = m(:,1)*sign (COEFF(1,1));
 %! m(:,2) = m(:,2)*sign (COEFF(1,2));
 
-%!assert (COEFF,m(1:2,:),10*eps);
-%!assert (SCORE,-m,10*eps);
-%!assert (latent,[1.5;.5],10*eps);
-%!assert (tsquare,[4;4;4]/3,10*eps);
+%!assert_equal (COEFF,m(1:2,:),10*eps);
+%!assert_equal (SCORE,-m,10*eps);
+%!assert_equal (latent,[1.5;.5],10*eps);
+%!assert_equal (tsquare,[4;4;4]/3,10*eps);
 
 %!test
 %! x=x';
@@ -167,17 +167,17 @@ endfunction
 %! m(:,2) = m(:,2)*sign (COEFF(1,2));
 %! m(:,3) = m(:,3)*sign (COEFF(3,3));
 
-%!assert (COEFF,m,10*eps);
-%!assert (SCORE(:,1),-m(1:2,1),10*eps);
-%!assert (SCORE(:,2:3),zeros (2),10*eps);
-%!assert (latent,[1;0;0],10*eps);
-%!assert (tsquare,[0.5;0.5],10*eps)
+%!assert_equal (COEFF,m,10*eps);
+%!assert_equal (SCORE(:,1),-m(1:2,1),10*eps);
+%!assert_equal (SCORE(:,2:3),zeros (2),10*eps);
+%!assert_equal (latent,[1;0;0],10*eps);
+%!assert_equal (tsquare,[0.5;0.5],10*eps)
 
 %!test
 %! [COEFF,SCORE,latent,tsquare] = princomp (x, 'econ');
 
-%!assert (COEFF,m(:, 1),10*eps);
-%!assert (SCORE,-m(1:2,1),10*eps);
-%!assert (latent,[1],10*eps);
-%!assert (tsquare,[0.5;0.5],10*eps)
+%!assert_equal (COEFF,m(:, 1),10*eps);
+%!assert_equal (SCORE,-m(1:2,1),10*eps);
+%!assert_equal (latent,[1],10*eps);
+%!assert_equal (tsquare,[0.5;0.5],10*eps)
 

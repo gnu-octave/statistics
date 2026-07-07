@@ -92,15 +92,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (unidinv (p, 10*ones (1,5)), [NaN NaN 5 10 NaN], eps)
-%!assert (unidinv (p, 10), [NaN NaN 5 10 NaN], eps)
-%!assert (unidinv (p, 10*[0 1 NaN 1 1]), [NaN NaN NaN 10 NaN], eps)
-%!assert (unidinv ([p(1:2) NaN p(4:5)], 10), [NaN NaN NaN 10 NaN], eps)
+%!assert_equal (unidinv (p, 10*ones (1,5)), [NaN NaN 5 10 NaN], eps)
+%!assert_equal (unidinv (p, 10), [NaN NaN 5 10 NaN], eps)
+%!assert_equal (unidinv (p, 10*[0 1 NaN 1 1]), [NaN NaN NaN 10 NaN], eps)
+%!assert_equal (unidinv ([p(1:2) NaN p(4:5)], 10), [NaN NaN NaN 10 NaN], eps)
 
 ## Test class of input preserved
-%!assert (unidinv ([p, NaN], 10), [NaN NaN 5 10 NaN NaN], eps)
-%!assert (unidinv (single ([p, NaN]), 10), single ([NaN NaN 5 10 NaN NaN]), eps)
-%!assert (unidinv ([p, NaN], single (10)), single ([NaN NaN 5 10 NaN NaN]), eps)
+%!assert_equal (unidinv ([p, NaN], 10), [NaN NaN 5 10 NaN NaN], eps)
+%!assert_equal (unidinv (single ([p, NaN]), 10), single ([NaN NaN 5 10 NaN NaN]), eps)
+%!assert_equal (unidinv ([p, NaN], single (10)), single ([NaN NaN 5 10 NaN NaN]), eps)
 
 ## Test input validation
 %!error<unidinv: function called with too few input arguments.> unidinv ()

@@ -748,31 +748,31 @@ endfunction
 %!shared pd, t
 %! pd = ExponentialDistribution (1);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0:5]), [0, 0.6321, 0.8647, 0.9502, 0.9817, 0.9933], 1e-4);
-%!assert (cdf (t, [0:5]), [0, 0, 0, 0.7311, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.7769, 0.8647, 0.9502, 0.9817], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.7311, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [0, 0.2231, 0.5108, 0.9163, 1.6094, Inf], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2.1899, 2.4244, 2.7315, 3.1768, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.5108, 0.9163, 1.6094, Inf, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.4244, 2.7315, 3.1768, 4, NaN], 1e-4);
-%!assert (iqr (pd), 1.0986, 1e-4);
-%!assert (iqr (t), 0.8020, 1e-4);
-%!assert (mean (pd), 1);
-%!assert (mean (t), 2.6870, 1e-4);
-%!assert (median (pd), 0.6931, 1e-4);
-%!assert (median (t), 2.5662, 1e-4);
-%!assert (pdf (pd, [0:5]), [1, 0.3679, 0.1353, 0.0498, 0.0183, 0.0067], 1e-4);
-%!assert (pdf (t, [0:5]), [0, 0, 1.1565, 0.4255, 0.1565, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.3679, 0.1353, 0.0498, 0.0183, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 1.1565, 0.4255, 0.1565, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 1);
-%!assert (std (t), 0.5253, 1e-4);
-%!assert (var (pd), 1);
-%!assert (var (t), 0.2759, 1e-4);
+%!assert_equal (cdf (pd, [0:5]), [0, 0.6321, 0.8647, 0.9502, 0.9817, 0.9933], 1e-4);
+%!assert_equal (cdf (t, [0:5]), [0, 0, 0, 0.7311, 1, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.7769, 0.8647, 0.9502, 0.9817], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.7311, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [0, 0.2231, 0.5108, 0.9163, 1.6094, Inf], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2.1899, 2.4244, 2.7315, 3.1768, 4], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.5108, 0.9163, 1.6094, Inf, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.4244, 2.7315, 3.1768, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 1.0986, 1e-4);
+%!assert_equal (iqr (t), 0.8020, 1e-4);
+%!assert_equal (mean (pd), 1);
+%!assert_equal (mean (t), 2.6870, 1e-4);
+%!assert_equal (median (pd), 0.6931, 1e-4);
+%!assert_equal (median (t), 2.5662, 1e-4);
+%!assert_equal (pdf (pd, [0:5]), [1, 0.3679, 0.1353, 0.0498, 0.0183, 0.0067], 1e-4);
+%!assert_equal (pdf (t, [0:5]), [0, 0, 1.1565, 0.4255, 0.1565, 0], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1:4, NaN]), [0, 0.3679, 0.1353, 0.0498, 0.0183, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1:4, NaN]), [0, 0, 1.1565, 0.4255, 0.1565, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), 1);
+%!assert_equal (std (t), 0.5253, 1e-4);
+%!assert_equal (var (pd), 1);
+%!assert_equal (var (t), 0.2759, 1e-4);
 
 ## Test input validation
 ## 'ExponentialDistribution' constructor

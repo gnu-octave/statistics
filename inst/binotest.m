@@ -144,6 +144,6 @@ endfunction
 
 %!test #example from https://en.wikipedia.org/wiki/Binomial_test
 %! [h,p_val,ci] = binotest (51,235,1/6);
-%! assert (p_val, 0.0437, 0.00005)
+%! assert_equal (p_val, 0.0437, 0.00005)
 %! [h,p_val,ci] = binotest (51,235,1/6,'tail','left');
-%! assert (p_val, 0.027, 0.0005)
+%! assert_equal (p_val, 0.027, 0.0005)

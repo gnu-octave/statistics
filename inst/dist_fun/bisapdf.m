@@ -123,18 +123,18 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 0.3989422804014327, 0.1647717335503959, 0];
-%!assert (bisapdf (x, ones (1,5), ones (1,5)), y, eps)
-%!assert (bisapdf (x, 1, 1), y, eps)
-%!assert (bisapdf (x, 1, ones (1,5)), y, eps)
-%!assert (bisapdf (x, ones (1,5), 1), y, eps)
-%!assert (bisapdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisapdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (bisapdf ([x, NaN], 1, 1), [y, NaN], eps)
+%!assert_equal (bisapdf (x, ones (1,5), ones (1,5)), y, eps)
+%!assert_equal (bisapdf (x, 1, 1), y, eps)
+%!assert_equal (bisapdf (x, 1, ones (1,5)), y, eps)
+%!assert_equal (bisapdf (x, ones (1,5), 1), y, eps)
+%!assert_equal (bisapdf (x, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (bisapdf (x, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (bisapdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bisapdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (bisapdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
-%!assert (bisapdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisapdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisapdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisapdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisapdf: function called with too few input arguments.> bisapdf ()

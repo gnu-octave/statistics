@@ -147,18 +147,18 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 0.5, 1, 2, Inf];
 %! y = [0, 0, 1/3, 1/2, 2/3, 1];
-%!assert (fcdf (x, 2*ones (1,6), 2*ones (1,6)), y, eps)
-%!assert (fcdf (x, 2, 2*ones (1,6)), y, eps)
-%!assert (fcdf (x, 2*ones (1,6), 2), y, eps)
-%!assert (fcdf (x, [0 NaN Inf 2 2 2], 2), [NaN NaN 0.1353352832366127 y(4:6)], eps)
-%!assert (fcdf (x, 2, [0 NaN Inf 2 2 2]), [NaN NaN 0.3934693402873666 y(4:6)], eps)
-%!assert (fcdf ([x(1:2) NaN x(4:6)], 2, 2), [y(1:2) NaN y(4:6)], eps)
+%!assert_equal (fcdf (x, 2*ones (1,6), 2*ones (1,6)), y, eps)
+%!assert_equal (fcdf (x, 2, 2*ones (1,6)), y, eps)
+%!assert_equal (fcdf (x, 2*ones (1,6), 2), y, eps)
+%!assert_equal (fcdf (x, [0 NaN Inf 2 2 2], 2), [NaN NaN 0.1353352832366127 y(4:6)], eps)
+%!assert_equal (fcdf (x, 2, [0 NaN Inf 2 2 2]), [NaN NaN 0.3934693402873666 y(4:6)], eps)
+%!assert_equal (fcdf ([x(1:2) NaN x(4:6)], 2, 2), [y(1:2) NaN y(4:6)], eps)
 
 ## Test class of input preserved
-%!assert (fcdf ([x, NaN], 2, 2), [y, NaN], eps)
-%!assert (fcdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ('single'))
-%!assert (fcdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ('single'))
-%!assert (fcdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (fcdf ([x, NaN], 2, 2), [y, NaN], eps)
+%!assert_equal (fcdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (fcdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (fcdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<fcdf: function called with too few input arguments.> fcdf ()

@@ -374,7 +374,7 @@ endclassdef
 %!test
 %! load fisheriris
 %! eva = evalclusters (meas, 'kmeans', 'silhouette', 'KList', [1:6]);
-%! assert (class (eva), "SilhouetteEvaluation");
+%! assert_equal (class (eva), "SilhouetteEvaluation");
 
 %!function C = count_calls_silhouette (X, k)
 %!  global count_calls_silhouette_n;
@@ -387,5 +387,5 @@ endclassdef
 %! count_calls_silhouette_n = 0;
 %! evalclusters (rand (20, 2), @count_calls_silhouette, ...
 %!               'silhouette', 'KList', [2, 3]);
-%! assert (count_calls_silhouette_n, 2);
+%! assert_equal (count_calls_silhouette_n, 2);
 %! clear -global count_calls_silhouette_n;

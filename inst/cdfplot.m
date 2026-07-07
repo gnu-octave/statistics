@@ -94,10 +94,10 @@ endfunction
 %! unwind_protect
 %!   x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
 %!   [hCDF, stats] = cdfplot (x);
-%!   assert (stats.min, 2);
-%!   assert (stats.max, 6);
-%!   assert (stats.median, 3.5);
-%!   assert (stats.std, 1.35400640077266, 1e-14);
+%!   assert_equal (stats.min, 2);
+%!   assert_equal (stats.max, 6);
+%!   assert_equal (stats.median, 3.5);
+%!   assert_equal (stats.std, 1.35400640077266, 1e-14);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

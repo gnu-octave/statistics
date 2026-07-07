@@ -95,17 +95,17 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (tlsinv (p, 0, 1, ones (1,5)), [NaN -Inf 0 Inf NaN])
-%!assert (tlsinv (p, 0, 1, 1), [NaN -Inf 0 Inf NaN], eps)
-%!assert (tlsinv (p, 0, 1, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
-%!assert (tlsinv ([p(1:2) NaN p(4:5)], 0, 1, 1), [NaN -Inf NaN Inf NaN])
+%!assert_equal (tlsinv (p, 0, 1, ones (1,5)), [NaN -Inf 0 Inf NaN])
+%!assert_equal (tlsinv (p, 0, 1, 1), [NaN -Inf 0 Inf NaN], eps)
+%!assert_equal (tlsinv (p, 0, 1, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
+%!assert_equal (tlsinv ([p(1:2) NaN p(4:5)], 0, 1, 1), [NaN -Inf NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (class (tlsinv ([p, NaN], 0, 1, 1)), "double")
-%!assert (class (tlsinv (single ([p, NaN]), 0, 1, 1)), "single")
-%!assert (class (tlsinv ([p, NaN], single (0), 1, 1)), "single")
-%!assert (class (tlsinv ([p, NaN], 0, single (1), 1)), "single")
-%!assert (class (tlsinv ([p, NaN], 0, 1, single (1))), "single")
+%!assert_equal (class (tlsinv ([p, NaN], 0, 1, 1)), "double")
+%!assert_equal (class (tlsinv (single ([p, NaN]), 0, 1, 1)), "single")
+%!assert_equal (class (tlsinv ([p, NaN], single (0), 1, 1)), "single")
+%!assert_equal (class (tlsinv ([p, NaN], 0, single (1), 1)), "single")
+%!assert_equal (class (tlsinv ([p, NaN], 0, 1, single (1))), "single")
 
 ## Test input validation
 %!error<tlsinv: function called with too few input arguments.> tlsinv ()

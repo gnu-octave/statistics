@@ -1052,140 +1052,140 @@ endfunction
 %! [P, ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 2.85812420217898e-05, 1e-09);
-%! assert (C(2,6), 5.22936741204085e-07, 1e-09);
-%! assert (C(3,6), 2.12794763209146e-08, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-15, 1e-09);
-%! assert (C(5,6), 0.546591417210693, 1e-09);
-%! assert (C(6,6), 0.0845897945254446, 1e-09);
-%! assert (C(7,6), 9.47436557975328e-08, 1e-09);
-%! assert (C(8,6), 0.188873478781067, 1e-09);
-%! assert (C(9,6), 4.08974010364197e-08, 1e-09);
-%! assert (C(10,6), 4.44427348175241e-06, 1e-09);
-%! assert (M(1,1), 10, 1e-09);
-%! assert (M(2,1), 18, 1e-09);
-%! assert (M(3,1), 19, 1e-09);
-%! assert (M(4,1), 21.0001428571429, 1e-09);
-%! assert (M(5,1), 29.0001111111111, 1e-09);
-%! assert (M(1,2), 1.0177537954095, 1e-09);
-%! assert (M(2,2), 1.28736803631001, 1e-09);
-%! assert (M(3,2), 1.0177537954095, 1e-09);
-%! assert (M(4,2), 1.0880245732889, 1e-09);
-%! assert (M(5,2), 0.959547480416536, 1e-09);
+%! assert_equal (C(1,6), 2.85812420217898e-05, 1e-09);
+%! assert_equal (C(2,6), 5.22936741204085e-07, 1e-09);
+%! assert_equal (C(3,6), 2.12794763209146e-08, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-15, 1e-09);
+%! assert_equal (C(5,6), 0.546591417210693, 1e-09);
+%! assert_equal (C(6,6), 0.0845897945254446, 1e-09);
+%! assert_equal (C(7,6), 9.47436557975328e-08, 1e-09);
+%! assert_equal (C(8,6), 0.188873478781067, 1e-09);
+%! assert_equal (C(9,6), 4.08974010364197e-08, 1e-09);
+%! assert_equal (C(10,6), 4.44427348175241e-06, 1e-09);
+%! assert_equal (M(1,1), 10, 1e-09);
+%! assert_equal (M(2,1), 18, 1e-09);
+%! assert_equal (M(3,1), 19, 1e-09);
+%! assert_equal (M(4,1), 21.0001428571429, 1e-09);
+%! assert_equal (M(5,1), 29.0001111111111, 1e-09);
+%! assert_equal (M(1,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(2,2), 1.28736803631001, 1e-09);
+%! assert_equal (M(3,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(4,2), 1.0880245732889, 1e-09);
+%! assert_equal (M(5,2), 0.959547480416536, 1e-09);
 %!
 %! ## Compare "fdr" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'fdr', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 4.08303457454140e-05, 1e-09);
-%! assert (C(2,6), 1.04587348240817e-06, 1e-09);
-%! assert (C(3,6), 1.06397381604573e-07, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
-%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
-%! assert (C(6,6), 1.05737243156806e-01, 1e-09);
-%! assert (C(7,6), 2.36859139493832e-07, 1e-09);
-%! assert (C(8,6), 2.09859420867852e-01, 1e-09);
-%! assert (C(9,6), 1.36324670121399e-07, 1e-09);
-%! assert (C(10,6), 7.40712246958735e-06, 1e-09);
+%! assert_equal (C(1,6), 4.08303457454140e-05, 1e-09);
+%! assert_equal (C(2,6), 1.04587348240817e-06, 1e-09);
+%! assert_equal (C(3,6), 1.06397381604573e-07, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert_equal (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert_equal (C(6,6), 1.05737243156806e-01, 1e-09);
+%! assert_equal (C(7,6), 2.36859139493832e-07, 1e-09);
+%! assert_equal (C(8,6), 2.09859420867852e-01, 1e-09);
+%! assert_equal (C(9,6), 1.36324670121399e-07, 1e-09);
+%! assert_equal (C(10,6), 7.40712246958735e-06, 1e-09);
 %!
 %! ## Compare "hochberg" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hochberg', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 1.14324968087159e-04, 1e-09);
-%! assert (C(2,6), 3.13762044722451e-06, 1e-09);
-%! assert (C(3,6), 1.91515286888231e-07, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
-%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
-%! assert (C(6,6), 2.53769383576334e-01, 1e-09);
-%! assert (C(7,6), 6.63205590582730e-07, 1e-09);
-%! assert (C(8,6), 3.77746957562134e-01, 1e-09);
-%! assert (C(9,6), 3.27179208291358e-07, 1e-09);
-%! assert (C(10,6), 2.22213674087620e-05, 1e-09);
+%! assert_equal (C(1,6), 1.14324968087159e-04, 1e-09);
+%! assert_equal (C(2,6), 3.13762044722451e-06, 1e-09);
+%! assert_equal (C(3,6), 1.91515286888231e-07, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert_equal (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert_equal (C(6,6), 2.53769383576334e-01, 1e-09);
+%! assert_equal (C(7,6), 6.63205590582730e-07, 1e-09);
+%! assert_equal (C(8,6), 3.77746957562134e-01, 1e-09);
+%! assert_equal (C(9,6), 3.27179208291358e-07, 1e-09);
+%! assert_equal (C(10,6), 2.22213674087620e-05, 1e-09);
 %!
 %! ## Compare "holm" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 1.14324968087159e-04, 1e-09);
-%! assert (C(2,6), 3.13762044722451e-06, 1e-09);
-%! assert (C(3,6), 1.91515286888231e-07, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
-%! assert (C(5,6), 5.46591417210693e-01, 1e-09);
-%! assert (C(6,6), 2.53769383576334e-01, 1e-09);
-%! assert (C(7,6), 6.63205590582730e-07, 1e-09);
-%! assert (C(8,6), 3.77746957562134e-01, 1e-09);
-%! assert (C(9,6), 3.27179208291358e-07, 1e-09);
-%! assert (C(10,6), 2.22213674087620e-05, 1e-09);
+%! assert_equal (C(1,6), 1.14324968087159e-04, 1e-09);
+%! assert_equal (C(2,6), 3.13762044722451e-06, 1e-09);
+%! assert_equal (C(3,6), 1.91515286888231e-07, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert_equal (C(5,6), 5.46591417210693e-01, 1e-09);
+%! assert_equal (C(6,6), 2.53769383576334e-01, 1e-09);
+%! assert_equal (C(7,6), 6.63205590582730e-07, 1e-09);
+%! assert_equal (C(8,6), 3.77746957562134e-01, 1e-09);
+%! assert_equal (C(9,6), 3.27179208291358e-07, 1e-09);
+%! assert_equal (C(10,6), 2.22213674087620e-05, 1e-09);
 %!
 %! ## Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'scheffe', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 0.00108105386141085, 1e-09);
-%! assert (C(2,6), 2.7779386789517e-05, 1e-09);
-%! assert (C(3,6), 1.3599854038198e-06, 1e-09);
-%! assert (C(4,6), 7.58830197867751e-13, 1e-09);
-%! assert (C(5,6), 0.984039948220281, 1e-09);
-%! assert (C(6,6), 0.539077018557706, 1e-09);
-%! assert (C(7,6), 5.59475764460574e-06, 1e-09);
-%! assert (C(8,6), 0.771173490574105, 1e-09);
-%! assert (C(9,6), 2.52838425729905e-06, 1e-09);
-%! assert (C(10,6), 0.000200719143889168, 1e-09);
+%! assert_equal (C(1,6), 0.00108105386141085, 1e-09);
+%! assert_equal (C(2,6), 2.7779386789517e-05, 1e-09);
+%! assert_equal (C(3,6), 1.3599854038198e-06, 1e-09);
+%! assert_equal (C(4,6), 7.58830197867751e-13, 1e-09);
+%! assert_equal (C(5,6), 0.984039948220281, 1e-09);
+%! assert_equal (C(6,6), 0.539077018557706, 1e-09);
+%! assert_equal (C(7,6), 5.59475764460574e-06, 1e-09);
+%! assert_equal (C(8,6), 0.771173490574105, 1e-09);
+%! assert_equal (C(9,6), 2.52838425729905e-06, 1e-09);
+%! assert_equal (C(10,6), 0.000200719143889168, 1e-09);
 %!
 %! ## Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
 %!
 %! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
 %!                                  'display', 'off');
-%! assert (C(1,6), 2.85812420217898e-04, 1e-09);
-%! assert (C(2,6), 5.22936741204085e-06, 1e-09);
-%! assert (C(3,6), 2.12794763209146e-07, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-14, 1e-09);
-%! assert (C(5,6), 1.00000000000000e+00, 1e-09);
-%! assert (C(6,6), 8.45897945254446e-01, 1e-09);
-%! assert (C(7,6), 9.47436557975328e-07, 1e-09);
-%! assert (C(8,6), 1.00000000000000e+00, 1e-09);
-%! assert (C(9,6), 4.08974010364197e-07, 1e-09);
-%! assert (C(10,6), 4.44427348175241e-05, 1e-09);
+%! assert_equal (C(1,6), 2.85812420217898e-04, 1e-09);
+%! assert_equal (C(2,6), 5.22936741204085e-06, 1e-09);
+%! assert_equal (C(3,6), 2.12794763209146e-07, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-14, 1e-09);
+%! assert_equal (C(5,6), 1.00000000000000e+00, 1e-09);
+%! assert_equal (C(6,6), 8.45897945254446e-01, 1e-09);
+%! assert_equal (C(7,6), 9.47436557975328e-07, 1e-09);
+%! assert_equal (C(8,6), 1.00000000000000e+00, 1e-09);
+%! assert_equal (C(9,6), 4.08974010364197e-07, 1e-09);
+%! assert_equal (C(10,6), 4.44427348175241e-05, 1e-09);
 %!
 %! ## Test for anova1 ("equal")- comparison of results from Matlab
 %!
 %! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 2.85812420217898e-05, 1e-09);
-%! assert (C(2,6), 5.22936741204085e-07, 1e-09);
-%! assert (C(3,6), 2.12794763209146e-08, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-15, 1e-09);
-%! assert (C(5,6), 0.546591417210693, 1e-09);
-%! assert (C(6,6), 0.0845897945254446, 1e-09);
-%! assert (C(7,6), 9.47436557975328e-08, 1e-09);
-%! assert (C(8,6), 0.188873478781067, 1e-09);
-%! assert (C(9,6), 4.08974010364197e-08, 1e-09);
-%! assert (C(10,6), 4.44427348175241e-06, 1e-09);
-%! assert (M(1,1), 10, 1e-09);
-%! assert (M(2,1), 18, 1e-09);
-%! assert (M(3,1), 19, 1e-09);
-%! assert (M(4,1), 21.0001428571429, 1e-09);
-%! assert (M(5,1), 29.0001111111111, 1e-09);
-%! assert (M(1,2), 1.0177537954095, 1e-09);
-%! assert (M(2,2), 1.28736803631001, 1e-09);
-%! assert (M(3,2), 1.0177537954095, 1e-09);
-%! assert (M(4,2), 1.0880245732889, 1e-09);
-%! assert (M(5,2), 0.959547480416536, 1e-09);
+%! assert_equal (C(1,6), 2.85812420217898e-05, 1e-09);
+%! assert_equal (C(2,6), 5.22936741204085e-07, 1e-09);
+%! assert_equal (C(3,6), 2.12794763209146e-08, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-15, 1e-09);
+%! assert_equal (C(5,6), 0.546591417210693, 1e-09);
+%! assert_equal (C(6,6), 0.0845897945254446, 1e-09);
+%! assert_equal (C(7,6), 9.47436557975328e-08, 1e-09);
+%! assert_equal (C(8,6), 0.188873478781067, 1e-09);
+%! assert_equal (C(9,6), 4.08974010364197e-08, 1e-09);
+%! assert_equal (C(10,6), 4.44427348175241e-06, 1e-09);
+%! assert_equal (M(1,1), 10, 1e-09);
+%! assert_equal (M(2,1), 18, 1e-09);
+%! assert_equal (M(3,1), 19, 1e-09);
+%! assert_equal (M(4,1), 21.0001428571429, 1e-09);
+%! assert_equal (M(5,1), 29.0001111111111, 1e-09);
+%! assert_equal (M(1,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(2,2), 1.28736803631001, 1e-09);
+%! assert_equal (M(3,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(4,2), 1.0880245732889, 1e-09);
+%! assert_equal (M(5,2), 0.959547480416536, 1e-09);
 %!
 %! ## Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
 %! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.001247025266382, 1e-09);
-%! assert (C(2,6), 0.000018037115146, 1e-09);
-%! assert (C(3,6), 0.000002974595187, 1e-09);
-%! assert (C(4,6), 0.000000000786046, 1e-09);
-%! assert (C(5,6), 0.5693192886650109, 1e-09);
-%! assert (C(6,6), 0.110501699029776, 1e-09);
-%! assert (C(7,6), 0.000131226488700, 1e-09);
-%! assert (C(8,6), 0.1912101409715992, 1e-09);
-%! assert (C(9,6), 0.000005385256394, 1e-09);
-%! assert (C(10,6), 0.000074089106171, 1e-09);
+%! assert_equal (C(1,6), 0.001247025266382, 1e-09);
+%! assert_equal (C(2,6), 0.000018037115146, 1e-09);
+%! assert_equal (C(3,6), 0.000002974595187, 1e-09);
+%! assert_equal (C(4,6), 0.000000000786046, 1e-09);
+%! assert_equal (C(5,6), 0.5693192886650109, 1e-09);
+%! assert_equal (C(6,6), 0.110501699029776, 1e-09);
+%! assert_equal (C(7,6), 0.000131226488700, 1e-09);
+%! assert_equal (C(8,6), 0.1912101409715992, 1e-09);
+%! assert_equal (C(9,6), 0.000005385256394, 1e-09);
+%! assert_equal (C(10,6), 0.000074089106171, 1e-09);
 
 %!test
 %!
@@ -1195,15 +1195,15 @@ endfunction
 %! [P, ATAB, STATS] = anova2 (popcorn, 3, 'off');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
 %!                                  'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 1.49311100811177e-05, 1e-09);
-%! assert (C(2,6), 2.20506904243535e-07, 1e-09);
-%! assert (C(3,6), 0.00449897860490058, 1e-09);
-%! assert (M(1,1), 6.25, 1e-09);
-%! assert (M(2,1), 4.75, 1e-09);
-%! assert (M(3,1), 4, 1e-09);
-%! assert (M(1,2), 0.152145154862547, 1e-09);
-%! assert (M(2,2), 0.152145154862547, 1e-09);
-%! assert (M(3,2), 0.152145154862547, 1e-09);
+%! assert_equal (C(1,6), 1.49311100811177e-05, 1e-09);
+%! assert_equal (C(2,6), 2.20506904243535e-07, 1e-09);
+%! assert_equal (C(3,6), 0.00449897860490058, 1e-09);
+%! assert_equal (M(1,1), 6.25, 1e-09);
+%! assert_equal (M(2,1), 4.75, 1e-09);
+%! assert_equal (M(3,1), 4, 1e-09);
+%! assert_equal (M(1,2), 0.152145154862547, 1e-09);
+%! assert_equal (M(2,2), 0.152145154862547, 1e-09);
+%! assert_equal (M(3,2), 0.152145154862547, 1e-09);
 
 %!test
 %!
@@ -1213,9 +1213,9 @@ endfunction
 %! [P, ATAB, STATS] = anova2 (words, 1, 'off', 'linear');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
 %!                                  'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.000020799832702, 1e-09);
-%! assert (C(2,6), 0.000000035812410, 1e-09);
-%! assert (C(3,6), 0.003038942449215, 1e-09);
+%! assert_equal (C(1,6), 0.000020799832702, 1e-09);
+%! assert_equal (C(2,6), 0.000000035812410, 1e-09);
+%! assert_equal (C(3,6), 0.003038942449215, 1e-09);
 
 %!test
 %!
@@ -1227,9 +1227,9 @@ endfunction
 %! [P, ATAB, STATS] = anova2 (data, 4, 'off', 'nested');
 %! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
 %!                                  'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.261031111511073, 1e-09);
-%! assert (C(2,6), 0.065879755907745, 1e-09);
-%! assert (C(3,6), 0.241874613529270, 1e-09);
+%! assert_equal (C(1,6), 0.261031111511073, 1e-09);
+%! assert_equal (C(2,6), 0.065879755907745, 1e-09);
+%! assert_equal (C(3,6), 0.241874613529270, 1e-09);
 
 %!shared visibility_setting
 %! visibility_setting = get (0, 'DefaultFigureVisible');
@@ -1243,17 +1243,17 @@ endfunction
 %! group = [1:3] .* ones (10,3);
 %! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), 'off');
 %! C = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.000163089828959986, 1e-09);
-%! assert (C(2,6), 0.630298044801257, 1e-09);
-%! assert (C(3,6), 0.00100567660695682, 1e-09);
+%! assert_equal (C(1,6), 0.000163089828959986, 1e-09);
+%! assert_equal (C(2,6), 0.630298044801257, 1e-09);
+%! assert_equal (C(3,6), 0.00100567660695682, 1e-09);
 %! C = multcompare (STATS, 'ctype', 'bonferroni', 'display', 'off');
-%! assert (C(1,6), 0.000489269486879958, 1e-09);
-%! assert (C(2,6), 1, 1e-09);
-%! assert (C(3,6), 0.00301702982087047, 1e-09);
+%! assert_equal (C(1,6), 0.000489269486879958, 1e-09);
+%! assert_equal (C(2,6), 1, 1e-09);
+%! assert_equal (C(3,6), 0.00301702982087047, 1e-09);
 %! C = multcompare (STATS, 'ctype', 'scheffe', 'display', 'off');
-%! assert (C(1,6), 0.000819054880289573, 1e-09);
-%! assert (C(2,6), 0.890628039849261, 1e-09);
-%! assert (C(3,6), 0.00447816059021654, 1e-09);
+%! assert_equal (C(1,6), 0.000819054880289573, 1e-09);
+%! assert_equal (C(2,6), 0.890628039849261, 1e-09);
+%! assert_equal (C(3,6), 0.00447816059021654, 1e-09);
 %! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
@@ -1263,17 +1263,17 @@ endfunction
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [P, ATAB, STATS] = friedman (popcorn, 3, 'off');
 %! C = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 0.227424558028569, 1e-09);
-%! assert (C(2,6), 0.0327204848315735, 1e-09);
-%! assert (C(3,6), 0.353160353315988, 1e-09);
+%! assert_equal (C(1,6), 0.227424558028569, 1e-09);
+%! assert_equal (C(2,6), 0.0327204848315735, 1e-09);
+%! assert_equal (C(3,6), 0.353160353315988, 1e-09);
 %! C = multcompare (STATS, 'ctype', 'bonferroni', 'display', 'off');
-%! assert (C(1,6), 0.682273674085708, 1e-09);
-%! assert (C(2,6), 0.0981614544947206, 1e-09);
-%! assert (C(3,6), 1, 1e-09);
+%! assert_equal (C(1,6), 0.682273674085708, 1e-09);
+%! assert_equal (C(2,6), 0.0981614544947206, 1e-09);
+%! assert_equal (C(3,6), 1, 1e-09);
 %! C = multcompare (STATS, 'ctype', 'scheffe', 'display', 'off');
-%! assert (C(1,6), 0.482657360384373, 1e-09);
-%! assert (C(2,6), 0.102266573027672, 1e-09);
-%! assert (C(3,6), 0.649836502233148, 1e-09);
+%! assert_equal (C(1,6), 0.482657360384373, 1e-09);
+%! assert_equal (C(2,6), 0.102266573027672, 1e-09);
+%! assert_equal (C(3,6), 0.649836502233148, 1e-09);
 %! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
@@ -1287,26 +1287,26 @@ endfunction
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %! [P, ATAB, STATS] = anovan (y, {X}, 'contrasts', 'simple', 'display', 'off');
 %! [C, M] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
-%! assert (C(1,6), 2.85812420217898e-05, 1e-09);
-%! assert (C(2,6), 5.22936741204085e-07, 1e-09);
-%! assert (C(3,6), 2.12794763209146e-08, 1e-09);
-%! assert (C(4,6), 7.82091664406946e-15, 1e-09);
-%! assert (C(5,6), 0.546591417210693, 1e-09);
-%! assert (C(6,6), 0.0845897945254446, 1e-09);
-%! assert (C(7,6), 9.47436557975328e-08, 1e-09);
-%! assert (C(8,6), 0.188873478781067, 1e-09);
-%! assert (C(9,6), 4.08974010364197e-08, 1e-09);
-%! assert (C(10,6), 4.44427348175241e-06, 1e-09);
-%! assert (M(1,1), 10, 1e-09);
-%! assert (M(2,1), 18, 1e-09);
-%! assert (M(3,1), 19, 1e-09);
-%! assert (M(4,1), 21.0001428571429, 1e-09);
-%! assert (M(5,1), 29.0001111111111, 1e-09);
-%! assert (M(1,2), 1.0177537954095, 1e-09);
-%! assert (M(2,2), 1.28736803631001, 1e-09);
-%! assert (M(3,2), 1.0177537954095, 1e-09);
-%! assert (M(4,2), 1.0880245732889, 1e-09);
-%! assert (M(5,2), 0.959547480416536, 1e-09);
+%! assert_equal (C(1,6), 2.85812420217898e-05, 1e-09);
+%! assert_equal (C(2,6), 5.22936741204085e-07, 1e-09);
+%! assert_equal (C(3,6), 2.12794763209146e-08, 1e-09);
+%! assert_equal (C(4,6), 7.82091664406946e-15, 1e-09);
+%! assert_equal (C(5,6), 0.546591417210693, 1e-09);
+%! assert_equal (C(6,6), 0.0845897945254446, 1e-09);
+%! assert_equal (C(7,6), 9.47436557975328e-08, 1e-09);
+%! assert_equal (C(8,6), 0.188873478781067, 1e-09);
+%! assert_equal (C(9,6), 4.08974010364197e-08, 1e-09);
+%! assert_equal (C(10,6), 4.44427348175241e-06, 1e-09);
+%! assert_equal (M(1,1), 10, 1e-09);
+%! assert_equal (M(2,1), 18, 1e-09);
+%! assert_equal (M(3,1), 19, 1e-09);
+%! assert_equal (M(4,1), 21.0001428571429, 1e-09);
+%! assert_equal (M(5,1), 29.0001111111111, 1e-09);
+%! assert_equal (M(1,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(2,2), 1.28736803631001, 1e-09);
+%! assert_equal (M(3,2), 1.0177537954095, 1e-09);
+%! assert_equal (M(4,2), 1.0880245732889, 1e-09);
+%! assert_equal (M(5,2), 0.959547480416536, 1e-09);
 %! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
@@ -1315,42 +1315,42 @@ endfunction
 %! p = [.005708; .023544; .024193; .044895; ...
 %!       .048805; .221227; .395867; .693051; .775755];
 %! padj = multcompare (p);
-%! assert (padj(1), 0.051372, 1e-06);
-%! assert (padj(2), 0.188352, 1e-06);
-%! assert (padj(3), 0.188352, 1e-06);
-%! assert (padj(4), 0.269370, 1e-06);
-%! assert (padj(5), 0.269370, 1e-06);
-%! assert (padj(6), 0.884908, 1e-06);
-%! assert (padj(7), 1.000000, 1e-06);
-%! assert (padj(8), 1.000000, 1e-06);
-%! assert (padj(9), 1.000000, 1e-06);
+%! assert_equal (padj(1), 0.051372, 1e-06);
+%! assert_equal (padj(2), 0.188352, 1e-06);
+%! assert_equal (padj(3), 0.188352, 1e-06);
+%! assert_equal (padj(4), 0.269370, 1e-06);
+%! assert_equal (padj(5), 0.269370, 1e-06);
+%! assert_equal (padj(6), 0.884908, 1e-06);
+%! assert_equal (padj(7), 1.000000, 1e-06);
+%! assert_equal (padj(8), 1.000000, 1e-06);
+%! assert_equal (padj(9), 1.000000, 1e-06);
 %! padj = multcompare (p,'ctype','holm');
-%! assert (padj(1), 0.051372, 1e-06);
-%! assert (padj(2), 0.188352, 1e-06);
-%! assert (padj(3), 0.188352, 1e-06);
-%! assert (padj(4), 0.269370, 1e-06);
-%! assert (padj(5), 0.269370, 1e-06);
-%! assert (padj(6), 0.884908, 1e-06);
-%! assert (padj(7), 1.000000, 1e-06);
-%! assert (padj(8), 1.000000, 1e-06);
-%! assert (padj(9), 1.000000, 1e-06);
+%! assert_equal (padj(1), 0.051372, 1e-06);
+%! assert_equal (padj(2), 0.188352, 1e-06);
+%! assert_equal (padj(3), 0.188352, 1e-06);
+%! assert_equal (padj(4), 0.269370, 1e-06);
+%! assert_equal (padj(5), 0.269370, 1e-06);
+%! assert_equal (padj(6), 0.884908, 1e-06);
+%! assert_equal (padj(7), 1.000000, 1e-06);
+%! assert_equal (padj(8), 1.000000, 1e-06);
+%! assert_equal (padj(9), 1.000000, 1e-06);
 %! padj = multcompare (p,'ctype','hochberg');
-%! assert (padj(1), 0.051372, 1e-06);
-%! assert (padj(2), 0.169351, 1e-06);
-%! assert (padj(3), 0.169351, 1e-06);
-%! assert (padj(4), 0.244025, 1e-06);
-%! assert (padj(5), 0.244025, 1e-06);
-%! assert (padj(6), 0.775755, 1e-06);
-%! assert (padj(7), 0.775755, 1e-06);
-%! assert (padj(8), 0.775755, 1e-06);
-%! assert (padj(9), 0.775755, 1e-06);
+%! assert_equal (padj(1), 0.051372, 1e-06);
+%! assert_equal (padj(2), 0.169351, 1e-06);
+%! assert_equal (padj(3), 0.169351, 1e-06);
+%! assert_equal (padj(4), 0.244025, 1e-06);
+%! assert_equal (padj(5), 0.244025, 1e-06);
+%! assert_equal (padj(6), 0.775755, 1e-06);
+%! assert_equal (padj(7), 0.775755, 1e-06);
+%! assert_equal (padj(8), 0.775755, 1e-06);
+%! assert_equal (padj(9), 0.775755, 1e-06);
 %! padj = multcompare (p,'ctype','fdr');
-%! assert (padj(1), 0.0513720, 1e-07);
-%! assert (padj(2), 0.0725790, 1e-07);
-%! assert (padj(3), 0.0725790, 1e-07);
-%! assert (padj(4), 0.0878490, 1e-07);
-%! assert (padj(5), 0.0878490, 1e-07);
-%! assert (padj(6), 0.3318405, 1e-07);
-%! assert (padj(7), 0.5089719, 1e-07);
-%! assert (padj(8), 0.7757550, 1e-07);
-%! assert (padj(9), 0.7757550, 1e-07);
+%! assert_equal (padj(1), 0.0513720, 1e-07);
+%! assert_equal (padj(2), 0.0725790, 1e-07);
+%! assert_equal (padj(3), 0.0725790, 1e-07);
+%! assert_equal (padj(4), 0.0878490, 1e-07);
+%! assert_equal (padj(5), 0.0878490, 1e-07);
+%! assert_equal (padj(6), 0.3318405, 1e-07);
+%! assert_equal (padj(7), 0.5089719, 1e-07);
+%! assert_equal (padj(8), 0.7757550, 1e-07);
+%! assert_equal (padj(9), 0.7757550, 1e-07);

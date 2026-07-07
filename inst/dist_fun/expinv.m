@@ -174,15 +174,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.3934693402873666 1 2];
-%!assert (expinv (p, 2*ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (expinv (p, 2), [NaN 0 1 Inf NaN], eps)
-%!assert (expinv (p, 2*[1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
-%!assert (expinv ([p(1:2) NaN p(4:5)], 2), [NaN 0 NaN Inf NaN], eps)
+%!assert_equal (expinv (p, 2*ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (expinv (p, 2), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (expinv (p, 2*[1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
+%!assert_equal (expinv ([p(1:2) NaN p(4:5)], 2), [NaN 0 NaN Inf NaN], eps)
 
 ## Test class of input preserved
-%!assert (expinv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (expinv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), eps)
-%!assert (expinv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), eps)
+%!assert_equal (expinv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], eps)
+%!assert_equal (expinv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), eps)
+%!assert_equal (expinv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), eps)
 
 ## Test input validation
 %!error<expinv: invalid number of input arguments.> expinv ()

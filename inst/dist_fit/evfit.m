@@ -347,13 +347,13 @@ endfunction
 %! [paramhat, paramci] = evfit (x);
 %! paramhat_out = [32.6811, 13.0509];
 %! paramci_out = [28.8504, 10.5294; 36.5118, 16.1763];
-%! assert (paramhat, paramhat_out, 1e-4);
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [paramhat, paramci] = evfit (x, 0.01);
 %! paramci_out = [27.6468, 9.8426; 37.7155, 17.3051];
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 
 ## Test input validation
 %!error<evfit: X must be a double-precision vector.> evfit (ones (2,5));

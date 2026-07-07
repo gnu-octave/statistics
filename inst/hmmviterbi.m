@@ -248,7 +248,7 @@ endfunction
 %! vpath = hmmviterbi (sequence, transprob, outprob);
 %! expected = [1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, ...
 %!             1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1];
-%! assert (vpath, expected);
+%! assert_equal (vpath, expected);
 
 %!test
 %! sequence = {'A', 'B', 'A', 'A', 'A', 'B', 'B', 'A', 'B', 'C', 'C', 'C', ...
@@ -262,4 +262,4 @@ endfunction
 %! expected = {'One', 'One', 'Two', 'Two', 'Two', 'One', 'One', 'One', ...
 %!             'One', 'One', 'One', 'One', 'One', 'One', 'One', 'Two', ...
 %!             'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One'};
-%! assert (vpath, expected);
+%! assert_equal (vpath, expected);

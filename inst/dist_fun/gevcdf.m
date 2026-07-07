@@ -158,7 +158,7 @@ endfunction
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
 %! expected_p = [0.36788, 0.44933, 0.47237, 0.48323, 0.48954, 0.49367];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test
 %! x = -0.5:0.5:2.5;
 %! sigma = 0.5;
@@ -166,7 +166,7 @@ endfunction
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
 %! expected_p = [0, 0.36788, 0.60653, 0.71653, 0.77880, 0.81873, 0.84648];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 %!test # check for continuity for k near 0
 %! x = 1;
 %! sigma = 0.5;
@@ -174,7 +174,7 @@ endfunction
 %! mu = 0;
 %! p = gevcdf (x, k, sigma, mu);
 %! expected_p = [0.88062, 0.87820, 0.87580, 0.87342, 0.87107, 0.86874, 0.86643];
-%! assert (p, expected_p, 0.001);
+%! assert_equal (p, expected_p, 0.001);
 
 ## Test input validation
 %!error<gevcdf: function called with too few input arguments.> gevcdf ()

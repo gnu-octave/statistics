@@ -127,28 +127,28 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.63212055882855778 1 2];
-%!assert (gaminv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
-%!assert (gaminv (p, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
-%!assert (gaminv (p, 1, [1 -Inf NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
-%!assert (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!assert_equal (gaminv (p, ones (1,5), ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (gaminv (p, 1, ones (1,5)), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (gaminv (p, ones (1,5), 1), [NaN 0 1 Inf NaN], eps)
+%!assert_equal (gaminv (p, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
+%!assert_equal (gaminv (p, 1, [1 -Inf NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
+%!assert_equal (gaminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN 0 NaN Inf NaN])
 
 ## Test for accuracy when p is small. Results compared to Matlab
-%!assert (gaminv (1e-16, 1, 1), 1e-16, eps)
-%!assert (gaminv (1e-16, 1, 2), 2e-16, eps)
-%!assert (gaminv (1e-20, 3, 5), 1.957434012161815e-06, eps)
-%!assert (gaminv (1e-15, 1, 1), 1e-15, eps)
-%!assert (gaminv (1e-35, 1, 1), 1e-35, eps)
+%!assert_equal (gaminv (1e-16, 1, 1), 1e-16, eps)
+%!assert_equal (gaminv (1e-16, 1, 2), 2e-16, eps)
+%!assert_equal (gaminv (1e-20, 3, 5), 1.957434012161815e-06, eps)
+%!assert_equal (gaminv (1e-15, 1, 1), 1e-15, eps)
+%!assert_equal (gaminv (1e-35, 1, 1), 1e-35, eps)
 
 ## Test class of input preserved
-%!assert (gaminv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (gaminv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), ...
+%!assert_equal (gaminv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
+%!assert_equal (gaminv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), ...
 %! eps ('single'))
-%!assert (gaminv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), ...
+%!assert_equal (gaminv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), ...
 %! eps ('single'))
-%!assert (gaminv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), ...
+%!assert_equal (gaminv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), ...
 %! eps ('single'))
 
 ## Test input validation

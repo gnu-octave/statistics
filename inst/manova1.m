@@ -245,13 +245,13 @@ endfunction
 %!test
 %! load carbig
 %! [d,p] = manova1 ([MPG, Acceleration, Weight, Displacement], Origin);
-%! assert (d, 3);
-%! assert (p, [0, 3.140583347827075e-07, 0.007510999577743149, ...
+%! assert_equal (d, 3);
+%! assert_equal (p, [0, 3.140583347827075e-07, 0.007510999577743149, ...
 %!             0.1934100745898493]', [1e-12, 1e-12, 1e-12, 1e-12]');
 
 %!test
 %! load carbig
 %! [d,p] = manova1 ([MPG, Acceleration, Weight], Origin);
-%! assert (d, 2);
-%! assert (p, [0, 0.00516082975137544, 0.1206528056514453]', ...
+%! assert_equal (d, 2);
+%! assert_equal (p, [0, 0.00516082975137544, 0.1206528056514453]', ...
 %!            [1e-12, 1e-12, 1e-12]');

@@ -39,8 +39,8 @@ function x = probit (p)
 endfunction
 
 ## Test output
-%!assert (probit ([-1, 0, 0.5, 1, 2]), [NaN, -Inf, 0, Inf, NaN])
-%!assert (probit ([0.2, 0.99]), norminv ([0.2, 0.99]))
+%!assert_equal (probit ([-1, 0, 0.5, 1, 2]), [NaN, -Inf, 0, Inf, NaN])
+%!assert_equal (probit ([0.2, 0.99]), norminv ([0.2, 0.99]))
 
 ## Test input validation
 %!error probit ()

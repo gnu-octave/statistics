@@ -285,15 +285,15 @@ endfunction
 %! [pfit, pci] = gevfit (x);
 %! pfit_out = [-0.4407, 15.1923, 21.5309];
 %! pci_out = [-0.7532, 11.5878, 16.5686; -0.1282, 19.9183, 26.4926];
-%! assert (pfit, pfit_out, 1e-3);
-%! assert (pci, pci_out, 1e-3);
+%! assert_equal (pfit, pfit_out, 1e-3);
+%! assert_equal (pci, pci_out, 1e-3);
 %!test
 %! x = 1:2:50;
 %! [pfit, pci] = gevfit (x);
 %! pfit_out = [-0.4434, 15.2024, 21.0532];
 %! pci_out = [-0.8904, 10.3439, 14.0168; 0.0035, 22.3429, 28.0896];
-%! assert (pfit, pfit_out, 1e-3);
-%! assert (pci, pci_out, 1e-3);
+%! assert_equal (pfit, pfit_out, 1e-3);
+%! assert_equal (pci, pci_out, 1e-3);
 
 ## Test input validation
 %!error<gevfit: X must be a vector.> gevfit (ones (2,5));

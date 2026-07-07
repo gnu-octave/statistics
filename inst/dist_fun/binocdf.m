@@ -121,25 +121,25 @@ endfunction
 %! x = [-1 0 1 2 3];
 %! p = [0 1/4 3/4 1 1];
 %! p1 = 1 - p;
-%!assert (binocdf (x, 2 * ones (1, 5), 0.5 * ones (1, 5)), p, eps)
-%!assert (binocdf (x, 2, 0.5 * ones (1, 5)), p, eps)
-%!assert (binocdf (x, 2 * ones (1, 5), 0.5), p, eps)
-%!assert (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
-%!assert (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
-%!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [p(1:2) NaN p(4:5)], eps)
-%!assert (binocdf (99, 100, 0.1, 'upper'), 1e-100, 1e-112);
-%!assert (binocdf (x, 2 * ones (1, 5), 0.5*ones (1,5), 'upper'), p1, eps)
-%!assert (binocdf (x, 2, 0.5 * ones (1, 5), 'upper'), p1, eps)
-%!assert (binocdf (x, 2 * ones (1, 5), 0.5, 'upper'), p1, eps)
-%!assert (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5, 'upper'), [1 NaN NaN NaN 0])
-%!assert (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1], 'upper'), [1 NaN NaN NaN 0])
-%!assert (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, 'upper'), [p1(1:2) NaN p1(4:5)])
-%!assert (binocdf ([x, NaN], 2, 0.5), [p, NaN], eps)
+%!assert_equal (binocdf (x, 2 * ones (1, 5), 0.5 * ones (1, 5)), p, eps)
+%!assert_equal (binocdf (x, 2, 0.5 * ones (1, 5)), p, eps)
+%!assert_equal (binocdf (x, 2 * ones (1, 5), 0.5), p, eps)
+%!assert_equal (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5), [0 NaN NaN NaN 1])
+%!assert_equal (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1]), [0 NaN NaN NaN 1])
+%!assert_equal (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5), [p(1:2) NaN p(4:5)], eps)
+%!assert_equal (binocdf (99, 100, 0.1, 'upper'), 1e-100, 1e-112);
+%!assert_equal (binocdf (x, 2 * ones (1, 5), 0.5*ones (1,5), 'upper'), p1, eps)
+%!assert_equal (binocdf (x, 2, 0.5 * ones (1, 5), 'upper'), p1, eps)
+%!assert_equal (binocdf (x, 2 * ones (1, 5), 0.5, 'upper'), p1, eps)
+%!assert_equal (binocdf (x, 2 * [0 -1 NaN 1.1 1], 0.5, 'upper'), [1 NaN NaN NaN 0])
+%!assert_equal (binocdf (x, 2, 0.5 * [0 -1 NaN 3 1], 'upper'), [1 NaN NaN NaN 0])
+%!assert_equal (binocdf ([x(1:2) NaN x(4:5)], 2, 0.5, 'upper'), [p1(1:2) NaN p1(4:5)])
+%!assert_equal (binocdf ([x, NaN], 2, 0.5), [p, NaN], eps)
 
 ## Test class of input preserved
-%!assert (binocdf (single ([x, NaN]), 2, 0.5), single ([p, NaN]))
-%!assert (binocdf ([x, NaN], single (2), 0.5), single ([p, NaN]))
-%!assert (binocdf ([x, NaN], 2, single (0.5)), single ([p, NaN]))
+%!assert_equal (binocdf (single ([x, NaN]), 2, 0.5), single ([p, NaN]))
+%!assert_equal (binocdf ([x, NaN], single (2), 0.5), single ([p, NaN]))
+%!assert_equal (binocdf ([x, NaN], 2, single (0.5)), single ([p, NaN]))
 
 ## Test input validation
 %!error<binocdf: function called with too few input arguments.> binocdf ()

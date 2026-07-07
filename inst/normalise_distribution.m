@@ -197,62 +197,62 @@ endfunction
 
 %!test
 %! v = normalise_distribution ([1 2 3], [], 1);
-%! assert (v, [0 0 0])
+%! assert_equal (v, [0 0 0])
 
 %!test
 %! v = normalise_distribution ([1 2 3], [], 2);
-%! assert (v, norminv ([1 3 5] / 6), 3 * eps)
+%! assert_equal (v, norminv ([1 3 5] / 6), 3 * eps)
 
 %!test
 %! v = normalise_distribution ([1 2 3]', [], 2);
-%! assert (v, [0 0 0]')
+%! assert_equal (v, [0 0 0]')
 
 %!test
 %! v = normalise_distribution ([1 2 3]', [], 1);
-%! assert (v, norminv ([1 3 5]' / 6), 3 * eps)
+%! assert_equal (v, norminv ([1 3 5]' / 6), 3 * eps)
 
 %!test
 %! v = normalise_distribution ([1 1 2 2 3 3], [], 2);
-%! assert (v, norminv ([3 3 7 7 11 11] / 12), 3 * eps)
+%! assert_equal (v, norminv ([3 3 7 7 11 11] / 12), 3 * eps)
 
 %!test
 %! v = normalise_distribution ([1 1 2 2 3 3]', [], 1);
-%! assert (v, norminv ([3 3 7 7 11 11]' / 12), 3 * eps)
+%! assert_equal (v, norminv ([3 3 7 7 11 11]' / 12), 3 * eps)
 
 %!test
 %! A = randn ( 10 );
 %! N = normalise_distribution (A, @normcdf);
-%! assert (A, N, 10000 * eps)
+%! assert_equal (A, N, 10000 * eps)
 
 %!test
 %! A = exprnd (1, 100);
 %! N = normalise_distribution (A, @(x)(expcdf (x, 1)));
-%! assert (mean (vec (N)), 0, 0.1)
-%! assert (std (vec (N)), 1, 0.1)
+%! assert_equal (mean (vec (N)), 0, 0.1)
+%! assert_equal (std (vec (N)), 1, 0.1)
 
 %!test
 %! A = rand (1000,1);
 %! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1))});
-%! assert (mean (vec (N)), 0, 0.2)
-%! assert (std (vec (N)), 1, 0.1)
+%! assert_equal (mean (vec (N)), 0, 0.2)
+%! assert_equal (std (vec (N)), 1, 0.1)
 
 %!test
 %! A = [rand(1000,1), randn(1000, 1)];
 %! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1)), @normcdf});
-%! assert (mean (N), [0, 0], 0.2)
-%! assert (std (N), [1, 1], 0.1)
+%! assert_equal (mean (N), [0, 0], 0.2)
+%! assert_equal (std (N), [1, 1], 0.1)
 
 %!test
 %! A = [rand(1000,1), randn(1000, 1), exprnd(1, 1000, 1)]';
 %! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1)); @normcdf; @(x)(expcdf (x, 1))}, 2);
-%! assert (mean (N, 2), [0, 0, 0]', 0.2);
-%! assert (std (N, [], 2), [1, 1, 1]', 0.1);
+%! assert_equal (mean (N, 2), [0, 0, 0]', 0.2);
+%! assert_equal (std (N, [], 2), [1, 1, 1]', 0.1);
 
 %!xtest
 %! A = exprnd (1, 1000, 9); A(300:500, 4:6) = 17;
 %! N = normalise_distribution (A);
-%! assert (mean (N), [0 0 0 0.38 0.38 0.38 0 0 0], 0.1);
-%! assert (var (N), [1 1 1 2.59 2.59 2.59 1 1 1], 0.1);
+%! assert_equal (mean (N), [0 0 0 0.38 0.38 0.38 0 0 0], 0.1);
+%! assert_equal (var (N), [1 1 1 2.59 2.59 2.59 1 1 1], 0.1);
 
 %!test
 %!error normalise_distribution (zeros (3, 4), ...

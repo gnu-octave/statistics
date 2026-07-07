@@ -216,11 +216,11 @@ endfunction
 %!test
 %! paramhat = invgfit ([1:50]);
 %! paramhat_out = [25.5, 19.6973];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = invgfit ([1:5]);
 %! paramhat_out = [3, 8.1081];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 
 ## Test input validation
 %!error<invgfit: X must be a vector.> invgfit (ones (2,5));

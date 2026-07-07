@@ -112,5 +112,5 @@ endfunction
 %!test
 %! C1 = [2, 1, 1, 2; 1, 2, 1, 2; 1, 1, 2, 2; 2, 2, 2, 3];
 %! T = cholcov (C1);
-%! assert (C1, T'*T, 1e-15 * ones (size (C1)));
+%! assert_equal (C1, T'*T, 1e-15 * ones (size (C1)));
 

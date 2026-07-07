@@ -234,10 +234,10 @@ endfunction
 ## Test output
 %!test
 %! nlogL = ricelike ([15.3057344, 17.6668458], [1:50]);
-%! assert (nlogL, 204.5230311010569, 1e-12);
+%! assert_equal (nlogL, 204.5230311010569, 1e-12);
 %!test
 %! nlogL = ricelike ([2.312346885, 1.681228265], [1:5]);
-%! assert (nlogL, 8.65562164930058, 1e-12);
+%! assert_equal (nlogL, 8.65562164930058, 1e-12);
 
 ## Test input validation
 %!error<ricelike: function called with too few input arguments.> ricelike (3.25)

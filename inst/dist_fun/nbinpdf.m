@@ -117,17 +117,17 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0 1/2 1/4 1/8 NaN];
-%!assert (nbinpdf (x, ones (1,5), 0.5*ones (1,5)), y)
-%!assert (nbinpdf (x, 1, 0.5*ones (1,5)), y)
-%!assert (nbinpdf (x, ones (1,5), 0.5), y)
-%!assert (nbinpdf (x, [0 1 NaN 1.5 Inf], 0.5), [NaN 1/2 NaN 1.875*0.5^1.5/4 NaN], eps)
-%!assert (nbinpdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
-%!assert (nbinpdf ([x, NaN], 1, 0.5), [y, NaN])
+%!assert_equal (nbinpdf (x, ones (1,5), 0.5*ones (1,5)), y)
+%!assert_equal (nbinpdf (x, 1, 0.5*ones (1,5)), y)
+%!assert_equal (nbinpdf (x, ones (1,5), 0.5), y)
+%!assert_equal (nbinpdf (x, [0 1 NaN 1.5 Inf], 0.5), [NaN 1/2 NaN 1.875*0.5^1.5/4 NaN], eps)
+%!assert_equal (nbinpdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
+%!assert_equal (nbinpdf ([x, NaN], 1, 0.5), [y, NaN])
 
 ## Test class of input preserved
-%!assert (nbinpdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))
-%!assert (nbinpdf ([x, NaN], single (1), 0.5), single ([y, NaN]))
-%!assert (nbinpdf ([x, NaN], 1, single (0.5)), single ([y, NaN]))
+%!assert_equal (nbinpdf (single ([x, NaN]), 1, 0.5), single ([y, NaN]))
+%!assert_equal (nbinpdf ([x, NaN], single (1), 0.5), single ([y, NaN]))
+%!assert_equal (nbinpdf ([x, NaN], 1, single (0.5)), single ([y, NaN]))
 
 ## Test input validation
 %!error<nbinpdf: function called with too few input arguments.> nbinpdf ()

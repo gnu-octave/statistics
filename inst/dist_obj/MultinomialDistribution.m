@@ -598,38 +598,38 @@ endfunction
 %!shared pd, t
 %! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.2, 0.1, 0.1]);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [2, 3, 4]), [0.3, 0.6, 0.8], eps);
-%!assert (cdf (t, [2, 3, 4]), [0.2857, 0.7143, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.1, 0.3, 0.6, 0.8], eps);
-%!assert (cdf (pd, [1.5, 2-eps, 3, 4]), [0.1, 0.1, 0.6, 0.8], eps);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.2857, 0.7143, 1], 1e-4);
-%!assert (cdf (t, [1.5, 2-eps, 3, 4]), [0, 0, 0.7143, 1], 1e-4);
-%!assert (cdf (pd, [1, 2.5, 4, 6]), [0.1, 0.3, 0.8, 1], eps);
-%!assert (icdf (pd, [0, 0.2857, 0.7143, 1]), [1, 2, 4, 6]);
-%!assert (icdf (t, [0, 0.2857, 0.7143, 1]), [2, 2, 4, 4]);
-%!assert (icdf (t, [0, 0.35, 0.7143, 1]), [2, 3, 4, 4]);
-%!assert (icdf (t, [0, 0.35, 0.7143, 1, NaN]), [2, 3, 4, 4, NaN]);
-%!assert (icdf (t, [-0.5, 0, 0.35, 0.7143, 1, NaN]), [NaN, 2, 3, 4, 4, NaN]);
-%!assert (icdf (pd, [-0.5, 0, 0.35, 0.7143, 1, NaN]), [NaN, 1, 3, 4, 6, NaN]);
-%!assert (iqr (pd), 2);
-%!assert (iqr (t), 2);
-%!assert (mean (pd), 3.3, 1e-14);
-%!assert (mean (t), 3, eps);
-%!assert (median (pd), 3);
-%!assert (median (t), 3);
-%!assert (pdf (pd, [-5, 1, 2.5, 4, 6, NaN, 9]), [0, 0.1, 0, 0.2, 0.1, NaN, 0]);
-%!assert (pdf (pd, [-5, 1, 2, 3, 4, 6, NaN, 9]), ...
+%!assert_equal (cdf (pd, [2, 3, 4]), [0.3, 0.6, 0.8], eps);
+%!assert_equal (cdf (t, [2, 3, 4]), [0.2857, 0.7143, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.1, 0.3, 0.6, 0.8], eps);
+%!assert_equal (cdf (pd, [1.5, 2-eps, 3, 4]), [0.1, 0.1, 0.6, 0.8], eps);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0.2857, 0.7143, 1], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2-eps, 3, 4]), [0, 0, 0.7143, 1], 1e-4);
+%!assert_equal (cdf (pd, [1, 2.5, 4, 6]), [0.1, 0.3, 0.8, 1], eps);
+%!assert_equal (icdf (pd, [0, 0.2857, 0.7143, 1]), [1, 2, 4, 6]);
+%!assert_equal (icdf (t, [0, 0.2857, 0.7143, 1]), [2, 2, 4, 4]);
+%!assert_equal (icdf (t, [0, 0.35, 0.7143, 1]), [2, 3, 4, 4]);
+%!assert_equal (icdf (t, [0, 0.35, 0.7143, 1, NaN]), [2, 3, 4, 4, NaN]);
+%!assert_equal (icdf (t, [-0.5, 0, 0.35, 0.7143, 1, NaN]), [NaN, 2, 3, 4, 4, NaN]);
+%!assert_equal (icdf (pd, [-0.5, 0, 0.35, 0.7143, 1, NaN]), [NaN, 1, 3, 4, 6, NaN]);
+%!assert_equal (iqr (pd), 2);
+%!assert_equal (iqr (t), 2);
+%!assert_equal (mean (pd), 3.3, 1e-14);
+%!assert_equal (mean (t), 3, eps);
+%!assert_equal (median (pd), 3);
+%!assert_equal (median (t), 3);
+%!assert_equal (pdf (pd, [-5, 1, 2.5, 4, 6, NaN, 9]), [0, 0.1, 0, 0.2, 0.1, NaN, 0]);
+%!assert_equal (pdf (pd, [-5, 1, 2, 3, 4, 6, NaN, 9]), ...
 %! [0, 0.1, 0.2, 0.3, 0.2, 0.1, NaN, 0]);
-%!assert (pdf (t, [-5, 1, 2, 3, 4, 6, NaN, 0]), ...
+%!assert_equal (pdf (t, [-5, 1, 2, 3, 4, 6, NaN, 0]), ...
 %! [0, 0, 0.2857, 0.4286, 0.2857, 0, NaN, 0], 1e-4);
-%!assert (pdf (t, [-5, 1, 2, 4, 6, NaN, 0]), ...
+%!assert_equal (pdf (t, [-5, 1, 2, 4, 6, NaN, 0]), ...
 %! [0, 0, 0.2857, 0.2857, 0, NaN, 0], 1e-4);
-%!assert (unique (random (pd, 1000, 5)), [1, 2, 3, 4, 5, 6]');
-%!assert (unique (random (t, 1000, 5)), [2, 3, 4]');
-%!assert (std (pd), 1.4177, 1e-4);
-%!assert (std (t), 0.7559, 1e-4);
-%!assert (var (pd), 2.0100, 1e-4);
-%!assert (var (t), 0.5714, 1e-4);
+%!assert_equal (unique (random (pd, 1000, 5)), [1, 2, 3, 4, 5, 6]');
+%!assert_equal (unique (random (t, 1000, 5)), [2, 3, 4]');
+%!assert_equal (std (pd), 1.4177, 1e-4);
+%!assert_equal (std (t), 0.7559, 1e-4);
+%!assert_equal (var (pd), 2.0100, 1e-4);
+%!assert_equal (var (t), 0.5714, 1e-4);
 
 ## Test input validation
 ## 'MultinomialDistribution' constructor

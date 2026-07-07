@@ -1380,103 +1380,103 @@ endfunction
 %! ## Test : Identifiers with numbers and underscores
 %! tokens = parseWilkinsonFormula ('Yield ~ Var_1 + A2_B', 'tokenize');
 %! vals = {tokens.value};
-%! assert (vals, {'Yield', '~', 'Var_1', '+', 'A2_B', 'EOF'});
+%! assert_equal (vals, {'Yield', '~', 'Var_1', '+', 'A2_B', 'EOF'});
 %!test
 %! ## Test : Floating point numbers
 %! tokens = parseWilkinsonFormula ('y ~ 0.5 * A', 'tokenize');
 %! vals = {tokens.value};
-%! assert (vals, {'y', '~', '0.5', '*', 'A', 'EOF'});
+%! assert_equal (vals, {'y', '~', '0.5', '*', 'A', 'EOF'});
 %!test
 %! ## Test : Whitespace insensitivity
 %! t1 = parseWilkinsonFormula ('A*B', 'tokenize');
 %! t2 = parseWilkinsonFormula ('A   * B', 'tokenize');
-%! assert ({t1.value}, {t2.value});
+%! assert_equal ({t1.value}, {t2.value});
 %!test
 %! ## Test : Precedence
 %! t = parseWilkinsonFormula ('A + B * C . D', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'A', 'B', 'C:D', 'B:C:D'}));
+%! assert_equal (sort (terms), sort ({'A', 'B', 'C:D', 'B:C:D'}));
 %!test
 %! ## Test : Parentheses Override
 %! t = parseWilkinsonFormula ('(A + B) . C', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'A:C', 'B:C'}));
+%! assert_equal (sort (terms), sort ({'A:C', 'B:C'}));
 %!test
 %! ## Test : Crossing Operator (*)
 %! t = parseWilkinsonFormula ('A * B', 'expand');
-%! assert (length (t), 3);
+%! assert_equal (length (t), 3);
 %! t3 = parseWilkinsonFormula ('A * B * C', 'expand');
-%! assert (length (t3), 7);
+%! assert_equal (length (t3), 7);
 %!test
 %! ## Test : Nesting Operator (/)
 %! t = parseWilkinsonFormula ('Field / Plot', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'Field', 'Field:Plot'}));
+%! assert_equal (sort (terms), sort ({'Field', 'Field:Plot'}));
 %!test
 %! ## Test : Multi-level Nesting
 %! t = parseWilkinsonFormula ('Block / Plot / Subplot', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'Block', 'Block:Plot', 'Block:Plot:Subplot'}));
+%! assert_equal (sort (terms), sort ({'Block', 'Block:Plot', 'Block:Plot:Subplot'}));
 %!test
 %! ## Test : Interaction Operator (.)
 %! t = parseWilkinsonFormula ('A . B', 'expand');
-%! assert (length (t), 1);
-%! assert (t{1}, {'A', 'B'});
+%! assert_equal (length (t), 1);
+%! assert_equal (t{1}, {'A', 'B'});
 %!test
 %! ## Test : Power operator on cube.
 %! t = parseWilkinsonFormula ('(A + B + C)^3', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! expected = sort ({'A', 'B', 'C', 'A:B', 'A:C', 'B:C', 'A:B:C'});
-%! assert (sort (terms), expected);
+%! assert_equal (sort (terms), expected);
 %!test
 %! ## Test : Power Operator.
 %! t = parseWilkinsonFormula ('(A + B + C)^2', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (! ismember ('A:B:C', terms));
-%! assert (ismember ('A:B', terms));
+%! assert_equal (! ismember ('A:B:C', terms), true);
+%! assert_equal (ismember ('A:B', terms), true);
 %!test
 %! ## Test : Redundancy Check
 %! t1 = parseWilkinsonFormula ('A + A', 'expand');
-%! assert (length (t1), 1);
+%! assert_equal (length (t1), 1);
 %! t2 = parseWilkinsonFormula ('A * A', 'expand');
-%! assert (length (t2), 1);
+%! assert_equal (length (t2), 1);
 %!test
 %! ## Test : Deletion - Exact (-)
 %! t = parseWilkinsonFormula ('A * B - A', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'B', 'A:B'}));
+%! assert_equal (sort (terms), sort ({'B', 'A:B'}));
 %!test
 %! ## Test : Deletion - Clean (-*)
 %! t = parseWilkinsonFormula ('A * B -* A', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), {'B'});
+%! assert_equal (sort (terms), {'B'});
 %!test
 %! ## Test : Deletion - Marginal (-/)
 %! t = parseWilkinsonFormula ('A * B -/ A', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (sort (terms), sort ({'A', 'B'}));
+%! assert_equal (sort (terms), sort ({'A', 'B'}));
 %!test
 %! ## Test : Deletion - Complex Sequence
 %! t = parseWilkinsonFormula ('A*B*C - A:B:C', 'expand');
-%! assert (length (t), 6);
+%! assert_equal (length (t), 6);
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
-%! assert (! ismember ('A:B:C', terms));
-%! assert (ismember ('A:B', terms));
+%! assert_equal (! ismember ('A:B:C', terms), true);
+%! assert_equal (ismember ('A:B', terms), true);
 %!test
 %! ## Test : LHS and RHS Identification
 %! s = parseWilkinsonFormula ('logY ~ A + B', 'matrix');
-%! assert (s.VariableNames{s.ResponseIdx}, 'logY');
-%! assert (any (strcmp ('A', s.VariableNames)));
+%! assert_equal (s.VariableNames{s.ResponseIdx}, 'logY');
+%! assert_equal (any (strcmp ('A', s.VariableNames)), true);
 %!test
 %! ## Test : No Response Variable
 %! s = parseWilkinsonFormula ('~ A + B', 'matrix');
-%! assert (isempty (s.ResponseIdx));
+%! assert_equal (isempty (s.ResponseIdx), true);
 %!test
 %! ## Test : Intercept Handling
 %! s1 = parseWilkinsonFormula ('~ A', 'matrix');
-%! assert (any (all (s1.Terms == 0, 2)));
+%! assert_equal (any (all (s1.Terms == 0, 2)), true);
 %! s2 = parseWilkinsonFormula ('~ A - 1', 'matrix');
-%! assert (! any (all (s2.Terms == 0, 2)));
+%! assert_equal (! any (all (s2.Terms == 0, 2)), true);
 %!test
 %! ## Test : Numeric Interaction
 %! y = [1;2;3;4;5];
@@ -1484,16 +1484,16 @@ endfunction
 %! X2 = [10;10;20;20;10];
 %! d = table (y, X1, X2);
 %! [M, ~, ~] = parseWilkinsonFormula ('y ~ X1:X2', 'model_matrix', d);
-%! assert (size (M), [5, 2]);
-%! assert (M(:, 2), d.X1 .* d.X2);
+%! assert_equal (size (M), [5, 2]);
+%! assert_equal (M(:, 2), d.X1 .* d.X2);
 %!test
 %! ## Test : Categorical Expansion
 %! y = [1;1;1];
 %! G = {'A'; 'B'; 'C'};
 %! d = table (y, G);
 %! [M, ~, names] = parseWilkinsonFormula ('~ G', 'model_matrix', d);
-%! assert (size (M, 2), 3);
-%! assert (names, {'(Intercept)'; 'G_B'; 'G_C'});
+%! assert_equal (size (M, 2), 3);
+%! assert_equal (names, {'(Intercept)'; 'G_B'; 'G_C'});
 %!test
 %! ## Test : Categorical * Categorical Rank
 %! y = [1;2;3;4];
@@ -1501,8 +1501,8 @@ endfunction
 %! F2 = {'x';'x';'y';'y'};
 %! d = table (y, F1, F2);
 %! [M, ~, ~] = parseWilkinsonFormula ('~ F1 * F2', 'model_matrix', d);
-%! assert (size (M, 2), 4);
-%! assert (rank (M), 4);
+%! assert_equal (size (M, 2), 4);
+%! assert_equal (rank (M), 4);
 %!test
 %! ## Test : Numeric * Categorical Naming
 %! y = [1;2];
@@ -1510,15 +1510,15 @@ endfunction
 %! C = {'lo'; 'hi'};
 %! d = table (y, N, C);
 %! [M, ~, names] = parseWilkinsonFormula ('~ N * C', 'model_matrix', d);
-%! assert (any (strcmp (names, 'C_lo:N')));
+%! assert_equal (any (strcmp (names, 'C_lo:N')), true);
 %!test
 %! ## Test : Intercept Only Model
 %! y = [1; 2; 3];
 %! d = table (y);
 %! [X, ~, names] = parseWilkinsonFormula ('y ~ 1', 'model_matrix', d);
-%! assert (size (X, 2), 1);
-%! assert (names, {'(Intercept)'});
-%! assert (all (X == 1));
+%! assert_equal (size (X, 2), 1);
+%! assert_equal (names, {'(Intercept)'});
+%! assert_equal (all (X == 1), true);
 %!test
 %! ## Test : NaNs and Missing Data
 %! y = [1; 2; 3; 4];
@@ -1526,28 +1526,28 @@ endfunction
 %! B = [10; 20; 30; NaN];
 %! d = table (y, A, B);
 %! [X, y_out, ~] = parseWilkinsonFormula ('y ~ A', 'model_matrix', d);
-%! assert (length (y_out), 3);
-%! assert (y_out(3), 4);
-%! assert (size (X, 1), 3);
+%! assert_equal (length (y_out), 3);
+%! assert_equal (y_out(3), 4);
+%! assert_equal (size (X, 1), 3);
 %!test
 %! ## Test : Nesting with Groups
 %! t = parseWilkinsonFormula ('A / (B + C)', 'expand');
 %! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! expected = sort ({'A', 'A:B', 'A:C'});
-%! assert (sort (terms), expected);
+%! assert_equal (sort (terms), expected);
 %! ## Test : Variable Name Collision
 %! Var = [1; 1];
 %! Var_1 = [2; 2];
 %! d = table (Var, Var_1);
 %! [~, ~, names] = parseWilkinsonFormula ('~ Var + Var_1', 'model_matrix', d);
-%! assert (any (strcmp (names, 'Var')));
-%! assert (any (strcmp (names, 'Var_1')));
+%! assert_equal (any (strcmp (names, 'Var')), true);
+%! assert_equal (any (strcmp (names, 'Var_1')), true);
 %!test
 %! ## Test : One-argument call
 %! result = parseWilkinsonFormula ('A * B');
 %! expected = sort ({'A', 'B', 'A:B'});
 %! actual = cellfun (@(x) strjoin (sort (x), ':'), result, 'UniformOutput', false);
-%! assert (sort (actual), expected);
+%! assert_equal (sort (actual), expected);
 %!test
 %! ## Test : Compatibility with Table Data
 %! Age = [25; 30; 35; 40; 45];
@@ -1556,29 +1556,29 @@ endfunction
 %! T = table (Age, Weight, BP);
 %! formula = 'BP ~ Age * Weight';
 %! [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', T);
-%! assert (size (X), [5, 4]);
-%! assert (y, BP);
-%! assert (any (strcmp ('Age', names)));
-%! assert (any (strcmp ('Weight', names)));
-%! assert (names{1}, '(Intercept)');
+%! assert_equal (size (X), [5, 4]);
+%! assert_equal (y, BP);
+%! assert_equal (any (strcmp ('Age', names)), true);
+%! assert_equal (any (strcmp ('Weight', names)), true);
+%! assert_equal (names{1}, '(Intercept)');
 %!test
 %! ## Test : Multi-variable List
 %! y1 = [1; 2; 3]; y2 = [4; 5; 6]; x = [1; 0; 1];
 %! d = table (y1, y2, x);
 %! [X, y, ~] = parseWilkinsonFormula ('y1, y2 ~ x', 'model_matrix', d);
-%! assert (size (y), [3, 2]);
-%! assert (y(:,1), d.y1);
-%! assert (y(:,2), d.y2);
+%! assert_equal (size (y), [3, 2]);
+%! assert_equal (y(:,1), d.y1);
+%! assert_equal (y(:,2), d.y2);
 %!test
 %!test
 %! ## Test : multivariable range.
 %! A = [10;20]; B = [30;40]; C = [50;60]; x = [1;2];
 %! d = table (A, B, C, x);
 %! [X, y, ~] = parseWilkinsonFormula ('A - C ~ x', 'model_matrix', d);
-%! assert (size (y), [2, 3]);
-%! assert (y(:,1), d.A);
-%! assert (y(:,2), d.B);
-%! assert (y(:,3), d.C);
+%! assert_equal (size (y), [2, 3]);
+%! assert_equal (y(:,1), d.A);
+%! assert_equal (y(:,2), d.B);
+%! assert_equal (y(:,3), d.C);
 %!test
 %! ## Test : multivariable list + range.
 %! y1 = [1]; y2 = [2]; y3 = [3]; y4 = [4]; y5 = [5];
@@ -1586,19 +1586,19 @@ endfunction
 %! d = table (y1, y2, y3, y4, y5, x1, x2);
 %! [X, y, names] = parseWilkinsonFormula ('y1, y3 - y5 ~ x1:x2', 'model_matrix', d);
 %! expected_y = [d.y1, d.y3, d.y4, d.y5];
-%! assert (isequal (y, expected_y));
-%! assert (size (X, 2), 2);
-%! assert (any (strcmp (names, 'x1:x2')));
+%! assert_equal (isequal (y, expected_y), true);
+%! assert_equal (size (X, 2), 2);
+%! assert_equal (any (strcmp (names, 'x1:x2')), true);
 %!test
 %! ## Test : reverse range.
 %! A = [1]; B = [2]; C = [3]; x = [10];
 %! d = table (A, B, C, x);
 %! [X, y, names] = parseWilkinsonFormula ('C - A ~ x - 1', 'model_matrix', d);
-%! assert (size (y), [1, 3]);
-%! assert (y(:,1), d.A);
-%! assert (y(:,3), d.C);
-%! assert (size (X, 2), 1);
-%! assert (! any (strcmp (names, '(Intercept)')));
+%! assert_equal (size (y), [1, 3]);
+%! assert_equal (y(:,1), d.A);
+%! assert_equal (y(:,3), d.C);
+%! assert_equal (size (X, 2), 1);
+%! assert_equal (! any (strcmp (names, '(Intercept)')), true);
 %!test
 %! ## Test : nans in multi-y.
 %! yA = {1; 2; 3; 4};
@@ -1606,101 +1606,101 @@ endfunction
 %! x  = [1; 1; 1; 1];
 %! d = table (yA, yB, x);
 %! [X, y, ~] = parseWilkinsonFormula ('yA, yB ~ x', 'model_matrix', d);
-%! assert (size (y), [3, 2]);
-%! assert (y(3, 1), 4);
-%! assert (y(3, 2), 40);
-%! assert (size (X, 1), 3);
+%! assert_equal (size (y), [3, 2]);
+%! assert_equal (y(3, 1), 4);
+%! assert_equal (y(3, 2), 40);
+%! assert_equal (size (X, 1), 3);
 %!test
 %! ## Test : basic.
 %! eq = parseWilkinsonFormula ('y ~ x1 + x2 - 9', 'equation');
 %! expected = string ('y = c1 + c2*x1 + c3*x2');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : explicit intercept.
 %! eq = parseWilkinsonFormula ('y ~ x1 + x2', 'equation');
 %! expected = string ('y = c1 + c2*x1 + c3*x2');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : interaction.
 %! eq = parseWilkinsonFormula ('y ~ x1:x2:x3:x4', 'equation');
 %! expected = string ('y = c1 + c2*x1*x2*x3*x4');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : crossing/factorial.
 %! eq = parseWilkinsonFormula ('y ~ A * B', 'equation');
 %! expected = string ('y = c1 + c2*A + c3*B + c4*A*B');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : polynomials.
 %! eq = parseWilkinsonFormula ('y ~ x^4 - x^2', 'equation');
 %! expected = string ('y = c1 + c2*x^3 + c3*x^4');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : repeated measures
 %! eq = parseWilkinsonFormula ('y1-y3 ~ x', 'equation');
 %! expected = string (['y1 = c1 + c2*x'; ...
 %!                    'y2 = c3 + c4*x'; ...
 %!                    'y3 = c5 + c6*x']);
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : nesting syntax.
 %! eq = parseWilkinsonFormula ('y ~ x2(x1)', 'equation');
 %! expected = string ('y = c1 + c2*x2(x1)');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : nesting with interaction.
 %! eq = parseWilkinsonFormula ('y ~ x3:x2(x1)', 'equation');
 %! expected = string ('y = c1 + c2*x2(x1)*x3');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : multiple nesting.
 %! eq = parseWilkinsonFormula ('y ~ Var(A, B)', 'equation');
 %! expected = string ('y = c1 + c2*Var(A,B)');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : nested factors
 %! eq = parseWilkinsonFormula ('y ~ x2(x1) + x3(x4)', 'equation');
 %! expected = string ('y = c1 + c2*x2(x1) + c3*x3(x4)');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : polynomial and nesting.
 %! eq = parseWilkinsonFormula ('y ~ x^2 + Effect(Group)', 'equation');
 %! expected = string ('y = c1 + c2*x + c3*x^2 + c4*Effect(Group)');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : symbolic resolution of LHS list
 %! eq = parseWilkinsonFormula ('A, B ~ x', 'equation');
 %! expected = string (['A = c1 + c2*x'; 'B = c3 + c4*x']);
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : intercept only.
 %! eq = parseWilkinsonFormula ('y ~ 1', 'equation');
 %! expected = string ('y = c1');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : empty model.
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
 %! expected = string ('y = c1');
-%! assert (isequal (eq, expected));
+%! assert_equal (isequal (eq, expected), true);
 %!test
 %! ## Test : term row sorting.
 %! eq = parseWilkinsonFormula ('Y ~ x1 * x2 * x3', 'matrix');
 %! expected_terms = [0, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1; 0, 1, 1, 0; 0, 1, 0, 1; 0, 0, 1, 1; 0, 1, 1, 1];
-%! assert (eq.VariableNames, {'Y', 'x1', 'x2', 'x3'});
-%! assert (eq.Terms, expected_terms);
+%! assert_equal (eq.VariableNames, {'Y', 'x1', 'x2', 'x3'});
+%! assert_equal (eq.Terms, expected_terms);
 %!test
 %! ## Test : polynomial term Weight^2 resolves from base column not as table variable name
 %! Weight = [2000; 2500; 3000; 3500; 4000];
 %! MPG    = [30; 28; 25; 22; 18];
 %! d = table (Weight, MPG);
 %! [X, yout, names] = parseWilkinsonFormula ('MPG ~ Weight^2', 'model_matrix', d);
-%! assert (size (X), [5, 3]);
-%! assert (names{1}, '(Intercept)');
-%! assert (any (strcmp (names, 'Weight')));
-%! assert (any (strcmp (names, 'Weight^2')));
+%! assert_equal (size (X), [5, 3]);
+%! assert_equal (names{1}, '(Intercept)');
+%! assert_equal (any (strcmp (names, 'Weight')), true);
+%! assert_equal (any (strcmp (names, 'Weight^2')), true);
 %! w2i = find (strcmp (names, 'Weight^2'));
-%! assert (X(:, w2i), Weight .^ 2, 1e-10);
-%! assert (yout, MPG);
+%! assert_equal (X(:, w2i), Weight .^ 2, 1e-10);
+%! assert_equal (yout, MPG);
 %!test
 %! ## Test : squared term sorts after a categorical term
 %! Weight = [2000;2500;3000;3500;4000;4500;2200;2700;3200;3700;4200;4700];
@@ -1709,8 +1709,8 @@ endfunction
 %! d = table (MPG, Weight, Year);
 %! [~, ~, n1] = parseWilkinsonFormula ('MPG ~ Year + Weight^2', 'model_matrix', d);
 %! [~, ~, n2] = parseWilkinsonFormula ('MPG ~ Weight^2 + Year', 'model_matrix', d);
-%! assert (n1, {'(Intercept)'; 'Weight'; 'Year_76'; 'Year_82'; 'Weight^2'});
-%! assert (n2, n1);
+%! assert_equal (n1, {'(Intercept)'; 'Weight'; 'Year_76'; 'Year_82'; 'Weight^2'});
+%! assert_equal (n2, n1);
 %!error <Input formula string is required> parseWilkinsonFormula ()
 %!error <Unknown mode> parseWilkinsonFormula ('y ~ x', 'invalid_mode')
 %!error <Unexpected End Of Formula> parseWilkinsonFormula ('', 'parse')

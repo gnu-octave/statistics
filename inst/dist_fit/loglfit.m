@@ -227,20 +227,20 @@ endfunction
 %! [paramhat, paramci] = loglfit ([1:50]);
 %! paramhat_out = [3.09717, 0.468525];
 %! paramci_out = [2.87261, 0.370616; 3.32174, 0.5923];
-%! assert (paramhat, paramhat_out, 1e-5);
-%! assert (paramci, paramci_out, 1e-5);
+%! assert_equal (paramhat, paramhat_out, 1e-5);
+%! assert_equal (paramci, paramci_out, 1e-5);
 %!test
 %! paramhat = loglfit ([1:5]);
 %! paramhat_out = [1.01124, 0.336449];
-%! assert (paramhat, paramhat_out, 1e-5);
+%! assert_equal (paramhat, paramhat_out, 1e-5);
 %!test
 %! paramhat = loglfit ([1:6], [], [], [1 1 1 1 1 0]);
 %! paramhat_out = [1.01124, 0.336449];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = loglfit ([1:5], [], [], [1 1 1 1 2]);
 %! paramhat_out = loglfit ([1:5, 5]);
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 
 ## Test input validation
 %!error<loglfit: X must be a vector.> loglfit (ones (2,5));

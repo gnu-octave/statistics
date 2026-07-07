@@ -304,20 +304,20 @@ endfunction
 %! x = [-1, 0, 0.5, 1, 2, Inf];
 %! y = [0, gammainc(x(2:end), 1)];
 %! u = [0, NaN, NaN, 1, 0.1353352832366127, 0];
-%!assert (gamcdf (x, ones (1,6), ones (1,6)), y, eps)
-%!assert (gamcdf (x, ones (1,6), ones (1,6), []), y, eps)
-%!assert (gamcdf (x, 1, ones (1,6)), y, eps)
-%!assert (gamcdf (x, ones (1,6), 1), y, eps)
-%!assert (gamcdf (x, [0, -Inf, NaN, Inf, 1, 1], 1), [1, NaN, NaN, 0, y(5:6)], eps)
-%!assert (gamcdf (x, [0, -Inf, NaN, Inf, 1, 1], 1, 'upper'), u, eps)
-%!assert (gamcdf (x, 1, [0, -Inf, NaN, Inf, 1, 1]), [NaN, NaN, NaN, 0, y(5:6)], eps)
-%!assert (gamcdf ([x(1:2), NaN, x(4:6)], 1, 1), [y(1:2), NaN, y(4:6)], eps)
+%!assert_equal (gamcdf (x, ones (1,6), ones (1,6)), y, eps)
+%!assert_equal (gamcdf (x, ones (1,6), ones (1,6), []), y, eps)
+%!assert_equal (gamcdf (x, 1, ones (1,6)), y, eps)
+%!assert_equal (gamcdf (x, ones (1,6), 1), y, eps)
+%!assert_equal (gamcdf (x, [0, -Inf, NaN, Inf, 1, 1], 1), [1, NaN, NaN, 0, y(5:6)], eps)
+%!assert_equal (gamcdf (x, [0, -Inf, NaN, Inf, 1, 1], 1, 'upper'), u, eps)
+%!assert_equal (gamcdf (x, 1, [0, -Inf, NaN, Inf, 1, 1]), [NaN, NaN, NaN, 0, y(5:6)], eps)
+%!assert_equal (gamcdf ([x(1:2), NaN, x(4:6)], 1, 1), [y(1:2), NaN, y(4:6)], eps)
 
 ## Test class of input preserved
-%!assert (gamcdf ([x, NaN], 1, 1), [y, NaN])
-%!assert (gamcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (gamcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
-%!assert (gamcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (gamcdf ([x, NaN], 1, 1), [y, NaN])
+%!assert_equal (gamcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (gamcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (gamcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<gamcdf: invalid number of input arguments.> gamcdf ()

@@ -160,24 +160,24 @@ endfunction
 %!shared p, x
 %! p = [0, 0.05, 0.5 0.95];
 %! x = [-Inf, -1.0972, 0.3665, 2.9702];
-%!assert (gumbelinv (p), x, 1e-4)
-%!assert (gumbelinv (p, zeros (1,4), ones (1,4)), x, 1e-4)
-%!assert (gumbelinv (p, 0, ones (1,4)), x, 1e-4)
-%!assert (gumbelinv (p, zeros (1,4), 1), x, 1e-4)
-%!assert (gumbelinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, -Inf, NaN, Inf], 1e-4)
-%!assert (gumbelinv (p, 0, [Inf, NaN, -1, 0]), [-Inf, NaN, NaN, NaN], 1e-4)
-%!assert (gumbelinv ([p(1:2), NaN, p(4)], 0, 1), [x(1:2), NaN, x(4)], 1e-4)
+%!assert_equal (gumbelinv (p), x, 1e-4)
+%!assert_equal (gumbelinv (p, zeros (1,4), ones (1,4)), x, 1e-4)
+%!assert_equal (gumbelinv (p, 0, ones (1,4)), x, 1e-4)
+%!assert_equal (gumbelinv (p, zeros (1,4), 1), x, 1e-4)
+%!assert_equal (gumbelinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, -Inf, NaN, Inf], 1e-4)
+%!assert_equal (gumbelinv (p, 0, [Inf, NaN, -1, 0]), [-Inf, NaN, NaN, NaN], 1e-4)
+%!assert_equal (gumbelinv ([p(1:2), NaN, p(4)], 0, 1), [x(1:2), NaN, x(4)], 1e-4)
 
 ## Test class of input preserved
-%!assert (gumbelinv ([p, NaN], 0, 1), [x, NaN], 1e-4)
-%!assert (gumbelinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
-%!assert (gumbelinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
-%!assert (gumbelinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
+%!assert_equal (gumbelinv ([p, NaN], 0, 1), [x, NaN], 1e-4)
+%!assert_equal (gumbelinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
+%!assert_equal (gumbelinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
+%!assert_equal (gumbelinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
 
 ## Test whether gumbelcdf is successfully inverted
 %! p = [0.05, 0.5, 0.95];
 %! x = gumbelinv(p);
-%!assert (gumbelcdf (x), p, 1e-4)
+%!assert_equal (gumbelcdf (x), p, 1e-4)
 
 ## Test input validation
 %!error<gumbelinv: invalid number of input arguments.> gumbelinv ()

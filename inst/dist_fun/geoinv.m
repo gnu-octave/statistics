@@ -96,15 +96,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.75 1 2];
-%!assert (geoinv (p, 0.5*ones (1,5)), [NaN 0 1 Inf NaN])
-%!assert (geoinv (p, 0.5), [NaN 0 1 Inf NaN])
-%!assert (geoinv (p, 0.5*[1 -1 NaN 4 1]), [NaN NaN NaN NaN NaN])
-%!assert (geoinv ([p(1:2) NaN p(4:5)], 0.5), [NaN 0 NaN Inf NaN])
+%!assert_equal (geoinv (p, 0.5*ones (1,5)), [NaN 0 1 Inf NaN])
+%!assert_equal (geoinv (p, 0.5), [NaN 0 1 Inf NaN])
+%!assert_equal (geoinv (p, 0.5*[1 -1 NaN 4 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (geoinv ([p(1:2) NaN p(4:5)], 0.5), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (geoinv ([p, NaN], 0.5), [NaN 0 1 Inf NaN NaN])
-%!assert (geoinv (single ([p, NaN]), 0.5), single ([NaN 0 1 Inf NaN NaN]))
-%!assert (geoinv ([p, NaN], single (0.5)), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (geoinv ([p, NaN], 0.5), [NaN 0 1 Inf NaN NaN])
+%!assert_equal (geoinv (single ([p, NaN]), 0.5), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (geoinv ([p, NaN], single (0.5)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
 %!error<geoinv: function called with too few input arguments.> geoinv ()

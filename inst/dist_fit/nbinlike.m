@@ -140,11 +140,11 @@ function [nlogL, avar] = nbinlike (params, x, freq)
 endfunction
 
 ## Test output
-%!assert (nbinlike ([2.42086, 0.0867043], [1:50]), 205.5942, 1e-4)
-%!assert (nbinlike ([3.58823, 0.254697], [1:20]), 63.6435, 1e-4)
-%!assert (nbinlike ([8.80671, 0.615565], [1:10]), 24.7410, 1e-4)
-%!assert (nbinlike ([22.1756, 0.831306], [1:8]), 17.9528, 1e-4)
-%!assert (nbinlike ([22.1756, 0.831306], [1:9], [ones(1,8), 0]), 17.9528, 1e-4)
+%!assert_equal (nbinlike ([2.42086, 0.0867043], [1:50]), 205.5942, 1e-4)
+%!assert_equal (nbinlike ([3.58823, 0.254697], [1:20]), 63.6435, 1e-4)
+%!assert_equal (nbinlike ([8.80671, 0.615565], [1:10]), 24.7410, 1e-4)
+%!assert_equal (nbinlike ([22.1756, 0.831306], [1:8]), 17.9528, 1e-4)
+%!assert_equal (nbinlike ([22.1756, 0.831306], [1:9], [ones(1,8), 0]), 17.9528, 1e-4)
 
 ## Test input validation
 %!error<nbinlike: function called with too few input arguments.> nbinlike (3.25)

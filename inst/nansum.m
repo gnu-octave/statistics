@@ -163,28 +163,28 @@ endfunction
 %! s = nansum (x, [2, 3])
 
 ## Test output
-%!assert (nansum ([]), 0)
-%!assert (nansum (NaN), 0)
-%!assert (nansum (NaN (3)), [0, 0, 0])
-%!assert (nansum ([2 4 NaN 7]), 13)
-%!assert (nansum ([2 4 NaN Inf]), Inf)
-%!assert (nansum ([1 NaN 3; NaN 5 6; 7 8 NaN]), [8 13 9])
-%!assert (nansum ([1 NaN 3; NaN 5 6; 7 8 NaN], 2), [4; 11; 15])
-%!assert (nansum (uint8 ([2 4 1 7])), 14)
+%!assert_equal (nansum ([]), 0)
+%!assert_equal (nansum (NaN), 0)
+%!assert_equal (nansum (NaN (3)), [0, 0, 0])
+%!assert_equal (nansum ([2 4 NaN 7]), 13)
+%!assert_equal (nansum ([2 4 NaN Inf]), Inf)
+%!assert_equal (nansum ([1 NaN 3; NaN 5 6; 7 8 NaN]), [8 13 9])
+%!assert_equal (nansum ([1 NaN 3; NaN 5 6; 7 8 NaN], 2), [4; 11; 15])
+%!assert_equal (nansum (uint8 ([2 4 1 7])), 14)
 %!test
 %! x = magic (3);
 %! x([1 6:9]) = NaN;
-%! assert (nansum (x), [7, 6, 0])
-%! assert (nansum (x, 2), [1; 8; 4])
+%! assert_equal (nansum (x), [7, 6, 0])
+%! assert_equal (nansum (x, 2), [1; 8; 4])
 %!test
 %! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
-%! assert (nansum (x, 'all'), 269)
+%! assert_equal (nansum (x, 'all'), 269)
 %!test
 %! x = reshape (1:24,[2, 4, 3]);
 %! x([5:6, 20]) = NaN;
-%! assert (squeeze (nansum (x, [1, 2])), [25; 100; 144])
-%! assert (nansum (x, [2, 3]), [139; 130])
+%! assert_equal (squeeze (nansum (x, [1, 2])), [25; 100; 144])
+%! assert_equal (nansum (x, [2, 3]), [139; 130])
 
 ## Test input validation
 %!error <nansum: X must be numeric.> nansum ({3})

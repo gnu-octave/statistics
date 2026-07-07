@@ -550,33 +550,33 @@ endfunction
 %!shared pd, t
 %! pd = LoguniformDistribution (1, 4);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0, 1, 2, 3, 4, 5]), [0, 0, 0.5, 0.7925, 1, 1], 1e-4);
-%!assert (cdf (t, [0, 1, 2, 3, 4, 5]), [0, 0, 0, 0.5850, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.2925, 0.5, 0.7925, 1], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.5850, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [1, 1.3195, 1.7411, 2.2974, 3.0314, 4], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2.2974, 2.6390, 3.0314, 3.4822, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1.7411, 2.2974, 3.0314, 4, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.6390, 3.0314, 3.4822, 4, NaN], 1e-4);
-%!assert (iqr (pd), 1.4142, 1e-4);
-%!assert (iqr (t), 0.9852, 1e-4);
-%!assert (mean (pd), 2.1640, 1e-4);
-%!assert (mean (t), 2.8854, 1e-4);
-%!assert (median (pd), 2);
-%!assert (median (t), 2.8284, 1e-4);
-%!assert (pdf (pd, [0, 1, 2, 3, 4, 5]), [0, 0.7213, 0.3607, 0.2404, 0.1803, 0], 1e-4);
-%!assert (pdf (t, [0, 1, 2, 3, 4, 5]), [0, 0, 0.7213, 0.4809, 0.3607, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1, 2, 3, 4, NaN]), [0, 0.7213, 0.3607, 0.2404, 0.1803, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1, 2, 3, 4, NaN]), [0, 0, 0.7213, 0.4809, 0.3607, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (pd, 1000, 1) < 1), false);
-%!assert (any (random (pd, 1000, 1) > 4), false);
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 0.8527, 1e-4);
-%!assert (std (t), 0.5751, 1e-4);
-%!assert (var (pd), 0.7270, 1e-4);
-%!assert (var (t), 0.3307, 1e-4);
+%!assert_equal (cdf (pd, [0, 1, 2, 3, 4, 5]), [0, 0, 0.5, 0.7925, 1, 1], 1e-4);
+%!assert_equal (cdf (t, [0, 1, 2, 3, 4, 5]), [0, 0, 0, 0.5850, 1, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.2925, 0.5, 0.7925, 1], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.5850, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [1, 1.3195, 1.7411, 2.2974, 3.0314, 4], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2.2974, 2.6390, 3.0314, 3.4822, 4], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1.7411, 2.2974, 3.0314, 4, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.6390, 3.0314, 3.4822, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 1.4142, 1e-4);
+%!assert_equal (iqr (t), 0.9852, 1e-4);
+%!assert_equal (mean (pd), 2.1640, 1e-4);
+%!assert_equal (mean (t), 2.8854, 1e-4);
+%!assert_equal (median (pd), 2);
+%!assert_equal (median (t), 2.8284, 1e-4);
+%!assert_equal (pdf (pd, [0, 1, 2, 3, 4, 5]), [0, 0.7213, 0.3607, 0.2404, 0.1803, 0], 1e-4);
+%!assert_equal (pdf (t, [0, 1, 2, 3, 4, 5]), [0, 0, 0.7213, 0.4809, 0.3607, 0], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1, 2, 3, 4, NaN]), [0, 0.7213, 0.3607, 0.2404, 0.1803, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1, 2, 3, 4, NaN]), [0, 0, 0.7213, 0.4809, 0.3607, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (pd, 1000, 1) < 1), false);
+%!assert_equal (any (random (pd, 1000, 1) > 4), false);
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), 0.8527, 1e-4);
+%!assert_equal (std (t), 0.5751, 1e-4);
+%!assert_equal (var (pd), 0.7270, 1e-4);
+%!assert_equal (var (t), 0.3307, 1e-4);
 
 ## Test input validation
 ## 'LoguniformDistribution' constructor

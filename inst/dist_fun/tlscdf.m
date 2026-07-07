@@ -113,19 +113,19 @@ endfunction
 %!shared x,y
 %! x = [-Inf 0 1 Inf];
 %! y = [0 1/2 3/4 1];
-%!assert (tlscdf (x, 0, 1, ones (1,4)), y, eps)
-%!assert (tlscdf (x, 0, 1, 1), y, eps)
-%!assert (tlscdf (x, 0, 1, [0 1 NaN 1]), [NaN 1/2 NaN 1], eps)
-%!assert (tlscdf ([x(1:2) NaN x(4)], 0, 1, 1), [y(1:2) NaN y(4)], eps)
-%!assert (tlscdf (2, 0, 1, 3, 'upper'), 0.0697, 1e-4)
-%!assert (tlscdf (205, 0, 1, 5, 'upper'), 2.6206e-11, 1e-14)
+%!assert_equal (tlscdf (x, 0, 1, ones (1,4)), y, eps)
+%!assert_equal (tlscdf (x, 0, 1, 1), y, eps)
+%!assert_equal (tlscdf (x, 0, 1, [0 1 NaN 1]), [NaN 1/2 NaN 1], eps)
+%!assert_equal (tlscdf ([x(1:2) NaN x(4)], 0, 1, 1), [y(1:2) NaN y(4)], eps)
+%!assert_equal (tlscdf (2, 0, 1, 3, 'upper'), 0.0697, 1e-4)
+%!assert_equal (tlscdf (205, 0, 1, 5, 'upper'), 2.6206e-11, 1e-14)
 
 ## Test class of input preserved
-%!assert (tlscdf ([x, NaN], 0, 1, 1), [y, NaN], eps)
-%!assert (tlscdf (single ([x, NaN]), 0, 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (tlscdf ([x, NaN], single (0), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (tlscdf ([x, NaN], 0, single (1), 1), single ([y, NaN]), eps ('single'))
-%!assert (tlscdf ([x, NaN], 0, 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (tlscdf ([x, NaN], 0, 1, 1), [y, NaN], eps)
+%!assert_equal (tlscdf (single ([x, NaN]), 0, 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (tlscdf ([x, NaN], single (0), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (tlscdf ([x, NaN], 0, single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (tlscdf ([x, NaN], 0, 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tlscdf: function called with too few input arguments.> tlscdf ()

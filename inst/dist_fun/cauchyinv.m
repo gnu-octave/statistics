@@ -101,20 +101,20 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (cauchyinv (p, ones (1,5), 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchyinv (p, 1, 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchyinv (p, ones (1,5), 2), [NaN -Inf 1 Inf NaN], eps)
-%!assert (cauchyinv (p, [1 -Inf NaN Inf 1], 2), [NaN NaN NaN NaN NaN])
-%!assert (cauchyinv (p, 1, 2 * [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (cauchyinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN -Inf NaN Inf NaN])
-%!assert (cauchyinv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
+%!assert_equal (cauchyinv (p, ones (1,5), 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
+%!assert_equal (cauchyinv (p, 1, 2 * ones (1,5)), [NaN -Inf 1 Inf NaN], eps)
+%!assert_equal (cauchyinv (p, ones (1,5), 2), [NaN -Inf 1 Inf NaN], eps)
+%!assert_equal (cauchyinv (p, [1 -Inf NaN Inf 1], 2), [NaN NaN NaN NaN NaN])
+%!assert_equal (cauchyinv (p, 1, 2 * [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (cauchyinv ([p(1:2) NaN p(4:5)], 1, 2), [NaN -Inf NaN Inf NaN])
+%!assert_equal (cauchyinv ([p, NaN], 1, 2), [NaN -Inf 1 Inf NaN NaN], eps)
 
 ## Test class of input preserved
-%!assert (cauchyinv (single ([p, NaN]), 1, 2), ...
+%!assert_equal (cauchyinv (single ([p, NaN]), 1, 2), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
-%!assert (cauchyinv ([p, NaN], single (1), 2), ...
+%!assert_equal (cauchyinv ([p, NaN], single (1), 2), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
-%!assert (cauchyinv ([p, NaN], 1, single (2)), ...
+%!assert_equal (cauchyinv ([p, NaN], 1, single (2)), ...
 %! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
 
 ## Test input validation

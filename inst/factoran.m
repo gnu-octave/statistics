@@ -157,9 +157,9 @@ endfunction
 %! l_out = [0.7071; 0.7071];
 %! s_out = [0.5000; 0.5000];
 %! f_out = [-0.7071; -0.7071; 1.4142];
-%! assert (loadings, l_out, 1.3e-4);
-%! assert (specvar, s_out, 1.3e-4);
-%! assert (fscores, f_out, 1.3e-4);
+%! assert_equal (loadings, l_out, 1.3e-4);
+%! assert_equal (specvar, s_out, 1.3e-4);
+%! assert_equal (fscores, f_out, 1.3e-4);
 
 ## Test input validation
 %!error factoran ()

@@ -87,25 +87,25 @@ endfunction
 ## Output validation tests
 %!test
 %! [m, v] = hnstat (0, 1);
-%! assert (m, 0.7979, 1e-4);
-%! assert (v, 0.3634, 1e-4);
+%! assert_equal (m, 0.7979, 1e-4);
+%! assert_equal (v, 0.3634, 1e-4);
 %!test
 %! [m, v] = hnstat (2, 1);
-%! assert (m, 2.7979, 1e-4);
-%! assert (v, 0.3634, 1e-4);
+%! assert_equal (m, 2.7979, 1e-4);
+%! assert_equal (v, 0.3634, 1e-4);
 %!test
 %! [m, v] = hnstat (2, 2);
-%! assert (m, 3.5958, 1e-4);
-%! assert (v, 1.4535, 1e-4);
+%! assert_equal (m, 3.5958, 1e-4);
+%! assert_equal (v, 1.4535, 1e-4);
 %!test
 %! [m, v] = hnstat (2, 2.5);
-%! assert (m, 3.9947, 1e-4);
-%! assert (v, 2.2711, 1e-4);
+%! assert_equal (m, 3.9947, 1e-4);
+%! assert_equal (v, 2.2711, 1e-4);
 %!test
 %! [m, v] = hnstat (1.5, 0.5);
-%! assert (m, 1.8989, 1e-4);
-%! assert (v, 0.0908, 1e-4);
+%! assert_equal (m, 1.8989, 1e-4);
+%! assert_equal (v, 0.0908, 1e-4);
 %!test
 %! [m, v] = hnstat (-1.5, 0.5);
-%! assert (m, -1.1011, 1e-4);
-%! assert (v, 0.0908, 1e-4);
+%! assert_equal (m, -1.1011, 1e-4);
+%! assert_equal (v, 0.0908, 1e-4);

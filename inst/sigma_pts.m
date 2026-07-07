@@ -101,21 +101,21 @@ endfunction
 
 %!test
 %! p = sigma_pts (5);
-%! assert (mean (p), zeros (1,5), sqrt (eps));
-%! assert (cov (p), eye (5), sqrt (eps));
+%! assert_equal (mean (p), zeros (1,5), sqrt (eps));
+%! assert_equal (cov (p), eye (5), sqrt (eps));
 
 %!test
 %! m = randn (1, 5);
 %! p = sigma_pts (5, m);
-%! assert (mean (p), m, sqrt (eps));
-%! assert (cov (p), eye (5), sqrt (eps));
+%! assert_equal (mean (p), m, sqrt (eps));
+%! assert_equal (cov (p), eye (5), sqrt (eps));
 
 %!test
 %! x = linspace (0,1,5);
 %! K = exp (- (x.' - x).^2/ 0.5);
 %! p = sigma_pts (5, [], K);
-%! assert (mean (p), zeros (1,5), sqrt (eps));
-%! assert (cov (p), K, sqrt (eps));
+%! assert_equal (mean (p), zeros (1,5), sqrt (eps));
+%! assert_equal (cov (p), K, sqrt (eps));
 
 %!error sigma_pts (2,1);
 %!error sigma_pts (2,[],1);

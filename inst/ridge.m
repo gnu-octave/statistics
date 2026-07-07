@@ -190,40 +190,40 @@ endfunction
 ## Test output
 %!test
 %! b = ridge ([1 2 3 4]', [1 2 3 4; 2 3 4 5]', 1);
-%! assert (b, [0.5533; 0.5533], 1e-4);
+%! assert_equal (b, [0.5533; 0.5533], 1e-4);
 %!test
 %! b = ridge ([1 2 3 4]', [1 2 3 4; 2 3 4 5]', 2);
-%! assert (b, [0.4841; 0.4841], 1e-4);
+%! assert_equal (b, [0.4841; 0.4841], 1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0);
-%! assert (b,[10.2273;1.97128;-0.601818],1e-4);
+%! assert_equal (b,[10.2273;1.97128;-0.601818],1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.0005);
-%! assert (b,[10.2233;1.9712;-0.6056],1e-4);
+%! assert_equal (b,[10.2233;1.9712;-0.6056],1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.001);
-%! assert (b,[10.2194;1.9711;-0.6094],1e-4);
+%! assert_equal (b,[10.2194;1.9711;-0.6094],1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.002);
-%! assert (b,[10.2116;1.9709;-0.6169],1e-4);
+%! assert_equal (b,[10.2116;1.9709;-0.6169],1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.005);
-%! assert (b,[10.1882;1.9704;-0.6393],1e-4);
+%! assert_equal (b,[10.1882;1.9704;-0.6393],1e-4);
 %!test
 %! load acetylene
 %! x = [x1, x2, x3];
 %! b = ridge (y, x, 0.01);
-%! assert (b,[10.1497;1.9695;-0.6761],1e-4);
+%! assert_equal (b,[10.1497;1.9695;-0.6761],1e-4);
 
 ## Test input validation
 %!error<ridge: function called with too few input arguments.> ridge (1)

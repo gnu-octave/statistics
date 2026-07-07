@@ -284,71 +284,71 @@ endfunction
 %! y = [2; 4; 6; 8];
 %! xi = [1.5; 2.5; 3.5];
 %! yi = makima (x, y, xi);
-%! assert (yi, [3; 5; 7], 1e-12);
+%! assert_equal (yi, [3; 5; 7], 1e-12);
 %!test
 %! ## Nonlinear dataset (finite check)
 %! x = [0; 1; 2; 3; 4];
 %! y = [0; 1; 0; 1; 0];
 %! xi = linspace (0,4,20)';
 %! yi = makima (x, y, xi);
-%! assert (all (isfinite (yi)));
+%! assert_equal (all (isfinite (yi)), true);
 %!test
 %! ## pp structure output
 %! x = [1; 2; 3; 4];
 %! y = [2; 4; 6; 8];
 %! pp = makima (x, y);
-%! assert (isstruct (pp));
-%! assert (strcmp (pp.form, 'pp'));
-%! assert (pp.pieces, 3);
-%! assert (pp.order, 4);
+%! assert_equal (isstruct (pp), true);
+%! assert_equal (strcmp (pp.form, 'pp'), true);
+%! assert_equal (pp.pieces, 3);
+%! assert_equal (pp.order, 4);
 %!test
 %! ## Matrix y input.
 %! x = [1; 3; 5];
 %! y = [1 3 2; 2 4 6]; 
 %! xi = 2;
 %! yi = makima (x, y, xi);
-%! assert (size (yi), [2, 1]);
-%! assert (all (isfinite (yi)));
-%! assert (yi(1), 2.304086538461538, 1e-12);
-%! assert (yi(2), 3.000000000000000, 1e-12);
+%! assert_equal (size (yi), [2, 1]);
+%! assert_equal (all (isfinite (yi)), true);
+%! assert_equal (yi(1), 2.304086538461538, 1e-12);
+%! assert_equal (yi(2), 3.000000000000000, 1e-12);
 %!test
 %! ## Extrapolation through default method.
 %! x = [1; 2; 3];
 %! y = [5; 10; 15];
 %! xi = [0; 4];
 %! yi = makima (x, y, xi);
-%! assert (all (isfinite (yi)));
-%! assert (yi, [0; 20], 1e-12);
+%! assert_equal (all (isfinite (yi)), true);
+%! assert_equal (yi, [0; 20], 1e-12);
 %!test
 %! ## Complex interpolation.
 %! x = [1; 2; 4];
 %! y = [1+2i; 2+3i; 4+8i];
 %! xi = 3;
 %! yi = makima (x, y, xi);
-%! assert (yi, 3 + 5.09767206477733i, 1e-12);
-%! assert (iscomplex (yi));
+%! assert_equal (yi, 3 + 5.09767206477733i, 1e-12);
+%! assert_equal (iscomplex (yi), true);
 %!test
 %! ## Two-point interpolation.
 %! x = [1; 5];
 %! y = [10; 30];
 %! xi = 3;
 %! yi = makima (x, y, xi);
-%! assert (yi, 20, 1e-12);
+%! assert_equal (yi, 20, 1e-12);
 %!test
 %! ## Single Precision Input.
 %! x = single ([1; 2; 3]);
 %! y = single ([10; 20; 30]);
 %! xi = single (1.5);
 %! yi = makima (x, y, xi);
-%! assert (isa (yi, 'single'));
-%! assert (yi, single (15), 1e-6);
+%! assert_equal (isa (yi, 'single'), true);
+%! assert_equal (yi, single (15), 1e-6);
 %!test
 %! ## Row vector inputs.
 %! x = [1 2 3];
 %! y = [4 5 6];
 %! xi = [1.5 2.5];
 %! yi = makima (x, y, xi);
-%! assert (yi, [4.5 5.5], 1e-12);
+%! assert_equal (yi, [4.5 5.5], 1e-12);
 %!test
 %! ## Step function.
 %! x = [1 2 3 4 5 6];
@@ -356,7 +356,7 @@ endfunction
 %! xi = [2.5 3.5 4.5];
 %! yi = makima (x, y, xi);
 %! expected_11 = [0.5000, 1.1250, 0.5000];
-%! assert (yi, expected_11, 1e-12);
+%! assert_equal (yi, expected_11, 1e-12);
 %!test
 %! ## Runge function (Oscillation Check)
 %! x = linspace (-1, 1, 7)';
@@ -364,7 +364,7 @@ endfunction
 %! xi = [-0.5; 0.1; 0.5];
 %! yi = makima (x, y, xi);
 %! expected_12 = [0.148690385982729; 0.857734549516009; 0.148690385982729];
-%! assert (yi, expected_12, 1e-12);
+%! assert_equal (yi, expected_12, 1e-12);
 %!test
 %! ## Constant Slopes / Zero Weights
 %! x = [1; 2; 3; 4; 5];
@@ -372,30 +372,30 @@ endfunction
 %! xi = 3.5;
 %! yi = makima (x, y, xi);
 %! expected_13 = [1];
-%! assert (yi, expected_13, 1e-12);
+%! assert_equal (yi, expected_13, 1e-12);
 %!test
 %! ## Empty xq input
 %! x = [1; 2; 3];
 %! y = [4; 5; 6];
 %! xi = [];
 %! yi = makima (x, y, xi);
-%! assert (isempty (yi));
-%! assert (! (iscolumn (yi)));
+%! assert_equal (isempty (yi), true);
+%! assert_equal (! (iscolumn (yi)), true);
 %!test
 %! ## Wide range of y-values
 %! x = [1e-10; 2e-10; 3e-10; 4e-10];
 %! y = [1e10; 2e10; 3e10; 4e10];
 %! xi = 2.5e-10;
 %! yi = makima (x, y, xi);
-%! assert (yi, 2.5e10, 1e-12); 
+%! assert_equal (yi, 2.5e10, 1e-12); 
 %!test
 %! ## Single column matrix input.
 %! x = [1; 2; 3];
 %! y = [10; 20; 30];
 %! xi = [1.5 2.5]; % Row input
 %! yi = makima (x, y, xi);
-%! assert (yi, [15 25], 1e-12);
-%! assert (isrow (yi));
+%! assert_equal (yi, [15 25], 1e-12);
+%! assert_equal (isrow (yi), true);
 %!test
 %! ## Evaluate pp structure with ppval
 %! x = [1; 2; 3; 4];
@@ -404,41 +404,41 @@ endfunction
 %! pp = makima (x, y);
 %! yi_ppval = ppval (pp, xi);
 %! yi_direct = makima (x, y, xi);
-%! assert (yi_ppval, yi_direct, 1e-12);
+%! assert_equal (yi_ppval, yi_direct, 1e-12);
 %!test
 %! ## xq is a 2x2 matrix
 %! x = [1; 2; 3; 4; 5];
 %! y = [10; 20; 15; 5; 25];
 %! xq = [1.5, 2.5; 3.5, 4.5];
 %! yi = makima (x, y, xq);
-%! assert (size (yi), [2, 2]);
+%! assert_equal (size (yi), [2, 2]);
 %! expected = [16.85897435897436, 18.22916666666667; 9.81182795698925, 10.84522332506203];
-%! assert (yi, expected, 1e-12);
+%! assert_equal (yi, expected, 1e-12);
 %!test
 %! ## xq is a 3D array
 %! x = [1; 2; 3; 4; 5];
 %! y = [10; 20; 15; 5; 25];
 %! xq = ones (2, 2, 2) * 2.5;
 %! yi = makima (x, y, xq);
-%! assert (size (yi), [2, 2, 2]);
+%! assert_equal (size (yi), [2, 2, 2]);
 %!test
 %! ## pp structure with matrix y input
 %! x = [1; 3; 5];
 %! y = [1 3 2; 2 4 6]; 
 %! pp = makima (x, y);
-%! assert (isstruct (pp));
-%! assert (pp.pieces, 2);
-%! assert (pp.dim, 2);
+%! assert_equal (isstruct (pp), true);
+%! assert_equal (pp.pieces, 2);
+%! assert_equal (pp.dim, 2);
 %! yi_ppval = ppval (pp, 2);
 %! yi_direct = makima (x, y, 2);
-%! assert (yi_ppval, yi_direct, 1e-12);
+%! assert_equal (yi_ppval, yi_direct, 1e-12);
 %!test
 %! ## y is a 3D array [2x3x4] and x is length 4
 %! x = [1, 2, 3, 4];
 %! xq = [1.5, 2.5, 3.5];
 %! y3 = reshape (1:24, [2, 3, 4]);
 %! yi = makima (x, y3, xq);
-%! assert (size (yi), [2, 3, 3]);
+%! assert_equal (size (yi), [2, 3, 3]);
 %!test
 %! ## Unsorted 'x' inputs 
 %! x_unsorted = [3; 1; 2; 4];
@@ -446,45 +446,45 @@ endfunction
 %! xq = [1.5; 2.5];
 %! x_sorted = [1; 2; 3; 4];
 %! y_sorted = [1; 4; 9; 16];
-%! assert (makima (x_unsorted, y_unsorted, xq), makima (x_sorted, y_sorted, xq), 1e-12);
+%! assert_equal (makima (x_unsorted, y_unsorted, xq), makima (x_sorted, y_sorted, xq), 1e-12);
 %!test
 %! ## Complex piecewise polynomial (pp) structure
 %! x = [1 2 3];
 %! y = [1 4 9] + 1i * [2 8 18];
 %! pp = makima (x, y);
-%! assert (isstruct (pp));
-%! assert (iscomplex (pp.coefs));
-%! assert (ppval (pp, 1.5), makima (x, y, 1.5), 1e-12);
+%! assert_equal (isstruct (pp), true);
+%! assert_equal (iscomplex (pp.coefs), true);
+%! assert_equal (ppval (pp, 1.5), makima (x, y, 1.5), 1e-12);
 %!test
 %! ## N-dimensional y (3D) with N-dimensional xq (2x2 matrix)
 %! x = [1 2 3 4];
 %! y3 = reshape (1:24, [2 3 4]);
 %! xq = [1.5 2.5; 3.5 1.5];
 %! yi = makima (x, y3, xq);
-%! assert (size (yi), [2 3 2 2]);
+%! assert_equal (size (yi), [2 3 2 2]);
 %!test
 %! ## 2-point pp struct 
 %! x = [1; 5];
 %! y = [10; 30];
 %! pp = makima (x, y);
-%! assert (pp.pieces, 1);
-%! assert (pp.order, 4);
-%! assert (ppval (pp, 3), 20, 1e-12);
+%! assert_equal (pp.pieces, 1);
+%! assert_equal (pp.order, 4);
+%! assert_equal (ppval (pp, 3), 20, 1e-12);
 %!test
 %! ## Exact Collinearity
 %! x = [1 2 3 4];
 %! y = [2 4 6 8];
 %! xi = 2.5;
 %! yi = makima (x, y, xi);
-%! assert (yi, 5, 1e-12);
+%! assert_equal (yi, 5, 1e-12);
 %!test
 %! ## Extrapolation check.
 %! x = [1; 2; 3];
 %! y = [5; 10; 15];
 %! xi = [0; 4];
 %! yi = makima (x, y, xi, 'extrap');
-%! assert (all (isfinite (yi)));
-%! assert (yi, [0; 20], 1e-12);
+%! assert_equal (all (isfinite (yi)), true);
+%! assert_equal (yi, [0; 20], 1e-12);
 %!error <makima: the sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
 %!error <makima: invalid number of inputs> makima (1)
 %!error <makima: the first two inputs must have at least two elements.> makima (1, 2, 1.5)

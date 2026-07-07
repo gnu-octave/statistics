@@ -192,43 +192,43 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab] = friedman (popcorn, 3);
-%! assert (p, 0.001028853354594794, 1e-14);
-%! assert (atab.SS(1), 99.75, 1e-14);
-%! assert (atab.df(1), 2, 0);
-%! assert (atab.MS(1), 49.875, 1e-14);
-%! assert (atab.Chi_sq(1), 13.75862068965517, 1e-14);
-%! assert (atab.Prob_Chi_sq(1), 0.001028853354594794, 1e-14);
+%! assert_equal (p, 0.001028853354594794, 1e-14);
+%! assert_equal (atab.SS(1), 99.75, 1e-14);
+%! assert_equal (atab.df(1), 2, 0);
+%! assert_equal (atab.MS(1), 49.875, 1e-14);
+%! assert_equal (atab.Chi_sq(1), 13.75862068965517, 1e-14);
+%! assert_equal (atab.Prob_Chi_sq(1), 0.001028853354594794, 1e-14);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab, stats] = friedman (popcorn, 3);
-%! assert (atab.SS(end), 116, 0);
-%! assert (atab.df(end), 17, 0);
-%! assert (stats.source, 'friedman');
-%! assert (stats.n, 2);
-%! assert (stats.meanranks, [8, 4.75, 2.25], 0);
-%! assert (stats.sigma, 2.692582403567252, 1e-14);
+%! assert_equal (atab.SS(end), 116, 0);
+%! assert_equal (atab.df(end), 17, 0);
+%! assert_equal (stats.source, 'friedman');
+%! assert_equal (stats.n, 2);
+%! assert_equal (stats.meanranks, [8, 4.75, 2.25], 0);
+%! assert_equal (stats.sigma, 2.692582403567252, 1e-14);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! s = evalc ('[p, atab] = friedman (popcorn, 3);');
-%! assert (isempty (strtrim (s)));
+%! assert_equal (isempty (strtrim (s)), true);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! s = evalc ('[p, atab] = friedman (popcorn, 3, "on");');
-%! assert (! isempty (strtrim (s)));
+%! assert_equal (! isempty (strtrim (s)), true);
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [p, atab] = friedman (popcorn, 3);
-%! assert (size (atab, 1), 4, 0);
-%! assert (numel (atab.SS), size (atab, 1), 0);
+%! assert_equal (size (atab, 1), 4, 0);
+%! assert_equal (numel (atab.SS), size (atab, 1), 0);
 %!test
 %! x = [1, 2, 3; 2, 1, 3; 3, 2, 1];
 %! [p, atab] = friedman (x);
-%! assert (size (atab, 1), 3, 0);
-%! assert (numel (atab.SS), size (atab, 1), 0);
+%! assert_equal (size (atab, 1), 3, 0);
+%! assert_equal (numel (atab.SS), size (atab, 1), 0);
 
 %!error<friedman: displayopt must be either 'on' or 'off'.> ...
 %! friedman ([5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; 6.5, 5.0, 4.0; ...

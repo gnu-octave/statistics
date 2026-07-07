@@ -215,19 +215,19 @@ endfunction
 %!test
 %! paramhat = logifit ([1:50]);
 %! paramhat_out = [25.5, 8.7724];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = logifit ([1:5]);
 %! paramhat_out = [3, 0.8645];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = logifit ([1:6], [], [], [1 1 1 1 1 0]);
 %! paramhat_out = [3, 0.8645];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = logifit ([1:5], [], [], [1 1 1 1 2]);
 %! paramhat_out = logifit ([1:5, 5]);
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 
 ## Test input validation
 %!error<logifit: X must be a vector.> logifit (ones (2,5));

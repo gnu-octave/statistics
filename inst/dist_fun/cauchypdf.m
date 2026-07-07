@@ -94,22 +94,22 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = 1/pi * ( 2 ./ ((x-1).^2 + 2^2) );
-%!assert (cauchypdf (x, ones (1,5), 2*ones (1,5)), y)
-%!assert (cauchypdf (x, 1, 2*ones (1,5)), y)
-%!assert (cauchypdf (x, ones (1,5), 2), y)
-%!assert (cauchypdf (x, [-Inf 1 NaN 1 Inf], 2), [NaN y(2) NaN y(4) NaN])
-%!assert (cauchypdf (x, 1, 2*[0 1 NaN 1 Inf]), [NaN y(2) NaN y(4) NaN])
-%!assert (cauchypdf ([x, NaN], 1, 2), [y, NaN])
+%!assert_equal (cauchypdf (x, ones (1,5), 2*ones (1,5)), y)
+%!assert_equal (cauchypdf (x, 1, 2*ones (1,5)), y)
+%!assert_equal (cauchypdf (x, ones (1,5), 2), y)
+%!assert_equal (cauchypdf (x, [-Inf 1 NaN 1 Inf], 2), [NaN y(2) NaN y(4) NaN])
+%!assert_equal (cauchypdf (x, 1, 2*[0 1 NaN 1 Inf]), [NaN y(2) NaN y(4) NaN])
+%!assert_equal (cauchypdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (cauchypdf (single ([x, NaN]), 1, 2), single ([y, NaN]), eps ('single'))
-%!assert (cauchypdf ([x, NaN], single (1), 2), single ([y, NaN]), eps ('single'))
-%!assert (cauchypdf ([x, NaN], 1, single (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (cauchypdf (single ([x, NaN]), 1, 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (cauchypdf ([x, NaN], single (1), 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (cauchypdf ([x, NaN], 1, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Cauchy (0,1) == Student's T distribution with 1 DOF
 %!test
 %! x = rand (10, 1);
-%! assert (cauchypdf (x, 0, 1), tpdf (x, 1), eps);
+%! assert_equal (cauchypdf (x, 0, 1), tpdf (x, 1), eps);
 
 ## Test input validation
 %!error<cauchypdf: function called with too few input arguments.> cauchypdf ()

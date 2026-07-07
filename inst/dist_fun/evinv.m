@@ -159,19 +159,19 @@ endfunction
 %!shared p, x
 %! p = [0, 0.05, 0.5 0.95];
 %! x = [-Inf, -2.9702, -0.3665, 1.0972];
-%!assert (evinv (p), x, 1e-4)
-%!assert (evinv (p, zeros (1,4), ones (1,4)), x, 1e-4)
-%!assert (evinv (p, 0, ones (1,4)), x, 1e-4)
-%!assert (evinv (p, zeros (1,4), 1), x, 1e-4)
-%!assert (evinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, -Inf, NaN, Inf], 1e-4)
-%!assert (evinv (p, 0, [Inf, NaN, -1, 0]), [-Inf, NaN, NaN, NaN], 1e-4)
-%!assert (evinv ([p(1:2), NaN, p(4)], 0, 1), [x(1:2), NaN, x(4)], 1e-4)
+%!assert_equal (evinv (p), x, 1e-4)
+%!assert_equal (evinv (p, zeros (1,4), ones (1,4)), x, 1e-4)
+%!assert_equal (evinv (p, 0, ones (1,4)), x, 1e-4)
+%!assert_equal (evinv (p, zeros (1,4), 1), x, 1e-4)
+%!assert_equal (evinv (p, [0, -Inf, NaN, Inf], 1), [-Inf, -Inf, NaN, Inf], 1e-4)
+%!assert_equal (evinv (p, 0, [Inf, NaN, -1, 0]), [-Inf, NaN, NaN, NaN], 1e-4)
+%!assert_equal (evinv ([p(1:2), NaN, p(4)], 0, 1), [x(1:2), NaN, x(4)], 1e-4)
 
 ## Test class of input preserved
-%!assert (evinv ([p, NaN], 0, 1), [x, NaN], 1e-4)
-%!assert (evinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
-%!assert (evinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
-%!assert (evinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
+%!assert_equal (evinv ([p, NaN], 0, 1), [x, NaN], 1e-4)
+%!assert_equal (evinv (single ([p, NaN]), 0, 1), single ([x, NaN]), 1e-4)
+%!assert_equal (evinv ([p, NaN], single (0), 1), single ([x, NaN]), 1e-4)
+%!assert_equal (evinv ([p, NaN], 0, single (1)), single ([x, NaN]), 1e-4)
 
 ## Test input validation
 %!error<evinv: invalid number of input arguments.> evinv ()

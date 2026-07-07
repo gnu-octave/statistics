@@ -120,20 +120,20 @@ endfunction
 %! x = 1:50;
 %! [nlogL, acov] = wbllike ([2.3, 1.2], x);
 %! avar_out = [0.0250, 0.0062; 0.0062, 0.0017];
-%! assert (nlogL, 945.9589180651594, 1e-12);
-%! assert (acov, avar_out, 1e-4);
+%! assert_equal (nlogL, 945.9589180651594, 1e-12);
+%! assert_equal (acov, avar_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [nlogL, acov] = wbllike ([2.3, 1.2], x * 0.5);
 %! avar_out = [-0.3238, -0.1112; -0.1112, -0.0376];
-%! assert (nlogL, 424.9879809704742, 6e-14);
-%! assert (acov, avar_out, 1e-4);
+%! assert_equal (nlogL, 424.9879809704742, 6e-14);
+%! assert_equal (acov, avar_out, 1e-4);
 %!test
 %! x = 1:50;
 %! [nlogL, acov] = wbllike ([21, 15], x);
 %! avar_out = [-0.00001236, -0.00001166; -0.00001166, -0.00001009];
-%! assert (nlogL, 1635190.328991511, 1e-8);
-%! assert (acov, avar_out, 1e-8);
+%! assert_equal (nlogL, 1635190.328991511, 1e-8);
+%! assert_equal (acov, avar_out, 1e-8);
 
 ## Test input validation
 %!error<wbllike: too few input arguments.> wbllike ([12, 15]);

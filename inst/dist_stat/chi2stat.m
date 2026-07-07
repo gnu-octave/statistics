@@ -73,5 +73,5 @@ endfunction
 %!test
 %! df = 1:6;
 %! [m, v] = chi2stat (df);
-%! assert (m, df);
-%! assert (v, [2, 4, 6, 8, 10, 12], 0.001);
+%! assert_equal (m, df);
+%! assert_equal (v, [2, 4, 6, 8, 10, 12], 0.001);

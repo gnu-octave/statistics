@@ -298,159 +298,159 @@ function [y, i, j] = __unique__ (x, varargin)
 endfunction
 
 
-%!assert (unique ([1 1 2; 1 2 1; 1 1 2]), [1;2])
-%!assert (unique ([1 1 2; 1 0 1; 1 1 2],'rows'), [1 0 1; 1 1 2])
-%!assert (unique ([]), [])
-%!assert (unique ([1]), [1])
-%!assert (unique ([1 2]), [1 2])
-%!assert (unique ([1;2]), [1;2])
-%!assert (unique ([1,NaN,Inf,NaN,Inf]), [1,Inf,NaN,NaN])
-%!assert (unique ([1,NaN,Inf,NaN,Inf], 'stable'), [1,NaN,Inf,NaN])
-%!assert (unique ({'Foo','Bar','Foo'}), {'Bar','Foo'})
-%!assert (unique ({'Foo','Bar','Foo'}, 'stable'), {'Foo', 'Bar'})
-%!assert (unique ({'Foo','Bar','FooBar'}'), {'Bar','Foo','FooBar'}')
-%!assert (unique (zeros (1,0)), zeros (0,1))
-%!assert (unique (zeros (1,0), 'rows'), zeros (1,0))
-%!assert (unique (cell (1,0)), cell (0,1))
-%!assert (unique ({}), {})
-%!assert (unique ([1,2,2,3,2,4], 'rows'), [1,2,2,3,2,4])
-%!assert (unique ([1,2,2,3,2,4]), [1,2,3,4])
-%!assert (unique ([1,2,2,3,2,4]', 'rows'), [1;2;3;4])
-%!assert (unique (sparse ([2,0;2,0])), [0;2])
-%!assert (unique (sparse ([1,2;2,3])), [1;2;3])
-%!assert (unique ([1,2,2,3,2,4]', 'rows'), [1;2;3;4])
-%!assert (unique (single ([1,2,2,3,2,4]), 'rows'), single ([1,2,2,3,2,4]))
-%!assert (unique (single ([1,2,2,3,2,4])), single ([1,2,3,4]))
-%!assert (unique (single ([1,2,2,3,2,4]'), 'rows'), single ([1;2;3;4]))
-%!assert (unique (uint8 ([1,2,2,3,2,4]), 'rows'), uint8 ([1,2,2,3,2,4]))
-%!assert (unique (uint8 ([1,2,2,3,2,4])), uint8 ([1,2,3,4]))
-%!assert (unique (uint8 ([1,2,2,3,2,4]'), 'rows'), uint8 ([1;2;3;4]))
+%!assert_equal (unique ([1 1 2; 1 2 1; 1 1 2]), [1;2])
+%!assert_equal (unique ([1 1 2; 1 0 1; 1 1 2],'rows'), [1 0 1; 1 1 2])
+%!assert_equal (unique ([]), [])
+%!assert_equal (unique ([1]), [1])
+%!assert_equal (unique ([1 2]), [1 2])
+%!assert_equal (unique ([1;2]), [1;2])
+%!assert_equal (unique ([1,NaN,Inf,NaN,Inf]), [1,Inf,NaN,NaN])
+%!assert_equal (unique ([1,NaN,Inf,NaN,Inf], 'stable'), [1,NaN,Inf,NaN])
+%!assert_equal (unique ({'Foo','Bar','Foo'}), {'Bar','Foo'})
+%!assert_equal (unique ({'Foo','Bar','Foo'}, 'stable'), {'Foo', 'Bar'})
+%!assert_equal (unique ({'Foo','Bar','FooBar'}'), {'Bar','Foo','FooBar'}')
+%!assert_equal (unique (zeros (1,0)), zeros (0,1))
+%!assert_equal (unique (zeros (1,0), 'rows'), zeros (1,0))
+%!assert_equal (unique (cell (1,0)), cell (0,1))
+%!assert_equal (unique ({}), {})
+%!assert_equal (unique ([1,2,2,3,2,4], 'rows'), [1,2,2,3,2,4])
+%!assert_equal (unique ([1,2,2,3,2,4]), [1,2,3,4])
+%!assert_equal (unique ([1,2,2,3,2,4]', 'rows'), [1;2;3;4])
+%!assert_equal (unique (sparse ([2,0;2,0])), [0;2])
+%!assert_equal (unique (sparse ([1,2;2,3])), [1;2;3])
+%!assert_equal (unique ([1,2,2,3,2,4]', 'rows'), [1;2;3;4])
+%!assert_equal (unique (single ([1,2,2,3,2,4]), 'rows'), single ([1,2,2,3,2,4]))
+%!assert_equal (unique (single ([1,2,2,3,2,4])), single ([1,2,3,4]))
+%!assert_equal (unique (single ([1,2,2,3,2,4]'), 'rows'), single ([1;2;3;4]))
+%!assert_equal (unique (uint8 ([1,2,2,3,2,4]), 'rows'), uint8 ([1,2,2,3,2,4]))
+%!assert_equal (unique (uint8 ([1,2,2,3,2,4])), uint8 ([1,2,3,4]))
+%!assert_equal (unique (uint8 ([1,2,2,3,2,4]'), 'rows'), uint8 ([1;2;3;4]))
 
 ## Test options with numeric inputs
 %!test
 %! [y,i,j] = unique ([1,1,2,3,3,3,4], 'sorted');
-%! assert (y, [1,2,3,4]);
-%! assert (i, [1;3;4;7]);
-%! assert (j, [1;1;2;3;3;3;4]);
+%! assert_equal (y, [1,2,3,4]);
+%! assert_equal (i, [1;3;4;7]);
+%! assert_equal (j, [1;1;2;3;3;3;4]);
 
 %!test
 %! [y,i,j] = unique ([4,4,2,2,2,3,1], 'stable');
-%! assert (y, [4,2,3,1]);
-%! assert (i, [1;3;6;7]);
-%! assert (j, [1;1;2;2;2;3;4]);
+%! assert_equal (y, [4,2,3,1]);
+%! assert_equal (i, [1;3;6;7]);
+%! assert_equal (j, [1;1;2;2;2;3;4]);
 
 %!test
 %! [y,i,j] = unique ([1,1,2,3,3,3,4]', 'last');
-%! assert (y, [1,2,3,4]');
-%! assert (i, [2;3;6;7]);
-%! assert (j, [1;1;2;3;3;3;4]);
+%! assert_equal (y, [1,2,3,4]');
+%! assert_equal (i, [2;3;6;7]);
+%! assert_equal (j, [1;1;2;3;3;3;4]);
 
 ## Test options with cellstr inputs
 %!test
 %! [y,i,j] = unique ({'z'; 'z'; 'z'});
-%! assert (y, {'z'});
-%! assert (i, [1]);
-%! assert (j, [1;1;1]);
+%! assert_equal (y, {'z'});
+%! assert_equal (i, [1]);
+%! assert_equal (j, [1;1;1]);
 
 %!test
 %! [y,i,~] = unique ({'B'; 'A'; 'B'}, 'stable');
-%! assert (y, {'B'; 'A'});
-%! assert (i, [1; 2]);
+%! assert_equal (y, {'B'; 'A'});
+%! assert_equal (i, [1; 2]);
 
 %!test
 %! A = [1,2,3; 1,2,3];
 %! [y,i,j] = unique (A, 'rows');
-%! assert (y, [1,2,3]);
-%! assert (A(i,:), y);
-%! assert (y(j,:), A);
+%! assert_equal (y, [1,2,3]);
+%! assert_equal (A(i,:), y);
+%! assert_equal (y(j,:), A);
 
 %!test
 %! A = [4,5,6; 1,2,3; 4,5,6];
 %! [y,i,j] = unique (A, 'rows', 'stable');
-%! assert (y, [4,5,6; 1,2,3]);
-%! assert (A(i,:), y);
-%! assert (y(j,:), A);
+%! assert_equal (y, [4,5,6; 1,2,3]);
+%! assert_equal (A(i,:), y);
+%! assert_equal (y(j,:), A);
 
 %!test
 %! A = {'1','2','3'; '1','2','3'};
 %! [y,i,j] = unique (A, 'rows');
-%! assert (y, {'1','2','3'});
-%! assert (A(i,:), y);
-%! assert (y(j,:), A);
+%! assert_equal (y, {'1','2','3'});
+%! assert_equal (A(i,:), y);
+%! assert_equal (y(j,:), A);
 
 %!test
 %! A = {'4','5','6'; '1','2','3'; '4','5','6'};
 %! [y,i,j] = unique (A, 'rows', 'stable');
-%! assert (y, {'4','5','6'; '1','2','3'});
-%! assert (A(i,:), y);
-%! assert (y(j,:), A);
+%! assert_equal (y, {'4','5','6'; '1','2','3'});
+%! assert_equal (A(i,:), y);
+%! assert_equal (y(j,:), A);
 
 ## Test "legacy" option
 %!test
 %! [y,i,j] = unique ([1,1,2,3,3,3,4], 'legacy');
-%! assert (y, [1,2,3,4]);
-%! assert (i, [2,3,6,7]);
-%! assert (j, [1,1,2,3,3,3,4]);
+%! assert_equal (y, [1,2,3,4]);
+%! assert_equal (i, [2,3,6,7]);
+%! assert_equal (j, [1,1,2,3,3,3,4]);
 
 %!test
 %! A = [7 9 7; 0 0 0; 7 9 7; 5 5 5; 1 4 5];
 %! [y,i,j] = unique (A, 'rows', 'legacy');
-%! assert (y, [0 0 0; 1 4 5; 5 5 5; 7 9 7]);
-%! assert (i, [2; 5; 4; 3]);
-%! assert (j, [4; 1; 4; 3; 2]);
+%! assert_equal (y, [0 0 0; 1 4 5; 5 5 5; 7 9 7]);
+%! assert_equal (i, [2; 5; 4; 3]);
+%! assert_equal (j, [4; 1; 4; 3; 2]);
 
 %!test <*65176>
 %! a = [3 2 1 2; 1 2 2 1];
 %! [o1, o2, o3] = unique (a);
-%! assert ({o1, o2, o3}, {[1;2;3], [2;3;1], [3;1;2;2;1;2;2;1]});
+%! assert_equal ({o1, o2, o3}, {[1;2;3], [2;3;1], [3;1;2;2;1;2;2;1]});
 %! [o1, o2, o3] = unique (a, 'stable');
-%! assert ({o1, o2, o3}, {[3;1;2], [1;2;3], [1;2;3;3;2;3;3;2]})
+%! assert_equal ({o1, o2, o3}, {[3;1;2], [1;2;3], [1;2;3;3;2;3;3;2]})
 
 %!test <*65176>
 %! a = [4,2,4,2,2,3,1];
 %! [o1, o2, o3] = unique (a);
-%! assert ({o1, o2, o3}, {[1,2,3,4], [7;2;6;1], [4;2;4;2;2;3;1]});
+%! assert_equal ({o1, o2, o3}, {[1,2,3,4], [7;2;6;1], [4;2;4;2;2;3;1]});
 %! [o1, o2, o3] = unique (a, 'stable');
-%! assert ({o1, o2, o3}, {[4,2,3,1], [1;2;6;7], [1;2;1;2;2;3;4]})
+%! assert_equal ({o1, o2, o3}, {[4,2,3,1], [1;2;6;7], [1;2;1;2;2;3;4]})
 
 %!test <*65176>
 %! a = [3 2 1 2; 2 1 2 1];
 %! [o1, o2, o3] = unique (a(1,:), 'rows');
-%! assert ({o1, o2, o3}, {a(1,:), 1, 1});
+%! assert_equal ({o1, o2, o3}, {a(1,:), 1, 1});
 %! [o1, o2, o3] = unique (a(1,:), 'rows', 'stable');
-%! assert ({o1, o2, o3}, {a(1,:), 1, 1});
+%! assert_equal ({o1, o2, o3}, {a(1,:), 1, 1});
 %! [o1, o2, o3] = unique (a, 'rows');
-%! assert ({o1, o2, o3}, {[a(2,:); a(1,:)], [2;1], [2;1]});
+%! assert_equal ({o1, o2, o3}, {[a(2,:); a(1,:)], [2;1], [2;1]});
 %! [o1, o2, o3] = unique (a, 'rows', 'stable');
-%! assert ({o1, o2, o3}, {a, [1;2], [1;2]});
+%! assert_equal ({o1, o2, o3}, {a, [1;2], [1;2]});
 %! [o1, o2, o3] = unique ([a;a], 'rows');
-%! assert ({o1, o2, o3}, {[a(2,:); a(1,:)], [2;1], [2;1;2;1]});
+%! assert_equal ({o1, o2, o3}, {[a(2,:); a(1,:)], [2;1], [2;1;2;1]});
 %! [o1, o2, o3] = unique ([a;a], 'rows', 'stable');
-%! assert ({o1, o2, o3}, {a, [1;2], [1;2;1;2]});
+%! assert_equal ({o1, o2, o3}, {a, [1;2], [1;2;1;2]});
 
 
 %!test <*65176>
 %! a = gallery ('integerdata', [-100, 100], 6, 6);
 %! a = [a(2,:); a(1:5,:); a(2:6,:)];
 %! [o1, o2, o3] = unique (a);
-%! assert ({o1, o1(o3), o2, o3}, {a(:)(o2), a(:), ...
+%! assert_equal ({o1, o1(o3), o2, o3}, {a(:)(o2), a(:), ...
 %! [26;22;34;45;57; 6;11;17;33;28;35;15;56; 2;59; 4;66; ...
 %!  16;50;49;27;24;37;44;48;39;38;13;23; 5;12;46;55; 1], ...
 %! [34;14;34;16;30; 6;34;16;30; 6; 7;31;28;31;12;18; 8;31;12;18; 8; 2;29; ...
 %!  22;29; 1;21;10;29; 1;21;10; 9; 3;11; 3;23;27;26; 3;23;27;26;24; 4;32; ...
 %!  4; 25;20;19; 4;25;20;19;33;13; 5;13;15; 2;24;13;15; 2;24;17]});
 %! [o1, o2, o3] = unique (a, 'stable');
-%! assert ({o1, o1(o3), o2, o3}, {a(:)(o2), a(:), ...
+%! assert_equal ({o1, o1(o3), o2, o3}, {a(:)(o2), a(:), ...
 %! [ 1; 2; 4; 5; 6;11;12;13;15;16;17;22;23;24;26;27;28; ...
 %!  33;34;35;37;38;39;44;45;46;48;49;50;55;56;57;59;66], ...
 %! [ 1; 2; 1; 3; 4; 5; 1; 3; 4; 5; 6; 7; 8; 7; 9;10;11; 7; 9;10;11;12;13; ...
 %!  14;13;15;16;17;13;15;16;17;18;19;20;19;21;22;23;19;21;22;23;24;25;26;...
 %!  25;27;28;29;25;27;28;29;30;31;32;31;33;12;24;31;33;12;24;34]});
 %! [o1, o2, o3] = unique (a, 'rows');
-%! assert ({o1, o1(o3,:), o2, o3}, {a(o2,:), a, ...
+%! assert_equal ({o1, o1(o3,:), o2, o3}, {a(o2,:), a, ...
 %! [6;11;2;4;5;1], [6;3;6;4;5;1;6;4;5;1;2]});
 %! [o1, o2, o3] = unique (a, 'rows', 'stable');
-%! assert ({o1, o1(o3,:), o2, o3}, {a(o2,:), a, ...
+%! assert_equal ({o1, o1(o3,:), o2, o3}, {a(o2,:), a, ...
 %! [1;2;4;5;6;11], [1;2;1;3;4;5;1;3;4;5;6]});
 
 ## Test input validation

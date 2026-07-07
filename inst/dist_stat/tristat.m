@@ -91,5 +91,5 @@ endfunction
 %! c = 5:9;
 %! [m, v] = tristat (a, b, c);
 %! expected_m = [3, 4, 5, 6, 7];
-%! assert (m, expected_m);
-%! assert (v, ones (1, 5) * (2/3));
+%! assert_equal (m, expected_m);
+%! assert_equal (v, ones (1, 5) * (2/3));

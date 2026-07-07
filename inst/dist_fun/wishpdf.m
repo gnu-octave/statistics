@@ -68,9 +68,9 @@ function y = wishpdf (W, Sigma, df, log_y=false)
 endfunction
 
 ##test results cross-checked against dwish function in R MCMCpack library
-%!assert (wishpdf (4, 3, 3.1), 0.07702496, 1E-7);
-%!assert (wishpdf ([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
-%!assert (wishpdf ([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
+%!assert_equal (wishpdf (4, 3, 3.1), 0.07702496, 1E-7);
+%!assert_equal (wishpdf ([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
+%!assert_equal (wishpdf ([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
 
 %% Test input validation
 %!error wishpdf ()

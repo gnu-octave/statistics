@@ -493,7 +493,7 @@ endclassdef
 %! load fisheriris
 %! eva = evalclusters (meas([1:50],:), 'kmeans', 'gap', 'KList', [1:3], ...
 %!                     'referencedistribution', 'uniform');
-%! assert (class (eva), "GapEvaluation");
+%! assert_equal (class (eva), "GapEvaluation");
 
 %!function C = count_calls_gap (X, k)
 %!  global count_calls_gap_n;
@@ -506,5 +506,5 @@ endclassdef
 %! count_calls_gap_n = 0;
 %! evalclusters (rand (20, 2), @count_calls_gap, 'gap', ...
 %!               'KList', [2, 3], 'B', 2);
-%! assert (count_calls_gap_n, 6);
+%! assert_equal (count_calls_gap_n, 6);
 %! clear -global count_calls_gap_n;

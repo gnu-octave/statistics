@@ -144,9 +144,9 @@ endfunction
 %! x = [-pi:pi/2:pi];
 %! p0 = [0, 0.10975, 0.5, 0.89025, 1];
 %! p1 = [0, 0.03752, 0.5, 0.99622, 1];
-%!assert (vminv (p0, 0, 1), x, 5e-5)
-%!assert (vminv (p0, zeros (1,5), ones (1,5)), x, 5e-5)
-%!assert (vminv (p1, 0, [1 2 3 4 5]), x, [5e-5, 5e-4, 5e-5, 5e-4, 5e-5])
+%!assert_equal (vminv (p0, 0, 1), x, 5e-5)
+%!assert_equal (vminv (p0, zeros (1,5), ones (1,5)), x, 5e-5)
+%!assert_equal (vminv (p1, 0, [1 2 3 4 5]), x, [5e-5, 5e-4, 5e-5, 5e-4, 5e-5])
 
 ## Test input validation
 %!error<vminv: function called with too few input arguments.> vminv ()

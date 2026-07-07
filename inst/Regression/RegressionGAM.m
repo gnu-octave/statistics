@@ -857,12 +857,12 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4];
 %! a = RegressionGAM (x, y);
-%! assert ({a.X, a.Y}, {x, y})
-%! assert ({a.BaseModel.Intercept}, {2.5000})
-%! assert ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
-%! assert ({a.NumObservations, a.NumPredictors}, {4, 3})
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
-%! assert ({a.Formula}, {[]})
+%! assert_equal ({a.X, a.Y}, {x, y})
+%! assert_equal ({a.BaseModel.Intercept}, {2.5000})
+%! assert_equal ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
+%! assert_equal ({a.NumObservations, a.NumPredictors}, {4, 3})
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
+%! assert_equal ({a.Formula}, {[]})
 %!test
 %! x = [1, 2, 3, 4; 4, 5, 6, 7; 7, 8, 9, 1; 3, 2, 1, 2];
 %! y = [1; 2; 3; 4];
@@ -870,9 +870,9 @@ endfunction
 %! formula = 'Y ~ A + B + C + D + A:C';
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = RegressionGAM (x, y, 'predictors', pnames, 'formula', formula);
-%! assert (a.IntMatrix, double (intMat))
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
-%! assert (a.Formula, formula)
+%! assert_equal (a.IntMatrix, double (intMat))
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
+%! assert_equal (a.Formula, formula)
 
 %!test
 %! ## Test that predict() executes correctly when interactions are present
@@ -880,12 +880,12 @@ endfunction
 %! Y = [10; 20; 30; 40];
 %! mdl = RegressionGAM (X, Y, 'formula', 'Y ~ x1 + x2 + x1:x2');
 %! ypred = predict (mdl, X);
-%! assert (isnumeric (ypred));
-%! assert (size (ypred), [4, 1]);
+%! assert_equal (isnumeric (ypred), true);
+%! assert_equal (size (ypred), [4, 1]);
 %! [ypred2, ySD, yInt] = predict (mdl, X, 'includeinteractions', true);
-%! assert (size (ypred2), [4, 1]);
-%! assert (size (ySD), [4, 1]);
-%! assert (size (yInt), [4, 2]);
+%! assert_equal (size (ypred2), [4, 1]);
+%! assert_equal (size (ySD), [4, 1]);
+%! assert_equal (size (yInt), [4, 2]);
 
 %!test
 %! ## Verify ySD is based on training residual variance
@@ -896,7 +896,7 @@ endfunction
 %! rs = Y - y_train;
 %! expected_ySD = sqrt (var (rs));
 %! [~, ySD] = predict (mdl, X(1:4,:));
-%! assert (ySD, expected_ySD * ones (4, 1), 1e-10);
+%! assert_equal (ySD, expected_ySD * ones (4, 1), 1e-10);
 
 %!test
 %! ## Verify ySD remains the same for one or more prediction points
@@ -907,8 +907,8 @@ endfunction
 %! expected_ySD = sqrt (var (Y - y_train));
 %! [~, ySD_1] = predict (mdl, X(1,:));
 %! [~, ySD_3] = predict (mdl, X(1:3,:));
-%! assert (ySD_1, expected_ySD, 1e-10);
-%! assert (ySD_3, expected_ySD * ones (3, 1), 1e-10);
+%! assert_equal (ySD_1, expected_ySD, 1e-10);
+%! assert_equal (ySD_3, expected_ySD * ones (3, 1), 1e-10);
 
 ## Test input validation for constructor
 %!error<RegressionGAM: too few input arguments.> RegressionGAM ()

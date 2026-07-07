@@ -108,20 +108,20 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (norminv (p, ones (1,5), ones (1,5)), [NaN -Inf 1 Inf NaN])
-%!assert (norminv (p, 1, ones (1,5)), [NaN -Inf 1 Inf NaN])
-%!assert (norminv (p, ones (1,5), 1), [NaN -Inf 1 Inf NaN])
-%!assert (norminv (p, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
-%!assert (norminv (p, 1, [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
-%!assert (norminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN -Inf NaN Inf NaN])
-%!assert (norminv (p), probit (p))
-%!assert (norminv (0.31254), probit (0.31254))
+%!assert_equal (norminv (p, ones (1,5), ones (1,5)), [NaN -Inf 1 Inf NaN])
+%!assert_equal (norminv (p, 1, ones (1,5)), [NaN -Inf 1 Inf NaN])
+%!assert_equal (norminv (p, ones (1,5), 1), [NaN -Inf 1 Inf NaN])
+%!assert_equal (norminv (p, [1 -Inf NaN Inf 1], 1), [NaN NaN NaN NaN NaN])
+%!assert_equal (norminv (p, 1, [1 0 NaN Inf 1]), [NaN NaN NaN NaN NaN])
+%!assert_equal (norminv ([p(1:2) NaN p(4:5)], 1, 1), [NaN -Inf NaN Inf NaN])
+%!assert_equal (norminv (p), probit (p))
+%!assert_equal (norminv (0.31254), probit (0.31254))
 
 ## Test class of input preserved
-%!assert (norminv ([p, NaN], 1, 1), [NaN -Inf 1 Inf NaN NaN])
-%!assert (norminv (single ([p, NaN]), 1, 1), single ([NaN -Inf 1 Inf NaN NaN]))
-%!assert (norminv ([p, NaN], single (1), 1), single ([NaN -Inf 1 Inf NaN NaN]))
-%!assert (norminv ([p, NaN], 1, single (1)), single ([NaN -Inf 1 Inf NaN NaN]))
+%!assert_equal (norminv ([p, NaN], 1, 1), [NaN -Inf 1 Inf NaN NaN])
+%!assert_equal (norminv (single ([p, NaN]), 1, 1), single ([NaN -Inf 1 Inf NaN NaN]))
+%!assert_equal (norminv ([p, NaN], single (1), 1), single ([NaN -Inf 1 Inf NaN NaN]))
+%!assert_equal (norminv ([p, NaN], 1, single (1)), single ([NaN -Inf 1 Inf NaN NaN]))
 
 ## Test input validation
 %!error<norminv: function called with too few input arguments.> norminv ()

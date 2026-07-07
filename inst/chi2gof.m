@@ -444,10 +444,10 @@ endfunction
 %!test
 %! x = [1 2 1 3 2 4 3 2 4 3 2 2];
 %! [h, p, stats] = chi2gof (x);
-%! assert (h, 0);
-%! assert (p, NaN);
-%! assert (stats.chi2stat, 0.1205375022748029, 1e-14);
-%! assert (stats.df, 0);
-%! assert (stats.edges, [1, 2.5, 4], 1e-14);
-%! assert (stats.O, [7, 5], 1e-14);
-%! assert (stats.E, [6.399995519909668, 5.600004480090332], 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (p, NaN);
+%! assert_equal (stats.chi2stat, 0.1205375022748029, 1e-14);
+%! assert_equal (stats.df, 0);
+%! assert_equal (stats.edges, [1, 2.5, 4], 1e-14);
+%! assert_equal (stats.O, [7, 5], 1e-14);
+%! assert_equal (stats.E, [6.399995519909668, 5.600004480090332], 1e-14);

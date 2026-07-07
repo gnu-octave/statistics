@@ -172,6 +172,6 @@ endfunction
 %! randn ('seed', 5);
 %! x2 = randn (30000, 5);
 %! [h, pval, stats] = hotelling_t2test2 (x1, x2);
-%! assert (h, 0);
-%! assert (stats.df1, 5);
-%! assert (stats.df2, 89994);
+%! assert_equal (h, 0);
+%! assert_equal (stats.df1, 5);
+%! assert_equal (stats.df2, 89994);

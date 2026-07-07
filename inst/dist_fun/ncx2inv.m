@@ -177,24 +177,24 @@ endfunction
 ## Test output
 %!test
 %! x = [0,0.3443,0.7226,1.1440,1.6220,2.1770,2.8436,3.6854,4.8447,6.7701,Inf];
-%! assert (ncx2inv ([0:0.1:1], 2, 1), x, 1e-4);
+%! assert_equal (ncx2inv ([0:0.1:1], 2, 1), x, 1e-4);
 %!test
 %! x = [0,0.8295,1.6001,2.3708,3.1785,4.0598,5.0644,6.2765,7.8763,10.4199,Inf];
-%! assert (ncx2inv ([0:0.1:1], 2, 3), x, 1e-4);
+%! assert_equal (ncx2inv ([0:0.1:1], 2, 3), x, 1e-4);
 %!test
 %! x = [0,0.5417,1.3483,2.1796,3.0516,4.0003,5.0777,6.3726,8.0748,10.7686,Inf];
-%! assert (ncx2inv ([0:0.1:1], 1, 4), x, 1e-4);
+%! assert_equal (ncx2inv ([0:0.1:1], 1, 4), x, 1e-4);
 %!test
 %! x = [0.1808, 0.6456, 1.1842, 1.7650, 2.3760, 3.0105];
-%! assert (ncx2inv (0.05, [1, 2, 3, 4, 5, 6], 4), x, 1e-4);
+%! assert_equal (ncx2inv (0.05, [1, 2, 3, 4, 5, 6], 4), x, 1e-4);
 %!test
 %! x = [0.4887, 0.6699, 0.9012, 1.1842, 1.5164, 1.8927];
-%! assert (ncx2inv (0.05, 3, [1, 2, 3, 4, 5, 6]), x, 1e-4);
+%! assert_equal (ncx2inv (0.05, 3, [1, 2, 3, 4, 5, 6]), x, 1e-4);
 %!test
 %! x = [1.3941, 1.6824, 2.0103, 2.3760, NaN, 3.2087];
-%! assert (ncx2inv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
+%! assert_equal (ncx2inv (0.05, 5, [1, 2, 3, 4, -1, 6]), x, 1e-4);
 %!test
-%! assert (ncx2inv (0.996, 5, 8), 35.51298862765576, 3e-13);
+%! assert_equal (ncx2inv (0.996, 5, 8), 35.51298862765576, 3e-13);
 
 ## Test input validation
 %!error<ncx2inv: function called with too few input arguments.> ncx2inv ()

@@ -790,31 +790,31 @@ endfunction
 %!shared pd, t
 %! pd = InverseGaussianDistribution (1, 1);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0:5]), [0, 0.6681, 0.8855, 0.9532, 0.9791, 0.9901], 1e-4);
-%!assert (cdf (t, [0:5]), [0, 0, 0, 0.7234, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.8108, 0.8855, 0.9532, 0.9791], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.7234, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [0, 0.3320, 0.5411, 0.8483, 1.4479, Inf], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2.1889, 2.4264, 2.7417, 3.1993, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.5411, 0.8483, 1.4479, Inf, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.4264, 2.7417, 3.1993, 4, NaN], 1e-4);
-%!assert (iqr (pd), 0.8643, 1e-4);
-%!assert (iqr (t), 0.8222, 1e-4);
-%!assert (mean (pd), 1);
-%!assert (mean (t), 2.6953, 1e-4);
-%!assert (median (pd), 0.6758, 1e-4);
-%!assert (median (t), 2.5716, 1e-4);
-%!assert (pdf (pd, [0:5]), [0, 0.3989, 0.1098, 0.0394, 0.0162, 0.0072], 1e-4);
-%!assert (pdf (t, [0:5]), [0, 0, 1.1736, 0.4211, 0.1730, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.3989, 0.1098, 0.0394, 0.0162, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 1.1736, 0.4211, 0.1730, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 1);
-%!assert (std (t), 0.5332, 1e-4);
-%!assert (var (pd), 1);
-%!assert (var (t), 0.2843, 1e-4);
+%!assert_equal (cdf (pd, [0:5]), [0, 0.6681, 0.8855, 0.9532, 0.9791, 0.9901], 1e-4);
+%!assert_equal (cdf (t, [0:5]), [0, 0, 0, 0.7234, 1, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.8108, 0.8855, 0.9532, 0.9791], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.7234, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [0, 0.3320, 0.5411, 0.8483, 1.4479, Inf], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2.1889, 2.4264, 2.7417, 3.1993, 4], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 0.5411, 0.8483, 1.4479, Inf, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.4264, 2.7417, 3.1993, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 0.8643, 1e-4);
+%!assert_equal (iqr (t), 0.8222, 1e-4);
+%!assert_equal (mean (pd), 1);
+%!assert_equal (mean (t), 2.6953, 1e-4);
+%!assert_equal (median (pd), 0.6758, 1e-4);
+%!assert_equal (median (t), 2.5716, 1e-4);
+%!assert_equal (pdf (pd, [0:5]), [0, 0.3989, 0.1098, 0.0394, 0.0162, 0.0072], 1e-4);
+%!assert_equal (pdf (t, [0:5]), [0, 0, 1.1736, 0.4211, 0.1730, 0], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1:4, NaN]), [0, 0.3989, 0.1098, 0.0394, 0.0162, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1:4, NaN]), [0, 0, 1.1736, 0.4211, 0.1730, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), 1);
+%!assert_equal (std (t), 0.5332, 1e-4);
+%!assert_equal (var (pd), 1);
+%!assert_equal (var (t), 0.2843, 1e-4);
 
 ## Test input validation
 ## 'InverseGaussianDistribution' constructor

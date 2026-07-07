@@ -109,13 +109,13 @@ endfunction
 %!shared x, y
 %! x = [-Inf, -1, 0, 1/2, 1, Inf];
 %! y = [0, 0, 0.7979, 0.7041, 0.4839, 0];
-%!assert (hnpdf ([x, NaN], 0, 1), [y, NaN], 1e-4)
-%!assert (hnpdf (x, 0, [-2, -1, 0, 1, 1, 1]), [nan(1,3), y([4:6])], 1e-4)
+%!assert_equal (hnpdf ([x, NaN], 0, 1), [y, NaN], 1e-4)
+%!assert_equal (hnpdf (x, 0, [-2, -1, 0, 1, 1, 1]), [nan(1,3), y([4:6])], 1e-4)
 
 ## Test class of input preserved
-%!assert (class (hncdf (single ([x, NaN]), 0, 1)), "single")
-%!assert (class (hncdf ([x, NaN], 0, single (1))), "single")
-%!assert (class (hncdf ([x, NaN], single (0), 1)), "single")
+%!assert_equal (class (hncdf (single ([x, NaN]), 0, 1)), "single")
+%!assert_equal (class (hncdf ([x, NaN], 0, single (1))), "single")
+%!assert_equal (class (hncdf ([x, NaN], single (0), 1)), "single")
 
 ## Test input validation
 %!error<hnpdf: function called with too few input arguments.> hnpdf ()

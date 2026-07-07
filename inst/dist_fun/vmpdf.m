@@ -91,14 +91,14 @@ endfunction
 %! x = [-pi:pi/2:pi];
 %! y0 = [0.046245, 0.125708, 0.341710, 0.125708, 0.046245];
 %! y1 = [0.046245, 0.069817, 0.654958, 0.014082, 0.000039];
-%!assert (vmpdf (x, 0, 1), y0, 1e-5)
-%!assert (vmpdf (x, zeros (1,5), ones (1,5)), y0, 1e-6)
-%!assert (vmpdf (x, 0, [1 2 3 4 5]), y1, 1e-6)
+%!assert_equal (vmpdf (x, 0, 1), y0, 1e-5)
+%!assert_equal (vmpdf (x, zeros (1,5), ones (1,5)), y0, 1e-6)
+%!assert_equal (vmpdf (x, 0, [1 2 3 4 5]), y1, 1e-6)
 
 ## Test class of input preserved
-%!assert (isa (vmpdf (single (pi), 0, 1), 'single'), true)
-%!assert (isa (vmpdf (pi, single (0), 1), 'single'), true)
-%!assert (isa (vmpdf (pi, 0, single (1)), 'single'), true)
+%!assert_equal (isa (vmpdf (single (pi), 0, 1), 'single'), true)
+%!assert_equal (isa (vmpdf (pi, single (0), 1), 'single'), true)
+%!assert_equal (isa (vmpdf (pi, 0, single (1)), 'single'), true)
 
 ## Test input validation
 %!error<vmpdf: function called with too few input arguments.> vmpdf ()

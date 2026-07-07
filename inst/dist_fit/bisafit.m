@@ -212,11 +212,11 @@ endfunction
 %!test
 %! paramhat = bisafit ([1:50]);
 %! paramhat_out = [16.2649, 1.0156];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = bisafit ([1:5]);
 %! paramhat_out = [2.5585, 0.5839];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 
 ## Test input validation
 %!error<bisafit: X must be a vector.> bisafit (ones (2,5));

@@ -252,29 +252,29 @@ endfunction
 ## Test output
 %!test
 %! [paramhat, paramci] = nbinfit ([1:50]);
-%! assert (paramhat, [2.420857, 0.086704], 1e-6);
-%! assert (paramci(:,1), [1.382702; 3.459012], 1e-6);
-%! assert (paramci(:,2), [0.049676; 0.123732], 1e-6);
+%! assert_equal (paramhat, [2.420857, 0.086704], 1e-6);
+%! assert_equal (paramci(:,1), [1.382702; 3.459012], 1e-6);
+%! assert_equal (paramci(:,2), [0.049676; 0.123732], 1e-6);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:20]);
-%! assert (paramhat, [3.588233, 0.254697], 1e-6);
-%! assert (paramci(:,1), [0.451693; 6.724774], 1e-6);
-%! assert (paramci(:,2), [0.081143; 0.428251], 1e-6);
+%! assert_equal (paramhat, [3.588233, 0.254697], 1e-6);
+%! assert_equal (paramci(:,1), [0.451693; 6.724774], 1e-6);
+%! assert_equal (paramci(:,2), [0.081143; 0.428251], 1e-6);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:10]);
-%! assert (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:10], 0.05, ones (1, 10));
-%! assert (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
 %!test
 %! [paramhat, paramci] = nbinfit ([1:11], 0.05, [ones(1, 10), 0]);
-%! assert (paramhat, [8.8067, 0.6156], 1e-4);
-%! assert (paramci(:,1), [0; 30.7068], 1e-4);
-%! assert (paramci(:,2), [0.0217; 1], 1e-4);
+%! assert_equal (paramhat, [8.8067, 0.6156], 1e-4);
+%! assert_equal (paramci(:,1), [0; 30.7068], 1e-4);
+%! assert_equal (paramci(:,2), [0.0217; 1], 1e-4);
 
 ## Test input validation
 %!error<nbinfit: X cannot have negative values.> nbinfit ([-1 2 3 3])

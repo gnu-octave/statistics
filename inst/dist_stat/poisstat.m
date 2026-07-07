@@ -73,5 +73,5 @@ endfunction
 %!test
 %! lambda = 1 ./ (1:6);
 %! [m, v] = poisstat (lambda);
-%! assert (m, lambda);
-%! assert (v, lambda);
+%! assert_equal (m, lambda);
+%! assert_equal (v, lambda);

@@ -104,13 +104,13 @@ endfunction
 %!shared x,y
 %! x = [-1 0 0.5 1 Inf];
 %! y = gampdf (x, 1, 2);
-%!assert (exppdf (x, 2*ones (1,5)), y)
-%!assert (exppdf (x, 2*[1 0 NaN 1 1]), [y(1) NaN NaN y(4:5)])
-%!assert (exppdf ([x, NaN], 2), [y, NaN])
+%!assert_equal (exppdf (x, 2*ones (1,5)), y)
+%!assert_equal (exppdf (x, 2*[1 0 NaN 1 1]), [y(1) NaN NaN y(4:5)])
+%!assert_equal (exppdf ([x, NaN], 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (exppdf (single ([x, NaN]), 2), single ([y, NaN]))
-%!assert (exppdf ([x, NaN], single (2)), single ([y, NaN]))
+%!assert_equal (exppdf (single ([x, NaN]), 2), single ([y, NaN]))
+%!assert_equal (exppdf ([x, NaN], single (2)), single ([y, NaN]))
 
 ## Test input validation
 %!error<exppdf: function called with too few input arguments.> exppdf ()

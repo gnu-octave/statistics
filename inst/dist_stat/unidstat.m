@@ -77,5 +77,5 @@ endfunction
 %! [m, v] = unidstat (N);
 %! expected_m = [1.0000, 1.5000, 2.0000, 2.5000, 3.0000, 3.5000];
 %! expected_v = [0.0000, 0.2500, 0.6667, 1.2500, 2.0000, 2.9167];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);

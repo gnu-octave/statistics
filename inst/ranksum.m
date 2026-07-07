@@ -307,21 +307,21 @@ endfunction
 %!            32.9, 33.8, 37.6; 32.6, 33.4, 36.6; ...
 %!            32.5, 33.7, 37.0; 33.0, 33.9, 36.7];
 %! [p,h,stats] = ranksum (mileage(:,1),mileage(:,2));
-%! assert (p, 0.004329004329004329, 1e-14);
-%! assert (h, true);
-%! assert (stats.ranksum, 21.5);
+%! assert_equal (p, 0.004329004329004329, 1e-14);
+%! assert_equal (h, true);
+%! assert_equal (stats.ranksum, 21.5);
 %!test
 %! year1 = [51 52 62 62 52 52 51 53 59 63 59 56 63 74 68 86 82 70 69 75 73 ...
 %!          49 47 50 60 59 60 62 61 71]';
 %! year2 = [54 53 64 66 57 53 54 54 62 66 59 59 67 76 75 86 82 67 74 80 75 ...
 %!          54 50 53 62 62 62 72 60 67]';
 %! [p,h,stats] = ranksum (year1, year2, 'alpha', 0.01, 'tail', 'left');
-%! assert (p, 0.1270832752950605, 1e-14);
-%! assert (h, false);
-%! assert (stats.ranksum, 837.5);
-%! assert (stats.zval, -1.140287483634606, 1e-14);
+%! assert_equal (p, 0.1270832752950605, 1e-14);
+%! assert_equal (h, false);
+%! assert_equal (stats.ranksum, 837.5);
+%! assert_equal (stats.zval, -1.140287483634606, 1e-14);
 %! [p,h,stats] = ranksum (year1, year2, 'alpha', 0.01, 'tail', 'left', ...
 %!                       'method', 'exact');
-%! assert (p, 0.127343916432862, 1e-14);
-%! assert (h, false);
-%! assert (stats.ranksum, 837.5);
+%! assert_equal (p, 0.127343916432862, 1e-14);
+%! assert_equal (h, false);
+%! assert_equal (stats.ranksum, 837.5);

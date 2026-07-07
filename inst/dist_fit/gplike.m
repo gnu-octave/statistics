@@ -143,19 +143,19 @@ endfunction
 %! x = [2.2196, 11.9301, 4.3673, 1.0949, 6.5626, ...
 %!      1.2109, 1.8576, 1.0039, 12.7917, 2.2590];
 %! [nlogL, acov] = gplike ([k, sigma, theta], x);
-%! assert (nlogL, 21.736, 1e-3);
-%! assert (acov, [0.7249, -0.7351, 0; -0.7351, 1.3040, 0; 0, 0, 0], 1e-4);
-%!assert (gplike ([2, 3, 0], 4), 3.047536764863501, 1e-14)
-%!assert (gplike ([2, 3, 4], 8), 3.047536764863501, 1e-14)
-%!assert (gplike ([1, 2, 0], 4), 2.890371757896165, 1e-14)
-%!assert (gplike ([1, 2, 4], 8), 2.890371757896165, 1e-14)
-%!assert (gplike ([2, 3, 0], [1:10]), 32.57864322725392, 1e-14)
-%!assert (gplike ([2, 3, 2], [1:10] + 2), 32.57864322725392, 1e-14)
-%!assert (gplike ([2, 3, 0], [1:10], ones (1,10)), 32.57864322725392, 1e-14)
-%!assert (gplike ([1, 2, 0], [1:10]), 31.65666282460443, 1e-14)
-%!assert (gplike ([1, 2, 3], [1:10] + 3), 31.65666282460443, 1e-14)
-%!assert (gplike ([1, 2, 0], [1:10], ones (1,10)), 31.65666282460443, 1e-14)
-%!assert (gplike ([1, NaN, 0], [1:10]), NaN)
+%! assert_equal (nlogL, 21.736, 1e-3);
+%! assert_equal (acov, [0.7249, -0.7351, 0; -0.7351, 1.3040, 0; 0, 0, 0], 1e-4);
+%!assert_equal (gplike ([2, 3, 0], 4), 3.047536764863501, 1e-14)
+%!assert_equal (gplike ([2, 3, 4], 8), 3.047536764863501, 1e-14)
+%!assert_equal (gplike ([1, 2, 0], 4), 2.890371757896165, 1e-14)
+%!assert_equal (gplike ([1, 2, 4], 8), 2.890371757896165, 1e-14)
+%!assert_equal (gplike ([2, 3, 0], [1:10]), 32.57864322725392, 1e-14)
+%!assert_equal (gplike ([2, 3, 2], [1:10] + 2), 32.57864322725392, 1e-14)
+%!assert_equal (gplike ([2, 3, 0], [1:10], ones (1,10)), 32.57864322725392, 1e-14)
+%!assert_equal (gplike ([1, 2, 0], [1:10]), 31.65666282460443, 1e-14)
+%!assert_equal (gplike ([1, 2, 3], [1:10] + 3), 31.65666282460443, 1e-14)
+%!assert_equal (gplike ([1, 2, 0], [1:10], ones (1,10)), 31.65666282460443, 1e-14)
+%!assert_equal (gplike ([1, NaN, 0], [1:10]), NaN)
 
 ## Test input validation
 %!error<gplike: function called with too few input arguments.> gplike ()

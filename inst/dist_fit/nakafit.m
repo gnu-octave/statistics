@@ -201,19 +201,19 @@ endfunction
 %!test
 %! paramhat = nakafit ([1:50]);
 %! paramhat_out = [0.7355, 858.5];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = nakafit ([1:5]);
 %! paramhat_out = [1.1740, 11];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = nakafit ([1:6], [], [], [1 1 1 1 1 0]);
 %! paramhat_out = [1.1740, 11];
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 %!test
 %! paramhat = nakafit ([1:5], [], [], [1 1 1 1 2]);
 %! paramhat_out = nakafit ([1:5, 5]);
-%! assert (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
 
 ## Test input validation
 %!error<nakafit: X must be a vector.> nakafit (ones (2,5));

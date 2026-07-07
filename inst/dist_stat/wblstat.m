@@ -92,12 +92,12 @@ endfunction
 %! [m, v] = wblstat (lambda, k);
 %! expected_m = [3.0000, 3.5449, 4.4649, 5.4384, 6.4272, 7.4218];
 %! expected_v = [9.0000, 3.4336, 2.6333, 2.3278, 2.1673, 2.0682];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! k = 1:6;
 %! [m, v] = wblstat (6, k);
 %! expected_m = [ 6.0000, 5.3174, 5.3579, 5.4384, 5.5090, 5.5663];
 %! expected_v = [36.0000, 7.7257, 3.7920, 2.3278, 1.5923, 1.1634];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);

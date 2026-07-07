@@ -127,17 +127,17 @@ endfunction
 %!shared x, y
 %! x = [0 1 2.5 10 11];
 %! y = [0, 0.1 0.2 1.0 1.0];
-%!assert (unidcdf (x, 10*ones (1,5)), y)
-%!assert (unidcdf (x, 10*ones (1,5), 'upper'), 1 - y)
-%!assert (unidcdf (x, 10), y)
-%!assert (unidcdf (x, 10, 'upper'), 1 - y)
-%!assert (unidcdf (x, 10*[0 1 NaN 1 1]), [NaN 0.1 NaN y(4:5)])
-%!assert (unidcdf ([x(1:2) NaN Inf x(5)], 10), [y(1:2) NaN 1 y(5)])
+%!assert_equal (unidcdf (x, 10*ones (1,5)), y)
+%!assert_equal (unidcdf (x, 10*ones (1,5), 'upper'), 1 - y)
+%!assert_equal (unidcdf (x, 10), y)
+%!assert_equal (unidcdf (x, 10, 'upper'), 1 - y)
+%!assert_equal (unidcdf (x, 10*[0 1 NaN 1 1]), [NaN 0.1 NaN y(4:5)])
+%!assert_equal (unidcdf ([x(1:2) NaN Inf x(5)], 10), [y(1:2) NaN 1 y(5)])
 
 ## Test class of input preserved
-%!assert (unidcdf ([x, NaN], 10), [y, NaN])
-%!assert (unidcdf (single ([x, NaN]), 10), single ([y, NaN]))
-%!assert (unidcdf ([x, NaN], single (10)), single ([y, NaN]))
+%!assert_equal (unidcdf ([x, NaN], 10), [y, NaN])
+%!assert_equal (unidcdf (single ([x, NaN]), 10), single ([y, NaN]))
+%!assert_equal (unidcdf ([x, NaN], single (10)), single ([y, NaN]))
 
 ## Test input validation
 %!error<unidcdf: function called with too few input arguments.> unidcdf ()

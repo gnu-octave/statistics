@@ -237,7 +237,7 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   tiles = einstein (0.4, 0.6);
-%!   assert (isstruct (tiles), true);
+%!   assert_equal (isstruct (tiles), true);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

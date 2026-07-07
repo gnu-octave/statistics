@@ -210,19 +210,19 @@ endfunction
 %!shared x, y
 %! x = [-Inf, 1, 2, Inf];
 %! y = [0, 0.3679, 0.6922, 1];
-%!assert (gumbelcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
-%!assert (gumbelcdf (x, 1, ones (1,4)), y, 1e-4)
-%!assert (gumbelcdf (x, ones (1,4), 1), y, 1e-4)
-%!assert (gumbelcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
-%!assert (gumbelcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
-%!assert (gumbelcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
-%!assert (gumbelcdf (x, 'upper'), [1, 0.3078, 0.1266, 0], 1e-4)
+%!assert_equal (gumbelcdf (x, ones (1,4), ones (1,4)), y, 1e-4)
+%!assert_equal (gumbelcdf (x, 1, ones (1,4)), y, 1e-4)
+%!assert_equal (gumbelcdf (x, ones (1,4), 1), y, 1e-4)
+%!assert_equal (gumbelcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
+%!assert_equal (gumbelcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
+%!assert_equal (gumbelcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
+%!assert_equal (gumbelcdf (x, 'upper'), [1, 0.3078, 0.1266, 0], 1e-4)
 
 ## Test class of input preserved
-%!assert (gumbelcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
-%!assert (gumbelcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
-%!assert (gumbelcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
-%!assert (gumbelcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)
+%!assert_equal (gumbelcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
+%!assert_equal (gumbelcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), 1e-4)
+%!assert_equal (gumbelcdf ([x, NaN], single (1), 1), single ([y, NaN]), 1e-4)
+%!assert_equal (gumbelcdf ([x, NaN], 1, single (1)), single ([y, NaN]), 1e-4)
 
 ## Test input validation
 %!error<gumbelcdf: invalid number of input arguments.> gumbelcdf ()

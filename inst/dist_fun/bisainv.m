@@ -129,18 +129,18 @@ endfunction
 %! f = @(p,b,c) (b * (c * norminv (p) + sqrt (4 + (c * norminv (p))^2))^2) / 4;
 %! p = [-1, 0, 1/4, 1/2, 1, 2];
 %! y = [NaN, 0, f(1/4, 1, 1), 1, Inf, NaN];
-%!assert (bisainv (p, ones (1,6), ones (1,6)), y)
-%!assert (bisainv (p, 1, ones (1,6)), y)
-%!assert (bisainv (p, ones (1,6), 1), y)
-%!assert (bisainv (p, 1, 1), y)
-%!assert (bisainv (p, 1, [1, 1, 1, NaN, 1, 1]), [y(1:3), NaN, y(5:6)])
-%!assert (bisainv (p, [1, 1, 1, NaN, 1, 1], 1), [y(1:3), NaN, y(5:6)])
-%!assert (bisainv ([p, NaN], 1, 1), [y, NaN])
+%!assert_equal (bisainv (p, ones (1,6), ones (1,6)), y)
+%!assert_equal (bisainv (p, 1, ones (1,6)), y)
+%!assert_equal (bisainv (p, ones (1,6), 1), y)
+%!assert_equal (bisainv (p, 1, 1), y)
+%!assert_equal (bisainv (p, 1, [1, 1, 1, NaN, 1, 1]), [y(1:3), NaN, y(5:6)])
+%!assert_equal (bisainv (p, [1, 1, 1, NaN, 1, 1], 1), [y(1:3), NaN, y(5:6)])
+%!assert_equal (bisainv ([p, NaN], 1, 1), [y, NaN])
 
 ## Test class of input preserved
-%!assert (bisainv (single ([p, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (bisainv ([p, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
-%!assert (bisainv ([p, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisainv (single ([p, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisainv ([p, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (bisainv ([p, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisainv: function called with too few input arguments.> bisainv ()

@@ -229,19 +229,19 @@ endfunction
 %!shared x, y
 %! x = [-Inf 1 2 Inf];
 %! y = [0, 0.5, 1/2*(1+erf(1/sqrt(2))), 1];
-%!assert (normcdf (x, ones (1,4), ones (1,4)), y)
-%!assert (normcdf (x, 1, ones (1,4)), y)
-%!assert (normcdf (x, ones (1,4), 1), y)
-%!assert (normcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN])
-%!assert (normcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, 1])
-%!assert (normcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)])
-%!assert (normcdf (x, 'upper'), [1, 0.1587, 0.0228, 0], 1e-4)
+%!assert_equal (normcdf (x, ones (1,4), ones (1,4)), y)
+%!assert_equal (normcdf (x, 1, ones (1,4)), y)
+%!assert_equal (normcdf (x, ones (1,4), 1), y)
+%!assert_equal (normcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN])
+%!assert_equal (normcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, 1])
+%!assert_equal (normcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)])
+%!assert_equal (normcdf (x, 'upper'), [1, 0.1587, 0.0228, 0], 1e-4)
 
 ## Test class of input preserved
-%!assert (normcdf ([x, NaN], 1, 1), [y, NaN])
-%!assert (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
-%!assert (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (normcdf ([x, NaN], 1, 1), [y, NaN])
+%!assert_equal (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<normcdf: invalid number of input arguments.> normcdf ()

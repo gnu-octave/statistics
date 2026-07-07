@@ -140,14 +140,14 @@ endfunction
 %!test
 %! x = 0:5;
 %! [paramhat, paramci] = unifit (x);
-%! assert (paramhat, [0, 5]);
-%! assert (paramci, [-3.2377, 8.2377; 0, 5], 1e-4);
+%! assert_equal (paramhat, [0, 5]);
+%! assert_equal (paramci, [-3.2377, 8.2377; 0, 5], 1e-4);
 %!test
 %! x = 0:5;
 %! [paramhat, paramci] = unifit (x, [], [1 1 1 1 1 1]);
-%! assert (paramhat, [0, 5]);
-%! assert (paramci, [-3.2377, 8.2377; 0, 5], 1e-4);
-%!assert (unifit ([1 1 2 3]), unifit ([1 2 3], [] ,[2 1 1]))
+%! assert_equal (paramhat, [0, 5]);
+%! assert_equal (paramci, [-3.2377, 8.2377; 0, 5], 1e-4);
+%!assert_equal (unifit ([1 1 2 3]), unifit ([1 2 3], [] ,[2 1 1]))
 
 ## Test input validation
 %!error<unifit: function called with too few input arguments.> unifit ()

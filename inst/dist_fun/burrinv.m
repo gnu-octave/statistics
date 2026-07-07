@@ -107,18 +107,18 @@ endfunction
 %!shared p, y
 %! p = [-Inf, -1, 0, 1/2, 1, 2, Inf];
 %! y = [NaN, NaN, 0, 1 , Inf, NaN, NaN];
-%!assert (burrinv (p, ones (1,7), ones (1,7), ones (1,7)), y, eps)
-%!assert (burrinv (p, 1, 1, 1), y, eps)
-%!assert (burrinv (p, [1, 1, 1, NaN, 1, 1, 1], 1, 1), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv (p, 1, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv (p, 1, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
-%!assert (burrinv ([p, NaN], 1, 1, 1), [y, NaN], eps)
+%!assert_equal (burrinv (p, ones (1,7), ones (1,7), ones (1,7)), y, eps)
+%!assert_equal (burrinv (p, 1, 1, 1), y, eps)
+%!assert_equal (burrinv (p, [1, 1, 1, NaN, 1, 1, 1], 1, 1), [y(1:3), NaN, y(5:7)], eps)
+%!assert_equal (burrinv (p, 1, [1, 1, 1, NaN, 1, 1, 1], 1), [y(1:3), NaN, y(5:7)], eps)
+%!assert_equal (burrinv (p, 1, 1, [1, 1, 1, NaN, 1, 1, 1]), [y(1:3), NaN, y(5:7)], eps)
+%!assert_equal (burrinv ([p, NaN], 1, 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (burrinv ([p, NaN], single (1), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (burrinv ([p, NaN], 1, single (1), 1), single ([y, NaN]), eps ('single'))
-%!assert (burrinv ([p, NaN], 1, 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrinv ([p, NaN], single (1), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrinv ([p, NaN], 1, single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrinv ([p, NaN], 1, 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<burrinv: function called with too few input arguments.> burrinv ()

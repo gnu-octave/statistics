@@ -130,15 +130,15 @@ endfunction
 %!shared x, y
 %! x = [-1 0 1 2 Inf];
 %! y = [0, gammainc(1, (x(2:4) +1), 'upper'), 1];
-%!assert (poisscdf (x, ones (1,5)), y)
-%!assert (poisscdf (x, 1), y)
-%!assert (poisscdf (x, [1 0 NaN 1 1]), [y(1) 1 NaN y(4:5)])
-%!assert (poisscdf ([x(1:2) NaN Inf x(5)], 1), [y(1:2) NaN 1 y(5)])
+%!assert_equal (poisscdf (x, ones (1,5)), y)
+%!assert_equal (poisscdf (x, 1), y)
+%!assert_equal (poisscdf (x, [1 0 NaN 1 1]), [y(1) 1 NaN y(4:5)])
+%!assert_equal (poisscdf ([x(1:2) NaN Inf x(5)], 1), [y(1:2) NaN 1 y(5)])
 
 ## Test class of input preserved
-%!assert (poisscdf ([x, NaN], 1), [y, NaN])
-%!assert (poisscdf (single ([x, NaN]), 1), single ([y, NaN]), eps ('single'))
-%!assert (poisscdf ([x, NaN], single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (poisscdf ([x, NaN], 1), [y, NaN])
+%!assert_equal (poisscdf (single ([x, NaN]), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (poisscdf ([x, NaN], single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<poisscdf: function called with too few input arguments.> poisscdf ()

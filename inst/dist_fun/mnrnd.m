@@ -165,25 +165,25 @@ endfunction
 %! n = 10;
 %! pk = [0.2, 0.5, 0.3];
 %! r = mnrnd (n, pk);
-%! assert (size (r), size (pk));
-%! assert (all (r >= 0));
-%! assert (all (round (r) == r));
-%! assert (sum (r) == n);
+%! assert_equal (size (r), size (pk));
+%! assert_equal (all ((all (r >= 0))(:)), true);
+%! assert_equal (all ((all (round (r) == r))(:)), true);
+%! assert_equal (all ((sum (r) == n)(:)), true);
 
 %!test
 %! n = 10 * ones (3, 1);
 %! pk = [0.2, 0.5, 0.3];
 %! r = mnrnd (n, pk);
-%! assert (size (r), [length(n), length(pk)]);
-%! assert (all (r >= 0));
-%! assert (all (round (r) == r));
-%! assert (all (sum (r, 2) == n));
+%! assert_equal (size (r), [length(n), length(pk)]);
+%! assert_equal (all ((all (r >= 0))(:)), true);
+%! assert_equal (all ((all (round (r) == r))(:)), true);
+%! assert_equal (all ((all (sum (r, 2) == n))(:)), true);
 
 %!test
 %! n = (1:2)';
 %! pk = [0.2, 0.5, 0.3; 0.1, 0.1, 0.8];
 %! r = mnrnd (n, pk);
-%! assert (size (r), size (pk));
-%! assert (all (r >= 0));
-%! assert (all (round (r) == r));
-%! assert (all (sum (r, 2) == n));
+%! assert_equal (size (r), size (pk));
+%! assert_equal (all ((all (r >= 0))(:)), true);
+%! assert_equal (all ((all (round (r) == r))(:)), true);
+%! assert_equal (all ((all (sum (r, 2) == n))(:)), true);

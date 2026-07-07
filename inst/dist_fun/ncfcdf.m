@@ -244,22 +244,22 @@ endfunction
 %!test
 %! x = -2:0.1:2;
 %! p = ncfcdf (x, 10, 1, 3);
-%! assert (p([1:21]), zeros (1, 21), 1e-76);
-%! assert (p(22), 0.004530737275319753, 1e-14);
-%! assert (p(30), 0.255842099135669, 1e-14);
-%! assert (p(41), 0.4379890998457305, 1e-14);
+%! assert_equal (p([1:21]), zeros (1, 21), 1e-76);
+%! assert_equal (p(22), 0.004530737275319753, 1e-14);
+%! assert_equal (p(30), 0.255842099135669, 1e-14);
+%! assert_equal (p(41), 0.4379890998457305, 1e-14);
 %!test
 %! p = ncfcdf (12, 10, 3, 2);
-%! assert (p, 0.9582287900447416, 1e-14);
+%! assert_equal (p, 0.9582287900447416, 1e-14);
 %!test
 %! p = ncfcdf (2, 3, 2, 1);
-%! assert (p, 0.5731985522994989, 1e-14);
+%! assert_equal (p, 0.5731985522994989, 1e-14);
 %!test
 %! p = ncfcdf (2, 3, 2, 1, 'upper');
-%! assert (p, 0.4268014477004823, 1e-14);
+%! assert_equal (p, 0.4268014477004823, 1e-14);
 %!test
 %! p = ncfcdf ([3, 6], 3, 2, 5, 'upper');
-%! assert (p, [0.530248523596927, 0.3350482341323044], 1e-14);
+%! assert_equal (p, [0.530248523596927, 0.3350482341323044], 1e-14);
 
 ## Test input validation
 %!error<ncfcdf: function called with too few input arguments.> ncfcdf ()

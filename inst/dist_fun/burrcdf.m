@@ -128,18 +128,18 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 2/3, 1];
-%!assert (burrcdf (x, ones (1,5), ones (1,5), ones (1,5)), y, eps)
-%!assert (burrcdf (x, 1, 1, 1), y, eps)
-%!assert (burrcdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (burrcdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
-%!assert (burrcdf (x, 1, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
-%!assert (burrcdf ([x, NaN], 1, 1, 1), [y, NaN], eps)
+%!assert_equal (burrcdf (x, ones (1,5), ones (1,5), ones (1,5)), y, eps)
+%!assert_equal (burrcdf (x, 1, 1, 1), y, eps)
+%!assert_equal (burrcdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (burrcdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (burrcdf (x, 1, 1, [1, 1, NaN, 1, 1]), [y(1:2), NaN, y(4:5)], eps)
+%!assert_equal (burrcdf ([x, NaN], 1, 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (burrcdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (burrcdf ([x, NaN], single (1), 1, 1), single ([y, NaN]), eps ('single'))
-%!assert (burrcdf ([x, NaN], 1, single (1), 1), single ([y, NaN]), eps ('single'))
-%!assert (burrcdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrcdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrcdf ([x, NaN], single (1), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrcdf ([x, NaN], 1, single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (burrcdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<burrcdf: function called with too few input arguments.> burrcdf ()

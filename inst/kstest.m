@@ -414,25 +414,25 @@ endfunction
 %!test
 %! load examgrades
 %! [h, p] = kstest (grades(:,1));
-%! assert (h, true);
-%! assert (p, 7.58603305206105e-107, 1e-14);
+%! assert_equal (h, true);
+%! assert_equal (p, 7.58603305206105e-107, 1e-14);
 %!test
 %! load examgrades
 %! [h, p] = kstest (grades(:,1), 'CDF', @(x) normcdf (x, 75, 10));
-%! assert (h, false);
-%! assert (p, 0.5612, 1e-4);
+%! assert_equal (h, false);
+%! assert_equal (p, 0.5612, 1e-4);
 %!test
 %! load examgrades
 %! x = grades(:,1);
 %! test_cdf = makedist ('tlocationscale', 'mu', 75, 'sigma', 10, 'nu', 1);
 %! [h, p] = kstest (x, 'alpha', 0.01, 'CDF', test_cdf);
-%! assert (h, true);
-%! assert (p, 0.0021, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (p, 0.0021, 1e-4);
 %!test
 %! load stockreturns
 %! x = stocks(:,3);
 %! [h,p,k,c] = kstest (x, 'Tail', 'larger');
-%! assert (h, true);
-%! assert (p, 5.085438806199252e-05, 1e-14);
-%! assert (k, 0.2197, 1e-4);
-%! assert (c, 0.1207, 1e-4);
+%! assert_equal (h, true);
+%! assert_equal (p, 5.085438806199252e-05, 1e-14);
+%! assert_equal (k, 0.2197, 1e-4);
+%! assert_equal (c, 0.1207, 1e-4);

@@ -201,10 +201,10 @@ endfunction
 %! x = [1, 2];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
-%! assert (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
+%! assert_equal (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
 %!test
 %! x = [3, 2;2, 4;1, 5];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
-%! assert (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
+%! assert_equal (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
 

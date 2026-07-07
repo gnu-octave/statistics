@@ -561,6 +561,6 @@ endfunction
 %! options.TolFun = 1e-6;
 %! options.Display = 'off';
 %! GMModel = fitgmdist (score, 2, 'Options', options);
-%! assert (isa (GMModel, 'gmdistribution'), true);
-%! assert (GMModel.mu, [1.3212, -0.0954; -2.6424, 0.1909], 1e-4);
+%! assert_equal (isa (GMModel, 'gmdistribution'), true);
+%! assert_equal (GMModel.mu, [1.3212, -0.0954; -2.6424, 0.1909], 1e-4);
 

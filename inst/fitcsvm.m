@@ -301,52 +301,52 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = {'a'; 'a'; 'b'; 'b'};
 %! a = fitcsvm (x, y);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y}, {x, y})
-%! assert (a.NumObservations, 4)
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
-%! assert (a.ModelParameters.SVMtype, "c_svc")
-%! assert (a.ClassNames, {'a'; 'b'})
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y}, {x, y})
+%! assert_equal (a.NumObservations, 4)
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
+%! assert_equal (a.ModelParameters.SVMtype, "c_svc")
+%! assert_equal (a.ClassNames, {'a'; 'b'})
 
 ## Test Output
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
-%! assert (a.ModelParameters.BoxConstraint, 1)
-%! assert (a.ModelParameters.KernelOffset, 0)
-%! assert (a.ClassNames, [-1; 1])
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
+%! assert_equal (a.ModelParameters.BoxConstraint, 1)
+%! assert_equal (a.ModelParameters.KernelOffset, 0)
+%! assert_equal (a.ClassNames, [-1; 1])
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y, 'KernelFunction', 'rbf', 'BoxConstraint', 2, ...
 %! 'KernelOffset', 2);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
-%! assert (a.ModelParameters.BoxConstraint, 2)
-%! assert (a.ModelParameters.KernelOffset, 2)
-%! assert (isempty (a.Alpha), true)
-%! assert (isempty (a.Beta), false)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
+%! assert_equal (a.ModelParameters.BoxConstraint, 2)
+%! assert_equal (a.ModelParameters.KernelOffset, 2)
+%! assert_equal (isempty (a.Alpha), true)
+%! assert_equal (isempty (a.Beta), false)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'PolynomialOrder', 3);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
-%! assert (a.ModelParameters.PolynomialOrder, 3)
-%! assert (isempty (a.Alpha), true)
-%! assert (isempty (a.Beta), false)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
+%! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+%! assert_equal (isempty (a.Alpha), true)
+%! assert_equal (isempty (a.Beta), false)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y, 'KernelFunction', 'linear', 'PolynomialOrder', 3);
-%! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
-%! assert (a.ModelParameters.PolynomialOrder, 3)
-%! assert (isempty (a.Alpha), false)
-%! assert (isempty (a.Beta), true)
+%! assert_equal (class (a), "ClassificationSVM");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
+%! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+%! assert_equal (isempty (a.Alpha), false)
+%! assert_equal (isempty (a.Beta), true)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
@@ -355,11 +355,11 @@ endfunction
 %! rand ('seed', 23);
 %! a = fitcsvm (x, y, 'KernelFunction', 'linear', 'CrossVal', 'on');
 %! warning (status);
-%! assert (class (a), "ClassificationPartitionedModel");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
-%! assert (a.ModelParameters.PolynomialOrder, 3)
-%! assert (isempty (a.Trained{1}.Alpha), false)
-%! assert (isempty (a.Trained{1}.Beta), true)
+%! assert_equal (class (a), "ClassificationPartitionedModel");
+%! assert_equal ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
+%! assert_equal (a.ModelParameters.PolynomialOrder, 3)
+%! assert_equal (isempty (a.Trained{1}.Alpha), false)
+%! assert_equal (isempty (a.Trained{1}.Beta), true)
 
 ## Test input validation
 %!error<fitcsvm: too few arguments.> fitcsvm ()

@@ -124,28 +124,28 @@ endfunction
 ## Test output
 %!test
 %! p = geocdf ([1, 2, 3, 4], 0.25);
-%! assert (p(1), 0.4375000000, 1e-14);
-%! assert (p(2), 0.5781250000, 1e-14);
-%! assert (p(3), 0.6835937500, 1e-14);
-%! assert (p(4), 0.7626953125, 1e-14);
+%! assert_equal (p(1), 0.4375000000, 1e-14);
+%! assert_equal (p(2), 0.5781250000, 1e-14);
+%! assert_equal (p(3), 0.6835937500, 1e-14);
+%! assert_equal (p(4), 0.7626953125, 1e-14);
 %!test
 %! p = geocdf ([1, 2, 3, 4], 0.25, 'upper');
-%! assert (p(1), 0.5625000000, 1e-14);
-%! assert (p(2), 0.4218750000, 1e-14);
-%! assert (p(3), 0.3164062500, 1e-14);
-%! assert (p(4), 0.2373046875, 1e-14);
+%! assert_equal (p(1), 0.5625000000, 1e-14);
+%! assert_equal (p(2), 0.4218750000, 1e-14);
+%! assert_equal (p(3), 0.3164062500, 1e-14);
+%! assert_equal (p(4), 0.2373046875, 1e-14);
 %!shared x, p
 %! x = [-1 0 1 Inf];
 %! p = [0 0.5 0.75 1];
-%!assert (geocdf (x, 0.5*ones (1,4)), p)
-%!assert (geocdf (x, 0.5), p)
-%!assert (geocdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN p(4)])
-%!assert (geocdf ([x(1:2) NaN x(4)], 0.5), [p(1:2) NaN p(4)])
+%!assert_equal (geocdf (x, 0.5*ones (1,4)), p)
+%!assert_equal (geocdf (x, 0.5), p)
+%!assert_equal (geocdf (x, 0.5*[-1 NaN 4 1]), [NaN NaN NaN p(4)])
+%!assert_equal (geocdf ([x(1:2) NaN x(4)], 0.5), [p(1:2) NaN p(4)])
 
 ## Test class of input preserved
-%!assert (geocdf ([x, NaN], 0.5), [p, NaN])
-%!assert (geocdf (single ([x, NaN]), 0.5), single ([p, NaN]))
-%!assert (geocdf ([x, NaN], single (0.5)), single ([p, NaN]))
+%!assert_equal (geocdf ([x, NaN], 0.5), [p, NaN])
+%!assert_equal (geocdf (single ([x, NaN]), 0.5), single ([p, NaN]))
+%!assert_equal (geocdf ([x, NaN], single (0.5)), single ([p, NaN]))
 
 ## Test input validation
 %!error<geocdf: function called with too few input arguments.> geocdf ()

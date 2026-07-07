@@ -188,5 +188,5 @@ endfunction
 % X = [(randn (10, 2) * 0.25) + 1; (randn (10, 2) * 0.25) - 1];
 % Z = linkage(X, "ward");
 % T = [ones (10, 1); 2 * ones (10, 1)];
-% assert (cluster (Z, "MaxClust", 2), T);
+% assert_equal (cluster (Z, "MaxClust", 2), T);
 

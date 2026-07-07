@@ -112,43 +112,43 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 0.5, 1, 2];
 %! y = [0, 0, 4/9, 1/4, 1/9];
-%!assert (fpdf (x, 2*ones (1,5), 2*ones (1,5)), y, eps)
-%!assert (fpdf (x, 2, 2*ones (1,5)), y, eps)
-%!assert (fpdf (x, 2*ones (1,5), 2), y, eps)
-%!assert (fpdf (x, [0, NaN, Inf, 2, 2], 2), [NaN, NaN, 0.5413, y(4:5)], 1e-4)
-%!assert (fpdf (x, 2, [0, NaN, Inf, 2, 2]), [NaN, NaN, 0.6065, y(4:5)], 1e-4)
-%!assert (fpdf ([x, NaN], 2, 2), [y, NaN], eps)
+%!assert_equal (fpdf (x, 2*ones (1,5), 2*ones (1,5)), y, eps)
+%!assert_equal (fpdf (x, 2, 2*ones (1,5)), y, eps)
+%!assert_equal (fpdf (x, 2*ones (1,5), 2), y, eps)
+%!assert_equal (fpdf (x, [0, NaN, Inf, 2, 2], 2), [NaN, NaN, 0.5413, y(4:5)], 1e-4)
+%!assert_equal (fpdf (x, 2, [0, NaN, Inf, 2, 2]), [NaN, NaN, 0.6065, y(4:5)], 1e-4)
+%!assert_equal (fpdf ([x, NaN], 2, 2), [y, NaN], eps)
 %!test #F (x, 1, df1) == T distribution (sqrt (x), df1) / sqrt (x)
 %! rand ('seed', 1234);    # for reproducibility
 %! xr = rand (10,1);
 %! xr = xr(x > 0.1 & x < 0.9);
 %! yr = tpdf (sqrt (xr), 2) ./ sqrt (xr);
-%! assert (fpdf (xr, 1, 2), yr, 5*eps);
+%! assert_equal (fpdf (xr, 1, 2), yr, 5*eps);
 
 ## Test for issue #203 (Github)
 %!test
 %! yy = fpdf (2, 4, Inf);
-%! assert (yy, 0.1465, 1e-4)
+%! assert_equal (yy, 0.1465, 1e-4)
 %!test
 %! yy = fpdf (2, 4, 1000000000000000);
-%! assert (yy, 0.1465, 1e-4)
+%! assert_equal (yy, 0.1465, 1e-4)
 %!test
 %! yy = fpdf (2, Inf, 4);
-%! assert (yy, 0.1839, 1e-4)
+%! assert_equal (yy, 0.1839, 1e-4)
 %!test
 %! yy = fpdf (2, 10000000000000000, 4);
-%! assert (yy, 0.1839, 1e-4)
+%! assert_equal (yy, 0.1839, 1e-4)
 %!test
 %! yy = fpdf (2, Inf, Inf);
-%! assert (yy, 0)
+%! assert_equal (yy, 0)
 %!test
 %! yy = fpdf (NaN, Inf, Inf);
-%! assert (yy, NaN)
+%! assert_equal (yy, NaN)
 
 ## Test class of input preserved
-%!assert (fpdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ('single'))
-%!assert (fpdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ('single'))
-%!assert (fpdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (fpdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (fpdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (fpdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<fpdf: function called with too few input arguments.> fpdf ()

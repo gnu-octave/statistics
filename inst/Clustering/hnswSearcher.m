@@ -755,9 +755,9 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'chebychev');
 %! Y = X(30:35,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 4);
-%! assert (idx, [[30 31 4 12]; [31 30 10 35]; [32 21 37 28]; [33 47 20 34]; ...
+%! assert_equal (idx, [[30 31 4 12]; [31 30 10 35]; [32 21 37 28]; [33 47 20 34]; ...
 %!               [34 16 33 15]; [35 10 26 2]])
-%! assert (D, [[0 0.1000 0.1000 0.2000]; [0 0.1000 0.1000 0.1000]; [0 0.2000 ...
+%! assert_equal (D, [[0 0.1000 0.1000 0.2000]; [0 0.1000 0.1000 0.1000]; [0 0.2000 ...
 %!              0.2000 0.2000]; [0 0.3000 0.3000 0.3000]; [0 0.2000 0.3000 ...
 %!              0.3000]; [0 0.1000 0.1000 0.1000]], 5e-15)
 
@@ -768,45 +768,45 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
 %! Y = X(120:125,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 2);
-%! assert (idx(1, :), [120 82])
-%! assert (idx(4, :), [123 106])
-%! assert (idx(5, :), [124 127])
-%! assert (idx(6, :), [125 57])
-%! assert (D(1, :), [0 0.7734], 1e-4)
-%! assert (D(4, :), [0 0.8452], 1e-4)
-%! assert (D(5, :), [0 0.4152], 1e-4)
-%! assert (D(6, :), [0 0.7322], 1e-4)
+%! assert_equal (idx(1, :), [120 82])
+%! assert_equal (idx(4, :), [123 106])
+%! assert_equal (idx(5, :), [124 127])
+%! assert_equal (idx(6, :), [125 57])
+%! assert_equal (D(1, :), [0 0.7734], 1e-4)
+%! assert_equal (D(4, :), [0 0.8452], 1e-4)
+%! assert_equal (D(5, :), [0 0.4152], 1e-4)
+%! assert_equal (D(6, :), [0 0.7322], 1e-4)
 
 %!test
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = hnswSearcher (X);
-%! assert (obj.X, X);
-%! assert (obj.Distance, "euclidean");
-%! assert (isempty (obj.DistParameter));
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "euclidean");
+%! assert_equal (isempty (obj.DistParameter), true);
 
 %!test
 %! ## Minkowski distance with custom P
 %! X = [0, 0; 1, 1; 2, 2];
 %! obj = hnswSearcher (X, 'Distance', 'minkowski', 'P', 3);
-%! assert (obj.Distance, "minkowski");
-%! assert (obj.DistParameter, 3);
+%! assert_equal (obj.Distance, "minkowski");
+%! assert_equal (obj.DistParameter, 3);
 
 %!test
 %! ## Seuclidean distance with custom Scale
 %! X = [1, 2; 3, 4; 5, 6];
 %! S = [1, 2];
 %! obj = hnswSearcher (X, 'Distance', 'seuclidean', 'Scale', S);
-%! assert (obj.Distance, "seuclidean");
-%! assert (obj.DistParameter, S);
+%! assert_equal (obj.Distance, "seuclidean");
+%! assert_equal (obj.DistParameter, S);
 
 %!test
 %! ## Mahalanobis distance with custom Cov
 %! X = [1, 2; 3, 4; 5, 6];
 %! C = [1, 0; 0, 1];
 %! obj = hnswSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
-%! assert (obj.Distance, "mahalanobis");
-%! assert (obj.DistParameter, C);
+%! assert_equal (obj.Distance, "mahalanobis");
+%! assert_equal (obj.DistParameter, C);
 
 %!test
 %! ## knnsearch with Euclidean distance
@@ -814,8 +814,8 @@ endfunction
 %! obj = hnswSearcher (X);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [2]));
-%! assert (abs (D - sqrt (2)) < 1e-2);
+%! assert_equal (ismember (idx, [2]), true);
+%! assert_equal (abs (D - sqrt (2)) < 1e-2, true);
 
 %!test
 %! ## knnsearch with Cityblock distance
@@ -823,8 +823,8 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'cityblock');
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [1, 2]));
-%! assert (abs (D - 1) < 1e-2);
+%! assert_equal (ismember (idx, [1, 2]), true);
+%! assert_equal (abs (D - 1) < 1e-2, true);
 
 %!test
 %! ## knnsearch with Chebychev distance
@@ -832,8 +832,8 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'chebychev');
 %! Y = [2, 2];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [1, 2]));
-%! assert (abs (D - 1) < 1e-2);
+%! assert_equal (ismember (idx, [1, 2]), true);
+%! assert_equal (abs (D - 1) < 1e-2, true);
 
 %!test
 %! ## knnsearch with Minkowski P=3
@@ -841,8 +841,8 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [2]));
-%! assert (abs (D - 0) < 1e-2);
+%! assert_equal (ismember (idx, [2]), true);
+%! assert_equal (abs (D - 0) < 1e-2, true);
 
 %!test
 %! ## Diverse dataset with Euclidean
@@ -850,8 +850,8 @@ endfunction
 %! obj = hnswSearcher (X);
 %! Y = [5, 5];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [2]));
-%! assert (abs (D - 0) < 1e-2);
+%! assert_equal (ismember (idx, [2]), true);
+%! assert_equal (abs (D - 0) < 1e-2, true);
 
 %!test
 %! ## High-dimensional data with Cityblock
@@ -859,8 +859,8 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'cityblock');
 %! Y = [4, 5, 6];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [2]));
-%! assert (abs (D - 0) < 1e-2);
+%! assert_equal (ismember (idx, [2]), true);
+%! assert_equal (abs (D - 0) < 1e-2, true);
 
 ## Test Input Validation
 

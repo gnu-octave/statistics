@@ -590,31 +590,31 @@ endfunction
 %! x = x(1:5:end);
 %! pd = PiecewiseLinearDistribution (x, f);
 %! t = truncate (pd, 130, 180);
-%!assert (cdf (pd, [120, 130, 140, 150, 200]), [0.0767, 0.25, 0.4629, 0.5190, 0.9908], 1e-4);
-%!assert (cdf (t, [120, 130, 140, 150, 200]), [0, 0, 0.4274, 0.5403, 1], 1e-4);
-%!assert (cdf (pd, [100, 250, NaN]), [0, 1, NaN], 1e-4);
-%!assert (cdf (t, [115, 290, NaN]), [0, 1, NaN], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [111, 127.5, 136.62, 169.67, 182.17, 202], 1e-2);
-%!assert (icdf (t, [0:0.2:1]), [130, 134.15, 139.26, 162.5, 173.99, 180], 1e-2);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NA, 136.62, 169.67, 182.17, 202, NA], 1e-2);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-2);
-%!assert (iqr (pd), 50.0833, 1e-4);
-%!assert (iqr (t), 36.8077, 1e-4);
-%!assert (mean (pd), 153.61, 1e-10);
-%!assert (mean (t), 152.311, 1e-3);
-%!assert (median (pd), 142, 1e-10);
-%!assert (median (t), 141.9462, 1e-4);
-%!assert (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0004], 6e-3);
-%!assert (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
-%!assert (pdf (pd, [100, 250, NaN]), [0, 0, NaN], 1e-4);
-%!assert (pdf (t, [100, 250, NaN]), [0, 0, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 130), false);
-%!assert (any (random (t, 1000, 1) > 180), false);
-%!assert (std (pd), 26.5196, 1e-4);
-%!assert (std (t), 18.2941, 1e-4);
-%!assert (var (pd), 703.2879, 1e-4);
-%!assert (var (t), 334.6757, 1e-4);
+%!assert_equal (cdf (pd, [120, 130, 140, 150, 200]), [0.0767, 0.25, 0.4629, 0.5190, 0.9908], 1e-4);
+%!assert_equal (cdf (t, [120, 130, 140, 150, 200]), [0, 0, 0.4274, 0.5403, 1], 1e-4);
+%!assert_equal (cdf (pd, [100, 250, NaN]), [0, 1, NaN], 1e-4);
+%!assert_equal (cdf (t, [115, 290, NaN]), [0, 1, NaN], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [111, 127.5, 136.62, 169.67, 182.17, 202], 1e-2);
+%!assert_equal (icdf (t, [0:0.2:1]), [130, 134.15, 139.26, 162.5, 173.99, 180], 1e-2);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NA, 136.62, 169.67, 182.17, 202, NA], 1e-2);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NA, 139.26, 162.5, 173.99, 180, NA], 1e-2);
+%!assert_equal (iqr (pd), 50.0833, 1e-4);
+%!assert_equal (iqr (t), 36.8077, 1e-4);
+%!assert_equal (mean (pd), 153.61, 1e-10);
+%!assert_equal (mean (t), 152.311, 1e-3);
+%!assert_equal (median (pd), 142, 1e-10);
+%!assert_equal (median (t), 141.9462, 1e-4);
+%!assert_equal (pdf (pd, [120, 130, 140, 150, 200]), [0.0133, 0.0240, 0.0186, 0.0024, 0.0004], 6e-3);
+%!assert_equal (pdf (t, [120, 130, 140, 150, 200]), [0, 0.0482, 0.0373, 0.0048, 0], 1e-4);
+%!assert_equal (pdf (pd, [100, 250, NaN]), [0, 0, NaN], 1e-4);
+%!assert_equal (pdf (t, [100, 250, NaN]), [0, 0, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 130), false);
+%!assert_equal (any (random (t, 1000, 1) > 180), false);
+%!assert_equal (std (pd), 26.5196, 1e-4);
+%!assert_equal (std (t), 18.2941, 1e-4);
+%!assert_equal (var (pd), 703.2879, 1e-4);
+%!assert_equal (var (t), 334.6757, 1e-4);
 
 ## Test input validation
 ## 'PiecewiseLinearDistribution' constructor

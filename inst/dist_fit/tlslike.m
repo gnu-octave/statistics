@@ -175,8 +175,8 @@ endfunction
 %! acov_out = [0.2525, 0.0670, 0.0288; ...
 %!             0.0670, 0.5724, 0.1786; ...
 %!             0.0288, 0.1786, 0.1789];
-%! assert (nlogL, 17.9979636579, 1e-10);
-%! assert (acov, acov_out, 1e-4);
+%! assert_equal (nlogL, 17.9979636579, 1e-10);
+%! assert_equal (acov, acov_out, 1e-4);
 
 ## Test input validation
 %!error<tlslike: too few input arguments.> tlslike ([12, 15, 1]);

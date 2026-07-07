@@ -138,14 +138,14 @@ endfunction
 %! x1 = [-Inf, 2, NaN, 4, Inf];
 %! df = [2, 0, -1, 1, 4];
 %! mu = [1, NaN, 3, -1, 2];
-%!assert (nctpdf (x1, df, mu), [0, NaN, NaN, 0.00401787561306999, 0], 1e-14);
-%!assert (nctpdf (x1, df, 1), [0, NaN, NaN, 0.0482312135423008, 0], 1e-14);
-%!assert (nctpdf (x1, df, 3), [0, NaN, NaN, 0.1048493126401585, 0], 1e-14);
-%!assert (nctpdf (x1, df, 2), [0, NaN, NaN, 0.08137377919890307, 0], 1e-14);
-%!assert (nctpdf (x1, 3, mu), [0, NaN, NaN, 0.001185305171654381, 0], 1e-14);
-%!assert (nctpdf (2, df, mu), [0.1791097459405861, NaN, NaN, ...
+%!assert_equal (nctpdf (x1, df, mu), [0, NaN, NaN, 0.00401787561306999, 0], 1e-14);
+%!assert_equal (nctpdf (x1, df, 1), [0, NaN, NaN, 0.0482312135423008, 0], 1e-14);
+%!assert_equal (nctpdf (x1, df, 3), [0, NaN, NaN, 0.1048493126401585, 0], 1e-14);
+%!assert_equal (nctpdf (x1, df, 2), [0, NaN, NaN, 0.08137377919890307, 0], 1e-14);
+%!assert_equal (nctpdf (x1, 3, mu), [0, NaN, NaN, 0.001185305171654381, 0], 1e-14);
+%!assert_equal (nctpdf (2, df, mu), [0.1791097459405861, NaN, NaN, ...
 %!                             0.0146500727180389, 0.3082302682110299], 1e-14);
-%!assert (nctpdf (4, df, mu), [0.04467929612254971, NaN, NaN, ...
+%!assert_equal (nctpdf (4, df, mu), [0.04467929612254971, NaN, NaN, ...
 %!                             0.00401787561306999, 0.0972086534042828], 1e-14);
 
 ## Test input validation

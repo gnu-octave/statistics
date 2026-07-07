@@ -79,5 +79,5 @@ endfunction
 %! [m, v] = tstat (df);
 %! expected_m = [0, 0, 0, 0, 0, 0];
 %! expected_v = [3.0000, 2.0000, 1.6667, 1.5000, 1.4000, 1.3333];
-%! assert (m, expected_m);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m);
+%! assert_equal (v, expected_v, 0.001);

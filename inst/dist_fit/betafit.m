@@ -257,20 +257,20 @@ endfunction
 %! [paramhat, paramci] = betafit (x);
 %! paramhat_out = [1.0199, 1.0199];
 %! paramci_out = [0.6947, 0.6947; 1.4974, 1.4974];
-%! assert (paramhat, paramhat_out, 1e-4);
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 %!test
 %! x = 0.01:0.02:0.99;
 %! [paramhat, paramci] = betafit (x, 0.01);
 %! paramci_out = [0.6157, 0.6157; 1.6895, 1.6895];
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 %!test
 %! x = 0.00:0.02:1;
 %! [paramhat, paramci] = betafit (x);
 %! paramhat_out = [0.0875, 0.1913];
 %! paramci_out = [0.0822, 0.1490; 0.0931, 0.2455];
-%! assert (paramhat, paramhat_out, 1e-4);
-%! assert (paramci, paramci_out, 1e-4);
+%! assert_equal (paramhat, paramhat_out, 1e-4);
+%! assert_equal (paramci, paramci_out, 1e-4);
 
 ## Test input validation
 %!error<betafit: X must be a vector of real values.> betafit ([0.2, 0.5+i]);

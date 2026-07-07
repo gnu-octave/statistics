@@ -79,5 +79,5 @@ endfunction
 %!test
 %! mu = 1:6;
 %! [m, v] = expstat (mu);
-%! assert (m, [1, 2, 3, 4, 5, 6], 0.001);
-%! assert (v, [1, 4, 9, 16, 25, 36], 0.001);
+%! assert_equal (m, [1, 2, 3, 4, 5, 6], 0.001);
+%! assert_equal (v, [1, 4, 9, 16, 25, 36], 0.001);

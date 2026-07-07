@@ -102,12 +102,12 @@ function [W, D] = wishrnd (Sigma, df, D, n = 1)
 endfunction
 
 
-%!assert (size (wishrnd (1,2)), [1, 1]);
-%!assert (size (wishrnd (1,2,[])), [1, 1]);
-%!assert (size (wishrnd (1,2,1)), [1, 1]);
-%!assert (size (wishrnd ([],2,1)), [1, 1]);
-%!assert (size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
-%!assert (size (wishrnd (eye (2), 2, [], 3)), [2, 2, 3]);
+%!assert_equal (size (wishrnd (1,2)), [1, 1]);
+%!assert_equal (size (wishrnd (1,2,[])), [1, 1]);
+%!assert_equal (size (wishrnd (1,2,1)), [1, 1]);
+%!assert_equal (size (wishrnd ([],2,1)), [1, 1]);
+%!assert_equal (size (wishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
+%!assert_equal (size (wishrnd (eye (2), 2, [], 3)), [2, 2, 3]);
 
 %% Test input validation
 %!error wishrnd ()
@@ -117,7 +117,7 @@ endfunction
 %% Test for non-integer df where p-1 < df < p (should not warn or truncate)
 %!test
 %! W = wishrnd (eye (3), 2.5);
-%! assert (size (W), [3, 3]);
+%! assert_equal (size (W), [3, 3]);
 
 %% Test that invalid non-integer df < p-1 triggers a warning
 %!warning <Wishart distribution undefined> wishrnd (eye (3), 1.5);

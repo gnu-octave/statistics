@@ -123,24 +123,24 @@ endfunction
 ## testing against mileage data and results from Matlab
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20]);
-%! assert (r, [1, 2.5, 4, 5, 2.5]);
-%! assert (tieadj, 3);
+%! assert_equal (r, [1, 2.5, 4, 5, 2.5]);
+%! assert_equal (tieadj, 3);
 %!test
 %! [r,tieadj] = tiedrank ([10; 20; 30; 40; 20]);
-%! assert (r, [1; 2.5; 4; 5; 2.5]);
-%! assert (tieadj, 3);
+%! assert_equal (r, [1; 2.5; 4; 5; 2.5]);
+%! assert_equal (tieadj, 3);
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 1);
-%! assert (r, [1, 2.5, 4, 5, 2.5]);
-%! assert (tieadj, [1; 0; 18]);
+%! assert_equal (r, [1, 2.5, 4, 5, 2.5]);
+%! assert_equal (tieadj, [1; 0; 18]);
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 0, 1);
-%! assert (r, [1, 2.5, 2, 1, 2.5]);
-%! assert (tieadj, 3);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, 3);
 %!test
 %! [r,tieadj] = tiedrank ([10, 20, 30, 40, 20], 1, 1);
-%! assert (r, [1, 2.5, 2, 1, 2.5]);
-%! assert (tieadj, [1; 0; 18]);
+%! assert_equal (r, [1, 2.5, 2, 1, 2.5]);
+%! assert_equal (tieadj, [1; 0; 18]);
 
 ## Test input validation
 %!error <tiedrank: X must be a vector.> tiedrank (ones (2))

@@ -202,7 +202,7 @@ endfunction
 %!          0.00378235566873474, 0.00638175749734415, ...
 %!          0.00943764224329656, 0.01239164888125426, ...
 %!          0.01472750274376648, 0.01623228313374828]';
-%! assert (p([1:10]), p_out, 1e-16);
+%! assert_equal (p([1:10]), p_out, 1e-16);
 %!test
 %! mu = [1, -1];
 %! sigma = [0.9, 0.4; 0.4, 0.3];
@@ -214,16 +214,16 @@ endfunction
 %!          0.9722897881414742, 0.9788150170059926, ...
 %!          0.9813597788804785, 0.9821977956568989, ...
 %!          0.9824283794464095, 0.9824809345614861]';
-%! assert (p([616:625]), p_out, 3e-16);
+%! assert_equal (p([616:625]), p_out, 3e-16);
 %!test
 %! ## Test infinite limits
 %! mu = [0, 0];
 %! sigma = [1 0.5; 0.5 1];
-%! assert (bvncdf ([Inf, Inf], mu, sigma), 1);
-%! assert (bvncdf ([-Inf, 2], mu, sigma), 0);
-%! assert (bvncdf ([1, -Inf], mu, sigma), 0);
-%! assert (bvncdf ([0.5, Inf], mu, sigma), normcdf (0.5), eps);
-%! assert (bvncdf ([Inf, 0.5], mu, sigma), normcdf (0.5), eps);
+%! assert_equal (bvncdf ([Inf, Inf], mu, sigma), 1);
+%! assert_equal (bvncdf ([-Inf, 2], mu, sigma), 0);
+%! assert_equal (bvncdf ([1, -Inf], mu, sigma), 0);
+%! assert_equal (bvncdf ([0.5, Inf], mu, sigma), normcdf (0.5), eps);
+%! assert_equal (bvncdf ([Inf, 0.5], mu, sigma), normcdf (0.5), eps);
 %!error bvncdf (randn (25,3), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], ones (3, 2));

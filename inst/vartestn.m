@@ -388,30 +388,30 @@ endfunction
 %!test
 %! load examgrades
 %! [p, stat] = vartestn (grades, 'Display', 'off');
-%! assert (p, 7.908647337018238e-08, 1e-14);
-%! assert (stat.chisqstat, 38.7332, 1e-4);
-%! assert (stat.df, 4);
+%! assert_equal (p, 7.908647337018238e-08, 1e-14);
+%! assert_equal (stat.chisqstat, 38.7332, 1e-4);
+%! assert_equal (stat.df, 4);
 %!test
 %! load examgrades
 %! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'LeveneAbsolute');
-%! assert (p, 9.523239714592791e-07, 1e-14);
-%! assert (stat.fstat, 8.5953, 1e-4);
-%! assert (stat.df, [4, 595]);
+%! assert_equal (p, 9.523239714592791e-07, 1e-14);
+%! assert_equal (stat.fstat, 8.5953, 1e-4);
+%! assert_equal (stat.df, [4, 595]);
 %!test
 %! load examgrades
 %! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'LeveneQuadratic');
-%! assert (p, 7.219514351897161e-07, 1e-14);
-%! assert (stat.fstat, 8.7503, 1e-4);
-%! assert (stat.df, [4, 595]);
+%! assert_equal (p, 7.219514351897161e-07, 1e-14);
+%! assert_equal (stat.fstat, 8.7503, 1e-4);
+%! assert_equal (stat.df, [4, 595]);
 %!test
 %! load examgrades
 %! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'BrownForsythe');
-%! assert (p, 1.312093241723211e-06, 1e-14);
-%! assert (stat.fstat, 8.4160, 1e-4);
-%! assert (stat.df, [4, 595]);
+%! assert_equal (p, 1.312093241723211e-06, 1e-14);
+%! assert_equal (stat.fstat, 8.4160, 1e-4);
+%! assert_equal (stat.df, [4, 595]);
 %!test
 %! load examgrades
 %! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'OBrien');
-%! assert (p, 8.235660885480556e-07, 1e-14);
-%! assert (stat.fstat, 8.6766, 1e-4);
-%! assert (stat.df, [4, 595]);
+%! assert_equal (p, 8.235660885480556e-07, 1e-14);
+%! assert_equal (stat.fstat, 8.6766, 1e-4);
+%! assert_equal (stat.df, [4, 595]);

@@ -99,16 +99,16 @@ endfunction
 %! x = [-1, 0, 0.5, 1, 2];
 %! p = [0, (1 - exp (-x(2:end) / 2))];
 %! u = [1, 0, NaN, 0.606530659712633, 0.367879441171442];
-%!assert (chi2cdf (x, 2 * ones (1,5)), p, eps)
-%!assert (chi2cdf (x, 2), p, eps)
-%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1]), [0, 1, NaN, p(4:5)], eps)
-%!assert (chi2cdf (x, 2 * [1, 0, NaN, 1, 1], 'upper'), u, 3 * eps)
-%!assert (chi2cdf ([x(1:2), NaN, x(4:5)], 2), [p(1:2), NaN, p(4:5)], eps)
+%!assert_equal (chi2cdf (x, 2 * ones (1,5)), p, eps)
+%!assert_equal (chi2cdf (x, 2), p, eps)
+%!assert_equal (chi2cdf (x, 2 * [1, 0, NaN, 1, 1]), [0, 1, NaN, p(4:5)], eps)
+%!assert_equal (chi2cdf (x, 2 * [1, 0, NaN, 1, 1], 'upper'), u, 3 * eps)
+%!assert_equal (chi2cdf ([x(1:2), NaN, x(4:5)], 2), [p(1:2), NaN, p(4:5)], eps)
 
 ## Test class of input preserved
-%!assert (chi2cdf ([x, NaN], 2), [p, NaN], eps)
-%!assert (chi2cdf (single ([x, NaN]), 2), single ([p, NaN]), eps ('single'))
-%!assert (chi2cdf ([x, NaN], single (2)), single ([p, NaN]), eps ('single'))
+%!assert_equal (chi2cdf ([x, NaN], 2), [p, NaN], eps)
+%!assert_equal (chi2cdf (single ([x, NaN]), 2), single ([p, NaN]), eps ('single'))
+%!assert_equal (chi2cdf ([x, NaN], single (2)), single ([p, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<chi2cdf: function called with too few input arguments.> chi2cdf ()

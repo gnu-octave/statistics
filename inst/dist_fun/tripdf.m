@@ -108,21 +108,21 @@ endfunction
 %! x = [-1, 0, 0.1, 0.5, 0.9, 1, 2] + 1;
 %! y = [0, 0, 0.4, 2, 0.4, 0, 0];
 %! deps = 2*eps;
-%!assert (tripdf (x, ones (1,7), 1.5*ones (1,7), 2*ones (1,7)), y, deps)
-%!assert (tripdf (x, 1*ones (1,7), 1.5, 2), y, deps)
-%!assert (tripdf (x, 1, 1.5, 2*ones (1,7)), y, deps)
-%!assert (tripdf (x, 1, 1.5*ones (1,7), 2), y, deps)
-%!assert (tripdf (x, 1, 1.5, 2), y, deps)
-%!assert (tripdf (x, [1, 1, NaN, 1, 1, 1, 1], 1.5, 2), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf (x, 1, 1.5, 2*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf (x, 1, 1.5*[1, 1, NaN, 1, 1, 1, 1], 2), [y(1:2), NaN, y(4:7)], deps)
-%!assert (tripdf ([x, NaN], 1, 1.5, 2), [y, NaN], deps)
+%!assert_equal (tripdf (x, ones (1,7), 1.5*ones (1,7), 2*ones (1,7)), y, deps)
+%!assert_equal (tripdf (x, 1*ones (1,7), 1.5, 2), y, deps)
+%!assert_equal (tripdf (x, 1, 1.5, 2*ones (1,7)), y, deps)
+%!assert_equal (tripdf (x, 1, 1.5*ones (1,7), 2), y, deps)
+%!assert_equal (tripdf (x, 1, 1.5, 2), y, deps)
+%!assert_equal (tripdf (x, [1, 1, NaN, 1, 1, 1, 1], 1.5, 2), [y(1:2), NaN, y(4:7)], deps)
+%!assert_equal (tripdf (x, 1, 1.5, 2*[1, 1, NaN, 1, 1, 1, 1]), [y(1:2), NaN, y(4:7)], deps)
+%!assert_equal (tripdf (x, 1, 1.5*[1, 1, NaN, 1, 1, 1, 1], 2), [y(1:2), NaN, y(4:7)], deps)
+%!assert_equal (tripdf ([x, NaN], 1, 1.5, 2), [y, NaN], deps)
 
 ## Test class of input preserved
-%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps ('single'))
-%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps ('single'))
-%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps ('single'))
-%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert_equal (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tripdf: function called with too few input arguments.> tripdf ()

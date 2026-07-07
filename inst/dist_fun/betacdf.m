@@ -144,24 +144,24 @@ endfunction
 %!shared x, y, x1, x2
 %! x = [-1 0 0.5 1 2];
 %! y = [0 0 0.75 1 1];
-%!assert (betacdf (x, ones (1, 5), 2 * ones (1, 5)), y)
-%!assert (betacdf (x, 1, 2 * ones (1, 5)), y)
-%!assert (betacdf (x, ones (1, 5), 2), y)
-%!assert (betacdf (x, [0 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
-%!assert (betacdf (x, 1, 2 * [0 1 NaN 1 1]), [NaN 0 NaN 1 1])
-%!assert (betacdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
+%!assert_equal (betacdf (x, ones (1, 5), 2 * ones (1, 5)), y)
+%!assert_equal (betacdf (x, 1, 2 * ones (1, 5)), y)
+%!assert_equal (betacdf (x, ones (1, 5), 2), y)
+%!assert_equal (betacdf (x, [0 1 NaN 1 1], 2), [NaN 0 NaN 1 1])
+%!assert_equal (betacdf (x, 1, 2 * [0 1 NaN 1 1]), [NaN 0 NaN 1 1])
+%!assert_equal (betacdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
 %! x1 = [0.1:0.2:0.9];
-%!assert (betacdf (x1, 2, 2), [0.028, 0.216, 0.5, 0.784, 0.972], 1e-14);
-%!assert (betacdf (x1, 2, 2, 'upper'), 1 - [0.028, 0.216, 0.5, 0.784, 0.972],...
+%!assert_equal (betacdf (x1, 2, 2), [0.028, 0.216, 0.5, 0.784, 0.972], 1e-14);
+%!assert_equal (betacdf (x1, 2, 2, 'upper'), 1 - [0.028, 0.216, 0.5, 0.784, 0.972],...
 %!        1e-14);
 %! x2 = [1, 2, 3];
-%!assert (betacdf (0.5, x2, x2), [0.5, 0.5, 0.5], 1e-14);
-%!assert (betacdf ([x, NaN], 1, 2), [y, NaN])
+%!assert_equal (betacdf (0.5, x2, x2), [0.5, 0.5, 0.5], 1e-14);
+%!assert_equal (betacdf ([x, NaN], 1, 2), [y, NaN])
 
 ## Test class of input preserved
-%!assert (betacdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
-%!assert (betacdf ([x, NaN], single (1), 2), single ([y, NaN]))
-%!assert (betacdf ([x, NaN], 1, single (2)), single ([y, NaN]))
+%!assert_equal (betacdf (single ([x, NaN]), 1, 2), single ([y, NaN]))
+%!assert_equal (betacdf ([x, NaN], single (1), 2), single ([y, NaN]))
+%!assert_equal (betacdf ([x, NaN], 1, single (2)), single ([y, NaN]))
 
 ## Test input validation
 %!error<betacdf: function called with too few input arguments.> betacdf ()

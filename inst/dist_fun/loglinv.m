@@ -105,14 +105,14 @@ endfunction
 %! p = [-1, 0, 0.2, 0.5, 0.8, 0.95, 1, 2];
 %! out1 = [NaN, 0, 0.25, 1, 4, 19, Inf, NaN];
 %! out2 = [NaN, 0, 0.0424732, 2.718282, 173.970037, 18644.695061, Inf, NaN];
-%!assert (loglinv (p, 0, 1), out1, 1e-8)
-%!assert (loglinv (p, 0, 1), out1, 1e-8)
-%!assert (loglinv (p, 1, 3), out2, 1e-6)
+%!assert_equal (loglinv (p, 0, 1), out1, 1e-8)
+%!assert_equal (loglinv (p, 0, 1), out1, 1e-8)
+%!assert_equal (loglinv (p, 1, 3), out2, 1e-6)
 
 ## Test class of input preserved
-%!assert (class (loglinv (single (1), 2, 3)), "single")
-%!assert (class (loglinv (1, single (2), 3)), "single")
-%!assert (class (loglinv (1, 2, single (3))), "single")
+%!assert_equal (class (loglinv (single (1), 2, 3)), "single")
+%!assert_equal (class (loglinv (1, single (2), 3)), "single")
+%!assert_equal (class (loglinv (1, 2, single (3))), "single")
 
 ## Test input validation
 %!error<loglinv: function called with too few input arguments.> loglinv (1)

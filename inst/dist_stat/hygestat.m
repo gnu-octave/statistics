@@ -114,13 +114,13 @@ endfunction
 %! [mn, v] = hygestat (m, k, n);
 %! expected_mn = [0.0000, 0.4000, 1.0000, 1.7143, 2.5000, 3.3333];
 %! expected_v = [0.0000, 0.2400, 0.4000, 0.4898, 0.5357, 0.5556];
-%! assert (mn, expected_mn, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (mn, expected_mn, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! m = 4:9;
 %! k = 0:5;
 %! [mn, v] = hygestat (m, k, 2);
 %! expected_mn = [0.0000, 0.4000, 0.6667, 0.8571, 1.0000, 1.1111];
 %! expected_v = [0.0000, 0.2400, 0.3556, 0.4082, 0.4286, 0.4321];
-%! assert (mn, expected_mn, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (mn, expected_mn, 0.001);
+%! assert_equal (v, expected_v, 0.001);

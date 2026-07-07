@@ -255,29 +255,29 @@ endfunction
 %!test
 %! theta = 0.5;
 %! r = copularnd ('Gaussian', theta);
-%! assert (size (r), [1, 2]);
-%! assert (all ((r >= 0) & (r <= 1)));
+%! assert_equal (size (r), [1, 2]);
+%! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);
 %!test
 %! theta = 0.5;
 %! df = 2;
 %! r = copularnd ('t', theta, df);
-%! assert (size (r), [1, 2]);
-%! assert (all ((r >= 0) & (r <= 1)));
+%! assert_equal (size (r), [1, 2]);
+%! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);
 %!test
 %! theta = 0.5;
 %! r = copularnd ('Clayton', theta);
-%! assert (size (r), [1, 2]);
-%! assert (all ((r >= 0) & (r <= 1)));
+%! assert_equal (size (r), [1, 2]);
+%! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);
 %!test
 %! theta = 0.5;
 %! n = 2;
 %! r = copularnd ('Clayton', theta, n);
-%! assert (size (r), [n, 2]);
-%! assert (all ((r >= 0) & (r <= 1)));
+%! assert_equal (size (r), [n, 2]);
+%! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);
 %!test
 %! theta = [1; 2];
 %! n = 2;
 %! d = 3;
 %! r = copularnd ('Clayton', theta, n, d);
-%! assert (size (r), [n, d]);
-%! assert (all ((r >= 0) & (r <= 1)));
+%! assert_equal (size (r), [n, d]);
+%! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);

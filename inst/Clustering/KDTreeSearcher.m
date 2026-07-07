@@ -817,8 +817,8 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = X(1:5,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 3);
-%! assert (idx, [[1, 18, 5]; [2, 35, 46]; [3, 48, 4]; [4, 48, 30]; [5, 38, 1]])
-%! assert (D, [[0, 0.1000, 0.1414]; [0,  0.1414,  0.1414]; [0, 0.1414, 0.2449];
+%! assert_equal (idx, [[1, 18, 5]; [2, 35, 46]; [3, 48, 4]; [4, 48, 30]; [5, 38, 1]])
+%! assert_equal (D, [[0, 0.1000, 0.1414]; [0,  0.1414,  0.1414]; [0, 0.1414, 0.2449];
 %!             [0, 0.1414, 0.1732]; [0, 0.1414, 0.1414]], 5e-5)
 
 %!test
@@ -827,8 +827,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = X(10:15,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 2);
-%! assert (idx, [[10, 35]; [11, 49]; [12, 30]; [13, 2]; [14, 39]; [15, 34]])
-%! assert (D, [[0, 0.1000]; [0, 0.1000]; [0, 0.2080]; [0, 0.1260]; [0, 0.2154];
+%! assert_equal (idx, [[10, 35]; [11, 49]; [12, 30]; [13, 2]; [14, 39]; [15, 34]])
+%! assert_equal (D, [[0, 0.1000]; [0, 0.1000]; [0, 0.2080]; [0, 0.1260]; [0, 0.2154];
 %!             [0, 0.3503]], 5e-5)
 
 %!test
@@ -837,8 +837,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = X(20:25,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, [20; 21; 22; 23; 24; 25])
-%! assert (D, [0; 0; 0; 0; 0; 0])
+%! assert_equal (idx, [20; 21; 22; 23; 24; 25])
+%! assert_equal (D, [0; 0; 0; 0; 0; 0])
 
 %!test
 %! load fisheriris
@@ -846,9 +846,9 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
 %! Y = X(30:35,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 4);
-%! assert (idx, [[30, 31, 4, 12]; [31, 30, 10, 35]; [32, 21, 37, 28];
+%! assert_equal (idx, [[30, 31, 4, 12]; [31, 30, 10, 35]; [32, 21, 37, 28];
 %!               [33, 20, 34, 47]; [34, 16, 15, 33]; [35, 10, 2, 26]])
-%! assert (D, [[0, 0.1000, 0.1000, 0.2000]; [0, 0.1000, 0.1000, 0.1000];
+%! assert_equal (D, [[0, 0.1000, 0.1000, 0.2000]; [0, 0.1000, 0.1000, 0.1000];
 %!             [0, 0.2000, 0.2000, 0.2000]; [0, 0.3000, 0.3000, 0.3000];
 %!             [0, 0.2000, 0.3000, 0.3000]; [0, 0.1000, 0.1000, 0.1000]], 5e-15)
 
@@ -858,8 +858,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'BucketSize', 20);
 %! Y = X(40:45,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 2);
-%! assert (idx, [[40, 8]; [41, 18]; [42, 9]; [43, 39]; [44, 27]; [45, 47]])
-%! assert (D, [[0, 0.1000]; [0, 0.1414]; [0, 0.6245]; [0, 0.2000]; [0, 0.2236];
+%! assert_equal (idx, [[40, 8]; [41, 18]; [42, 9]; [43, 39]; [44, 27]; [45, 47]])
+%! assert_equal (D, [[0, 0.1000]; [0, 0.1414]; [0, 0.6245]; [0, 0.2000]; [0, 0.2236];
 %!             [0, 0.3606]], 4.7e-5)
 
 %!test
@@ -868,9 +868,9 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = X(50:55,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 3, 'IncludeTies', true);
-%! assert (idx, {[50; 8; 40]; [51; 53; 87]; [52; 57; 76]; [53; 51; 87]; [54; ...
+%! assert_equal (idx, {[50; 8; 40]; [51; 53; 87]; [52; 57; 76]; [53; 51; 87]; [54; ...
 %!                90; 81]; [55; 59; 76]})
-%! assert (D, {[0; 0.1414; 0.1732]; [0; 0.2646; 0.3317]; [0; 0.2646; 0.3162];
+%! assert_equal (D, {[0; 0.1414; 0.1732]; [0; 0.2646; 0.3317]; [0; 0.2646; 0.3162];
 %!             [0; 0.2646; 0.2828]; [0; 0.2000; 0.3000]; [0; 0.2449; 0.3162]}, 5e-5)
 
 %!test
@@ -879,9 +879,9 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = X(60:65,:);
 %! [idx, D] = rangesearch (obj, Y, 0.4);
-%! assert (idx, {[60; 90]; [61; 94]; [62; 97; 79; 96; 100; 89; 98; 72]; [63];
+%! assert_equal (idx, {[60; 90]; [61; 94]; [62; 97; 79; 96; 100; 89; 98; 72]; [63];
 %!               [64; 92; 74; 79]; [65]})
-%! assert (D, {[0; 0.3873]; [0; 0.3606];
+%! assert_equal (D, {[0; 0.3873]; [0; 0.3606];
 %!             [0; 0.3000; 0.3317; 0.3606; 0.3606; 0.3742; 0.3873; 0.4000]; [0];
 %!             [0; 0.1414; 0.2236; 0.2449]; [0]}, 5e-5)
 
@@ -891,11 +891,11 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = X(70:72,:);
 %! [idx, D] = rangesearch (obj, Y, 1.0);
-%! assert (idx, {[70; 81; 90; 82; 83; 93; 54; 68; 95; 80; 91; 100; 60; 65; ...
+%! assert_equal (idx, {[70; 81; 90; 82; 83; 93; 54; 68; 95; 80; 91; 100; 60; 65; ...
 %!                89; 63]; [71; 139; 128; 150; 127; 57; 86; 64; 79; 92; 124];
 %!               [72; 100; 98; 83; 93; 97; 75; 68; 62; 89; 95; 74; 56; 90; ...
 %!                79; 92; 96; 64; 63; 65]})
-%! assert (D, {[0; 0.3000; 0.4000; 0.5000; 0.5000; 0.5000; 0.6000; 0.7000; ...
+%! assert_equal (D, {[0; 0.3000; 0.4000; 0.5000; 0.5000; 0.5000; 0.6000; 0.7000; ...
 %!              0.7000; 0.7000; 0.8000; 0.8000; 0.9000; 0.9000; 0.9000; 0.9000];
 %!             [0; 0.3000; 0.5000; 0.5000; 0.7000; 0.8000; 0.8000; 1.0000; ...
 %!              1.0000; 1.0000; 1]; [0; 0.5000; 0.5000; 0.6000; 0.6000; ...
@@ -908,7 +908,7 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = X(80:85,:);
 %! [idx, D] = rangesearch (obj, Y, 0.8);
-%! assert (idx, {[80; 82; 81; 65; 70; 83; 93; 90; 54; 63; 68; 72; 100; 60; ...
+%! assert_equal (idx, {[80; 82; 81; 65; 70; 83; 93; 90; 54; 63; 68; 72; 100; 60; ...
 %!                89; 99; 95; 94; 97; 96]; [81; 82; 70; 54; 90; 93; 80; 83; ...
 %!                60; 68; 95; 100; 65; 63; 97; 61; 91; 94; 89; 96; 72; 58; ...
 %!                62; 56]; [82; 81; 70; 80; 54; 90; 93; 83; 68; 60; 65; 63; ...
@@ -921,7 +921,7 @@ endfunction
 %!                87]; [85; 67; 56; 97; 95; 89; 96; 91; 100; 62; 71; 122; ...
 %!                79; 60; 107; 90; 139; 93; 68; 86; 83; 92; 64; 150; 102; ...
 %!                143; 74; 114; 70; 128; 84; 54; 72]})
-%! assert (D, {[0; 0.2884; 0.3530; 0.3826; 0.4062; 0.4198; 0.5117; 0.5440; 0.5718;
+%! assert_equal (D, {[0; 0.2884; 0.3530; 0.3826; 0.4062; 0.4198; 0.5117; 0.5440; 0.5718;
 %!              0.6000; 0.6018; 0.6073; 0.6308; 0.6333; 0.6753; 0.7000; 0.7192;
 %!              0.7230; 0.7350; 0.7459];
 %!             [0; 0.1260; 0.1442; 0.2571; 0.2571; 0.3530; 0.3530; 0.3826; 0.4344;
@@ -950,9 +950,9 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
 %! Y = X(90,:);
 %! [idx, D] = rangesearch (obj, Y, 0.7);
-%! assert (idx, {[90; 70; 54; 81; 95; 60; 83; 93; 100; 68; 82; 65; 97; 91; ...
+%! assert_equal (idx, {[90; 70; 54; 81; 95; 60; 83; 93; 100; 68; 82; 65; 97; 91; ...
 %!                56; 61; 62; 63; 67; 79; 80; 85; 89; 96; 72; 92; 107]})
-%! assert (D, {[0; 0.2000; 0.2000; 0.2000; 0.2000; 0.3000; 0.3000; 0.3000; ...
+%! assert_equal (D, {[0; 0.2000; 0.2000; 0.2000; 0.2000; 0.3000; 0.3000; 0.3000; ...
 %!             0.3000; 0.3000; 0.3000; 0.4000; 0.4000; 0.4000; 0.5000; ...
 %!             0.5000; 0.5000; 0.5000; 0.5000; 0.5000; 0.5000; 0.5000; ...
 %!             0.5000; 0.5000; 0.6000; 0.6000; 0.6000]}, 5e-16)
@@ -961,24 +961,24 @@ endfunction
 %! ## Constructor with single-point dataset
 %! X = [0, 0];
 %! obj = KDTreeSearcher (X);
-%! assert (obj.X, X);
-%! assert (obj.Distance, "euclidean");
-%! assert (isempty (obj.DistParameter));
-%! assert (obj.BucketSize, 50);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "euclidean");
+%! assert_equal (isempty (obj.DistParameter), true);
+%! assert_equal (obj.BucketSize, 50);
 
 %!test
 %! ## Constructor with duplicate points
 %! X = [0, 0; 0, 0; 1, 0];
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
-%! assert (obj.X, X);
-%! assert (obj.Distance, "cityblock");
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "cityblock");
 
 %!test
 %! ## Constructor with 3D data
 %! X = [0, 0, 0; 1, 0, 0; 0, 1, 0];
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
-%! assert (obj.X, X);
-%! assert (obj.DistParameter, 3);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.DistParameter, 3);
 
 %!test
 %! ## knnsearch with grid, K = 1
@@ -987,8 +987,8 @@ endfunction
 %! Y = [0.5, 0.5];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! D_true = pdist2 (X, Y, 'euclidean');
-%! assert (D, min (D_true), 1e-10);
-%! assert (any (idx == find (D_true == min (D_true))));
+%! assert_equal (D, min (D_true), 1e-10);
+%! assert_equal (any (idx == find (D_true == min (D_true))), true);
 
 %!test
 %! ## knnsearch with IncludeTies, all points equidistant
@@ -998,8 +998,8 @@ endfunction
 %! [idx, D] = knnsearch (obj, Y, 'K', 1, 'IncludeTies', true);
 %! D_true = pdist2 (X, Y, 'euclidean');
 %! expected_idx = find (D_true == min (D_true));
-%! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}(:)', repmat (min (D_true), 1, 4), 1e-10);
+%! assert_equal (sort (idx{1}(:)), sort (expected_idx));
+%! assert_equal (D{1}(:)', repmat (min (D_true), 1, 4), 1e-10);
 
 %!test
 %! ## rangesearch with line dataset
@@ -1010,8 +1010,8 @@ endfunction
 %! [idx, D] = rangesearch (obj, Y, r);
 %! D_true = pdist2 (X, Y, 'euclidean');
 %! expected_idx = find (D_true <= r);
-%! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+%! assert_equal (sort (idx{1}(:)), sort (expected_idx));
+%! assert_equal (D{1}, sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with duplicates
@@ -1019,8 +1019,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = [0, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1, 'IncludeTies', true);
-%! assert (sort (idx{1}(:))', [1, 2]);
-%! assert (D{1}', [0, 0], 1e-10);
+%! assert_equal (sort (idx{1}(:))', [1, 2]);
+%! assert_equal (D{1}', [0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with 3D data
@@ -1029,8 +1029,8 @@ endfunction
 %! Y = [0, 0, 0];
 %! r = 1;
 %! [idx, D] = rangesearch (obj, Y, r);
-%! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}', [0, 1, 1], 1e-10);
+%! assert_equal (sort (idx{1}(:))', [1, 2, 3]);
+%! assert_equal (D{1}', [0, 1, 1], 1e-10);
 
 %!test
 %! ## knnsearch with P = 2 (Euclidean equivalent)
@@ -1038,8 +1038,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 2);
 %! Y = [0, 1];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 1);
-%! assert (D, 1, 1e-10);
+%! assert_equal (idx, 1);
+%! assert_equal (D, 1, 1e-10);
 
 %!test
 %! ## rangesearch with P = 3
@@ -1050,8 +1050,8 @@ endfunction
 %! [idx, D] = rangesearch (obj, Y, r);
 %! D_true = pdist2 (X, Y, 'minkowski', 3);
 %! expected_idx = find (D_true <= r);
-%! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, sort (D_true(expected_idx)), 1e-10);
+%! assert_equal (sort (idx{1}(:)), sort (expected_idx));
+%! assert_equal (D{1}, sort (D_true(expected_idx)), 1e-10);
 
 %!test
 %! ## knnsearch with P = 4, random data
@@ -1061,8 +1061,8 @@ endfunction
 %! [idx, D] = knnsearch (obj, Y, 'K', 3);
 %! D_true = pdist2 (X, Y, 'minkowski', 4);
 %! [sorted_D, sort_idx] = sort (D_true);
-%! assert (idx', sort_idx(1:3));
-%! assert (D', sorted_D(1:3), 1e-10);
+%! assert_equal (idx', sort_idx(1:3));
+%! assert_equal (D', sorted_D(1:3), 1e-10);
 
 %!test
 %! ## knnsearch with all same points
@@ -1070,8 +1070,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
 %! Y = [1, 1];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1, 'IncludeTies', true);
-%! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (D{1}', [0, 0, 0], 1e-10);
+%! assert_equal (sort (idx{1}(:))', [1, 2, 3]);
+%! assert_equal (D{1}', [0, 0, 0], 1e-10);
 
 %!test
 %! ## rangesearch with grid
@@ -1082,8 +1082,8 @@ endfunction
 %! [idx, D] = rangesearch (obj, Y, r);
 %! D_true = pdist2 (X, Y, 'chebychev');
 %! expected_idx = find (D_true <= r);
-%! assert (sort (idx{1}(:)), sort (expected_idx));
-%! assert (D{1}, D_true(expected_idx), 1e-10);
+%! assert_equal (sort (idx{1}(:)), sort (expected_idx));
+%! assert_equal (D{1}, D_true(expected_idx), 1e-10);
 
 %!test
 %! ## Changing Distance and verifying search
@@ -1091,10 +1091,10 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'euclidean');
 %! Y = [0,1];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (D, 1, 1e-10);
+%! assert_equal (D, 1, 1e-10);
 %! obj.Distance = 'chebychev';
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (D, 1, 1e-10);
+%! assert_equal (D, 1, 1e-10);
 
 %!test
 %! ## Changing DistParameter for minkowski
@@ -1102,10 +1102,10 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 1);
 %! Y = [0,1];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (D, 1, 1e-10);
+%! assert_equal (D, 1, 1e-10);
 %! obj.DistParameter = 3;
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (D, 1, 1e-10);
+%! assert_equal (D, 1, 1e-10);
 
 %!test
 %! ## Different BucketSize values
@@ -1115,38 +1115,38 @@ endfunction
 %! Y = rand (1,2);
 %! [idx1, D1] = knnsearch (obj1, Y, 'K', 3);
 %! [idx2, D2] = knnsearch (obj2, Y, 'K', 3);
-%! assert (idx1, idx2);
-%! assert (D1, D2, 1e-10);
+%! assert_equal (idx1, idx2);
+%! assert_equal (D1, D2, 1e-10);
 
 %!test
 %! ## Basic constructor with default Euclidean
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = KDTreeSearcher (X);
-%! assert (obj.X, X);
-%! assert (obj.Distance, "euclidean");
-%! assert (isempty (obj.DistParameter));
-%! assert (obj.BucketSize, 50);
+%! assert_equal (obj.X, X);
+%! assert_equal (obj.Distance, "euclidean");
+%! assert_equal (isempty (obj.DistParameter), true);
+%! assert_equal (obj.BucketSize, 50);
 
 %!test
 %! ## Minkowski distance with custom P
 %! X = [0, 0; 1, 1; 2, 2];
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
-%! assert (obj.Distance, "minkowski");
-%! assert (obj.DistParameter, 3);
+%! assert_equal (obj.Distance, "minkowski");
+%! assert_equal (obj.DistParameter, 3);
 
 %!test
 %! ## Cityblock distance
 %! X = [0, 0; 1, 0; 0, 1];
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
-%! assert (obj.Distance, "cityblock");
-%! assert (isempty (obj.DistParameter));
+%! assert_equal (obj.Distance, "cityblock");
+%! assert_equal (isempty (obj.DistParameter), true);
 
 %!test
 %! ## Chebychev distance
 %! X = [1, 1; 2, 3; 4, 2];
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
-%! assert (obj.Distance, "chebychev");
-%! assert (isempty (obj.DistParameter));
+%! assert_equal (obj.Distance, "chebychev");
+%! assert_equal (isempty (obj.DistParameter), true);
 
 %!test
 %! ## knnsearch with Euclidean distance
@@ -1154,8 +1154,8 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 1);
-%! assert (D, sqrt (2), 1e-10);
+%! assert_equal (idx, 1);
+%! assert_equal (D, sqrt (2), 1e-10);
 
 %!test
 %! ## knnsearch with Cityblock distance
@@ -1163,8 +1163,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [1, 2]));
-%! assert (D, 1, 1e-10);
+%! assert_equal (ismember (idx, [1, 2]), true);
+%! assert_equal (D, 1, 1e-10);
 
 %!test
 %! ## knnsearch with Chebychev distance
@@ -1172,8 +1172,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
 %! Y = [2, 2];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (ismember (idx, [1, 2]));
-%! assert (D, 1, 1e-10);
+%! assert_equal (ismember (idx, [1, 2]), true);
+%! assert_equal (D, 1, 1e-10);
 
 %!test
 %! ## knnsearch with Minkowski P=3
@@ -1181,8 +1181,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = [1, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 2);
-%! assert (D, 0, 1e-10);
+%! assert_equal (idx, 2);
+%! assert_equal (D, 0, 1e-10);
 
 %!test
 %! ## knnsearch with IncludeTies
@@ -1190,9 +1190,9 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = [0.5, 0];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1, 'IncludeTies', true);
-%! assert (iscell (idx));
-%! assert (sort (idx{1}(:))', [1, 2]);
-%! assert (sort (D{1}(:)), [0.5; 0.5], 1e-10);
+%! assert_equal (iscell (idx), true);
+%! assert_equal (sort (idx{1}(:))', [1, 2]);
+%! assert_equal (sort (D{1}(:)), [0.5; 0.5], 1e-10);
 
 %!test
 %! ## rangesearch with Euclidean
@@ -1200,8 +1200,8 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 2);
-%! assert (idx{1}, [1]);
-%! assert (D{1}, [sqrt(2)], 1e-10);
+%! assert_equal (idx{1}, [1]);
+%! assert_equal (D{1}, [sqrt(2)], 1e-10);
 
 %!test
 %! ## rangesearch with Cityblock
@@ -1209,8 +1209,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = [0, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (idx{1}, [1]);
-%! assert (D{1}, [0], 1e-10);
+%! assert_equal (idx{1}, [1]);
+%! assert_equal (D{1}, [0], 1e-10);
 
 %!test
 %! ## rangesearch with Chebychev
@@ -1218,8 +1218,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'chebychev');
 %! Y = [2, 2];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (sort (idx{1}(:))', [1, 2]);
-%! assert (sort (D{1}(:))', [1, 1], 1e-10);
+%! assert_equal (sort (idx{1}(:))', [1, 2]);
+%! assert_equal (sort (D{1}(:))', [1, 1], 1e-10);
 
 %!test
 %! ## rangesearch with Minkowski P=3
@@ -1227,8 +1227,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = [1, 0];
 %! [idx, D] = rangesearch (obj, Y, 1);
-%! assert (sort (idx{1}(:))', [1, 2, 3]);
-%! assert (sort (D{1}(:))', [0, 1, 1], 1e-10);
+%! assert_equal (sort (idx{1}(:))', [1, 2, 3]);
+%! assert_equal (sort (D{1}(:))', [0, 1, 1], 1e-10);
 
 %!test
 %! ## Diverse dataset with Euclidean
@@ -1236,8 +1236,8 @@ endfunction
 %! obj = KDTreeSearcher (X);
 %! Y = [5, 5];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 2);
-%! assert (D, 0, 1e-10);
+%! assert_equal (idx, 2);
+%! assert_equal (D, 0, 1e-10);
 
 %!test
 %! ## High-dimensional data with Cityblock
@@ -1245,8 +1245,8 @@ endfunction
 %! obj = KDTreeSearcher (X, 'Distance', 'cityblock');
 %! Y = [4, 5, 6];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
-%! assert (idx, 2);
-%! assert (D, 0, 1e-10);
+%! assert_equal (idx, 2);
+%! assert_equal (D, 0, 1e-10);
 
 ## Test Input Validation
 

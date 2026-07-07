@@ -123,8 +123,8 @@ endfunction
 %! [L, V] = explike (beta, x);
 %! expected_L = 4.0094;
 %! expected_V = 6.5789;
-%! assert (L, expected_L, 0.001);
-%! assert (V, expected_V, 0.001);
+%! assert_equal (L, expected_L, 0.001);
+%! assert_equal (V, expected_V, 0.001);
 
 %!test
 %! x = 1:5;
@@ -132,8 +132,8 @@ endfunction
 %! [L, V] = explike (beta, x);
 %! expected_L = 10.9657;
 %! expected_V = 0.4;
-%! assert (L, expected_L, 0.001);
-%! assert (V, expected_V, 0.001);
+%! assert_equal (L, expected_L, 0.001);
+%! assert_equal (V, expected_V, 0.001);
 
 ## Test input validation
 %!error<explike: function called with too few input arguments.> explike ()

@@ -104,9 +104,9 @@ endfunction
 %! x = [-5, 0, 1, 2, 3];
 %! y0 = [0, 0.3679, 0.2547, 0.1182, 0.0474];
 %! y1 = [0, 0.1794, 0.3679, 0.2547, 0.1182];
-%!assert (gumbelpdf (x), y0, 1e-4)
-%!assert (gumbelpdf (x, zeros (1,5), ones (1,5)), y0, 1e-4)
-%!assert (gumbelpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
+%!assert_equal (gumbelpdf (x), y0, 1e-4)
+%!assert_equal (gumbelpdf (x, zeros (1,5), ones (1,5)), y0, 1e-4)
+%!assert_equal (gumbelpdf (x, ones (1,5), ones (1,5)), y1, 1e-4)
 
 ## Test input validation
 %!error<gumbelpdf: too few input arguments.> gumbelpdf ()

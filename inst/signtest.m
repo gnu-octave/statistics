@@ -241,37 +241,37 @@ endfunction
 ## Test output
 %!test
 %! [pval, h, stats] = signtest ([-ones(1, 1000) 1], 0, 'tail', 'left');
-%! assert (pval, 1.091701889420221e-218, 1e-14);
-%! assert (h, 1);
-%! assert (stats.zval, -31.5437631079266, 1e-14);
+%! assert_equal (pval, 1.091701889420221e-218, 1e-14);
+%! assert_equal (h, 1);
+%! assert_equal (stats.zval, -31.5437631079266, 1e-14);
 %!test
 %! [pval, h, stats] = signtest ([-2 -1 0 2 1 3 1], 0);
-%! assert (pval, 0.6875000000000006, 1e-14);
-%! assert (h, 0);
-%! assert (stats.zval, NaN);
-%! assert (stats.sign, 4);
+%! assert_equal (pval, 0.6875000000000006, 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (stats.zval, NaN);
+%! assert_equal (stats.sign, 4);
 %!test
 %! [pval, h, stats] = signtest ([-2 -1 0 2 1 3 1], 0, 'method', 'approximate');
-%! assert (pval, 0.6830913983096086, 1e-14);
-%! assert (h, 0);
-%! assert (stats.zval, 0.4082482904638631, 1e-14);
-%! assert (stats.sign, 4);
+%! assert_equal (pval, 0.6830913983096086, 1e-14);
+%! assert_equal (h, 0);
+%! assert_equal (stats.zval, 0.4082482904638631, 1e-14);
+%! assert_equal (stats.sign, 4);
 %!test
 %! x = [1, 2, 3, 4, NaN, NaN, NaN];
 %! [pval, h] = signtest (x);
-%! assert (pval, 0.1250, 1e-4);
-%! assert (h, 0);
+%! assert_equal (pval, 0.1250, 1e-4);
+%! assert_equal (h, 0);
 %!test
 %! x = [1, 2, 3, 4, 5];
 %! y = [1, 1, NaN, 5, 4];
 %! [pval, h] = signtest (x, y);
-%! assert (pval, 1.0, 1e-4);
-%! assert (h, 0);
+%! assert_equal (pval, 1.0, 1e-4);
+%! assert_equal (h, 0);
 %!test
 %! x = [1, 2, 3, 4, 5, -1];
 %! [p_val, ~] = signtest (x);
 %! [p, h, stats] = signtest (x, 0, 'alpha', p_val);
-%! assert (h, 1);
+%! assert_equal (h, 1);
 
 ## Test input validation
 %!error <signtest: X must be a vector.> signtest (ones (2))

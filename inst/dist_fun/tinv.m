@@ -113,15 +113,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (tinv (p, ones (1,5)), [NaN -Inf 0 Inf NaN])
-%!assert (tinv (p, 1), [NaN -Inf 0 Inf NaN], eps)
-%!assert (tinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
-%!assert (tinv ([p(1:2) NaN p(4:5)], 1), [NaN -Inf NaN Inf NaN])
+%!assert_equal (tinv (p, ones (1,5)), [NaN -Inf 0 Inf NaN])
+%!assert_equal (tinv (p, 1), [NaN -Inf 0 Inf NaN], eps)
+%!assert_equal (tinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN], eps)
+%!assert_equal (tinv ([p(1:2) NaN p(4:5)], 1), [NaN -Inf NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (tinv ([p, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)
-%!assert (tinv (single ([p, NaN]), 1), single ([NaN -Inf 0 Inf NaN NaN]), eps ('single'))
-%!assert (tinv ([p, NaN], single (1)), single ([NaN -Inf 0 Inf NaN NaN]), eps ('single'))
+%!assert_equal (tinv ([p, NaN], 1), [NaN -Inf 0 Inf NaN NaN], eps)
+%!assert_equal (tinv (single ([p, NaN]), 1), single ([NaN -Inf 0 Inf NaN NaN]), eps ('single'))
+%!assert_equal (tinv ([p, NaN], single (1)), single ([NaN -Inf 0 Inf NaN NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tinv: function called with too few input arguments.> tinv ()

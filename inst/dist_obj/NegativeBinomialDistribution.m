@@ -834,37 +834,37 @@ endfunction
 %! pd = NegativeBinomialDistribution (5, 0.5);
 %! t = truncate (pd, 2, 4);
 %! t_inf = truncate (pd, 2, Inf);
-%!assert (cdf (pd, [0:5]), [0.0312, 0.1094, 0.2266, 0.3633, 0.5, 0.6230], 1e-4);
-%!assert (cdf (t, [0:5]), [0, 0, 0.3, 0.65, 1, 1], 1e-4);
-%!assert (cdf (t_inf, [0:5]), [0, 0, 0.1316, 0.2851, 0.4386, 0.5768], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.1094, 0.2266, 0.3633, 0.5000], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0.3, 0.65, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [0, 2, 4, 5, 7, Inf], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2, 3, 3, 4, 4], 1e-4);
-%!assert (icdf (t_inf, [0:0.2:1]), [2, 3, 4, 6, 8, Inf], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 4, 5, 7, Inf, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 3, 3, 4, 4, NaN], 1e-4);
-%!assert (iqr (pd), 4);
-%!assert (iqr (t), 2);
-%!assert (mean (pd), 5);
-%!assert (mean (t), 3.0500, 1e-4);
-%!assert (mean (t_inf), 5.5263, 1e-4);
-%!assert (median (pd), 4);
-%!assert (median (t), 3);
-%!assert (pdf (pd, [0:5]), [0.0312, 0.0781, 0.1172, 0.1367, 0.1367, 0.1230], 1e-4);
-%!assert (pdf (t, [0:5]), [0, 0, 0.3, 0.35, 0.35, 0], 1e-4);
-%!assert (pdf (t_inf, [0:5]), [0, 0, 0.1316, 0.1535, 0.1535, 0.1382], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 0.0781, 0.1172, 0.1367, 0.1367, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.3, 0.35, 0.35, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), 3.1623, 1e-4);
-%!assert (std (t), 0.8047, 1e-4);
-%!assert (std (t_inf), 2.9445, 1e-4);
-%!assert (var (pd), 10);
-%!assert (var (t), 0.6475, 1e-4);
-%!assert (var (t_inf), 8.6704, 1e-4);
+%!assert_equal (cdf (pd, [0:5]), [0.0312, 0.1094, 0.2266, 0.3633, 0.5, 0.6230], 1e-4);
+%!assert_equal (cdf (t, [0:5]), [0, 0, 0.3, 0.65, 1, 1], 1e-4);
+%!assert_equal (cdf (t_inf, [0:5]), [0, 0, 0.1316, 0.2851, 0.4386, 0.5768], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.1094, 0.2266, 0.3633, 0.5000], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0.3, 0.65, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [0, 2, 4, 5, 7, Inf], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2, 3, 3, 4, 4], 1e-4);
+%!assert_equal (icdf (t_inf, [0:0.2:1]), [2, 3, 4, 6, 8, Inf], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 4, 5, 7, Inf, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 3, 3, 4, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 4);
+%!assert_equal (iqr (t), 2);
+%!assert_equal (mean (pd), 5);
+%!assert_equal (mean (t), 3.0500, 1e-4);
+%!assert_equal (mean (t_inf), 5.5263, 1e-4);
+%!assert_equal (median (pd), 4);
+%!assert_equal (median (t), 3);
+%!assert_equal (pdf (pd, [0:5]), [0.0312, 0.0781, 0.1172, 0.1367, 0.1367, 0.1230], 1e-4);
+%!assert_equal (pdf (t, [0:5]), [0, 0, 0.3, 0.35, 0.35, 0], 1e-4);
+%!assert_equal (pdf (t_inf, [0:5]), [0, 0, 0.1316, 0.1535, 0.1535, 0.1382], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1:4, NaN]), [0, 0.0781, 0.1172, 0.1367, 0.1367, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1:4, NaN]), [0, 0, 0.3, 0.35, 0.35, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), 3.1623, 1e-4);
+%!assert_equal (std (t), 0.8047, 1e-4);
+%!assert_equal (std (t_inf), 2.9445, 1e-4);
+%!assert_equal (var (pd), 10);
+%!assert_equal (var (t), 0.6475, 1e-4);
+%!assert_equal (var (t_inf), 8.6704, 1e-4);
 
 ## Test input validation
 ## 'NegativeBinomialDistribution' constructor

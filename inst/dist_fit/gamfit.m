@@ -394,53 +394,53 @@ endfunction
 %! x = [1.2 1.6 1.7 1.8 1.9 2.0 2.2 2.6 3.0 3.5 4.0 4.8 5.6 6.6 7.6];
 %!test
 %! [paramhat, paramci] = gamfit (x);
-%! assert (paramhat, [3.4248, 0.9752], 1e-4);
-%! assert (paramci, [1.7287, 0.4670; 6.7852, 2.0366], 1e-4);
+%! assert_equal (paramhat, [3.4248, 0.9752], 1e-4);
+%! assert_equal (paramci, [1.7287, 0.4670; 6.7852, 2.0366], 1e-4);
 %!test
 %! [paramhat, paramci] = gamfit (x, 0.01);
-%! assert (paramhat, [3.4248, 0.9752], 1e-4);
-%! assert (paramci, [1.3945, 0.3705; 8.4113, 2.5668], 1e-4);
+%! assert_equal (paramhat, [3.4248, 0.9752], 1e-4);
+%! assert_equal (paramci, [1.3945, 0.3705; 8.4113, 2.5668], 1e-4);
 %!test
 %! freq = [1 1 1 1 2 1 1 1 1 2 1 1 1 1 2];
 %! [paramhat, paramci] = gamfit (x, [], [], freq);
-%! assert (paramhat, [3.3025, 1.0615], 1e-4);
-%! assert (paramci, [1.7710, 0.5415; 6.1584, 2.0806], 1e-4);
+%! assert_equal (paramhat, [3.3025, 1.0615], 1e-4);
+%! assert_equal (paramci, [1.7710, 0.5415; 6.1584, 2.0806], 1e-4);
 %!test
 %! [paramhat, paramci] = gamfit (x, [], [], [1:15]);
-%! assert (paramhat, [4.4484, 0.9689], 1e-4);
-%! assert (paramci, [3.4848, 0.7482; 5.6785, 1.2546], 1e-4);
+%! assert_equal (paramhat, [4.4484, 0.9689], 1e-4);
+%! assert_equal (paramci, [3.4848, 0.7482; 5.6785, 1.2546], 1e-4);
 %!test
 %! [paramhat, paramci] = gamfit (x, 0.01, [], [1:15]);
-%! assert (paramhat, [4.4484, 0.9689], 1e-4);
-%! assert (paramci, [3.2275, 0.6899; 6.1312, 1.3608], 1e-4);
+%! assert_equal (paramhat, [4.4484, 0.9689], 1e-4);
+%! assert_equal (paramci, [3.2275, 0.6899; 6.1312, 1.3608], 1e-4);
 %!test
 %! cens = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0];
 %! [paramhat, paramci] = gamfit (x, [], cens, [1:15]);
-%! assert (paramhat, [4.7537, 0.9308], 1e-4);
-%! assert (paramci, [3.7123, 0.7162; 6.0872, 1.2097], 1e-4);
+%! assert_equal (paramhat, [4.7537, 0.9308], 1e-4);
+%! assert_equal (paramci, [3.7123, 0.7162; 6.0872, 1.2097], 1e-4);
 %!test
 %! cens = [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0];
 %! freq = [1 1 1 1 2 1 1 1 1 2 1 1 1 1 2];
 %! [paramhat, paramci] = gamfit (x, [], cens, freq);
-%! assert (paramhat, [3.4736, 1.0847], 1e-4);
-%! assert (paramci, [1.8286, 0.5359; 6.5982, 2.1956], 1e-4);
+%! assert_equal (paramhat, [3.4736, 1.0847], 1e-4);
+%! assert_equal (paramci, [1.8286, 0.5359; 6.5982, 2.1956], 1e-4);
 
 ## Test edge cases
 %!test
 %! [paramhat, paramci] = gamfit ([1 1 1 1 1 1]);
-%! assert (paramhat, [Inf, 0]);
-%! assert (paramci, [Inf, 0; Inf, 0]);
+%! assert_equal (paramhat, [Inf, 0]);
+%! assert_equal (paramci, [Inf, 0; Inf, 0]);
 %!test
 %! [paramhat, paramci] = gamfit ([1 1 1 1 1 1], [], [1 1 1 1 1 1]);
-%! assert (paramhat, [NaN, NaN]);
-%! assert (paramci, [NaN, NaN; NaN, NaN]);
+%! assert_equal (paramhat, [NaN, NaN]);
+%! assert_equal (paramci, [NaN, NaN; NaN, NaN]);
 %!test
 %! [paramhat, paramci] = gamfit ([1 1 1 1 1 1], [], [], [1 1 1 1 1 1]);
-%! assert (paramhat, [Inf, 0]);
-%! assert (paramci, [Inf, 0; Inf, 0]);
+%! assert_equal (paramhat, [Inf, 0]);
+%! assert_equal (paramci, [Inf, 0; Inf, 0]);
 
 ## Test class of input preserved
-%!assert (class (gamfit (single (x))), "single")
+%!assert_equal (class (gamfit (single (x))), "single")
 
 ## Test input validation
 %!error<gamfit: X must be a vector.> gamfit (ones (2))

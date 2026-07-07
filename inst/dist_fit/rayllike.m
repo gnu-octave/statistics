@@ -96,23 +96,23 @@ endfunction
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [nlogL, acov] = rayllike (3.25, x);
-%! assert (nlogL, 14.7442, 1e-4)
+%! assert_equal (nlogL, 14.7442, 1e-4)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [nlogL, acov] = rayllike (3.25, x, [], f);
-%! assert (nlogL, 14.7442, 1e-4)
+%! assert_equal (nlogL, 14.7442, 1e-4)
 %!test
 %! x = [1 2 3 4 5 6];
 %! f = [1 1 2 3 1 0];
 %! [nlogL, acov] = rayllike (3.25, x, [], f);
-%! assert (nlogL, 14.7442, 1e-4)
+%! assert_equal (nlogL, 14.7442, 1e-4)
 %!test
 %! x = [1 2 3 4 5 6];
 %! c = [0 0 0 0 0 1];
 %! f = [1 1 2 3 1 0];
 %! [nlogL, acov] = rayllike (3.25, x, c, f);
-%! assert (nlogL, 14.7442, 1e-4)
+%! assert_equal (nlogL, 14.7442, 1e-4)
 
 ## Test input validation
 %!error<rayllike: function called with too few input arguments.> rayllike (1)

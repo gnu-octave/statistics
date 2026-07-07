@@ -159,12 +159,12 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [1; 2; 3; 4];
 %! a = fitrgam (x, y);
-%! assert ({a.X, a.Y}, {x, y})
-%! assert ({a.BaseModel.Intercept}, {2.5000})
-%! assert ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
-%! assert ({a.NumObservations, a.NumPredictors}, {4, 3})
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
-%! assert ({a.Formula}, {[]})
+%! assert_equal ({a.X, a.Y}, {x, y})
+%! assert_equal ({a.BaseModel.Intercept}, {2.5000})
+%! assert_equal ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
+%! assert_equal ({a.NumObservations, a.NumPredictors}, {4, 3})
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
+%! assert_equal ({a.Formula}, {[]})
 %!test
 %! x = [1, 2, 3, 4; 4, 5, 6, 7; 7, 8, 9, 1; 3, 2, 1, 2];
 %! y = [1; 2; 3; 4];
@@ -172,9 +172,9 @@ endfunction
 %! formula = 'Y ~ A + B + C + D + A:C';
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
 %! a = fitrgam (x, y, 'predictors', pnames, 'formula', formula);
-%! assert (a.IntMatrix, double (intMat))
-%! assert ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
-%! assert (a.Formula, formula)
+%! assert_equal (a.IntMatrix, double (intMat))
+%! assert_equal ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
+%! assert_equal (a.Formula, formula)
 
 ## Test input validation
 %!error<fitrgam: too few arguments.> fitrgam ()

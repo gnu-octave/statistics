@@ -164,32 +164,32 @@ endfunction
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [shat, sci] = raylfit (x);
-%! assert (shat, 2.4495, 1e-4)
-%! assert (sci, [1.8243; 3.7279], 1e-4)
+%! assert_equal (shat, 2.4495, 1e-4)
+%! assert_equal (sci, [1.8243; 3.7279], 1e-4)
 %!test
 %! x = [1 3 2 4 5 4 3 4];
 %! [shat, sci] = raylfit (x, 0.01);
-%! assert (shat, 2.4495, 1e-4)
-%! assert (sci, [1.6738; 4.3208], 1e-4)
+%! assert_equal (shat, 2.4495, 1e-4)
+%! assert_equal (sci, [1.6738; 4.3208], 1e-4)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [shat, sci] = raylfit (x, [], [], f);
-%! assert (shat, 2.4495, 1e-4)
-%! assert (sci, [1.8243; 3.7279], 1e-4)
+%! assert_equal (shat, 2.4495, 1e-4)
+%! assert_equal (sci, [1.8243; 3.7279], 1e-4)
 %!test
 %! x = [1 2 3 4 5];
 %! f = [1 1 2 3 1];
 %! [shat, sci] = raylfit (x, 0.01, [], f);
-%! assert (shat, 2.4495, 1e-4)
-%! assert (sci, [1.6738; 4.3208], 1e-4)
+%! assert_equal (shat, 2.4495, 1e-4)
+%! assert_equal (sci, [1.6738; 4.3208], 1e-4)
 %!test
 %! x = [1 2 3 4 5 6];
 %! c = [0 0 0 0 0 1];
 %! f = [1 1 2 3 1 1];
 %! [shat, sci] = raylfit (x, 0.01, c, f);
-%! assert (shat, 2.4495, 1e-4)
-%! assert (sci, [1.6738; 4.3208], 1e-4)
+%! assert_equal (shat, 2.4495, 1e-4)
+%! assert_equal (sci, [1.6738; 4.3208], 1e-4)
 
 ## Test input validation
 %!error<raylfit: X must be a vector.> raylfit (ones (2,5));

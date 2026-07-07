@@ -95,23 +95,23 @@ endfunction
 %! [m, v] = binostat (n, ps);
 %! expected_m = [0.00, 0.40, 1.20, 2.40, 4.00, 6.00];
 %! expected_v = [0.00, 0.32, 0.72, 0.96, 0.80, 0.00];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! n = 1:6;
 %! [m, v] = binostat (n, 0.5);
 %! expected_m = [0.50, 1.00, 1.50, 2.00, 2.50, 3.00];
 %! expected_v = [0.25, 0.50, 0.75, 1.00, 1.25, 1.50];
-%! assert (m, expected_m, 0.001);
-%! assert (v, expected_v, 0.001);
+%! assert_equal (m, expected_m, 0.001);
+%! assert_equal (v, expected_v, 0.001);
 %!test
 %! n = [-Inf -3 5 0.5 3 NaN 100, Inf];
 %! [m, v] = binostat (n, 0.5);
-%! assert (isnan (m), [true true false true false true false false])
-%! assert (isnan (v), [true true false true false true false false])
-%! assert (m(end), Inf);
-%! assert (v(end), Inf);
-%!assert (nthargout (1:2, @binostat, 5, []), {[], []})
-%!assert (nthargout (1:2, @binostat, [], 5), {[], []})
-%!assert (size (binostat (randi (100, 10, 5, 4), rand (10, 5, 4))), [10 5 4])
-%!assert (size (binostat (randi (100, 10, 5, 4), 7)), [10 5 4])
+%! assert_equal (isnan (m), [true true false true false true false false])
+%! assert_equal (isnan (v), [true true false true false true false false])
+%! assert_equal (m(end), Inf);
+%! assert_equal (v(end), Inf);
+%!assert_equal (nthargout (1:2, @binostat, 5, []), {[], []})
+%!assert_equal (nthargout (1:2, @binostat, [], 5), {[], []})
+%!assert_equal (size (binostat (randi (100, 10, 5, 4), rand (10, 5, 4))), [10 5 4])
+%!assert_equal (size (binostat (randi (100, 10, 5, 4), 7)), [10 5 4])

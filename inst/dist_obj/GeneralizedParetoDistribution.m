@@ -816,31 +816,31 @@ endfunction
 %!shared pd, t
 %! pd = GeneralizedParetoDistribution (1, 1, 1);
 %! t = truncate (pd, 2, 4);
-%!assert (cdf (pd, [0:5]), [0, 0, 0.5, 0.6667, 0.75, 0.8], 1e-4);
-%!assert (cdf (t, [0:5]), [0, 0, 0, 0.6667, 1, 1], 1e-4);
-%!assert (cdf (pd, [1.5, 2, 3, 4]), [0.3333, 0.5, 0.6667, 0.75], 1e-4);
-%!assert (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.6667, 1], 1e-4);
-%!assert (icdf (pd, [0:0.2:1]), [1, 1.25, 1.6667, 2.5, 5, Inf], 1e-4);
-%!assert (icdf (t, [0:0.2:1]), [2, 2.2222, 2.5, 2.8571, 3.3333, 4], 1e-4);
-%!assert (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1.6667, 2.5, 5, Inf, NaN], 1e-4);
-%!assert (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.5, 2.8571, 3.3333, 4, NaN], 1e-4);
-%!assert (iqr (pd), 2.6667, 1e-4);
-%!assert (iqr (t), 0.9143, 1e-4);
-%!assert (mean (pd), Inf);
-%!assert (mean (t), 2.7726, 1e-4);
-%!assert (median (pd), 2);
-%!assert (median (t), 2.6667, 1e-4);
-%!assert (pdf (pd, [0:5]), [0, 1, 0.25, 0.1111, 0.0625, 0.04], 1e-4);
-%!assert (pdf (t, [0:5]), [0, 0, 1, 0.4444, 0.25, 0], 1e-4);
-%!assert (pdf (pd, [-1, 1:4, NaN]), [0, 1, 0.25, 0.1111, 0.0625, NaN], 1e-4);
-%!assert (pdf (t, [-1, 1:4, NaN]), [0, 0, 1, 0.4444, 0.25, NaN], 1e-4);
-%!assert (isequal (size (random (pd, 100, 50)), [100, 50]))
-%!assert (any (random (t, 1000, 1) < 2), false);
-%!assert (any (random (t, 1000, 1) > 4), false);
-%!assert (std (pd), Inf);
-%!assert (std (t), 0.5592, 1e-4);
-%!assert (var (pd), Inf);
-%!assert (var (t), 0.3128, 1e-4);
+%!assert_equal (cdf (pd, [0:5]), [0, 0, 0.5, 0.6667, 0.75, 0.8], 1e-4);
+%!assert_equal (cdf (t, [0:5]), [0, 0, 0, 0.6667, 1, 1], 1e-4);
+%!assert_equal (cdf (pd, [1.5, 2, 3, 4]), [0.3333, 0.5, 0.6667, 0.75], 1e-4);
+%!assert_equal (cdf (t, [1.5, 2, 3, 4]), [0, 0, 0.6667, 1], 1e-4);
+%!assert_equal (icdf (pd, [0:0.2:1]), [1, 1.25, 1.6667, 2.5, 5, Inf], 1e-4);
+%!assert_equal (icdf (t, [0:0.2:1]), [2, 2.2222, 2.5, 2.8571, 3.3333, 4], 1e-4);
+%!assert_equal (icdf (pd, [-1, 0.4:0.2:1, NaN]), [NaN, 1.6667, 2.5, 5, Inf, NaN], 1e-4);
+%!assert_equal (icdf (t, [-1, 0.4:0.2:1, NaN]), [NaN, 2.5, 2.8571, 3.3333, 4, NaN], 1e-4);
+%!assert_equal (iqr (pd), 2.6667, 1e-4);
+%!assert_equal (iqr (t), 0.9143, 1e-4);
+%!assert_equal (mean (pd), Inf);
+%!assert_equal (mean (t), 2.7726, 1e-4);
+%!assert_equal (median (pd), 2);
+%!assert_equal (median (t), 2.6667, 1e-4);
+%!assert_equal (pdf (pd, [0:5]), [0, 1, 0.25, 0.1111, 0.0625, 0.04], 1e-4);
+%!assert_equal (pdf (t, [0:5]), [0, 0, 1, 0.4444, 0.25, 0], 1e-4);
+%!assert_equal (pdf (pd, [-1, 1:4, NaN]), [0, 1, 0.25, 0.1111, 0.0625, NaN], 1e-4);
+%!assert_equal (pdf (t, [-1, 1:4, NaN]), [0, 0, 1, 0.4444, 0.25, NaN], 1e-4);
+%!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (any (random (t, 1000, 1) < 2), false);
+%!assert_equal (any (random (t, 1000, 1) > 4), false);
+%!assert_equal (std (pd), Inf);
+%!assert_equal (std (t), 0.5592, 1e-4);
+%!assert_equal (var (pd), Inf);
+%!assert_equal (var (t), 0.3128, 1e-4);
 
 ## Test input validation
 ## 'GeneralizedParetoDistribution' constructor

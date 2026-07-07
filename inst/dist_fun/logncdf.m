@@ -192,19 +192,19 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, e, Inf];
 %! y = [0, 0, 0.5, 1/2+1/2*erf(1/2), 1];
-%!assert (logncdf (x, zeros (1,5), sqrt (2)*ones (1,5)), y, eps)
-%!assert (logncdf (x, zeros (1,5), sqrt (2)*ones (1,5), []), y, eps)
-%!assert (logncdf (x, 0, sqrt (2)*ones (1,5)), y, eps)
-%!assert (logncdf (x, zeros (1,5), sqrt (2)), y, eps)
-%!assert (logncdf (x, [0 1 NaN 0 1], sqrt (2)), [0 0 NaN y(4:5)], eps)
-%!assert (logncdf (x, 0, sqrt (2)*[0 NaN Inf 1 1]), [NaN NaN y(3:5)], eps)
-%!assert (logncdf ([x(1:3) NaN x(5)], 0, sqrt (2)), [y(1:3) NaN y(5)], eps)
+%!assert_equal (logncdf (x, zeros (1,5), sqrt (2)*ones (1,5)), y, eps)
+%!assert_equal (logncdf (x, zeros (1,5), sqrt (2)*ones (1,5), []), y, eps)
+%!assert_equal (logncdf (x, 0, sqrt (2)*ones (1,5)), y, eps)
+%!assert_equal (logncdf (x, zeros (1,5), sqrt (2)), y, eps)
+%!assert_equal (logncdf (x, [0 1 NaN 0 1], sqrt (2)), [0 0 NaN y(4:5)], eps)
+%!assert_equal (logncdf (x, 0, sqrt (2)*[0 NaN Inf 1 1]), [NaN NaN y(3:5)], eps)
+%!assert_equal (logncdf ([x(1:3) NaN x(5)], 0, sqrt (2)), [y(1:3) NaN y(5)], eps)
 
 ## Test class of input preserved
-%!assert (logncdf ([x, NaN], 0, sqrt (2)), [y, NaN], eps)
-%!assert (logncdf (single ([x, NaN]), 0, sqrt (2)), single ([y, NaN]), eps ('single'))
-%!assert (logncdf ([x, NaN], single (0), sqrt (2)), single ([y, NaN]), eps ('single'))
-%!assert (logncdf ([x, NaN], 0, single (sqrt (2))), single ([y, NaN]), eps ('single'))
+%!assert_equal (logncdf ([x, NaN], 0, sqrt (2)), [y, NaN], eps)
+%!assert_equal (logncdf (single ([x, NaN]), 0, sqrt (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (logncdf ([x, NaN], single (0), sqrt (2)), single ([y, NaN]), eps ('single'))
+%!assert_equal (logncdf ([x, NaN], 0, single (sqrt (2))), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<logncdf: invalid number of input arguments.> logncdf ()

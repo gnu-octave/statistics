@@ -215,15 +215,15 @@ endfunction
 ## Test output
 %!shared p
 %! p = [-1 0 0.5 1 2];
-%!assert (poissinv (p, ones (1,5)), [NaN 0 1 Inf NaN])
-%!assert (poissinv (p, 1), [NaN 0 1 Inf NaN])
-%!assert (poissinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN])
-%!assert (poissinv ([p(1:2) NaN p(4:5)], 1), [NaN 0 NaN Inf NaN])
+%!assert_equal (poissinv (p, ones (1,5)), [NaN 0 1 Inf NaN])
+%!assert_equal (poissinv (p, 1), [NaN 0 1 Inf NaN])
+%!assert_equal (poissinv (p, [1 0 NaN 1 1]), [NaN NaN NaN Inf NaN])
+%!assert_equal (poissinv ([p(1:2) NaN p(4:5)], 1), [NaN 0 NaN Inf NaN])
 
 ## Test class of input preserved
-%!assert (poissinv ([p, NaN], 1), [NaN 0 1 Inf NaN NaN])
-%!assert (poissinv (single ([p, NaN]), 1), single ([NaN 0 1 Inf NaN NaN]))
-%!assert (poissinv ([p, NaN], single (1)), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (poissinv ([p, NaN], 1), [NaN 0 1 Inf NaN NaN])
+%!assert_equal (poissinv (single ([p, NaN]), 1), single ([NaN 0 1 Inf NaN NaN]))
+%!assert_equal (poissinv ([p, NaN], single (1)), single ([NaN 0 1 Inf NaN NaN]))
 
 ## Test input validation
 %!error<poissinv: function called with too few input arguments.> poissinv ()

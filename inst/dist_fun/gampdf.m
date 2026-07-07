@@ -118,23 +118,23 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0 exp(-x(2:end))];
-%!assert (gampdf (x, ones (1,5), ones (1,5)), y)
-%!assert (gampdf (x, 1, ones (1,5)), y)
-%!assert (gampdf (x, ones (1,5), 1), y)
-%!assert (gampdf (x, [0 -Inf NaN Inf 1], 1), [NaN NaN NaN 0 y(5)])
-%!assert (gampdf (x, [0 Inf NaN Inf 1], 1), [NaN 0 NaN 0 y(5)])
-%!assert (gampdf (x, 1, [0 -Inf NaN Inf 1]), [NaN NaN NaN 0 y(5)])
-%!assert (gampdf ([x, NaN], 1, 1), [y, NaN])
+%!assert_equal (gampdf (x, ones (1,5), ones (1,5)), y)
+%!assert_equal (gampdf (x, 1, ones (1,5)), y)
+%!assert_equal (gampdf (x, ones (1,5), 1), y)
+%!assert_equal (gampdf (x, [0 -Inf NaN Inf 1], 1), [NaN NaN NaN 0 y(5)])
+%!assert_equal (gampdf (x, [0 Inf NaN Inf 1], 1), [NaN 0 NaN 0 y(5)])
+%!assert_equal (gampdf (x, 1, [0 -Inf NaN Inf 1]), [NaN NaN NaN 0 y(5)])
+%!assert_equal (gampdf ([x, NaN], 1, 1), [y, NaN])
 
 ## Test for issue #203 (Github)
-%!assert (gampdf (2, Inf, 4), 0)
-%!assert (gampdf (2, 4, Inf), 0)
-%!assert (gampdf (2, Inf, Inf), 0)
+%!assert_equal (gampdf (2, Inf, 4), 0)
+%!assert_equal (gampdf (2, 4, Inf), 0)
+%!assert_equal (gampdf (2, Inf, Inf), 0)
 
 ## Test class of input preserved
-%!assert (gampdf (single ([x, NaN]), 1, 1), single ([y, NaN]))
-%!assert (gampdf ([x, NaN], single (1), 1), single ([y, NaN]))
-%!assert (gampdf ([x, NaN], 1, single (1)), single ([y, NaN]))
+%!assert_equal (gampdf (single ([x, NaN]), 1, 1), single ([y, NaN]))
+%!assert_equal (gampdf ([x, NaN], single (1), 1), single ([y, NaN]))
+%!assert_equal (gampdf ([x, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
 %!error<gampdf: function called with too few input arguments.> gampdf ()

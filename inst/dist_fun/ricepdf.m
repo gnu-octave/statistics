@@ -103,17 +103,17 @@ endfunction
 %!shared x, y
 %! x = [-1 0 0.5 1 2];
 %! y = [0 0 0.1073 0.1978 0.2846];
-%!assert (ricepdf (x, ones (1, 5), 2 * ones (1, 5)), y, 1e-4)
-%!assert (ricepdf (x, 1, 2 * ones (1, 5)), y, 1e-4)
-%!assert (ricepdf (x, ones (1, 5), 2), y, 1e-4)
-%!assert (ricepdf (x, [0 NaN 1 1 1], 2), [0 NaN y(3:5)], 1e-4)
-%!assert (ricepdf (x, 1, 2 * [0 NaN 1 1 1]), [0 NaN y(3:5)], 1e-4)
-%!assert (ricepdf ([x, NaN], 1, 2), [y, NaN], 1e-4)
+%!assert_equal (ricepdf (x, ones (1, 5), 2 * ones (1, 5)), y, 1e-4)
+%!assert_equal (ricepdf (x, 1, 2 * ones (1, 5)), y, 1e-4)
+%!assert_equal (ricepdf (x, ones (1, 5), 2), y, 1e-4)
+%!assert_equal (ricepdf (x, [0 NaN 1 1 1], 2), [0 NaN y(3:5)], 1e-4)
+%!assert_equal (ricepdf (x, 1, 2 * [0 NaN 1 1 1]), [0 NaN y(3:5)], 1e-4)
+%!assert_equal (ricepdf ([x, NaN], 1, 2), [y, NaN], 1e-4)
 
 ## Test class of input preserved
-%!assert (ricepdf (single ([x, NaN]), 1, 2), single ([y, NaN]), 1e-4)
-%!assert (ricepdf ([x, NaN], single (1), 2), single ([y, NaN]), 1e-4)
-%!assert (ricepdf ([x, NaN], 1, single (2)), single ([y, NaN]), 1e-4)
+%!assert_equal (ricepdf (single ([x, NaN]), 1, 2), single ([y, NaN]), 1e-4)
+%!assert_equal (ricepdf ([x, NaN], single (1), 2), single ([y, NaN]), 1e-4)
+%!assert_equal (ricepdf ([x, NaN], 1, single (2)), single ([y, NaN]), 1e-4)
 
 ## Test input validation
 %!error<ricepdf: function called with too few input arguments.> ricepdf ()

@@ -349,8 +349,8 @@ endfunction
 %! [smpl, accept] = mhsample (start, nsamples, 'pdf', pdf, 'proppdf', proppdf, ...
 %!                            'proprnd', proprnd, 'thin', 2, 'nchain', nchain, ...
 %!                            'burnin', 0);
-%! assert (mean (mean (smpl, 1), 3), 1, .01);
-%! assert (mean (var (smpl, 1), 3), 1, .01)
+%! assert_equal (mean (mean (smpl, 1), 3), 1, .01);
+%! assert_equal (mean (var (smpl, 1), 3), 1, .01)
 
 ## Test input validation
 %!error mhsample ();

@@ -178,46 +178,46 @@ endfunction
 %!test
 %! load carsmall
 %! [h, pval, ci] = ztest (MPG, mean (MPG, 'omitnan'), std (MPG, 'omitnan'));
-%! assert (h, 0);
-%! assert (pval, 1, 1e-14);
-%! assert (ci, [22.094; 25.343], 1e-3);
+%! assert_equal (h, 0);
+%! assert_equal (pval, 1, 1e-14);
+%! assert_equal (ci, [22.094; 25.343], 1e-3);
 %!test
 %! load carsmall
 %! [h, pval, ci] = ztest (MPG, 26, 8);
-%! assert (h, 1);
-%! assert (pval, 0.00568359158544743, 1e-14);
-%! assert (ci, [22.101; 25.335], 1e-3);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 0.00568359158544743, 1e-14);
+%! assert_equal (ci, [22.101; 25.335], 1e-3);
 %!test
 %! load carsmall
 %! [h, pval, ci] = ztest (MPG, 26, 4);
-%! assert (h, 1);
-%! assert (pval, 3.184168011941316e-08, 1e-14);
-%! assert (ci, [22.909; 24.527], 1e-3);
+%! assert_equal (h, 1);
+%! assert_equal (pval, 3.184168011941316e-08, 1e-14);
+%! assert_equal (ci, [22.909; 24.527], 1e-3);
 %!test
 %! x = normrnd (10, 2, 100, 1);
 %! [h, pval, ci] = ztest (x, 10, 2, 'tail', 'right');
-%! assert (isnan (pval), false);
-%! assert (pval >= 0 && pval <= 1, true);
+%! assert_equal (isnan (pval), false);
+%! assert_equal (pval >= 0 && pval <= 1, true);
 %!test
 %! x = normrnd (10, 2, 100, 1);
 %! [h, pval, ci] = ztest (x, 10, 2, 'tail', 'left');
-%! assert (isnan (pval), false);
-%! assert (pval >= 0 && pval <= 1, true);
+%! assert_equal (isnan (pval), false);
+%! assert_equal (pval >= 0 && pval <= 1, true);
 %!test
 %! load fisheriris;
 %! x = meas(:,1);
 %! m = 5.8;
 %! sigma = 0.8;
 %! [h, pval, ci] = ztest (x, m, sigma, 'tail', 'right');
-%! assert (h, 0)
-%! assert (pval, 0.2535, 1e-4)
-%! assert (ci, [5.7359; Inf], 1e-5)
+%! assert_equal (h, 0)
+%! assert_equal (pval, 0.2535, 1e-4)
+%! assert_equal (ci, [5.7359; Inf], 1e-5)
 %!test
 %! load fisheriris;
 %! x = meas(:,1);
 %! m = 5.8;
 %! sigma = 0.8;
 %! [h, pval, ci] = ztest (x, m, sigma, 'tail', 'left');
-%! assert (h, 0)
-%! assert (pval, 0.7465, 1e-4)
-%! assert (ci, [-Inf; 5.9508], 1e-4)    
+%! assert_equal (h, 0)
+%! assert_equal (pval, 0.7465, 1e-4)
+%! assert_equal (ci, [-Inf; 5.9508], 1e-4)    

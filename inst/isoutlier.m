@@ -680,28 +680,28 @@ endfunction
 ## Output validation tests (checked against MATLAB)
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! assert (isoutlier (A, 'mean'), logical ([zeros(1,8) 1 zeros(1,6)]))
-%! assert (isoutlier (A, 'median'), ...
+%! assert_equal (isoutlier (A, 'mean'), logical ([zeros(1,8) 1 zeros(1,6)]))
+%! assert_equal (isoutlier (A, 'median'), ...
 %! logical ([zeros(1,3) 1 zeros(1,4) 1 zeros(1,6)]))
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'mean');
-%! assert (L, -109.2459044922864, 1e-12)
-%! assert (U, 264.9792378256198, 1e-12)
-%! assert (C, 77.8666666666666, 1e-12)
+%! assert_equal (L, -109.2459044922864, 1e-12)
+%! assert_equal (U, 264.9792378256198, 1e-12)
+%! assert_equal (C, 77.8666666666666, 1e-12)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'median');
-%! assert (L, 50.104386688966386, 1e-12)
-%! assert (U, 67.895613311033610, 1e-12)
-%! assert (C, 59)
+%! assert_equal (L, 50.104386688966386, 1e-12)
+%! assert_equal (U, 67.895613311033610, 1e-12)
+%! assert_equal (C, 59)
 
 %!test
 %! A = magic (5) + diag (200*ones (1,5));
 %! T = logical (eye (5));
-%! assert (isoutlier (A, 2), T)
+%! assert_equal (isoutlier (A, 2), T)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
@@ -711,9 +711,9 @@ endfunction
 %! u = [63.4478, 66.1717, 63.4478, 63.4478, 63.4478, 62.4478, 62.4478, ...
 %!      62.4478, 74.3434, 65.4478, 66.4478, 65.4478, 68.8956, 65.6717, 62.4478];
 %! c = [59, 59.5, 59, 59, 59, 58, 58, 58, 61, 61, 62, 61, 60, 59, 58];
-%! assert (L, l, 1e-4)
-%! assert (U, u, 1e-4)
-%! assert (C, c)
+%! assert_equal (L, l, 1e-4)
+%! assert_equal (U, u, 1e-4)
+%! assert_equal (C, c)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
@@ -723,9 +723,9 @@ endfunction
 %! u = [63.4478, 66.1717, 63.4478, 63.4478, 63.4478, 62.4478, 62.4478, ...
 %!      62.4478, 74.3434, 65.4478, 66.4478, 65.4478, 68.8956, 65.6717, 62.4478];
 %! c = [59, 59.5, 59, 59, 59, 58, 58, 58, 61, 61, 62, 61, 60, 59, 58];
-%! assert (L, l, 1e-4)
-%! assert (U, u, 1e-4)
-%! assert (C, c)
+%! assert_equal (L, l, 1e-4)
+%! assert_equal (U, u, 1e-4)
+%! assert_equal (C, c)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
@@ -738,9 +738,9 @@ endfunction
 %!      66.9373];
 %! c = [58.6667, 69, 67, 67.2, 66.8, 66.4, 106.4, 106.8, 107.6, 108.2, 109, ...
 %!      60.6, 59.8, 59.25, 59];
-%! assert (L, l, 1e-4)
-%! assert (U, u, 1e-4)
-%! assert (C, c, 1e-4)
+%! assert_equal (L, l, 1e-4)
+%! assert_equal (U, u, 1e-4)
+%! assert_equal (C, c, 1e-4)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
@@ -753,65 +753,65 @@ endfunction
 %!      66.9373];
 %! c = [58.6667, 69, 67, 67.2, 66.8, 66.4, 106.4, 106.8, 107.6, 108.2, 109, ...
 %!      60.6, 59.8, 59.25, 59];
-%! assert (L, l, 1e-4)
-%! assert (U, u, 1e-4)
-%! assert (C, c, 1e-4)
+%! assert_equal (L, l, 1e-4)
+%! assert_equal (U, u, 1e-4)
+%! assert_equal (C, c, 1e-4)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'gesd');
-%! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 34.235977035439944, 1e-12)
-%! assert (U, 89.764022964560060, 1e-12)
-%! assert (C, 62)
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 34.235977035439944, 1e-12)
+%! assert_equal (U, 89.764022964560060, 1e-12)
+%! assert_equal (C, 62)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'gesd', 'ThresholdFactor', 0.01);
-%! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 31.489256770616173, 1e-12)
-%! assert (U, 92.510743229383820, 1e-12)
-%! assert (C, 62)
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 31.489256770616173, 1e-12)
+%! assert_equal (U, 92.510743229383820, 1e-12)
+%! assert_equal (C, 62)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'gesd', 'ThresholdFactor', 5e-10);
-%! assert (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 23.976664158788935, 1e-12)
-%! assert (U, 100.02333584121110, 1e-12)
-%! assert (C, 62)
+%! assert_equal (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 23.976664158788935, 1e-12)
+%! assert_equal (U, 100.02333584121110, 1e-12)
+%! assert_equal (C, 62)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'grubbs');
-%! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 54.642809574646606, 1e-12)
-%! assert (U, 63.511036579199555, 1e-12)
-%! assert (C, 59.076923076923080, 1e-12)
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 54.642809574646606, 1e-12)
+%! assert_equal (U, 63.511036579199555, 1e-12)
+%! assert_equal (C, 59.076923076923080, 1e-12)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A, 'grubbs', 'ThresholdFactor', 0.01);
-%! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 54.216083184201850, 1e-12)
-%! assert (U, 63.937762969644310, 1e-12)
-%! assert (C, 59.076923076923080, 1e-12)
+%! assert_equal (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 54.216083184201850, 1e-12)
+%! assert_equal (U, 63.937762969644310, 1e-12)
+%! assert_equal (C, 59.076923076923080, 1e-12)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A,  'percentiles', [10 90]);
-%! assert (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
-%! assert (L, 57)
-%! assert (U, 100)
-%! assert (C, 78.5)
+%! assert_equal (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
+%! assert_equal (L, 57)
+%! assert_equal (U, 100)
+%! assert_equal (C, 78.5)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %! [TF, L, U, C] = isoutlier (A,  'percentiles', [20 80]);
-%! assert (TF, logical ([1 0 0 1 0 0 1 0 1 0 0 0 0 0 1]))
-%! assert (L, 57.5)
-%! assert (U, 62)
-%! assert (C, 59.75)
+%! assert_equal (TF, logical ([1 0 0 1 0 0 1 0 1 0 0 0 0 0 1]))
+%! assert_equal (L, 57.5)
+%! assert_equal (U, 62)
+%! assert_equal (C, 59.75)
 
 ## Test input validation
 %!shared A

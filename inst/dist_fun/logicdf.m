@@ -118,13 +118,13 @@ endfunction
 %!shared x, y
 %! x = [-Inf -log(3) 0 log(3) Inf];
 %! y = [0, 1/4, 1/2, 3/4, 1];
-%!assert (logicdf ([x, NaN], 0, 1), [y, NaN], eps)
-%!assert (logicdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1], eps)
+%!assert_equal (logicdf ([x, NaN], 0, 1), [y, NaN], eps)
+%!assert_equal (logicdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), 0.75, 1], eps)
 
 ## Test class of input preserved
-%!assert (logicdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
-%!assert (logicdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
-%!assert (logicdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
+%!assert_equal (logicdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (logicdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert_equal (logicdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<logicdf: function called with too few input arguments.> logicdf ()

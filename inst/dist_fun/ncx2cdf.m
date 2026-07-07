@@ -263,22 +263,22 @@ endfunction
 %!test
 %! x = -2:0.1:2;
 %! p = ncx2cdf (x, 10, 1);
-%! assert (p([1:21]), zeros (1, 21), 3e-84);
-%! assert (p(22), 1.521400636466575e-09, 1e-14);
-%! assert (p(30), 6.665480510026046e-05, 1e-14);
-%! assert (p(41), 0.002406447308399836, 1e-14);
+%! assert_equal (p([1:21]), zeros (1, 21), 3e-84);
+%! assert_equal (p(22), 1.521400636466575e-09, 1e-14);
+%! assert_equal (p(30), 6.665480510026046e-05, 1e-14);
+%! assert_equal (p(41), 0.002406447308399836, 1e-14);
 %!test
 %! p = ncx2cdf (12, 10, 3);
-%! assert (p, 0.4845555602398649, 1e-14);
+%! assert_equal (p, 0.4845555602398649, 1e-14);
 %!test
 %! p = ncx2cdf (2, 3, 2);
-%! assert (p, 0.2207330870741212, 1e-14);
+%! assert_equal (p, 0.2207330870741212, 1e-14);
 %!test
 %! p = ncx2cdf (2, 3, 2, 'upper');
-%! assert (p, 0.7792669129258789, 1e-14);
+%! assert_equal (p, 0.7792669129258789, 1e-14);
 %!test
 %! p = ncx2cdf ([3, 6], 3, 2, 'upper');
-%! assert (p, [0.6423318186400054, 0.3152299878943012], 1e-14);
+%! assert_equal (p, [0.6423318186400054, 0.3152299878943012], 1e-14);
 
 ## Test input validation
 %!error<ncx2cdf: function called with too few input arguments.> ncx2cdf ()

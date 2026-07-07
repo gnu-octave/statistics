@@ -260,49 +260,49 @@ endfunction
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
-%! assert (trimmean (x, 10, 'all'), 19.4722, 1e-4);
+%! assert_equal (trimmean (x, 10, 'all'), 19.4722, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! out = trimmean (x, 10, [1, 2]);
-%! assert (out(1,1,1), 10.3889, 1e-4);
-%! assert (out(1,1,2), 29.6111, 1e-4);
+%! assert_equal (out(1,1,1), 10.3889, 1e-4);
+%! assert_equal (out(1,1,2), 29.6111, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
-%! assert (trimmean (x, 10, 'all'), 19.3824, 1e-4);
+%! assert_equal (trimmean (x, 10, 'all'), 19.3824, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! out = trimmean (x, 10, 1);
-%! assert (out(:,:,1), [-17.6, 8, 13, 18]);
-%! assert (out(:,:,2), [23, 28, 33, 10.6]);
+%! assert_equal (out(:,:,1), [-17.6, 8, 13, 18]);
+%! assert_equal (out(:,:,2), [23, 28, 33, 10.6]);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, 1);
-%! assert (out(:,:,1), [-23, 8, 13, 18]);
-%! assert (out(:,:,2), [23, 28, 33, 3.75]);
+%! assert_equal (out(:,:,1), [-23, 8, 13, 18]);
+%! assert_equal (out(:,:,2), [23, 28, 33, 3.75]);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! out = trimmean (x, 10, 2);
-%! assert (out(:,:,1), [8.5; 9.5; -15.25; 11.5; 12.5]);
-%! assert (out(:,:,2), [28.5; -4.75; 30.5; 31.5; 32.5]);
+%! assert_equal (out(:,:,1), [8.5; 9.5; -15.25; 11.5; 12.5]);
+%! assert_equal (out(:,:,2), [28.5; -4.75; 30.5; 31.5; 32.5]);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, 2);
-%! assert (out(:,:,1), [8.5; 9.5; -15.25; 14; 12.5]);
-%! assert (out(:,:,2), [28.5; -4.75; 28; 31.5; 32.5]);
+%! assert_equal (out(:,:,1), [8.5; 9.5; -15.25; 14; 12.5]);
+%! assert_equal (out(:,:,2), [28.5; -4.75; 28; 31.5; 32.5]);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! out = trimmean (x, 10, [1, 2, 3]);
-%! assert (out, trimmean (x, 10, 'all'));
+%! assert_equal (out, trimmean (x, 10, 'all'));
 
 ## Test N-D array with NaNs
 %!test
@@ -310,57 +310,57 @@ endfunction
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [1, 2]);
-%! assert (out(1,1,1), 10.7647, 1e-4);
-%! assert (out(1,1,2), 29.1176, 1e-4);
+%! assert_equal (out(1,1,1), 10.7647, 1e-4);
+%! assert_equal (out(1,1,2), 29.1176, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [1, 3]);
-%! assert (out, [2.5556, 18, 23, 11.6667], 1e-4);
+%! assert_equal (out, [2.5556, 18, 23, 11.6667], 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [2, 3]);
-%! assert (out, [18.5; 2.3750; 3.2857; 24; 22.5], 1e-4);
+%! assert_equal (out, [18.5; 2.3750; 3.2857; 24; 22.5], 1e-4);
 
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [1, 2, 3]);
-%! assert (out, trimmean (x, 10, 'all'));
+%! assert_equal (out, trimmean (x, 10, 'all'));
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [2, 3, 5]);
-%! assert (out, [18.5; 2.3750; 3.2857; 24; 22.5], 1e-4);
+%! assert_equal (out, [18.5; 2.3750; 3.2857; 24; 22.5], 1e-4);
 
 ## Test bug reported in PR #381
-%!assert (trimmean ([1, 2, 3, 4, 5], 40), 3)
+%!assert_equal (trimmean ([1, 2, 3, 4, 5], 40), 3)
 
 ## Test special cases
-%!assert (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape (1:40, [5, 4, 2]))
-%!assert (trimmean ([], 10), NaN)
-%!assert (trimmean ([1;2;3;4;5], 10, 2), [1;2;3;4;5])
+%!assert_equal (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape (1:40, [5, 4, 2]))
+%!assert_equal (trimmean ([], 10), NaN)
+%!assert_equal (trimmean ([1;2;3;4;5], 10, 2), [1;2;3;4;5])
 
 %!test
 %! ## Row vector with explicit dimension 1
-%! assert (trimmean ([1, 2, 3], 10, 1), [1, 2, 3]);
+%! assert_equal (trimmean ([1, 2, 3], 10, 1), [1, 2, 3]);
 
 %!test
 %! ## Row vector with explicit dimension 2 
-%! assert (trimmean ([1, 2, 3], 10, 2), 2);
+%! assert_equal (trimmean ([1, 2, 3], 10, 2), 2);
 
 %!test
 %! ## Empty array with non-operating dimension preserved (dim=1)
-%! assert (trimmean (zeros (0, 5), 10, 1), NaN (1, 5));
+%! assert_equal (trimmean (zeros (0, 5), 10, 1), NaN (1, 5));
 
 %!test
 %! ## Empty array with non-operating dimension preserved (dim=2)
-%! assert (trimmean (zeros (2, 0), 10, 2), NaN (2, 1));
+%! assert_equal (trimmean (zeros (2, 0), 10, 2), NaN (2, 1));
 
 ## Test input validation
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1)
