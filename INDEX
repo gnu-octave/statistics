@@ -224,6 +224,7 @@ Distribution Wrappers
 Experimental Design
  fullfact
  ff2n
+ parseWilkinsonFormula
  sigma_pts
  x2fx
 Machine Learning
@@ -243,6 +244,7 @@ Model Fitting
  fitgmdist
  fitlm
  fitrgam
+ LinearModel
 Hypothesis Testing
  adtest
  anova1
