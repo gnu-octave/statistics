@@ -55,69 +55,70 @@
 
 function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
 
-   if (nargin < 1 || nargin > 2)
-      print_usage ();
-   endif
+  if (nargin < 1 || nargin > 2)
+    print_usage ();
+  endif
 
-   if (nargin == 2 && ! strcmpi (varargin{:}, "econ"))
-      error (strcat ("princomp: if a second input argument is present,", ...
-                     " it must be the string  'econ'."));
-   endif
+  if (nargin == 2 && ! strcmpi (varargin{:}, 'econ'))
+    error (strcat ("princomp: if a second input argument is present,", ...
+                   " it must be the string  'econ'."));
+  endif
 
-   [nobs nvars] = size(X);
+  [nobs nvars] = size(X);
 
-   # Center the columns to mean zero
-   Xcentered = bsxfun(@minus,X,mean(X));
+  # Center the columns to mean zero
+  Xcentered = bsxfun (@minus,X,mean(X));
 
-   # Check if there are more variables then observations
-   if nvars <= nobs
+  # Check if there are more variables then observations
+  if nvars <= nobs
 
-      [U,S,COEFF] = svd(Xcentered, "econ");
+    [U,S,COEFF] = svd (Xcentered, "econ");
 
-   else
+  else
 
-      # Calculate the svd on the transpose matrix, much faster
-      if (nargin == 2 && strcmpi ( varargin{:} , "econ"))
-	     [COEFF,S,V] = svd(Xcentered' , 'econ');
-      else
-	     [COEFF,S,V] = svd(Xcentered');
-      endif
-
-   endif
-
-   if nargout > 1
-
-      # Get the Scores
-      SCORE = Xcentered*COEFF;
-
-      # Get the rank of the SCORE matrix
-      r = rank(SCORE);
-
-      # Only use the first r columns, pad rest with zeros if economy != 'econ'
-      SCORE = SCORE(:,1:r) ;
-
-      if ! (nargin == 2 && strcmpi ( varargin{:} , "econ"))
-	    SCORE = [SCORE, zeros(nobs , nvars-r)];
-      else
-	    COEFF   = COEFF(: , 1:r);
-      endif
-
+    # Calculate the svd on the transpose matrix, much faster
+    if (nargin == 2 && strcmpi (varargin{:} , 'econ'))
+      [COEFF,S,V] = svd (Xcentered' , 'econ');
+    else
+      [COEFF,S,V] = svd (Xcentered');
     endif
 
-    if nargout > 2
+  endif
 
-      # This is the same as the eigenvalues of the covariance matrix of X
-      latent  = (diag(S).^2 / (size(Xcentered,1)-1))(1:r);
+  if nargout > 1
 
-      if ! (nargin == 2 && strcmpi ( varargin{:} , "econ"))
-	  latent= [latent;zeros(nvars-r,1)];
-      endif
+    # Get the Scores
+    SCORE = Xcentered * COEFF;
+
+    # Get the rank of the SCORE matrix
+    r = rank(SCORE);
+
+    # Only use the first r columns, pad rest with zeros if economy != 'econ'
+    SCORE = SCORE(:,1:r) ;
+
+    if ! (nargin == 2 && strcmpi (varargin{:} , 'econ'))
+      SCORE = [SCORE, zeros(nobs , nvars-r)];
+    else
+      COEFF   = COEFF(: , 1:r);
     endif
 
-    if nargout > 3
- 	# Calculate the Hotelling T-Square statistic for the observations
-	tsquare = sumsq(zscore(SCORE(:,1:r)),2);
+  endif
+
+  if nargout > 2
+
+    # This is the same as the eigenvalues of the covariance matrix of X
+    latent  = (diag(S) .^ 2 / (size (Xcentered, 1) - 1))(1:r);
+
+    if ! (nargin == 2 && strcmpi (varargin{:} , 'econ'))
+      latent= [latent; zeros(nvars-r,1)];
     endif
+
+  endif
+
+  if (nargout > 3)
+    # Calculate the Hotelling T-Square statistic for the observations
+    tsquare = sumsq (zscore (SCORE(:,1:r)), 2);
+  endif
 
 endfunction
 
