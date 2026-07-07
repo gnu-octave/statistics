@@ -260,7 +260,7 @@ function varargout = to_cell (varargin)
       if (isscalar (x)) x = repmat (x, m, 1); endif
 
       if (iscell (x))
-        if (numel(x) ~= m) # no dimension equals m
+        if (numel(x) != m) # no dimension equals m
           error ("to_cell:element_idx", "%d\n",i);
         endif
         varargout{i} = x;

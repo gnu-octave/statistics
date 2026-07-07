@@ -109,7 +109,7 @@ function y = binopdf (x, n, ps)
 
   ## Input NaN, n not pos int, or ps outside [0,1],
   ## set output to NaN (overrides 0 or 1)
-  ksp = (n ~= fix (n)) | (n < 0) | (ps < 0) | (ps > 1) | isnan (x) ...
+  ksp = (n != fix (n)) | (n < 0) | (ps < 0) | (ps > 1) | isnan (x) ...
            | isnan (n) | isnan (ps);
   y(ksp) = NaN;
 

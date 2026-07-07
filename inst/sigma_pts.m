@@ -51,10 +51,10 @@ function pts = sigma_pts (n, m = [], K = [], l = 0)
     m = zeros (1, n);
   endif
 
-  if (n ~= length (m))
+  if (n != length (m))
     error ("Dimension and size of mean vector don't match.")
   endif
-  if any(n ~= size (K))
+  if any(n != size (K))
     error ("Dimension and size of covariance matrix don't match.")
   endif
 
