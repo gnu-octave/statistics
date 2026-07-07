@@ -560,7 +560,7 @@ endfunction
 %! [b,se,pval,finalmodel,stats] = stepwisefit (X, y);
 %!
 %! p = columns (X);
-%! n = rows (X(~stats.wasnan, :));
+%! n = rows (X(! stats.wasnan, :));
 %!
 %! assert (size (stats.yr), [n, 1]);
 %! assert (rows (stats.B) == p);
@@ -606,7 +606,7 @@ endfunction
 %! y = randn (35, 1);
 %! [~,~,~,finalmodel,stats] = stepwisefit (X, y);
 %!
-%! Xc = X(~stats.wasnan, :);
+%! Xc = X(! stats.wasnan, :);
 %! Xfinal = [ones(rows (Xc),1), Xc(:, finalmodel)];
 %!
 %! for j = 1:columns (stats.xr)

@@ -654,7 +654,7 @@ endclassdef
 %! rng('default');
 %! numSamples = size (meas, 1);
 %! queryIndices = [20, 95, 123, 136, 138];
-%! dataPoints = meas(~ismember (1:numSamples, queryIndices), :);
+%! dataPoints = meas(! ismember (1:numSamples, queryIndices), :);
 %! queryPoints = meas(queryIndices, :);
 %! searchModel = ExhaustiveSearcher (dataPoints, 'Distance', 'mahalanobis')
 %! mahalanobisParam = searchModel.DistParameter
@@ -749,7 +749,7 @@ endclassdef
 %!     y_circle = center(2) + r * sin(theta);
 %!     plot(x_circle, y_circle, 'g-');
 %!     % Highlight points within radius
-%!     if ~isempty(idx{i})
+%!     if ! isempty(idx{i})
 %!         in_radius = X(idx{i}, :);
 %!         scatter(in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
 %!     endif

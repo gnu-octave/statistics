@@ -168,10 +168,10 @@ endfunction
 %!
 %! c = cvpartition(n,'HoldOut',0.3);
 %! idxTrain = training(c,1);
-%! idxTest = ~idxTrain;
+%! idxTest = ! idxTrain;
 %!
 %! idxTrain = training(c,1);
-%! idxTest = ~idxTrain;
+%! idxTest = ! idxTrain;
 %!
 %! k = 5;
 %! b = ridge(y(idxTrain),X(idxTrain,:),k,0);

@@ -696,7 +696,7 @@ endfunction
 %! load fisheriris
 %! numSamples = size (meas, 1);
 %! queryIndices = [1, 23, 46, 63, 109];
-%! dataIndices = ~ismember (1:numSamples, queryIndices);
+%! dataIndices = ! ismember (1:numSamples, queryIndices);
 %! queryPoints = meas(queryIndices, :);
 %! dataPoints = meas(dataIndices, :);
 %! searchRadius = 0.3;

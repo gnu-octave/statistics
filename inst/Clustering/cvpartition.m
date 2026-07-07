@@ -2394,8 +2394,8 @@ endclassdef
 %! T_wide = unstack (T(:, 1:4), "GroupCount", "GroupLabel");
 %! ## Check if numeric columns were created successfully
 %! col_names = T_wide.Properties.VariableNames;
-%! assert (any (cellfun (@(x) ~isempty (strfind (x, "1")), col_names)));
-%! assert (any (cellfun (@(x) ~isempty (strfind (x, "2")), col_names)));
+%! assert (any (cellfun (@(x) ! isempty (strfind (x, "1")), col_names)));
+%! assert (any (cellfun (@(x) ! isempty (strfind (x, "2")), col_names)));
 %!test
 %! ## 24. Unstacking with Missing/NaN Groups
 %! groups = [1; 1; 2; 2; NaN];
