@@ -64,18 +64,18 @@
 ##
 ## @qcode{procrustes} can take two optional parameters as Name-Value pairs.
 ##
-## @code{[@dots{}] = procrustes (@dots{}, @qcode{"Scaling"}, @qcode{false})}
+## @code{[@dots{}] = procrustes (@dots{}, @qcode{'Scaling'}, @qcode{false})}
 ## computes a transformation that does not include scaling, that is
-## @var{transform}.@qcode{b} = 1.  Setting @qcode{"Scaling"} to @qcode{true}
+## @var{transform}.@qcode{b} = 1.  Setting @qcode{'Scaling'} to @qcode{true}
 ## includes a scaling component, which is the default.
 ##
-## @code{[@dots{}] = procrustes (@dots{}, @qcode{"Reflection"}, @qcode{false})}
+## @code{[@dots{}] = procrustes (@dots{}, @qcode{'Reflection'}, @qcode{false})}
 ## computes a transformation that does not include a reflection component, that
-## is @var{transform}.@qcode{T} = 1.  Setting @qcode{"Reflection"} to
+## is @var{transform}.@qcode{T} = 1.  Setting @qcode{'Reflection'} to
 ## @qcode{true} forces the solution to include a reflection component in the
 ## computed transformation, that is @var{transform}.@qcode{T} = -1.
 ##
-## @code{[@dots{}] = procrustes (@dots{}, @qcode{"Reflection"}, @qcode{"best"})}
+## @code{[@dots{}] = procrustes (@dots{}, @qcode{'Reflection'}, @qcode{'best'})}
 ## computes the best fit procrustes solution, which may or may not include a
 ## reflection component, which is the default.
 ##

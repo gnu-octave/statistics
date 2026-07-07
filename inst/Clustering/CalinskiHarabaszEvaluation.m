@@ -32,7 +32,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## dense and well-separated.
   ##
   ## Create a @code{CalinskiHarabaszEvaluation} object by using the
-  ## @code{evalclusters} function with the @qcode{"CalinskiHarabasz"} criterion.
+  ## @code{evalclusters} function with the @qcode{'CalinskiHarabasz'} criterion.
   ##
   ## @seealso{evalclusters, ClusterCriterion, DaviesBouldinEvaluation,
   ## GapEvaluation, SilhouetteEvaluation}

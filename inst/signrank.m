@@ -42,29 +42,29 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"alpha"} @tab @tab A scalar value for the significance level of
+## @item @qcode{'alpha'} @tab @tab A scalar value for the significance level of
 ## the test.  Default is 0.05.
 ##
-## @item @qcode{"tail"} @tab @tab A character vector specifying the alternative
+## @item @qcode{'tail'} @tab @tab A character vector specifying the alternative
 ## hypothesis.  It can take one of the following values:
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ##
-## @item @tab @qcode{"both"} @tab For one-sample test (@var{my} is empty or a
+## @item @tab @qcode{'both'} @tab For one-sample test (@var{my} is empty or a
 ## scalar), the data in @var{x} come from a continuous distribution with median
 ## different than zero or @var{my}.  For two-sample test (@var{my} is a vector),
 ## the data in @qcode{@var{x} - @var{my}} come from a continuous distribution
 ## with median different than zero.
 ##
-## @item @tab @qcode{"left"} @tab For one-sample test (@var{my} is empty or a
+## @item @tab @qcode{'left'} @tab For one-sample test (@var{my} is empty or a
 ## scalar), the data in @var{x} come from a continuous distribution with median
 ## less than zero or @var{my}.  For two-sample test (@var{my} is a vector), the
 ## data in @qcode{@var{x} - @var{my}} come from a continuous distribution with
 ## median less than zero.
 ##
-## @item @tab @qcode{"right"} @tab For one-sample test (@var{my} is empty or a
+## @item @tab @qcode{'right'} @tab For one-sample test (@var{my} is empty or a
 ## scalar), the data in @var{x} come from a continuous distribution with median
 ## greater than zero or @var{my}.  For two-sample test (@var{my} is a vector),
 ## the data in @qcode{@var{x} - @var{my}} come from a continuous distribution
@@ -74,20 +74,20 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"method"} @tab @tab A character vector specifying the method for
+## @item @qcode{'method'} @tab @tab A character vector specifying the method for
 ## computing the @math{p}-value.  It can take one of the following values:
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ##
-## @item @tab @qcode{"exact"} @tab Exact computation of the @math{p}-value.  It
-## is the default value for 15 of fewer observations when @qcode{"method"} is
+## @item @tab @qcode{'exact'} @tab Exact computation of the @math{p}-value.  It
+## is the default value for 15 of fewer observations when @qcode{'method'} is
 ## not specified.
 ##
-## @item @tab @qcode{"approximate"} @tab Using normal approximation for
+## @item @tab @qcode{'approximate'} @tab Using normal approximation for
 ## computing the @math{p}-value.  It is the default value for more than 15
-## observations when @qcode{"method"} is not specified.
+## observations when @qcode{'method'} is not specified.
 ## @end multitable
 ##
 ## @code{[@var{pval}, @var{h}] = signrank (@dots{})} also returns a logical
@@ -102,7 +102,7 @@
 ## @item @qcode{signedrank} @tab @tab Value of the sign rank test statistic.
 ##
 ## @item @qcode{zval} @tab @tab Value of the @math{z}-statistic (only computed
-## when the @qcode{"method"} is @qcode{"approximate"}).
+## when the @qcode{'method'} is @qcode{'approximate'}).
 ## @end multitable
 ##
 ## @seealso{tiedrank, signtest, runstest}

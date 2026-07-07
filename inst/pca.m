@@ -38,50 +38,50 @@
 ## The following @var{Name}, @var{Value} pair arguments can be used:
 ## @itemize @bullet
 ## @item
-## @qcode{"Algorithm"} defines the algorithm to use:
+## @qcode{'Algorithm'} defines the algorithm to use:
 ## @itemize
-## @item @qcode{"svd"} (default), for singular value decomposition
-## @item @qcode{"eig"} for eigenvalue decomposition
+## @item @qcode{'svd'} (default), for singular value decomposition
+## @item @qcode{'eig'} for eigenvalue decomposition
 ## @end itemize
 ##
 ## @item
-## @qcode{"Centered"} is a boolean indicator for centering the observation data.
+## @qcode{'Centered'} is a boolean indicator for centering the observation data.
 ## It is @code{true} by default.
 ## @item
 ##
-## @qcode{"Economy"} is a boolean indicator for the economy size output.  It is
+## @qcode{'Economy'} is a boolean indicator for the economy size output.  It is
 ## @code{true} by default.  Hence, @code{pca} returns only the elements of
 ## @var{latent} that are not necessarily zero, and the corresponding columns of
 ## @var{coeff} and @var{score}, that is, when @math{N <= D}, only the first
 ## @math{N - 1}.
 ##
 ## @item
-## @qcode{"NumComponents"} defines the number of components @math{k} to return.
+## @qcode{'NumComponents'} defines the number of components @math{k} to return.
 ## If @math{k < p}, then only the first @math{k} columns of @var{coeff} and
 ## @var{score} are returned.
 ##
 ## @item
-## @qcode{"Rows"} defines how to handle missing values:
+## @qcode{'Rows'} defines how to handle missing values:
 ## @itemize
-## @item @qcode{"complete"} (default), missing values are removed before
+## @item @qcode{'complete'} (default), missing values are removed before
 ## computation.
-## @item @qcode{"pairwise"} (only valid when @qcode{"Algorithm"} is
-## @qcode{"eig"}), the covariance of rows with missing data is computed using
+## @item @qcode{'pairwise'} (only valid when @qcode{'Algorithm'} is
+## @qcode{'eig'}), the covariance of rows with missing data is computed using
 ## the available data, but the covariance matrix could be not positive definite,
 ## which triggers the termination of @code{pca}.
-## @item @qcode{"all"}, missing values are not allowed, @code{pca}
+## @item @qcode{'all'}, missing values are not allowed, @code{pca}
 ## terminates with an error if there are any.
 ## @end itemize
 ##
 ## @item
-## @qcode{"Weights"} defines observation weights as a vector of positive values
+## @qcode{'Weights'} defines observation weights as a vector of positive values
 ## of length @math{N}.
 ##
 ## @item
-## @qcode{"VariableWeights"} defines variable weights:
+## @qcode{'VariableWeights'} defines variable weights:
 ## @itemize
 ## @item a @var{vector} of positive values of length @math{D}.
-## @item the string @qcode{"variance"} to use the sample variance as weights.
+## @item the string @qcode{'variance'} to use the sample variance as weights.
 ## @end itemize
 ## @end itemize
 ##

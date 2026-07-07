@@ -57,34 +57,34 @@
 ## @subheading Name–Value Arguments
 ##
 ## @table @asis
-## @item @qcode{"InModel"}
+## @item @qcode{'InModel'}
 ## Logical row vector of length @var{p} specifying predictors that are initially
 ## included in the model.
 ##
-## @item @qcode{"Keep"}
+## @item @qcode{'Keep'}
 ## Logical row vector of length @var{p} specifying predictors that must remain
 ## in the model and are never removed during stepwise selection.
 ##
-## @item @qcode{"PEnter"}
+## @item @qcode{'PEnter'}
 ## Scalar significance level in the open interval (0,1) specifying the maximum
 ## p-value required for a predictor to enter the model.  Default is @code{0.05}.
 ##
-## @item @qcode{"PRemove"}
+## @item @qcode{'PRemove'}
 ## Scalar significance level in the open interval (0,1) specifying the minimum
 ## p-value required for a predictor to be removed from the model.  If not
-## specified, a default value greater than or equal to @qcode{"PEnter"} is used.
+## specified, a default value greater than or equal to @qcode{'PEnter'} is used.
 ##
-## @item @qcode{"MaxIter"}
+## @item @qcode{'MaxIter'}
 ## Positive integer specifying the maximum number of stepwise iterations.
 ## Default is @code{Inf}.
 ##
-## @item @qcode{"Scale"}
-## Either @qcode{"on"} or @qcode{"off"}.  When enabled, predictors are
+## @item @qcode{'Scale'}
+## Either @qcode{'on'} or @qcode{'off'}.  When enabled, predictors are
 ## standardized prior to stepwise selection only.  Final regression
 ## coefficients are always reported on the original data scale.
 ##
-## @item @qcode{"Display"}
-## Either @qcode{"on"} or @qcode{"off"}.  Accepted for compatibility but
+## @item @qcode{'Display'}
+## Either @qcode{'on'} or @qcode{'off'}.  Accepted for compatibility but
 ## currently does not affect output.
 ## @end table
 ##

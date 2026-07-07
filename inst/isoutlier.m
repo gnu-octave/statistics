@@ -18,7 +18,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{TF} =} isoutlier (@var{x})
 ## @deftypefnx {statistics} {@var{TF} =} isoutlier (@var{x}, @var{method})
-## @deftypefnx {statistics} {@var{TF} =} isoutlier (@var{x}, @qcode{"percentiles"}, @var{threshold})
+## @deftypefnx {statistics} {@var{TF} =} isoutlier (@var{x}, @qcode{'percentiles'}, @var{threshold})
 ## @deftypefnx {statistics} {@var{TF} =} isoutlier (@var{x}, @var{movmethod}, @var{window})
 ## @deftypefnx {statistics} {@var{TF} =} isoutlier (@dots{}, @var{dim})
 ## @deftypefnx {statistics} {@var{TF} =} isoutlier (@dots{}, @var{Name}, @var{Value})
@@ -48,25 +48,25 @@
 ##
 ## @multitable @columnfractions 0.13 0.02 0.8
 ## @headitem Method @tab @tab Description
-## @item @qcode{"median"} @tab @tab Outliers are defined as elements more than
+## @item @qcode{'median'} @tab @tab Outliers are defined as elements more than
 ## three scaled MAD from the median.
-## @item @qcode{"mean"} @tab @tab Outliers are defined as elements more than
+## @item @qcode{'mean'} @tab @tab Outliers are defined as elements more than
 ## three standard deviations from the mean.
-## @item @qcode{"quartiles"} @tab @tab Outliers are defined as elements more
+## @item @qcode{'quartiles'} @tab @tab Outliers are defined as elements more
 ## than 1.5 interquartile ranges above the upper quartile (75 percent) or below
 ## the lower quartile (25 percent).  This method is useful when the data in
 ## @var{x} is not normally distributed.
-## @item @qcode{"grubbs"} @tab @tab Outliers are detected using Grubbs’ test for
+## @item @qcode{'grubbs'} @tab @tab Outliers are detected using Grubbs’ test for
 ## outliers, which removes one outlier per iteration based on hypothesis
 ## testing.  This method assumes that the data in @var{x} is normally
 ## distributed.
-## @item @qcode{"gesd"} @tab @tab Outliers are detected using the generalized
+## @item @qcode{'gesd'} @tab @tab Outliers are detected using the generalized
 ## extreme Studentized deviate test for outliers.  This iterative method is
-## similar to @qcode{"grubbs"}, but can perform better when there are multiple
+## similar to @qcode{'grubbs'}, but can perform better when there are multiple
 ## outliers masking each other.
 ## @end multitable
 ##
-## @code{isoutlier (@var{x}, @qcode{"percentiles"}, @var{threshold})} detects
+## @code{isoutlier (@var{x}, @qcode{'percentiles'}, @var{threshold})} detects
 ## outliers based on a percentile thresholds,  specified as a two-element row
 ## vector whose elements are in the interval @math{[0, 100]}.  The first element
 ## indicates the lower percentile threshold, and the second element indicates
@@ -78,10 +78,10 @@
 ##
 ## @multitable @columnfractions 0.13 0.02 0.8
 ## @headitem Method @tab @tab Description
-## @item @qcode{"movmedian"} @tab @tab Outliers are defined as elements more
+## @item @qcode{'movmedian'} @tab @tab Outliers are defined as elements more
 ## than three local scaled MAD from the local median over a window length
 ## specified by @var{window}.
-## @item @qcode{"movmean"} @tab @tab Outliers are defined as elements more than
+## @item @qcode{'movmean'} @tab @tab Outliers are defined as elements more than
 ## three local standard deviations from the from the local mean over a window
 ## length specified by @var{window}.
 ## @end multitable
@@ -93,7 +93,7 @@
 ## centered about the current and previous elements.  When @var{window} is a
 ## two-element vector of positive integers @math{[nb, na]}, the window contains
 ## the current element, @math{nb} elements before the current element, and
-## @math{na} elements after the current element.  When @qcode{"SamplePoints"}
+## @math{na} elements after the current element.  When @qcode{'SamplePoints'}
 ## are also specified, @var{window} can take any real positive values (either as
 ## a scalar or a two-element vector) and in this case, the windows are computed
 ## relative to the sample points.
@@ -106,32 +106,32 @@
 ## paired arguments.
 ##
 ## @itemize
-## @item @qcode{"SamplePoints"} can be specified as a vector of sample points
+## @item @qcode{'SamplePoints'} can be specified as a vector of sample points
 ## with equal length as the operating dimension.  The sample points represent
 ## the x-axis location of the data and must be sorted and contain unique
 ## elements.  Sample points do not need to be uniformly sampled.  By default,
 ## the vector is @qcode{[1, 2, 3, @dots{}, @var{n}]}, where
 ## @qcode{@var{n} = size (@var{x}, @var{dim})}.  You can use unequally spaced
-## @qcode{"SamplePoints"} to define a variable-length window for one of the
+## @qcode{'SamplePoints'} to define a variable-length window for one of the
 ## moving methods available.
 ##
-## @item @qcode{"ThresholdFactor"} can be specified as a nonnegative scalar.
-## For methods @qcode{"median"} and @qcode{"movmedian"}, the detection threshold
+## @item @qcode{'ThresholdFactor'} can be specified as a nonnegative scalar.
+## For methods @qcode{'median'} and @qcode{'movmedian'}, the detection threshold
 ## factor replaces the number of scaled MAD, which is 3 by default.  For methods
-## @qcode{"mean"} and @qcode{"movmean"}, the detection threshold factor replaces
+## @qcode{'mean'} and @qcode{'movmean'}, the detection threshold factor replaces
 ## the number of standard deviations, which is 3 by default.  For methods
-## @qcode{"grubbs"} and @qcode{"gesd"}, the detection threshold factor ranges
+## @qcode{'grubbs'} and @qcode{'gesd'}, the detection threshold factor ranges
 ## from 0 to 1, specifying the critical @math{alpha}-value of the respective
-## test, and it is 0.05 by default.  For the @qcode{"quartiles"} method, the
+## test, and it is 0.05 by default.  For the @qcode{'quartiles'} method, the
 ## detection threshold factor replaces the number of interquartile ranges, which
-## is 1.5 by default.  @qcode{"ThresholdFactor"} is not supported for the
-## @qcode{"quartiles"} method.
+## is 1.5 by default.  @qcode{'ThresholdFactor'} is not supported for the
+## @qcode{'quartiles'} method.
 ##
-## @item @qcode{"MaxNumOutliers"} is only relevant to the @qcode{"gesd"} method
+## @item @qcode{'MaxNumOutliers'} is only relevant to the @qcode{'gesd'} method
 ## and it must be a positive integer scalar specifying the maximum number of
-## outliers returned by the @qcode{"gesd"} method.  By default, it is the
+## outliers returned by the @qcode{'gesd'} method.  By default, it is the
 ## integer nearest to the 10% of the number of elements along the operating
-## dimension in @var{x}.  The @qcode{"gesd"} method assumes the nonoutlier input
+## dimension in @var{x}.  The @qcode{'gesd'} method assumes the nonoutlier input
 ## data is sampled from an approximate normal distribution.  When the data is
 ## not sampled in this way, the number of returned outliers might exceed the
 ## @qcode{MaxNumOutliers} value.
@@ -159,10 +159,10 @@
 ## If @var{method} is used for outlier detection, then @var{C} has the same size
 ## as @var{x} in all dimensions except for the operating dimension where the
 ## length is 1.  If @var{movmethod} is used, then @var{C} has the same size as
-## @var{x}.  For @qcode{"median"}, @qcode{"movmedian"}, @qcode{"mean"}, and
-## @qcode{"movmean"} methods, @var{C} is computed by taking into account the
-## outlier values.  For @qcode{"grubbs"} and @qcode{"gesd"} methods, @var{C} is
-## computed by excluding the outliers.  For the @qcode{"percentiles"} method,
+## @var{x}.  For @qcode{'median'}, @qcode{'movmedian'}, @qcode{'mean'}, and
+## @qcode{'movmean'} methods, @var{C} is computed by taking into account the
+## outlier values.  For @qcode{'grubbs'} and @qcode{'gesd'} methods, @var{C} is
+## computed by excluding the outliers.  For the @qcode{'percentiles'} method,
 ## @var{C} is the average between @var{U} and @var{L} thresholds.
 ## @end itemize
 ##

@@ -46,8 +46,8 @@ classdef hnswSearcher
     ## Distance metric
     ##
     ## Distance metric used for searches, specified as a character vector (e.g.,
-    ## @qcode{"euclidean"}, @qcode{"minkowski"}, @qcode{"cityblock"}). Default
-    ## is @qcode{"euclidean"}. Supported metrics align with those in
+    ## @qcode{'euclidean'}, @qcode{'minkowski'}, @qcode{'cityblock'}). Default
+    ## is @qcode{'euclidean'}. Supported metrics align with those in
     ## @code{pdist2}.  This property is private and cannot be modified after
     ## object creation.
     ##
@@ -63,11 +63,11 @@ classdef hnswSearcher
     ## @qcode{Distance} metric and can be any of the following:
     ##
     ## @itemize
-    ## @item For @qcode{"minkowski"}, a positive scalar exponent (default 2).
-    ## @item For @qcode{"seuclidean"}, a nonnegative vector of scaling factors
+    ## @item For @qcode{'minkowski'}, a positive scalar exponent (default 2).
+    ## @item For @qcode{'seuclidean'}, a nonnegative vector of scaling factors
     ## matching the number of columns in @qcode{X} (default is standard
     ## deviation of @qcode{X}).
-    ## @item For @qcode{"mahalanobis"}, a positive definite covariance matrix
+    ## @item For @qcode{'mahalanobis'}, a positive definite covariance matrix
     ## matching the dimensions of @qcode{X} (default is @code{cov (@var{X})}).
     ## @item Empty for other metrics.
     ## @end itemize
@@ -229,7 +229,7 @@ classdef hnswSearcher
     ##
     ## @code{@var{obj} = hnswSearcher (@var{X})} constructs an
     ## @qcode{hnswSearcher} object with training data @var{X} using the
-    ## default @qcode{"euclidean"} distance metric. @var{X} must be an
+    ## default @qcode{'euclidean'} distance metric. @var{X} must be an
     ## @math{NxP} numeric matrix, where rows represent observations and columns
     ## represent features.
     ##
@@ -239,27 +239,27 @@ classdef hnswSearcher
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric, specified as a
-    ## character vector (e.g., @qcode{"euclidean"}, @qcode{"minkowski"},
-    ## @qcode{"cityblock"}). Default is @qcode{"euclidean"}. See @code{pdist2}
+    ## @item @qcode{'Distance'} @tab @tab Distance metric, specified as a
+    ## character vector (e.g., @qcode{'euclidean'}, @qcode{'minkowski'},
+    ## @qcode{'cityblock'}). Default is @qcode{'euclidean'}. See @code{pdist2}
     ## for supported metrics.
     ##
-    ## @item @qcode{"P"} @tab @tab Minkowski distance exponent, a positive
-    ## scalar. Valid only when @qcode{"Distance"} is @qcode{"minkowski"}.
+    ## @item @qcode{'P'} @tab @tab Minkowski distance exponent, a positive
+    ## scalar. Valid only when @qcode{'Distance'} is @qcode{'minkowski'}.
     ## Default is 2.
     ##
-    ## @item @qcode{"Scale"} @tab @tab Nonnegative vector of scaling factors
+    ## @item @qcode{'Scale'} @tab @tab Nonnegative vector of scaling factors
     ## matching the number of columns in @var{X}. Valid only when
-    ## @qcode{"Distance"} is @qcode{"seuclidean"}. Default is @code{std (X)}.
+    ## @qcode{'Distance'} is @qcode{'seuclidean'}. Default is @code{std (X)}.
     ##
-    ## @item @qcode{"Cov"} @tab @tab Positive definite covariance matrix
+    ## @item @qcode{'Cov'} @tab @tab Positive definite covariance matrix
     ## matching the number of columns in @var{X}. Valid only when
-    ## @qcode{"Distance"} is @qcode{"mahalanobis"}. Default is @code{cov (X)}.
+    ## @qcode{'Distance'} is @qcode{'mahalanobis'}. Default is @code{cov (X)}.
     ##
-    ## @item @qcode{"MaxNumLinksPerNode"} @tab @tab Maximum number of neighbors
+    ## @item @qcode{'MaxNumLinksPerNode'} @tab @tab Maximum number of neighbors
     ## per node in the HNSW graph, a positive integer. Default is 16.
     ##
-    ## @item @qcode{"TrainSetSize"} @tab @tab Size of the dynamic candidate
+    ## @item @qcode{'TrainSetSize'} @tab @tab Size of the dynamic candidate
     ## list during graph construction, a positive integer. Default is 200.
     ## @end multitable
     ##
@@ -433,13 +433,13 @@ classdef hnswSearcher
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"K"} @tab @tab A positive integer specifying the number of
+    ## @item @qcode{'K'} @tab @tab A positive integer specifying the number of
     ## nearest neighbors to find. Default is 1.
     ##
-    ## @item @qcode{"SearchSetSize"} @tab @tab A positive integer specifying the
+    ## @item @qcode{'SearchSetSize'} @tab @tab A positive integer specifying the
     ## size of the candidate list of nearest neighbors for a single query point
     ## during the search process.  Default is @qcode{max (10, @var{C})}, where
-    ## @var{C} is the number of columns in @var{obj.X}.  @qcode{"SearchSetSize"}
+    ## @var{C} is the number of columns in @var{obj.X}.  @qcode{'SearchSetSize'}
     ## must be at least @var{C} and no more than the number of rows in training
     ## data @var{obj.X}.
     ## @end multitable

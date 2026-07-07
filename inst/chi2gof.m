@@ -49,7 +49,7 @@
 ## the null hypothesis (that @var{x} is a random sample from a normal
 ## distribution) cannot be rejected at the 5% significance level, or @var{h} = 1
 ## if the null hypothesis can be rejected at the 5% level.  @code{chi2gof} uses
-## by default 10 bins (@qcode{"nbins"}), and compares the test statistic to a
+## by default 10 bins (@qcode{'nbins'}), and compares the test statistic to a
 ## chi-square distribution with @qcode{@var{nbins} - 3} degrees of freedom, to
 ## take into account that two parameters were estimated.
 ##
@@ -75,35 +75,35 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab @qcode{"nbins"} @tab The number of bins to use.  Default is 10.
-## @item @tab @qcode{"binctrs"} @tab A vector of bin centers.
-## @item @tab @qcode{"binedges"} @tab A vector of bin binedges.
-## @item @tab @qcode{"cdf"} @tab A fully specified cumulative distribution
+## @item @tab @qcode{'nbins'} @tab The number of bins to use.  Default is 10.
+## @item @tab @qcode{'binctrs'} @tab A vector of bin centers.
+## @item @tab @qcode{'binedges'} @tab A vector of bin binedges.
+## @item @tab @qcode{'cdf'} @tab A fully specified cumulative distribution
 ## function or a function handle provided in a cell array whose first element is
 ## a function handle, and all later elements are its parameter values.  The
 ## function must take @var{x} values as its first argument, and other parameters
 ## as later arguments.
-## @item @tab @qcode{"expected"} @tab A vector with one element per bin
+## @item @tab @qcode{'expected'} @tab A vector with one element per bin
 ## specifying the expected counts for each bin.
-## @item @tab @qcode{"nparams"} @tab The number of estimated parameters; used to
+## @item @tab @qcode{'nparams'} @tab The number of estimated parameters; used to
 ## adjust the degrees of freedom to be @qcode{@var{nbins} - 1 - @var{nparams}},
 ## where @var{nbins} is the number of bins.
-## @item @tab @qcode{"emin"} @tab The minimum allowed expected value for a bin;
+## @item @tab @qcode{'emin'} @tab The minimum allowed expected value for a bin;
 ## any bin in either tail having an expected value less than this amount is
 ## pooled with a neighboring bin.  Use the value 0 to prevent pooling.  Default
 ## is 5.
-## @item @tab @qcode{"frequency"} @tab A vector of the same length as @var{x}
+## @item @tab @qcode{'frequency'} @tab A vector of the same length as @var{x}
 ## containing the frequency of the corresponding @var{x} values.
-## @item @tab @qcode{"alpha"} @tab An @var{alpha} value such that the hypothesis
+## @item @tab @qcode{'alpha'} @tab An @var{alpha} value such that the hypothesis
 ## is rejected if @qcode{@var{p} < @var{alpha}}.  Default is
 ## @qcode{@var{alpha} = 0.05}.
 ## @end multitable
 ##
-## You should specify either @qcode{"cdf"} or @qcode{"expected"} parameters, but
-## not both. If your @qcode{"cdf"} input contains extra parameters, these are
+## You should specify either @qcode{'cdf'} or @qcode{'expected'} parameters, but
+## not both. If your @qcode{'cdf'} input contains extra parameters, these are
 ## accounted for automatically and there is no need to specify
-## @qcode{"nparams"}. If your @qcode{"expected"} input depends on estimated
-## parameters, you should use the @qcode{"nparams"} parameter to ensure that the
+## @qcode{'nparams'}. If your @qcode{'expected'} input depends on estimated
+## parameters, you should use the @qcode{'nparams'} parameter to ensure that the
 ## degrees of freedom for the test is correct.
 ##
 ## @end deftypefn

@@ -27,7 +27,7 @@
 ## coefficient estimates @var{b}, a matrix of predictors @var{X}, in which each
 ## column corresponds to a distinct predictor variable, and a link function
 ## @var{link}, which can be any of the character vectors, numeric scalar, or
-## custom-defined link functions used as values for the @qcode{"link"}
+## custom-defined link functions used as values for the @qcode{'link'}
 ## name-value pair argument in the @code{glmfit} function.
 ##
 ## @code{[@var{yhat}, @var{y_lo}, @var{y_hi}] = glmval (@var{b}, @var{X},
@@ -43,18 +43,18 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"confidence"} @tab @tab A scalar value between 0 and 1
+## @item @qcode{'confidence'} @tab @tab A scalar value between 0 and 1
 ## specifying the confidence level for the confidence bounds.
 ##
-## @item @qcode{"Constant"} @tab @tab A character vector specifying whether to
+## @item @qcode{'Constant'} @tab @tab A character vector specifying whether to
 ## include a constant term in the model.  Valid options are @var{"on"} (default)
 ## and @var{"off"}.
 ##
-## @item @qcode{"simultaneous"} @tab @tab Specifies whether to
+## @item @qcode{'simultaneous'} @tab @tab Specifies whether to
 ## include a constant term in the model. Options are
 ## @var{"on"} (default) or @var{"off"}.
 ##
-## @item @qcode{"size"} @tab @tab A numeric scalar or a vector with one value
+## @item @qcode{'size'} @tab @tab A numeric scalar or a vector with one value
 ## for each row of @var{X} specifying the size parameter @math{N} for a binomial
 ## model.
 ## @end multitable

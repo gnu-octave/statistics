@@ -74,29 +74,29 @@
 ##
 ## @var{whichstats} specifies the statistics to compute. It can be either a
 ## string array or a cell array of strings specifying any of the following
-## builtin statistics.  If omitted, the default is @qcode{"mean"}.
+## builtin statistics.  If omitted, the default is @qcode{'mean'}.
 ## @var{whichstats} can also contain function handles for custom statistics.
 ##
 ## The available statistics are:
 ## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{"mean"}   @tab Mean of each group.
-## @item @tab @qcode{"median"} @tab Median of each group.
-## @item @tab @qcode{"sem"}    @tab Standard error of the mean for each group.
-## @item @tab @qcode{"std"}    @tab Standard deviation of each group.
-## @item @tab @qcode{"var"}    @tab Variance of each group.
-## @item @tab @qcode{"min"}    @tab Minimum value in each group.
-## @item @tab @qcode{"max"}    @tab Maximum value in each group.
-## @item @tab @qcode{"range"}  @tab Difference between max and min in each
+## @item @tab @qcode{'mean'}   @tab Mean of each group.
+## @item @tab @qcode{'median'} @tab Median of each group.
+## @item @tab @qcode{'sem'}    @tab Standard error of the mean for each group.
+## @item @tab @qcode{'std'}    @tab Standard deviation of each group.
+## @item @tab @qcode{'var'}    @tab Variance of each group.
+## @item @tab @qcode{'min'}    @tab Minimum value in each group.
+## @item @tab @qcode{'max'}    @tab Maximum value in each group.
+## @item @tab @qcode{'range'}  @tab Difference between max and min in each
 ## group.
-## @item @tab @qcode{"numel"}  @tab Number of elements (count) in each group.
-## @item @tab @qcode{"meanci"} @tab Confidence interval for the mean.
-## @item @tab @qcode{"predci"} @tab Prediction interval for a new observation.
-## @item @tab @qcode{"gname"}  @tab Group names.
+## @item @tab @qcode{'numel'}  @tab Number of elements (count) in each group.
+## @item @tab @qcode{'meanci'} @tab Confidence interval for the mean.
+## @item @tab @qcode{'predci'} @tab Prediction interval for a new observation.
+## @item @tab @qcode{'gname'}  @tab Group names.
 ## @end multitable
 ##
 ## @code{[@dots{}] = grpstats (@dots{}, @qcode{'Alpha'}, @var{alpha})} specifies
-## the significance level for the confidence intervals (@qcode{"meanci"} and
-## @qcode{"predci"}) as @code{100 * (1-@var{alpha})@@%}.  @var{alpha} must be a
+## the significance level for the confidence intervals (@qcode{'meanci'} and
+## @qcode{'predci'}) as @code{100 * (1-@var{alpha})@@%}.  @var{alpha} must be a
 ## scalar between 0 and 1.  When not specified, it defaults to 0.05.  Note that
 ## this paired input argument is also valid for table input.
 ##
@@ -112,7 +112,7 @@
 ## object, logical vector, function handle).
 ##
 ## The output @var{tblstats} is a table with one row for each group. It contains
-## the grouping variables, an additional  @qcode{"GroupCount"} variable, and the
+## the grouping variables, an additional  @qcode{'GroupCount'} variable, and the
 ## specified summary statistics for the variables in @var{tbl}, expect for those
 ## specified as grouping variables.  When input is a table, only a single output
 ## variable, @var{tblstats} can be specified.  The output @var{tblstats} also
@@ -150,8 +150,8 @@
 ## @code{errorbar} plot with the group means and their respective confidence
 ## intervals.  @var{x} must be a numeric vector or matrix.  @var{alpha} is a
 ## scalar between 0 and 1 that determines the confidence level.  This syntax is
-## an alternative to calling @code{errorbar} after computing @qcode{"mean"} and
-## @qcode{"meanci"} statistics.  The optional output @var{h} is a handle to the
+## an alternative to calling @code{errorbar} after computing @qcode{'mean'} and
+## @qcode{'meanci'} statistics.  The optional output @var{h} is a handle to the
 ## hggroup object representing the data plot and errorbars.
 ##
 ## @seealso{grp2idx}

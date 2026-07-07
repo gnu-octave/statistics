@@ -46,32 +46,32 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"Standardize"} @tab @tab A boolean flag indicating whether
+## @item @qcode{'Standardize'} @tab @tab A boolean flag indicating whether
 ## the data in @var{X} should be standardized prior to training.
 ##
-## @item @qcode{"PredictorNames"} @tab @tab A cell array of character vectors
+## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
 ## specifying the predictor variable names.  The variable names are assumed to
 ## be in the same order as they appear in the training data @var{X}.
 ##
-## @item @qcode{"ResponseName"} @tab @tab A character vector specifying the name
+## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the name
 ## of the response variable.
 ##
-## @item @qcode{"ClassNames"} @tab @tab Names of the classes in the class
+## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the kNN model.  @qcode{ClassNames} are of
 ## the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{"Prior"} @tab @tab A numeric vector specifying the prior
+## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{"Cost"} @tab @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab @tab A @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,
 ## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{"ScoreTransform"} @tab @tab A character vector defining one of
+## @item @qcode{'ScoreTransform'} @tab @tab A character vector defining one of
 ## the following functions or a user defined function handle, which is used
 ## for transforming the prediction scores returned by the @code{predict} and
 ## @code{resubPredict} methods.  Default value is @qcode{'none'}.
@@ -79,24 +79,24 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
-## @item @tab @qcode{"doublelogit"} @tab @math{1 ./ (1 + exp (-2 * x))}
-## @item @tab @qcode{"invlogit"} @tab @math{log (x ./ (1 - x))}
-## @item @tab @qcode{"ismax"} @tab Sets the score for the class with the largest
+## @item @tab @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+## @item @tab @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+## @item @tab @qcode{'ismax'} @tab Sets the score for the class with the largest
 ## score to 1, and sets the scores for all other classes to 0
-## @item @tab @qcode{"logit"} @tab @math{1 ./ (1 + exp (-x))}
-## @item @tab @qcode{"none"} @tab @math{x} (no transformation)
-## @item @tab @qcode{"identity"} @tab @math{x} (no transformation)
-## @item @tab @qcode{"sign"} @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
-## @item @tab @qcode{"symmetric"} @tab @math{2 * x - 1}
-## @item @tab @qcode{"symmetricismax"} @tab Sets the score for the class with
+## @item @tab @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+## @item @tab @qcode{'none'} @tab @math{x} (no transformation)
+## @item @tab @qcode{'identity'} @tab @math{x} (no transformation)
+## @item @tab @qcode{'sign'} @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+## @item @tab @qcode{'symmetric'} @tab @math{2 * x - 1}
+## @item @tab @qcode{'symmetricismax'} @tab Sets the score for the class with
 ## the largest score to 1, and sets the scores for all other classes to -1
-## @item @tab @qcode{"symmetriclogit"} @tab @math{2 ./ (1 + exp (-x)) - 1}
+## @item @tab @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"BreakTies"} @tab @tab Tie-breaking algorithm used by predict
+## @item @qcode{'BreakTies'} @tab @tab Tie-breaking algorithm used by predict
 ## when multiple classes have the same smallest cost. By default, ties occur
 ## when multiple classes have the same number of nearest points among the
 ## @math{k} nearest neighbors. The available options are specified by the
@@ -106,78 +106,78 @@
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ##
-## @item @tab @qcode{"smallest"} @tab This is the default and it favors the
+## @item @tab @qcode{'smallest'} @tab This is the default and it favors the
 ## class with the smallest index among the tied groups, i.e. the one that
 ## appears first in the training labelled data.
-## @item @tab @qcode{"nearest"} @tab This favors the class with the nearest
+## @item @tab @qcode{'nearest'} @tab This favors the class with the nearest
 ## neighbor among the tied groups, i.e. the class with the closest member point
 ## according to the distance metric used.
-## @item @tab @qcode{"random"} @tab This randomly picks one class among the
+## @item @tab @qcode{'random'} @tab This randomly picks one class among the
 ## tied groups.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"BucketSize"} @tab @tab The maximum number of data points in the
+## @item @qcode{'BucketSize'} @tab @tab The maximum number of data points in the
 ## leaf node of the Kd-tree and it must be a positive integer.  By default, it
 ## is 50. This argument is meaningful only when the selected search method is
-## @qcode{"kdtree"}.
+## @qcode{'kdtree'}.
 ##
-## @item @qcode{"NumNeighbors"} @tab @tab A positive integer value specifying
+## @item @qcode{'NumNeighbors'} @tab @tab A positive integer value specifying
 ## the number of nearest neighbors to be found in the kNN search.  By default,
 ## it is 1.
 ##
-## @item @qcode{"Exponent"} @tab @tab A positive scalar (usually an integer)
+## @item @qcode{'Exponent'} @tab @tab A positive scalar (usually an integer)
 ## specifying the Minkowski distance exponent.  This argument is only valid when
-## the selected distance metric is @qcode{"minkowski"}.  By default it is 2.
+## the selected distance metric is @qcode{'minkowski'}.  By default it is 2.
 ##
-## @item @qcode{"Scale"} @tab @tab A nonnegative numeric vector specifying the
+## @item @qcode{'Scale'} @tab @tab A nonnegative numeric vector specifying the
 ## scale parameters for the standardized Euclidean distance.  The vector length
 ## must be equal to the number of columns in @var{X}.  This argument is only
-## valid when the selected distance metric is @qcode{"seuclidean"}, in which
+## valid when the selected distance metric is @qcode{'seuclidean'}, in which
 ## case each coordinate of @var{X} is scaled by the corresponding element of
-## @qcode{"scale"}, as is each query point in @var{Y}.  By default, the scale
+## @qcode{'scale'}, as is each query point in @var{Y}.  By default, the scale
 ## parameter is the standard deviation of each coordinate in @var{X}.  If a
 ## variable in @var{X} is constant, i.e. zero variance, this value is forced
 ## to 1 to avoid division by zero.  This is the equivalent of this variable not
 ## being standardized.
 ##
-## @item @qcode{"Cov"} @tab @tab A square matrix with the same number of columns
+## @item @qcode{'Cov'} @tab @tab A square matrix with the same number of columns
 ## as @var{X} specifying the covariance matrix for computing the mahalanobis
 ## distance.  This must be a positive definite matrix matching.  This argument
-## is only valid when the selected distance metric is @qcode{"mahalanobis"}.
+## is only valid when the selected distance metric is @qcode{'mahalanobis'}.
 ##
-## @item @qcode{"Distance"} @tab @tab is the distance metric used by
+## @item @qcode{'Distance'} @tab @tab is the distance metric used by
 ## @code{knnsearch} as specified below:
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ##
-## @item @tab @qcode{"euclidean"} @tab Euclidean distance.
-## @item @tab @qcode{"seuclidean"} @tab standardized Euclidean distance.  Each
+## @item @tab @qcode{'euclidean'} @tab Euclidean distance.
+## @item @tab @qcode{'seuclidean'} @tab standardized Euclidean distance.  Each
 ## coordinate difference between the rows in @var{X} and the query matrix
 ## @var{Y} is scaled by dividing by the corresponding element of the standard
 ## deviation computed from @var{X}.  To specify a different scaling, use the
-## @qcode{"Scale"} name-value argument.
-## @item @tab @qcode{"cityblock"} @tab City block distance.
-## @item @tab @qcode{"chebychev"} @tab Chebychev distance (maximum coordinate
+## @qcode{'Scale'} name-value argument.
+## @item @tab @qcode{'cityblock'} @tab City block distance.
+## @item @tab @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
 ## difference).
-## @item @tab @qcode{"minkowski"} @tab Minkowski distance.  The default exponent
-## is 2.  To specify a different exponent, use the @qcode{"P"} name-value
+## @item @tab @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
+## is 2.  To specify a different exponent, use the @qcode{'P'} name-value
 ## argument.
-## @item @tab @qcode{"mahalanobis"} @tab Mahalanobis distance, computed using a
+## @item @tab @qcode{'mahalanobis'} @tab Mahalanobis distance, computed using a
 ## positive definite covariance matrix.  To change the value of the covariance
-## matrix, use the @qcode{"Cov"} name-value argument.
-## @item @tab @qcode{"cosine"} @tab Cosine distance.
-## @item @tab @qcode{"correlation"} @tab One minus the sample linear correlation
+## matrix, use the @qcode{'Cov'} name-value argument.
+## @item @tab @qcode{'cosine'} @tab Cosine distance.
+## @item @tab @qcode{'correlation'} @tab One minus the sample linear correlation
 ## between observations (treated as sequences of values).
-## @item @tab @qcode{"spearman"} @tab One minus the sample Spearman's rank
+## @item @tab @qcode{'spearman'} @tab One minus the sample Spearman's rank
 ## correlation between observations (treated as sequences of values).
-## @item @tab @qcode{"hamming"} @tab Hamming distance, which is the percentage
+## @item @tab @qcode{'hamming'} @tab Hamming distance, which is the percentage
 ## of coordinates that differ.
-## @item @tab @qcode{"jaccard"} @tab One minus the Jaccard coefficient, which is
+## @item @tab @qcode{'jaccard'} @tab One minus the Jaccard coefficient, which is
 ## the percentage of nonzero coordinates that differ.
 ## @item @tab @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
@@ -191,38 +191,38 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"DistanceWeight"} @tab @tab A distance weighting function,
+## @item @qcode{'DistanceWeight'} @tab @tab A distance weighting function,
 ## specified either as a function handle, which accepts a matrix of nonnegative
 ## distances and returns a matrix the same size containing nonnegative distance
-## weights, or one of the following values: @qcode{"equal"}, which corresponds
-## to no weighting; @qcode{"inverse"}, which corresponds to a weight equal to
-## @math{1/distance}; @qcode{"squaredinverse"}, which corresponds to a weight
+## weights, or one of the following values: @qcode{'equal'}, which corresponds
+## to no weighting; @qcode{'inverse'}, which corresponds to a weight equal to
+## @math{1/distance}; @qcode{'squaredinverse'}, which corresponds to a weight
 ## equal to @math{1/distance^2}.
 ##
-## @item @qcode{"IncludeTies"} @tab @tab A boolean flag to indicate if the
+## @item @qcode{'IncludeTies'} @tab @tab A boolean flag to indicate if the
 ## returned values should contain the indices that have same distance as the
 ## @math{K^th} neighbor.  When @qcode{false}, @code{knnsearch} chooses the
 ## observation with the smallest index among the observations that have the same
 ## distance from a query point.  When @qcode{true}, @code{knnsearch} includes
 ## all nearest neighbors whose distances are equal to the @math{K^th} smallest
-## distance in the output arguments. To specify @math{K}, use the @qcode{"K"}
+## distance in the output arguments. To specify @math{K}, use the @qcode{'K'}
 ## name-value pair argument.
 ##
-## @item @qcode{"NSMethod"} @tab @tab is the nearest neighbor search method used
+## @item @qcode{'NSMethod'} @tab @tab is the nearest neighbor search method used
 ## by @code{knnsearch} as specified below.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
 ##
-## @item @tab @qcode{"kdtree"} @tab Creates and uses a Kd-tree to find nearest
-## neighbors.  @qcode{"kdtree"} is the default value when the number of columns
+## @item @tab @qcode{'kdtree'} @tab Creates and uses a Kd-tree to find nearest
+## neighbors.  @qcode{'kdtree'} is the default value when the number of columns
 ## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
-## distance metric is @qcode{"euclidean"}, @qcode{"cityblock"},
-## @qcode{"manhattan"}, @qcode{"chebychev"}, or @qcode{"minkowski"}.  Otherwise,
-## the default value is @qcode{"exhaustive"}.  This argument is only valid when
+## distance metric is @qcode{'euclidean'}, @qcode{'cityblock'},
+## @qcode{'manhattan'}, @qcode{'chebychev'}, or @qcode{'minkowski'}.  Otherwise,
+## the default value is @qcode{'exhaustive'}.  This argument is only valid when
 ## the distance metric is one of the four aforementioned metrics.
-## @item @tab @qcode{"exhaustive"} @tab Uses the exhaustive search algorithm by
+## @item @tab @qcode{'exhaustive'} @tab Uses the exhaustive search algorithm by
 ## computing the distance values from all the points in @var{X} to each point in
 ## @var{Y}.
 ## @end multitable
@@ -232,35 +232,35 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"Crossval"} @tab @tab Cross-validation flag specified as
+## @item @qcode{'Crossval'} @tab @tab Cross-validation flag specified as
 ## @qcode{'on'} or @qcode{'off'}.  If @qcode{'on'} is specified, a 10-fold
 ## cross validation is performed and a @code{ClassificationPartitionedModel} is
 ## returned in @var{Mdl}.  To override this cross-validation setting, use only
 ## one of the following Name-Value pair arguments.
 ##
-## @item @qcode{"CVPartition"} @tab @tab A @code{cvpartition} object that
+## @item @qcode{'CVPartition'} @tab @tab A @code{cvpartition} object that
 ## specifies the type of cross-validation and the indexing for the training and
 ## validation sets.  A @code{ClassificationPartitionedModel} is returned in
 ## @var{Mdl} and the trained model is stored in the @code{Trained} property.
 ##
-## @item @qcode{"Holdout"} @tab @tab Fraction of the data used for holdout
+## @item @qcode{'Holdout'} @tab @tab Fraction of the data used for holdout
 ## validation, specified as a scalar value in the range @math{[0,1]}.  When
 ## specified, a randomly selected percentage is reserved as validation data and
 ## the remaining set is used for training.  The trained model is stored in the
 ## @code{Trained} property of the @code{ClassificationPartitionedModel} returned
-## in @var{Mdl}.  @qcode{"Holdout"} partitioning attempts to ensure that each
+## in @var{Mdl}.  @qcode{'Holdout'} partitioning attempts to ensure that each
 ## partition represents the classes proportionately.
 ##
-## @item @qcode{"KFold"} @tab @tab Number of folds to use in the cross-validated
+## @item @qcode{'KFold'} @tab @tab Number of folds to use in the cross-validated
 ## model, specified as a positive integer value greater than 1.  When specified,
 ## then the data is randomly partitioned in @math{k} sets and for each set, the
 ## set is reserved as validation data while the remaining @math{k-1} sets are
 ## used for training.  The trained models are stored in the @code{Trained}
 ## property of the @code{ClassificationPartitionedModel} returned in @var{Mdl}.
-## @qcode{"KFold"} partitioning attempts to ensure that each partition
+## @qcode{'KFold'} partitioning attempts to ensure that each partition
 ## represents the classes proportionately.
 ##
-## @item @qcode{"Leaveout"} @tab @tab Leave-one-out cross-validation flag
+## @item @qcode{'Leaveout'} @tab @tab Leave-one-out cross-validation flag
 ## specified as @qcode{'on'} or @qcode{'off'}.  If @qcode{'on'} is specified,
 ## then for each of the @math{n} observations (where @math{n} is the number of
 ## observations, excluding missing observations, specified in the

@@ -49,7 +49,7 @@
 ## alteration defines the confidence interval.
 ## @item @var{method} @tab @tab string @tab @tab An optional argument
 ## for defining the calculation method.  Available choices are
-## @qcode{"bromaghin"} (default), @qcode{"cochran"}, and @qcode{agresti_cull}.
+## @qcode{'bromaghin'} (default), @qcode{'cochran'}, and @qcode{agresti_cull}.
 ## @end multitable
 ##
 ## Note!  The @qcode{agresti_cull} method is not exactly the solution at

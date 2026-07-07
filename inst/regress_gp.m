@@ -18,13 +18,13 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {[@var{Yfit}, @var{Yint}, @var{m}, @var{K}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit})
-## @deftypefnx {statistics} {[@var{Yfit}, @var{Yint}, @var{m}, @var{K}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"linear"})
-## @deftypefnx {statistics} {[@var{Yfit}, @var{Yint}, @var{Ysd}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"rbf"})
-## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"linear"}, @var{Sp})
+## @deftypefnx {statistics} {[@var{Yfit}, @var{Yint}, @var{m}, @var{K}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'linear'})
+## @deftypefnx {statistics} {[@var{Yfit}, @var{Yint}, @var{Ysd}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'rbf'})
+## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'linear'}, @var{Sp})
 ## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @var{Sp})
-## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"rbf"}, @var{theta})
-## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"rbf"}, @var{theta}, @var{g})
-## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{"rbf"}, @var{theta}, @var{g}, @var{alpha})
+## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'rbf'}, @var{theta})
+## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'rbf'}, @var{theta}, @var{g})
+## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @qcode{'rbf'}, @var{theta}, @var{g}, @var{alpha})
 ## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @var{theta})
 ## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @var{theta}, @var{g})
 ## @deftypefnx {statistics} {[@dots{}] =} regress_gp (@var{X}, @var{Y}, @var{Xfit}, @var{theta}, @var{g}, @var{alpha})
@@ -49,7 +49,7 @@
 ## @var{Yfit}.
 ##
 ## @code{[@var{Yfit}, @var{Yint}, @var{Ysd}, @var{K}] = regress_gp (@var{X},
-## @var{Y}, @var{Xfit}, @qcode{"rbf"})} will estimate a Gaussian Process model
+## @var{Y}, @var{Xfit}, @qcode{'rbf'})} will estimate a Gaussian Process model
 ## with a Radial Basis Function (RBF) kernel with default parameters
 ## @qcode{@var{theta} = 5}, which corresponds to the characteristic lengthscale,
 ## and @qcode{@var{g} = 0.01}, which corresponds to the nugget effect, and

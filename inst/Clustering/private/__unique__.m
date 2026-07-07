@@ -38,23 +38,23 @@
 ## Otherwise, return a row vector.  @var{x} may also be a cell array of
 ## strings.
 ##
-## If the optional argument @qcode{"rows"} is given then return the unique
+## If the optional argument @qcode{'rows'} is given then return the unique
 ## rows of @var{x}.
 ##
-## The optional argument @qcode{"sorted"}/@qcode{"stable"} controls the order
+## The optional argument @qcode{'sorted'}/@qcode{'stable'} controls the order
 ## in which unique values appear in the output.  The default is
-## @qcode{"sorted"} and values in the output are placed in ascending order.
-## The alternative @qcode{"stable"} preserves the order found in the input
+## @qcode{'sorted'} and values in the output are placed in ascending order.
+## The alternative @qcode{'stable'} preserves the order found in the input
 ## @var{x}.
 ##
 ## If requested, return column index vectors @var{i} and @var{j} such that
 ## @code{@var{y} = @var{x}(@var{i})} and @code{@var{x} = @var{y}(@var{j})}.
 ##
 ## Additionally, if @var{i} is a requested output then one of the flags
-## @qcode{"first"} or @qcode{"last"} may be given.  If @qcode{"last"} is
+## @qcode{'first'} or @qcode{'last'} may be given.  If @qcode{'last'} is
 ## specified, return the highest possible indices in @var{i}, otherwise, if
-## @qcode{"first"} is specified, return the lowest.  The default is
-## @qcode{"first"}.
+## @qcode{'first'} is specified, return the lowest.  The default is
+## @qcode{'first'}.
 ##
 ## Example 1 : sort order
 ##
@@ -78,9 +78,9 @@
 ## @end group
 ## @end example
 ##
-## Programming Notes: The input flag @qcode{"legacy"} changes the algorithm
+## Programming Notes: The input flag @qcode{'legacy'} changes the algorithm
 ## to be compatible with @sc{matlab} releases prior to R2012b.  Specifically,
-## The index ordering flag is changed to @qcode{"last"}, and the shape of the
+## The index ordering flag is changed to @qcode{'last'}, and the shape of the
 ## outputs @var{i}, @var{j} will follow the shape of the input @var{x} rather
 ## than always being column vectors.
 ##

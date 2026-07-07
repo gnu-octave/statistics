@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} hygecdf (@var{x}, @var{m}, @var{k}, @var{n})
-## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{m}, @var{k}, @var{n}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} hygecdf (@var{x}, @var{m}, @var{k}, @var{n}, @qcode{'upper'})
 ##
 ## Hypergeometric cumulative distribution function (CDF).
 ##

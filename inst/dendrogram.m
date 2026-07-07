@@ -53,23 +53,23 @@
 ## Additional input properties can be specified by pairs of properties and
 ## values. Known properties are:
 ## @itemize @bullet
-## @item @qcode{"Reorder"}
+## @item @qcode{'Reorder'}
 ## Reorder the leaves of the dendrogram plot using a numerical vector of size n,
 ## the number of leaves. When @var{p} is smaller than @var{n}, the reordering
 ## cannot break the @var{p} groups of leaves.
 ##
-## @item @qcode{"Orientation"}
+## @item @qcode{'Orientation'}
 ## Change the orientation of the plot. Available values: @qcode{top} (default),
 ## @qcode{bottom}, @qcode{left}, @qcode{right}.
 ##
-## @item @qcode{"CheckCrossing"}
+## @item @qcode{'CheckCrossing'}
 ## Check if the lines of a reordered dendrogram cross each other. Available
 ## values: @qcode{true} (default), @qcode{false}.
 ##
-## @item @qcode{"ColorThreshold"}
+## @item @qcode{'ColorThreshold'}
 ## Not implemented.
 ##
-## @item @qcode{"Labels"}
+## @item @qcode{'Labels'}
 ## Use a char, string or cellstr array of size @var{n} to set the label for each
 ## leaf; the label is displayed only for nodes with just one leaf.
 ## @end itemize

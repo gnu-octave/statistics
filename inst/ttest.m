@@ -45,15 +45,15 @@
 ## @qcode{ttest} treats NaNs as missing values, and ignores them.
 ##
 ## Name-Value pair arguments can be used to set various options.
-## @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  @qcode{"tail"}, can be used
+## @qcode{'alpha'} can be used to specify the significance level
+## of the test (the default value is 0.05).  @qcode{'tail'}, can be used
 ## to select the desired alternative hypotheses.  If the value is
-## @qcode{"both"} (default) the null is tested against the two-sided
+## @qcode{'both'} (default) the null is tested against the two-sided
 ## alternative @code{mean (@var{x}) != @var{m}}.
-## If it is @qcode{"right"} the one-sided alternative @code{mean (@var{x})
-## > @var{m}} is considered.  Similarly for @qcode{"left"}, the one-sided
+## If it is @qcode{'right'} the one-sided alternative @code{mean (@var{x})
+## > @var{m}} is considered.  Similarly for @qcode{'left'}, the one-sided
 ## alternative @code{mean (@var{x}) < @var{m}} is considered.
-## When argument @var{x} is a matrix, @qcode{"dim"} can be used to select
+## When argument @var{x} is a matrix, @qcode{'dim'} can be used to select
 ## the dimension over which to perform the test.  (The default is the
 ## first non-singleton dimension).
 ##

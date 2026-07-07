@@ -44,71 +44,71 @@
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
 ##
-## @item @tab @qcode{"predictors"} @tab Predictor Variable names, specified as
+## @item @tab @qcode{'predictors'} @tab Predictor Variable names, specified as
 ## a row vector cell of strings with the same length as the columns in @var{X}.
 ## If omitted, the program will generate default variable names
 ## @qcode{(x1, x2, ..., xn)} for each column in @var{X}.
 ##
-## @item @tab @qcode{"responsename"} @tab Response Variable Name, specified as
-## a string.  If omitted, the default value is @qcode{"Y"}.
+## @item @tab @qcode{'responsename'} @tab Response Variable Name, specified as
+## a string.  If omitted, the default value is @qcode{'Y'}.
 ##
-## @item @tab @qcode{"formula"} @tab a model specification given as a string in
-## the form @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable
+## @item @tab @qcode{'formula'} @tab a model specification given as a string in
+## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
 ## and @qcode{terms} the predictor variables.  The formula can be used to
 ## specify a subset of variables for training model.  For example:
-## @qcode{"Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3"} specifies four linear terms
+## @qcode{'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3'} specifies four linear terms
 ## for the first four columns of for predictor data, and @qcode{x1:x2} and
 ## @qcode{x2:x3} specify the two interaction terms for 1st-2nd and 3rd-4th
 ## columns respectively.  Only these terms will be used for training the model,
 ## but @var{X} must have at least as many columns as referenced in the formula.
 ## If Predictor Variable names have been defined, then the terms in the formula
-## must reference to those.  When @qcode{"formula"} is specified, all terms used
+## must reference to those.  When @qcode{'formula'} is specified, all terms used
 ## for training the model are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object as a matrix containing the column indexes for each
 ## term including both the predictors and the interactions used.
 ##
-## @item @tab @qcode{"interactions"} @tab a logical matrix, a positive integer
-## scalar, or the string @qcode{"all"} for defining the interactions between
+## @item @tab @qcode{'interactions'} @tab a logical matrix, a positive integer
+## scalar, or the string @qcode{'all'} for defining the interactions between
 ## predictor variables.  When given a logical matrix, it must have the same
 ## number of columns as @var{X} and each row corresponds to a different
 ## interaction term combining the predictors indexed as @qcode{true}.  Each
 ## interaction term is appended as a column vector after the available predictor
-## column in @var{X}.  When @qcode{"all"} is defined, then all possible
+## column in @var{X}.  When @qcode{'all'} is defined, then all possible
 ## combinations of interactions are appended in @var{X} before training.  At the
-## moment, parsing a positive integer has the same effect as the @qcode{"all"}
-## option.  When @qcode{"interactions"} is specified, only the interaction terms
+## moment, parsing a positive integer has the same effect as the @qcode{'all'}
+## option.  When @qcode{'interactions'} is specified, only the interaction terms
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @tab @qcode{"knots"} @tab a scalar or a row vector with the same
+## @item @tab @qcode{'knots'} @tab a scalar or a row vector with the same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{"order"} @tab a scalar or a row vector with the same
+## @item @tab @qcode{'order'} @tab a scalar or a row vector with the same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{"dof"} @tab a scalar or a row vector with the same columns
+## @item @tab @qcode{'dof'} @tab a scalar or a row vector with the same columns
 ## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
 ## parse a row vector with different degrees of freedom for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{"tol"} @tab a positive scalar to set the tolerance for
+## @item @tab @qcode{'tol'} @tab a positive scalar to set the tolerance for
 ## convergence during training. By default, it is set to @qcode{1e-3}.
 ## @end multitable
 ##
-## You can parse either a @qcode{"formula"} or an @qcode{"interactions"}
+## You can parse either a @qcode{'formula'} or an @qcode{'interactions'}
 ## optional parameter.  Parsing both parameters will result an error.
-## Accordingly, you can only pass up to two parameters among @qcode{"knots"},
-## @qcode{"order"}, and @qcode{"dof"} to define the required polynomial for
+## Accordingly, you can only pass up to two parameters among @qcode{'knots'},
+## @qcode{'order'}, and @qcode{'dof'} to define the required polynomial for
 ## training the GAM model.
 ##
 ## @seealso{RegressionGAM, regress, regress_gp}

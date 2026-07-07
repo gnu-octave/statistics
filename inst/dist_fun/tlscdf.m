@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu})
-## @deftypefnx {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} tlscdf (@var{x}, @var{mu}, @var{sigma}, @var{nu}, @qcode{'upper'})
 ##
 ## Location-scale Student's T cumulative distribution function (CDF).
 ##

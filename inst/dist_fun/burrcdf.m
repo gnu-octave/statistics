@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} burrcdf (@var{x}, @var{lambda}, @var{c}, @var{k})
-## @deftypefnx {statistics} {@var{p} =} burrcdf (@var{x}, @var{lambda}, @var{c}, @var{k}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} burrcdf (@var{x}, @var{lambda}, @var{c}, @var{k}, @qcode{'upper'})
 ##
 ## Burr type XII cumulative distribution function (CDF).
 ##

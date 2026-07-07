@@ -33,30 +33,30 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"NSMethod"} @tab @tab Specifies the nearest neighbor search
+## @item @qcode{'NSMethod'} @tab @tab Specifies the nearest neighbor search
 ## method. Possible values are:
 ##   @itemize @bullet
-##   @item @qcode{"exhaustive"}: Creates an @code{ExhaustiveSearcher} object.
-##   @item @qcode{"kdtree"}: Creates a @code{KDTreeSearcher} object.
-##   @item @qcode{"hnsw"}: Creates an @code{hnswSearcher} object.
+##   @item @qcode{'exhaustive'}: Creates an @code{ExhaustiveSearcher} object.
+##   @item @qcode{'kdtree'}: Creates a @code{KDTreeSearcher} object.
+##   @item @qcode{'hnsw'}: Creates an @code{hnswSearcher} object.
 ##   @end itemize
-##   Default is @qcode{"exhaustive"}.
+##   Default is @qcode{'exhaustive'}.
 ##
 ## @end multitable
 ##
-## Additional name-value pairs depend on the selected @qcode{"NSMethod"} and
+## Additional name-value pairs depend on the selected @qcode{'NSMethod'} and
 ## are passed directly to the constructor of the corresponding class:
 ##
 ## @itemize @bullet
-## @item For @qcode{"exhaustive"}, see @code{ExhaustiveSearcher} documentation
-## for parameters like @qcode{"Distance"}, @qcode{"P"}, @qcode{"Scale"}, and
-## @qcode{"Cov"}.
-## @item For @qcode{"kdtree"}, see @code{KDTreeSearcher} documentation for
-## parameters like @qcode{"Distance"}, @qcode{"P"}, and @qcode{"BucketSize"}.
-## @item For @qcode{"hnsw"}, see @code{hnswSearcher} documentation for
+## @item For @qcode{'exhaustive'}, see @code{ExhaustiveSearcher} documentation
+## for parameters like @qcode{'Distance'}, @qcode{'P'}, @qcode{'Scale'}, and
+## @qcode{'Cov'}.
+## @item For @qcode{'kdtree'}, see @code{KDTreeSearcher} documentation for
+## parameters like @qcode{'Distance'}, @qcode{'P'}, and @qcode{'BucketSize'}.
+## @item For @qcode{'hnsw'}, see @code{hnswSearcher} documentation for
 ## parameters
-## like @qcode{"Distance"}, @qcode{"P"}, @qcode{"Scale"}, @qcode{"Cov"},
-## @qcode{"MaxNumLinksPerNode"}, and @qcode{"TrainSetSize"}.
+## like @qcode{'Distance'}, @qcode{'P'}, @qcode{'Scale'}, @qcode{'Cov'},
+## @qcode{'MaxNumLinksPerNode'}, and @qcode{'TrainSetSize'}.
 ## @end itemize
 ##
 ## @strong{Input Arguments:}
@@ -70,7 +70,7 @@
 ## @itemize @bullet
 ## @item @var{obj} - A nearest neighbor searcher object of type
 ## @code{ExhaustiveSearcher}, @code{KDTreeSearcher}, or @code{hnswSearcher},
-## depending on the specified @qcode{"NSMethod"}.
+## depending on the specified @qcode{'NSMethod'}.
 ## @end itemize
 ##
 ## @strong{Examples:}

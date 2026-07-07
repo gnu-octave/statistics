@@ -38,23 +38,23 @@
 ##
 ## @code{@var{mdl} = fitlm (@var{X}, @var{y})} fits a linear regression model
 ## of the response @var{y} to the predictor data @var{X}.  Unless removed via
-## the @qcode{"Intercept"} option, the fitted model contains a constant
+## the @qcode{'Intercept'} option, the fitted model contains a constant
 ## (intercept) term and one linear term for every column of @var{X}.
 ##
 ## @itemize
 ## @item
 ## @var{X} is an @math{NxP} numeric or logical matrix of predictor data, where
 ## rows correspond to observations and columns correspond to variables.  By
-## default, the predictors are named @qcode{"x1"}, @qcode{"x2"}, @dots{},
-## @qcode{"xP"}.
+## default, the predictors are named @qcode{'x1'}, @qcode{'x2'}, @dots{},
+## @qcode{'xP'}.
 ## @item
 ## @var{X} can also be a categorical vector of length @math{N}, representing a
 ## single categorical predictor.  In this case @var{y} must be supplied as the
-## next argument, and the predictor is named @qcode{"x1"} by default.
+## next argument, and the predictor is named @qcode{'x1'} by default.
 ## @item
 ## @var{y} is an @math{Nx1} numeric or logical vector of response values, and
 ## must have the same number of observations (rows) as @var{X}.  By default,
-## the response is named @qcode{"y"}.
+## the response is named @qcode{'y'}.
 ## @end itemize
 ##
 ## @code{@var{mdl} = fitlm (@var{tbl})} fits a linear regression model using
@@ -82,24 +82,24 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Value} @tab @tab @var{Description}
 ##
-## @item @qcode{"constant"} @tab @tab Model contains only an intercept term.
+## @item @qcode{'constant'} @tab @tab Model contains only an intercept term.
 ##
-## @item @qcode{"linear"} @tab @tab Model contains an intercept and one term
+## @item @qcode{'linear'} @tab @tab Model contains an intercept and one term
 ## for each predictor variable.  This is the default when @var{modelspec} is
 ## not specified.
 ##
-## @item @qcode{"interactions"} @tab @tab Model contains an intercept, all
+## @item @qcode{'interactions'} @tab @tab Model contains an intercept, all
 ## linear terms, and all pairwise products of distinct predictor variables
 ## (no squared terms).
 ##
-## @item @qcode{"purequadratic"} @tab @tab Model contains an intercept, all
+## @item @qcode{'purequadratic'} @tab @tab Model contains an intercept, all
 ## linear terms, and all squared terms.
 ##
-## @item @qcode{"quadratic"} @tab @tab Model contains an intercept, all linear
+## @item @qcode{'quadratic'} @tab @tab Model contains an intercept, all linear
 ## terms, all pairwise products of distinct predictor variables, and all
 ## squared terms.
 ##
-## @item @qcode{"full"} @tab @tab Model contains an intercept and all terms up
+## @item @qcode{'full'} @tab @tab Model contains an intercept and all terms up
 ## to and including the full @math{P}-way interaction of the predictor
 ## variables, i.e. every combination of one or more distinct predictors.
 ##
@@ -112,8 +112,8 @@
 ## response variable) must be all zeros.
 ##
 ## @item Wilkinson formula @tab @tab A character vector of the form
-## @qcode{"y ~ terms"} describing the response and predictor terms using
-## Wilkinson notation.  The variable name to the left of @qcode{"~"} is used
+## @qcode{'y ~ terms'} describing the response and predictor terms using
+## Wilkinson notation.  The variable name to the left of @qcode{'~'} is used
 ## as the response, overriding any response implied elsewhere in the call.
 ## @end multitable
 ##
@@ -122,22 +122,22 @@
 ##
 ## @multitable @columnfractions 0.12 0.38 0.5
 ## @headitem Operator @tab Meaning @tab Example
-## @item @code{+} @tab add a term @tab @qcode{"x1 + x2"} adds @code{x1} and
+## @item @code{+} @tab add a term @tab @qcode{'x1 + x2'} adds @code{x1} and
 ## @code{x2} as separate terms
-## @item @code{-} @tab remove a term @tab @qcode{"x1*x2 - x1:x2"} removes the
+## @item @code{-} @tab remove a term @tab @qcode{'x1*x2 - x1:x2'} removes the
 ## interaction, leaving only @code{x1} and @code{x2}
-## @item @code{*} @tab cross two terms @tab @qcode{"x1*x2"} expands to
+## @item @code{*} @tab cross two terms @tab @qcode{'x1*x2'} expands to
 ## @code{x1}, @code{x2}, @code{x1:x2}
-## @item @code{:} @tab interaction only @tab @qcode{"x1:x2"} adds only the
+## @item @code{:} @tab interaction only @tab @qcode{'x1:x2'} adds only the
 ## interaction term between @code{x1} and @code{x2}
-## @item @code{^} @tab power / crossing limit @tab @qcode{"x^2"} adds
-## @code{x} and @code{x^2}; @qcode{"(x1+x2)^2"} expands to @code{x1},
+## @item @code{^} @tab power / crossing limit @tab @qcode{'x^2'} adds
+## @code{x} and @code{x^2}; @qcode{'(x1+x2)^2'} expands to @code{x1},
 ## @code{x2}, @code{x1:x2}
-## @item @code{-1} @tab remove intercept @tab @qcode{"x1 + x2 - 1"} fits the
+## @item @code{-1} @tab remove intercept @tab @qcode{'x1 + x2 - 1'} fits the
 ## model without a constant term
 ## @end multitable
 ##
-## A formula includes an intercept term by default; append @qcode{"- 1"} to
+## A formula includes an intercept term by default; append @qcode{'- 1'} to
 ## the formula to omit it.  For a categorical predictor, @code{fitlm}
 ## generates the necessary indicator (dummy) variables automatically from the
 ## formula, so a formula does not need to be changed when the underlying
@@ -152,19 +152,19 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"Intercept"} @tab @tab A logical scalar indicating whether to
+## @item @qcode{'Intercept'} @tab @tab A logical scalar indicating whether to
 ## include a constant (intercept) term in the model.  Default is @qcode{true}.
 ## This option only applies when @var{modelspec} is a character vector model
 ## name (or omitted); it is ignored when @var{modelspec} is a terms matrix or
 ## a Wilkinson formula, where the intercept is instead controlled by the
 ## matrix/formula itself.
 ##
-## @item @qcode{"Weights"} @tab @tab A numeric vector of nonnegative
+## @item @qcode{'Weights'} @tab @tab A numeric vector of nonnegative
 ## observation weights, with one element per observation, used to fit a
 ## weighted least squares model.  Default is a vector of ones, i.e. an
 ## unweighted ordinary least squares fit.
 ##
-## @item @qcode{"Exclude"} @tab @tab A numeric or logical vector specifying
+## @item @qcode{'Exclude'} @tab @tab A numeric or logical vector specifying
 ## observations to exclude from the fit, given as row indices into the
 ## original data or as a logical mask the same length as the number of
 ## observations.  Excluded observations, together with any observation that
@@ -172,7 +172,7 @@
 ## recorded in the @code{ObservationInfo} property of the fitted model but do
 ## not contribute to the fitted coefficients or summary statistics.
 ##
-## @item @qcode{"CategoricalVars"} @tab @tab Specifies which predictor
+## @item @qcode{'CategoricalVars'} @tab @tab Specifies which predictor
 ## variables are treated as categorical, given as a vector of column indices,
 ## a logical vector, or a cell array of variable names (only valid for table
 ## input).  Each categorical predictor with @math{L} distinct categories is
@@ -182,36 +182,36 @@
 ## @code{categorical} arrays or cell arrays of character vectors are always
 ## treated as categorical, regardless of this option.
 ##
-## @item @qcode{"VarNames"} @tab @tab A cell array of character vectors
+## @item @qcode{'VarNames'} @tab @tab A cell array of character vectors
 ## naming the predictor and response variables, listed in order with the
 ## response variable name last, e.g. @code{@{"x1", "x2", "y"@}} for two
 ## predictors.  Only applies when @var{X} and @var{y} (or a categorical
 ## vector and @var{y}) are supplied directly, since table variables already
-## carry their own names.  By default, predictors are named @qcode{"x1"},
-## @qcode{"x2"}, etc. and the response is named @qcode{"y"}.
+## carry their own names.  By default, predictors are named @qcode{'x1'},
+## @qcode{'x2'}, etc. and the response is named @qcode{'y'}.
 ##
-## @item @qcode{"ResponseVar"} @tab @tab A character vector naming the
+## @item @qcode{'ResponseVar'} @tab @tab A character vector naming the
 ## response variable, used to override the response variable name that would
-## otherwise be inferred (the last table variable, or @qcode{"y"} for matrix
+## otherwise be inferred (the last table variable, or @qcode{'y'} for matrix
 ## input).
 ##
-## @item @qcode{"PredictorVars"} @tab @tab A cell array of character vectors
+## @item @qcode{'PredictorVars'} @tab @tab A cell array of character vectors
 ## naming which variables in @var{tbl} to use as predictors.  By default, all
 ## variables in @var{tbl} other than the response variable are used as
 ## predictors.
 ##
-## @item @qcode{"RobustOpts"} @tab @tab Selects ordinary least squares or
-## robust regression fitting.  This value can be @qcode{"off"} (default,
-## ordinary least squares), @qcode{"on"} (robust fitting using the
-## @qcode{"bisquare"} weighting function), the name of one of the weighting
+## @item @qcode{'RobustOpts'} @tab @tab Selects ordinary least squares or
+## robust regression fitting.  This value can be @qcode{'off'} (default,
+## ordinary least squares), @qcode{'on'} (robust fitting using the
+## @qcode{'bisquare'} weighting function), the name of one of the weighting
 ## functions below, a function handle for a custom weighting function, or a
 ## scalar structure with fields @qcode{RobustWgtFun} and @qcode{Tune}
 ## specifying the weighting function and its tuning constant.  Robust fitting
 ## uses Iteratively Reweighted Least Squares (IRLS), refitting the model with
 ## updated observation weights until the coefficients converge.  Supported
-## weighting function names: @qcode{"andrews"}, @qcode{"bisquare"},
-## @qcode{"cauchy"}, @qcode{"fair"}, @qcode{"huber"}, @qcode{"logistic"},
-## @qcode{"ols"}, @qcode{"talwar"}, @qcode{"welsch"}, each with its own default
+## weighting function names: @qcode{'andrews'}, @qcode{'bisquare'},
+## @qcode{'cauchy'}, @qcode{'fair'}, @qcode{'huber'}, @qcode{'logistic'},
+## @qcode{'ols'}, @qcode{'talwar'}, @qcode{'welsch'}, each with its own default
 ## tuning constant.
 ## @end multitable
 ##
@@ -223,12 +223,12 @@
 ## columns beyond the numerically detected rank of the design matrix are set
 ## to zero.  Robust fits refine this ordinary least squares solution using
 ## IRLS as described above.  Observations with missing values in any variable
-## used by the model, or explicitly excluded via @qcode{"Exclude"}, are
+## used by the model, or explicitly excluded via @qcode{'Exclude'}, are
 ## omitted from the fit entirely and flagged in @code{ObservationInfo}, but
 ## are otherwise not counted as errors.
 ##
 ## @var{mdl} is returned as a @code{LinearModel} object.  If
-## @qcode{"RobustOpts"} is anything other than @qcode{"off"}, the returned
+## @qcode{'RobustOpts'} is anything other than @qcode{'off'}, the returned
 ## model is a robust fit rather than an ordinary least squares fit, and its
 ## @code{Robust} property is populated accordingly.
 ##

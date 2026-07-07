@@ -34,20 +34,20 @@
 ##
 ## For a nested t-test, use @qcode{anova2}.
 ##
-## The argument @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05).  The string argument @qcode{"tail"},
-## can be used to select the desired alternative hypotheses.  If @qcode{"tail"}
-## is @qcode{"both"} (default) the null is tested against the two-sided
-## alternative @code{mean (@var{x}) != @var{m}}.  If @qcode{"tail"} is
-## @qcode{"right"} the one-sided alternative @code{mean (@var{x}) > @var{m}} is
-## considered.  Similarly for @qcode{"left"}, the one-sided alternative
+## The argument @qcode{'alpha'} can be used to specify the significance level
+## of the test (the default value is 0.05).  The string argument @qcode{'tail'},
+## can be used to select the desired alternative hypotheses.  If @qcode{'tail'}
+## is @qcode{'both'} (default) the null is tested against the two-sided
+## alternative @code{mean (@var{x}) != @var{m}}.  If @qcode{'tail'} is
+## @qcode{'right'} the one-sided alternative @code{mean (@var{x}) > @var{m}} is
+## considered.  Similarly for @qcode{'left'}, the one-sided alternative
 ## @code{mean (@var{x}) < @var{m}} is considered.
 ##
-## When @qcode{"vartype"} is @qcode{"equal"} the variances are assumed to be
-## equal (this is the default).  When @qcode{"vartype"} is @qcode{"unequal"} the
+## When @qcode{'vartype'} is @qcode{'equal'} the variances are assumed to be
+## equal (this is the default).  When @qcode{'vartype'} is @qcode{'unequal'} the
 ## variances are not assumed equal.
 ##
-## When argument @var{x} and @var{y} are matrices the @qcode{"dim"} argument can
+## When argument @var{x} and @var{y} are matrices the @qcode{'dim'} argument can
 ## be used to select the dimension over which to perform the test.
 ## (The default is the first non-singleton dimension.)
 ##

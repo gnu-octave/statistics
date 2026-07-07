@@ -37,30 +37,30 @@
 ## then the confusion matrix chart is displayed inside that object.
 ##
 ## Optional property/value pairs are passed directly to the underlying objects,
-## e.g. @qcode{"xlabel"}, @qcode{"ylabel"}, @qcode{"title"}, @qcode{"fontname"},
-## @qcode{"fontsize"} etc.
+## e.g. @qcode{'xlabel'}, @qcode{'ylabel'}, @qcode{'title'}, @qcode{'fontname'},
+## @qcode{'fontsize'} etc.
 ##
 ## The optional return value @var{cm} is a @code{ConfusionMatrixChart} object.
 ## Specific properties of a @code{ConfusionMatrixChart} object are:
 ## @itemize @bullet
-## @item @qcode{"DiagonalColor"}
+## @item @qcode{'DiagonalColor'}
 ## The color of the patches on the diagonal, default is [0.0, 0.4471, 0.7412].
 ##
-## @item @qcode{"OffDiagonalColor"}
+## @item @qcode{'OffDiagonalColor'}
 ## The color of the patches off the diagonal, default is [0.851, 0.3255, 0.098].
 ##
-## @item @qcode{"GridVisible"}
+## @item @qcode{'GridVisible'}
 ## Available values: @qcode{on} (default), @qcode{off}.
 ##
-## @item @qcode{"Normalization"}
+## @item @qcode{'Normalization'}
 ## Available values: @qcode{absolute} (default), @qcode{column-normalized},
 ## @qcode{row-normalized}, @qcode{total-normalized}.
 ##
-## @item @qcode{"ColumnSummary"}
+## @item @qcode{'ColumnSummary'}
 ## Available values: @qcode{off} (default), @qcode{absolute},
 ## @qcode{column-normalized},@qcode{total-normalized}.
 ##
-## @item @qcode{"RowSummary"}
+## @item @qcode{'RowSummary'}
 ## Available values: @qcode{off} (default), @qcode{absolute},
 ## @qcode{row-normalized}, @qcode{total-normalized}.
 ## @end itemize

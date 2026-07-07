@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} loglcdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{mu}, @var{sigma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} loglcdf (@var{x}, @var{mu}, @var{sigma}, @qcode{'upper'})
 ##
 ## Loglogistic cumulative distribution function (CDF).
 ##

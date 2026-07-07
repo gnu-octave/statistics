@@ -40,35 +40,35 @@
 ## options.
 ##
 ## @multitable @columnfractions 0.23 0.02 0.65
-## @item @qcode{"euclidean"} @tab @tab Euclidean distance.
-## @item @qcode{"fasteuclidean"} @tab @tab Euclidean distance computed with an
+## @item @qcode{'euclidean'} @tab @tab Euclidean distance.
+## @item @qcode{'fasteuclidean'} @tab @tab Euclidean distance computed with an
 ## alternative algorithm which may be faster but might reduce accuracy.
-## @item @qcode{"squaredeuclidean"} @tab @tab Squared Euclidean distance.
-## @item @qcode{"fastsquaredeuclidean"} @tab @tab Euclidean distance computed
+## @item @qcode{'squaredeuclidean'} @tab @tab Squared Euclidean distance.
+## @item @qcode{'fastsquaredeuclidean'} @tab @tab Euclidean distance computed
 ## with an alternative algorithm which may be faster but might reduce accuracy.
-## @item @qcode{"seuclidean"} @tab @tab standardized Euclidean distance.  Each
+## @item @qcode{'seuclidean'} @tab @tab standardized Euclidean distance.  Each
 ## coordinate difference between the rows in @var{X} and the query matrix
 ## @var{Y} is scaled by dividing by the corresponding element of the standard
 ## deviation computed from @var{X}.  A different scaling vector can be specified
 ## with the subsequent @var{DistParameter} input argument.
-## @item @qcode{"mahalanobis"} @tab @tab Mahalanobis distance, computed using a
+## @item @qcode{'mahalanobis'} @tab @tab Mahalanobis distance, computed using a
 ## positive definite covariance matrix.  A different covariance matrix can be
 ## specified with the subsequent @var{DistParameter} input argument.
-## @item @qcode{"cityblock"} @tab @tab City block distance.
-## @item @qcode{"minkowski"} @tab @tab Minkowski distance.  The default exponent
+## @item @qcode{'cityblock'} @tab @tab City block distance.
+## @item @qcode{'minkowski'} @tab @tab Minkowski distance.  The default exponent
 ## is 2.  A different exponent can be specified with the subsequent
 ## @var{DistParameter} input argument.
-## @item @qcode{"chebychev"} @tab @tab Chebychev distance (maximum coordinate
+## @item @qcode{'chebychev'} @tab @tab Chebychev distance (maximum coordinate
 ## difference).
-## @item @qcode{"cosine"} @tab @tab One minus the cosine of the included angle
+## @item @qcode{'cosine'} @tab @tab One minus the cosine of the included angle
 ## between points (treated as vectors).
-## @item @qcode{"correlation"} @tab @tab One minus the sample linear correlation
+## @item @qcode{'correlation'} @tab @tab One minus the sample linear correlation
 ## between observations (treated as sequences of values).
-## @item @qcode{"hamming"} @tab @tab Hamming distance, which is the percentage
+## @item @qcode{'hamming'} @tab @tab Hamming distance, which is the percentage
 ## of coordinates that differ.
-## @item @qcode{"jaccard"} @tab @tab One minus the Jaccard coefficient, which is
+## @item @qcode{'jaccard'} @tab @tab One minus the Jaccard coefficient, which is
 ## the percentage of nonzero coordinates that differ.
-## @item @qcode{"spearman"} @tab @tab One minus the sample Spearman's rank
+## @item @qcode{'spearman'} @tab @tab One minus the sample Spearman's rank
 ## correlation between observations (treated as sequences of values).
 ## @item @var{@@distfun} @tab @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
@@ -83,21 +83,21 @@
 ## @var{DistParameter})}
 ## returns the distance using the metric specified by @var{Distance} and
 ## @var{DistParameter}.  The latter one can only be specified when the selected
-## @var{Distance} is @qcode{"seuclidean"}, @qcode{"minkowski"}, and
-## @qcode{"mahalanobis"}.
+## @var{Distance} is @qcode{'seuclidean'}, @qcode{'minkowski'}, and
+## @qcode{'mahalanobis'}.
 ##
 ## @code{@var{D} = pdist2 (@dots{}, @var{Name}, @var{Value})}  for any previous
 ## arguments, modifies the computation using @var{Name}-@var{Value} parameters.
 ## @itemize
 ## @item
-## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance}, @qcode{"Smallest"},
+## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance}, @qcode{'Smallest'},
 ## @var{K})} computes the distance using the metric specified by
 ## @var{Distance} and returns the @var{K} smallest pairwise distances to
 ## observations in @var{X} for each observation in @var{Y} in ascending order.
 ## @item
 ## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance},
 ## @var{DistParameter},
-## @qcode{"Largest"}, @var{K})} computes the distance using the metric specified
+## @qcode{'Largest'}, @var{K})} computes the distance using the metric specified
 ## by @var{Distance} and @var{DistParameter} and returns the @var{K} largest
 ## pairwise distances in descending order.
 ## @end itemize
@@ -105,7 +105,7 @@
 ## @code{[@var{D}, @var{I}] = pdist2 (@dots{}, @var{Name}, @var{Value})} also
 ## returns the matrix @var{I}, which contains the indices of the observations in
 ## @var{X} corresponding to the distances in @var{D}.  You must specify either
-## @qcode{"Smallest"} or @qcode{"Largest"} as an optional @var{Name}-@var{Value}
+## @qcode{'Smallest'} or @qcode{'Largest'} as an optional @var{Name}-@var{Value}
 ## pair argument to compute the second output argument.
 ##
 ## @seealso{pdist, knnsearch, rangesearch}

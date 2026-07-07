@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} binocdf (@var{x}, @var{n}, @var{ps})
-## @deftypefnx {statistics} {@var{p} =} binocdf (@var{x}, @var{n}, @var{ps}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} binocdf (@var{x}, @var{n}, @var{ps}, @qcode{'upper'})
 ##
 ## Binomial cumulative distribution function (CDF).
 ##

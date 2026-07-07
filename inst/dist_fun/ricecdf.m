@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} ricecdf (@var{x}, @var{s}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} ricecdf (@var{x}, @var{s}, @var{sigma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} ricecdf (@var{x}, @var{s}, @var{sigma}, @qcode{'upper'})
 ##
 ## Rician cumulative distribution function (CDF).
 ##

@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{h} =} runstest (@var{x})
 ## @deftypefnx {statistics} {@var{h} =} runstest (@var{x}, @var{v})
-## @deftypefnx {statistics} {@var{h} =} runstest (@var{x}, @qcode{"ud"})
+## @deftypefnx {statistics} {@var{h} =} runstest (@var{x}, @qcode{'ud'})
 ## @deftypefnx {statistics} {@var{h} =} runstest (@dots{}, @var{Name}, @var{Value})
 ## @deftypefnx {statistics} {[@var{h}, @var{pval}, @var{stats}] =} runstest (@dots{})
 ##
@@ -35,7 +35,7 @@
 ## on the number of runs of consecutive values above or below the specified
 ## reference value @var{v}.  Values exactly equal to @var{v} are omitted.
 ##
-## @code{@var{h} = runstest (@var{x}, @qcode{"ud"})} calculates the number of
+## @code{@var{h} = runstest (@var{x}, @qcode{'ud'})} calculates the number of
 ## runs up or down and tests the null hypothesis that the values in the data
 ## vector @var{x} follow a trend.  Too few runs indicate a trend, while too
 ## many runs indicate an oscillation.  Values exactly equal to the preceding
@@ -47,22 +47,22 @@
 ##
 ## @multitable @columnfractions 0.15 0.05 0.8
 ## @headitem Name @tab @tab Value
-## @item @qcode{"alpha"} @tab @tab the significance level. Default is 0.05.
+## @item @qcode{'alpha'} @tab @tab the significance level. Default is 0.05.
 ##
-## @item @qcode{"method"} @tab @tab a string specifying the method used to
-## compute the p-value of the test.  It can be either @qcode{"exact"} to use an
-## exact algorithm, or @qcode{"approximate"} to use a normal approximation.  The
-## default is @qcode{"exact"} for runs above/below, and for runs up/down when
+## @item @qcode{'method'} @tab @tab a string specifying the method used to
+## compute the p-value of the test.  It can be either @qcode{'exact'} to use an
+## exact algorithm, or @qcode{'approximate'} to use a normal approximation.  The
+## default is @qcode{'exact'} for runs above/below, and for runs up/down when
 ## the length of x is less than or equal to 50.  When testing for runs up/down
 ## and the length of @var{x} is greater than 50, then the default is
-## @qcode{"approximate"}, and the @qcode{"exact"} method is not available.
+## @qcode{'approximate'}, and the @qcode{'exact'} method is not available.
 ##
-## @item @qcode{"tail"} @tab @tab a string specifying the alternative hypothesis
+## @item @qcode{'tail'} @tab @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.2 0.15 0.05 0.5
-## @item @tab @qcode{"both"} @tab @tab two-tailed (default)
-## @item @tab @qcode{"left"} @tab @tab left-tailed
-## @item @tab @qcode{"right"} @tab @tab right-tailed
+## @item @tab @qcode{'both'} @tab @tab two-tailed (default)
+## @item @tab @qcode{'left'} @tab @tab left-tailed
+## @item @tab @qcode{'right'} @tab @tab right-tailed
 ## @end multitable
 ##
 ## @seealso{signrank, signtest}

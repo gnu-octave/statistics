@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{y} =} hygepdf (@var{x}, @var{m}, @var{k}, @var{n})
-## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, @qcode{"vectorexpand"})
+## @deftypefnx {statistics} {@var{y} =} hygepdf (@dots{}, @qcode{'vectorexpand'})
 ##
 ## Hypergeometric probability density function (PDF).
 ##

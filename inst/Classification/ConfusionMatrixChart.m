@@ -129,10 +129,10 @@ classdef ConfusionMatrixChart < handle
     ## values.  Supported values are:
     ##
     ## @itemize
-    ## @item @qcode{"absolute"} - Display absolute counts (default)
-    ## @item @qcode{"column-normalized"} - Normalize by column totals
-    ## @item @qcode{"row-normalized"} - Normalize by row totals
-    ## @item @qcode{"total-normalized"} - Normalize by total number of
+    ## @item @qcode{'absolute'} - Display absolute counts (default)
+    ## @item @qcode{'column-normalized'} - Normalize by column totals
+    ## @item @qcode{'row-normalized'} - Normalize by row totals
+    ## @item @qcode{'total-normalized'} - Normalize by total number of
     ## observations
     ## @end itemize
     ##
@@ -148,10 +148,10 @@ classdef ConfusionMatrixChart < handle
     ## summaries. Supported values are:
     ##
     ## @itemize
-    ## @item @qcode{"off"} - Do not display column summary (default)
-    ## @item @qcode{"absolute"} - Display absolute counts
-    ## @item @qcode{"column-normalized"} - Display normalized by column
-    ## @item @qcode{"total-normalized"} - Display normalized by total
+    ## @item @qcode{'off'} - Do not display column summary (default)
+    ## @item @qcode{'absolute'} - Display absolute counts
+    ## @item @qcode{'column-normalized'} - Display normalized by column
+    ## @item @qcode{'total-normalized'} - Display normalized by total
     ## @end itemize
     ##
     ## @end deftp
@@ -166,10 +166,10 @@ classdef ConfusionMatrixChart < handle
     ## Supported values are:
     ##
     ## @itemize
-    ## @item @qcode{"off"} - Do not display row summary (default)
-    ## @item @qcode{"absolute"} - Display absolute counts
-    ## @item @qcode{"row-normalized"} - Display normalized by row
-    ## @item @qcode{"total-normalized"} - Display normalized by total
+    ## @item @qcode{'off'} - Do not display row summary (default)
+    ## @item @qcode{'absolute'} - Display absolute counts
+    ## @item @qcode{'row-normalized'} - Display normalized by row
+    ## @item @qcode{'total-normalized'} - Display normalized by total
     ## @end itemize
     ##
     ## @end deftp
@@ -184,8 +184,8 @@ classdef ConfusionMatrixChart < handle
     ## confusion matrix.  Supported values are:
     ##
     ## @itemize
-    ## @item @qcode{"on"} - Display grid lines (default)
-    ## @item @qcode{"off"} - Hide grid lines
+    ## @item @qcode{'on'} - Display grid lines (default)
+    ## @item @qcode{'off'} - Hide grid lines
     ## @end itemize
     ##
     ## @end deftp
@@ -197,7 +197,7 @@ classdef ConfusionMatrixChart < handle
     ## Handle visibility
     ##
     ## A character vector specifying the visibility of the object's handle.
-    ## Supported values are @qcode{"on"}, @qcode{"off"}, and @qcode{"callback"}.
+    ## Supported values are @qcode{'on'}, @qcode{'off'}, and @qcode{'callback'}.
     ##
     ## @end deftp
     HandleVisibility = '';
@@ -230,9 +230,9 @@ classdef ConfusionMatrixChart < handle
     ## Position units
     ##
     ## A character vector specifying the units for the position properties.
-    ## Supported values are @qcode{"centimeters"}, @qcode{"characters"},
-    ## @qcode{"inches"}, @qcode{"normalized"}, @qcode{"pixels"}, and
-    ## @qcode{"points"}.
+    ## Supported values are @qcode{'centimeters'}, @qcode{'characters'},
+    ## @qcode{'inches'}, @qcode{'normalized'}, @qcode{'pixels'}, and
+    ## @qcode{'points'}.
     ##
     ## @end deftp
     Units = '';
@@ -324,62 +324,62 @@ classdef ConfusionMatrixChart < handle
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"XLabel"} @tab @tab A character vector specifying the
+    ## @item @qcode{'XLabel'} @tab @tab A character vector specifying the
     ## x-axis label. Default is "Predicted Class".
     ##
-    ## @item @qcode{"YLabel"} @tab @tab A character vector specifying the
+    ## @item @qcode{'YLabel'} @tab @tab A character vector specifying the
     ## y-axis label. Default is "True Class".
     ##
-    ## @item @qcode{"Title"} @tab @tab A character vector specifying the chart
+    ## @item @qcode{'Title'} @tab @tab A character vector specifying the chart
     ## title. Default is empty string.
     ##
-    ## @item @qcode{"FontName"} @tab @tab A character vector specifying the
+    ## @item @qcode{'FontName'} @tab @tab A character vector specifying the
     ## font name for text elements. Default is the axes font name.
     ##
-    ## @item @qcode{"FontSize"} @tab @tab A numeric scalar specifying the
+    ## @item @qcode{'FontSize'} @tab @tab A numeric scalar specifying the
     ## font size for text elements. Default is the axes font size.
     ##
-    ## @item @qcode{"DiagonalColor"} @tab @tab A 1x3 RGB vector specifying
+    ## @item @qcode{'DiagonalColor'} @tab @tab A 1x3 RGB vector specifying
     ## the color for diagonal elements (correct classifications). Default is
     ## [0.0, 0.4471, 0.7412].
     ##
-    ## @item @qcode{"OffDiagonalColor"} @tab @tab A 1x3 RGB vector specifying
+    ## @item @qcode{'OffDiagonalColor'} @tab @tab A 1x3 RGB vector specifying
     ## the color for off-diagonal elements (misclassifications). Default is
     ## [0.8510, 0.3255, 0.0980].
     ##
-    ## @item @qcode{"Normalization"} @tab @tab A character vector specifying
-    ## the normalization method. Supported values are @qcode{"absolute"},
-    ## @qcode{"column-normalized"}, @qcode{"row-normalized"}, and
-    ## @qcode{"total-normalized"}. Default is @qcode{"absolute"}.
+    ## @item @qcode{'Normalization'} @tab @tab A character vector specifying
+    ## the normalization method. Supported values are @qcode{'absolute'},
+    ## @qcode{'column-normalized'}, @qcode{'row-normalized'}, and
+    ## @qcode{'total-normalized'}. Default is @qcode{'absolute'}.
     ##
-    ## @item @qcode{"ColumnSummary"} @tab @tab A character vector specifying
+    ## @item @qcode{'ColumnSummary'} @tab @tab A character vector specifying
     ## whether and how to display column summaries. Supported values are
-    ## @qcode{"off"}, @qcode{"absolute"}, @qcode{"column-normalized"}, and
-    ## @qcode{"total-normalized"}. Default is @qcode{"off"}.
+    ## @qcode{'off'}, @qcode{'absolute'}, @qcode{'column-normalized'}, and
+    ## @qcode{'total-normalized'}. Default is @qcode{'off'}.
     ##
-    ## @item @qcode{"RowSummary"} @tab @tab A character vector specifying
+    ## @item @qcode{'RowSummary'} @tab @tab A character vector specifying
     ## whether and how to display row summaries. Supported values are
-    ## @qcode{"off"}, @qcode{"absolute"}, @qcode{"row-normalized"}, and
-    ## @qcode{"total-normalized"}. Default is @qcode{"off"}.
+    ## @qcode{'off'}, @qcode{'absolute'}, @qcode{'row-normalized'}, and
+    ## @qcode{'total-normalized'}. Default is @qcode{'off'}.
     ##
-    ## @item @qcode{"GridVisible"} @tab @tab A character vector specifying
-    ## whether to display grid lines. Supported values are @qcode{"on"} and
-    ## @qcode{"off"}. Default is @qcode{"on"}.
+    ## @item @qcode{'GridVisible'} @tab @tab A character vector specifying
+    ## whether to display grid lines. Supported values are @qcode{'on'} and
+    ## @qcode{'off'}. Default is @qcode{'on'}.
     ##
-    ## @item @qcode{"HandleVisibility"} @tab @tab A character vector specifying
-    ## the handle visibility. Supported values are @qcode{"on"}, @qcode{"off"},
-    ## and @qcode{"callback"}.
+    ## @item @qcode{'HandleVisibility'} @tab @tab A character vector specifying
+    ## the handle visibility. Supported values are @qcode{'on'}, @qcode{'off'},
+    ## and @qcode{'callback'}.
     ##
-    ## @item @qcode{"OuterPosition"} @tab @tab A 1x4 numeric vector specifying
+    ## @item @qcode{'OuterPosition'} @tab @tab A 1x4 numeric vector specifying
     ## the outer position of the chart.
     ##
-    ## @item @qcode{"Position"} @tab @tab A 1x4 numeric vector specifying
+    ## @item @qcode{'Position'} @tab @tab A 1x4 numeric vector specifying
     ## the position of the chart.
     ##
-    ## @item @qcode{"Units"} @tab @tab A character vector specifying the
-    ## position units. Supported values are @qcode{"centimeters"},
-    ## @qcode{"characters"}, @qcode{"inches"}, @qcode{"normalized"},
-    ## @qcode{"pixels"}, and @qcode{"points"}.
+    ## @item @qcode{'Units'} @tab @tab A character vector specifying the
+    ## position units. Supported values are @qcode{'centimeters'},
+    ## @qcode{'characters'}, @qcode{'inches'}, @qcode{'normalized'},
+    ## @qcode{'pixels'}, and @qcode{'points'}.
     ## @end multitable
     ##
     ## @seealso{confusionchart}
@@ -636,13 +636,13 @@ classdef ConfusionMatrixChart < handle
     ## @var{order} can be:
     ## @itemize
     ## @item A cell array of class labels in the desired order
-    ## @item @qcode{"auto"} - Sort class labels alphabetically
-    ## @item @qcode{"ascending-diagonal"} - Sort by ascending diagonal values
-    ## @item @qcode{"descending-diagonal"} - Sort by descending diagonal values
-    ## @item @qcode{"cluster"} - Sort using hierarchical clustering
+    ## @item @qcode{'auto'} - Sort class labels alphabetically
+    ## @item @qcode{'ascending-diagonal'} - Sort by ascending diagonal values
+    ## @item @qcode{'descending-diagonal'} - Sort by descending diagonal values
+    ## @item @qcode{'cluster'} - Sort using hierarchical clustering
     ## @end itemize
     ##
-    ## When using @qcode{"cluster"}, the classes are grouped based on similarity
+    ## When using @qcode{'cluster'}, the classes are grouped based on similarity
     ## using hierarchical clustering, which can help identify groups of
     ## frequently confused classes.
     ##

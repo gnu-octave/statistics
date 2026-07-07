@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} vmcdf (@var{x}, @var{mu}, @var{k})
-## @deftypefnx {statistics} {@var{p} =} vmcdf (@var{x}, @var{mu}, @var{k}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} vmcdf (@var{x}, @var{mu}, @var{k}, @qcode{'upper'})
 ##
 ## Von Mises probability density function (PDF).
 ##

@@ -61,17 +61,17 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
+## @item @tab @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @tab @qcode{"dim"} @tab dimension to work along a matrix or an N-D
+## @item @tab @qcode{'dim'} @tab dimension to work along a matrix or an N-D
 ## array.
 ##
-## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
+## @item @tab @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab @qcode{"both"} @tab variance is not @var{v} (two-tailed, default)
-## @item @tab @qcode{"left"} @tab variance is less than @var{v} (left-tailed)
-## @item @tab @qcode{"right"} @tab variance is greater than @var{v}
+## @item @tab @qcode{'both'} @tab variance is not @var{v} (two-tailed, default)
+## @item @tab @qcode{'left'} @tab variance is less than @var{v} (left-tailed)
+## @item @tab @qcode{'right'} @tab variance is greater than @var{v}
 ## (right-tailed)
 ## @end multitable
 ##

@@ -41,8 +41,8 @@ classdef SilhouetteEvaluation < ClusterCriterion
   ##
   ## @item @qcode{ClusterPriors}
   ## A character vector specifying how to evaluate silhouette values across
-  ## clusters: @qcode{"empirical"} (default) uses empirical cluster priors,
-  ## or @qcode{"equal"} treats clusters equally.
+  ## clusters: @qcode{'empirical'} (default) uses empirical cluster priors,
+  ## or @qcode{'equal'} treats clusters equally.
   ##
   ## @item @qcode{ClusterSilhouettes}
   ## A cell array containing silhouette values for each observation for each
@@ -75,7 +75,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## Cluster prior handling
     ##
     ## Specifies how cluster-level silhouette aggregation is computed.  Valid
-    ## values are @qcode{"empirical"} (default) and @qcode{"equal"}.  This
+    ## values are @qcode{'empirical'} (default) and @qcode{'equal'}.  This
     ## property is read-only.
     ##
     ## @end deftp
@@ -125,7 +125,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## predictors (columns).
     ## @item
     ## @var{clust} is a string naming the clustering method (for example
-    ## @qcode{"kmeans"}, @qcode{"linkage"}, or a custom function handle).
+    ## @qcode{'kmeans'}, @qcode{'linkage'}, or a custom function handle).
     ## @item
     ## @var{KList} is a vector of positive integers specifying the cluster
     ## numbers to inspect.
@@ -136,11 +136,11 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ## @multitable @columnfractions 0.20 0.02 0.78
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Distance"} @tab @tab Distance metric name, function handle,
-    ## or numeric pdist vector.  Default: @qcode{"sqeuclidean"}.
+    ## @item @qcode{'Distance'} @tab @tab Distance metric name, function handle,
+    ## or numeric pdist vector.  Default: @qcode{'sqeuclidean'}.
     ##
-    ## @item @qcode{"ClusterPriors"} @tab @tab Either @qcode{"empirical"}
-    ## (default) or @qcode{"equal"}.
+    ## @item @qcode{'ClusterPriors'} @tab @tab Either @qcode{'empirical'}
+    ## (default) or @qcode{'equal'}.
     ## @end multitable
     ##
     ## @seealso{silhouette, evalclusters, ClusterCriterion}

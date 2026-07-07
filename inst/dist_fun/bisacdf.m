@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} bisacdf (@var{x}, @var{beta}, @var{gamma})
-## @deftypefnx {statistics} {@var{p} =} bisacdf (@var{x}, @var{beta}, @var{gamma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} bisacdf (@var{x}, @var{beta}, @var{gamma}, @qcode{'upper'})
 ##
 ## Birnbaum-Saunders cumulative distribution function (CDF).
 ##

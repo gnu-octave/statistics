@@ -127,7 +127,7 @@ classdef ClassificationPartitionedModel
     ##
     ## A character vector specifying the class of the cross-validated model.
     ## This field contains the type of model that was used for the training,
-    ## e.g., @qcode{"ClassificationKNN"}.  This property is read-only.
+    ## e.g., @qcode{'ClassificationKNN'}.  This property is read-only.
     ##
     ## @end deftp
     CrossValidatedModel          = [];

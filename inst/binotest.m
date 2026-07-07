@@ -26,16 +26,16 @@
 ##
 ##
 ## Name-Value pair arguments can be used to set various options.
-## @qcode{"alpha"} can be used to specify the significance level
-## of the test (the default value is 0.05). The option @qcode{"tail"},
+## @qcode{'alpha'} can be used to specify the significance level
+## of the test (the default value is 0.05). The option @qcode{'tail'},
 ## can be used to select the desired alternative hypotheses.  If the
-## value is @qcode{"both"} (default) the null is tested against the two-sided
+## value is @qcode{'both'} (default) the null is tested against the two-sided
 ## alternative @code{@var{p} != @var{p0}}. The value of @var{pval} is
 ## determined by adding the probabilities of all event less or equally
 ## likely than the observed number @var{pos} of positive events.
-## If the value of @qcode{"tail"} is @qcode{"right"}
+## If the value of @qcode{'tail'} is @qcode{'right'}
 ## the one-sided alternative @code{@var{p} > @var{p0}} is considered.
-## Similarly for @qcode{"left"}, the one-sided alternative
+## Similarly for @qcode{'left'}, the one-sided alternative
 ## @code{@var{p} < @var{p0}} is considered.
 ##
 ## If @var{h} is 0 the null hypothesis is accepted, if it is 1 the null

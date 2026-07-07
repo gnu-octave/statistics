@@ -26,11 +26,11 @@
 ## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}] =} kmeans (@var{data}, @var{k})
 ## @deftypefnx {statistics} {[@var{idx}, @var{centers}, @var{sumd}, @var{dist}] =} kmeans (@var{data}, @var{k})
 ## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
-## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @qcode{"start"}, @var{start}, @dots{})
+## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @qcode{'start'}, @var{start}, @dots{})
 ##
 ## Perform a @var{k}-means clustering of the @math{NxD} matrix @var{data}.
 ##
-## If parameter @qcode{"start"} is specified, then @var{k} may be empty
+## If parameter @qcode{'start'} is specified, then @var{k} may be empty
 ## in which case @var{k} is set to the number of rows of @var{start}.
 ##
 ## The outputs are:
@@ -54,17 +54,17 @@
 ##
 ## @multitable @columnfractions 0.15 0.02 0.83
 ## @headitem Name @tab @tab Description
-## @item @qcode{"Start"} @tab @tab The initialization method for the centroids.
+## @item @qcode{'Start'} @tab @tab The initialization method for the centroids.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.04 0.19 0.02 0.75
 ## @headitem @tab Value @tab @tab Description
-## @item @tab @qcode{"plus"} @tab @tab The k-means++ algorithm.  (Default)
-## @item @tab @qcode{"sample"} @tab @tab A subset of @math{k} rows from
+## @item @tab @qcode{'plus'} @tab @tab The k-means++ algorithm.  (Default)
+## @item @tab @qcode{'sample'} @tab @tab A subset of @math{k} rows from
 ## @var{data}, sampled uniformly without replacement.
-## @item @tab @qcode{"cluster"} @tab @tab Perform a pilot clustering on 10% of
+## @item @tab @qcode{'cluster'} @tab @tab Perform a pilot clustering on 10% of
 ## the rows of @var{data}.
-## @item @tab @qcode{"uniform"} @tab @tab Each component of each centroid is
+## @item @tab @qcode{'uniform'} @tab @tab Each component of each centroid is
 ## drawn uniformly from the interval between the maximum and minimum values of
 ## that component within @var{data}.  This performs poorly and is implemented
 ## only for Matlab compatibility.
@@ -74,36 +74,36 @@
 ## starting locations.  The third dimension invokes replication of the
 ## clustering routine.  Page @math{r} contains the set of seeds for replicate
 ## @math{r}.  @qcode{kmeans} infers the number of replicates (specified by the
-## @qcode{"Replicates"} Name-Value pair argument) from the size of the third
+## @qcode{'Replicates'} Name-Value pair argument) from the size of the third
 ## dimension.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.15 0.02 0.838
 ## @headitem Name @tab @tab Description
-## @item @qcode{"Distance"} @tab @tab The distance measure used for partitioning
+## @item @qcode{'Distance'} @tab @tab The distance measure used for partitioning
 ## and calculating centroids.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.04 0.19 0.02 0.75
 ## @headitem @tab Value @tab @tab Description
-## @item @tab @qcode{"sqeuclidean"} @tab @tab The squared Euclidean distance.
+## @item @tab @qcode{'sqeuclidean'} @tab @tab The squared Euclidean distance.
 ## i.e. the sum of the squares of the differences between corresponding
 ## components.  In this case, the centroid is the arithmetic mean of all samples
 ## in its cluster.  This is the only distance for which this algorithm is truly
 ## "k-means".
-## @item @tab @qcode{"cityblock"} @tab @tab The sum metric, or L1 distance,
+## @item @tab @qcode{'cityblock'} @tab @tab The sum metric, or L1 distance,
 ## i.e. the sum of the absolute differences between corresponding components.
 ## In this case, the centroid is the median of all samples in its cluster.
 ## This gives the k-medians algorithm.
-## @item @tab @qcode{"cosine"} @tab @tab One minus the cosine of the included
+## @item @tab @qcode{'cosine'} @tab @tab One minus the cosine of the included
 ## angle between points (treated as vectors). Each centroid is the mean of the
 ## points in that cluster, after normalizing those points to unit Euclidean
 ## length.
-## @item @tab @qcode{"correlation"} @tab @tab One minus the sample correlation
+## @item @tab @qcode{'correlation'} @tab @tab One minus the sample correlation
 ## between points (treated as sequences of values).  Each centroid is the
 ## component-wise mean of the points in that cluster, after centering and
 ## normalizing those points to zero mean and unit standard deviation.
-## @item @tab @qcode{"hamming"} @tab @tab The number of components in which the
+## @item @tab @qcode{'hamming'} @tab @tab The number of components in which the
 ## sample and the centroid differ.  In this case, the centroid is the median of
 ## all samples in its cluster.  Unlike Matlab, Octave allows non-logical
 ## @var{data}.
@@ -111,16 +111,16 @@
 ##
 ## @multitable @columnfractions 0.15 0.02 0.838
 ## @headitem Name @tab @tab Description
-## @item @qcode{"EmptyAction"} @tab @tab What to do when a centroid is not the
+## @item @qcode{'EmptyAction'} @tab @tab What to do when a centroid is not the
 ## closest to any data sample.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.04 0.19 0.02 0.75
 ## @headitem @tab Value @tab @tab Description
-## @item @tab @qcode{"error"} @tab @tab Throw an error.
-## @item @tab @qcode{"singleton"} @tab @tab (Default) Select the row of
+## @item @tab @qcode{'error'} @tab @tab Throw an error.
+## @item @tab @qcode{'singleton'} @tab @tab (Default) Select the row of
 ## @var{data} that has the highest error and use that as the new centroid.
-## @item @tab @qcode{"drop"} @tab @tab Remove the centroid, and continue
+## @item @tab @qcode{'drop'} @tab @tab Remove the centroid, and continue
 ## computation with one fewer centroid.  The dimensions of the outputs
 ## @var{centroids} and @var{d} are unchanged, with values for omitted centroids
 ## replaced by NaN.
@@ -128,27 +128,27 @@
 ##
 ## @multitable @columnfractions 0.15 0.02 0.838
 ## @headitem Name @tab @tab Description
-## @item @qcode{"Display"} @tab @tab Display a text summary.
+## @item @qcode{'Display'} @tab @tab Display a text summary.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.04 0.19 0.02 0.75
 ## @headitem @tab Value @tab @tab Description
-## @item @tab @qcode{"off"} @tab @tab (Default) Display no summary.
-## @item @tab @qcode{"final"} @tab @tab Display a summary for each clustering
+## @item @tab @qcode{'off'} @tab @tab (Default) Display no summary.
+## @item @tab @qcode{'final'} @tab @tab Display a summary for each clustering
 ## operation.
-## @item @tab @qcode{"iter"} @tab @tab Display a summary for each iteration of a
+## @item @tab @qcode{'iter'} @tab @tab Display a summary for each iteration of a
 ## clustering operation.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.15 0.02 0.838
 ## @headitem Name @tab @tab Value
-## @item @qcode{"Replicates"} @tab @tab A positive integer specifying the number
+## @item @qcode{'Replicates'} @tab @tab A positive integer specifying the number
 ## of independent clusterings to perform.  The output values are the values for
 ## the best clustering, i.e., the one with the smallest value of @var{sumd}.
 ## If @var{Start} is numeric, then @var{Replicates} defaults to
 ## (and must equal) the size of the third dimension of @var{Start}.
 ## Otherwise it defaults to 1.
-## @item @qcode{"MaxIter"} @tab @tab The maximum number of iterations to perform
+## @item @qcode{'MaxIter'} @tab @tab The maximum number of iterations to perform
 ## for each replicate.  If the maximum change of any centroid is less than
 ## 0.001, then the replicate terminates even if @var{MaxIter} iterations have no
 ## occurred.  The default is 100.

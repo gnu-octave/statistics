@@ -19,7 +19,7 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{yi} =} makima (@var{x}, @var{y}, @var{xq})
 ## @deftypefnx {statistics} {@var{yi} =} makima (@var{y}, @var{xq})
-## @deftypefnx {statistics} {@var{yi} =} makima (@dots{}, @qcode{"extrap"})
+## @deftypefnx {statistics} {@var{yi} =} makima (@dots{}, @qcode{'extrap'})
 ##
 ## Compute the 1-D Modified Akima piecewise cubic Hermite interpolant of
 ## sample data @var{x} and @var{y}.
@@ -43,7 +43,7 @@
 ## If query points @var{xq} are provided, the function evaluates the 
 ## interpolant and returns the interpolated values @var{yi}. By default,
 ## @code{makima} uses the boundary polynomials to extrapolate for points 
-## outside the range of @var{x}. The optional string argument @qcode{"extrap"} 
+## outside the range of @var{x}. The optional string argument @qcode{'extrap'} 
 ## is accepted for compatibility with other interpolation functions.
 ##
 ## If only @var{x} and @var{y} are provided, the function returns a 

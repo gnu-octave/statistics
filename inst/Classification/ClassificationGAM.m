@@ -200,20 +200,20 @@ classdef ClassificationGAM
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
     ## @headitem @var{Value} @tab @tab @var{Description}
-    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{"invlogit"} @tab @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## @item @qcode{'doublelogit'} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'ismax'} @tab @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab
+    ## @item @qcode{'logit'} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'none'} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab @tab
     ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
     ## 0}
-    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
-    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## @item @qcode{'symmetric'} @tab @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @item @qcode{'symmetriclogit'} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
     ## @end deftp
@@ -225,7 +225,7 @@ classdef ClassificationGAM
     ## Model specification formula
     ##
     ## A character vector specifying the model formula in the form
-    ## @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable and
+    ## @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable and
     ## @qcode{terms} specifies the predictor variables and interaction terms.
     ## This property is read-only.
     ##
@@ -238,7 +238,7 @@ classdef ClassificationGAM
     ## Interaction terms specification
     ##
     ## A logical matrix, positive integer scalar, or character vector
-    ## @qcode{"all"} specifying the interaction terms between predictor
+    ## @qcode{'all'} specifying the interaction terms between predictor
     ## variables.  This property is read-only.
     ##
     ## @end deftp
@@ -507,8 +507,8 @@ classdef ClassificationGAM
     ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
     ## probabilities for each class.  The order of the elements in @qcode{Prior}
     ## corresponds to the order of the classes in @qcode{ClassNames}.
-    ## Alternatively, you can specify @qcode{"empirical"} to use the empirical
-    ## class probabilities or @qcode{"uniform"} to assume equal class
+    ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
+    ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
     ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
@@ -520,12 +520,12 @@ classdef ClassificationGAM
     ## @qcode{'symmetriclogit'}.
     ##
     ## @item @qcode{'Formula'} @tab @tab A character vector specifying the model
-    ## formula in the form @qcode{"Y ~ terms"} where @qcode{Y} represents the
+    ## formula in the form @qcode{'Y ~ terms'} where @qcode{Y} represents the
     ## response variable and @qcode{terms} specifies the predictor variables and
     ## interaction terms.
     ##
     ## @item @qcode{'Interactions'} @tab @tab A logical matrix, a positive
-    ## integer scalar, or the string @qcode{"all"} for defining the interactions
+    ## integer scalar, or the string @qcode{'all'} for defining the interactions
     ## between predictor variables.
     ##
     ## @item @qcode{'Knots'} @tab @tab A scalar or row vector specifying the
@@ -1050,19 +1050,19 @@ classdef ClassificationGAM
     ## @multitable @columnfractions 0.28 0.02 0.7
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"KFold"} @tab @tab Specify the number of folds to use in
+    ## @item @qcode{'KFold'} @tab @tab Specify the number of folds to use in
     ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
     ## integer greater than 1.
     ##
-    ## @item @qcode{"Holdout"} @tab @tab Specify the fraction of the data to
+    ## @item @qcode{'Holdout'} @tab @tab Specify the fraction of the data to
     ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
     ## scalar in the range @math{(0,1)}.
     ##
-    ## @item @qcode{"Leaveout"} @tab @tab Specify whether to perform
+    ## @item @qcode{'Leaveout'} @tab @tab Specify whether to perform
     ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
     ## @var{Value} is 'on' or 'off'.
     ##
-    ## @item @qcode{"CVPartition"} @tab @tab Specify a @qcode{cvpartition}
+    ## @item @qcode{'CVPartition'} @tab @tab Specify a @qcode{cvpartition}
     ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
     ## @code{isa (@var{cv}, "cvpartition")} = 1.
     ##

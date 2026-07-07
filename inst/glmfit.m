@@ -39,9 +39,9 @@
 ## matrix, where the first column contains the number of successes and the
 ## second column contains the number of trials.
 ## @item @var{distribution} is a character vector specifying the distribution of
-## the response variable. Supported distributions are @qcode{"normal"},
-## @qcode{"binomial"}, @qcode{"poisson"}, @qcode{"gamma"}, and @qcode{"inverse
-## gaussian"}.
+## the response variable. Supported distributions are @qcode{'normal'},
+## @qcode{'binomial'}, @qcode{'poisson'}, @qcode{'gamma'}, and @qcode{'inverse
+## gaussian'}.
 ## @end itemize
 ##
 ## @code{@var{b} = glmfit (@dots{}, @var{Name}, @var{Value})} specifies
@@ -50,29 +50,29 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"B0"} @tab @tab A numeric vector specifying initial values for
+## @item @qcode{'B0'} @tab @tab A numeric vector specifying initial values for
 ## the coefficient estimates.  By default, the initial values are fitted values
 ## fitted from the data.
 ##
-## @item @qcode{"Constant"} @tab @tab A character vector specifying whether to
+## @item @qcode{'Constant'} @tab @tab A character vector specifying whether to
 ## include a constant term in the model.  Valid options are @var{"on"} (default)
 ## and @var{"off"}.
 ##
-## @item @qcode{"EstDisp"} @tab @tab A character vector specifying whether to
+## @item @qcode{'EstDisp'} @tab @tab A character vector specifying whether to
 ## compute dispersion parameter. Valid options are @var{"on"} and @var{"off"}.
-## For @qcode{"binomial"} and @qcode{"poisson"} distributions the default is
-## @var{"off"}, whereas for the @qcode{"normal"}, @qcode{"gamma"}, and
-## @qcode{"inverse gaussian"} distributions the default is @var{"on"}.
+## For @qcode{'binomial'} and @qcode{'poisson'} distributions the default is
+## @var{"off"}, whereas for the @qcode{'normal'}, @qcode{'gamma'}, and
+## @qcode{'inverse gaussian'} distributions the default is @var{"on"}.
 ##
-## @item @qcode{"link"} @tab @tab A character vector specifying the name of a
-## canonical link function or a numeric scalar for specifying a @qcode{"power"}
-## link function.  Supported canonical link functions include @qcode{"identity"}
-## (default for @qcode{"normal"} distribution), @qcode{"log"} (default for
-## @qcode{"poisson"} distribution), @qcode{"logit"} (default for
-## @qcode{"binomial"} distribution), @qcode{"probit"}, @qcode{"loglog"},
-## @qcode{"comploglog"}, and @qcode{"reciprocal"} (default for the
-## @qcode{"gamma"} distribution).  The @qcode{"power"} link function is the
-## default for the @qcode{"inverse gaussian"} distribution with @math{p = -2}.
+## @item @qcode{'link'} @tab @tab A character vector specifying the name of a
+## canonical link function or a numeric scalar for specifying a @qcode{'power'}
+## link function.  Supported canonical link functions include @qcode{'identity'}
+## (default for @qcode{'normal'} distribution), @qcode{'log'} (default for
+## @qcode{'poisson'} distribution), @qcode{'logit'} (default for
+## @qcode{'binomial'} distribution), @qcode{'probit'}, @qcode{'loglog'},
+## @qcode{'comploglog'}, and @qcode{'reciprocal'} (default for the
+## @qcode{'gamma'} distribution).  The @qcode{'power'} link function is the
+## default for the @qcode{'inverse gaussian'} distribution with @math{p = -2}.
 ## For custom link functions, the user can provide cell array with three
 ## function handles: the link function, its derivative, and its inverse, or
 ## alternatively a structure @var{S} with three fields: @qcode{S.Link},
@@ -81,17 +81,17 @@
 ## All custom link functions must accept a vector of inputs and return a vector
 ## of the same size.
 ##
-## @item @qcode{"Offset"} @tab @tab A numeric vector of the same length as the
+## @item @qcode{'Offset'} @tab @tab A numeric vector of the same length as the
 ## response @var{y} specifying an offset variable in the fit. It is used as an
 ## additional predictor with a coefficient value fixed at 1.
 ##
-## @item @qcode{"Options"} @tab @tab A scalar structure containing the fields
+## @item @qcode{'Options'} @tab @tab A scalar structure containing the fields
 ## @qcode{MaxIter} and @qcode{TolX}.  @qcode{MaxIter} must be a scalar positive
 ## integer specifying the maximum number of iteration allowed for fitting the
 ## model, and @qcode{TolX} must be a positive scalar value specifying the
 ## termination tolerance.
 ##
-## @item @qcode{"Weights"} @tab @tab An @math{nx1} numeric vector of nonnegative
+## @item @qcode{'Weights'} @tab @tab An @math{nx1} numeric vector of nonnegative
 ## values, where @math{n} is the number of observations in @var{X}.  By default,
 ## it is @code{ones (n, 1)}.
 ## @end multitable
@@ -110,8 +110,8 @@
 ## @item @qcode{dfe} - Degrees of freedom for error
 ## @item @qcode{sfit} - Estimated dispersion parameter
 ## @item @qcode{s} - Theoretical or estimated dispersion parameter
-## @item @qcode{estdisp} - @code{false} when @qcode{"EstDisp"} is @qcode{"off"}
-## and @code{true} when @qcode{"EstDisp"} is @qcode{"on"}
+## @item @qcode{estdisp} - @code{false} when @qcode{'EstDisp'} is @qcode{'off'}
+## and @code{true} when @qcode{'EstDisp'} is @qcode{'on'}
 ## @item @qcode{covb} - Estimated covariance matrix for @var{b}
 ## @item @qcode{se} - Vector of standard errors of the coefficient estimates
 ## @var{b}

@@ -55,8 +55,8 @@
 ## @item
 ## @var{vartype} is an optional parameter to used to indicate whether the
 ## groups can be assumed to come from populations with equal variance. When
-## @qcode{vartype} is @qcode{"equal"} the variances are assumed to be equal
-## (this is the default). When @qcode{vartype} is @qcode{"unequal"} the
+## @qcode{vartype} is @qcode{'equal'} the variances are assumed to be equal
+## (this is the default). When @qcode{vartype} is @qcode{'unequal'} the
 ## population variances are not assumed to be equal and Welch's ANOVA test is
 ## used instead.
 ## @end itemize

@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} poisscdf (@var{x}, @var{lambda})
-## @deftypefnx {statistics} {@var{p} =} poisscdf (@var{x}, @var{lambda}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} poisscdf (@var{x}, @var{lambda}, @qcode{'upper'})
 ##
 ## Poisson cumulative distribution function (CDF).
 ##

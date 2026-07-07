@@ -58,15 +58,15 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab @qcode{"alpha"} @tab the significance level. Default is 0.05.
+## @item @tab @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @tab @qcode{"tail"} @tab a string specifying the alternative hypothesis
+## @item @tab @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
 ## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{"both"} @tab odds ratio not equal to 1, indicating
+## @item @tab @qcode{'both'} @tab odds ratio not equal to 1, indicating
 ## association between two variables (two-tailed test, default)
-## @item @tab @qcode{"left"} @tab odds ratio greater than 1 (right-tailed test)
-## @item @tab @qcode{"right"} @tab odds ratio is less than 1 (left-tailed test)
+## @item @tab @qcode{'left'} @tab odds ratio greater than 1 (right-tailed test)
+## @item @tab @qcode{'right'} @tab odds ratio is less than 1 (left-tailed test)
 ## @end multitable
 ##
 ## @seealso{crosstab, chi2test, mcnemar_test, ztest2}

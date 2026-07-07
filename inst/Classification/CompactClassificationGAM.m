@@ -145,20 +145,20 @@ classdef CompactClassificationGAM
     ##
     ## @multitable @columnfractions 0.2 0.05 0.75
     ## @headitem @var{Value} @tab @tab @var{Description}
-    ## @item @qcode{"doublelogit"} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{"invlogit"} @tab @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{"ismax"} @tab @tab Sets the score for the class with the
+    ## @item @qcode{'doublelogit'} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'ismax'} @tab @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab
+    ## @item @qcode{'logit'} @tab @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'none'} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab @tab
     ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
     ## 0}
-    ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
-    ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
+    ## @item @qcode{'symmetric'} @tab @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{"symmetriclogit"} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @item @qcode{'symmetriclogit'} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
     ## @end deftp
@@ -170,7 +170,7 @@ classdef CompactClassificationGAM
     ## Model specification formula
     ##
     ## A character vector specifying the model formula in the form
-    ## @qcode{"Y ~ terms"} where @qcode{Y} represents the response variable and
+    ## @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable and
     ## @qcode{terms} specifies the predictor variables and interaction terms.
     ## This property is read-only.
     ##
@@ -183,7 +183,7 @@ classdef CompactClassificationGAM
     ## Interaction terms specification
     ##
     ## A logical matrix, positive integer scalar, or character vector
-    ## @qcode{"all"} specifying the interaction terms between predictor
+    ## @qcode{'all'} specifying the interaction terms between predictor
     ## variables.  This property is read-only.
     ##
     ## @end deftp

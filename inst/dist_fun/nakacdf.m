@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} nakacdf (@var{x}, @var{mu}, @var{omega})
-## @deftypefnx {statistics} {@var{p} =} nakacdf (@var{x}, @var{mu}, @var{omega}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} nakacdf (@var{x}, @var{mu}, @var{omega}, @qcode{'upper'})
 ##
 ## Nakagami cumulative distribution function (CDF).
 ##

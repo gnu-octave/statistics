@@ -50,20 +50,20 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"model"} @tab @tab Specifies the type of model to fit.
-## Currently, only @qcode{"ordinal"} is fully supported.  @qcode{"nominal"} is
+## @item @qcode{'model'} @tab @tab Specifies the type of model to fit.
+## Currently, only @qcode{'ordinal'} is fully supported.  @qcode{'nominal'} is
 ## only supported for 2 classes in @var{Y}.
 ##
-## @item @qcode{"display"} @tab @tab A flag to enable/disable displaying
-## information about the fitted model.  Default is @qcode{"off"}.
+## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
+## information about the fitted model.  Default is @qcode{'off'}.
 ## @end multitable
 ##
 ## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{}}  also returns the
 ## deviance of the fit, @var{dev}, and the structure @var{stats} for any of the
 ## previous input arguments. @var{stats} currently only returns values for the
-## fields @qcode{"beta"}, same as @var{B}, @qcode{"coeffcorr"}, the estimated
-## correlation matrix for @var{B}, @qcode{"covd"}, the estimated covariance
-## matrix for @var{B}, and @qcode{"se"}, the standard errors of the coefficient
+## fields @qcode{'beta'}, same as @var{B}, @qcode{'coeffcorr'}, the estimated
+## correlation matrix for @var{B}, @qcode{'covd'}, the estimated covariance
+## matrix for @var{B}, and @qcode{'se'}, the standard errors of the coefficient
 ## estimates @var{B}.
 ##
 ## @seealso{logistic_regression}

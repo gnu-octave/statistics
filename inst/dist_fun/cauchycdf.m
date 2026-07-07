@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} cauchycdf (@var{x}, @var{x0}, @var{gamma})
-## @deftypefnx {statistics} {@var{p} =} cauchycdf (@var{x}, @var{x0}, @var{gamma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} cauchycdf (@var{x}, @var{x0}, @var{gamma}, @qcode{'upper'})
 ##
 ## Cauchy cumulative distribution function (CDF).
 ##

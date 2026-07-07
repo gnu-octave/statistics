@@ -46,103 +46,103 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"Standardize"} @tab @tab A boolean flag indicating whether
+## @item @qcode{'Standardize'} @tab @tab A boolean flag indicating whether
 ## the data in @var{X} should be standardized prior to training.
 ##
-## @item @qcode{"PredictorNames"} @tab @tab A cell array of character vectors
+## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
 ## specifying the predictor variable names.  The variable names are assumed to
 ## be in the same order as they appear in the training data @var{X}.
 ##
-## @item @qcode{"ResponseName"} @tab @tab A character vector specifying the name
+## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the name
 ## of the response variable.
 ##
-## @item @qcode{"ClassNames"} @tab @tab Names of the classes in the class
+## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the kNN model.  @qcode{ClassNames} are of
 ## the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{"SVMtype"} @tab @tab Specifies the type of SVM used for training
+## @item @qcode{'SVMtype'} @tab @tab Specifies the type of SVM used for training
 ## the @code{ClassificationSVM} model.  By default, the type of SVM is defined
 ## by setting other parameters and/or by the data itself.  Setting the
-## @qcode{"SVMtype"} parameter overrides the default behavior and it accepts the
+## @qcode{'SVMtype'} parameter overrides the default behavior and it accepts the
 ## following options:
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Value} @tab @var{Description}
-## @item @tab @qcode{"C_SVC"} @tab It is the standard SVM formulation for
+## @item @tab @qcode{'C_SVC'} @tab It is the standard SVM formulation for
 ## classification tasks.  It aims to find the optimal hyperplane that separates
 ## different classes by maximizing the margin between them while allowing some
-## misclassifications.  The parameter @qcode{"C"} controls the trade-off between
+## misclassifications.  The parameter @qcode{'C'} controls the trade-off between
 ## maximizing the margin and minimizing the classification error.  It is the
 ## default type, unless otherwise specified.
-## @item @tab @qcode{"nu_SVC"} @tab It is a variation of the standard SVM that
+## @item @tab @qcode{'nu_SVC'} @tab It is a variation of the standard SVM that
 ## introduces a parameter @math{ν} (nu) as an upper bound on the fraction of
 ## margin errors and a lower bound on the fraction of support vectors.  This
 ## formulation provides more control over the number of support vectors and the
 ## margin errors, making it useful for specific classification scenarios.  It is
-## the default type, when the @qcode{"OutlierFraction"} parameter is set.
-## @item @tab @qcode{"one_class_SVM"} @tab It is used for anomaly detection and
+## the default type, when the @qcode{'OutlierFraction'} parameter is set.
+## @item @tab @qcode{'one_class_SVM'} @tab It is used for anomaly detection and
 ## novelty detection tasks. It aims to separate the data points of a single
 ## class from the origin in a high-dimensional feature space. This method is
 ## particularly useful for identifying outliers or unusual patterns in the data.
-## It is the default type, when the @qcode{"Nu"} parameter is set or when there
-## is a single class in @var{Y}.  When @qcode{"one_class_SVM"} is set by the
-## @qcode{"SVMtype"} pair argument, @var{Y} has no effect and any classes are
+## It is the default type, when the @qcode{'Nu'} parameter is set or when there
+## is a single class in @var{Y}.  When @qcode{'one_class_SVM'} is set by the
+## @qcode{'SVMtype'} pair argument, @var{Y} has no effect and any classes are
 ## ignored.
 ## @end multitable
 ##
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"OutlierFraction"} @tab @tab The expected proportion of outliers
+## @item @qcode{'OutlierFraction'} @tab @tab The expected proportion of outliers
 ## in the training data, specified as a scalar value in the range @math{[0,1]}.
-## When specified, the type of SVM model is switched to @qcode{"nu_SVC"} and
-## @qcode{"OutlierFraction"} defines the @math{ν} (nu) parameter.
+## When specified, the type of SVM model is switched to @qcode{'nu_SVC'} and
+## @qcode{'OutlierFraction'} defines the @math{ν} (nu) parameter.
 ##
-## @item @qcode{"KernelFunction"} @tab @tab A character vector specifying the
+## @item @qcode{'KernelFunction'} @tab @tab A character vector specifying the
 ## method for computing elements of the Gram matrix.  The available kernel
 ## functions are @qcode{'gaussian'} or @qcode{'rbf'}, @qcode{'linear'},
 ## @qcode{'polynomial'}, and @qcode{'sigmoid'}.  For one-class learning, the
 ## default Kernel function is @qcode{'rbf'}. For two-class learning the default
 ## is @qcode{'linear'}.
 ##
-## @item @qcode{"PolynomialOrder"} @tab @tab A positive integer that specifies
+## @item @qcode{'PolynomialOrder'} @tab @tab A positive integer that specifies
 ## the order of polynomial in kernel function.  The default value is 3.  Unless
-## the @qcode{"KernelFunction"} is set to @qcode{'polynomial'}, this parameter
+## the @qcode{'KernelFunction'} is set to @qcode{'polynomial'}, this parameter
 ## is ignored.
 ##
-## @item @qcode{"KernelScale"} @tab @tab A positive scalar that specifies a
+## @item @qcode{'KernelScale'} @tab @tab A positive scalar that specifies a
 ## scaling factor for the @math{γ} (gamma) parameter, which can be seen as the
 ## inverse of the radius of influence of samples selected by the model as
 ## support vectors.  The @math{γ} (gamma) parameter is computed as
 ## @math{gamma = @qcode{KernelScale} / (number of features)}.  The default value
-## for @qcode{"KernelScale"} is 1.
+## for @qcode{'KernelScale'} is 1.
 ##
-## @item @qcode{"KernelOffset"} @tab @tab A nonnegative scalar that specifies
+## @item @qcode{'KernelOffset'} @tab @tab A nonnegative scalar that specifies
 ## the @math{coef0} in kernel function. For the polynomial kernel, it influences
 ## the polynomial's shift, and for the sigmoid kernel, it affects the hyperbolic
-## tangent's shift. The default value for @qcode{"KernelOffset"} is 0.
+## tangent's shift. The default value for @qcode{'KernelOffset'} is 0.
 ##
-## @item @qcode{"BoxConstraint"} @tab @tab A positive scalar that specifies the
+## @item @qcode{'BoxConstraint'} @tab @tab A positive scalar that specifies the
 ## upper bound of the Lagrange multipliers, i.e. the parameter C, which is used
-## for training @qcode{"C_SVC"} and @qcode{"one_class_SVM"} type of models.  It
+## for training @qcode{'C_SVC'} and @qcode{'one_class_SVM'} type of models.  It
 ## determines the trade-off between maximizing the margin and minimizing the
-## classification error. The default value for @qcode{"BoxConstraint"} is 1.
+## classification error. The default value for @qcode{'BoxConstraint'} is 1.
 ##
-## @item @qcode{"Nu"} @tab @tab A positive scalar, in the range @math{(0,1]}
-## that specifies the parameter @math{ν} (nu) for training @qcode{"nu_SVC"} and
-## @qcode{"one_class_SVM"} type of models.  Unless overridden by setting the
-## @qcode{"SVMtype"} parameter, setting the @qcode{"Nu"} parameter always forces
-## the training model type to @qcode{"one_class_SVM"}, in which case, the number
-## of classes in @var{Y} is ignored.  The default value for @qcode{"Nu"} is 1.
+## @item @qcode{'Nu'} @tab @tab A positive scalar, in the range @math{(0,1]}
+## that specifies the parameter @math{ν} (nu) for training @qcode{'nu_SVC'} and
+## @qcode{'one_class_SVM'} type of models.  Unless overridden by setting the
+## @qcode{'SVMtype'} parameter, setting the @qcode{'Nu'} parameter always forces
+## the training model type to @qcode{'one_class_SVM'}, in which case, the number
+## of classes in @var{Y} is ignored.  The default value for @qcode{'Nu'} is 1.
 ##
-## @item @qcode{"CacheSize"} @tab @tab A positive scalar that specifies the
+## @item @qcode{'CacheSize'} @tab @tab A positive scalar that specifies the
 ## memory requirements (in MB) for storing the Gram matrix. The default is 1000.
 ##
-## @item @qcode{"Tolerance"} @tab @tab A nonnegative scalar that specifies
+## @item @qcode{'Tolerance'} @tab @tab A nonnegative scalar that specifies
 ## the tolerance of termination criterion. The default value is 1e-6.
 ##
-## @item @qcode{"Shrinking"} @tab @tab Specifies whether to use shrinking
+## @item @qcode{'Shrinking'} @tab @tab Specifies whether to use shrinking
 ## heuristics. It accepts either 0 or 1. The default value is 1.
 ## @end multitable
 ##
@@ -151,35 +151,35 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{"Crossval"} @tab @tab Cross-validation flag specified as
+## @item @qcode{'Crossval'} @tab @tab Cross-validation flag specified as
 ## @qcode{'on'} or @qcode{'off'}.  If @qcode{'on'} is specified, a 10-fold
 ## cross validation is performed and a @code{ClassificationPartitionedModel} is
 ## returned in @var{Mdl}.  To override this cross-validation setting, use only
 ## one of the following Name-Value pair arguments.
 ##
-## @item @qcode{"CVPartition"} @tab @tab A @code{cvpartition} object that
+## @item @qcode{'CVPartition'} @tab @tab A @code{cvpartition} object that
 ## specifies the type of cross-validation and the indexing for the training and
 ## validation sets.  A @code{ClassificationPartitionedModel} is returned in
 ## @var{Mdl} and the trained model is stored in the @code{Trained} property.
 ##
-## @item @qcode{"Holdout"} @tab @tab Fraction of the data used for holdout
+## @item @qcode{'Holdout'} @tab @tab Fraction of the data used for holdout
 ## validation, specified as a scalar value in the range @math{[0,1]}.  When
 ## specified, a randomly selected percentage is reserved as validation data and
 ## the remaining set is used for training.  The trained model is stored in the
 ## @code{Trained} property of the @code{ClassificationPartitionedModel} returned
-## in @var{Mdl}.  @qcode{"Holdout"} partitioning attempts to ensure that each
+## in @var{Mdl}.  @qcode{'Holdout'} partitioning attempts to ensure that each
 ## partition represents the classes proportionately.
 ##
-## @item @qcode{"KFold"} @tab @tab Number of folds to use in the cross-validated
+## @item @qcode{'KFold'} @tab @tab Number of folds to use in the cross-validated
 ## model, specified as a positive integer value greater than 1.  When specified,
 ## then the data is randomly partitioned in @math{k} sets and for each set, the
 ## set is reserved as validation data while the remaining @math{k-1} sets are
 ## used for training.  The trained models are stored in the @code{Trained}
 ## property of the @code{ClassificationPartitionedModel} returned in @var{Mdl}.
-## @qcode{"KFold"} partitioning attempts to ensure that each partition
+## @qcode{'KFold'} partitioning attempts to ensure that each partition
 ## represents the classes proportionately.
 ##
-## @item @qcode{"Leaveout"} @tab @tab Leave-one-out cross-validation flag
+## @item @qcode{'Leaveout'} @tab @tab Leave-one-out cross-validation flag
 ## specified as @qcode{'on'} or @qcode{'off'}.  If @qcode{'on'} is specified,
 ## then for each of the @math{n} observations (where @math{n} is the number of
 ## observations, excluding missing observations, specified in the

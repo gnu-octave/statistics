@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c})
-## @deftypefnx {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} tricdf (@var{x}, @var{a}, @var{b}, @var{c}, @qcode{'upper'})
 ##
 ## Triangular cumulative distribution function (CDF).
 ##

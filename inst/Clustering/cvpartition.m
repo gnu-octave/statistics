@@ -858,9 +858,9 @@ classdef cvpartition
     ## @code{@var{Cnew} = repartition (@var{C}, @var{sval})} also uses the value
     ## of @var{sval} to set the state of the random generator used in
     ## repartitioning @var{C}.  If @var{sval} is a vector, then the random
-    ## generator is set using the @qcode{"state"} keyword as in
+    ## generator is set using the @qcode{'state'} keyword as in
     ## @code{rand ("state", @var{sval})}.  If @var{sval} is a scalar, then the
-    ## @qcode{"seed"} keyword is used as in @code{rand ("seed", @var{sval})} to
+    ## @qcode{'seed'} keyword is used as in @code{rand ("seed", @var{sval})} to
     ## specify that old generators should be used.
     ##
     ## @code{@var{Cnew} = repartition (@var{C}, @qcode{'legacy'})} only applies
@@ -1075,8 +1075,8 @@ classdef cvpartition
     ## @item @var{c}
     ## A @code{cvpartition} object.  The object must satisfy two conditions:
     ## @enumerate
-    ## @item The partition type (@code{c.Type}) must be @qcode{"kfold"} or
-    ## @qcode{"holdout"}.
+    ## @item The partition type (@code{c.Type}) must be @qcode{'kfold'} or
+    ## @qcode{'holdout'}.
     ## @item The partition must be created with a stratification or grouping
     ## variable (i.e., @code{c.IsStratified} or @code{c.IsGrouped} must be
     ## @code{true}).
@@ -1091,8 +1091,8 @@ classdef cvpartition
     ## test).  The columns are:
     ## @table @code
     ## @item Set
-    ## The specific subset being described.  Values include @qcode{"all"} (the
-    ## full dataset), @qcode{"train1"}, @qcode{"test1"}, etc.
+    ## The specific subset being described.  Values include @qcode{'all'} (the
+    ## full dataset), @qcode{'train1'}, @qcode{'test1'}, etc.
     ## @item SetSize
     ## The total number of observations in that specific set.
     ## @item Label
@@ -1246,7 +1246,7 @@ classdef cvpartition
     ## -*- texinfo -*-
     ## @deftypefn  {cvpartition} {@var{idx} =} test (@var{C})
     ## @deftypefnx {cvpartition} {@var{idx} =} test (@var{C}, @var{i})
-    ## @deftypefnx {cvpartition} {@var{idx} =} test (@var{C}, @qcode{"all"})
+    ## @deftypefnx {cvpartition} {@var{idx} =} test (@var{C}, @qcode{'all'})
     ##
     ## Test indices for cross-validation.
     ##
@@ -1264,7 +1264,7 @@ classdef cvpartition
     ## test set @code{@var{i}(j)}.  The value(s) in @var{i} must not exceed the
     ## number of tests in the @qcode{cvpartition} object @var{C}.
     ##
-    ## @code{@var{idx} = test (@var{C}, @qcode{"all"})} returns a logical vector
+    ## @code{@var{idx} = test (@var{C}, @qcode{'all'})} returns a logical vector
     ## or matrix for all test sets defined in the @qcode{cvpartition} object
     ## @var{C}.  For holdout and resubstitution partition types, a vector is
     ## returned.  For K-fold and leave-one-out, a matrix is returned.
@@ -1373,7 +1373,7 @@ classdef cvpartition
     ## -*- texinfo -*-
     ## @deftypefn  {cvpartition} {@var{idx} =} training (@var{C})
     ## @deftypefnx {cvpartition} {@var{idx} =} training (@var{C}, @var{i})
-    ## @deftypefnx {cvpartition} {@var{idx} =} training (@var{C}, @qcode{"all"})
+    ## @deftypefnx {cvpartition} {@var{idx} =} training (@var{C}, @qcode{'all'})
     ##
     ## Training indices for cross-validation.
     ##
@@ -1391,7 +1391,7 @@ classdef cvpartition
     ## in the training set @code{@var{i}(j)}.  The value(s) in @var{i} must not
     ## exceed the number of tests in the @qcode{cvpartition} object @var{C}.
     ##
-    ## @code{@var{idx} = training (@var{C}, @qcode{"all"})} returns a logical
+    ## @code{@var{idx} = training (@var{C}, @qcode{'all'})} returns a logical
     ## vector or matrix for all training sets defined in the @qcode{cvpartition}
     ## object @var{C}.  For holdout and resubstitution partition types, a vector
     ## is returned.  For K-fold and leave-one-out, a matrix is returned.

@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{sigma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} logicdf (@var{x}, @var{mu}, @var{sigma}, @qcode{'upper'})
 ##
 ## Logistic cumulative distribution function (CDF).
 ##

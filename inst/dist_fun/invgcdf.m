@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} invgcdf (@var{x}, @var{mu}, @var{lambda})
-## @deftypefnx {statistics} {@var{p} =} invgcdf (@var{x}, @var{mu}, @var{lambda}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} invgcdf (@var{x}, @var{mu}, @var{lambda}, @qcode{'upper'})
 ##
 ## Inverse Gaussian cumulative distribution function (CDF).
 ##

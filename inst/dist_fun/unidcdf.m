@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} unidcdf (@var{x}, @var{N})
-## @deftypefnx {statistics} {@var{p} =} unidcdf (@var{x}, @var{N}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} unidcdf (@var{x}, @var{N}, @qcode{'upper'})
 ##
 ## Discrete uniform cumulative distribution function (CDF).
 ##

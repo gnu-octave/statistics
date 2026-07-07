@@ -44,7 +44,7 @@
 ## The second argument is used to specify the output type in case the distance
 ## input is a scalar.  Accepted values are @qcode{'tomatrix'} (or @qcode{'tom'})
 ## and @qcode{'tovector'} (or @qcode{'tov'}).  If not specified, it defaults to
-## @qcode{"tomatrix"} otherwise.
+## @qcode{'tomatrix'} otherwise.
 ##
 ## @seealso{pdist}
 ## @end deftypefn

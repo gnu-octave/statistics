@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} hncdf (@var{x}, @var{mu}, @var{sigma})
-## @deftypefnx {statistics} {@var{p} =} hncdf (@var{x}, @var{mu}, @var{sigma}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} hncdf (@var{x}, @var{mu}, @var{sigma}, @qcode{'upper'})
 ##
 ## Half-normal cumulative distribution function (CDF).
 ##

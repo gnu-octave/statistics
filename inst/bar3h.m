@@ -75,18 +75,18 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab Name @tab Value
-## @item @tab @qcode{"width"} @tab A two-element vector specifying the width
+## @item @tab @qcode{'width'} @tab A two-element vector specifying the width
 ## of the bars along the @qcode{x-} and @qcode{z-axes}, respectively.  Each
 ## element must be in the range @math{(0,1]}.
 ##
-## @item @tab @qcode{"color"} @tab A character or a cellstr vector, or a
+## @item @tab @qcode{'color'} @tab A character or a cellstr vector, or a
 ## numerical @math{Mx3} matrix following the same conventions as the @var{color}
 ## input argument.
 ##
-## @item @tab @qcode{"xlabel"} @tab A cellstr vector specifying the group names
+## @item @tab @qcode{'xlabel'} @tab A cellstr vector specifying the group names
 ## along the @qcode{x-axis}.
 ##
-## @item @tab @qcode{"zlabel"} @tab A cellstr vector specifying the names of the
+## @item @tab @qcode{'zlabel'} @tab A cellstr vector specifying the names of the
 ## bars in the same series along the @qcode{z-axis}.
 ## @end multitable
 ##

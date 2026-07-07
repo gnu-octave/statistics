@@ -94,19 +94,19 @@
 ##
 ## @multitable @columnfractions 0.05 0.2 0.75
 ## @headitem @tab @var{Name} @tab @var{Value}
-## @item @tab @qcode{"CV"} @tab The method used to compute @var{mse}.  When
+## @item @tab @qcode{'CV'} @tab The method used to compute @var{mse}.  When
 ## @var{Value} is a positive integer @math{K}, @code{plsregress} uses
 ## @math{K}-fold cross-validation.  Set @var{Value} to a cross-validation
 ## partition, created using @code{cvpartition}, to use other forms of
-## cross-validation.  Set @var{Value} to @qcode{"resubstitution"} to use both
+## cross-validation.  Set @var{Value} to @qcode{'resubstitution'} to use both
 ## @var{X} and @var{Y} to fit the model and to estimate the mean squared errors,
 ## without cross-validation. By default, @qcode{@var{Value} = "resubstitution"}.
-## @item @tab @qcode{"MCReps"} @tab A positive integer indicating the number of
+## @item @tab @qcode{'MCReps'} @tab A positive integer indicating the number of
 ## Monte-Carlo repetitions for cross-validation.  By default,
-## @qcode{@var{Value} = 1}.  A different @qcode{"MCReps"} value is only
-## meaningful when using the @qcode{"HoldOut"} method for cross-validation,
+## @qcode{@var{Value} = 1}.  A different @qcode{'MCReps'} value is only
+## meaningful when using the @qcode{'HoldOut'} method for cross-validation,
 ## previously set by a @code{cvpartition} object.  If no cross-validation method
-## is used, then @qcode{"MCReps"} must be @qcode{1}.
+## is used, then @qcode{'MCReps'} must be @qcode{1}.
 ## @end multitable
 ##
 ## Further information about the PLS regression can be found at

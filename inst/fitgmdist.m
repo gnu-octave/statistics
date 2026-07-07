@@ -25,11 +25,11 @@
 ##
 ## Optional parameters are:
 ## @itemize
-## @item @qcode{"start"}:  Initialization conditions.  Possible values are:
+## @item @qcode{'start'}:  Initialization conditions.  Possible values are:
 ## @itemize
-## @item @qcode{"randSample"} (default) Takes means uniformly from rows of data.
-## @item @qcode{"plus"} Use k-means++ to initialize means.
-## @item @qcode{"cluster"} Performs an initial clustering with 10% of the data.
+## @item @qcode{'randSample'} (default) Takes means uniformly from rows of data.
+## @item @qcode{'plus'} Use k-means++ to initialize means.
+## @item @qcode{'cluster'} Performs an initial clustering with 10% of the data.
 ## @item @var{vector} A vector whose length is the number of rows in data, and
 ## whose values are 1 to k specify the components each row is initially
 ## allocated to.  The mean, variance, and weight of each component is calculated
@@ -37,42 +37,42 @@
 ## @item @var{structure} A structure with fields @qcode{mu}, @qcode{Sigma} and
 ## @qcode{ComponentProportion}.
 ## @end itemize
-## For @qcode{"randSample"}, @qcode{"plus"}, and @qcode{"cluster"}, the initial
+## For @qcode{'randSample'}, @qcode{'plus'}, and @qcode{'cluster'}, the initial
 ## variance of each component is the variance of the entire data sample.
 ##
-## @item @qcode{"Replicates"}: Number of random restarts to perform.
+## @item @qcode{'Replicates'}: Number of random restarts to perform.
 ##
-## @item @qcode{"RegularizationValue"} or @qcode{"Regularize"}: A small number
+## @item @qcode{'RegularizationValue'} or @qcode{'Regularize'}: A small number
 ## added to the diagonal entries of the covariance to prevent singular
 ## covariances.
 ##
-## @item @qcode{"SharedCovariance"} or @qcode{"SharedCov"} (logical). True if
+## @item @qcode{'SharedCovariance'} or @qcode{'SharedCov'} (logical). True if
 ## all components must share the same variance, to reduce the number of free
 ## parameters
 ##
-## @item @qcode{"CovarianceType"} or @qcode{"CovType"} (string). Possible values
+## @item @qcode{'CovarianceType'} or @qcode{'CovType'} (string). Possible values
 ## are:
 ## @itemize
-## @item @qcode{"full"} (default) Allow arbitrary covariance matrices.
-## @item @qcode{"diagonal"} Force covariances to be diagonal, to reduce the
+## @item @qcode{'full'} (default) Allow arbitrary covariance matrices.
+## @item @qcode{'diagonal'} Force covariances to be diagonal, to reduce the
 ## number of free parameters.
 ## @end itemize
 ##
-## @item @qcode{"Options"}: A structure with all of the following fields:
+## @item @qcode{'Options'}: A structure with all of the following fields:
 ## @itemize
 ## @item @qcode{MaxIter} Maximum number of EM iterations (default 100).
 ## @item @qcode{TolFun} Threshold increase in likelihood to terminate EM
 ## (default 1e-6).
 ## @item @qcode{Display} Possible values are:
 ## @itemize
-## @item @qcode{"off"} (default): Display nothing.
-## @item @qcode{"final"}: Display the total number of iterations and likelihood
+## @item @qcode{'off'} (default): Display nothing.
+## @item @qcode{'final'}: Display the total number of iterations and likelihood
 ## once the execution completes.
-## @item @qcode{"iter"}: Display the number of iteration and likelihood after
+## @item @qcode{'iter'}: Display the number of iteration and likelihood after
 ## each iteration.
 ## @end itemize
 ## @end itemize
-## @item @qcode{"Weight"}:  A column vector or @math{Nx2} matrix. The first
+## @item @qcode{'Weight'}:  A column vector or @math{Nx2} matrix. The first
 ## column consists of non-negative weights given to the samples.  If these are
 ## all integers, this is equivalent to specifying @qcode{@var{weight}(i)} copies
 ## of row @qcode{i} of @var{data}, but potentially faster.  If a row of

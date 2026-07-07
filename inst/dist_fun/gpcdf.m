@@ -20,7 +20,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{theta})
-## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{theta}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} gpcdf (@var{x}, @var{k}, @var{sigma}, @var{theta}, @qcode{'upper'})
 ##
 ## Generalized Pareto cumulative distribution function (CDF).
 ##

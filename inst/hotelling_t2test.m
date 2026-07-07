@@ -39,7 +39,7 @@
 ## corresponding rows.
 ##
 ## Name-Value pair arguments can be used to set statistical significance.
-## @qcode{"alpha"} can be used to specify the significance level of the test
+## @qcode{'alpha'} can be used to specify the significance level of the test
 ## (the default value is 0.05).
 ##
 ## If @var{h} is 1 the null hypothesis is rejected, meaning that the tested

@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b})
-## @deftypefnx {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} betacdf (@var{x}, @var{a}, @var{b}, @qcode{'upper'})
 ##
 ## Beta cumulative distribution function (CDF).
 ##

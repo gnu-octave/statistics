@@ -17,7 +17,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} plcdf (@var{data}, @var{x}, @var{Fx})
-## @deftypefnx {statistics} {@var{p} =} plcdf (@var{data}, @var{x}, @var{Fx}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} plcdf (@var{data}, @var{x}, @var{Fx}, @qcode{'upper'})
 ##
 ## Piecewise linear cumulative distribution function (CDF).
 ##

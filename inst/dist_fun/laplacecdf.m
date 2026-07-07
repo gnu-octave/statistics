@@ -19,7 +19,7 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{p} =} laplacecdf (@var{x}, @var{mu}, @var{beta})
-## @deftypefnx {statistics} {@var{p} =} laplacecdf (@var{x}, @var{mu}, @var{beta}, @qcode{"upper"})
+## @deftypefnx {statistics} {@var{p} =} laplacecdf (@var{x}, @var{mu}, @var{beta}, @qcode{'upper'})
 ##
 ## Laplace cumulative distribution function (CDF).
 ##

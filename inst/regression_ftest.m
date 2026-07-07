@@ -46,7 +46,7 @@
 ## a vector or a scalar if only a constant term is passed into the function.
 ##
 ## Name-Value pair arguments can be used to set statistical significance.
-## @qcode{"alpha"} can be used to specify the significance level of the test
+## @qcode{'alpha'} can be used to specify the significance level of the test
 ## (the default value is 0.05).  If you want to pass optional Name-Value pair
 ## without a reduced model, make sure that the latter is passed as an empty
 ## variable.

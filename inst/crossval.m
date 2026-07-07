@@ -37,43 +37,43 @@
 ## Optional arguments may include name-value pairs as follows:
 ##
 ## @table @asis
-## @item @qcode{"KFold"}
+## @item @qcode{'KFold'}
 ## Divide set into @var{k} equal-size subsets, using each one successively
 ## for validation.
 ##
-## @item @qcode{"HoldOut"}
+## @item @qcode{'HoldOut'}
 ## Divide set into two subsets, training and validation. If the value
 ## @var{k} is a fraction, that is the fraction of values put in the
 ## validation subset (by default @var{k}=0.1); if it is a positive integer,
 ## that is the number of values in the validation subset.
 ##
-## @item @qcode{"LeaveOut"}
+## @item @qcode{'LeaveOut'}
 ## Leave-one-out partition (each element is placed in its own subset).
 ## The value is ignored, but it is required.
 ##
-## @item @qcode{"Partition"}
+## @item @qcode{'Partition'}
 ## The value should be a @var{cvpartition} object.
 ##
-## @item @qcode{"Given"}
+## @item @qcode{'Given'}
 ## The value should be an @var{n} by @var{1} vector specifying in which
 ## partition to put each element.
 ##
-## @item @qcode{"stratify"}
+## @item @qcode{'stratify'}
 ## The value should be an @var{n} by @var{1} vector containing class
-## designations for the elements, in which case the @qcode{"KFold"} and
-## @qcode{"HoldOut"} partitionings attempt to ensure each partition
+## designations for the elements, in which case the @qcode{'KFold'} and
+## @qcode{'HoldOut'} partitionings attempt to ensure each partition
 ## represents the classes proportionately.
 ##
-## @item @qcode{"mcreps"}
+## @item @qcode{'mcreps'}
 ## The value should be a positive integer specifying the number of times
 ## to resample based on different partitionings. Currently only works with
-## the partition type @qcode{"HoldOut"}.
+## the partition type @qcode{'HoldOut'}.
 ##
 ## @end table
 ##
-## Only one of @qcode{"KFold"}, @qcode{"HoldOut"}, @qcode{"LeaveOut"},
-## @qcode{"Given"}, @qcode{"Partition"} should be specified. If none is
-## specified, the default is @qcode{"KFold"} with @var{k} = 10.
+## Only one of @qcode{'KFold'}, @qcode{'HoldOut'}, @qcode{'LeaveOut'},
+## @qcode{'Given'}, @qcode{'Partition'} should be specified. If none is
+## specified, the default is @qcode{'KFold'} with @var{k} = 10.
 ##
 ## @seealso{cvpartition}
 ## @end deftypefn

@@ -112,14 +112,14 @@ classdef LinearModel
   ##
   ## @item @code{plotResiduals} @tab @tab Plot the model residuals.  Default
   ## is a probability density histogram; other supported plot types are
-  ## @qcode{"fitted"}, @qcode{"caseorder"}, @qcode{"lagged"},
-  ## @qcode{"probability"}, and @qcode{"observed"}.
+  ## @qcode{'fitted'}, @qcode{'caseorder'}, @qcode{'lagged'},
+  ## @qcode{'probability'}, and @qcode{'observed'}.
   ##
   ## @item @code{plotDiagnostics} @tab @tab Plot per-observation influence
   ## diagnostics.  Default is leverage by observation row number; other
-  ## supported plot types are @qcode{"cookd"}, @qcode{"covratio"},
-  ## @qcode{"dfbetas"}, @qcode{"dffits"}, @qcode{"s2_i"}, and
-  ## @qcode{"contour"} (standardized residuals against leverage with Cook's
+  ## supported plot types are @qcode{'cookd'}, @qcode{'covratio'},
+  ## @qcode{'dfbetas'}, @qcode{'dffits'}, @qcode{'s2_i'}, and
+  ## @qcode{'contour'} (standardized residuals against leverage with Cook's
   ## distance contours).
   ##
   ## @item @code{plotEffects} @tab @tab Plot the estimated main effect and
@@ -766,7 +766,7 @@ classdef LinearModel
     ##
     ## @code{@var{mdl} = LinearModel (@var{X}, @var{y})} returns a
     ## @code{LinearModel} object fit to the response @var{y} and the
-    ## predictor data @var{X}.  Unless removed via the @qcode{"Intercept"}
+    ## predictor data @var{X}.  Unless removed via the @qcode{'Intercept'}
     ## option, the fitted model contains a constant (intercept) term and one
     ## linear term for every column of @var{X}.
     ##
@@ -774,12 +774,12 @@ classdef LinearModel
     ## @item
     ## @var{X} is an @math{NxP} numeric or logical matrix of predictor data,
     ## where rows correspond to observations and columns correspond to
-    ## variables.  By default, the predictors are named @qcode{"x1"},
-    ## @qcode{"x2"}, @dots{}, @qcode{"xP"}.
+    ## variables.  By default, the predictors are named @qcode{'x1'},
+    ## @qcode{'x2'}, @dots{}, @qcode{'xP'}.
     ## @item
     ## @var{y} is an @math{Nx1} numeric or logical vector of response values,
     ## and must have the same number of observations (rows) as @var{X}.  By
-    ## default, the response is named @qcode{"y"}.
+    ## default, the response is named @qcode{'y'}.
     ## @end itemize
     ##
     ## @code{@var{mdl} = LinearModel (@var{tbl}, @var{resp_input})} fits a
@@ -799,25 +799,25 @@ classdef LinearModel
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Value} @tab @tab @var{Description}
     ##
-    ## @item @qcode{"constant"} @tab @tab Model contains only an intercept
+    ## @item @qcode{'constant'} @tab @tab Model contains only an intercept
     ## term.
     ##
-    ## @item @qcode{"linear"} @tab @tab Model contains an intercept and one
+    ## @item @qcode{'linear'} @tab @tab Model contains an intercept and one
     ## term for each predictor variable.  This is the default when
     ## @var{modelspec} is not specified.
     ##
-    ## @item @qcode{"interactions"} @tab @tab Model contains an intercept, all
+    ## @item @qcode{'interactions'} @tab @tab Model contains an intercept, all
     ## linear terms, and all pairwise products of distinct predictor
     ## variables (no squared terms).
     ##
-    ## @item @qcode{"purequadratic"} @tab @tab Model contains an intercept,
+    ## @item @qcode{'purequadratic'} @tab @tab Model contains an intercept,
     ## all linear terms, and all squared terms.
     ##
-    ## @item @qcode{"quadratic"} @tab @tab Model contains an intercept, all
+    ## @item @qcode{'quadratic'} @tab @tab Model contains an intercept, all
     ## linear terms, all pairwise products of distinct predictor variables,
     ## and all squared terms.
     ##
-    ## @item @qcode{"full"} @tab @tab Model contains an intercept and all
+    ## @item @qcode{'full'} @tab @tab Model contains an intercept and all
     ## terms up to and including the full @math{P}-way interaction of the
     ## predictor variables.
     ##
@@ -830,9 +830,9 @@ classdef LinearModel
     ## the response variable) must be all zeros.
     ##
     ## @item Wilkinson formula @tab @tab A character vector of the form
-    ## @qcode{"y ~ terms"} describing the response and predictor terms using
+    ## @qcode{'y ~ terms'} describing the response and predictor terms using
     ## Wilkinson notation.  For table input, the variable to the left of
-    ## @qcode{"~"} is used as the response, overriding @var{resp_input}.
+    ## @qcode{'~'} is used as the response, overriding @var{resp_input}.
     ## @end multitable
     ##
     ## @code{@var{mdl} = LinearModel (@dots{}, @var{Name}, @var{Value},
@@ -842,58 +842,58 @@ classdef LinearModel
     ## @multitable @columnfractions 0.18 0.02 0.8
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Intercept"} @tab @tab A logical scalar indicating
+    ## @item @qcode{'Intercept'} @tab @tab A logical scalar indicating
     ## whether to include a constant (intercept) term in the model.  Default
     ## is @qcode{true}.  Ignored when @var{modelspec} is a Wilkinson formula.
     ##
-    ## @item @qcode{"Weights"} @tab @tab A numeric vector of nonnegative
+    ## @item @qcode{'Weights'} @tab @tab A numeric vector of nonnegative
     ## observation weights, with one element per observation, used to fit a
     ## weighted least squares model.  Default is a vector of ones.
     ##
-    ## @item @qcode{"Exclude"} @tab @tab A numeric or logical vector
+    ## @item @qcode{'Exclude'} @tab @tab A numeric or logical vector
     ## specifying observations to exclude from the fit, given as row indices
     ## or a logical mask.  Excluded observations, together with any
     ## observation containing a missing value, are recorded in
     ## @code{ObservationInfo} but do not contribute to the fit.
     ##
-    ## @item @qcode{"CategoricalVars"} @tab @tab Specifies which predictor
+    ## @item @qcode{'CategoricalVars'} @tab @tab Specifies which predictor
     ## variables are treated as categorical, given as a vector of column
     ## indices, a logical vector, or a cell array of variable names.  Each
     ## categorical predictor with @math{L} categories is expanded into
     ## @math{L-1} indicator (dummy) variables, using the first category as
     ## the reference level.
     ##
-    ## @item @qcode{"VarNames"} @tab @tab A cell array of character vectors
+    ## @item @qcode{'VarNames'} @tab @tab A cell array of character vectors
     ## naming the predictor and response variables, in order, with the
     ## response variable name last.  Only applies to matrix input, since
     ## table variables already carry their own names.
     ##
-    ## @item @qcode{"ResponseVar"} @tab @tab A character vector naming the
+    ## @item @qcode{'ResponseVar'} @tab @tab A character vector naming the
     ## response variable, used to override the response variable name that
     ## would otherwise be used.
     ##
-    ## @item @qcode{"PredictorVars"} @tab @tab A cell array of character
+    ## @item @qcode{'PredictorVars'} @tab @tab A cell array of character
     ## vectors naming which variables in @var{tbl} to use as predictors.  By
     ## default, all variables other than the response variable are used.
     ##
-    ## @item @qcode{"RobustOpts"} @tab @tab Selects ordinary least squares or
-    ## robust regression fitting.  This value can be @qcode{"off"} (default,
-    ## ordinary least squares), @qcode{"on"} (robust fitting using the
-    ## @qcode{"bisquare"} weighting function), the name of one of the
+    ## @item @qcode{'RobustOpts'} @tab @tab Selects ordinary least squares or
+    ## robust regression fitting.  This value can be @qcode{'off'} (default,
+    ## ordinary least squares), @qcode{'on'} (robust fitting using the
+    ## @qcode{'bisquare'} weighting function), the name of one of the
     ## weighting functions below, a function handle for a custom weighting
     ## function, or a scalar structure with fields @qcode{RobustWgtFun} and
     ## @qcode{Tune} specifying the weighting function and its tuning
     ## constant.  Robust fitting uses Iteratively Reweighted Least Squares
     ## (IRLS), refitting the model with updated observation weights until the
     ## coefficients converge.  Supported weighting function names:
-    ## @qcode{"andrews"}, @qcode{"bisquare"}, @qcode{"cauchy"},
-    ## @qcode{"fair"}, @qcode{"huber"}, @qcode{"logistic"}, @qcode{"ols"},
-    ## @qcode{"talwar"}, @qcode{"welsch"}, each with its own default tuning
+    ## @qcode{'andrews'}, @qcode{'bisquare'}, @qcode{'cauchy'},
+    ## @qcode{'fair'}, @qcode{'huber'}, @qcode{'logistic'}, @qcode{'ols'},
+    ## @qcode{'talwar'}, @qcode{'welsch'}, each with its own default tuning
     ## constant.
     ## @end multitable
     ##
     ## @var{mdl} is returned as a @code{LinearModel} object.  If
-    ## @qcode{"RobustOpts"} is anything other than @qcode{"off"}, the returned
+    ## @qcode{'RobustOpts'} is anything other than @qcode{'off'}, the returned
     ## model is a robust fit rather than an ordinary least squares fit.
     ##
     ## @end deftypefn
@@ -1420,19 +1420,19 @@ classdef LinearModel
     ## @multitable @columnfractions 0.2 0.02 0.78
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
-    ## @item @qcode{"Alpha"} @tab @tab Significance level for the confidence
+    ## @item @qcode{'Alpha'} @tab @tab Significance level for the confidence
     ## interval, specified as a scalar in @math{[0,1]}.  The interval has
     ## coverage @math{100(1-\alpha)\%}.  Default is @code{0.05}, giving a 95%
     ## interval.
     ##
-    ## @item @qcode{"Prediction"} @tab @tab Type of interval to compute.
+    ## @item @qcode{'Prediction'} @tab @tab Type of interval to compute.
     ## @code{"curve"} (default) gives a confidence interval on the mean response
     ## @math{f(x)}.  @code{"observation"} gives a wider prediction interval for
     ## a single future observation @math{y = f(x) + \varepsilon}, which accounts
     ## for both estimation uncertainty and irreducible noise; it adds
     ## @code{@var{mdl}.MSE} to the variance before computing the half-width.
     ##
-    ## @item @qcode{"Simultaneous"} @tab @tab Logical flag controlling whether
+    ## @item @qcode{'Simultaneous'} @tab @tab Logical flag controlling whether
     ## the bounds are simultaneous or pointwise.  When @code{true},
     ## Scheff@'{e}'s method is used so the entire predicted curve lies within
     ## the band with @math{100(1-\alpha)\%} confidence; these bands are always
@@ -2411,37 +2411,37 @@ classdef LinearModel
     ## @var{plottype} must be one of:
     ##
     ## @table @asis
-    ## @item @qcode{"histogram"} (default)
+    ## @item @qcode{'histogram'} (default)
     ## Probability density histogram.  Only active observations are used.
     ## Returns one @code{patch} handle.  Accepts @code{FaceColor},
     ## @code{EdgeColor}, @code{FaceAlpha}, and @code{LineWidth} Name-Value
     ## arguments.
     ##
-    ## @item @qcode{"fitted"}
+    ## @item @qcode{'fitted'}
     ## Residuals on the y-axis against fitted values on the x-axis.  A dotted
     ## horizontal reference line marks @math{y = 0}.  Returns two line handles:
     ## @code{h(1)} is the data scatter and @code{h(2)} is the reference line.
     ##
-    ## @item @qcode{"caseorder"}
+    ## @item @qcode{'caseorder'}
     ## Residuals on the y-axis against observation row number on the x-axis,
     ## covering all rows from 1 to @code{n_total}.  A dotted horizontal
     ## reference line marks @math{y = 0}.  Returns two line handles:
     ## @code{h(1)} is the data and @code{h(2)} is the reference line.
     ##
-    ## @item @qcode{"lagged"}
+    ## @item @qcode{'lagged'}
     ## Each residual @math{r(t)} on the y-axis against the preceding residual
     ## @math{r(t-1)} on the x-axis.  Two dotted reference lines mark
     ## @math{y = 0} and @math{x = 0}.  Returns three line handles: @code{h(1)}
     ## is the scatter, @code{h(2)} is the horizontal reference, and @code{h(3)}
     ## is the vertical reference.
     ##
-    ## @item @qcode{"probability"}
+    ## @item @qcode{'probability'}
     ## Normal probability plot of the sorted active residuals produced by
     ## @code{normplot}.  Returns two handles: @code{h(1)} is the data line and
     ## @code{h(2)} is the fitted reference line produced by @code{normplot}.
     ## Name-Value arguments are not applied for this plot type.
     ##
-    ## @item @qcode{"observed"}
+    ## @item @qcode{'observed'}
     ## Observed response values on the y-axis against fitted values on the
     ## x-axis.  A dotted @math{y = x} reference line is drawn through the
     ## origin.  Vertical segments connect each observed point down to the
@@ -2450,7 +2450,7 @@ classdef LinearModel
     ## @math{y = x} reference, and @code{h(3)} is the vertical segment line
     ## (stored as a single @code{NaN}-separated line object).
     ##
-    ## @item @qcode{"symmetry"}
+    ## @item @qcode{'symmetry'}
     ## Upper-tail distances from the median plotted against lower-tail distances
     ## from the median.  Each point @code{(x, y)} satisfies
     ## @math{x = \mathrm{med} - r_{(i)}} and
@@ -2479,41 +2479,41 @@ classdef LinearModel
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
     ##
-    ## @item @qcode{"ResidualType"} @tab @tab
-    ## Type of residual to plot.  One of @qcode{"raw"} (default),
-    ## @qcode{"pearson"}, @qcode{"standardized"}, or @qcode{"studentized"}.
+    ## @item @qcode{'ResidualType'} @tab @tab
+    ## Type of residual to plot.  One of @qcode{'raw'} (default),
+    ## @qcode{'pearson'}, @qcode{'standardized'}, or @qcode{'studentized'}.
     ## Case-insensitive.  Selects the corresponding column of
     ## @code{mdl.Residuals}.
     ##
-    ## @item @qcode{"Color"} @tab @tab
+    ## @item @qcode{'Color'} @tab @tab
     ## (@emph{non-histogram}) Marker color.
     ## Default: @code{[0.1490 0.5490 0.8660]}.
     ##
-    ## @item @qcode{"Marker"} @tab @tab
+    ## @item @qcode{'Marker'} @tab @tab
     ## (@emph{non-histogram}) Marker symbol.  Any symbol accepted by
-    ## @code{plot} is valid.  Default: @qcode{"x"}.
+    ## @code{plot} is valid.  Default: @qcode{'x'}.
     ##
-    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## @item @qcode{'MarkerSize'} @tab @tab
     ## (@emph{non-histogram}) Marker size in points.  Default: @code{6}.
     ##
-    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
-    ## (@emph{non-histogram}) Marker edge color.  Default: @qcode{"auto"}.
+    ## @item @qcode{'MarkerEdgeColor'} @tab @tab
+    ## (@emph{non-histogram}) Marker edge color.  Default: @qcode{'auto'}.
     ##
-    ## @item @qcode{"MarkerFaceColor"} @tab @tab
-    ## (@emph{non-histogram}) Marker fill color.  Default: @qcode{"none"}.
+    ## @item @qcode{'MarkerFaceColor'} @tab @tab
+    ## (@emph{non-histogram}) Marker fill color.  Default: @qcode{'none'}.
     ##
-    ## @item @qcode{"LineWidth"} @tab @tab
+    ## @item @qcode{'LineWidth'} @tab @tab
     ## (@emph{non-histogram}) Width of the marker edge in points.
     ## Default: @code{0.5}.
     ##
-    ## @item @qcode{"FaceColor"} @tab @tab
+    ## @item @qcode{'FaceColor'} @tab @tab
     ## (@emph{histogram only}) Fill color of the histogram bars.
     ## Default: @code{[0.1490 0.5490 0.8660]}.
     ##
-    ## @item @qcode{"EdgeColor"} @tab @tab
+    ## @item @qcode{'EdgeColor'} @tab @tab
     ## (@emph{histogram only}) Edge color of the histogram bars.
     ##
-    ## @item @qcode{"FaceAlpha"} @tab @tab
+    ## @item @qcode{'FaceAlpha'} @tab @tab
     ## (@emph{histogram only}) Transparency of the histogram bars,
     ## specified as a scalar in @math{[0, 1]}.
     ## @end multitable
@@ -2735,27 +2735,27 @@ classdef LinearModel
     ## @var{plottype} must be one of:
     ##
     ## @table @asis
-    ## @item @qcode{"leverage"} (default)
+    ## @item @qcode{'leverage'} (default)
     ## Leverage of each observation (@code{mdl.Diagnostics.Leverage}).
     ## One dotted horizontal reference line at @math{2p/n}.
     ## Returns two handles: @code{h(1)} is the data scatter and @code{h(2)}
     ## is the reference line.
     ##
-    ## @item @qcode{"cookd"}
+    ## @item @qcode{'cookd'}
     ## Cook's distance for each observation
     ## (@code{mdl.Diagnostics.CooksDistance}).  One dotted reference line at
     ## @math{3 \times \mathrm{mean(CooksDistance)}}, where the mean ignores
     ## @code{NaN} values.  Returns two handles: @code{h(1)} data, @code{h(2)}
     ## reference.
     ##
-    ## @item @qcode{"covratio"}
+    ## @item @qcode{'covratio'}
     ## Delete-1 ratio of the determinant of the coefficient covariance matrix
     ## (@code{mdl.Diagnostics.CovRatio}).  Two dotted reference lines at
     ## @math{1 - 3p/n} (lower bound) and @math{1 + 3p/n} (upper bound).
     ## Both bounds are stored as a single @code{NaN}-separated line object.
     ## Returns two handles: @code{h(1)} data, @code{h(2)} combined reference.
     ##
-    ## @item @qcode{"dfbetas"}
+    ## @item @qcode{'dfbetas'}
     ## Delete-1 scaled change in each coefficient estimate
     ## (@code{mdl.Diagnostics.Dfbetas}, one column per coefficient).
     ## One line object is drawn per coefficient.  Two dotted reference lines
@@ -2765,18 +2765,18 @@ classdef LinearModel
     ## the combined reference.  Name-Value arguments are applied to all
     ## @math{p} data handles.
     ##
-    ## @item @qcode{"dffits"}
+    ## @item @qcode{'dffits'}
     ## Delete-1 scaled change in the fitted value
     ## (@code{mdl.Diagnostics.Dffits}).  Two dotted reference lines at
     ## @math{\pm 2\sqrt{p/n}} stored as a single @code{NaN}-separated line.
     ## Returns two handles: @code{h(1)} data, @code{h(2)} combined reference.
     ##
-    ## @item @qcode{"s2_i"}
+    ## @item @qcode{'s2_i'}
     ## Delete-1 variance estimate (@code{mdl.Diagnostics.S2_i}).  One dotted
     ## reference line at @code{mdl.MSE}.  Returns two handles: @code{h(1)}
     ## data, @code{h(2)} reference.
     ##
-    ## @item @qcode{"contour"}
+    ## @item @qcode{'contour'}
     ## Standardized residuals on the y-axis against leverage on the x-axis,
     ## with Cook's distance contours overlaid at levels
     ## @math{[0.05, 0.10, 0.15, 0.20, 0.25]}.  The contour surface is
@@ -2798,25 +2798,25 @@ classdef LinearModel
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
     ##
-    ## @item @qcode{"Color"} @tab @tab
+    ## @item @qcode{'Color'} @tab @tab
     ## Marker color for data points.  For @code{"dfbetas"} this color is
     ## applied to all @math{p} coefficient line objects.
     ## Default: @code{[0.1490 0.5490 0.8660]}.
     ##
-    ## @item @qcode{"Marker"} @tab @tab
+    ## @item @qcode{'Marker'} @tab @tab
     ## Marker symbol.  Any symbol accepted by @code{plot} is valid.
-    ## Default: @qcode{"x"}.
+    ## Default: @qcode{'x'}.
     ##
-    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## @item @qcode{'MarkerSize'} @tab @tab
     ## Marker size in points.  Default: @code{6}.
     ##
-    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
-    ## Marker edge color.  Default: @qcode{"auto"}.
+    ## @item @qcode{'MarkerEdgeColor'} @tab @tab
+    ## Marker edge color.  Default: @qcode{'auto'}.
     ##
-    ## @item @qcode{"MarkerFaceColor"} @tab @tab
-    ## Marker fill color.  Default: @qcode{"none"}.
+    ## @item @qcode{'MarkerFaceColor'} @tab @tab
+    ## Marker fill color.  Default: @qcode{'none'}.
     ##
-    ## @item @qcode{"LineWidth"} @tab @tab
+    ## @item @qcode{'LineWidth'} @tab @tab
     ## Width of the marker edge in points.  Default: @code{0.5}.
     ## @end multitable
     ##
@@ -3001,7 +3001,7 @@ classdef LinearModel
     ## with @code{XData = [ci_lo, ci_hi]} and @code{YData = [j, j]}.
     ##
     ## The y-axis tick labels follow the format
-    ## @qcode{"varname: min to max"}, showing the predictor name and the
+    ## @qcode{'varname: min to max'}, showing the predictor name and the
     ## minimum and maximum observed values used to compute the effect.
     ##
     ## @end deftypefn
@@ -3174,22 +3174,22 @@ classdef LinearModel
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
     ##
-    ## @item @qcode{"Color"} @tab @tab
+    ## @item @qcode{'Color'} @tab @tab
     ## Marker color.  Default: @code{[0.1490 0.5490 0.8660]}.
     ##
-    ## @item @qcode{"Marker"} @tab @tab
-    ## Marker symbol.  Default: @qcode{"x"}.
+    ## @item @qcode{'Marker'} @tab @tab
+    ## Marker symbol.  Default: @qcode{'x'}.
     ##
-    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## @item @qcode{'MarkerSize'} @tab @tab
     ## Marker size in points.  Default: @code{6}.
     ##
-    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
-    ## Marker edge color.  Default: @qcode{"auto"}.
+    ## @item @qcode{'MarkerEdgeColor'} @tab @tab
+    ## Marker edge color.  Default: @qcode{'auto'}.
     ##
-    ## @item @qcode{"MarkerFaceColor"} @tab @tab
-    ## Marker fill color.  Default: @qcode{"none"}.
+    ## @item @qcode{'MarkerFaceColor'} @tab @tab
+    ## Marker fill color.  Default: @qcode{'none'}.
     ##
-    ## @item @qcode{"LineWidth"} @tab @tab
+    ## @item @qcode{'LineWidth'} @tab @tab
     ## Width of the marker edge in points.  Default: @code{0.5}.
     ## @end multitable
     ##
@@ -3398,22 +3398,22 @@ classdef LinearModel
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
     ##
-    ## @item @qcode{"Color"} @tab @tab
+    ## @item @qcode{'Color'} @tab @tab
     ## Marker color.  Default: @code{[0.1490 0.5490 0.8660]}.
     ##
-    ## @item @qcode{"Marker"} @tab @tab
-    ## Marker symbol.  Default: @qcode{"x"}.
+    ## @item @qcode{'Marker'} @tab @tab
+    ## Marker symbol.  Default: @qcode{'x'}.
     ##
-    ## @item @qcode{"MarkerSize"} @tab @tab
+    ## @item @qcode{'MarkerSize'} @tab @tab
     ## Marker size in points.  Default: @code{6}.
     ##
-    ## @item @qcode{"MarkerEdgeColor"} @tab @tab
-    ## Marker edge color.  Default: @qcode{"auto"}.
+    ## @item @qcode{'MarkerEdgeColor'} @tab @tab
+    ## Marker edge color.  Default: @qcode{'auto'}.
     ##
-    ## @item @qcode{"MarkerFaceColor"} @tab @tab
-    ## Marker fill color.  Default: @qcode{"none"}.
+    ## @item @qcode{'MarkerFaceColor'} @tab @tab
+    ## Marker fill color.  Default: @qcode{'none'}.
     ##
-    ## @item @qcode{"LineWidth"} @tab @tab
+    ## @item @qcode{'LineWidth'} @tab @tab
     ## Width of the marker edge in points.  Default: @code{0.5}.
     ## @end multitable
     ##

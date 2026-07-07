@@ -41,10 +41,10 @@
 ## for testing the null hypothesis independently of the number of discordants.
 ## Valid options for @var{testtype}:
 ## @itemize
-## @item @qcode{"asymptotic"} Original McNemar test statistic
-## @item @qcode{"corrected"} Edwards' version with continuity correction
-## @item @qcode{"exact"} An exact binomial test
-## @item @qcode{"mid-p"} The mid-P McNemar test (mid-p binomial test)
+## @item @qcode{'asymptotic'} Original McNemar test statistic
+## @item @qcode{'corrected'} Edwards' version with continuity correction
+## @item @qcode{'exact'} An exact binomial test
+## @item @qcode{'mid-p'} The mid-P McNemar test (mid-p binomial test)
 ## @end itemize
 ##
 ## The test decision is returned in @var{h}, which is 1 when the null hypothesis
