@@ -1278,15 +1278,14 @@ endfunction
 
 %!test
 %! set (0, "DefaultFigureVisible", "off");
-%! ## Test for fitlm - same comparisons as for first anovan example
+%! ## Test for anovan with 'simple' contrasts - same comparisons as for first anovan example
 %! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
 %!        22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
 %!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
-%! [TAB,STATS] = fitlm (X,y,"linear","categorical",1,"display","off",...
-%!                      "contrasts","simple");
+%! [P, ATAB, STATS] = anovan (y, {X}, "contrasts", "simple", "display", "off");
 %! [C, M] = multcompare(STATS, "ctype", "lsd", "display", "off");
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
