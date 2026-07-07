@@ -141,7 +141,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
   ## parsing the clustering algorithm
   if (ischar (clust))
     clust = lower (clust);
-    if (! any (strcmpi (clust, {"kmeans", "linkage", "gmdistribution"})))
+    if (! any (strcmpi (clust, {'kmeans', 'linkage', 'gmdistribution'})))
       error ("evalclusters: unknown clustering algorithm '%s'", clust);
     endif
   elseif (! isscalar (clust))
@@ -149,7 +149,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
         (rows (clust) != n))
       error ("evalclusters: invalid matrix of clustering solutions.");
     endif
-  elseif (! isa (clust, "function_handle"))
+  elseif (! isa (clust, 'function_handle'))
     error ("evalclusters: invalid argument for 'clust'.");
   endif
 
@@ -159,19 +159,19 @@ function cc = evalclusters (x, clust, criterion, varargin)
     error ("evalclusters: invalid criterion, it must be a string.");
   else
     criterion = lower (criterion);
-    if (! any (strcmpi (criterion, {"calinskiharabasz", "daviesbouldin", ...
-                                   "silhouette", "gap"})))
+    if (! any (strcmpi (criterion, {'calinskiharabasz', 'daviesbouldin', ...
+                                   'silhouette', 'gap'})))
       error ("evalclusters: unknown criterion '%s'", criterion);
     endif
   endif
 
   ## some default value
   klist = [];
-  distance = "sqeuclidean";
-  clusterpriors = "empirical";
+  distance = 'sqeuclidean';
+  clusterpriors = 'empirical';
   b = 100;
-  referencedistribution = "pca";
-  searchmethod = "globalmaxse";
+  referencedistribution = 'pca';
+  searchmethod = 'globalmaxse';
 
   ## parse the name/value pairs
   pair_index = 1;
@@ -183,12 +183,12 @@ function cc = evalclusters (x, clust, criterion, varargin)
 
     ## now parse the parameter
     switch (lower (varargin{pair_index}))
-      case "klist"
+      case 'klist'
         ## klist must be an array of positive integer numbers;
         ## there is a special case when it can be empty, but that is not the
         ## suggested way to use it (it is better to omit it instead)
         if (isempty (varargin{pair_index + 1}))
-          if (ischar (clust) || isa (clust, "function_handle"))
+          if (ischar (clust) || isa (clust, 'function_handle'))
             error (strcat ("evalclusters: 'KList' can be empty", ...
                            " only when 'clust' is a matrix"));
           endif
@@ -200,39 +200,39 @@ function cc = evalclusters (x, clust, criterion, varargin)
         endif
         klist = varargin{pair_index + 1};
 
-      case "distance"
+      case 'distance'
         ## used by silhouette and gap
-        if (! (strcmpi (criterion, "silhouette") || strcmpi (criterion, "gap")))
+        if (! (strcmpi (criterion, 'silhouette') || strcmpi (criterion, 'gap')))
           error (strcat ("evalclusters: distance metric cannot", ...
                          " be used with '%s' criterion"), criterion);
         endif
         if (ischar (varargin{pair_index + 1}))
           if (! any (strcmpi (varargin{pair_index + 1}, ...
-                    {"sqeuclidean", "euclidean", "cityblock", "cosine", ...
-                     "correlation", "hamming", "jaccard"})))
+                    {'sqeuclidean', 'euclidean', 'cityblock', 'cosine', ...
+                     'correlation', 'hamming', 'jaccard'})))
             error ("evalclusters: unknown distance criterion '%s'", ...
                     varargin{pair_index + 1});
           endif
-        elseif (! isa (varargin{pair_index + 1}, "function_handle") ||
+        elseif (! isa (varargin{pair_index + 1}, 'function_handle') ||
                 ! ((isvector (varargin{pair_index + 1}) && ...
                     isnumeric (varargin{pair_index + 1}))))
           error ("evalclusters: invalid distance metric.");
         endif
         distance = varargin{pair_index + 1};
 
-      case "clusterpriors"
+      case 'clusterpriors'
         ## used by silhouette evaluation
-        if (! strcmpi (criterion, "silhouette"))
+        if (! strcmpi (criterion, 'silhouette'))
           error (strcat ("evalclusters: cluster prior probabilities cannot", ...
                          " be used with '%s' criterion"), criterion);
         endif
-        if (any (strcmpi (varargin{pair_index + 1}, {"empirical", "equal"})))
+        if (any (strcmpi (varargin{pair_index + 1}, {'empirical', 'equal'})))
           clusterpriors = lower (varargin{pair_index + 1});
         else
           error ("evalclusters: invalid cluster prior probabilities value.");
         endif
 
-      case "b"
+      case 'b'
         ## used by gap evaluation
         if (! isnumeric (varargin{pair_index + 1}) || ...
             ! isscalar (varargin{pair_index + 1}) || ...
@@ -242,19 +242,19 @@ function cc = evalclusters (x, clust, criterion, varargin)
         endif
         b = varargin{pair_index + 1};
 
-      case "referencedistribution"
+      case 'referencedistribution'
         ## used by gap evaluation
         if (! ischar (varargin{pair_index + 1}) || ! any (strcmpi ...
-            (varargin{pair_index + 1}, {"pca", "uniform"})))
+            (varargin{pair_index + 1}, {'pca', 'uniform'})))
           error (strcat ("evalclusters: the reference distribution", ...
                          " must be either 'PCA' or 'uniform'."));
         endif
         referencedistribution = lower (varargin{pair_index + 1});
 
-      case "searchmethod"
+      case 'searchmethod'
         ## used by gap evaluation
         if (! ischar (varargin{pair_index + 1}) || any (strcmpi ...
-            (varargin{pair_index + 1}, {"globalmaxse", "uniform"})))
+            (varargin{pair_index + 1}, {'globalmaxse', 'uniform'})))
           error (strcat ("evalclusters: the search method must be", ...
                          " either'globalMaxSE' or 'firstmaxse'"));
         endif
@@ -278,14 +278,14 @@ function cc = evalclusters (x, clust, criterion, varargin)
   endif
 
   ## another check on klist
-  if (isempty (klist) && (ischar (clust) || isa (clust, "function_handle")))
+  if (isempty (klist) && (ischar (clust) || isa (clust, 'function_handle')))
     error (strcat ("evalclusters: 'KList' can be empty", ...
                    " only when 'clust' is a matrix"));
   endif
 
   ## main
   switch (lower (criterion))
-    case "calinskiharabasz"
+    case 'calinskiharabasz'
       ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
@@ -293,7 +293,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       endif
       cc = CalinskiHarabaszEvaluation (x, clust, klist);
 
-    case "daviesbouldin"
+    case 'daviesbouldin'
       ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
@@ -301,7 +301,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       endif
       cc = DaviesBouldinEvaluation (x, clust, klist);
 
-    case "silhouette"
+    case 'silhouette'
       ## further compatibility checks between the chosen parameters are
       ## delegated to the class constructor
       if (isempty (klist))
@@ -309,7 +309,7 @@ function cc = evalclusters (x, clust, criterion, varargin)
       endif
       cc = SilhouetteEvaluation (x, clust, klist, distance, clusterpriors);
 
-    case "gap"
+    case 'gap'
       ## gap cannot be used with a pre-computed solution, i.e. a matrix for
       ## 'clust', and klist must be specified
       if (isnumeric (clust))
@@ -334,41 +334,41 @@ endfunction
 ## Demo code
 %!demo
 %! load fisheriris;
-%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6])
+%! eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6])
 %! plot (eva)
 
 ## input tests
 %!error evalclusters ()
 %!error evalclusters ([1 1;0 1])
-%!error evalclusters ([1 1;0 1], "kmeans")
+%!error evalclusters ([1 1;0 1], 'kmeans')
 %!error <evalclusters: X must be a numeric matrix.> ...
-%! evalclusters ("abc", "kmeans", "gap")
-%!error <unknown clustering*> evalclusters ([1 1;0 1], "xxx", "gap")
-%!error <invalid matrix*> evalclusters ([1 1;0 1], [1 2], "gap")
-%!error <invalid argument*> evalclusters ([1 1;0 1], 1.2, "gap")
+%! evalclusters ('abc', 'kmeans', 'gap')
+%!error <unknown clustering*> evalclusters ([1 1;0 1], 'xxx', 'gap')
+%!error <invalid matrix*> evalclusters ([1 1;0 1], [1 2], 'gap')
+%!error <invalid argument*> evalclusters ([1 1;0 1], 1.2, 'gap')
 %!error <invalid criterion*> evalclusters ([1 1;0 1], [1; 2], 123)
-%!error <unknown criterion*> evalclusters ([1 1;0 1], [1; 2], "xxx")
-%!error <'KList' can be empty*> evalclusters ([1 1;0 1], "kmeans", "gap")
-%!error <invalid parameter*> evalclusters ([1 1;0 1], [1; 2], "gap", 1)
-%!error <invalid property*> evalclusters ([1 1;0 1], [1; 2], "gap", 1, 1)
-%!error <unknown property*> evalclusters ([1 1;0 1], [1; 2], "gap", "xxx", 1)
-%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], "gap", "KList", [-1 0])
-%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], "gap", "KList", [1 .5])
-%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], "gap", "KList", [1 1; 1 1])
-%!error <unknown distance*> evalclusters ([1 1;0 1], [1; 2], "gap", ...
-%!                                        "distance", "a")
-%!error <distance metric*> evalclusters ([1 1;0 1], [1; 2], "daviesbouldin", ...
-%!                                       "distance", "a")
-%!error <cluster prior*> evalclusters ([1 1;0 1], [1; 2], "gap", ...
-%!                                     "clusterpriors", "equal")
+%!error <unknown criterion*> evalclusters ([1 1;0 1], [1; 2], 'xxx')
+%!error <'KList' can be empty*> evalclusters ([1 1;0 1], 'kmeans', 'gap')
+%!error <invalid parameter*> evalclusters ([1 1;0 1], [1; 2], 'gap', 1)
+%!error <invalid property*> evalclusters ([1 1;0 1], [1; 2], 'gap', 1, 1)
+%!error <unknown property*> evalclusters ([1 1;0 1], [1; 2], 'gap', 'xxx', 1)
+%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], 'gap', 'KList', [-1 0])
+%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], 'gap', 'KList', [1 .5])
+%!error <'KList'*> evalclusters ([1 1;0 1], [1; 2], 'gap', 'KList', [1 1; 1 1])
+%!error <unknown distance*> evalclusters ([1 1;0 1], [1; 2], 'gap', ...
+%!                                        'distance', 'a')
+%!error <distance metric*> evalclusters ([1 1;0 1], [1; 2], 'daviesbouldin', ...
+%!                                       'distance', 'a')
+%!error <cluster prior*> evalclusters ([1 1;0 1], [1; 2], 'gap', ...
+%!                                     'clusterpriors', 'equal')
 %!error <invalid cluster prior*> evalclusters ([1 1;0 1], [1; 2], ...
-%!                                         "silhouette", "clusterpriors", "xxx")
-%!error <'clust' must be a clustering*> evalclusters ([1 1;0 1], [1; 2], "gap")
+%!                                         'silhouette', 'clusterpriors', 'xxx')
+%!error <'clust' must be a clustering*> evalclusters ([1 1;0 1], [1; 2], 'gap')
 
 %!test
 %! load fisheriris;
-%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
-%! assert (isa (eva, "CalinskiHarabaszEvaluation"));
+%! eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6]);
+%! assert (isa (eva, 'CalinskiHarabaszEvaluation'));
 %! assert (eva.NumObservations, 150);
 %! assert (eva.OptimalK, 3);
 %! assert (eva.InspectedK, [1 2 3 4 5 6]);

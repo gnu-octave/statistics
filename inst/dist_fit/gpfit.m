@@ -126,14 +126,14 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("gpfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -254,17 +254,17 @@ endfunction
 %! ## Sample 2 populations from different generalized Pareto distributions
 %! ## Assume location parameter θ is known
 %! theta = 0;
-%! rand ("seed", 5);    # for reproducibility
+%! rand ('seed', 5);    # for reproducibility
 %! r1 = gprnd (1, 2, theta, 20000, 1);
-%! rand ("seed", 2);    # for reproducibility
+%! rand ('seed', 2);    # for reproducibility
 %! r2 = gprnd (3, 1, theta, 20000, 1);
 %! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0.1:0.2:100], 5);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "r");
-%! set (h(2), "facecolor", "c");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'r');
+%! set (h(2), 'facecolor', 'c');
 %! ylim ([0, 1]);
 %! xlim ([0, 5]);
 %! hold on
@@ -276,18 +276,18 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0.01, 0.1:0.2:18];
 %! y = gppdf (x, k_sigmaA(1), k_sigmaA(2), theta);
-%! plot (x, y, "-pc");
+%! plot (x, y, '-pc');
 %! y = gppdf (x, k_sigmaB(1), k_sigmaB(2), theta);
-%! plot (x, y, "-sr");
+%! plot (x, y, '-sr');
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with k=1 and σ=2", ...
-%!          "Normalized HIST of sample 2 with k=2 and σ=2", ...
+%! legend ({'Normalized HIST of sample 1 with k=1 and σ=2', ...
+%!          'Normalized HIST of sample 2 with k=2 and σ=2', ...
 %!          sprintf("PDF for sample 1 with estimated k=%0.2f and σ=%0.2f", ...
 %!                  k_sigmaA(1), k_sigmaA(2)), ...
 %!          sprintf("PDF for sample 3 with estimated k=%0.2f and σ=%0.2f", ...
 %!                  k_sigmaB(1), k_sigmaB(2))})
-%! title ("Two population samples from different generalized Pareto distributions")
-%! text (2, 0.7, "Known location parameter θ = 0")
+%! title ('Two population samples from different generalized Pareto distributions')
+%! text (2, 0.7, 'Known location parameter θ = 0')
 %! hold off
 
 ## Test output

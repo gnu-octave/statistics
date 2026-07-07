@@ -57,8 +57,8 @@ function y = logipdf (x, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    y = NaN (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    y = NaN (size (x), 'single');
   else
     y = NaN (size (x));
   endif
@@ -81,14 +81,14 @@ endfunction
 %! y3 = logipdf (x, 9, 4);
 %! y4 = logipdf (x, 6, 2);
 %! y5 = logipdf (x, 2, 1);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-m')
 %! grid on
 %! ylim ([0, 0.3])
-%! legend ({"μ = 5, σ = 2", "μ = 9, σ = 3", "μ = 9, σ = 4", ...
-%!          "μ = 6, σ = 2", "μ = 2, σ = 1"}, "location", "northeast")
-%! title ("Logistic PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 5, σ = 2', 'μ = 9, σ = 3', 'μ = 9, σ = 4', ...
+%!          'μ = 6, σ = 2', 'μ = 2, σ = 1'}, 'location', 'northeast')
+%! title ('Logistic PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y
@@ -98,9 +98,9 @@ endfunction
 %!assert (logipdf (x, 0, [-2, -1, 0, 1, 2]), [nan(1, 3), y([4:5])], eps)
 
 ## Test class of input preserved
-%!assert (logipdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ("single"))
-%!assert (logipdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ("single"))
-%!assert (logipdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ("single"))
+%!assert (logipdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert (logipdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert (logipdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<logipdf: function called with too few input arguments.> logipdf ()

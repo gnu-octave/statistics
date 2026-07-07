@@ -91,7 +91,7 @@ function [h, pval, stats] = hotelling_t2test2 (x, y, varargin)
   i = 1;
   while (i <= length (varargin))
     switch lower (varargin{i})
-      case "alpha"
+      case 'alpha'
         i = i + 1;
         alpha = varargin{i};
         ## Check for valid alpha
@@ -151,15 +151,15 @@ endfunction
 %!error<hotelling_t2test2: Y must be a vector or a 2D matrix.> ...
 %! hotelling_t2test2 ([2, 3, 4, 5, 6], ones (2,2,2));
 %!error<hotelling_t2test2: invalid value for alpha.> ...
-%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", 1);
+%! hotelling_t2test2 (ones (20,2), ones (20,2), 'alpha', 1);
 %!error<hotelling_t2test2: invalid value for alpha.> ...
-%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", -0.2);
+%! hotelling_t2test2 (ones (20,2), ones (20,2), 'alpha', -0.2);
 %!error<hotelling_t2test2: invalid value for alpha.> ...
-%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", "a");
+%! hotelling_t2test2 (ones (20,2), ones (20,2), 'alpha', 'a');
 %!error<hotelling_t2test2: invalid value for alpha.> ...
-%! hotelling_t2test2 (ones (20,2), ones (20,2), "alpha", [0.01, 0.05]);
+%! hotelling_t2test2 (ones (20,2), ones (20,2), 'alpha', [0.01, 0.05]);
 %!error<hotelling_t2test2: invalid Name argument.> ...
-%! hotelling_t2test2 (ones (20,2), ones (20,2), "name", 0.01);
+%! hotelling_t2test2 (ones (20,2), ones (20,2), 'name', 0.01);
 %!error<hotelling_t2test2: if X is a vector, Y must also be a vector.> ...
 %! hotelling_t2test2 (ones (20,1), ones (20,2));
 %!error<hotelling_t2test2: X and Y must have the same number of columns.> ...
@@ -167,9 +167,9 @@ endfunction
 
 ## Test results
 %!test
-%! randn ("seed", 1);
+%! randn ('seed', 1);
 %! x1 = randn (60000, 5);
-%! randn ("seed", 5);
+%! randn ('seed', 5);
 %! x2 = randn (30000, 5);
 %! [h, pval, stats] = hotelling_t2test2 (x1, x2);
 %! assert (h, 0);

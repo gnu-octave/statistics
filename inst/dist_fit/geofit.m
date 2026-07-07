@@ -102,17 +102,17 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different geometric distributions
-%! rande ("seed", 1);    # for reproducibility
+%! rande ('seed', 1);    # for reproducibility
 %! r1 = geornd (0.15, 1000, 1);
-%! rande ("seed", 2);    # for reproducibility
+%! rande ('seed', 2);    # for reproducibility
 %! r2 = geornd (0.5, 1000, 1);
 %! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 0:0.5:20.5, 1);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
 %! hold on
 %!
 %! ## Estimate their probability of success
@@ -122,18 +122,18 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:15];
 %! y = geopdf (x, pshatA);
-%! plot (x, y, "-pg");
+%! plot (x, y, '-pg');
 %! y = geopdf (x, pshatB);
-%! plot (x, y, "-sc");
+%! plot (x, y, '-sc');
 %! xlim ([0, 15])
 %! ylim ([0, 0.6])
-%! legend ({"Normalized HIST of sample 1 with ps=0.15", ...
-%!          "Normalized HIST of sample 2 with ps=0.50", ...
+%! legend ({'Normalized HIST of sample 1 with ps=0.15', ...
+%!          'Normalized HIST of sample 2 with ps=0.50', ...
 %!          sprintf("PDF for sample 1 with estimated ps=%0.2f", ...
 %!                  mean (pshatA)), ...
 %!          sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
 %!                  mean (pshatB))})
-%! title ("Two population samples from different geometric distributions")
+%! title ('Two population samples from different geometric distributions')
 %! hold off
 
 ## Test output

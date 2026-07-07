@@ -61,7 +61,7 @@ function p = loglcdf (x, mu, sigma, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("loglcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -97,8 +97,8 @@ function p = loglcdf (x, mu, sigma, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    p = cast (p, "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    p = cast (p, 'single');
   endif
 
 endfunction
@@ -111,25 +111,25 @@ endfunction
 %! p3 = loglcdf (x, log (1), 1/2);
 %! p4 = loglcdf (x, log (1), 1/4);
 %! p5 = loglcdf (x, log (1), 1/8);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
-%! legend ({"σ = 2 (β = 0.5)", "σ = 1 (β = 1)", "σ = 0.5 (β = 2)", ...
-%!          "σ = 0.25 (β = 4)", "σ = 0.125 (β = 8)"}, "location", "northwest")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-m')
+%! legend ({'σ = 2 (β = 0.5)', 'σ = 1 (β = 1)', 'σ = 0.5 (β = 2)', ...
+%!          'σ = 0.25 (β = 4)', 'σ = 0.125 (β = 8)'}, 'location', 'northwest')
 %! grid on
-%! title ("Log-logistic CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
-%! text (0.05, 0.64, "μ = 0 (α = 1), values of σ (β) as shown in legend")
+%! title ('Log-logistic CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
+%! text (0.05, 0.64, 'μ = 0 (α = 1), values of σ (β) as shown in legend')
 
 ## Test output
 %!shared out1, out2
 %! out1 = [0, 0.5, 0.66666667, 0.75, 0.8, 0.83333333];
 %! out2 = [0, 0.4174, 0.4745, 0.5082, 0.5321, 0.5506];
 %!assert (loglcdf ([0:5], 0, 1), out1, 1e-8)
-%!assert (loglcdf ([0:5], 0, 1, "upper"), 1 - out1, 1e-8)
+%!assert (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
 %!assert (loglcdf ([0:5], 0, 1), out1, 1e-8)
-%!assert (loglcdf ([0:5], 0, 1, "upper"), 1 - out1, 1e-8)
+%!assert (loglcdf ([0:5], 0, 1, 'upper'), 1 - out1, 1e-8)
 %!assert (loglcdf ([0:5], 1, 3), out2, 1e-4)
-%!assert (loglcdf ([0:5], 1, 3, "upper"), 1 - out2, 1e-4)
+%!assert (loglcdf ([0:5], 1, 3, 'upper'), 1 - out2, 1e-4)
 
 ## Test class of input preserved
 %!assert (class (loglcdf (single (1), 2, 3)), "single")
@@ -142,22 +142,22 @@ endfunction
 %!error<loglcdf: invalid argument for upper tail.> ...
 %! loglcdf (1, 2, 3, 4)
 %!error<loglcdf: invalid argument for upper tail.> ...
-%! loglcdf (1, 2, 3, "uper")
+%! loglcdf (1, 2, 3, 'uper')
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! loglcdf (1, ones (2), ones (3))
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! loglcdf (1, ones (2), ones (3), "upper")
+%! loglcdf (1, ones (2), ones (3), 'upper')
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! loglcdf (ones (2), 1, ones (3))
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! loglcdf (ones (2), 1, ones (3), "upper")
+%! loglcdf (ones (2), 1, ones (3), 'upper')
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! loglcdf (ones (2), ones (3), 1)
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! loglcdf (ones (2), ones (3), 1, "upper")
+%! loglcdf (ones (2), ones (3), 1, 'upper')
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (i, 2, 3)
-%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (i, 2, 3, "upper")
+%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (i, 2, 3, 'upper')
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, i, 3)
-%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, i, 3, "upper")
+%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, i, 3, 'upper')
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, 2, i)
-%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, 2, i, "upper")
+%!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, 2, i, 'upper')

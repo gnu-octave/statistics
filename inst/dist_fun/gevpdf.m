@@ -91,18 +91,18 @@ endfunction
 %! y4 = gevpdf (x, 1, 2, 5);
 %! y5 = gevpdf (x, 1, 5, 5);
 %! y6 = gevpdf (x, 1, 0.5, 5);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
-%!       x, y4, "-c", x, y5, "-m", x, y6, "-k")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', ...
+%!       x, y4, '-c', x, y5, '-m', x, y6, '-k')
 %! grid on
 %! xlim ([-1, 10])
 %! ylim ([0, 1.1])
-%! legend ({"k = 1, σ = 1, μ = 1", "k = 0.5, σ = 1, μ = 1", ...
-%!          "k = 1, σ = 1, μ = 5", "k = 1, σ = 2, μ = 5", ...
-%!          "k = 1, σ = 5, μ = 5", "k = 1, σ = 0.5, μ = 5"}, ...
-%!         "location", "northeast")
-%! title ("Generalized extreme value PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'k = 1, σ = 1, μ = 1', 'k = 0.5, σ = 1, μ = 1', ...
+%!          'k = 1, σ = 1, μ = 5', 'k = 1, σ = 2, μ = 5', ...
+%!          'k = 1, σ = 5, μ = 5', 'k = 1, σ = 0.5, μ = 5'}, ...
+%!         'location', 'northeast')
+%! title ('Generalized extreme value PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!test

@@ -101,10 +101,10 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
   endif
 
   ## Check for appropriate class
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
-    is_class = "single";
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Compute inverse of type 1 extreme value cdf
@@ -146,14 +146,14 @@ endfunction
 %! x2 = evinv (p, 1.0, 2);
 %! x3 = evinv (p, 1.5, 3);
 %! x4 = evinv (p, 3.0, 4);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([-10, 10])
-%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
-%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northwest")
-%! title ("Extreme value iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0.5, σ = 2', 'μ = 1.0, σ = 2', ...
+%!          'μ = 1.5, σ = 3', 'μ = 3.0, σ = 4'}, 'location', 'northwest')
+%! title ('Extreme value iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, x

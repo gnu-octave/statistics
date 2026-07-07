@@ -101,10 +101,10 @@ function r = tlsrnd (mu, sigma, nu, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (sigma, "single") || isa (nu, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (sigma, 'single') || isa (nu, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Call trnd to do the work

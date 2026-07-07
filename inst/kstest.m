@@ -114,7 +114,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
 
   ## Add defaults
   alpha = 0.05;
-  tail = "unequal";
+  tail = 'unequal';
   CDF = [];
 
   ## Parse extra parameters
@@ -122,11 +122,11 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     [~, prop] = parseparams (varargin);
     while (! isempty (prop))
       switch (lower (prop{1}))
-        case "alpha"
+        case 'alpha'
           alpha = prop{2};
-        case "tail"
+        case 'tail'
           tail = prop{2};
-        case "cdf"
+        case 'cdf'
           CDF = prop{2};
         otherwise
           error ("kstest: unknown option '%s'.", prop{1});
@@ -144,7 +144,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   endif
   if (! isa (tail, 'char'))
     error ("kstest: tail argument must be a string.");
-  elseif (sum (strcmpi (tail, {"unequal", "larger", "smaller"})) < 1)
+  elseif (sum (strcmpi (tail, {'unequal', 'larger', 'smaller'})) < 1)
     error ("kstest: tail value must be either 'both', right' or 'left'.");
   endif
 
@@ -163,7 +163,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     yCDF = normcdf (x, 0, 1);
 
   ## If CDF is a function handle
-  elseif (isa (CDF, "function_handle"))
+  elseif (isa (CDF, 'function_handle'))
     xCDF = x;
     yCDF = feval (CDF, x);
     if (! isequal (size (xCDF), size (yCDF)))
@@ -171,7 +171,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     endif
 
   ## If CDF is character vector
-  elseif (isa (CDF, "char") && isvector (CDF))
+  elseif (isa (CDF, 'char') && isvector (CDF))
     ## Check for supported distributions
     PDO = makedist ();
     if (! any (strcmpi (PDO, CDF)))
@@ -185,7 +185,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   elseif (isobject (CDF))
     PDO = makedist ();
     PDO = cellfun (@(x) sprintf ("%sDistribution", x), PDO, ...
-                   "UniformOutput", false);
+                   'UniformOutput', false);
 
     if (! any (isa (CDF, PDO)))
       error ("kstest: 'CDF' must be a probability distribution object.");
@@ -240,15 +240,15 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
 
   ## Calculate the suitable KS statistic according to tail
   switch (tail)
-    case "unequal"    # 2-sided test: T = max|S(x) - CDF(x)|.
+    case 'unequal'    # 2-sided test: T = max|S(x) - CDF(x)|.
       delta1    =  sampleCDF(1:end - 1) - nCDF;
       delta2    =  sampleCDF(2:end) - nCDF;
       deltaCDF  =  abs ([delta1; delta2]);
-    case "smaller"    # 1-sided test: T = max[CDF(x) - S(x)].
+    case 'smaller'    # 1-sided test: T = max[CDF(x) - S(x)].
       delta1    =  nCDF - sampleCDF(1:end - 1);
       delta2    =  nCDF - sampleCDF(2:end);
       deltaCDF  =  [delta1; delta2];
-    case "larger"     # 1-sided test: T = max[S(x) - CDF(x)].
+    case 'larger'     # 1-sided test: T = max[S(x) - CDF(x)].
       delta1    =  sampleCDF(1:end - 1) - nCDF;
       delta2    =  sampleCDF(2:end) - nCDF;
       deltaCDF  =  [delta1; delta2];
@@ -256,7 +256,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   ksstat = max (deltaCDF);
 
   ## Compute the asymptotic P-value approximation
-  if (strcmpi (tail, "unequal"))    # 2-sided test
+  if (strcmpi (tail, 'unequal'))    # 2-sided test
     s = n * ksstat ^ 2;
     ## For d values that are in the far tail of the distribution (i.e.
     ## p-values > .999), the following lines will speed up the computation
@@ -305,7 +305,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
   if (nargout > 3)
     ## The critical value table used below is expressed in reference to a
     ## 1-sided significance level. Hence alpha is halved for a two-sided test.
-    if (strcmpi (tail, "unequal"))  # 2-sided test
+    if (strcmpi (tail, 'unequal'))  # 2-sided test
         alpha1 = alpha / 2;
     else                            # 1-sided test
         alpha1 = alpha;
@@ -365,50 +365,50 @@ endfunction
 %!
 %! load stockreturns;
 %! x = stocks(:,2);
-%! [h, p, k, c] = kstest (x, "Tail", "larger")
+%! [h, p, k, c] = kstest (x, 'Tail', 'larger')
 %!
 %! ## Compute the empirical CDF and plot against the standard normal CDF
 %! [f, x_values] = ecdf (x);
 %! h1 = plot (x_values, f);
 %! hold on;
 %! h2 = plot (x_values, normcdf (x_values), 'r--');
-%! set (h1, "LineWidth", 2);
-%! set (h2, "LineWidth", 2);
-%! legend ([h1, h2], "Empirical CDF", "Standard Normal CDF", ...
-%!         "Location", "southeast");
-%! title ("Empirical CDF of stock return data against standard normal CDF")
+%! set (h1, 'LineWidth', 2);
+%! set (h2, 'LineWidth', 2);
+%! legend ([h1, h2], 'Empirical CDF', 'Standard Normal CDF', ...
+%!         'Location', 'southeast');
+%! title ('Empirical CDF of stock return data against standard normal CDF')
 
 ## Test input
 %!error<kstest: too few inputs.> kstest ()
 %!error<kstest: X must be a vector of real numbers.> kstest (ones (2, 4))
 %!error<kstest: X must be a vector of real numbers.> kstest ([2, 3, 5, 3+3i])
-%!error<kstest: unknown option 'opt'.> kstest ([2, 3, 4, 5, 6], "opt", 0.51)
+%!error<kstest: unknown option 'opt'.> kstest ([2, 3, 4, 5, 6], 'opt', 0.51)
 %!error<kstest: optional parameters must be in name/value pairs.> ...
-%! kstest ([2, 3, 4, 5, 6], "tail")
+%! kstest ([2, 3, 4, 5, 6], 'tail')
 %!error<kstest: alpha must be a numeric scalar in the range> ...
-%! kstest ([2,3,4,5,6],"alpha", [0.05, 0.05])
+%! kstest ([2,3,4,5,6],'alpha', [0.05, 0.05])
 %!error<kstest: alpha must be a numeric scalar in the range> ...
-%! kstest ([2, 3, 4, 5, 6], "alpha", NaN)
+%! kstest ([2, 3, 4, 5, 6], 'alpha', NaN)
 %!error<kstest: tail argument must be a string.> ...
-%! kstest ([2, 3, 4, 5, 6], "tail", 0)
+%! kstest ([2, 3, 4, 5, 6], 'tail', 0)
 %!error<kstest: tail value must be either 'both', right' or 'left'.> ...
-%! kstest ([2,3,4,5,6], "tail", "whatever")
+%! kstest ([2,3,4,5,6], 'tail', 'whatever')
 %!error<kstest: invalid function handle.> ...
-%! kstest ([1, 2, 3, 4, 5], "CDF", @(x) repmat (x, 2, 3))
+%! kstest ([1, 2, 3, 4, 5], 'CDF', @(x) repmat (x, 2, 3))
 %!error<kstest: 'somedist' is not a supported distribution.> ...
-%! kstest ([1, 2, 3, 4, 5], "CDF", "somedist")
+%! kstest ([1, 2, 3, 4, 5], 'CDF', 'somedist')
 %!error<kstest: 'CDF' must be a probability distribution object.> ...
-%! kstest ([1, 2, 3, 4, 5], "CDF", cvpartition (5, 'resubstitution'))
+%! kstest ([1, 2, 3, 4, 5], 'CDF', cvpartition (5, 'resubstitution'))
 %!error<kstest: numerical CDF should have only 2 columns.> ...
-%! kstest ([2, 3, 4, 5, 6], "alpha", 0.05, "CDF", [2, 3, 4; 1, 3, 4; 1, 2, 1])
+%! kstest ([2, 3, 4, 5, 6], 'alpha', 0.05, 'CDF', [2, 3, 4; 1, 3, 4; 1, 2, 1])
 %!error<kstest: numerical CDF should have at least one row.> ...
-%! kstest ([2, 3, 4, 5, 6], "alpha", 0.05, "CDF", nan (5, 2))
+%! kstest ([2, 3, 4, 5, 6], 'alpha', 0.05, 'CDF', nan (5, 2))
 %!error<kstest: non-incrementing numerical CDF.> ...
-%! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 1, 4; 3, 2])
+%! kstest ([2, 3, 4, 5, 6], 'CDF', [2, 3; 1, 4; 3, 2])
 %!error<kstest: wrong duplicates in numerical CDF.> ...
-%! kstest ([2, 3, 4, 5, 6], "CDF", [2, 3; 2, 4; 3, 5])
+%! kstest ([2, 3, 4, 5, 6], 'CDF', [2, 3; 2, 4; 3, 5])
 %!error<kstest: invalid value parsed as CDF optional argument.> ...
-%! kstest ([2, 3, 4, 5, 6], "CDF", {1, 2, 3, 4, 5})
+%! kstest ([2, 3, 4, 5, 6], 'CDF', {1, 2, 3, 4, 5})
 
 ## Test results
 %!test
@@ -418,20 +418,20 @@ endfunction
 %! assert (p, 7.58603305206105e-107, 1e-14);
 %!test
 %! load examgrades
-%! [h, p] = kstest (grades(:,1), "CDF", @(x) normcdf(x, 75, 10));
+%! [h, p] = kstest (grades(:,1), 'CDF', @(x) normcdf(x, 75, 10));
 %! assert (h, false);
 %! assert (p, 0.5612, 1e-4);
 %!test
 %! load examgrades
 %! x = grades(:,1);
-%! test_cdf = makedist ("tlocationscale", "mu", 75, "sigma", 10, "nu", 1);
-%! [h, p] = kstest (x, "alpha", 0.01, "CDF", test_cdf);
+%! test_cdf = makedist ('tlocationscale', 'mu', 75, 'sigma', 10, 'nu', 1);
+%! [h, p] = kstest (x, 'alpha', 0.01, 'CDF', test_cdf);
 %! assert (h, true);
 %! assert (p, 0.0021, 1e-4);
 %!test
 %! load stockreturns
 %! x = stocks(:,3);
-%! [h,p,k,c] = kstest (x, "Tail", "larger");
+%! [h,p,k,c] = kstest (x, 'Tail', 'larger');
 %! assert (h, true);
 %! assert (p, 5.085438806199252e-05, 1e-14);
 %! assert (k, 0.2197, 1e-4);

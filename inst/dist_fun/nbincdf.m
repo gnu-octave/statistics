@@ -69,9 +69,9 @@ function p = nbincdf (x, r, ps, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin == 4 && strcmpi (uflag, "upper"))
+  if (nargin == 4 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin == 4  && ! strcmpi (uflag, "upper"))
+  elseif (nargin == 4  && ! strcmpi (uflag, 'upper'))
     error ("nbincdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -94,8 +94,8 @@ function p = nbincdf (x, r, ps, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (r, "single") || isa (ps, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (r, 'single') || isa (ps, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -130,7 +130,7 @@ function p = nbincdf (x, r, ps, uflag)
   ## Accumulate probabilities up to the maximum value in X
   if (any (k))
     if (uflag)
-      p(k) = betainc (ps(k), r(k), xf(k) + 1, "upper");
+      p(k) = betainc (ps(k), r(k), xf(k) + 1, 'upper');
     else
       max_val = max (xf(k));
       if (scalarNPS)
@@ -168,14 +168,14 @@ endfunction
 %! p2 = nbincdf (x, 5, 0.2);
 %! p3 = nbincdf (x, 4, 0.4);
 %! p4 = nbincdf (x, 10, 0.3);
-%! plot (x, p1, "*r", x, p2, "*g", x, p3, "*k", x, p4, "*m")
+%! plot (x, p1, '*r', x, p2, '*g', x, p3, '*k', x, p4, '*m')
 %! grid on
 %! xlim ([0, 40])
-%! legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
-%!          "r = 10, ps = 0.3"}, "location", "southeast")
-%! title ("Negative binomial CDF")
-%! xlabel ("values in x (number of failures)")
-%! ylabel ("probability")
+%! legend ({'r = 2, ps = 0.15', 'r = 5, ps = 0.2', 'r = 4, p = 0.4', ...
+%!          'r = 10, ps = 0.3'}, 'location', 'southeast')
+%! title ('Negative binomial CDF')
+%! xlabel ('values in x (number of failures)')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -184,7 +184,7 @@ endfunction
 %!assert (nbincdf (x, ones (1,5), 0.5*ones (1,5)), y)
 %!assert (nbincdf (x, 1, 0.5*ones (1,5)), y)
 %!assert (nbincdf (x, ones (1,5), 0.5), y)
-%!assert (nbincdf (x, ones (1,5), 0.5, "upper"), 1 - y, eps)
+%!assert (nbincdf (x, ones (1,5), 0.5, 'upper'), 1 - y, eps)
 %!assert (nbincdf ([x(1:3) 0 x(5)], [0 1 NaN 1.5 Inf], 0.5), ...
 %! [NaN 1/2 NaN nbinpdf(0,1.5,0.5) NaN], eps)
 %!assert (nbincdf (x, 1, 0.5*[-1 NaN 4 1 1]), [NaN NaN NaN y(4:5)])
@@ -201,7 +201,7 @@ endfunction
 %!error<nbincdf: function called with too few input arguments.> nbincdf (1)
 %!error<nbincdf: function called with too few input arguments.> nbincdf (1, 2)
 %!error<nbincdf: invalid argument for upper tail.> nbincdf (1, 2, 3, 4)
-%!error<nbincdf: invalid argument for upper tail.> nbincdf (1, 2, 3, "some")
+%!error<nbincdf: invalid argument for upper tail.> nbincdf (1, 2, 3, 'some')
 %!error<nbincdf: X, R, and PS must be of common size or scalars.> ...
 %! nbincdf (ones (3), ones (2), ones (2))
 %!error<nbincdf: X, R, and PS must be of common size or scalars.> ...

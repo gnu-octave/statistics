@@ -191,8 +191,8 @@ endfunction
 function Q = marcumQ1 (a, b)
 
   ## Prepare output matrix
-  if (isa (a, "single") || isa (b, "single"))
-   Q = NaN (size (b), "single");
+  if (isa (a, 'single') || isa (b, 'single'))
+   Q = NaN (size (b), 'single');
   else
    Q = NaN (size (b));
   endif

@@ -55,9 +55,9 @@ function p = unidcdf (x, N, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 2 && strcmpi (uflag, "upper"))
+  if (nargin > 2 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 2  && ! strcmpi (uflag, 'upper'))
     error ("unidcdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -77,8 +77,8 @@ function p = unidcdf (x, N, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (N, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (N, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -114,23 +114,23 @@ endfunction
 %! x = 0:10;
 %! p1 = unidcdf (x, 5);
 %! p2 = unidcdf (x, 9);
-%! plot (x, p1, "*b", x, p2, "*g")
+%! plot (x, p1, '*b', x, p2, '*g')
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 1])
-%! legend ({"N = 5", "N = 9"}, "location", "southeast")
-%! title ("Discrete uniform CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'N = 5', 'N = 9'}, 'location', 'southeast')
+%! title ('Discrete uniform CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
 %! x = [0 1 2.5 10 11];
 %! y = [0, 0.1 0.2 1.0 1.0];
 %!assert (unidcdf (x, 10*ones (1,5)), y)
-%!assert (unidcdf (x, 10*ones (1,5), "upper"), 1 - y)
+%!assert (unidcdf (x, 10*ones (1,5), 'upper'), 1 - y)
 %!assert (unidcdf (x, 10), y)
-%!assert (unidcdf (x, 10, "upper"), 1 - y)
+%!assert (unidcdf (x, 10, 'upper'), 1 - y)
 %!assert (unidcdf (x, 10*[0 1 NaN 1 1]), [NaN 0.1 NaN y(4:5)])
 %!assert (unidcdf ([x(1:2) NaN Inf x(5)], 10), [y(1:2) NaN 1 y(5)])
 
@@ -143,7 +143,7 @@ endfunction
 %!error<unidcdf: function called with too few input arguments.> unidcdf ()
 %!error<unidcdf: function called with too few input arguments.> unidcdf (1)
 %!error<unidcdf: invalid argument for upper tail.> unidcdf (1, 2, 3)
-%!error<unidcdf: invalid argument for upper tail.> unidcdf (1, 2, "tail")
+%!error<unidcdf: invalid argument for upper tail.> unidcdf (1, 2, 'tail')
 %!error<unidcdf: X and N must be of common size or scalars.> ...
 %! unidcdf (ones (3), ones (2))
 %!error<unidcdf: X and N must be of common size or scalars.> ...

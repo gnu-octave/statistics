@@ -56,8 +56,8 @@ function y = unifpdf (x, a, b)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (a, 'single') || isa (b, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -76,14 +76,14 @@ endfunction
 %! x = 0:0.001:10;
 %! y1 = unifpdf (x, 2, 5);
 %! y2 = unifpdf (x, 3, 9);
-%! plot (x, y1, "-b", x, y2, "-g")
+%! plot (x, y1, '-b', x, y2, '-g')
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.4])
-%! legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "northeast")
-%! title ("Continuous uniform PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'a = 2, b = 5', 'a = 3, b = 9'}, 'location', 'northeast')
+%! title ('Continuous uniform PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

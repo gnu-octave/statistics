@@ -65,11 +65,11 @@ function [varargout] = normcdf (x, varargin)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 1 && strcmpi (varargin{end}, 'upper'))
     uflag = true;
     varargin(end) = [];
   elseif (nargin > 1  && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
+          ! strcmpi (varargin{end}, 'upper'))
     error ("normcdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -129,10 +129,10 @@ function [varargout] = normcdf (x, varargin)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -216,14 +216,14 @@ endfunction
 %! p2 = normcdf (x, 0, 1);
 %! p3 = normcdf (x, 0, 2);
 %! p4 = normcdf (x, -2, 0.8);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c')
 %! grid on
 %! xlim ([-5, 5])
-%! legend ({"μ = 0, σ = 0.5", "μ = 0, σ = 1", ...
-%!          "μ = 0, σ = 2", "μ = -2, σ = 0.8"}, "location", "southeast")
-%! title ("Normal CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0, σ = 0.5', 'μ = 0, σ = 1', ...
+%!          'μ = 0, σ = 2', 'μ = -2, σ = 0.8'}, 'location', 'southeast')
+%! title ('Normal CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -235,18 +235,18 @@ endfunction
 %!assert (normcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN])
 %!assert (normcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, 1])
 %!assert (normcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)])
-%!assert (normcdf (x, "upper"), [1, 0.1587, 0.0228, 0], 1e-4)
+%!assert (normcdf (x, 'upper'), [1, 0.1587, 0.0228, 0], 1e-4)
 
 ## Test class of input preserved
 %!assert (normcdf ([x, NaN], 1, 1), [y, NaN])
-%!assert (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
-%!assert (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
-%!assert (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
+%!assert (normcdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (normcdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert (normcdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<normcdf: invalid number of input arguments.> normcdf ()
 %!error<normcdf: invalid number of input arguments.> normcdf (1,2,3,4,5,6,7)
-%!error<normcdf: invalid argument for upper tail.> normcdf (1, 2, 3, 4, "uper")
+%!error<normcdf: invalid argument for upper tail.> normcdf (1, 2, 3, 4, 'uper')
 %!error<normcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! normcdf (ones (3), ones (2), ones (2))
 %!error<normcdf: invalid size of covariance matrix.> normcdf (2, 3, 4, [1, 2])
@@ -257,7 +257,7 @@ endfunction
 %!error<normcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! normcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<normcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! normcdf (1, 2, 3, [1, 0; 0, 1], "alpha", "upper")
+%! normcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (i, 2, 2)
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (2, i, 2)
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (2, 2, i)

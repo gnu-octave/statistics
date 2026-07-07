@@ -56,8 +56,8 @@ function x = binoinv (p, n, ps)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (n, "single") || isa (ps, "single"));
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (n, 'single') || isa (ps, 'single'));
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -180,13 +180,13 @@ endfunction
 %! x1 = binoinv (p, 20, 0.5);
 %! x2 = binoinv (p, 20, 0.7);
 %! x3 = binoinv (p, 40, 0.5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r')
 %! grid on
-%! legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
-%!          "n = 40, ps = 0.5"}, "location", "southeast")
-%! title ("Binomial iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x (number of successes)")
+%! legend ({'n = 20, ps = 0.5', 'n = 20, ps = 0.7', ...
+%!          'n = 40, ps = 0.5'}, 'location', 'southeast')
+%! title ('Binomial iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x (number of successes)')
 
 ## Test output
 %!shared p

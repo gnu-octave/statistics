@@ -98,10 +98,10 @@ function r = laplacernd (mu, beta, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (beta, "single"))
-    is_type = "single";
+  if (isa (mu, 'single') || isa (beta, 'single'))
+    is_type = 'single';
   else
-    is_type = "double";
+    is_type = 'double';
   endif
 
   ## Generate random sample from Laplace distribution

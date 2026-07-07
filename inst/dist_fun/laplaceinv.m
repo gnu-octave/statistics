@@ -59,8 +59,8 @@ function x = laplaceinv (p, mu, beta)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (beta, "single"));
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (beta, 'single'));
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -79,14 +79,14 @@ endfunction
 %! x2 = cauchyinv (p, 0, 2);
 %! x3 = cauchyinv (p, 0, 4);
 %! x4 = cauchyinv (p, -5, 4);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([-10, 10])
-%! legend ({"μ = 0, β = 1", "μ = 0, β = 2", ...
-%!          "μ = 0, β = 4", "μ = -5, β = 4"}, "location", "northwest")
-%! title ("Laplace iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0, β = 1', 'μ = 0, β = 2', ...
+%!          'μ = 0, β = 4', 'μ = -5, β = 4'}, 'location', 'northwest')
+%! title ('Laplace iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, x

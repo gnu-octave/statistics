@@ -71,8 +71,8 @@ function x = wblinv (p, varargin)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (lambda, "single") || isa (k, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (lambda, 'single') || isa (k, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -101,14 +101,14 @@ endfunction
 %! x2 = wblinv (p, 1, 1);
 %! x3 = wblinv (p, 1, 1.5);
 %! x4 = wblinv (p, 1, 5);
-%! plot (p, x1, "-b", p, x2, "-r", p, x3, "-m", p, x4, "-g")
+%! plot (p, x1, '-b', p, x2, '-r', p, x3, '-m', p, x4, '-g')
 %! ylim ([0, 2.5])
 %! grid on
-%! legend ({"λ = 1, k = 0.5", "λ = 1, k = 1",  ...
-%!          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "northwest")
-%! title ("Weibull iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
+%! legend ({'λ = 1, k = 0.5', 'λ = 1, k = 1',  ...
+%!          'λ = 1, k = 1.5', 'λ = 1, k = 5'}, 'location', 'northwest')
+%! title ('Weibull iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
 
 ## Test output
 %!shared p
@@ -122,9 +122,9 @@ endfunction
 
 ## Test class of input preserved
 %!assert (wblinv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
-%!assert (wblinv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (wblinv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
-%!assert (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ("single"))
+%!assert (wblinv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
+%!assert (wblinv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
+%!assert (wblinv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), eps ('single'))
 
 ## Test input validation
 %!error<wblinv: invalid number of input arguments.> wblinv ()

@@ -100,14 +100,14 @@ function [paramhat, paramci] = logifit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("logifit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -140,7 +140,7 @@ function [paramhat, paramci] = logifit (x, alpha, censor, freq, options)
   ## Handle errors
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
-      msg = "logifit: maximum number of function evaluations are exceeded.";
+      msg = 'logifit: maximum number of function evaluations are exceeded.';
       warning (msg);
     elseif (output.iterations >= options.MaxIter)
       warning ("logifit: maximum number of iterations are exceeded.");
@@ -167,20 +167,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different logistic distributions
-%! rand ("seed", 5)  # for reproducibility
+%! rand ('seed', 5)  # for reproducibility
 %! r1 = logirnd (2, 1, 2000, 1);
-%! rand ("seed", 2)   # for reproducibility
+%! rand ('seed', 2)   # for reproducibility
 %! r2 = logirnd (5, 2, 2000, 1);
-%! rand ("seed", 7)   # for reproducibility
+%! rand ('seed', 7)   # for reproducibility
 %! r3 = logirnd (9, 4, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [-6:20], 1);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 0.3]);
 %! xlim ([-5, 20]);
 %! hold on
@@ -193,22 +193,22 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [-5:0.5:20];
 %! y = logipdf (x, mu_sA(1), mu_sA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = logipdf (x, mu_sB(1), mu_sB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = logipdf (x, mu_sC(1), mu_sC(2));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with μ=1 and s=0.5", ...
-%!          "Normalized HIST of sample 2 with μ=2 and s=0.3", ...
-%!          "Normalized HIST of sample 3 with μ=4 and s=0.5", ...
+%! legend ({'Normalized HIST of sample 1 with μ=1 and s=0.5', ...
+%!          'Normalized HIST of sample 2 with μ=2 and s=0.3', ...
+%!          'Normalized HIST of sample 3 with μ=4 and s=0.5', ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f and s=%0.2f", ...
 %!                  mu_sA(1), mu_sA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f and s=%0.2f", ...
 %!                  mu_sB(1), mu_sB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and s=%0.2f", ...
 %!                  mu_sC(1), mu_sC(2))})
-%! title ("Three population samples from different logistic distributions")
+%! title ('Three population samples from different logistic distributions')
 %! hold off
 
 ## Test output
@@ -233,7 +233,7 @@ endfunction
 %!error<logifit: X must be a vector.> logifit (ones (2,5));
 %!error<logifit: wrong value for ALPHA.> logifit ([1, 2, 3, 4, 5], 1.2);
 %!error<logifit: wrong value for ALPHA.> logifit ([1, 2, 3, 4, 5], 0);
-%!error<logifit: wrong value for ALPHA.> logifit ([1, 2, 3, 4, 5], "alpha");
+%!error<logifit: wrong value for ALPHA.> logifit ([1, 2, 3, 4, 5], 'alpha');
 %!error<logifit: X and CENSOR vectors mismatch.> ...
 %! logifit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<logifit: X and CENSOR vectors mismatch.> ...

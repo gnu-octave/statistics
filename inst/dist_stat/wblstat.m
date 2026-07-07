@@ -77,7 +77,7 @@ endfunction
 %!error<wblstat: function called with too few input arguments.> wblstat ()
 %!error<wblstat: function called with too few input arguments.> wblstat (1)
 %!error<wblstat: LAMBDA and K must be numeric.> wblstat ({}, 2)
-%!error<wblstat: LAMBDA and K must be numeric.> wblstat (1, "")
+%!error<wblstat: LAMBDA and K must be numeric.> wblstat (1, '')
 %!error<wblstat: LAMBDA and K must not be complex.> wblstat (i, 2)
 %!error<wblstat: LAMBDA and K must not be complex.> wblstat (1, i)
 %!error<wblstat: LAMBDA and K must be of common size or scalars.> ...

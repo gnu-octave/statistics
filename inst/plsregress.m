@@ -159,16 +159,16 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 
   ## Parse additional Name-Value pairs
   while (numel (varargin) > 0)
-    if (strcmpi (varargin{1}, "cv"))
+    if (strcmpi (varargin{1}, 'cv'))
       cvarg = varargin{2};
-      if (isa (cvarg, "cvpartition"))
+      if (isa (cvarg, 'cvpartition'))
         CV = true;
       elseif (isscalar (cvarg) && cvarg == fix (cvarg) && cvarg > 0)
         CV = true;
-      elseif (! strcmpi (cvarg, "resubstitution"))
+      elseif (! strcmpi (cvarg, 'resubstitution'))
         error ("plsregress: invalid VALUE for 'cv' optional argument.");
       endif
-    elseif (strcmpi (varargin{1}, "mcreps"))
+    elseif (strcmpi (varargin{1}, 'mcreps'))
       mcreps = varargin{2};
       if (! (isscalar (mcreps) && mcreps == fix (mcreps) && mcreps > 0))
         error ("plsregress: invalid VALUE for 'mcreps' optional argument.");
@@ -226,12 +226,12 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
     if (CV)
       mse = NaN (2, NCOMP + 1);
       ## Check crossval method and recalculate max number of components
-      if isa (cvarg, "cvpartition")
-        type = "Partition";
+      if isa (cvarg, 'cvpartition')
+        type = 'Partition';
         NCOMPmax = min(min(cvarg.TrainSize)-1,npred);
         ts = sum (cvarg.TestSize);
       else
-        type = "Kfold";
+        type = 'Kfold';
         NCOMPmax = min (floor ((nobs * (cvarg - 1) / cvarg) -1), npred);
         ts = nobs;
       endif
@@ -243,7 +243,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
       ## Create function handle with NCOMP extra argument
       F = @(xtr, ytr, xte, yte) sseCV (xtr, ytr, xte, yte, NCOMP);
       ## Apply cross validation
-      sse = crossval (F, X, Y, type, cvarg, "mcreps", mcreps);
+      sse = crossval (F, X, Y, type, cvarg, 'mcreps', mcreps);
       ## Compute MSE from the SSEs collected from each cross validation set
       mse(:,1:NCOMP+1) = reshape (sum (sse, 1) / (ts * mcreps), [2, NCOMP+1]);
 
@@ -369,20 +369,20 @@ endfunction
 %!
 %! ## Plot the percentage of explained variance in the response variable
 %! ## (PCTVAR) as a function of the number of components.
-%! plot (1:10, cumsum (100 * ptcVar(2,:)), "-ro");
+%! plot (1:10, cumsum (100 * ptcVar(2,:)), '-ro');
 %! xlim ([1, 10]);
-%! xlabel ("Number of PLS components");
-%! ylabel ("Percentage of Explained Variance in octane");
-%! title ("Explained Variance per PLS components");
+%! xlabel ('Number of PLS components');
+%! ylabel ('Percentage of Explained Variance in octane');
+%! title ('Explained Variance per PLS components');
 %!
 %! ## Compute the fitted response and display the residuals.
 %! octane_fitted = [ones(size(NIR,1),1), NIR] * coef;
 %! residuals = octane - octane_fitted;
 %! figure
-%! stem (residuals, "color", "r", "markersize", 4, "markeredgecolor", "r")
-%! xlabel ("Observations");
-%! ylabel ("Residuals");
-%! title ("Residuals in octane's fitted response");
+%! stem (residuals, 'color', 'r', 'markersize', 4, 'markeredgecolor', 'r')
+%! xlabel ('Observations');
+%! ylabel ('Residuals');
+%! title ('Residuals in octane''s fitted response');
 
 %!demo
 %! ## Calculate Variable Importance in Projection (VIP) for PLS Regression
@@ -409,15 +409,15 @@ endfunction
 %! VIPidx = find (VIPscore >= 1);
 %!
 %! ## Plot the VIP scores
-%! scatter (1:length (VIPscore), VIPscore, "xb");
+%! scatter (1:length (VIPscore), VIPscore, 'xb');
 %! hold on
-%! scatter (VIPidx, VIPscore (VIPidx), "xr");
-%! plot ([1, length(VIPscore)], [1, 1], "--k");
+%! scatter (VIPidx, VIPscore (VIPidx), 'xr');
+%! plot ([1, length(VIPscore)], [1, 1], '--k');
 %! hold off
-%! axis ("tight");
-%! xlabel ("Predictor Variables");
-%! ylabel ("VIP scores");
-%! title ("VIP scores for each predictor variable with 10 components");
+%! axis ('tight');
+%! xlabel ('Predictor Variables');
+%! ylabel ('VIP scores');
+%! title ('VIP scores for each predictor variable with 10 components');
 
 ## Test output
 %!test
@@ -450,9 +450,9 @@ endfunction
 ## Test input validation
 %!error<plsregress: function called with too few input arguments.>
 %! plsregress (1)
-%!error<plsregress: X and Y must be real matrices.> plsregress (1, "asd")
+%!error<plsregress: X and Y must be real matrices.> plsregress (1, 'asd')
 %!error<plsregress: X and Y must be real matrices.> plsregress (1, {1,2,3})
-%!error<plsregress: X and Y must be real matrices.> plsregress ("asd", 1)
+%!error<plsregress: X and Y must be real matrices.> plsregress ('asd', 1)
 %!error<plsregress: X and Y must be real matrices.> plsregress ({1,2,3}, 1)
 %!error<plsregress: X and Y observations mismatch.> ...
 %! plsregress (ones (20,3), ones (15,1))
@@ -467,23 +467,23 @@ endfunction
 %!error<plsregress: NCOMP exceeds maximum components for X.> ...
 %! plsregress (ones (20,3), ones (20,1), 4)
 %!error<plsregress: invalid VALUE for 'cv' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", 4.5)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 4.5)
 %!error<plsregress: invalid VALUE for 'cv' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", -1)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', -1)
 %!error<plsregress: invalid VALUE for 'cv' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", "somestring")
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 'somestring')
 %!error<plsregress: invalid VALUE for 'mcreps' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", 3, "mcreps", 2.2)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 3, 'mcreps', 2.2)
 %!error<plsregress: invalid VALUE for 'mcreps' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", 3, "mcreps", -2)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 3, 'mcreps', -2)
 %!error<plsregress: invalid VALUE for 'mcreps' optional argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", 3, "mcreps", [1, 2])
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 3, 'mcreps', [1, 2])
 %!error<plsregress: invalid NAME argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "Name", 3, "mcreps", 1)
+%! plsregress (ones (20,3), ones (20,1), 3, 'Name', 3, 'mcreps', 1)
 %!error<plsregress: invalid NAME argument.> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", 3, "Name", 1)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 3, 'Name', 1)
 %!error<plsregress: 'mcreps' must be 1 when 'resubstitution' is specified> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "mcreps", 2)
+%! plsregress (ones (20,3), ones (20,1), 3, 'mcreps', 2)
 %!error<plsregress: 'mcreps' must be 1 when 'resubstitution' is specified> ...
-%! plsregress (ones (20,3), ones (20,1), 3, "cv", "resubstitution", "mcreps", 2)
+%! plsregress (ones (20,3), ones (20,1), 3, 'cv', 'resubstitution', 'mcreps', 2)
 %!error<Invalid call to plsregress.  Correct usage is:> plsregress (1, 2)

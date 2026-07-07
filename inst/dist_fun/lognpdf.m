@@ -66,8 +66,8 @@ function y = lognpdf (x, mu = 0, sigma = 1)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -91,14 +91,14 @@ endfunction
 %! y1 = lognpdf (x, 0, 1);
 %! y2 = lognpdf (x, 0, 0.5);
 %! y3 = lognpdf (x, 0, 0.25);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r')
 %! grid on
 %! ylim ([0, 2])
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
-%!          "location", "northeast")
-%! title ("Log-normal PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 0.5', 'μ = 0, σ = 0.25'}, ...
+%!          'location', 'northeast')
+%! title ('Log-normal PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y
@@ -112,9 +112,9 @@ endfunction
 %!assert (lognpdf ([x, NaN], 0, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (lognpdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ("single"))
-%!assert (lognpdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ("single"))
-%!assert (lognpdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ("single"))
+%!assert (lognpdf (single ([x, NaN]), 0, 1), single ([y, NaN]), eps ('single'))
+%!assert (lognpdf ([x, NaN], single (0), 1), single ([y, NaN]), eps ('single'))
+%!assert (lognpdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error lognpdf ()

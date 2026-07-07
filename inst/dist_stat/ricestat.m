@@ -60,8 +60,8 @@ function [m, v] = ricestat (s, sigma)
   endif
 
   ## Initialize mean and variance
-  if (isa (s, "single") || isa (sigma, "single"))
-    m = NaN (size (s), "single");
+  if (isa (s, 'single') || isa (sigma, 'single'))
+    m = NaN (size (s), 'single');
     v = m;
   else
     m = NaN (size (s));
@@ -88,7 +88,7 @@ endfunction
 %!error<ricestat: function called with too few input arguments.> ricestat ()
 %!error<ricestat: function called with too few input arguments.> ricestat (1)
 %!error<ricestat: S and SIGMA must be numeric.> ricestat ({}, 2)
-%!error<ricestat: S and SIGMA must be numeric.> ricestat (1, "")
+%!error<ricestat: S and SIGMA must be numeric.> ricestat (1, '')
 %!error<ricestat: S and SIGMA must not be complex.> ricestat (i, 2)
 %!error<ricestat: S and SIGMA must not be complex.> ricestat (1, i)
 %!error<ricestat: S and SIGMA must be of common size or scalars.> ...

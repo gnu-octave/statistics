@@ -170,7 +170,7 @@ endfunction
 %!assert (rmmissing ({'xxx', ''; 'xyz', 'yyy'}, 2), {'xxx'; 'xyz'})
 %!assert (rmmissing ([1, 2; NaN, 2]), [1, 2])
 %!assert (rmmissing ([1, 2; NaN, 2], 2), [2, 2]')
-%!assert (rmmissing ([1, 2; NaN, 4; NaN, NaN],"MinNumMissing", 2), [1, 2; NaN, 4])
+%!assert (rmmissing ([1, 2; NaN, 4; NaN, NaN],'MinNumMissing', 2), [1, 2; NaN, 4])
 
 ## Test second output
 %!test
@@ -186,10 +186,10 @@ endfunction
 %! [~, idx] = rmmissing (x, 2);
 %! assert (idx, logical ([1, 1, 0]));
 %! assert (class(idx), 'logical');
-%! [~, idx] = rmmissing (x, 1, "MinNumMissing", 2);
+%! [~, idx] = rmmissing (x, 1, 'MinNumMissing', 2);
 %! assert (idx, logical ([0; 1]));
 %! assert (class(idx), 'logical');
-%! [~, idx] = rmmissing (x, 2, "MinNumMissing", 2);
+%! [~, idx] = rmmissing (x, 2, 'MinNumMissing', 2);
 %! assert (idx, logical ([0, 0, 0]));
 %! assert (class(idx), 'logical');
 
@@ -219,13 +219,13 @@ endfunction
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
 %!       rmmissing (ones(2, 2), 'MinNumMissing', 0)
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing ([1, 2; 3, 4], 2, "MinNumMissing", -2)
+%!       rmmissing ([1, 2; 3, 4], 2, 'MinNumMissing', -2)
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", 3.8)
+%!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', 3.8)
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", [1, 2, 3])
+%!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', [1, 2, 3])
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing ([1, 2; 3, 4], "MinNumMissing", 'xxx')
+%!       rmmissing ([1, 2; 3, 4], 'MinNumMissing', 'xxx')
 %!error <rmmissing: 'MissingLocations' must be a logical matrix of the same size as input A.> ...
 %!       rmmissing ([1, 2; 3, 4], 'MissingLocations', false ([1, 1, 1]))
 %!error <rmmissing: specified DIM must be either 1 or 2.> rmmissing ([1, 2; 3, 4], 5)

@@ -91,7 +91,7 @@ classdef NakagamiDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "NakagamiDistribution";
+    DistributionName = 'NakagamiDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} NumParameters
@@ -113,7 +113,7 @@ classdef NakagamiDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "omega"};
+    ParameterNames = {'mu', 'omega'};
 
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} ParameterDescription
@@ -125,12 +125,12 @@ classdef NakagamiDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Shape", "Spread"};
+    ParameterDescription = {'Shape', 'Spread'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "naka";
+    DistributionCode = 'naka';
     ParameterRange = [0.5, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -248,11 +248,11 @@ classdef NakagamiDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Nakagami distribution");
+      __disp__ (this, 'Nakagami distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Nakagami distribution");
+      __disp__ (this, 'Nakagami distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -303,9 +303,9 @@ classdef NakagamiDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -747,7 +747,7 @@ classdef NakagamiDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -768,7 +768,7 @@ classdef NakagamiDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -791,12 +791,12 @@ endfunction
 %! ## parameters mu = 1 and omega = 1.  Fit a Nakagami distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Nakagami", "mu", 1, "omega", 1)
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Nakagami', 'mu', 1, 'omega', 1)
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Nakagami")
+%! pd_fitted = fitdist (data, 'Nakagami')
 %! plot (pd_fitted)
-%! msg = "Fitted Nakagami distribution with mu = %0.2f and omega = %0.2f";
+%! msg = 'Fitted Nakagami distribution with mu = %0.2f and omega = %0.2f';
 %! title (sprintf (msg, pd_fitted.mu, pd_fitted.omega))
 
 ## Test output
@@ -836,7 +836,7 @@ endfunction
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution(i, 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution("a", 1)
+%! NakagamiDistribution('a', 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
 %! NakagamiDistribution([1, 2], 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
@@ -850,7 +850,7 @@ endfunction
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, i)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, "a")
+%! NakagamiDistribution(1, 'a')
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
 %! NakagamiDistribution(1, [1, 2])
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
@@ -858,7 +858,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (NakagamiDistribution, 2, "uper")
+%! cdf (NakagamiDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (NakagamiDistribution, 2, 3)
 
@@ -866,59 +866,59 @@ endfunction
 %!shared x
 %! x = nakarnd (1, 0.5, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha")
+%! paramci (NakagamiDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 0)
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 1)
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (NakagamiDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", "")
+%! paramci (NakagamiDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", {0.05})
+%! paramci (NakagamiDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "parameter", "mu", "alpha", {0.05})
+%! paramci (NakagamiDistribution.fit (x), 'parameter', 'mu', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "parameter", {"mu", "omega", "param"})
+%! paramci (NakagamiDistribution.fit (x), 'parameter', {'mu', 'omega', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "omega", "param"})
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'omega', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NakagamiDistribution.fit (x), "parameter", "param")
+%! paramci (NakagamiDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "NAME", "value")
+%! paramci (NakagamiDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NakagamiDistribution.fit (x), "alpha", 0.01, "parameter", "mu", ...
-%!          "NAME", "value")
+%! paramci (NakagamiDistribution.fit (x), 'alpha', 0.01, 'parameter', 'mu', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (NakagamiDistribution, "Parent")
+%! plot (NakagamiDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NakagamiDistribution, "PlotType", 12)
+%! plot (NakagamiDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (NakagamiDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (NakagamiDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NakagamiDistribution, "PlotType", "pdfcdf")
+%! plot (NakagamiDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NakagamiDistribution, "Discrete", "pdfcdf")
+%! plot (NakagamiDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NakagamiDistribution, "Discrete", [1, 0])
+%! plot (NakagamiDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NakagamiDistribution, "Discrete", {true})
+%! plot (NakagamiDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NakagamiDistribution, "Parent", 12)
+%! plot (NakagamiDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NakagamiDistribution, "Parent", "hax")
+%! plot (NakagamiDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (NakagamiDistribution, "invalidNAME", "pdf")
+%! plot (NakagamiDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (NakagamiDistribution, "PlotType", "probability")
+%! plot (NakagamiDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -932,23 +932,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (NakagamiDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display")
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display", 1)
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display", {1})
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (NakagamiDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, "NAME", "on")
+%! proflik (NakagamiDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (NakagamiDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NakagamiDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (NakagamiDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

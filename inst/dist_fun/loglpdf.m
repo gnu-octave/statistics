@@ -77,8 +77,8 @@ function y = loglpdf (x, mu, sigma)
   y(x <= 0) = 0;
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    y = cast (y, "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    y = cast (y, 'single');
   endif
 
 endfunction
@@ -91,15 +91,15 @@ endfunction
 %! y3 = loglpdf (x, log (1), 1/2);
 %! y4 = loglpdf (x, log (1), 1/4);
 %! y5 = loglpdf (x, log (1), 1/8);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-m')
 %! grid on
 %! ylim ([0,3])
-%! legend ({"σ = 2 (β = 0.5)", "σ = 1 (β = 1)", "σ = 0.5 (β = 2)", ...
-%!          "σ = 0.25 (β = 4)", "σ = 0.125 (β = 8)"}, "location", "northeast")
-%! title ("Log-logistic PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
-%! text (0.1, 2.8, "μ = 0 (α = 1), values of σ (β) as shown in legend")
+%! legend ({'σ = 2 (β = 0.5)', 'σ = 1 (β = 1)', 'σ = 0.5 (β = 2)', ...
+%!          'σ = 0.25 (β = 4)', 'σ = 0.125 (β = 8)'}, 'location', 'northeast')
+%! title ('Log-logistic PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
+%! text (0.1, 2.8, 'μ = 0 (α = 1), values of σ (β) as shown in legend')
 
 ## Test output
 %!shared out1, out2

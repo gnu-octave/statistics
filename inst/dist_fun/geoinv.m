@@ -57,8 +57,8 @@ function x = geoinv (p, ps)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (ps, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (ps, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -85,13 +85,13 @@ endfunction
 %! x1 = geoinv (p, 0.2);
 %! x2 = geoinv (p, 0.5);
 %! x3 = geoinv (p, 0.7);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "northwest")
-%! title ("Geometric iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x (number of failures)")
+%! legend ({'ps = 0.2', 'ps = 0.5', 'ps = 0.7'}, 'location', 'northwest')
+%! title ('Geometric iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x (number of failures)')
 
 ## Test output
 %!shared p

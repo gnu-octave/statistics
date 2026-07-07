@@ -207,20 +207,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different exponential distributions
-%! rande ("seed", 1);   # for reproducibility
+%! rande ('seed', 1);   # for reproducibility
 %! r1 = exprnd (2, 4000, 1);
-%! rande ("seed", 2);   # for reproducibility
+%! rande ('seed', 2);   # for reproducibility
 %! r2 = exprnd (5, 4000, 1);
-%! rande ("seed", 3);   # for reproducibility
+%! rande ('seed', 3);   # for reproducibility
 %! r3 = exprnd (12, 4000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 48, 0.52);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! hold on
 %!
 %! ## Estimate their mu parameter
@@ -229,20 +229,20 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:max(r(:))];
 %! y = exppdf (x, muhat(1));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = exppdf (x, muhat(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = exppdf (x, muhat(3));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! ylim ([0, 0.6])
 %! xlim ([0, 40])
-%! legend ({"Normalized HIST of sample 1 with μ=2", ...
-%!          "Normalized HIST of sample 2 with μ=5", ...
-%!          "Normalized HIST of sample 3 with μ=12", ...
+%! legend ({'Normalized HIST of sample 1 with μ=2', ...
+%!          'Normalized HIST of sample 2 with μ=5', ...
+%!          'Normalized HIST of sample 3 with μ=12', ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f", muhat(1)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f", muhat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f", muhat(3))})
-%! title ("Three population samples from different exponential distributions")
+%! title ('Three population samples from different exponential distributions')
 %! hold off
 
 ## Tests for mean
@@ -325,7 +325,7 @@ endfunction
 %!error [a b censor] = expfit (1)
 %!error <ALPHA must be a scalar quantity> expfit (1, [1 2])
 %!error <X cannot be negative> expfit ([-1 2 3 4 5])
-%!error <CENSOR must be a numeric or logical array> expfit ([1:5], [], "test")
-%!error <FREQ must be a numeric or logical array> expfit ([1:5], [], [], "test")
+%!error <CENSOR must be a numeric or logical array> expfit ([1:5], [], 'test')
+%!error <FREQ must be a numeric or logical array> expfit ([1:5], [], [], 'test')
 %!error <X and CENSOR vectors mismatch.> expfit ([1:5], [], [0 0 0 0])
 %!error <X and FREQ vectors mismatch.> expfit ([1:5], [], [], [1 1 1 1])

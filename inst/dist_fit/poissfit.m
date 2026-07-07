@@ -98,20 +98,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Poisson distributions
-%! randp ("seed", 2);    # for reproducibility
+%! randp ('seed', 2);    # for reproducibility
 %! r1 = poissrnd (1, 1000, 1);
-%! randp ("seed", 2);    # for reproducibility
+%! randp ('seed', 2);    # for reproducibility
 %! r2 = poissrnd (4, 1000, 1);
-%! randp ("seed", 3);    # for reproducibility
+%! randp ('seed', 3);    # for reproducibility
 %! r3 = poissrnd (10, 1000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0:20], 1);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! hold on
 %!
 %! ## Estimate their lambda parameter
@@ -120,23 +120,23 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:20];
 %! y = poisspdf (x, lambdahat(1));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = poisspdf (x, lambdahat(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = poisspdf (x, lambdahat(3));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! xlim ([0, 20])
 %! ylim ([0, 0.4])
-%! legend ({"Normalized HIST of sample 1 with λ=1", ...
-%!          "Normalized HIST of sample 2 with λ=4", ...
-%!          "Normalized HIST of sample 3 with λ=10", ...
+%! legend ({'Normalized HIST of sample 1 with λ=1', ...
+%!          'Normalized HIST of sample 2 with λ=4', ...
+%!          'Normalized HIST of sample 3 with λ=10', ...
 %!          sprintf("PDF for sample 1 with estimated λ=%0.2f", ...
 %!                  lambdahat(1)), ...
 %!          sprintf("PDF for sample 2 with estimated λ=%0.2f", ...
 %!                  lambdahat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated λ=%0.2f", ...
 %!                  lambdahat(3))})
-%! title ("Three population samples from different Poisson distributions")
+%! title ('Three population samples from different Poisson distributions')
 %! hold off
 
 ## Test output

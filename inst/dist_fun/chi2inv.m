@@ -67,15 +67,15 @@ endfunction
 %! x4 = chi2inv (p, 4);
 %! x5 = chi2inv (p, 6);
 %! x6 = chi2inv (p, 9);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
-%!       p, x4, "-c", p, x5, "-m", p, x6, "-y")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', ...
+%!       p, x4, '-c', p, x5, '-m', p, x6, '-y')
 %! grid on
 %! ylim ([0, 8])
-%! legend ({"df = 1", "df = 2", "df = 3", ...
-%!          "df = 4", "df = 6", "df = 9"}, "location", "northwest")
-%! title ("Chi-squared iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'df = 1', 'df = 2', 'df = 3', ...
+%!          'df = 4', 'df = 6', 'df = 9'}, 'location', 'northwest')
+%! title ('Chi-squared iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p
@@ -87,8 +87,8 @@ endfunction
 
 ## Test class of input preserved
 %!assert (chi2inv ([p, NaN], 2), [NaN 0 1 Inf NaN NaN], 5*eps)
-%!assert (chi2inv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), 5*eps ("single"))
-%!assert (chi2inv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), 5*eps ("single"))
+%!assert (chi2inv (single ([p, NaN]), 2), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
+%!assert (chi2inv ([p, NaN], single (2)), single ([NaN 0 1 Inf NaN NaN]), 5*eps ('single'))
 
 ## Test input validation
 %!error<chi2inv: function called with too few input arguments.> chi2inv ()

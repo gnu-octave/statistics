@@ -76,8 +76,8 @@ function x = nbininv (p, r, ps)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (r, "single") || isa (ps, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (r, 'single') || isa (ps, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -167,14 +167,14 @@ endfunction
 %! x2 = nbininv (p, 5, 0.2);
 %! x3 = nbininv (p, 4, 0.4);
 %! x4 = nbininv (p, 10, 0.3);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-k', p, x4, '-m')
 %! grid on
 %! ylim ([0, 40])
-%! legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
-%!          "r = 10, ps = 0.3"}, "location", "northwest")
-%! title ("Negative binomial iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x (number of failures)")
+%! legend ({'r = 2, ps = 0.15', 'r = 5, ps = 0.2', 'r = 4, p = 0.4', ...
+%!          'r = 10, ps = 0.3'}, 'location', 'northwest')
+%! title ('Negative binomial iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x (number of failures)')
 
 ## Test output
 %!shared p

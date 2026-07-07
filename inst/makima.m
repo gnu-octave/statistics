@@ -62,7 +62,7 @@ function yi = makima (x, y, xq, varargin)
     error ("makima: invalid number of inputs");
   endif
 
-  if (nargin == 4 && ! strcmpi (varargin{1}, "extrap"))
+  if (nargin == 4 && ! strcmpi (varargin{1}, 'extrap'))
     error ("makima: unknown option '%s'", varargin{1});
   endif
 
@@ -145,7 +145,7 @@ function yi = makima (x, y, xq, varargin)
       yi = mkpp (x.', coefs, dim_out);
       return;
     else
-      yi = interp1 (x, y, xqv, "linear", "extrap");
+      yi = interp1 (x, y, xqv, 'linear', 'extrap');
       yi = reshape (yi, [nq, nc]); 
       math_done = true;
     endif
@@ -298,7 +298,7 @@ endfunction
 %! y = [2; 4; 6; 8];
 %! pp = makima (x, y);
 %! assert (isstruct (pp));
-%! assert (strcmp (pp.form, "pp"));
+%! assert (strcmp (pp.form, 'pp'));
 %! assert (pp.pieces, 3);
 %! assert (pp.order, 4);
 %!test
@@ -340,7 +340,7 @@ endfunction
 %! y = single ([10; 20; 30]);
 %! xi = single (1.5);
 %! yi = makima (x, y, xi);
-%! assert (isa (yi, "single"));
+%! assert (isa (yi, 'single'));
 %! assert (yi, single (15), 1e-6);
 %!test
 %! ## Row vector inputs.
@@ -482,12 +482,12 @@ endfunction
 %! x = [1; 2; 3];
 %! y = [5; 10; 15];
 %! xi = [0; 4];
-%! yi = makima (x, y, xi, "extrap");
+%! yi = makima (x, y, xi, 'extrap');
 %! assert (all (isfinite (yi)));
 %! assert (yi, [0; 20], 1e-12);
 %!error <makima: the sample points x must be unique.> makima ([1 1 2], [3 4 5], 1.5)
 %!error <makima: invalid number of inputs> makima (1)
 %!error <makima: the first two inputs must have at least two elements.> makima (1, 2, 1.5)
 %!error <makima: the number of sample points X, 4, is incompatible with the number of values Y, 5.> makima ([1 2 3 4], [1 2 3 4 5], 2)
-%!error <makima: unknown option 'linear'> makima ([1 2 3], [1 2 3], 2, "linear")
-%!error <makima: invalid number of inputs> makima ([1 2 3], [1 2 3], 2, "extrap", "too_many")
+%!error <makima: unknown option 'linear'> makima ([1 2 3], [1 2 3], 2, 'linear')
+%!error <makima: invalid number of inputs> makima ([1 2 3], [1 2 3], 2, 'extrap', 'too_many')

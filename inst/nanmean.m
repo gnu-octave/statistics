@@ -132,7 +132,7 @@ endfunction
 %!
 %! x = reshape (1:30, [2, 5, 3]);
 %! x([10:12, 25]) = NaN
-%! y = nanmean (x, "all")
+%! y = nanmean (x, 'all')
 
 %!demo
 %! ## Find the mean of a multidimensional array with missing values over
@@ -159,7 +159,7 @@ endfunction
 %!test
 %! x = reshape(1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
-%! assert (nanmean (x, "all"), 269/21)
+%! assert (nanmean (x, 'all'), 269/21)
 %!test
 %! x = reshape(1:24,[2, 4, 3]);
 %! x([5:6, 20]) = NaN;

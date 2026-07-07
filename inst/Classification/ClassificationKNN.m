@@ -451,15 +451,15 @@ classdef ClassificationKNN
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       if (iscellstr (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
       elseif (ischar (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, rows (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, cellstr (this.ClassNames){:});
       else # single, double, logical
-        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
@@ -526,7 +526,7 @@ classdef ClassificationKNN
             case 'Prior'
               this.Prior = setPrior (this, val);
             case 'ScoreTransform'
-              name = "ClassificationKNN";
+              name = 'ClassificationKNN';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                                    (varargin{2}, name);
             otherwise
@@ -710,7 +710,7 @@ classdef ClassificationKNN
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "standardize"
+          case 'standardize'
             if (SSC < 1)
               Standardize = varargin{2};
               if (! (Standardize == true || Standardize == false))
@@ -724,7 +724,7 @@ classdef ClassificationKNN
                              " Scale or Cov."));
             endif
 
-          case "predictornames"
+          case 'predictornames'
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
               error (strcat ("ClassificationKNN: 'PredictorNames' must", ...
@@ -734,14 +734,14 @@ classdef ClassificationKNN
                              " have the same number of columns as X."));
             endif
 
-          case "responsename"
+          case 'responsename'
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
               error (strcat ("ClassificationKNN: 'ResponseName'", ...
                              " must be a character vector."));
             endif
 
-          case "classnames"
+          case 'classnames'
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
                    islogical (ClassNames) || ischar (ClassNames)))
@@ -753,51 +753,51 @@ classdef ClassificationKNN
             if (iscellstr (ClassNames) || ischar (ClassNames))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
-                                   ClassNames, "UniformOutput", false))))
+                                   ClassNames, 'UniformOutput', false))))
                 error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
                                " are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
-                                   ClassNames, "UniformOutput", false))))
+                                   ClassNames, 'UniformOutput', false))))
                 error (strcat ("ClassificationKNN: not all 'ClassNames'", ...
                                " are present in Y."));
               endif
             endif
 
-          case "prior"
+          case 'prior'
             Prior = varargin{2};
             if (! ((isnumeric (Prior) && isvector (Prior)) ||
-                  (strcmpi (Prior, "empirical") || strcmpi (Prior, "uniform"))))
+                  (strcmpi (Prior, 'empirical') || strcmpi (Prior, 'uniform'))))
               error (strcat ("ClassificationKNN: 'Prior' must be either", ...
                              " a numeric vector or a character vector."));
             endif
 
-          case "cost"
+          case 'cost'
             Cost = varargin{2};
             if (! (isnumeric (Cost) && issquare (Cost)))
               error (strcat ("ClassificationKNN: 'Cost' must be", ...
                              " a numeric square matrix."));
             endif
 
-          case "scoretransform"
-            name = "ClassificationKNN";
+          case 'scoretransform'
+            name = 'ClassificationKNN';
             [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                                  (varargin{2}, name);
 
-          case "breakties"
+          case 'breakties'
             BreakTies = varargin{2};
             if (! ischar (BreakTies))
               error (strcat ("ClassificationKNN: 'BreakTies'", ...
                              " must be a character vector."));
             endif
             ## Check that all class names are available in gnY
-            BTs = {"smallest", "nearest", "random"};
+            BTs = {'smallest', 'nearest', 'random'};
             if (! any (strcmpi (BTs, BreakTies)))
               error ("ClassificationKNN: invalid value for 'BreakTies'.");
             endif
 
-          case "numneighbors"
+          case 'numneighbors'
             NumNeighbors = varargin{2};
             if (! (isnumeric (NumNeighbors) && isscalar (NumNeighbors) &&
                    NumNeighbors > 0 && fix (NumNeighbors) == NumNeighbors))
@@ -805,11 +805,11 @@ classdef ClassificationKNN
                              " must be a positive integer."));
             endif
 
-          case "distance"
+          case 'distance'
             Distance = varargin{2};
-            DMs = {"euclidean", "seuclidean", "mahalanobis", "minkowski", ...
-                   "cityblock", "manhattan", "chebychev", "cosine", ...
-                   "correlation", "spearman", "hamming", "jaccard"};
+            DMs = {'euclidean', 'seuclidean', 'mahalanobis', 'minkowski', ...
+                   'cityblock', 'manhattan', 'chebychev', 'cosine', ...
+                   'correlation', 'spearman', 'hamming', 'jaccard'};
             if (ischar (Distance))
               if (! any (strcmpi (DMs, Distance)))
                 error ("ClassificationKNN: unsupported distance metric.");
@@ -832,9 +832,9 @@ classdef ClassificationKNN
               error ("ClassificationKNN: invalid distance metric.");
             endif
 
-          case "distanceweight"
+          case 'distanceweight'
             DistanceWeight = varargin{2};
-            DMs = {"equal", "inverse", "squareinverse"};
+            DMs = {'equal', 'inverse', 'squareinverse'};
             if (is_function_handle (DistanceWeight))
               m = eye (5);
               if (! isequal (size (m), size (DistanceWeight (m))))
@@ -847,18 +847,18 @@ classdef ClassificationKNN
               if (! any (strcmpi (DMs, DistanceWeight)))
                 error ("ClassificationKNN: invalid distance weight.");
               endif
-              if (strcmpi ("equal", DistanceWeight))
+              if (strcmpi ('equal', DistanceWeight))
                 this.DistanceWeight = @(x) x;
               endif
-              if (strcmpi ("inverse", DistanceWeight))
+              if (strcmpi ('inverse', DistanceWeight))
                 this.DistanceWeight = @(x) x.^(-1);
               endif
-              if (strcmpi ("squareinverse", DistanceWeight))
+              if (strcmpi ('squareinverse', DistanceWeight))
                 this.DistanceWeight = @(x) x.^(-2);
               endif
             endif
 
-          case "scale"
+          case 'scale'
             if (SSC < 1)
               Scale = varargin{2};
               if (! (isnumeric (Scale) && isvector (Scale)))
@@ -871,7 +871,7 @@ classdef ClassificationKNN
                              " 'Standardize' or 'Cov'."));
             endif
 
-          case "cov"
+          case 'cov'
             if (SSC < 1)
               Cov = varargin{2};
               [~, p] = chol (Cov);
@@ -886,7 +886,7 @@ classdef ClassificationKNN
                              " 'Standardize' or 'Scale'."));
             endif
 
-          case "exponent"
+          case 'exponent'
             Exponent = varargin{2};
             if (! (isnumeric (Exponent) && isscalar (Exponent) &&
                            Exponent > 0 && fix (Exponent) == Exponent))
@@ -894,9 +894,9 @@ classdef ClassificationKNN
                              " must be a positive integer."));
             endif
 
-          case "nsmethod"
+          case 'nsmethod'
             NSMethod = varargin{2};
-            NSM = {"kdtree", "exhaustive"};
+            NSM = {'kdtree', 'exhaustive'};
             if (! ischar (NSMethod))
               error (strcat ("ClassificationKNN: 'NSMethod' must", ...
                              " be a character vector."));
@@ -906,14 +906,14 @@ classdef ClassificationKNN
                              " be either 'kdtree' or 'exhaustive'."));
             endif
 
-          case "includeties"
+          case 'includeties'
             IncludeTies = varargin{2};
             if (! (IncludeTies == true || IncludeTies == false))
               error (strcat ("ClassificationKNN: 'IncludeTies'", ...
                              " must be either true or false."));
             endif
 
-          case "bucketsize"
+          case 'bucketsize'
             BucketSize = varargin{2};
             if (! (isnumeric (BucketSize) && isscalar (BucketSize) &&
                            BucketSize > 0 && fix (BucketSize) == BucketSize))
@@ -937,7 +937,7 @@ classdef ClassificationKNN
         endfor
       endif
       if (isempty (ResponseName))
-        ResponseName = "Y";
+        ResponseName = 'Y';
       endif
 
       ## Assign predictors and response variable names
@@ -990,7 +990,7 @@ classdef ClassificationKNN
 
       ## Handle BreakTies
       if (isempty (BreakTies))
-        this.BreakTies = "smallest";
+        this.BreakTies = 'smallest';
       else
         this.BreakTies = BreakTies;
       endif
@@ -1008,7 +1008,7 @@ classdef ClassificationKNN
 
       ## Get distance metric
       if (isempty (Distance))
-        Distance = "euclidean";
+        Distance = 'euclidean';
       endif
       this.Distance = Distance;
 
@@ -1019,7 +1019,7 @@ classdef ClassificationKNN
 
       ## Handle distance metric parameters (Scale, Cov, Exponent)
       if (! isempty (Scale))
-        if (! strcmpi (Distance, "seuclidean"))
+        if (! strcmpi (Distance, 'seuclidean'))
           error (strcat ("ClassificationKNN: 'Scale' is only valid", ...
                          " when distance metric is seuclidean."));
         endif
@@ -1033,7 +1033,7 @@ classdef ClassificationKNN
         endif
         this.DistParameter = Scale;
       else
-        if (strcmpi (Distance, "seuclidean"))
+        if (strcmpi (Distance, 'seuclidean'))
           if (Standardize)
             this.DistParameter = ones (1, NumPredictors);
           else
@@ -1042,7 +1042,7 @@ classdef ClassificationKNN
         endif
       endif
       if (! isempty (Cov))
-        if (! strcmpi (Distance, "mahalanobis"))
+        if (! strcmpi (Distance, 'mahalanobis'))
           error (strcat ("ClassificationKNN: 'Cov' is only valid", ...
                          " when distance metric is 'mahalanobis'."));
         endif
@@ -1052,26 +1052,26 @@ classdef ClassificationKNN
         endif
         this.DistParameter = Cov;
       else
-        if (strcmpi (Distance, "mahalanobis"))
+        if (strcmpi (Distance, 'mahalanobis'))
           this.DistParameter = cov (X);
         endif
       endif
       if (! isempty (Exponent))
-        if (! strcmpi (Distance, "minkowski"))
+        if (! strcmpi (Distance, 'minkowski'))
           error (strcat ("ClassificationKNN: 'Exponent' is only", ...
                          " valid when distance metric is 'minkowski'."));
         endif
         this.DistParameter = Exponent;
       else
-        if (strcmpi (Distance, "minkowski"))
+        if (strcmpi (Distance, 'minkowski'))
           this.DistParameter = 2;
         endif
       endif
 
       ## Get Nearest neighbor search method
-      kdm = {"euclidean", "cityblock", "manhattan", "minkowski", "chebychev"};
+      kdm = {'euclidean', 'cityblock', 'manhattan', 'minkowski', 'chebychev'};
       if (! isempty (NSMethod))
-        if (strcmpi ("kdtree", NSMethod) && (! any (strcmpi (kdm, Distance))))
+        if (strcmpi ('kdtree', NSMethod) && (! any (strcmpi (kdm, Distance))))
           error (strcat ("ClassificationKNN: 'kdtree' method is only va", ...
                          "lid for 'euclidean', 'cityblock', 'manhattan',", ...
                          " 'minkowski', and 'chebychev' distance metrics."));
@@ -1079,9 +1079,9 @@ classdef ClassificationKNN
         this.NSMethod = NSMethod;
       else
         if (any (strcmpi (kdm, Distance)) && NumPredictors <= 10)
-          this.NSMethod = "kdtree";
+          this.NSMethod = 'kdtree';
         else
-          this.NSMethod = "exhaustive";
+          this.NSMethod = 'exhaustive';
         endif
       endif
 
@@ -1153,32 +1153,32 @@ classdef ClassificationKNN
       endif
 
       ## Train kNN
-      if (strcmpi (this.Distance, "seuclidean"))
-        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "seuclidean", ...
-                      "Scale", this.DistParameter, "sortindices", true, ...
-                      "includeties", this.IncludeTies, ...
-                      "bucketsize", this.BucketSize);
+      if (strcmpi (this.Distance, 'seuclidean'))
+        [idx, dist] = knnsearch (X, XC, 'k', this.NumNeighbors, ...
+                      'NSMethod', this.NSMethod, 'Distance', 'seuclidean', ...
+                      'Scale', this.DistParameter, 'sortindices', true, ...
+                      'includeties', this.IncludeTies, ...
+                      'bucketsize', this.BucketSize);
 
-      elseif (strcmpi (this.Distance, "mahalanobis"))
-        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "mahalanobis", ...
-                      "cov", this.DistParameter, "sortindices", true, ...
-                      "includeties", this.IncludeTies, ...
-                      "bucketsize", this.BucketSize);
+      elseif (strcmpi (this.Distance, 'mahalanobis'))
+        [idx, dist] = knnsearch (X, XC, 'k', this.NumNeighbors, ...
+                      'NSMethod', this.NSMethod, 'Distance', 'mahalanobis', ...
+                      'cov', this.DistParameter, 'sortindices', true, ...
+                      'includeties', this.IncludeTies, ...
+                      'bucketsize', this.BucketSize);
 
-      elseif (strcmpi (this.Distance, "minkowski"))
-        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", "minkowski", ...
-                      "P", this.DistParameter, "sortindices", true, ...
-                      "includeties",this.IncludeTies, ...
-                      "bucketsize", this.BucketSize);
+      elseif (strcmpi (this.Distance, 'minkowski'))
+        [idx, dist] = knnsearch (X, XC, 'k', this.NumNeighbors, ...
+                      'NSMethod', this.NSMethod, 'Distance', 'minkowski', ...
+                      'P', this.DistParameter, 'sortindices', true, ...
+                      'includeties',this.IncludeTies, ...
+                      'bucketsize', this.BucketSize);
 
       else
-        [idx, dist] = knnsearch (X, XC, "k", this.NumNeighbors, ...
-                      "NSMethod", this.NSMethod, "Distance", this.Distance, ...
-                      "sortindices", true, "includeties", this.IncludeTies, ...
-                      "bucketsize", this.BucketSize);
+        [idx, dist] = knnsearch (X, XC, 'k', this.NumNeighbors, ...
+                      'NSMethod', this.NSMethod, 'Distance', this.Distance, ...
+                      'sortindices', true, 'includeties', this.IncludeTies, ...
+                      'bucketsize', this.BucketSize);
       endif
 
       ## Make prediction
@@ -1215,13 +1215,13 @@ classdef ClassificationKNN
         endfor
 
         ## Get labels according to BreakTies
-        if (strcmpi (this.BreakTies, "smallest"))
+        if (strcmpi (this.BreakTies, 'smallest'))
           [~, idl] = max (freq);
         else
           idl = find (freq == max (freq));
           tgn = numel (idl);
           if (tgn > 1)
-            if (strcmpi (this.BreakTies, "nearest"))
+            if (strcmpi (this.BreakTies, 'nearest'))
               for t = 1:tgn
                 tgs(t) = find (gY(NN_idx) == idl(t));
               endfor
@@ -1377,9 +1377,9 @@ classdef ClassificationKNN
                                " produce correct output."));
               end_try_catch
               LossFun = Value;
-            elseif (ischar (Value) && any (strcmpi (Value, {"binodeviance", ...
-                "classifcost", "classiferror", "exponential", "hinge", ...
-                "logit", "mincost", "quadratic"})))
+            elseif (ischar (Value) && any (strcmpi (Value, {'binodeviance', ...
+                'classifcost', 'classiferror', 'exponential', 'hinge', ...
+                'logit', 'mincost', 'quadratic'})))
               LossFun = Value;
             else
               error ("ClassificationKNN.loss: invalid loss function.");
@@ -1388,7 +1388,7 @@ classdef ClassificationKNN
             if (isnumeric (Value) && isvector (Value))
               if (numel (Value) != size (X ,1))
                 error ("ClassificationKNN.loss: size of Weights must", ...
-                       " be equal to the number of rows in X.");
+                       ' be equal to the number of rows in X.');
               elseif (numel (Value) == size (X, 1))
                 Weights = Value;
               endif
@@ -1703,7 +1703,7 @@ classdef ClassificationKNN
       if (isnumeric (Vars))
         if (! all (Vars > 0) || ! (numel (Vars) == 1 || numel (Vars) == 2))
           error ("ClassificationKNN.partialDependence: VARS must be a", ...
-                 " positive integer or vector of two positive integers.");
+                 ' positive integer or vector of two positive integers.');
         endif
       elseif (iscellstr (Vars))
         if (! (numel (Vars) == 1 || numel (Vars) == 2))
@@ -2062,7 +2062,7 @@ classdef ClassificationKNN
 
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "ClassificationKNN";
+      classdef_name = 'ClassificationKNN';
 
       ## Create variables from model properties
       X = this.X;
@@ -2090,12 +2090,12 @@ classdef ClassificationKNN
       STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
-            "RowsUsed", "Standardize", "Sigma", "Mu", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", "Prior", "Cost", ...
-            "ScoreTransform", "BreakTies", "NumNeighbors", "Distance", ...
-            "DistanceWeight", "DistParameter", "NSMethod", "IncludeTies", ...
-            "BucketSize", "STname");
+      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
+            'RowsUsed', 'Standardize', 'Sigma', 'Mu', 'NumPredictors', ...
+            'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', 'Cost', ...
+            'ScoreTransform', 'BreakTies', 'NumNeighbors', 'Distance', ...
+            'DistanceWeight', 'DistParameter', 'NSMethod', 'IncludeTies', ...
+            'BucketSize', 'STname');
     endfunction
 
   endmethods
@@ -2128,7 +2128,7 @@ classdef ClassificationKNN
         [~, gnY, gY] = unique (this.Y(this.RowsUsed));
       endif
       if (isempty (Cost))
-        this.Cost = cast (! eye (numel (gnY)), "double");
+        this.Cost = cast (! eye (numel (gnY)), 'double');
       else
         if (numel (gnY) != sqrt (numel (Cost)))
           error (strcat ("ClassificationKNN: the number of rows and columns", ...
@@ -2143,9 +2143,9 @@ classdef ClassificationKNN
         [~, gnY, gY] = unique (this.Y(this.RowsUsed));
       endif
       ## Set prior
-      if (strcmpi ("uniform", Prior))
+      if (strcmpi ('uniform', Prior))
         this.Prior = ones (size (gnY)) ./ numel (gnY);
-      elseif (isempty (Prior) || strcmpi ("empirical", Prior))
+      elseif (isempty (Prior) || strcmpi ('empirical', Prior))
         pr = [];
         for i = 1:numel (gnY)
           pr = [pr; sum(gY==i)];
@@ -2185,14 +2185,14 @@ endfunction
 %! x = meas;
 %! y = species;
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
 %! [label, score, cost] = predict (obj, xc)
 
 %!demo
 %! load fisheriris
 %! x = meas;
 %! y = species;
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
 %!
 %! ## Create a cross-validated model
 %! CVMdl = crossval (obj)
@@ -2276,181 +2276,181 @@ endfunction
 ## Test constructor with NSMethod and NumNeighbors parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "NSMethod", "exhaustive");
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'NSMethod', 'exhaustive');
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
-%! a = ClassificationKNN (x, y, "NumNeighbors" ,k);
+%! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = ones (4, 11);
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
-%! a = ClassificationKNN (x, y, "NumNeighbors" ,k);
+%! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
-%! a = ClassificationKNN (x, y, "NumNeighbors" ,k, "NSMethod", "exhaustive");
+%! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'NSMethod', 'exhaustive');
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! k = 10;
-%! a = ClassificationKNN (x, y, "NumNeighbors" ,k, "Distance", "hamming");
+%! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'Distance', 'hamming');
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert ({a.BucketSize}, {50})
 
 ## Test constructor with Standardize and DistParameter parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! weights = ones (4,1);
-%! a = ClassificationKNN (x, y, "Standardize", 1);
+%! a = ClassificationKNN (x, y, 'Standardize', 1);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.Standardize}, {true})
 %! assert ({a.Sigma}, {std(x, [], 1)})
 %! assert ({a.Mu}, {[3.75, 4.25, 4.75]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! weights = ones (4,1);
-%! a = ClassificationKNN (x, y, "Standardize", false);
+%! a = ClassificationKNN (x, y, 'Standardize', false);
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.X, a.Y, a.NumNeighbors}, {x, y, 1})
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.Standardize}, {false})
 %! assert ({a.Sigma}, {[]})
 %! assert ({a.Mu}, {[]})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! s = ones (1, 3);
-%! a = ClassificationKNN (x, y, "Scale" , s, "Distance", "seuclidean");
+%! a = ClassificationKNN (x, y, 'Scale' , s, 'Distance', 'seuclidean');
 %! assert (class (a), "ClassificationKNN");
 %! assert ({a.DistParameter}, {s})
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "seuclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'seuclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "Exponent" , 5, "Distance", "minkowski");
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'Exponent' , 5, 'Distance', 'minkowski');
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.DistParameter, 5)
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "minkowski"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'minkowski'})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "Exponent" , 5, "Distance", "minkowski", ...
-%!                        "NSMethod", "exhaustive");
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'Exponent' , 5, 'Distance', 'minkowski', ...
+%!                        'NSMethod', 'exhaustive');
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.DistParameter, 5)
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "minkowski"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'minkowski'})
 
 ## Test constructor with BucketSize and IncludeTies parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "BucketSize" , 20, "distance", "mahalanobis");
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'BucketSize' , 20, 'distance', 'mahalanobis');
 %! assert (class (a), "ClassificationKNN");
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "mahalanobis"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'mahalanobis'})
 %! assert ({a.BucketSize}, {20})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
-%! a = ClassificationKNN (x, y, "IncludeTies", true);
+%! y = ['a'; 'a'; 'b'; 'b'];
+%! a = ClassificationKNN (x, y, 'IncludeTies', true);
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.IncludeTies, true);
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
 %! assert (class (a), "ClassificationKNN");
 %! assert (a.IncludeTies, false);
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 
 ## Test constructor with Prior and Cost parameters
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! a = ClassificationKNN (x, y);
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, [0.5; 0.5])
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! prior = [0.5; 0.5];
-%! a = ClassificationKNN (x, y, "Prior", "empirical");
+%! a = ClassificationKNN (x, y, 'Prior', 'empirical');
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "a"; "b"];
+%! y = ['a'; 'a'; 'a'; 'b'];
 %! prior = [0.75; 0.25];
-%! a = ClassificationKNN (x, y, "Prior", "empirical");
+%! a = ClassificationKNN (x, y, 'Prior', 'empirical');
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "a"; "b"];
+%! y = ['a'; 'a'; 'a'; 'b'];
 %! prior = [0.5; 0.5];
-%! a = ClassificationKNN (x, y, "Prior", "uniform");
+%! a = ClassificationKNN (x, y, 'Prior', 'uniform');
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Prior, prior)
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! cost = eye (2);
-%! a = ClassificationKNN (x, y, "Cost", cost);
+%! a = ClassificationKNN (x, y, 'Cost', cost);
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Cost, [1, 0; 0, 1])
-%! assert ({a.NSMethod, a.Distance}, {"kdtree", "euclidean"})
+%! assert ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = ["a"; "a"; "b"; "b"];
+%! y = ['a'; 'a'; 'b'; 'b'];
 %! cost = eye (2);
-%! a = ClassificationKNN (x, y, "Cost", cost, "Distance", "hamming" );
+%! a = ClassificationKNN (x, y, 'Cost', cost, 'Distance', 'hamming' );
 %! assert (class (a), "ClassificationKNN")
 %! assert (a.Cost, [1, 0; 0, 1])
-%! assert ({a.NSMethod, a.Distance}, {"exhaustive", "hamming"})
+%! assert ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert ({a.BucketSize}, {50})
 %!test
 %! x = [1, 2; 3, 4; 5,6; 5, 8];
@@ -2474,129 +2474,129 @@ endfunction
 %!error<ClassificationKNN: number of rows in X and Y must be equal.> ...
 %! ClassificationKNN (ones (4,2), ones (1,4))
 %!error<ClassificationKNN: 'Standardize' must be either true or false.> ...
-%! ClassificationKNN (ones (5,3), ones (5,1), "standardize", "a")
+%! ClassificationKNN (ones (5,3), ones (5,1), 'standardize', 'a')
 %!error<ClassificationKNN: 'Standardize' cannot simultaneously be specified with> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "scale", [1 1], "standardize", true)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'scale', [1 1], 'standardize', true)
 %!error<ClassificationKNN: 'PredictorNames' must be supplied as a cellstring array.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "PredictorNames", ["A"])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'PredictorNames', ['A'])
 %!error<ClassificationKNN: 'PredictorNames' must be supplied as a cellstring array.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "PredictorNames", "A")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'PredictorNames', 'A')
 %!error<ClassificationKNN: 'PredictorNames' must have the same number of columns as X.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'PredictorNames', {'A', 'B', 'C'})
 %!error<ClassificationKNN: 'ResponseName' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "ResponseName", {"Y"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'ResponseName', {'Y'})
 %!error<ClassificationKNN: 'ResponseName' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "ResponseName", 1)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'ResponseName', 1)
 %!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", @(x)x)
+%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', @(x)x)
 %!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", {1})
+%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), "ClassNames", [1, 2])
+%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', [1, 2])
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(5,2), ['a';'b';'a';'a';'b'], "ClassNames", ['a';'c'])
+%! ClassificationKNN (ones(5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
+%! ClassificationKNN (ones(5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(10,2), logical (ones (10,1)), "ClassNames", [true, false])
+%! ClassificationKNN (ones(10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationKNN: 'BreakTies' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", 1)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BreakTies', 1)
 %!error<ClassificationKNN: 'BreakTies' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", {"1"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BreakTies', {'1'})
 %!error<ClassificationKNN: invalid value for 'BreakTies'.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BreakTies", "some")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BreakTies', 'some')
 %!error<ClassificationKNN: 'Prior' must be either a numeric vector or a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Prior", {"1", "2"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Prior', {'1', '2'})
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cost", [1, 2])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', [1, 2])
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cost", "string")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', 'string')
 %!error<ClassificationKNN: 'Cost' must be a numeric square matrix.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cost", {eye(2)})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', {eye(2)})
 %!error<ClassificationKNN: 'NumNeighbors' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NumNeighbors", 0)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NumNeighbors', 0)
 %!error<ClassificationKNN: 'NumNeighbors' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NumNeighbors", 15.2)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NumNeighbors', 15.2)
 %!error<ClassificationKNN: 'NumNeighbors' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NumNeighbors", "asd")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NumNeighbors', 'asd')
 %!error<ClassificationKNN: unsupported distance metric.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", "somemetric")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', 'somemetric')
 %!error<ClassificationKNN: invalid function handle for distance metric.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", ...
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', ...
 %!                    @(v,m)sqrt(repmat(v,rows(m),1)-m,2))
 %!error<ClassificationKNN: custom distance function produces wrong output size.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", ...
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', ...
 %!                    @(v,m)sqrt(sum(sumsq(repmat(v,rows(m),1)-m,2))))
 %!error<ClassificationKNN: invalid distance metric.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", [1 2 3])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', [1 2 3])
 %!error<ClassificationKNN: invalid distance metric.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", {"mahalanobis"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', {'mahalanobis'})
 %!error<ClassificationKNN: invalid distance metric.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", logical (5))
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', logical (5))
 %!error<ClassificationKNN: function handle for distance weight must return the> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "DistanceWeight", @(x)sum(x))
+%! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', @(x)sum(x))
 %!error<ClassificationKNN: invalid distance weight.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "DistanceWeight", "text")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', 'text')
 %!error<ClassificationKNN: invalid distance weight.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "DistanceWeight", [1 2 3])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', [1 2 3])
 %!error<ClassificationKNN: 'Scale' must be a numeric vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Scale", "scale")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', 'scale')
 %!error<ClassificationKNN: 'Scale' must be a numeric vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Scale", {[1 2 3]})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', {[1 2 3]})
 %!error<ClassificationKNN: 'Scale' cannot simultaneously be specified with> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "standardize", true, "scale", [1 1])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'standardize', true, 'scale', [1 1])
 %!error<ClassificationKNN: 'Cov' must be a symmetric positive definite matrix.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cov", ones (2), "Distance", "mahalanobis")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cov', ones (2), 'Distance', 'mahalanobis')
 %!error<ClassificationKNN: 'Cov' cannot simultaneously be specified with> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "scale", [1 1], "Cov", ones (2))
+%! ClassificationKNN (ones (5,2), ones (5,1), 'scale', [1 1], 'Cov', ones (2))
 %!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", 12.5)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 12.5)
 %!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", -3)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', -3)
 %!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", "three")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 'three')
 %!error<ClassificationKNN: 'Exponent' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", {3})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', {3})
 %!error<ClassificationKNN: 'NSMethod' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NSMethod", {"kdtree"})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NSMethod', {'kdtree'})
 %!error<ClassificationKNN: 'NSMethod' must be a character vector.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NSMethod", 3)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NSMethod', 3)
 %!error<ClassificationKNN: 'NSMethod' must be either 'kdtree' or 'exhaustive'.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "NSMethod", "some")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'NSMethod', 'some')
 %!error<ClassificationKNN: 'IncludeTies' must be either true or false.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "IncludeTies", "some")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'IncludeTies', 'some')
 %!error<ClassificationKNN: 'BucketSize' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BucketSize", 42.5)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BucketSize', 42.5)
 %!error<ClassificationKNN: 'BucketSize' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BucketSize", -50)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BucketSize', -50)
 %!error<ClassificationKNN: 'BucketSize' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BucketSize", "some")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BucketSize', 'some')
 %!error<ClassificationKNN: 'BucketSize' must be a positive integer.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "BucketSize", {50})
+%! ClassificationKNN (ones (5,2), ones (5,1), 'BucketSize', {50})
 %!error<ClassificationKNN: invalid parameter name in optional pair arguments.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "some", "some")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'some', 'some')
 %!error<ClassificationKNN: invalid values in X.> ...
 %! ClassificationKNN ([1;2;3;'a';4], ones (5,1))
 %!error<ClassificationKNN: invalid values in X.> ...
 %! ClassificationKNN ([1;2;3;Inf;4], ones (5,1))
 %!error<ClassificationKNN: the elements in 'Prior' do not correspond to the selected classes in Y.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Prior", [1 2])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Prior', [1 2])
 %!error<ClassificationKNN: the number of rows and columns in 'Cost' must correspond to selected classes in Y.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cost", [1 2; 1 3])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cost', [1 2; 1 3])
 %!error<ClassificationKNN: 'Scale' is only valid when distance metric is seuclidean.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Scale", [1 1])
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', [1 1])
 %!error<ClassificationKNN: 'Scale' vector must have equal length to the number of columns in X.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Scale", [1 1 1], "Distance", "seuclidean")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', [1 1 1], 'Distance', 'seuclidean')
 %!error<ClassificationKNN: 'Scale' vector must contain nonnegative scalar values.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Scale", [1 -1], "Distance", "seuclidean")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Scale', [1 -1], 'Distance', 'seuclidean')
 %!error<ClassificationKNN: 'Cov' is only valid when distance metric is 'mahalanobis'.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cov", eye (2))
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cov', eye (2))
 %!error<ClassificationKNN: 'Cov' matrix must have equal columns as X.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Cov", eye (3), "Distance", "mahalanobis")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Cov', eye (3), 'Distance', 'mahalanobis')
 %!error<ClassificationKNN: 'Exponent' is only valid when distance metric is 'minkowski'.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Exponent", 3)
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Exponent', 3)
 %!error<ClassificationKNN: 'kdtree' method is only valid for 'euclidean', 'cityblock', 'manhattan', 'minkowski', and 'chebychev' distance metrics.> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), "Distance", "hamming", "NSMethod", "kdtree")
+%! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', 'hamming', 'NSMethod', 'kdtree')
 
 ## Test output for predict method
 %!shared x, y
@@ -2605,142 +2605,142 @@ endfunction
 %! y = species;
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0, 1])
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"; "versicolor"; "virginica"})
+%! assert (l, {'versicolor'; 'versicolor'; 'virginica'})
 %! assert (s, [0.4, 0.6, 0; 0, 1, 0; 0, 0, 1])
 %! assert (c, [0.6, 0.4, 1; 1, 0, 1; 1, 1, 0])
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "mahalanobis");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'mahalanobis');
 %! [l, s, c] = predict (obj, xc);
 %! assert (s, [0.3, 0.7, 0; 0, 0.9, 0.1; 0.2, 0.2, 0.6], 1e-4)
 %! assert (c, [0.7, 0.3, 1; 1, 0.1, 0.9; 0.8, 0.8, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cosine");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cosine');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.3, 0.7], 1e-4)
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.7, 0.3], 1e-4)
 %!test
 %! xc = [5.2, 4.1, 1.5, 0.1; 5.1, 3.8, 1.9, 0.4; ...
 %!         5.1, 3.8, 1.5, 0.3; 4.9, 3.6, 1.4, 0.1];
-%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"; "setosa"; "setosa"; "setosa"})
+%! assert (l, {'setosa'; 'setosa'; 'setosa'; 'setosa'})
 %! assert (s, [1, 0, 0; 1, 0, 0; 1, 0, 0; 1, 0, 0])
 %! assert (c, [0, 1, 1; 0, 1, 1; 0, 1, 1; 0, 1, 1])
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 5);
+%! obj = fitcknn (x, y, 'NumNeighbors', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "minkowski", "Exponent", 5);
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'minkowski', 'Exponent', 5);
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 0.5, 0.5], 1e-4)
 %! assert (c, [1, 0.5, 0.5], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "jaccard");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'jaccard');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"})
+%! assert (l, {'setosa'})
 %! assert (s, [0.9, 0.1, 0], 1e-4)
 %! assert (c, [0.1, 0.9, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "mahalanobis");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'mahalanobis');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0.1000, 0.5000, 0.4000], 1e-4)
 %! assert (c, [0.9000, 0.5000, 0.6000], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "jaccard");
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'jaccard');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"})
+%! assert (l, {'setosa'})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "seuclidean");
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'seuclidean');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "chebychev");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'chebychev');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 0.7, 0.3], 1e-4)
 %! assert (c, [1, 0.3, 0.7], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cityblock");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cityblock');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 0.6, 0.4], 1e-4)
 %! assert (c, [1, 0.4, 0.6], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "cosine");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'cosine');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"virginica"})
+%! assert (l, {'virginica'})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "correlation");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'correlation');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"virginica"})
+%! assert (l, {'virginica'})
 %! assert (s, [0, 0.1, 0.9], 1e-4)
 %! assert (c, [1, 0.9, 0.1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 30, "distance", "spearman");
+%! obj = fitcknn (x, y, 'NumNeighbors', 30, 'distance', 'spearman');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"versicolor"})
+%! assert (l, {'versicolor'})
 %! assert (s, [0, 1, 0], 1e-4)
 %! assert (c, [1, 0, 1], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 30, "distance", "hamming");
+%! obj = fitcknn (x, y, 'NumNeighbors', 30, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"})
+%! assert (l, {'setosa'})
 %! assert (s, [0.4333, 0.3333, 0.2333], 1e-4)
 %! assert (c, [0.5667, 0.6667, 0.7667], 1e-4)
 %!test
 %! xc = [5, 3, 5, 1.45];
-%! obj = fitcknn (x, y, "NumNeighbors", 5, "distance", "hamming");
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"})
+%! assert (l, {'setosa'})
 %! assert (s, [0.8, 0.2, 0], 1e-4)
 %! assert (c, [0.2, 0.8, 1], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "correlation");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'correlation');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa"; "versicolor"; "virginica"})
+%! assert (l, {'setosa'; 'versicolor'; 'virginica'})
 %! assert (s, [1, 0, 0; 0, 1, 0; 0, 0.4, 0.6], 1e-4)
 %! assert (c, [0, 1, 1; 1, 0, 1; 1, 0.6, 0.4], 1e-4)
 %!test
 %! xc = [min(x); mean(x); max(x)];
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "distance", "hamming");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'distance', 'hamming');
 %! [l, s, c] = predict (obj, xc);
-%! assert (l, {"setosa";"setosa";"setosa"})
+%! assert (l, {'setosa';'setosa';'setosa'})
 %! assert (s, [0.9, 0.1, 0; 1, 0, 0; 0.5, 0, 0.5], 1e-4)
 %! assert (c, [0.1, 0.9, 1; 0, 1, 1; 0.5, 1, 0.5], 1e-4)
 
@@ -3097,80 +3097,80 @@ endfunction
 %!test
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
+%! rand ('seed', 23);
 %! CVMdl = crossval (obj);
 %! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 10)
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (! CVMdl.ModelParameters.Standardize)
 %!test
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! CVMdl = crossval (obj, "KFold", 5);
+%! rand ('seed', 23);
+%! CVMdl = crossval (obj, 'KFold', 5);
 %! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.KFold == 5)
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! rand ('seed', 23);
+%! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, 'mahalanobis'))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! CVMdl = crossval (obj, "HoldOut", 0.2);
+%! rand ('seed', 23);
+%! CVMdl = crossval (obj, 'HoldOut', 0.2);
 %! warning (status);
-%! CVMdl = crossval (obj, "LeaveOut", 'on');
+%! CVMdl = crossval (obj, 'LeaveOut', 'on');
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
 %! assert (CVMdl.ModelParameters.NumNeighbors == 10)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 %!test
-%! obj = fitcknn (x, y, "NumNeighbors", 10, "Distance", "cityblock");
+%! obj = fitcknn (x, y, 'NumNeighbors', 10, 'Distance', 'cityblock');
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
+%! rand ('seed', 23);
 %! partition = cvpartition (y, 'KFold', 3);
 %! warning (status);
 %! CVMdl = crossval (obj, 'cvPartition', partition);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert (CVMdl.KFold == 3)
 %! assert (CVMdl.ModelParameters.NumNeighbors == 10)
-%! assert (strcmp (CVMdl.ModelParameters.Distance, "cityblock"))
+%! assert (strcmp (CVMdl.ModelParameters.Distance, 'cityblock'))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
 %! assert (CVMdl.ModelParameters.Standardize == obj.Standardize)
 
 ## Test input validation for crossval method
 %!error<ClassificationKNN.crossval: Name-Value arguments must be in pairs.> ...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold")
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'kfold')
 %!error<ClassificationKNN.crossval: specify only one of the optional Name-Value paired arguments.>...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold", 12, "holdout", 0.2)
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'kfold', 12, 'holdout', 0.2)
 %!error<ClassificationKNN.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "kfold", 'a')
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'kfold', 'a')
 %!error<ClassificationKNN.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "holdout", 2)
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'holdout', 2)
 %!error<ClassificationKNN.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "leaveout", 1)
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'leaveout', 1)
 %!error<ClassificationKNN.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
-%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), "cvpartition", 1)
+%! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'cvpartition', 1)

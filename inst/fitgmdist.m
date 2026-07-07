@@ -97,11 +97,11 @@ function obj = fitgmdist (data, k, varargin)
   ## defaults for options
   diagonalCovar  = false;      # "full".  (true is "diagonal")
   sharedCovar    = false;
-  start          = "randSample";
+  start          = 'randSample';
   replicates     = 1;
   option.MaxIter = 100;
   option.TolFun  = 1e-6;
-  option.Display = "off";      # "off" (1 is "final", 2 is "iter")
+  option.Display = 'off';      # "off" (1 is "final", 2 is "iter")
   Regularizer    = 0;
   weights        = [];         # Each row i counts as "weights(i,1)" rows
 
@@ -117,19 +117,19 @@ function obj = fitgmdist (data, k, varargin)
   while (! isempty (prop))
     try
       switch (lower (prop{1}))
-        case {"sharedcovariance", "sharedcov"}
+        case {'sharedcovariance', 'sharedcov'}
           sharedCovar = prop{2};
-        case {"covariancetype", "covartype"}
+        case {'covariancetype', 'covartype'}
           diagonalCovar  = prop{2};
-        case {"regularizationvalue", "regularize"}
+        case {'regularizationvalue', 'regularize'}
           Regularizer = prop{2};
-        case "replicates"
+        case 'replicates'
           replicates = prop{2};
-        case "start"
+        case 'start'
           start = prop{2};
-        case "weights"
+        case 'weights'
           weights = prop{2};
-        case "options"
+        case 'options'
           option.MaxIter = prop{2}.MaxIter;
           option.TolFun  = prop{2}.TolFun;
           option.Display = prop{2}.Display;
@@ -162,13 +162,13 @@ function obj = fitgmdist (data, k, varargin)
   MaxIter = option.MaxIter;
   TolFun  = option.TolFun;
   switch (lower (option.Display))
-    case "off"
+    case 'off'
       Display = 0;
-    case "final"
+    case 'final'
       Display = 1;
-    case "iter"
+    case 'iter'
       Display = 2;
-    case "notify"
+    case 'notify'
       Display = 0;
     otherwise
       error ("fitgmdist: Unknown Display option %s.", option.Display);
@@ -188,7 +188,7 @@ function obj = fitgmdist (data, k, varargin)
   if (ischar (start))
     start = lower (start);
     switch (start)
-      case {"randsample", "plus", "cluster", "randsamplep", "plusp", "clusterp"}
+      case {'randsample', 'plus', 'cluster', 'randsamplep', 'plusp', 'clusterp'}
       otherwise
         error ("fitgmdist: Unknown Start value %s\n.", start);
     endswitch
@@ -236,9 +236,9 @@ function obj = fitgmdist (data, k, varargin)
   ## Check for the "CovarianceType" property
   if (! islogical (diagonalCovar))
     try
-      if (strcmpi (diagonalCovar, "diagonal"))
+      if (strcmpi (diagonalCovar, 'diagonal'))
         diagonalCovar = true;
-      elseif (strcmpi (diagonalCovar, "full"))
+      elseif (strcmpi (diagonalCovar, 'full'))
         diagonalCovar = false;
       else
         error ("fitgmdist: CovarianceType must be Full or Diagonal.");
@@ -290,7 +290,7 @@ function obj = fitgmdist (data, k, varargin)
     if (! isnumeric (data) || ! ismatrix (data) || ! isreal (data))
       error ("fitgmdist: first input argument must be a DxN real data matrix.");
     elseif (k > nRows || k < 0)
-      if (exists ("non_zero", "var") && k <= length (non_zero))
+      if (exists ('non_zero', 'var') && k <= length (non_zero))
         error (strcat ("fitgmdist: The number of non-zero weights (%d)", ...
                        " must be at least the number of components", ...
                        " (%d)."), nRows, k);
@@ -336,14 +336,14 @@ function obj = fitgmdist (data, k, varargin)
       if (! isempty (start))
         ## Initialize the means
         switch (start)
-          case {"randsample"}
+          case {'randsample'}
             if (isempty (weights))
               idx = randperm (nRows, k);
             else
               idx = randsample (nRows, k, false, weights);
             endif
             mu = data(idx, :);
-          case {"plus"}           # k-means++, by Arthur and Vassilios
+          case {'plus'}           # k-means++, by Arthur and Vassilios
             mu(1,:) = data(randi (nRows),:);
             d = inf (nRows, 1);   # Distance to nearest centroid so far
             for i = 2:k
@@ -356,14 +356,14 @@ function obj = fitgmdist (data, k, varargin)
               endif
               mu(i,:) = data(find (cs > rand * cs(end), 1), :);
             endfor
-          case {"cluster"}
+          case {'cluster'}
             subsamp = max (k, ceil (nRows/10));
             if (isempty (weights))
               idx = randperm (nRows, subsamp);
             else
               idx = randsample (nRows, subsamp, false, weights);
             endif
-            [~, mu] = kmeans (data(idx), k, "start", "sample");
+            [~, mu] = kmeans (data(idx), k, 'start', 'sample');
         endswitch
 
         ## Initialize the variance, unless set explicitly
@@ -399,7 +399,7 @@ function obj = fitgmdist (data, k, varargin)
           try
             p_x_l (:, i) = mvnpdf (data, mu(i, :), sig);
           catch ME
-            if (strfind (ME.message, "positive definite"))
+            if (strfind (ME.message, 'positive definite'))
               error (strcat ("fitgmdist: Covariance is not positive", ...
                              " definite.  Increase RegularizationValue."));
             else
@@ -547,20 +547,20 @@ endfunction
 %! initial_orientations = [38.0; 18.0];
 %! initial_weights = ones (1, nbOrientations) / nbOrientations;
 %! initial_Sigma = 10 * ones (1, 1, nbOrientations);
-%! start = struct ("mu", initial_orientations, "Sigma", initial_Sigma, ...
-%!                 "ComponentProportion", initial_weights);
-%! GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, "Start", start , ...
-%!                            "RegularizationValue", 0.0001)
+%! start = struct ('mu', initial_orientations, 'Sigma', initial_Sigma, ...
+%!                 'ComponentProportion', initial_weights);
+%! GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, 'Start', start , ...
+%!                            'RegularizationValue', 0.0001)
 
 ## Test results against MATLAB example
 %!test
 %! load fisheriris
 %! classes = unique (species);
-%! [~, score] = pca (meas, "NumComponents", 2);
+%! [~, score] = pca (meas, 'NumComponents', 2);
 %! options.MaxIter = 1000;
 %! options.TolFun = 1e-6;
-%! options.Display = "off";
-%! GMModel = fitgmdist (score, 2, "Options", options);
-%! assert (isa (GMModel, "gmdistribution"), true);
+%! options.Display = 'off';
+%! GMModel = fitgmdist (score, 2, 'Options', options);
+%! assert (isa (GMModel, 'gmdistribution'), true);
 %! assert (GMModel.mu, [1.3212, -0.0954; -2.6424, 0.1909], 1e-4);
 

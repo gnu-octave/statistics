@@ -56,10 +56,10 @@ function y = invgpdf (x, mu, lambda)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (lambda, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (lambda, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Return NaNs for out of range values of MU and LAMBDA parameters
@@ -91,15 +91,15 @@ endfunction
 %! y3 = invgpdf (x, 1, 3);
 %! y4 = invgpdf (x, 3, 0.2);
 %! y5 = invgpdf (x, 3, 1);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-y")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-y')
 %! grid on
 %! xlim ([0, 3])
 %! ylim ([0, 3])
-%! legend ({"μ = 1, σ = 0.2", "μ = 1, σ = 1", "μ = 1, σ = 3", ...
-%!          "μ = 3, σ = 0.2", "μ = 3, σ = 1"}, "location", "northeast")
-%! title ("Inverse Gaussian PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 1, σ = 0.2', 'μ = 1, σ = 1', 'μ = 1, σ = 3', ...
+%!          'μ = 3, σ = 0.2', 'μ = 3, σ = 1'}, 'location', 'northeast')
+%! title ('Inverse Gaussian PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

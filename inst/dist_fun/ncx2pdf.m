@@ -52,8 +52,8 @@ function y = ncx2pdf (x, df, lambda)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df, "single") || isa (lambda, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (df, 'single') || isa (lambda, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -251,7 +251,7 @@ endfunction
 ## Deviance term for binomial and Poisson probability calculation.
 function BP = BinoPoisson (x, np)
   if (isa (x,'single') || isa (np,'single'))
-    BP = zeros (size (x), "single");
+    BP = zeros (size (x), 'single');
   else
     BP = zeros (size (x));
   endif
@@ -288,17 +288,17 @@ endfunction
 %! y4 = ncx2pdf (x, 4, 1);
 %! y5 = ncx2pdf (x, 4, 2);
 %! y6 = ncx2pdf (x, 4, 3);
-%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", ...
-%!       x, y4, "-m", x, y5, "-c", x, y6, "-y")
+%! plot (x, y1, '-r', x, y2, '-g', x, y3, '-k', ...
+%!       x, y4, '-m', x, y5, '-c', x, y6, '-y')
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.32])
-%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
-%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
-%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northeast")
-%! title ("Noncentral chi-squared PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'df = 2, λ = 1', 'df = 2, λ = 2', ...
+%!          'df = 2, λ = 3', 'df = 4, λ = 1', ...
+%!          'df = 4, λ = 2', 'df = 4, λ = 3'}, 'location', 'northeast')
+%! title ('Noncentral chi-squared PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 %!demo
 %! ## Compare the noncentral chi-squared PDF with LAMBDA = 2 to the
@@ -307,14 +307,14 @@ endfunction
 %! x = 0:0.1:10;
 %! y1 = ncx2pdf (x, 4, 2);
 %! y2 = chi2pdf (x, 4);
-%! plot (x, y1, "-", x, y2, "-");
+%! plot (x, y1, '-', x, y2, '-');
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.32])
-%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
-%! title ("Noncentral chi-squared vs chi-squared PDFs")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'Noncentral T(10,1)', 'T(10)'}, 'location', 'northwest')
+%! title ('Noncentral chi-squared vs chi-squared PDFs')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x1, df, d1

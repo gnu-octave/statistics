@@ -77,7 +77,7 @@ endfunction
 %!error<normstat: function called with too few input arguments.> normstat ()
 %!error<normstat: function called with too few input arguments.> normstat (1)
 %!error<normstat: MU and SIGMA must be numeric.> normstat ({}, 2)
-%!error<normstat: MU and SIGMA must be numeric.> normstat (1, "")
+%!error<normstat: MU and SIGMA must be numeric.> normstat (1, '')
 %!error<normstat: MU and SIGMA must not be complex.> normstat (i, 2)
 %!error<normstat: MU and SIGMA must not be complex.> normstat (1, i)
 %!error<normstat: MU and SIGMA must be of common size or scalars.> ...

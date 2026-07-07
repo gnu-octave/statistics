@@ -175,9 +175,9 @@ function y = mvnpdf (x, mu, sigma)
         lnSDS = sum (log (R), 2);
       else
         ## Create arrays according to class type
-        if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
-          xRinv = zeros (row, col," single");
-          lnSDS = zeros (row, 1, "single");
+        if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'))
+          xRinv = zeros (row, col,' single');
+          lnSDS = zeros (row, 1, 'single');
         else
           xRinv = zeros (row, col);
           lnSDS = zeros (row, 1);

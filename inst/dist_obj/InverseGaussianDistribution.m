@@ -93,7 +93,7 @@ classdef InverseGaussianDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "InverseGaussianDistribution";
+    DistributionName = 'InverseGaussianDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} NumParameters
@@ -115,7 +115,7 @@ classdef InverseGaussianDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "lambda"};
+    ParameterNames = {'mu', 'lambda'};
 
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} ParameterDescription
@@ -127,12 +127,12 @@ classdef InverseGaussianDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Mean", "Shape"};
+    ParameterDescription = {'Mean', 'Shape'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "invg";
+    DistributionCode = 'invg';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -250,11 +250,11 @@ classdef InverseGaussianDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Inverse Gaussian distribution");
+      __disp__ (this, 'Inverse Gaussian distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Inverse Gaussian distribution");
+      __disp__ (this, 'Inverse Gaussian distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -305,9 +305,9 @@ classdef InverseGaussianDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -746,7 +746,7 @@ classdef InverseGaussianDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -768,7 +768,7 @@ classdef InverseGaussianDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -825,7 +825,7 @@ endfunction
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
 %! InverseGaussianDistribution(i, 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution("a", 1)
+%! InverseGaussianDistribution('a', 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
 %! InverseGaussianDistribution([1, 2], 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
@@ -839,7 +839,7 @@ endfunction
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
 %! InverseGaussianDistribution(1, i)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, "a")
+%! InverseGaussianDistribution(1, 'a')
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
 %! InverseGaussianDistribution(1, [1, 2])
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
@@ -847,7 +847,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (InverseGaussianDistribution, 2, "uper")
+%! cdf (InverseGaussianDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (InverseGaussianDistribution, 2, 3)
 
@@ -855,62 +855,62 @@ endfunction
 %!shared x
 %! x = invgrnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha")
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 0)
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 1)
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", "")
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", {0.05})
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "parameter", "mu", ...
-%!          "alpha", {0.05})
+%! paramci (InverseGaussianDistribution.fit (x), 'parameter', 'mu', ...
+%!          'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (InverseGaussianDistribution.fit (x), ...
-%!          "parameter", {"mu", "lambda", "param"})
+%!          'parameter', {'mu', 'lambda', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "lambda", "param"})
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'lambda', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "parameter", "param")
+%! paramci (InverseGaussianDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "NAME", "value")
+%! paramci (InverseGaussianDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (InverseGaussianDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "mu", "NAME", "value")
+%! paramci (InverseGaussianDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'mu', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (InverseGaussianDistribution, "Parent")
+%! plot (InverseGaussianDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (InverseGaussianDistribution, "PlotType", 12)
+%! plot (InverseGaussianDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (InverseGaussianDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (InverseGaussianDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (InverseGaussianDistribution, "PlotType", "pdfcdf")
+%! plot (InverseGaussianDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (InverseGaussianDistribution, "Discrete", "pdfcdf")
+%! plot (InverseGaussianDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (InverseGaussianDistribution, "Discrete", [1, 0])
+%! plot (InverseGaussianDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (InverseGaussianDistribution, "Discrete", {true})
+%! plot (InverseGaussianDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (InverseGaussianDistribution, "Parent", 12)
+%! plot (InverseGaussianDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (InverseGaussianDistribution, "Parent", "hax")
+%! plot (InverseGaussianDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (InverseGaussianDistribution, "invalidNAME", "pdf")
+%! plot (InverseGaussianDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (InverseGaussianDistribution, "PlotType", "probability")
+%! plot (InverseGaussianDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -924,23 +924,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (InverseGaussianDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display")
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display", 1)
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display", {1})
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, "NAME", "on")
+%! proflik (InverseGaussianDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (InverseGaussianDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (InverseGaussianDistribution.fit (x), 1, {[1 2 3]}, "Display", "on")
+%! proflik (InverseGaussianDistribution.fit (x), 1, {[1 2 3]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

@@ -95,8 +95,8 @@ function r = raylrnd (sigma, varargin)
   endif
 
   ## Cast into appropriate class
-  if (isa (sigma, "single"))
-    r = cast (r, "single");
+  if (isa (sigma, 'single'))
+    r = cast (r, 'single');
   endif
 
 endfunction

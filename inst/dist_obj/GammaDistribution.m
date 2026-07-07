@@ -91,7 +91,7 @@ classdef GammaDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "GammaDistribution";
+    DistributionName = 'GammaDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} NumParameters
@@ -113,7 +113,7 @@ classdef GammaDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"a", "b"};
+    ParameterNames = {'a', 'b'};
 
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} ParameterDescription
@@ -125,12 +125,12 @@ classdef GammaDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Shape", "Scale"};
+    ParameterDescription = {'Shape', 'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "gam";
+    DistributionCode = 'gam';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -248,11 +248,11 @@ classdef GammaDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "gamma distribution");
+      __disp__ (this, 'gamma distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "gamma distribution");
+      __disp__ (this, 'gamma distribution');
     endfunction
 
     function this = set.a (this, a)
@@ -303,9 +303,9 @@ classdef GammaDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -743,7 +743,7 @@ classdef GammaDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -764,7 +764,7 @@ classdef GammaDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -821,7 +821,7 @@ endfunction
 %!error <GammaDistribution: A must be a positive real scalar.> ...
 %! GammaDistribution(i, 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution("a", 1)
+%! GammaDistribution('a', 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
 %! GammaDistribution([1, 2], 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
@@ -835,7 +835,7 @@ endfunction
 %!error <GammaDistribution: B must be a positive real scalar.> ...
 %! GammaDistribution(1, i)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, "a")
+%! GammaDistribution(1, 'a')
 %!error <GammaDistribution: B must be a positive real scalar.> ...
 %! GammaDistribution(1, [1, 2])
 %!error <GammaDistribution: B must be a positive real scalar.> ...
@@ -843,7 +843,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (GammaDistribution, 2, "uper")
+%! cdf (GammaDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (GammaDistribution, 2, 3)
 
@@ -851,59 +851,59 @@ endfunction
 %!shared x
 %! x = gamrnd (1, 1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (GammaDistribution.fit (x), "alpha")
+%! paramci (GammaDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 0)
+%! paramci (GammaDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 1)
+%! paramci (GammaDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (GammaDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", "")
+%! paramci (GammaDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", {0.05})
+%! paramci (GammaDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GammaDistribution.fit (x), "parameter", "a", "alpha", {0.05})
+%! paramci (GammaDistribution.fit (x), 'parameter', 'a', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (GammaDistribution.fit (x), "parameter", {"a", "b", "param"})
+%! paramci (GammaDistribution.fit (x), 'parameter', {'a', 'b', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"a", "b", "param"})
+%! paramci (GammaDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'a', 'b', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GammaDistribution.fit (x), "parameter", "param")
+%! paramci (GammaDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (GammaDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GammaDistribution.fit (x), "NAME", "value")
+%! paramci (GammaDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (GammaDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GammaDistribution.fit (x), "alpha", 0.01, "parameter", "a", ...
-%!          "NAME", "value")
+%! paramci (GammaDistribution.fit (x), 'alpha', 0.01, 'parameter', 'a', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (GammaDistribution, "Parent")
+%! plot (GammaDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GammaDistribution, "PlotType", 12)
+%! plot (GammaDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (GammaDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (GammaDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GammaDistribution, "PlotType", "pdfcdf")
+%! plot (GammaDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GammaDistribution, "Discrete", "pdfcdf")
+%! plot (GammaDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GammaDistribution, "Discrete", [1, 0])
+%! plot (GammaDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GammaDistribution, "Discrete", {true})
+%! plot (GammaDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GammaDistribution, "Parent", 12)
+%! plot (GammaDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GammaDistribution, "Parent", "hax")
+%! plot (GammaDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (GammaDistribution, "invalidNAME", "pdf")
+%! plot (GammaDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (GammaDistribution, "PlotType", "probability")
+%! plot (GammaDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -917,23 +917,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (GammaDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display")
+%! proflik (GammaDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display", 1)
+%! proflik (GammaDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display", {1})
+%! proflik (GammaDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (GammaDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (GammaDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (GammaDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (GammaDistribution.fit (x), 1, "NAME", "on")
+%! proflik (GammaDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (GammaDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (GammaDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (GammaDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

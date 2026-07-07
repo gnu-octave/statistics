@@ -92,7 +92,7 @@
 function p = copulacdf (family, x, theta, df)
 
   ## Check arguments
-  if (nargin != 3 && (nargin != 4 || ! strcmpi (family, "t")))
+  if (nargin != 3 && (nargin != 4 || ! strcmpi (family, 't')))
     print_usage ();
   endif
 
@@ -112,7 +112,7 @@ function p = copulacdf (family, x, theta, df)
   ## Check family and copula parameters
   switch (lower_family)
 
-    case {"gaussian", "t"}
+    case {'gaussian', 't'}
       ## Family with a covariance matrix
       if (d == 2 && isscalar (theta))
         ## Expand a scalar to a correlation matrix
@@ -131,7 +131,7 @@ function p = copulacdf (family, x, theta, df)
         df = df(:);
       endif
 
-    case {"clayton", "gumbel", "frank", "amh"}
+    case {'clayton', 'gumbel', 'frank', 'amh'}
       ## Archimedian one parameter family
       if (! isvector (theta) || (! isscalar (theta) && length (theta) != n))
         error (strcat ("copulacdf: THETA must be a vector with the same", ...
@@ -142,7 +142,7 @@ function p = copulacdf (family, x, theta, df)
         theta = repmat (theta, n, 1);
       endif
 
-    case {"fgm"}
+    case {'fgm'}
       ## Exponential number of parameters
       if (! ismatrix (theta) || size (theta, 2) != (2 .^ d - d - 1) || ...
           (size (theta, 1) != 1 && size (theta, 1) != n))
@@ -169,19 +169,19 @@ function p = copulacdf (family, x, theta, df)
     ## Compute the cumulative distribution function according to family
     switch (lower_family)
 
-      case {"gaussian"}
+      case {'gaussian'}
         ## The Gaussian family
         p = mvncdf (norminv (x), zeros (1, d), theta);
         ## No parameter bounds check
         k = [];
 
-      case {"t"}
+      case {'t'}
         ## The Student's t family
         p = mvtcdf (tinv (x, df), theta, df);
         ## No parameter bounds check
         k = [];
 
-      case {"clayton"}
+      case {'clayton'}
         ## The Clayton family
         p = exp (-log (max (sum (x .^ (repmat (-theta, 1, d)), 2) ...
                  - d + 1, 0)) ./ theta);
@@ -197,14 +197,14 @@ function p = copulacdf (family, x, theta, df)
           k = find (! (theta >= -1) | ! (theta < inf));
         endif
 
-      case {"gumbel"}
+      case {'gumbel'}
         ## The Gumbel-Hougaard family
         p = exp (-(sum ((-log (x)) .^ repmat (theta, 1, d), 2)) ...
                                    .^ (1 ./ theta));
         ## Check bounds
         k = find (! (theta >= 1) | ! (theta < inf));
 
-      case {"frank"}
+      case {'frank'}
         ## The Frank family
         p = -log (1 + (prod (expm1 (repmat (-theta, 1, d) .* x), 2)) ./ ...
                   (expm1 (-theta) .^ (d - 1))) ./ theta;
@@ -220,7 +220,7 @@ function p = copulacdf (family, x, theta, df)
           k = find (! (theta > -inf) | ! (theta < inf));
         endif
 
-      case {"amh"}
+      case {'amh'}
         ## The Ali-Mikhail-Haq family
         p = (theta - 1) ./ (theta - prod ((1 + repmat (theta, 1, d) ...
                         .* (x - 1)) ./ x, 2));
@@ -231,7 +231,7 @@ function p = copulacdf (family, x, theta, df)
           k = find (! (theta >= -1) | ! (theta < 1));
         endif
 
-      case {"fgm"}
+      case {'fgm'}
         ## The Farlie-Gumbel-Morgenstern family
         ## All binary combinations
         bcomb = logical (floor (mod (((0:(2 .^ d - 1))' * 2 .^ ...
@@ -270,29 +270,29 @@ endfunction
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
-%! p = copulacdf ("Clayton", x, theta);
+%! p = copulacdf ('Clayton', x, theta);
 %! expected_p = [0.1395; 0.1767];
 %! assert (p, expected_p, 0.001);
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
-%! p = copulacdf ("Gumbel", x, 2);
+%! p = copulacdf ('Gumbel', x, 2);
 %! expected_p = [0.1464; 0.1464];
 %! assert (p, expected_p, 0.001);
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
-%! p = copulacdf ("Frank", x, theta);
+%! p = copulacdf ('Frank', x, theta);
 %! expected_p = [0.0699; 0.0930];
 %! assert (p, expected_p, 0.001);
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [0.3; 0.7];
-%! p = copulacdf ("AMH", x, theta);
+%! p = copulacdf ('AMH', x, theta);
 %! expected_p = [0.0629; 0.0959];
 %! assert (p, expected_p, 0.001);
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.1:0.4];
 %! theta = [0.2, 0.1, 0.1, 0.05];
-%! p = copulacdf ("FGM", x, theta);
+%! p = copulacdf ('FGM', x, theta);
 %! expected_p = [0.0558; 0.0293];
 %! assert (p, expected_p, 0.001);

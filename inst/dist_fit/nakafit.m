@@ -104,14 +104,14 @@ function [paramhat, paramci] = nakafit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("nakafit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -154,20 +154,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Nakagami distributions
-%! randg ("seed", 5)  # for reproducibility
+%! randg ('seed', 5)  # for reproducibility
 %! r1 = nakarnd (0.5, 1, 2000, 1);
-%! randg ("seed", 2)   # for reproducibility
+%! randg ('seed', 2)   # for reproducibility
 %! r2 = nakarnd (5, 1, 2000, 1);
-%! randg ("seed", 7)   # for reproducibility
+%! randg ('seed', 7)   # for reproducibility
 %! r3 = nakarnd (2, 2, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0.05:0.1:3.5], 10);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 2.5]);
 %! xlim ([0, 3.0]);
 %! hold on
@@ -180,21 +180,21 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0.01:0.1:3.01];
 %! y = nakapdf (x, mu_omegaA(1), mu_omegaA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = nakapdf (x, mu_omegaB(1), mu_omegaB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = nakapdf (x, mu_omegaC(1), mu_omegaC(2));
-%! plot (x, y, "-^c");
-%! legend ({"Normalized HIST of sample 1 with μ=0.5 and ω=1", ...
-%!          "Normalized HIST of sample 2 with μ=5 and ω=1", ...
-%!          "Normalized HIST of sample 3 with μ=2 and ω=2", ...
+%! plot (x, y, '-^c');
+%! legend ({'Normalized HIST of sample 1 with μ=0.5 and ω=1', ...
+%!          'Normalized HIST of sample 2 with μ=5 and ω=1', ...
+%!          'Normalized HIST of sample 3 with μ=2 and ω=2', ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f and ω=%0.2f", ...
 %!                  mu_omegaA(1), mu_omegaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f and ω=%0.2f", ...
 %!                  mu_omegaB(1), mu_omegaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and ω=%0.2f", ...
 %!                  mu_omegaC(1), mu_omegaC(2))})
-%! title ("Three population samples from different Nakagami distributions")
+%! title ('Three population samples from different Nakagami distributions')
 %! hold off
 
 ## Test output
@@ -219,7 +219,7 @@ endfunction
 %!error<nakafit: X must be a vector.> nakafit (ones (2,5));
 %!error<nakafit: wrong value for ALPHA.> nakafit ([1, 2, 3, 4, 5], 1.2);
 %!error<nakafit: wrong value for ALPHA.> nakafit ([1, 2, 3, 4, 5], 0);
-%!error<nakafit: wrong value for ALPHA.> nakafit ([1, 2, 3, 4, 5], "alpha");
+%!error<nakafit: wrong value for ALPHA.> nakafit ([1, 2, 3, 4, 5], 'alpha');
 %!error<nakafit: X and CENSOR vectors mismatch.> ...
 %! nakafit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<nakafit: X and CENSOR vectors mismatch.> ...

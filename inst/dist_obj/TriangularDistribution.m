@@ -102,7 +102,7 @@ classdef TriangularDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "TriangularDistribution";
+    DistributionName = 'TriangularDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} NumParameters
@@ -124,7 +124,7 @@ classdef TriangularDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"A", "B", "C"};
+    ParameterNames = {'A', 'B', 'C'};
 
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} ParameterDescription
@@ -136,12 +136,12 @@ classdef TriangularDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Lower limit", "Peak location", "Upper limit"};
+    ParameterDescription = {'Lower limit', 'Peak location', 'Upper limit'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "tri";
+    DistributionCode = 'tri';
   endproperties
 
   properties (GetAccess = public, SetAccess = protected)
@@ -199,11 +199,11 @@ classdef TriangularDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Triangular distribution");
+      __disp__ (this, 'Triangular distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Triangular distribution");
+      __disp__ (this, 'Triangular distribution');
     endfunction
 
     function this = set.A (this, A)
@@ -257,9 +257,9 @@ classdef TriangularDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -583,8 +583,8 @@ endfunction
 %! ## this data and plot a PDF of the fitted distribution superimposed on a
 %! ## histogram of the data.
 %!
-%! pd_fixed = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Triangular', 'A', 0, 'B', 1, 'C', 2);
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! A = min (data);
 %! C = mean (data);
@@ -645,7 +645,7 @@ endfunction
 %!error <TriangularDistribution: lower limit A must be a real scalar.> ...
 %! TriangularDistribution ([1, 2], 1, 2)
 %!error <TriangularDistribution: lower limit A must be a real scalar.> ...
-%! TriangularDistribution ("a", 1, 2)
+%! TriangularDistribution ('a', 1, 2)
 %!error <TriangularDistribution: lower limit A must be a real scalar.> ...
 %! TriangularDistribution (NaN, 1, 2)
 %!error <TriangularDistribution: mode B must be a real scalar.> ...
@@ -655,7 +655,7 @@ endfunction
 %!error <TriangularDistribution: mode B must be a real scalar.> ...
 %! TriangularDistribution (1, [1, 2], 2)
 %!error <TriangularDistribution: mode B must be a real scalar.> ...
-%! TriangularDistribution (1, "a", 2)
+%! TriangularDistribution (1, 'a', 2)
 %!error <TriangularDistribution: mode B must be a real scalar.> ...
 %! TriangularDistribution (1, NaN, 2)
 %!error <TriangularDistribution: upper limit C must be a real scalar.> ...
@@ -665,7 +665,7 @@ endfunction
 %!error <TriangularDistribution: upper limit C must be a real scalar.> ...
 %! TriangularDistribution (1, 2, [1, 2])
 %!error <TriangularDistribution: upper limit C must be a real scalar.> ...
-%! TriangularDistribution (1, 2, "a")
+%! TriangularDistribution (1, 2, 'a')
 %!error <TriangularDistribution: upper limit C must be a real scalar.> ...
 %! TriangularDistribution (1, 2, NaN)
 %!error <TriangularDistribution: lower limit A must be less than upper limit C.> ...
@@ -675,33 +675,33 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (TriangularDistribution, 2, "uper")
+%! cdf (TriangularDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (TriangularDistribution, 2, 3)
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (TriangularDistribution, "Parent")
+%! plot (TriangularDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (TriangularDistribution, "PlotType", 12)
+%! plot (TriangularDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (TriangularDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (TriangularDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (TriangularDistribution, "PlotType", "pdfcdf")
+%! plot (TriangularDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (TriangularDistribution, "Discrete", "pdfcdf")
+%! plot (TriangularDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (TriangularDistribution, "Discrete", [1, 0])
+%! plot (TriangularDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (TriangularDistribution, "Discrete", {true})
+%! plot (TriangularDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (TriangularDistribution, "Parent", 12)
+%! plot (TriangularDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (TriangularDistribution, "Parent", "hax")
+%! plot (TriangularDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (TriangularDistribution, "invalidNAME", "pdf")
+%! plot (TriangularDistribution, 'invalidNAME', 'pdf')
 %!error <'probability' PlotType is not supported for 'TriangularDistribution'.> ...
-%! plot (TriangularDistribution, "PlotType", "probability")
+%! plot (TriangularDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

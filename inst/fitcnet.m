@@ -143,15 +143,15 @@ endfunction
 %! load fisheriris
 %! Mdl = fitcnet (meas, species);
 %! pred_species = resubPredict (Mdl);
-%! confusionchart (species, pred_species, "Title", ...
-%! "Fully Connected Neural Network classification on Fisher's Iris dataset");
+%! confusionchart (species, pred_species, 'Title', ...
+%! 'Fully Connected Neural Network classification on Fisher''s Iris dataset');
 
 ## Test constructor
 %!test
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
-%! Mdl = fitcnet (x, y, "IterationLimit", 50);
+%! Mdl = fitcnet (x, y, 'IterationLimit', 50);
 %! assert (class (Mdl), "ClassificationNeuralNetwork");
 %! assert (numel (Mdl.ModelParameters.LayerWeights), 2);
 %! assert (size (Mdl.ModelParameters.LayerWeights{1}), [10, 5]);

@@ -53,8 +53,8 @@ function y = ricepdf (x, s, sigma)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (s, "single") || isa (sigma, "single"));
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (s, 'single') || isa (sigma, 'single'));
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -89,15 +89,15 @@ endfunction
 %! y3 = ricepdf (x, 1, 1);
 %! y4 = ricepdf (x, 2, 1);
 %! y5 = ricepdf (x, 4, 1);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-m", x, y5, "-k")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-m', x, y5, '-k')
 %! grid on
 %! ylim ([0, 0.65])
 %! xlim ([0, 8])
-%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
-%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northeast")
-%! title ("Rician PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'s = 0, σ = 1', 's = 0.5, σ = 1', 's = 1, σ = 1', ...
+%!          's = 2, σ = 1', 's = 4, σ = 1'}, 'location', 'northeast')
+%! title ('Rician PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

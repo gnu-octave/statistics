@@ -98,12 +98,12 @@ function [varargout] = einstein (a, b, varargin)
   all.rhat = [all.rhat, tmp_rhat];
 
   ## Plot four-tile clusters
-  patch (all.that(:,[1:2:end]), all.that(:,[2:2:end]), "LineWidth", 2, ...
-         "FaceColor", "c", "EdgeColor","k");
-  patch (all.rhat(:,[1:2:end]), all.rhat(:,[2:2:end]), "LineWidth", 2, ...
-         "FaceColor", "b", "EdgeColor","k");
+  patch (all.that(:,[1:2:end]), all.that(:,[2:2:end]), 'LineWidth', 2, ...
+         'FaceColor', 'c', 'EdgeColor','k');
+  patch (all.rhat(:,[1:2:end]), all.rhat(:,[2:2:end]), 'LineWidth', 2, ...
+         'FaceColor', 'b', 'EdgeColor','k');
 
-  title (sprintf ("a = %4.2f  b = %4.2f", a, b), "FontSize",30)
+  title (sprintf ("a = %4.2f  b = %4.2f", a, b), 'FontSize',30)
 
   ## Make a single-hat cluster
   translate = three_hat(10,[3,4]) - single_hat(2,:);
@@ -111,9 +111,9 @@ function [varargout] = einstein (a, b, varargin)
   all.shat = singlehat;
 
   ## Plot single-tile cluster
-  patch (all.shat(:,1), all.shat(:,2), "LineWidth", 2, ...
-         "FaceColor", [0.95, 0.95, 0.95], "EdgeColor","k");
-  axis ("equal")
+  patch (all.shat(:,1), all.shat(:,2), 'LineWidth', 2, ...
+         'FaceColor', [0.95, 0.95, 0.95], 'EdgeColor','k');
+  axis ('equal')
 
   ## Make a paired-hat cluster
   paired_hat1 = all.shat + (all.rhat(9,[5,6]) - all.shat(5,:));
@@ -131,8 +131,8 @@ function [varargout] = einstein (a, b, varargin)
   all.phat = [all.phat, tmp_phat];
 
   ## Plot paired-tiles clusters
-  patch (all.phat(:,[1:2:end]), all.phat(:,[2:2:end]), "LineWidth", 2, ...
-         "FaceColor", [0.9, 0.9, 0.9], "EdgeColor","k");
+  patch (all.phat(:,[1:2:end]), all.phat(:,[2:2:end]), 'LineWidth', 2, ...
+         'FaceColor', [0.9, 0.9, 0.9], 'EdgeColor','k');
 
   ## Make a fylfot cluster
   fylfot_hat = paired_hat;
@@ -156,8 +156,8 @@ function [varargout] = einstein (a, b, varargin)
   all.fhat = [all.fhat, tmp_fhat];
 
   ## Plot fylfot clusters
-  patch (all.fhat(:,[1:2:end]), all.fhat(:,[2:2:end]), "LineWidth", 2, ...
-         "FaceColor", "r", "EdgeColor","k");
+  patch (all.fhat(:,[1:2:end]), all.fhat(:,[2:2:end]), 'LineWidth', 2, ...
+         'FaceColor', 'r', 'EdgeColor','k');
 
   if (nargout > 0)
     varargout{1} = all;
@@ -234,7 +234,7 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   tiles = einstein (0.4, 0.6);
 %!   assert (isstruct (tiles), true);

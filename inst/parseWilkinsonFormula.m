@@ -1228,7 +1228,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
     if (isempty (t))
       term_strs{end+1} = ''; 
     else
-      if (length (t) == 1 && any (strfind (t{1}, "(")))
+      if (length (t) == 1 && any (strfind (t{1}, '(')))
          term_strs{end+1} = t{1};
       else
          term_strs{end+1} = strjoin (sort (t), '*');
@@ -1246,7 +1246,7 @@ function eq_list = run_equation_builder (lhs_vars, rhs_terms)
       coeff = sprintf ("c%d", c_idx++);
       if (isempty (t_str))
         rhs_parts{end+1} = coeff;
-      elseif (strcmp (t_str, "1"))
+      elseif (strcmp (t_str, '1'))
         rhs_parts{end+1} = coeff;
       else
         rhs_parts{end+1} = sprintf ("%s*%s", coeff, t_str);

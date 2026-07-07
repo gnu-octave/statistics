@@ -55,12 +55,12 @@ function x = ncx2inv (p, df, lambda)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (df, "single") || isa (lambda, "single"))
-    x = NaN (size (p), "single");
-    crit = sqrt (eps ("single"));
+  if (isa (p, 'single') || isa (df, 'single') || isa (lambda, 'single'))
+    x = NaN (size (p), 'single');
+    crit = sqrt (eps ('single'));
   else
-    x = NaN (size (p), "double");
-    crit = sqrt (eps ("double"));
+    x = NaN (size (p), 'double');
+    crit = sqrt (eps ('double'));
   endif
 
   ## For lambda == 0, call chi2inv
@@ -148,16 +148,16 @@ endfunction
 %! x4 = ncx2inv (p, 4, 1);
 %! x5 = ncx2inv (p, 4, 2);
 %! x6 = ncx2inv (p, 4, 3);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", ...
-%!       p, x4, "-m", p, x5, "-c", p, x6, "-y")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-k', ...
+%!       p, x4, '-m', p, x5, '-c', p, x6, '-y')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
-%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
-%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northwest")
-%! title ("Noncentral chi-squared iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'df = 2, λ = 1', 'df = 2, λ = 2', ...
+%!          'df = 2, λ = 3', 'df = 4, λ = 1', ...
+%!          'df = 4, λ = 2', 'df = 4, λ = 3'}, 'location', 'northwest')
+%! title ('Noncentral chi-squared iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 %!demo
 %! ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
@@ -166,13 +166,13 @@ endfunction
 %! p = 0.001:0.001:0.999;
 %! x1 = ncx2inv (p, 4, 2);
 %! x2 = chi2inv (p, 4);
-%! plot (p, x1, "-", p, x2, "-");
+%! plot (p, x1, '-', p, x2, '-');
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
-%! title ("Noncentral chi-squared vs chi-squared quantile functions")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'Noncentral χ^2(4,2)', 'χ^2(4)'}, 'location', 'northwest')
+%! title ('Noncentral chi-squared vs chi-squared quantile functions')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!test

@@ -62,11 +62,11 @@ function [varargout] = wblcdf (x, varargin)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 1 && strcmpi (varargin{end}, 'upper'))
     uflag = true;
     varargin(end) = [];
   elseif (nargin > 1  && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
+          ! strcmpi (varargin{end}, 'upper'))
     error ("wblcdf: invalid argument for upper tail.");
   elseif (nargin > 1 && isempty (varargin{end}))
     uflag = false;
@@ -123,10 +123,10 @@ function [varargout] = wblcdf (x, varargin)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (lambda, 'single') || isa (k, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Return NaN for out of range parameters.
@@ -186,29 +186,29 @@ endfunction
 %! p2 = wblcdf (x, 1, 1);
 %! p3 = wblcdf (x, 1, 1.5);
 %! p4 = wblcdf (x, 1, 5);
-%! plot (x, p1, "-b", x, p2, "-r", x, p3, "-m", x, p4, "-g")
+%! plot (x, p1, '-b', x, p2, '-r', x, p3, '-m', x, p4, '-g')
 %! grid on
-%! legend ({"λ = 1, k = 0.5", "λ = 1, k = 1", ...
-%!          "λ = 1, k = 1.5", "λ = 1, k = 5"}, "location", "southeast")
-%! title ("Weibull CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'λ = 1, k = 0.5', 'λ = 1, k = 1', ...
+%!          'λ = 1, k = 1.5', 'λ = 1, k = 5'}, 'location', 'southeast')
+%! title ('Weibull CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
 %! x = [-1 0 0.5 1 Inf];
 %! y = [0, 1-exp(-x(2:4)), 1];
 %!assert (wblcdf (x, ones (1,5), ones (1,5)), y, 1e-16)
-%!assert (wblcdf (x, ones (1,5), ones (1,5), "upper"), 1 - y)
-%!assert (wblcdf (x, "upper"), 1 - y)
+%!assert (wblcdf (x, ones (1,5), ones (1,5), 'upper'), 1 - y)
+%!assert (wblcdf (x, 'upper'), 1 - y)
 %!assert (wblcdf (x, 1, ones (1,5)), y, 1e-16)
 %!assert (wblcdf (x, ones (1,5), 1), y, 1e-16)
 %!assert (wblcdf (x, [0 1 NaN Inf 1], 1), [NaN 0 NaN 0 1])
-%!assert (wblcdf (x, [0 1 NaN Inf 1], 1, "upper"), 1 - [NaN 0 NaN 0 1])
+%!assert (wblcdf (x, [0 1 NaN Inf 1], 1, 'upper'), 1 - [NaN 0 NaN 0 1])
 %!assert (wblcdf (x, 1, [0 1 NaN Inf 1]), [NaN 0 NaN y(4:5)])
-%!assert (wblcdf (x, 1, [0 1 NaN Inf 1], "upper"), 1 - [NaN 0 NaN y(4:5)])
+%!assert (wblcdf (x, 1, [0 1 NaN Inf 1], 'upper'), 1 - [NaN 0 NaN y(4:5)])
 %!assert (wblcdf ([x(1:2) NaN x(4:5)], 1, 1), [y(1:2) NaN y(4:5)])
-%!assert (wblcdf ([x(1:2) NaN x(4:5)], 1, 1, "upper"), 1 - [y(1:2) NaN y(4:5)])
+%!assert (wblcdf ([x(1:2) NaN x(4:5)], 1, 1, 'upper'), 1 - [y(1:2) NaN y(4:5)])
 
 ## Test class of input preserved
 %!assert (wblcdf ([x, NaN], 1, 1), [y, NaN], 1e-16)
@@ -219,7 +219,7 @@ endfunction
 ## Test input validation
 %!error<wblcdf: invalid number of input arguments.> wblcdf ()
 %!error<wblcdf: invalid number of input arguments.> wblcdf (1,2,3,4,5,6,7)
-%!error<wblcdf: invalid argument for upper tail.> wblcdf (1, 2, 3, 4, "uper")
+%!error<wblcdf: invalid argument for upper tail.> wblcdf (1, 2, 3, 4, 'uper')
 %!error<wblcdf: X, LAMBDA, and K must be of common size or scalars.> ...
 %! wblcdf (ones (3), ones (2), ones (2))
 %!error<wblcdf: invalid size of covariance matrix.> wblcdf (2, 3, 4, [1, 2])
@@ -230,7 +230,7 @@ endfunction
 %!error<wblcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! wblcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<wblcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! wblcdf (1, 2, 3, [1, 0; 0, 1], "alpha", "upper")
+%! wblcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (i, 2, 2)
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (2, i, 2)
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (2, 2, i)

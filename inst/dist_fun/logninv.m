@@ -66,8 +66,8 @@ function x = logninv (p, mu = 0, sigma = 1)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -94,14 +94,14 @@ endfunction
 %! x1 = logninv (p, 0, 1);
 %! x2 = logninv (p, 0, 0.5);
 %! x3 = logninv (p, 0, 0.25);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r')
 %! grid on
 %! ylim ([0, 3])
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
-%!         "location", "northwest")
-%! title ("Log-normal iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 0.5', 'μ = 0, σ = 0.25'}, ...
+%!         'location', 'northwest')
+%! title ('Log-normal iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

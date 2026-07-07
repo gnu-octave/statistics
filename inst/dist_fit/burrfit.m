@@ -105,14 +105,14 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("burrfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -186,8 +186,8 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
       c0 = log(3)/log(xl_upperq/xl_median);
     else
       l0 = 1;
-      opts = optimset ("fzero");
-      opts = optimset (opts, "Display", "off");
+      opts = optimset ('fzero');
+      opts = optimset (opts, 'Display', 'off');
       cmax  = log(realmax)/(2*log(xl_upperq/xl_median));
       c0 = fzero (@(c)(xl_upperq/xl_median).^c-xl_median.^c-2, [0, cmax], opts);
     endif
@@ -305,20 +305,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Burr type XII distributions
-%! rand ("seed", 4);    # for reproducibility
+%! rand ('seed', 4);    # for reproducibility
 %! r1 = burrrnd (3.5, 2, 2.5, 10000, 1);
-%! rand ("seed", 2);    # for reproducibility
+%! rand ('seed', 2);    # for reproducibility
 %! r2 = burrrnd (1, 3, 1, 10000, 1);
-%! rand ("seed", 9);    # for reproducibility
+%! rand ('seed', 9);    # for reproducibility
 %! r3 = burrrnd (0.5, 2, 3, 10000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0.1:0.2:20], [18, 5, 3]);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 3]);
 %! xlim ([0, 5]);
 %! hold on
@@ -331,22 +331,22 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0.01:0.15:15];
 %! y = burrpdf (x, lambda_c_kA(1), lambda_c_kA(2), lambda_c_kA(3));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = burrpdf (x, lambda_c_kB(1), lambda_c_kB(2), lambda_c_kB(3));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = burrpdf (x, lambda_c_kC(1), lambda_c_kC(2), lambda_c_kC(3));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with λ=3.5, c=2, and k=2.5", ...
-%!          "Normalized HIST of sample 2 with λ=1, c=3, and k=1", ...
-%!          "Normalized HIST of sample 3 with λ=0.5, c=2, and k=3", ...
+%! legend ({'Normalized HIST of sample 1 with λ=3.5, c=2, and k=2.5', ...
+%!          'Normalized HIST of sample 2 with λ=1, c=3, and k=1', ...
+%!          'Normalized HIST of sample 3 with λ=0.5, c=2, and k=3', ...
 %!  sprintf("PDF for sample 1 with estimated λ=%0.2f, c=%0.2f, and k=%0.2f", ...
 %!          lambda_c_kA(1), lambda_c_kA(2), lambda_c_kA(3)), ...
 %!  sprintf("PDF for sample 2 with estimated λ=%0.2f, c=%0.2f, and k=%0.2f", ...
 %!          lambda_c_kB(1), lambda_c_kB(2), lambda_c_kB(3)), ...
 %!  sprintf("PDF for sample 3 with estimated λ=%0.2f, c=%0.2f, and k=%0.2f", ...
 %!          lambda_c_kC(1), lambda_c_kC(2), lambda_c_kC(3))})
-%! title ("Three population samples from different Burr type XII distributions")
+%! title ('Three population samples from different Burr type XII distributions')
 %! hold off
 
 ## Test output
@@ -391,7 +391,7 @@ endfunction
 %!error<burrfit: X must contain only positive values.> burrfit ([-1 2 3 4]);
 %!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 1.2);
 %!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 0);
-%!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], "alpha");
+%!error<burrfit: wrong value for ALPHA.> burrfit ([1, 2, 3, 4, 5], 'alpha');
 %!error<burrfit: X and CENSOR vectors mismatch.> ...
 %! burrfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<burrfit: X and CENSOR vectors mismatch.> ...

@@ -66,7 +66,7 @@ endfunction
 ## Input validation tests
 %!error<chi2stat: function called with too few input arguments.> chi2stat ()
 %!error<chi2stat: DF must be numeric.> chi2stat ({})
-%!error<chi2stat: DF must be numeric.> chi2stat ("")
+%!error<chi2stat: DF must be numeric.> chi2stat ('')
 %!error<chi2stat: DF must not be complex.> chi2stat (i)
 
 ## Output validation tests

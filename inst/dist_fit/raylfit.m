@@ -117,20 +117,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Rayleigh distributions
-%! rand ("seed", 2);    # for reproducibility
+%! rand ('seed', 2);    # for reproducibility
 %! r1 = raylrnd (1, 1000, 1);
-%! rand ("seed", 2);    # for reproducibility
+%! rand ('seed', 2);    # for reproducibility
 %! r2 = raylrnd (2, 1000, 1);
-%! rand ("seed", 3);    # for reproducibility
+%! rand ('seed', 3);    # for reproducibility
 %! r3 = raylrnd (4, 1000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0.5:0.5:10.5], 2);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! hold on
 %!
 %! ## Estimate their lambda parameter
@@ -141,23 +141,23 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:0.1:10];
 %! y = raylpdf (x, sigmaA);
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = raylpdf (x, sigmaB);
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = raylpdf (x, sigmaC);
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! xlim ([0, 10])
 %! ylim ([0, 0.7])
-%! legend ({"Normalized HIST of sample 1 with σ=1", ...
-%!          "Normalized HIST of sample 2 with σ=2", ...
-%!          "Normalized HIST of sample 3 with σ=4", ...
+%! legend ({'Normalized HIST of sample 1 with σ=1', ...
+%!          'Normalized HIST of sample 2 with σ=2', ...
+%!          'Normalized HIST of sample 3 with σ=4', ...
 %!          sprintf("PDF for sample 1 with estimated σ=%0.2f", ...
 %!                  sigmaA), ...
 %!          sprintf("PDF for sample 2 with estimated σ=%0.2f", ...
 %!                  sigmaB), ...
 %!          sprintf("PDF for sample 3 with estimated σ=%0.2f", ...
 %!                  sigmaC)})
-%! title ("Three population samples from different Rayleigh distributions")
+%! title ('Three population samples from different Rayleigh distributions')
 %! hold off
 
 ## Test output

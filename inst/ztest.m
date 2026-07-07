@@ -84,25 +84,25 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   endif
   ## Add defaults
   alpha = 0.05;
-  tail = "both";
+  tail = 'both';
   dim = [];
   if (nargin > 3)
     for idx = 4:2:nargin
       name = varargin{idx-3};
       value = varargin{idx-2};
       switch (lower (name))
-        case "alpha"
+        case 'alpha'
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
             error ("ztest: invalid VALUE for alpha.");
           endif
-        case "tail"
+        case 'tail'
           tail = value;
-          if (! any (strcmpi (tail, {"both", "left", "right"})))
+          if (! any (strcmpi (tail, {'both', 'left', 'right'})))
             error ("ztest: invalid VALUE for tail.");
           endif
-        case "dim"
+        case 'dim'
           dim = value;
           if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
             error ("ztest: invalid VALUE for operating dimension.");
@@ -129,19 +129,19 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   stderr = sigma ./ sqrt (sz);
   zvalue = (x_mean - m) ./ stderr;
   ## Calculate p-value for the test and confidence intervals (if requested)
-  if (strcmpi (tail, "both"))
+  if (strcmpi (tail, 'both'))
     pval = 2 * normcdf (- abs (zvalue), 0, 1);
     if (nargout > 2)
       crit = norminv (1 - alpha / 2, 0, 1) .* stderr;
       ci = cat (dim, x_mean - crit, x_mean + crit);
     endif
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmpi (tail, 'right'))
     pval = normcdf (- zvalue, 0, 1);
     if (nargout > 2)
       crit = norminv (1 - alpha, 0, 1) .* stderr;
       ci = cat (dim, x_mean - crit, Inf (size (pval)));
     endif
-  elseif (strcmpi (tail, "left"))
+  elseif (strcmpi (tail, 'left'))
     pval = normcdf (zvalue, 0, 1);
     if (nargout > 2)
       crit = norminv (1 - alpha, 0, 1) .* stderr;
@@ -159,25 +159,25 @@ endfunction
 %!error<ztest: invalid value for standard deviation.> ...
 %! ztest ([1, 2, 3, 4], 2, -0.5);
 %!error<ztest: invalid VALUE for alpha.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0);
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 0);
 %!error<ztest: invalid VALUE for alpha.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 1.2);
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 1.2);
 %!error<ztest: invalid VALUE for alpha.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", "val");
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 'val');
 %!error<ztest: invalid VALUE for tail.>  ...
-%! ztest ([1, 2, 3, 4], 1, 2, "tail", "val");
+%! ztest ([1, 2, 3, 4], 1, 2, 'tail', 'val');
 %!error<ztest: invalid VALUE for tail.>  ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "val");
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 0.01, 'tail', 'val');
 %!error<ztest: invalid VALUE for operating dimension.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "dim", 3);
+%! ztest ([1, 2, 3, 4], 1, 2, 'dim', 3);
 %!error<ztest: invalid VALUE for operating dimension.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "dim", 3);
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 0.01, 'tail', 'both', 'dim', 3);
 %!error<ztest: invalid NAME for optional arguments.> ...
-%! ztest ([1, 2, 3, 4], 1, 2, "alpha", 0.01, "tail", "both", "badoption", 3);
+%! ztest ([1, 2, 3, 4], 1, 2, 'alpha', 0.01, 'tail', 'both', 'badoption', 3);
 ## Test results
 %!test
 %! load carsmall
-%! [h, pval, ci] = ztest (MPG, mean (MPG, "omitnan"), std (MPG, "omitnan"));
+%! [h, pval, ci] = ztest (MPG, mean (MPG, 'omitnan'), std (MPG, 'omitnan'));
 %! assert (h, 0);
 %! assert (pval, 1, 1e-14);
 %! assert (ci, [22.094; 25.343], 1e-3);
@@ -195,12 +195,12 @@ endfunction
 %! assert (ci, [22.909; 24.527], 1e-3);
 %!test
 %! x = normrnd (10, 2, 100, 1);
-%! [h, pval, ci] = ztest (x, 10, 2, "tail", "right");
+%! [h, pval, ci] = ztest (x, 10, 2, 'tail', 'right');
 %! assert (isnan (pval), false);
 %! assert (pval >= 0 && pval <= 1, true);
 %!test
 %! x = normrnd (10, 2, 100, 1);
-%! [h, pval, ci] = ztest (x, 10, 2, "tail", "left");
+%! [h, pval, ci] = ztest (x, 10, 2, 'tail', 'left');
 %! assert (isnan (pval), false);
 %! assert (pval >= 0 && pval <= 1, true);
 %!test
@@ -208,7 +208,7 @@ endfunction
 %! x = meas(:,1);
 %! m = 5.8;
 %! sigma = 0.8;
-%! [h, pval, ci] = ztest (x, m, sigma, "tail", "right");
+%! [h, pval, ci] = ztest (x, m, sigma, 'tail', 'right');
 %! assert (h, 0)
 %! assert (pval, 0.2535, 1e-4)
 %! assert (ci, [5.7359; Inf], 1e-5)
@@ -217,7 +217,7 @@ endfunction
 %! x = meas(:,1);
 %! m = 5.8;
 %! sigma = 0.8;
-%! [h, pval, ci] = ztest (x, m, sigma, "tail", "left");
+%! [h, pval, ci] = ztest (x, m, sigma, 'tail', 'left');
 %! assert (h, 0)
 %! assert (pval, 0.7465, 1e-4)
 %! assert (ci, [-Inf; 5.9508], 1e-4)    

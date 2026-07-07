@@ -79,7 +79,7 @@ classdef RayleighDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "RayleighDistribution";
+    DistributionName = 'RayleighDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} NumParameters
@@ -101,7 +101,7 @@ classdef RayleighDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"sigma"};
+    ParameterNames = {'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} ParameterDescription
@@ -113,12 +113,12 @@ classdef RayleighDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Scale"};
+    ParameterDescription = {'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "rayl";
+    DistributionCode = 'rayl';
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
@@ -235,11 +235,11 @@ classdef RayleighDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Rayleigh distribution");
+      __disp__ (this, 'Rayleigh distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Rayleigh distribution");
+      __disp__ (this, 'Rayleigh distribution');
     endfunction
 
     function this = set.sigma (this, sigma)
@@ -278,9 +278,9 @@ classdef RayleighDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -721,7 +721,7 @@ classdef RayleighDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = false;
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -740,12 +740,12 @@ endfunction
 %! ## parameter sigma = 2.  Fit a Rayleigh distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Rayleigh", "sigma", 2)
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Rayleigh', 'sigma', 2)
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Rayleigh")
+%! pd_fitted = fitdist (data, 'Rayleigh')
 %! plot (pd_fitted)
-%! msg = "Fitted Rayleigh distribution with sigma = %0.2f";
+%! msg = 'Fitted Rayleigh distribution with sigma = %0.2f';
 %! title (sprintf (msg, pd_fitted.sigma))
 
 ## Test output
@@ -789,7 +789,7 @@ endfunction
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
 %! RayleighDistribution(i)
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution("a")
+%! RayleighDistribution('a')
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
 %! RayleighDistribution([1, 2])
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
@@ -797,7 +797,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (RayleighDistribution, 2, "uper")
+%! cdf (RayleighDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (RayleighDistribution, 2, 3)
 
@@ -805,59 +805,59 @@ endfunction
 %!shared x
 %! x = raylrnd (1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha")
+%! paramci (RayleighDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 0)
+%! paramci (RayleighDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 1)
+%! paramci (RayleighDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (RayleighDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", "")
+%! paramci (RayleighDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", {0.05})
+%! paramci (RayleighDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "parameter", "sigma", "alpha", {0.05})
+%! paramci (RayleighDistribution.fit (x), 'parameter', 'sigma', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "parameter", {"sigma", "param"})
+%! paramci (RayleighDistribution.fit (x), 'parameter', {'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"sigma", "param"})
+%! paramci (RayleighDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (RayleighDistribution.fit (x), "parameter", "param")
+%! paramci (RayleighDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (RayleighDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RayleighDistribution.fit (x), "NAME", "value")
+%! paramci (RayleighDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (RayleighDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RayleighDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "sigma", "NAME", "value")
+%! paramci (RayleighDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'sigma', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (RayleighDistribution, "Parent")
+%! plot (RayleighDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (RayleighDistribution, "PlotType", 12)
+%! plot (RayleighDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (RayleighDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (RayleighDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (RayleighDistribution, "PlotType", "pdfcdf")
+%! plot (RayleighDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RayleighDistribution, "Discrete", "pdfcdf")
+%! plot (RayleighDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RayleighDistribution, "Discrete", [1, 0])
+%! plot (RayleighDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RayleighDistribution, "Discrete", {true})
+%! plot (RayleighDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (RayleighDistribution, "Parent", 12)
+%! plot (RayleighDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (RayleighDistribution, "Parent", "hax")
+%! plot (RayleighDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (RayleighDistribution, "invalidNAME", "pdf")
+%! plot (RayleighDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (RayleighDistribution, "PlotType", "probability")
+%! plot (RayleighDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -871,23 +871,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (RayleighDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display")
+%! proflik (RayleighDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display", 1)
+%! proflik (RayleighDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display", {1})
+%! proflik (RayleighDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (RayleighDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (RayleighDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (RayleighDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (RayleighDistribution.fit (x), 1, "NAME", "on")
+%! proflik (RayleighDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (RayleighDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (RayleighDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (RayleighDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

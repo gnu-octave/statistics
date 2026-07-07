@@ -48,7 +48,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     function this = CalinskiHarabaszEvaluation (x, clust, KList)
       this@ClusterCriterion(x, clust, KList);
 
-      this.CriterionName = "CalinskiHarabasz";
+      this.CriterionName = 'CalinskiHarabasz';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
@@ -102,9 +102,9 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
       yLabel = sprintf ("%s value", this.CriterionName);
       h = gca ();
       hold on;
-      plot (this.InspectedK, this.CriterionValues, "bo-");
-      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
-      xlabel ("number of clusters");
+      plot (this.InspectedK, this.CriterionValues, 'bo-');
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), 'b*');
+      xlabel ('number of clusters');
       ylabel (yLabel);
       hold off;
     endfunction
@@ -137,7 +137,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
         for iter = 1 : length (this.InspectedK)
           ## do it only for the specified K values
           if (any (this.InspectedK(iter) == K))
-            if (isa (this.ClusteringFunction, "function_handle"))
+            if (isa (this.ClusteringFunction, 'function_handle'))
               ## custom function
               ClusteringSolution = ...
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -160,22 +160,22 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
               endif
             else
               switch (this.ClusteringFunction)
-                case "kmeans"
+                case 'kmeans'
                   [this.ClusteringSolutions(:, iter), this.Centroids{iter}] =...
                     kmeans (UsableX, this.InspectedK(iter),  ...
-                    "Distance", "sqeuclidean", "EmptyAction", "singleton", ...
-                    "Replicates", 5);
+                    'Distance', 'sqeuclidean', 'EmptyAction', 'singleton', ...
+                    'Replicates', 5);
 
-                case "linkage"
+                case 'linkage'
                   ## use clusterdata
                   this.ClusteringSolutions(:, iter) = clusterdata (UsableX, ...
-                    "MaxClust", this.InspectedK(iter), ...
-                    "Distance", "euclidean", "Linkage", "ward");
+                    'MaxClust', this.InspectedK(iter), ...
+                    'Distance', 'euclidean', 'Linkage', 'ward');
                   this.Centroids{iter} = this.computeCentroids (UsableX, iter);
 
-                case "gmdistribution"
+                case 'gmdistribution'
                   gmm = fitgmdist (UsableX, this.InspectedK(iter), ...
-                        "SharedCov", true, "Replicates", 5);
+                        'SharedCov', true, 'Replicates', 5);
                   this.ClusteringSolutions(:, iter) = cluster (gmm, UsableX);
                   this.Centroids{iter} = gmm.mu;
 
@@ -245,7 +245,7 @@ endclassdef
 
 %!test
 %! load fisheriris
-%! eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6]);
+%! eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6]);
 %! assert (class (eva), "CalinskiHarabaszEvaluation");
 
 %!function C = count_calls_calinskiharabasz (X, k)
@@ -258,6 +258,6 @@ endclassdef
 %! global count_calls_calinskiharabasz_n;
 %! count_calls_calinskiharabasz_n = 0;
 %! evalclusters (rand (20, 2), @count_calls_calinskiharabasz, ...
-%!               "CalinskiHarabasz", "KList", [2, 3]);
+%!               'CalinskiHarabasz', 'KList', [2, 3]);
 %! assert (count_calls_calinskiharabasz_n, 2);
 %! clear -global count_calls_calinskiharabasz_n;

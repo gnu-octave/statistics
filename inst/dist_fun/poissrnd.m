@@ -88,10 +88,10 @@ function r = poissrnd (lambda, varargin)
   endif
 
   ## Check for class type
-  if (isa (lambda, "single"))
-    cls = "single";
+  if (isa (lambda, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Poisson distribution

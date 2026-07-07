@@ -56,8 +56,8 @@ function x = cauchyinv (p, x0, gamma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (x0, "single") || isa (gamma, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (x0, 'single') || isa (gamma, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -89,14 +89,14 @@ endfunction
 %! x2 = cauchyinv (p, 0, 1);
 %! x3 = cauchyinv (p, 0, 2);
 %! x4 = cauchyinv (p, -2, 1);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([-5, 5])
-%! legend ({"x0 = 0, γ = 0.5", "x0 = 0, γ = 1", ...
-%!          "x0 = 0, γ = 2", "x0 = -2, γ = 1"}, "location", "northwest")
-%! title ("Cauchy iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'x0 = 0, γ = 0.5', 'x0 = 0, γ = 1', ...
+%!          'x0 = 0, γ = 2', 'x0 = -2, γ = 1'}, 'location', 'northwest')
+%! title ('Cauchy iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p
@@ -111,11 +111,11 @@ endfunction
 
 ## Test class of input preserved
 %!assert (cauchyinv (single ([p, NaN]), 1, 2), ...
-%! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
+%! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
 %!assert (cauchyinv ([p, NaN], single (1), 2), ...
-%! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
+%! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
 %!assert (cauchyinv ([p, NaN], 1, single (2)), ...
-%! single ([NaN -Inf 1 Inf NaN NaN]), eps ("single"))
+%! single ([NaN -Inf 1 Inf NaN NaN]), eps ('single'))
 
 ## Test input validation
 %!error<cauchyinv: function called with too few input arguments.> cauchyinv ()

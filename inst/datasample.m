@@ -92,12 +92,12 @@ function [y, idcs] = datasample (data, k, varargin)
     ## (Name, Value) pairs
     while (pair_index < (nargin - 2))
       switch (lower (varargin{pair_index}))
-        case "replace"
+        case 'replace'
           if (! islogical (varargin{pair_index + 1}))
             error ("datasample: expected a logical value for 'Replace'");
           endif
           replace = varargin{pair_index + 1};
-        case "weights"
+        case 'weights'
           if ((! isnumeric (varargin{pair_index + 1})) ||
               (! isvector (varargin{pair_index + 1})) ||
               (any (varargin{pair_index + 1} < 0)))
@@ -191,15 +191,15 @@ function [y, idcs] = datasample (data, k, varargin)
       endif
     else
       ## data is an n-dimensional matrix
-      s = "y = data(";
+      s = 'y = data(';
       for iter = 1 : length (vS)
         if (iter == dim)
-          s = [s "idcs,"];
+          s = [s 'idcs,'];
         else
-          s = [s ":,"];
+          s = [s ':,'];
         endif
       endfor
-      s = [s ":);"];
+      s = [s ':);'];
       eval (s);
     endif
   endif
@@ -217,11 +217,11 @@ endfunction
 %!error <DIM must be a positive integer scalar> datasample([1 2], 1, -1);
 %!error <DIM must be a positive integer scalar> datasample([1 2], 1, 1.5);
 %!error <DIM must be a positive integer scalar> datasample([1 2], 1, [1 1]);
-%!error <Replace> datasample([1 2], 1, 1, "Replace", -2);
-%!error <weights must be defined> datasample([1 2], 1, 1, "Weights", "abc");
-%!error <weights must be defined> datasample([1 2], 1, 1, "Weights", [1 -2 3]);
-%!error <weights must be defined> datasample([1 2], 1, 1, "Weights", ones (2));
-%!error <weights must be equal> datasample([1 2], 1, 1, "Weights", [1 2 3]);
+%!error <Replace> datasample([1 2], 1, 1, 'Replace', -2);
+%!error <weights must be defined> datasample([1 2], 1, 1, 'Weights', 'abc');
+%!error <weights must be defined> datasample([1 2], 1, 1, 'Weights', [1 -2 3]);
+%!error <weights must be defined> datasample([1 2], 1, 1, 'Weights', ones (2));
+%!error <weights must be equal> datasample([1 2], 1, 1, 'Weights', [1 2 3]);
 %!error <datasample: K must not exceed the number of available elements when sampling without replacement.> ...
 %! data = 1:5; weights = [0.077846, 0.103765, 0.703748, 0.840937, 0.422901];
 %! sampled = datasample (data, 8, 'Weights', weights, 'Replace', false);

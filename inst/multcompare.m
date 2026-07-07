@@ -186,30 +186,30 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
     ALPHA = 0.05;
     REF = [];
-    CTYPE = "holm";
-    DISPLAY = "on";
+    CTYPE = 'holm';
+    DISPLAY = 'on';
     DIM = 1;
-    ESTIMATE = "column";
+    ESTIMATE = 'column';
     DFE = [];
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
       switch (lower (name))
-        case "alpha"
+        case 'alpha'
           ALPHA = value;
-        case {"controlgroup","ref"}
+        case {'controlgroup','ref'}
           REF = value;
-        case {"ctype","criticalvaluetype"}
+        case {'ctype','criticalvaluetype'}
           CTYPE = lower (value);
-        case {"display","displayopt"}
+        case {'display','displayopt'}
           DISPLAY = lower (value);
-        case {"dim","dimension"}
+        case {'dim','dimension'}
           DIM = value;
-        case "estimate"
+        case 'estimate'
           ESTIMATE = lower (value);
-        case {"df","dfe"}
+        case {'df','dfe'}
           DFE = value;
-        case {"seed"}
+        case {'seed'}
           SEED = value;
           ## Set random seed for mvtrnd and mvnrnd
           randn ('seed', SEED);
@@ -220,7 +220,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endfor
 
     ## Evaluate ALPHA input argument
-    if (! isa (ALPHA,"numeric") || numel (ALPHA) != 1)
+    if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
       error("multcompare:alpha must be a numeric scalar value.");
     endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
@@ -228,19 +228,19 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     endif
 
     ## Evaluate CTYPE input argument
-    if (ismember (CTYPE, {"tukey-kramer", "hsd"}))
-      CTYPE = "mvt";
+    if (ismember (CTYPE, {'tukey-kramer', 'hsd'}))
+      CTYPE = 'mvt';
       REF = [];
-    elseif (strcmp (CTYPE, "dunnett"))
-      CTYPE = "mvt";
+    elseif (strcmp (CTYPE, 'dunnett'))
+      CTYPE = 'mvt';
       if (isempty (REF))
         REF = 1;
       endif
-    elseif (strcmp (CTYPE, "none"))
-      CTYPE = "lsd";
+    elseif (strcmp (CTYPE, 'none'))
+      CTYPE = 'lsd';
     endif
     if (! ismember (CTYPE, ...
-                    {"bonferroni","scheffe","mvt","holm","hochberg","fdr","lsd"}))
+                    {'bonferroni','scheffe','mvt','holm','hochberg','fdr','lsd'}))
       error ("multcompare: '%s' is not a supported value for CTYPE.", CTYPE)
     endif
 
@@ -261,13 +261,13 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
                        " arguments if only used to adjust p-values."))
       endif
       if (! isempty (varargin))
-        if (! any (strcmpi (varargin{1}, {"ctype","criticalvaluetype"})) ...
+        if (! any (strcmpi (varargin{1}, {'ctype','criticalvaluetype'})) ...
             || (nargin > 3) )
           error (strcat("multcompare: invalid input arguments", ...
                         " if only used to adjust p-values."));
         endif
       endif
-      if (! ismember (CTYPE, {"bonferroni","holm","hochberg","fdr"}))
+      if (! ismember (CTYPE, {'bonferroni','holm','hochberg','fdr'}))
         error ("multcompare: '%s' is not a supported p-adjustment method.", ...
                CTYPE)
       endif
@@ -287,7 +287,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## Perform test specific calculations
     switch (STATS.source)
 
-      case "anova1"
+      case 'anova1'
 
         ## Make matrix of requested comparisons (pairs)
         ## Also return the corresponding hypothesis matrix (L)
@@ -304,7 +304,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
         switch (STATS.vartype)
 
-          case "equal"
+          case 'equal'
 
             ## Calculate estimated marginal means and their standard errors
             gmeans = STATS.means(:);
@@ -319,10 +319,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
               DFE = STATS.df;
             endif
 
-          case "unequal"
+          case 'unequal'
 
             ## Error checking
-            if (strcmp (CTYPE, "scheffe"))
+            if (strcmp (CTYPE, 'scheffe'))
               error (strcat ("multcompare: the CTYPE value 'scheffe'", ...
                              " does not support tests with varying", ...
                              " degrees of freedom "));
@@ -354,16 +354,16 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create cell array of group names corresponding to each row of m
         GNAMES = STATS.gnames;
 
-      case "anova2"
+      case 'anova2'
 
         ## Fetch estimate specific information from the STATS structure
         switch (ESTIMATE)
-          case {"column","columns","col","cols"}
+          case {'column','columns','col','cols'}
             gmeans = STATS.colmeans(:);
             Ng = numel (gmeans);
             n = STATS.coln;
-          case {"row","rows"}
-            if (ismember (STATS.model, {"linear","nested"}))
+          case {'row','rows'}
+            if (ismember (STATS.model, {'linear','nested'}))
               error (strcat ("multcompare: no support for the row factor",...
                              " (random effect) in a 'nested' or 'linear'",...
                              " anova2 model."));
@@ -401,7 +401,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create character array of group names corresponding to each row of m
         GNAMES = cellstr (num2str ([1:Ng]'));
 
-      case "anovan"
+      case 'anovan'
 
         ## Our calculations treat all effects as fixed
         if (ismember (STATS.random, DIM))
@@ -426,7 +426,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         N = numel (STATS.contrasts);
         for j = 1:N
           if (isnumeric (STATS.contrasts{j}))
-            if (any (abs (sum (STATS.contrasts{j})) > eps("single")))
+            if (any (abs (sum (STATS.contrasts{j})) > eps('single')))
               error (msg);
             endif
           endif
@@ -449,7 +449,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
                                                    df(k(j)) + 1 : i(k(j)));
         endfor
         L(:,1) = 1;
-        U = unique (L, "rows", "stable");
+        U = unique (L, 'rows', 'stable');
         Ng = size (U, 1);
         idx = zeros (Ng, 1);
         for k = 1:Ng
@@ -464,14 +464,14 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create cell array of group names corresponding to each row of m
         GNAMES = cell (Ng, 1);
         for i = 1:Ng
-          str = "";
+          str = '';
           for j = 1:Nd
             str = sprintf("%s%s=%s, ", str, ...
                       num2str(STATS.varnames{DIM(j)}), ...
                       num2str(STATS.grpnames{DIM(j)}{STATS.grps(idx(i),DIM(j))}));
           endfor
           GNAMES{i} = str(1:end-2);
-          str = "";
+          str = '';
         endfor
 
         ## Make matrix of requested comparisons (pairs)
@@ -492,7 +492,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         vcov = L * gcov * L';
         R = cov2corr (vcov);
 
-      case "friedman"
+      case 'friedman'
 
         ## Get stats from structure
         gmeans = STATS.meanranks(:);
@@ -500,7 +500,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         sigma = STATS.sigma;
 
         ## Make group names
-        GNAMES = strjust (num2str ((1:Ng)'), "left");
+        GNAMES = strjust (num2str ((1:Ng)'), 'left');
 
         ## Make matrix of requested comparisons (pairs)
         ## Also return the corresponding hypothesis matrix (L)
@@ -527,7 +527,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
           DFE = inf;  # this is a z-statistic so infinite degrees of freedom
         endif
 
-      case "kruskalwallis"
+      case 'kruskalwallis'
 
         ## Get stats from structure
         gmeans = STATS.meanranks(:);
@@ -618,33 +618,33 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     switch (lower (DISPLAY))
       case {'on',true}
         H = figure;
-        plot ([0; 0], [0; Np + 1]',"k:"); # Plot vertical dashed line at 0 effect
-        set (gca, "Ydir", "reverse")      # Flip y-axis direction
+        plot ([0; 0], [0; Np + 1]','k:'); # Plot vertical dashed line at 0 effect
+        set (gca, 'Ydir', 'reverse')      # Flip y-axis direction
         ylim ([0.5, Np + 0.5]);           # Set y-axis limits
         hold on                           # Plot on the same axis
         for j = 1:Np
           if (C(j,6) < ALPHA)
             ## Plot marker for the difference in means
-            plot (C(j,4), j,"or","MarkerFaceColor", "r");
+            plot (C(j,4), j,'or','MarkerFaceColor', 'r');
             ## Plot line for each confidence interval
-            plot ([C(j,3), C(j,5)], j * ones(2,1), "r-");
+            plot ([C(j,3), C(j,5)], j * ones(2,1), 'r-');
           else
             ## Plot marker for the difference in means
-            plot (C(j,4), j,"ob","MarkerFaceColor", "b");
+            plot (C(j,4), j,'ob','MarkerFaceColor', 'b');
             ## Plot line for each confidence interval
-            plot ([C(j,3), C(j,5)], j * ones(2,1), "b-");
+            plot ([C(j,3), C(j,5)], j * ones(2,1), 'b-');
           endif
         endfor
         hold off
         xlabel (sprintf ("%g%% confidence interval for the difference",...
                          100 * (1 - ALPHA)));
-        ylabel ("Row number in matrix of comparisons (C)");
+        ylabel ('Row number in matrix of comparisons (C)');
       case {'off',false}
         H = [];
     endswitch
 
     ## Print multcompare table on screen if no output argument was requested
-    if (nargout == 0 || strcmp (DISPLAY, "on"))
+    if (nargout == 0 || strcmp (DISPLAY, 'on'))
       printf ("\n        %s Multiple Comparison (Post Hoc) Test for %s\n\n", ...
              upper (CTYPE), upper (STATS.source));
       header = strcat ("Group ID  Group ID   LBoundDiff   EstimatedDiff",...
@@ -834,7 +834,7 @@ function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
   ## Holm's step-down Bonferroni procedure
 
   ## Order raw p-values
-  [ps, idx] = sort (p, "ascend");
+  [ps, idx] = sort (p, 'ascend');
   Np = numel (ps);
 
   ## Implement Holm's step-down Bonferroni procedure
@@ -845,7 +845,7 @@ function [padj, critval, dfe] = holm (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [~, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, 'ascend');
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
@@ -865,7 +865,7 @@ function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
   ## Hochberg's step-up Bonferroni procedure
 
   ## Order raw p-values
-  [ps, idx] = sort (p, "ascend");
+  [ps, idx] = sort (p, 'ascend');
   Np = numel (ps);
 
   ## Implement Hochberg's step-down Bonferroni procedure
@@ -877,7 +877,7 @@ function [padj, critval, dfe] = hochberg (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [~, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, 'ascend');
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
@@ -898,7 +898,7 @@ function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   ## This procedure does not control the family-wise error rate
 
   ## Order raw p-values
-  [ps, idx] = sort (p, "ascend");
+  [ps, idx] = sort (p, 'ascend');
   Np = numel (ps);
 
   ## Initialize
@@ -914,7 +914,7 @@ function [padj, critval, dfe] = fdr (p, t, Ng, dfe, R, ALPHA)
   endfor
 
   ## Reorder the adjusted p-values to match the order of the original p-values
-  [~, original_order] = sort (idx, "ascend");
+  [~, original_order] = sort (idx, 'ascend');
   padj = padj(original_order);
 
   ## Truncate adjusted p-values to 1.0
@@ -946,10 +946,10 @@ endfunction
 %! ## Demonstration using balanced one-way ANOVA from anova1
 %!
 %! x = ones (50, 4) .* [-2, 0, 1, 5];
-%! randn ("seed", 1);    # for reproducibility
+%! randn ('seed', 1);    # for reproducibility
 %! x = x + normrnd (0, 2, 50, 4);
-%! groups = {"A", "B", "C", "D"};
-%! [p, tbl, stats] = anova1 (x, groups, "off");
+%! groups = {'A', 'B', 'C', 'D'};
+%! [p, tbl, stats] = anova1 (x, groups, 'off');
 %! multcompare (stats);
 
 %!demo
@@ -964,10 +964,10 @@ endfunction
 %! g = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 ...
 %!      4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %!
-%! [P,ATAB, STATS] = anovan (dv, g, "varnames", "score", "display", "off");
+%! [P,ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "holm", ...
-%!                                  "ControlGroup", 1, "display", "on")
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
+%!                                  'ControlGroup', 1, 'display', 'on')
 %!
 
 %!demo
@@ -980,29 +980,29 @@ endfunction
 %! 84.9 96.1 94.6 82.5 90.7 87.0 86.8 93.3 87.6 92.4 ...
 %! 100. 80.5 92.9 84.0 88.4 91.1 85.7 91.3 92.3 87.9 ...
 %! 91.7 88.6 75.8 75.7 75.3 82.4 80.1 86.0 81.8 82.5]';
-%! treatment = {"yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"}';
-%! exercise = {"lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
-%!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
-%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  ...
-%!             "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
-%!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
-%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"}';
+%! treatment = {'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'}';
+%! exercise = {'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
+%!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
+%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  ...
+%!             'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
+%!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
+%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'}';
 %! age = [59 65 70 66 61 65 57 61 58 55 62 61 60 59 55 57 60 63 62 57 ...
 %! 58 56 57 59 59 60 55 53 55 58 68 62 61 54 59 63 60 67 60 67 ...
 %! 75 54 57 62 65 60 58 61 65 57 56 58 58 58 52 53 60 62 61 61]';
 %!
-%! [P, ATAB, STATS] = anovan (score, {treatment, exercise, age}, "model", ...
-%!                            [1 0 0; 0 1 0; 0 0 1; 1 1 0], "continuous", 3, ...
-%!                            "sstype", "h", "display", "off", "contrasts", ...
-%!                            {"simple","poly",""});
+%! [P, ATAB, STATS] = anovan (score, {treatment, exercise, age}, 'model', ...
+%!                            [1 0 0; 0 1 0; 0 0 1; 1 1 0], 'continuous', 3, ...
+%!                            'sstype', 'h', 'display', 'off', 'contrasts', ...
+%!                            {'simple','poly',''});
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", [1 2], "ctype", "holm", ...
-%!                                  "display", "on")
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', [1 2], 'ctype', 'holm', ...
+%!                                  'display', 'on')
 %!
 
 %!demo
@@ -1018,12 +1018,12 @@ endfunction
 %!      10, 25, 66, 43, 47, 56,  6, 39, ...
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
 %!
-%! [P,ATAB,STATS] = anovan(y, g, "display", "off");
+%! [P,ATAB,STATS] = anovan(y, g, 'display', 'off');
 %! fitted = STATS.X * STATS.coeffs(:,1); # fitted values
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
-%! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1, "display", "off");
-%! [C, M] =  multcompare (STATS, "display", "on", "ctype", "mvt")
+%! [P,ATAB,STATS] = anovan (y, g, 'weights', v.^-1, 'display', 'off');
+%! [C, M] =  multcompare (STATS, 'display', 'on', 'ctype', 'mvt')
 
 %!demo
 %!
@@ -1049,9 +1049,9 @@ endfunction
 %! g = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 ...
 %!      4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %!
-%! [P, ATAB, STATS] = anovan (dv, g, "varnames", "score", "display", "off");
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "lsd", ...
-%!                                  "display", "off");
+%! [P, ATAB, STATS] = anovan (dv, g, 'varnames', 'score', 'display', 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'lsd', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -1075,8 +1075,8 @@ endfunction
 %!
 %! ## Compare "fdr" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "fdr", ...
-%!                                  "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'fdr', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 4.08303457454140e-05, 1e-09);
 %! assert (C(2,6), 1.04587348240817e-06, 1e-09);
 %! assert (C(3,6), 1.06397381604573e-07, 1e-09);
@@ -1090,8 +1090,8 @@ endfunction
 %!
 %! ## Compare "hochberg" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "hochberg", ...
-%!                                  "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'hochberg', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 1.14324968087159e-04, 1e-09);
 %! assert (C(2,6), 3.13762044722451e-06, 1e-09);
 %! assert (C(3,6), 1.91515286888231e-07, 1e-09);
@@ -1105,8 +1105,8 @@ endfunction
 %!
 %! ## Compare "holm" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "holm", ...
-%!                                  "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'holm', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 1.14324968087159e-04, 1e-09);
 %! assert (C(2,6), 3.13762044722451e-06, 1e-09);
 %! assert (C(3,6), 1.91515286888231e-07, 1e-09);
@@ -1120,8 +1120,8 @@ endfunction
 %!
 %! ## Compare "scheffe" adjusted p-values to those obtained using 'scheffe' in Matlab
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "scheffe", ...
-%!                                  "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'scheffe', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 0.00108105386141085, 1e-09);
 %! assert (C(2,6), 2.7779386789517e-05, 1e-09);
 %! assert (C(3,6), 1.3599854038198e-06, 1e-09);
@@ -1135,8 +1135,8 @@ endfunction
 %!
 %! ## Compare "bonferroni" adjusted p-values to those obtained using p.adjust in R
 %!
-%! [C, M, H, GNAMES] = multcompare (STATS, "dim", 1, "ctype", "bonferroni", ...
-%!                                  "display", "off");
+%! [C, M, H, GNAMES] = multcompare (STATS, 'dim', 1, 'ctype', 'bonferroni', ...
+%!                                  'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-04, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-06, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-07, 1e-09);
@@ -1150,8 +1150,8 @@ endfunction
 %!
 %! ## Test for anova1 ("equal")- comparison of results from Matlab
 %!
-%! [P, ATAB, STATS] = anova1 (dv, g, "off", "equal");
-%! [C, M, H, GNAMES] = multcompare (STATS, "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'equal');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -1174,8 +1174,8 @@ endfunction
 %! assert (M(5,2), 0.959547480416536, 1e-09);
 %!
 %! ## Test for anova1 ("unequal") - comparison with results from GraphPad Prism 8
-%! [P, ATAB, STATS] = anova1 (dv, g, "off", "unequal");
-%! [C, M, H, GNAMES] = multcompare (STATS, "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anova1 (dv, g, 'off', 'unequal');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.001247025266382, 1e-09);
 %! assert (C(2,6), 0.000018037115146, 1e-09);
 %! assert (C(3,6), 0.000002974595187, 1e-09);
@@ -1192,9 +1192,9 @@ endfunction
 %! ## Test for anova2 ("interaction") - comparison with results from Matlab for column effect
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [P, ATAB, STATS] = anova2 (popcorn, 3, "off");
-%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
-%!                                  "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anova2 (popcorn, 3, 'off');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 1.49311100811177e-05, 1e-09);
 %! assert (C(2,6), 2.20506904243535e-07, 1e-09);
 %! assert (C(3,6), 0.00449897860490058, 1e-09);
@@ -1210,9 +1210,9 @@ endfunction
 %! ## Test for anova2 ("linear") - comparison with results from GraphPad Prism 8
 %! words = [10 13 13; 6 8 8; 11 14 14; 22 23 25; 16 18 20; ...
 %!          15 17 17; 1 1 4; 12 15 17;  9 12 12;  8 9 12];
-%! [P, ATAB, STATS] = anova2 (words, 1, "off", "linear");
-%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
-%!                                  "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anova2 (words, 1, 'off', 'linear');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.000020799832702, 1e-09);
 %! assert (C(2,6), 0.000000035812410, 1e-09);
 %! assert (C(3,6), 0.003038942449215, 1e-09);
@@ -1224,60 +1224,60 @@ endfunction
 %!         6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
 %!         5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
 %!         6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
-%! [P, ATAB, STATS] = anova2 (data, 4, "off", "nested");
-%! [C, M, H, GNAMES] = multcompare (STATS, "estimate", "column",...
-%!                                  "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anova2 (data, 4, 'off', 'nested');
+%! [C, M, H, GNAMES] = multcompare (STATS, 'estimate', 'column',...
+%!                                  'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.261031111511073, 1e-09);
 %! assert (C(2,6), 0.065879755907745, 1e-09);
 %! assert (C(3,6), 0.241874613529270, 1e-09);
 
 %!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+%! visibility_setting = get (0, 'DefaultFigureVisible');
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
+%! set (0, 'DefaultFigureVisible', 'off');
 %!
 %! ## Test for kruskalwallis - comparison with results from MATLAB
 %! data = [3,2,4; 5,4,4; 4,2,4; 4,2,4; 4,1,5; ...
 %!         4,2,3; 4,3,5; 4,2,4; 5,2,4; 5,3,3];
 %! group = [1:3] .* ones (10,3);
-%! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), "off");
-%! C = multcompare (STATS, "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = kruskalwallis (data(:), group(:), 'off');
+%! C = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.000163089828959986, 1e-09);
 %! assert (C(2,6), 0.630298044801257, 1e-09);
 %! assert (C(3,6), 0.00100567660695682, 1e-09);
-%! C = multcompare (STATS, "ctype", "bonferroni", "display", "off");
+%! C = multcompare (STATS, 'ctype', 'bonferroni', 'display', 'off');
 %! assert (C(1,6), 0.000489269486879958, 1e-09);
 %! assert (C(2,6), 1, 1e-09);
 %! assert (C(3,6), 0.00301702982087047, 1e-09);
-%! C = multcompare(STATS, "ctype", "scheffe", "display", "off");
+%! C = multcompare(STATS, 'ctype', 'scheffe', 'display', 'off');
 %! assert (C(1,6), 0.000819054880289573, 1e-09);
 %! assert (C(2,6), 0.890628039849261, 1e-09);
 %! assert (C(3,6), 0.00447816059021654, 1e-09);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
+%! set (0, 'DefaultFigureVisible', 'off');
 %! ## Test for friedman - comparison with results from MATLAB
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! [P, ATAB, STATS] = friedman (popcorn, 3, "off");
-%! C = multcompare(STATS, "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = friedman (popcorn, 3, 'off');
+%! C = multcompare(STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.227424558028569, 1e-09);
 %! assert (C(2,6), 0.0327204848315735, 1e-09);
 %! assert (C(3,6), 0.353160353315988, 1e-09);
-%! C = multcompare(STATS, "ctype", "bonferroni", "display", "off");
+%! C = multcompare(STATS, 'ctype', 'bonferroni', 'display', 'off');
 %! assert (C(1,6), 0.682273674085708, 1e-09);
 %! assert (C(2,6), 0.0981614544947206, 1e-09);
 %! assert (C(3,6), 1, 1e-09);
-%! C = multcompare(STATS, "ctype", "scheffe", "display", "off");
+%! C = multcompare(STATS, 'ctype', 'scheffe', 'display', 'off');
 %! assert (C(1,6), 0.482657360384373, 1e-09);
 %! assert (C(2,6), 0.102266573027672, 1e-09);
 %! assert (C(3,6), 0.649836502233148, 1e-09);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
+%! set (0, 'DefaultFigureVisible', 'off');
 %! ## Test for anovan with 'simple' contrasts - same comparisons as for first anovan example
 %! y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
 %!        22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
@@ -1285,8 +1285,8 @@ endfunction
 %!        22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
-%! [P, ATAB, STATS] = anovan (y, {X}, "contrasts", "simple", "display", "off");
-%! [C, M] = multcompare(STATS, "ctype", "lsd", "display", "off");
+%! [P, ATAB, STATS] = anovan (y, {X}, 'contrasts', 'simple', 'display', 'off');
+%! [C, M] = multcompare(STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -1307,7 +1307,7 @@ endfunction
 %! assert (M(3,2), 1.0177537954095, 1e-09);
 %! assert (M(4,2), 1.0880245732889, 1e-09);
 %! assert (M(5,2), 0.959547480416536, 1e-09);
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
 %! ## Test p-value adjustments compared to R stats package function p.adjust

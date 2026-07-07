@@ -77,7 +77,7 @@ endfunction
 
 %!demo
 %! c = combnk (1:5, 2);
-%! disp ("All pairs of integers between 1 and 5:");
+%! disp ('All pairs of integers between 1 and 5:');
 %! disp (c);
 
 %!test
@@ -93,5 +93,5 @@ endfunction
 %! assert (c, {1, 2; 1, 3; 2, 3});
 
 %!test
-%! c = combnk ("hello", 2);
-%! assert (c, ["lo"; "lo"; "ll"; "eo"; "el"; "el"; "ho"; "hl"; "hl"; "he"]);
+%! c = combnk ('hello', 2);
+%! assert (c, ['lo'; 'lo'; 'll'; 'eo'; 'el'; 'el'; 'ho'; 'hl'; 'hl'; 'he']);

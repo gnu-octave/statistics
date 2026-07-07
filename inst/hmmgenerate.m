@@ -249,12 +249,12 @@ endfunction
 %! len = 25;
 %! transprob = [0.8, 0.2; 0.4, 0.6];
 %! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-%! symbols = {"A", "B", "C"};
-%! statenames = {"One", "Two"};
+%! symbols = {'A', 'B', 'C'};
+%! statenames = {'One', 'Two'};
 %! [sequence, states] = hmmgenerate (len, transprob, outprob, ...
-%!                      "symbols", symbols, "statenames", statenames);
+%!                      'symbols', symbols, 'statenames', statenames);
 %! assert (length (sequence), len);
 %! assert (length (states), len);
-%! assert (strcmp (sequence, "A") + strcmp (sequence, "B") + ...
-%!                                  strcmp (sequence, "C") == ones (1, len));
-%! assert (strcmp (states, "One") + strcmp (states, "Two") == ones (1, len));
+%! assert (strcmp (sequence, 'A') + strcmp (sequence, 'B') + ...
+%!                                  strcmp (sequence, 'C') == ones (1, len));
+%! assert (strcmp (states, 'One') + strcmp (states, 'Two') == ones (1, len));

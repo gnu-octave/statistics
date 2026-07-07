@@ -286,7 +286,7 @@ classdef hnswSearcher
       N = size (X, 1);
 
       ## Default values
-      Distance = "euclidean";
+      Distance = 'euclidean';
       P = [];
       S = [];
       C = [];
@@ -297,17 +297,17 @@ classdef hnswSearcher
       ## Parse optional parameters
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
-          case "distance"
+          case 'distance'
             Distance = varargin{2};
-          case "p"
+          case 'p'
             P = varargin{2};
-          case "scale"
+          case 'scale'
             S = varargin{2};
-          case "cov"
+          case 'cov'
             C = varargin{2};
-          case "maxnumlinkspernode"
+          case 'maxnumlinkspernode'
             MaxNumLinksPerNode = varargin{2};
-          case "trainsetsize"
+          case 'trainsetsize'
             TrainSetSize = varargin{2};
           otherwise
             error ("hnswSearcher: invalid parameter name: '%s'.", varargin{1});
@@ -330,7 +330,7 @@ classdef hnswSearcher
       endif
 
       ## Set DistParameter
-      if (strcmpi (obj.Distance, "minkowski"))
+      if (strcmpi (obj.Distance, 'minkowski'))
         if (isempty (P))
           obj.DistParameter = 2;
         else
@@ -339,7 +339,7 @@ classdef hnswSearcher
           endif
           obj.DistParameter = P;
         endif
-      elseif (strcmpi (obj.Distance, "seuclidean"))
+      elseif (strcmpi (obj.Distance, 'seuclidean'))
         if (isempty (S))
           obj.DistParameter = std (X, [], 1);
         else
@@ -351,7 +351,7 @@ classdef hnswSearcher
           endif
           obj.DistParameter = S;
         endif
-      elseif (strcmpi (obj.Distance, "mahalanobis"))
+      elseif (strcmpi (obj.Distance, 'mahalanobis'))
         if (isempty (C))
           obj.DistParameter = cov (X);
         else
@@ -478,13 +478,13 @@ classdef hnswSearcher
       ## Parse options
       while (numel (varargin) > 0)
         switch (lower (varargin{1}))
-          case "k"
+          case 'k'
             K = varargin{2};
             if (! (isscalar (K) && isnumeric (K) &&
                    K >= 1 && K == fix (K) && isfinite (K)))
               error ("hnswSearcher.knnsearch: 'K' must be a positive integer.");
             endif
-          case "searchsetsize"
+          case 'searchsetsize'
             SearchSetSize = varargin{2};
             if (! (isscalar (SearchSetSize) &&
                    isnumeric (SearchSetSize) &&
@@ -729,22 +729,22 @@ endfunction
 %! obj = hnswSearcher (X);
 %! ## Find the nearest neighbor to [2, 3]
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
-%! disp ("Nearest neighbor index:");
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! disp ('Nearest neighbor index:');
 %! disp (idx);
-%! disp ("Distance:");
+%! disp ('Distance:');
 %! disp (D);
 
 %!demo
 %! ## Create an hnswSearcher with Minkowski distance (P=3)
 %! X = [0, 0; 1, 0; 2, 0];
-%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! obj = hnswSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! ## Find the nearest neighbor to [1, 0]
 %! Y = [1, 0];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
-%! disp ("Nearest neighbor index:");
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! disp ('Nearest neighbor index:');
 %! disp (idx);
-%! disp ("Distance:");
+%! disp ('Distance:');
 %! disp (D);
 
 ## Test Cases
@@ -752,9 +752,9 @@ endfunction
 %!test
 %! load fisheriris
 %! X = meas;
-%! obj = hnswSearcher (X, "Distance", "chebychev");
+%! obj = hnswSearcher (X, 'Distance', 'chebychev');
 %! Y = X(30:35,:);
-%! [idx, D] = knnsearch (obj, Y, "K", 4);
+%! [idx, D] = knnsearch (obj, Y, 'K', 4);
 %! assert (idx, [[30 31 4 12]; [31 30 10 35]; [32 21 37 28]; [33 47 20 34]; ...
 %!               [34 16 33 15]; [35 10 26 2]])
 %! assert (D, [[0 0.1000 0.1000 0.2000]; [0 0.1000 0.1000 0.1000]; [0 0.2000 ...
@@ -765,9 +765,9 @@ endfunction
 %! load fisheriris
 %! X = meas;
 %! C = cov (X);
-%! obj = hnswSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! obj = hnswSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
 %! Y = X(120:125,:);
-%! [idx, D] = knnsearch (obj, Y, "K", 2);
+%! [idx, D] = knnsearch (obj, Y, 'K', 2);
 %! assert (idx(1, :), [120 82])
 %! assert (idx(4, :), [123 106])
 %! assert (idx(5, :), [124 127])
@@ -788,7 +788,7 @@ endfunction
 %!test
 %! ## Minkowski distance with custom P
 %! X = [0, 0; 1, 1; 2, 2];
-%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! obj = hnswSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! assert (obj.Distance, "minkowski");
 %! assert (obj.DistParameter, 3);
 
@@ -796,7 +796,7 @@ endfunction
 %! ## Seuclidean distance with custom Scale
 %! X = [1, 2; 3, 4; 5, 6];
 %! S = [1, 2];
-%! obj = hnswSearcher (X, "Distance", "seuclidean", "Scale", S);
+%! obj = hnswSearcher (X, 'Distance', 'seuclidean', 'Scale', S);
 %! assert (obj.Distance, "seuclidean");
 %! assert (obj.DistParameter, S);
 
@@ -804,7 +804,7 @@ endfunction
 %! ## Mahalanobis distance with custom Cov
 %! X = [1, 2; 3, 4; 5, 6];
 %! C = [1, 0; 0, 1];
-%! obj = hnswSearcher (X, "Distance", "mahalanobis", "Cov", C);
+%! obj = hnswSearcher (X, 'Distance', 'mahalanobis', 'Cov', C);
 %! assert (obj.Distance, "mahalanobis");
 %! assert (obj.DistParameter, C);
 
@@ -813,34 +813,34 @@ endfunction
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = hnswSearcher (X);
 %! Y = [2, 3];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [2]));
 %! assert (abs (D - sqrt(2)) < 1e-2);
 
 %!test
 %! ## knnsearch with Cityblock distance
 %! X = [0, 0; 1, 1; 2, 2];
-%! obj = hnswSearcher (X, "Distance", "cityblock");
+%! obj = hnswSearcher (X, 'Distance', 'cityblock');
 %! Y = [1, 0];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [1, 2]));
 %! assert (abs (D - 1) < 1e-2);
 
 %!test
 %! ## knnsearch with Chebychev distance
 %! X = [1, 1; 2, 3; 4, 2];
-%! obj = hnswSearcher (X, "Distance", "chebychev");
+%! obj = hnswSearcher (X, 'Distance', 'chebychev');
 %! Y = [2, 2];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [1, 2]));
 %! assert (abs (D - 1) < 1e-2);
 
 %!test
 %! ## knnsearch with Minkowski P=3
 %! X = [0, 0; 1, 0; 2, 0];
-%! obj = hnswSearcher (X, "Distance", "minkowski", "P", 3);
+%! obj = hnswSearcher (X, 'Distance', 'minkowski', 'P', 3);
 %! Y = [1, 0];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [2]));
 %! assert (abs (D - 0) < 1e-2);
 
@@ -849,16 +849,16 @@ endfunction
 %! X = [0, 10; 5, 5; 10, 0];
 %! obj = hnswSearcher (X);
 %! Y = [5, 5];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [2]));
 %! assert (abs (D - 0) < 1e-2);
 
 %!test
 %! ## High-dimensional data with Cityblock
 %! X = [1, 2, 3; 4, 5, 6; 7, 8, 9];
-%! obj = hnswSearcher (X, "Distance", "cityblock");
+%! obj = hnswSearcher (X, 'Distance', 'cityblock');
 %! Y = [4, 5, 6];
-%! [idx, D] = knnsearch (obj, Y, "K", 1);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (ismember (idx, [2]));
 %! assert (abs (D - 0) < 1e-2);
 
@@ -867,52 +867,52 @@ endfunction
 %!error<hnswSearcher: too few input arguments.> ...
 %! hnswSearcher ()
 %!error<hnswSearcher: Name-Value arguments must be in pairs.> ...
-%! hnswSearcher (ones(3,2), "Distance")
+%! hnswSearcher (ones(3,2), 'Distance')
 %!error<hnswSearcher: X cannot be empty.> ...
 %! hnswSearcher ([])
 %!error<hnswSearcher: X must be a finite numeric matrix.> ...
-%! hnswSearcher ("abc")
+%! hnswSearcher ('abc')
 %!error<hnswSearcher: X must be a finite numeric matrix.> ...
 %! hnswSearcher ([1; Inf; 3])
 %!error<hnswSearcher: invalid parameter name: 'foo'.> ...
-%! hnswSearcher (ones(3,2), "foo", "bar")
+%! hnswSearcher (ones(3,2), 'foo', 'bar')
 %!error<hnswSearcher: unsupported distance metric 'invalid'.> ...
-%! hnswSearcher (ones(3,2), "Distance", "invalid")
+%! hnswSearcher (ones(3,2), 'Distance', 'invalid')
 %!error<hnswSearcher: 'Distance' must be a string.> ...
-%! hnswSearcher (ones(3,2), "Distance", 1)
+%! hnswSearcher (ones(3,2), 'Distance', 1)
 %!error<hnswSearcher: 'P' must be a positive finite scalar.> ...
-%! hnswSearcher (ones(3,2), "Distance", "minkowski", "P", -1)
+%! hnswSearcher (ones(3,2), 'Distance', 'minkowski', 'P', -1)
 %!error<hnswSearcher: 'Scale' must be a nonnegative vector matching X columns.> ...
-%! hnswSearcher (ones(3,2), "Distance", "seuclidean", "Scale", [-1, 1])
+%! hnswSearcher (ones(3,2), 'Distance', 'seuclidean', 'Scale', [-1, 1])
 %!error<hnswSearcher: 'Cov' must be a square matrix matching X columns.> ...
-%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", ones(3,3))
+%! hnswSearcher (ones(3,2), 'Distance', 'mahalanobis', 'Cov', ones(3,3))
 %!error<hnswSearcher: 'Cov' must be symmetric for mahalanobis.> ...
-%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", [1, 2; 3, 4])
+%! hnswSearcher (ones(3,2), 'Distance', 'mahalanobis', 'Cov', [1, 2; 3, 4])
 %!error<hnswSearcher: 'Cov' must be positive definite for mahalanobis.> ...
-%! hnswSearcher (ones(3,2), "Distance", "mahalanobis", "Cov", -eye(2))
+%! hnswSearcher (ones(3,2), 'Distance', 'mahalanobis', 'Cov', -eye(2))
 %!error<hnswSearcher: 'MaxNumLinksPerNode' must be a positive integer.> ...
-%! hnswSearcher (ones(3,2), "MaxNumLinksPerNode", 0)
+%! hnswSearcher (ones(3,2), 'MaxNumLinksPerNode', 0)
 %!error<hnswSearcher: 'TrainSetSize' must be a positive integer.> ...
-%! hnswSearcher (ones(3,2), "TrainSetSize", -1)
+%! hnswSearcher (ones(3,2), 'TrainSetSize', -1)
 %!error<hnswSearcher: 'TrainSetSize' cannot exceed the number of rows in X.> ...
-%! hnswSearcher (ones(3,2), "TrainSetSize", 4)
+%! hnswSearcher (ones(3,2), 'TrainSetSize', 4)
 %!error<hnswSearcher: 'TrainSetSize' cannot exceed the number of rows in X.> ...
-%! hnswSearcher (ones(3,2), "MaxNumLinksPerNode", 200, "TrainSetSize", 100)
+%! hnswSearcher (ones(3,2), 'MaxNumLinksPerNode', 200, 'TrainSetSize', 100)
 
 %!error<hnswSearcher.knnsearch: too few input arguments.> ...
 %! knnsearch (hnswSearcher (ones(3,2)))
 %!error<hnswSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
-%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), "K")
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 'K')
 %!error<hnswSearcher.knnsearch: Y cannot be empty.> ...
 %! knnsearch (hnswSearcher (ones(3,2)), [])
 %!error<hnswSearcher.knnsearch: Y must be a finite numeric matrix.> ...
-%! knnsearch (hnswSearcher (ones(3,2)), "abc")
+%! knnsearch (hnswSearcher (ones(3,2)), 'abc')
 %!error<hnswSearcher.knnsearch: Y must have the same number of columns as the training data in OBJ.X.> ...
 %! knnsearch (hnswSearcher (ones(3,2)), ones(3,3))
 %!error<hnswSearcher.knnsearch: 'K' must be a positive integer.> ...
-%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), "K", 0)
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 'K', 0)
 %!error<hnswSearcher.knnsearch: invalid parameter name: 'foo'.> ...
-%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), "foo", "bar")
+%! knnsearch (hnswSearcher (ones(3,2)), ones(3,2), 'foo', 'bar')
 %!error<hnswSearcher.subsref: \(\) indexing not supported.> ...
 %! obj = hnswSearcher (ones(3,2)); obj(1)
 %!error<hnswSearcher.subsref: {} indexing not supported.> ...
@@ -931,17 +931,17 @@ endfunction
 %!error<hnswSearcher.subsasgn: 'HNSWGraph' is read-only and cannot be modified.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.HNSWGraph = 1
 %!error<hnswSearcher.subsasgn: 'Distance' is read-only and cannot be modified.> ...
-%! obj = hnswSearcher (ones(3,2)); obj.Distance = "invalid"
+%! obj = hnswSearcher (ones(3,2)); obj.Distance = 'invalid'
 %!error<hnswSearcher.subsasgn: 'Distance' is read-only and cannot be modified.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.Distance = 1
 %!error<hnswSearcher.subsasgn: 'DistParameter' is read-only and cannot be modified.> ...
-%! obj = hnswSearcher (ones(3,2), "Distance", "minkowski"); obj.DistParameter = -1
+%! obj = hnswSearcher (ones(3,2), 'Distance', 'minkowski'); obj.DistParameter = -1
 %!error<hnswSearcher.subsasgn: 'DistParameter' is read-only and cannot be modified.> ...
-%! obj = hnswSearcher (ones(3,2), "Distance", "seuclidean"); obj.DistParameter = [-1, 1]
+%! obj = hnswSearcher (ones(3,2), 'Distance', 'seuclidean'); obj.DistParameter = [-1, 1]
 %!error<pdist2: covariance matrix for mahalanobis distance must be symmetric and positive definite.> ...
-%! obj = hnswSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = ones(3,3)
+%! obj = hnswSearcher (ones(3,2), 'Distance', 'mahalanobis'); obj.DistParameter = ones(3,3)
 %!error<pdist2: covariance matrix for mahalanobis distance must be symmetric and positive definite.> ...
-%! obj = hnswSearcher (ones(3,2), "Distance", "mahalanobis"); obj.DistParameter = -eye(2)
+%! obj = hnswSearcher (ones(3,2), 'Distance', 'mahalanobis'); obj.DistParameter = -eye(2)
 %!error<hnswSearcher.subsasgn: 'DistParameter' is read-only and cannot be modified.> ...
 %! obj = hnswSearcher (ones(3,2)); obj.DistParameter = 1
 %!error<hnswSearcher.subsasgn: 'MaxNumLinksPerNode' is read-only and cannot be modified.> ...

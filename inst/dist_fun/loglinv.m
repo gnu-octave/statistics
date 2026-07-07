@@ -68,8 +68,8 @@ function x = loglinv (p, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -90,15 +90,15 @@ endfunction
 %! x3 = loglinv (p, log (1), 1/2);
 %! x4 = loglinv (p, log (1), 1/4);
 %! x5 = loglinv (p, log (1), 1/8);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! ylim ([0, 20])
 %! grid on
-%! legend ({"σ = 2 (β = 0.5)", "σ = 1 (β = 1)", "σ = 0.5 (β = 2)", ...
-%!          "σ = 0.25 (β = 4)", "σ = 0.125 (β = 8)"}, "location", "northwest")
-%! title ("Log-logistic iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
-%! text (0.03, 12.5, "μ = 0 (α = 1), values of σ (β) as shown in legend")
+%! legend ({'σ = 2 (β = 0.5)', 'σ = 1 (β = 1)', 'σ = 0.5 (β = 2)', ...
+%!          'σ = 0.25 (β = 4)', 'σ = 0.125 (β = 8)'}, 'location', 'northwest')
+%! title ('Log-logistic iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
+%! text (0.03, 12.5, 'μ = 0 (α = 1), values of σ (β) as shown in legend')
 
 ## Test output
 %!shared p, out1, out2

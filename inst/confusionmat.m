@@ -45,7 +45,7 @@
 ## @seealso{crosstab}
 ## @end deftypefn
 
-function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
+function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
 
   ## check the input parameters
   if ((nargin < 2) || (nargin > 4))
@@ -73,7 +73,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
     error ("confusionmat: group and grouphat must be of the same length.");
   endif
 
-  if ((nargin > 3) && strcmp (opt, "Order"))
+  if ((nargin > 3) && strcmp (opt, 'Order'))
     unique_tokens = grouporder;
 
     if (! strcmp (class (y_true), class (unique_tokens)))
@@ -102,7 +102,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
     error ("confusionmat: grouphat must be a vector or character array.");
   endif
 
-  if (exist ( "unique_tokens", "var"))
+  if (exist ( 'unique_tokens', 'var'))
     if (ischar (unique_tokens))
       unique_tokens = cellstr (unique_tokens);
     elseif (isvector (unique_tokens))
@@ -113,7 +113,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
   endif
 
   ## compute the confusion matrix
-  if (isa (y_true, "numeric") || isa (y_true, "logical"))
+  if (isa (y_true, 'numeric') || isa (y_true, 'logical'))
 
     ## Remove observations where EITHER group or grouphat is NaN
     nan_indices = isnan (y_true) | isnan (y_pred);
@@ -121,7 +121,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
     y_pred(nan_indices) = [];
 
     ## numeric and boolean values are sorted in ascending order
-    if (! exist ("unique_tokens", "var"))
+    if (! exist ('unique_tokens', 'var'))
       unique_tokens = unique ([y_true; y_pred]);
     endif
 
@@ -142,18 +142,18 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
     ## string cells
 
     ## remove observations where EITHER input is empty
-    empty_indices = cellfun ("isempty", y_true) | cellfun ("isempty", y_pred);
+    empty_indices = cellfun ('isempty', y_true) | cellfun ('isempty', y_pred);
     y_true(empty_indices) = [];
     y_pred(empty_indices) = [];
 
     ## string values are sorted according to their
     ## first appearance in group and grouphat
-    if (! exist ("unique_tokens", "var"))
+    if (! exist ('unique_tokens', 'var'))
       all_tokens = [y_true; y_pred];
       if (isempty (all_tokens))
         unique_tokens = {};
       else
-        [~, idx] = unique (all_tokens, "first");
+        [~, idx] = unique (all_tokens, 'first');
         unique_tokens = all_tokens(sort (idx));
       endif
     endif
@@ -174,7 +174,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
 
     ## character values are sorted according to their
     ## first appearance in group and grouphat
-    if (! exist ("unique_tokens", "var"))
+    if (! exist ('unique_tokens', 'var'))
       all_tokens = vertcat (y_true, y_pred);
       unique_tokens = [all_tokens(1)];
       for i = 2:length (all_tokens)
@@ -193,7 +193,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
       C(row_index, col_index)++;
     endfor
 
-  elseif (isa (y_true, "string"))
+  elseif (isa (y_true, 'string'))
 
     ## 1. Filter Missing Values
     bad_indices = ismissing (y_true) | ismissing (y_pred);
@@ -203,7 +203,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
 
     ## 2. Determine Order
     ## String arrays are sorted ALPHABETICALLY by unique().
-    if (! exist ("unique_tokens", "var"))
+    if (! exist ('unique_tokens', 'var'))
       all_tokens = [y_true; y_pred];
 
       if (isempty (all_tokens))
@@ -227,7 +227,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
       C(row_indices(i), col_indices(i))++;
     endfor
 
-  elseif (isa (y_true, "categorical"))
+  elseif (isa (y_true, 'categorical'))
 
     ## 1. Filter Undefined Values
     bad_indices = isundefined (y_true) | isundefined (y_pred);
@@ -236,13 +236,13 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
     y_pred(bad_indices) = [];
 
     ## 2. Determine Order
-    if (! exist ("unique_tokens", "var"))
+    if (! exist ('unique_tokens', 'var'))
        ## This ensures the matrix includes all defined categories
        cats_true = categories (y_true);
        cats_pred = categories (y_pred);
 
        ## Union of defined categories
-       all_cats = union (cats_true, cats_pred, "stable");
+       all_cats = union (cats_true, cats_pred, 'stable');
 
        ## Create the reference order vector
        unique_tokens = categorical (all_cats, all_cats);
@@ -359,20 +359,20 @@ endfunction
 
 ## Test 12: String Arrays
 %!test
-%! g  = ["Apple"; "Banana"; "Apple"];
-%! gh = ["Apple"; "Apple";  "Cherry"];
+%! g  = ['Apple'; 'Banana'; 'Apple'];
+%! gh = ['Apple'; 'Apple';  'Cherry'];
 %! [C, order] = confusionmat (g, gh);
 %! assert (C, [1 0 1; 1 0 0; 0 0 0]);
-%! assert (order, ["Apple"; "Banana"; "Cherry"]);
+%! assert (order, ['Apple'; 'Banana'; 'Cherry']);
 
 ## Test 13: String Arrays (Missing Values)
 %!test
-%! g = string ({"A"; "B"; "B"});
+%! g = string ({'A'; 'B'; 'B'});
 %! g(2) = missing;
-%! gh = string(["A"; "B"; "B"]);
+%! gh = string(['A'; 'B'; 'B']);
 %! [C, order] = confusionmat (g, gh);
 %! assert (C, [1 0; 0 1]);
-%! assert (isequal (order, string(["A"; "B"])));
+%! assert (isequal (order, string(['A'; 'B'])));
 
 ## Test 14: Categorical Arrays
 %!test
@@ -423,7 +423,7 @@ endfunction
 %! g  = [1; 2; 3];
 %! gh = [1; 2; 3];
 %! myOrder = [3; 2; 1];
-%! [C, order] = confusionmat (g, gh, "Order", myOrder);
+%! [C, order] = confusionmat (g, gh, 'Order', myOrder);
 %! assert (C, [1 0 0; 0 1 0; 0 0 1]);
 %! assert (order, [3; 2; 1]);
 
@@ -431,14 +431,14 @@ endfunction
 %!test
 %! g  = {'A'; 'B'};
 %! gh = {'A'; 'B'};
-%! [C, order] = confusionmat (g, gh, "Order", {'B'; 'A'});
+%! [C, order] = confusionmat (g, gh, 'Order', {'B'; 'A'});
 %! assert (C, [1 0; 0 1]);
 %! assert (order, {'B'; 'A'});
 ## Test 21: Custom Order (Subset / Filtering)
 %!test
 %! g  = [1; 2; 3];
 %! gh = [1; 2; 3];
-%! [C, order] = confusionmat (g, gh, "Order", [1; 2]);
+%! [C, order] = confusionmat (g, gh, 'Order', [1; 2]);
 %! assert (C, eye(2));
 %! assert (order, [1; 2]);
 
@@ -446,7 +446,7 @@ endfunction
 %!test
 %! g  = [1; 2];
 %! gh = [1; 2];
-%! [C, order] = confusionmat (g, gh, "Order", [1; 2; 4]);
+%! [C, order] = confusionmat (g, gh, 'Order', [1; 2; 4]);
 %! assert (C, [1 0 0; 0 1 0; 0 0 0]);
 %! assert (order, [1; 2; 4]);
 
@@ -474,9 +474,9 @@ endfunction
 %!error <confusionmat: group and grouphat must be of the same length.>
 %! confusionmat ([1; 2; 3], [1; 2])
 %!error <confusionmat: group and grouporder must be of the same data type.>
-%! confusionmat ([1; 2], [1; 2], "Order", {'A'; 'B'})
+%! confusionmat ([1; 2], [1; 2], 'Order', {'A'; 'B'})
 %!error <confusionmat: group and grouporder must be of the same data type.>
-%! confusionmat ({'A'}, {'A'}, "Order", [1])
+%! confusionmat ({'A'}, {'A'}, 'Order', [1])
 %!error <confusionmat: group must be a vector or character array.>
 %! confusionmat (eye(2), eye(2))
 %!error <confusionmat: invalid data type.> confusionmat ({1; 2}, {1; 2})

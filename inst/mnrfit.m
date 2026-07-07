@@ -104,15 +104,15 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   if (mod (numel (varargin), 2) != 0)
     error ("mnrfit: optional arguments must be in pairs.")
   endif
-  MODELTYPE = "nominal";
-  DISPLAY = "off";
+  MODELTYPE = 'nominal';
+  DISPLAY = 'off';
   while (numel (varargin) > 0)
     name = varargin{1};
     value = varargin{2};
     switch (lower (name))
-      case "model"
+      case 'model'
         MODELTYPE = value;
-      case "display"
+      case 'display'
         DISPLAY = value;
       otherwise
         warning (sprintf ("mnrfit: parameter %s will be ignored", name));
@@ -122,9 +122,9 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
 
   ## Evaluate display input argument
   switch (lower (DISPLAY))
-    case "on"
+    case 'on'
       dispopt = true;
-    case "off"
+    case 'off'
       dispopt = false;
   endswitch
 
@@ -183,16 +183,16 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
 
   ## Evaluate model type input argument
   switch (lower (MODELTYPE))
-    case "nominal"
+    case 'nominal'
       if (n > 2)
         error ("mnrfit: fitting more than 2 nominal responses not supported.");
       else
         ## Y has two responses. Ordinal logistic regression can be used to fit
         ## models with binary nominal responses
       endif
-    case "ordinal"
+    case 'ordinal'
       ## Do nothing, ordinal responses are fully supported
-    case "hierarchical"
+    case 'hierarchical'
       error ("mnrfit: fitting hierarchical responses not supported.");
     otherwise
       error ("mnrfit: model type not recognised.");
@@ -201,19 +201,19 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   ## Perform fit and reformat output
   [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, dispopt);
   B = cat (1, INTERCEPT, SLOPE);
-  STATS = struct ("beta", B, ...
-                  "dfe", [], ...      ## Not used
-                  "s", [], ...        ## Not used
-                  "sfit", [], ...     ## Not used
-                  "estdisp", [], ...  ## Not used
-                  "coeffcorr", S.coeffcorr, ...
-                  "covb", S.cov, ...
-                  "se", S.se, ...
-                  "t", [], ...        ## Not used
-                  "p", [], ...        ## Not used
-                  "resid", [], ...    ## Not used
-                  "residp", [], ...   ## Not used
-                  "residd", []);      ## Not used
+  STATS = struct ('beta', B, ...
+                  'dfe', [], ...      ## Not used
+                  's', [], ...        ## Not used
+                  'sfit', [], ...     ## Not used
+                  'estdisp', [], ...  ## Not used
+                  'coeffcorr', S.coeffcorr, ...
+                  'covb', S.cov, ...
+                  'se', S.se, ...
+                  't', [], ...        ## Not used
+                  'p', [], ...        ## Not used
+                  'resid', [], ...    ## Not used
+                  'residp', [], ...   ## Not used
+                  'residd', []);      ## Not used
 
 endfunction
 
@@ -230,17 +230,17 @@ endfunction
 %!error<mnrfit: Response labels must be a character array, a cell vector> ...
 %! mnrfit (ones (5, 4), {1 ;2 ;3 ;4 ;5})
 %!error<mnrfit: optional arguments must be in pairs.> ...
-%! mnrfit (ones (5, 4), ones (5, 1), "model")
+%! mnrfit (ones (5, 4), ones (5, 1), 'model')
 %!error<mnrfit: Y must be a column vector when given as cellstr.> ...
-%! mnrfit (ones (5, 4), {"q","q";"w","w";"q","q";"w","w";"q","q"})
+%! mnrfit (ones (5, 4), {'q','q';'w','w';'q','q';'w','w';'q','q'})
 %!error<mnrfit: Y must contain only 1 and 0 when given as a 2D matrix.> ...
 %! mnrfit (ones (5, 4), [1, 2; 1, 2; 1, 2; 1, 2; 1, 2])
 %!error<mnrfit: Y must contain positive integer category numbers.> ...
 %! mnrfit (ones (5, 4), [1; -1; 1; 2; 1])
 %!error<mnrfit: fitting more than 2 nominal responses not supported.> ...
-%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], "model", "nominal")
+%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'nominal')
 %!error<mnrfit: fitting hierarchical responses not supported.> ...
-%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], "model", "hierarchical")
+%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'hierarchical')
 %!error<mnrfit: model type not recognised.> ...
-%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], "model", "whatever")
+%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'whatever')
 

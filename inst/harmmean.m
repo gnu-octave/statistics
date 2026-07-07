@@ -90,7 +90,7 @@ function m = harmmean (x, varargin)
   omitnan = false;
 
   nvarg = numel (varargin);
-  varg_chars = cellfun ("ischar", varargin);
+  varg_chars = cellfun ('ischar', varargin);
   szx = size (x);
   ndx = ndims (x);
 
@@ -103,13 +103,13 @@ function m = harmmean (x, varargin)
   if (any (varg_chars))
     for i = varargin(varg_chars)
       switch (lower (i{:}))
-        case "all"
+        case 'all'
           all_flag = true;
 
-        case "omitnan"
+        case 'omitnan'
           omitnan = true;
 
-        case "includenan"
+        case 'includenan'
           omitnan = false;
 
         otherwise
@@ -250,21 +250,21 @@ endfunction
 %! assert (harmmean (x), 0);
 %! m = [0 8.907635160795225 14.30854471766802];
 %! assert (harmmean (y, 2), m', 4e-14);
-%! assert (harmmean (y, "all"), 0);
+%! assert (harmmean (y, 'all'), 0);
 %! y(2,4) = NaN;
 %! m(2) = 9.009855936313949;
 %! assert (harmmean (y, 2), [0 NaN m(3)]', 4e-14);
-%! assert (harmmean (y', "omitnan"), m, 4e-14);
+%! assert (harmmean (y', 'omitnan'), m, 4e-14);
 %! z = y + 20;
-%! assert (harmmean (z, "all"), NaN);
-%! assert (harmmean (z, "all", "includenan"), NaN);
-%! assert (harmmean (z, "all", "omitnan"), 29.1108719858295, 4e-14);
+%! assert (harmmean (z, 'all'), NaN);
+%! assert (harmmean (z, 'all', 'includenan'), NaN);
+%! assert (harmmean (z, 'all', 'omitnan'), 29.1108719858295, 4e-14);
 %! m = [24.59488458841874 NaN 34.71244385944397];
 %! assert (harmmean (z'), m, 4e-14);
-%! assert (harmmean (z', "includenan"), m, 4e-14);
+%! assert (harmmean (z', 'includenan'), m, 4e-14);
 %! m(2) = 29.84104075528277;
-%! assert (harmmean (z', "omitnan"), m, 4e-14);
-%! assert (harmmean (z, 2, "omitnan"), m', 4e-14);
+%! assert (harmmean (z', 'omitnan'), m, 4e-14);
+%! assert (harmmean (z, 2, 'omitnan'), m', 4e-14);
 
 ## Test dimension indexing with vecdim in n-dimensional arrays
 %!test
@@ -284,24 +284,24 @@ endfunction
 %! m(2,3) = NaN;
 %! assert (harmmean (x, [3 2]), m, 4e-14);
 %! m(2,3) = 13.06617961315406;
-%! assert (harmmean (x, [3 2], "omitnan"), m, 4e-14);
+%! assert (harmmean (x, [3 2], 'omitnan'), m, 4e-14);
 
 ## Test results for pure Inf arrays and omitnan interactions
 %!test
 %! assert (harmmean ([Inf, Inf]), Inf);
-%! assert (harmmean ([Inf, Inf], "all"), Inf);
+%! assert (harmmean ([Inf, Inf], 'all'), Inf);
 %! assert (harmmean ([Inf, Inf], 2), Inf);
-%! assert (harmmean ([NaN, Inf], "omitnan"), Inf);
-%! assert (harmmean ([NaN, Inf], "includenan"), NaN);
+%! assert (harmmean ([NaN, Inf], 'omitnan'), Inf);
+%! assert (harmmean ([NaN, Inf], 'includenan'), NaN);
 %! assert (harmmean ([0, Inf]), 0);
 
 ## Test NaN propagation in the presence of zeros.
 %!test
 %! assert (harmmean ([0, NaN]), NaN);
-%! assert (harmmean ([0, NaN], "all"), NaN);
+%! assert (harmmean ([0, NaN], 'all'), NaN);
 %! assert (harmmean ([0, NaN], [1, 2]), NaN);
-%! assert (harmmean ([0, NaN], "omitnan"), 0);
-%! assert (harmmean ([0, NaN], "all", "omitnan"), 0);
+%! assert (harmmean ([0, NaN], 'omitnan'), 0);
+%! assert (harmmean ([0, NaN], 'all', 'omitnan'), 0);
 
 ## Test default handling of empty arrays.
 %!test
@@ -320,7 +320,7 @@ endfunction
 %!assert (harmmean ([], 3), [])
 
 ## Test errors
-%!error <harmmean: X must contain real nonnegative values.> harmmean ("char")
+%!error <harmmean: X must contain real nonnegative values.> harmmean ('char')
 %!error <harmmean: X must contain real nonnegative values.> harmmean ([1 -1 3])
 %!error <harmmean: DIM must be a positive integer scalar or vector.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), -1)
@@ -329,6 +329,6 @@ endfunction
 %!error <harmmean: VECDIM must contain non-repeating positive integers.> ...
 %! harmmean (repmat ([1:20;6:25], [5 2 6 3 5]), [1 1])
 %!error <harmmean: dimension and 'all' flag are mutually exclusive.> ...
-%! harmmean ([1, 2; 3, 4], 1, "all")
+%! harmmean ([1, 2; 3, 4], 1, 'all')
 %!error <harmmean: dimension and 'all' flag are mutually exclusive.> ...
-%! harmmean ([1, 2; 3, 4], [1, 2], "all")
+%! harmmean ([1, 2; 3, 4], [1, 2], 'all')

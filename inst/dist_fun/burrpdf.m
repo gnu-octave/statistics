@@ -56,9 +56,9 @@ function y = burrpdf (x, lambda, c, k)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (lambda, "single") ...
-                        || isa (c, "single") || isa (k, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (lambda, 'single') ...
+                        || isa (c, 'single') || isa (k, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -91,17 +91,17 @@ endfunction
 %! y4 = burrpdf (x, 1, 2, 1);
 %! y5 = burrpdf (x, 1, 3, 1);
 %! y6 = burrpdf (x, 1, 0.5, 2);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
-%!       x, y4, "-c", x, y5, "-m", x, y6, "-k")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', ...
+%!       x, y4, '-c', x, y5, '-m', x, y6, '-k')
 %! grid on
 %! ylim ([0, 2])
-%! legend ({"λ = 1, c = 1, k = 1", "λ = 1, c = 1, k = 2", ...
-%!          "λ = 1, c = 1, k = 3", "λ = 1, c = 2, k = 1", ...
-%!          "λ = 1, c = 3, k = 1", "λ = 1, c = 0.5, k = 2"}, ...
-%!         "location", "northeast")
-%! title ("Burr type XII PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'λ = 1, c = 1, k = 1', 'λ = 1, c = 1, k = 2', ...
+%!          'λ = 1, c = 1, k = 3', 'λ = 1, c = 2, k = 1', ...
+%!          'λ = 1, c = 3, k = 1', 'λ = 1, c = 0.5, k = 2'}, ...
+%!         'location', 'northeast')
+%! title ('Burr type XII PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

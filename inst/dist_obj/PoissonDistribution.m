@@ -78,7 +78,7 @@ classdef PoissonDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "PoissonDistribution";
+    DistributionName = 'PoissonDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {PoissonDistribution} {property} NumParameters
@@ -100,7 +100,7 @@ classdef PoissonDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"lambda"};
+    ParameterNames = {'lambda'};
 
     ## -*- texinfo -*-
     ## @deftp {PoissonDistribution} {property} ParameterDescription
@@ -112,12 +112,12 @@ classdef PoissonDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Rate"};
+    ParameterDescription = {'Rate'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "poiss";
+    DistributionCode = 'poiss';
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
@@ -229,11 +229,11 @@ classdef PoissonDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Poisson distribution");
+      __disp__ (this, 'Poisson distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Poisson distribution");
+      __disp__ (this, 'Poisson distribution');
     endfunction
 
     function this = set.lambda (this, lambda)
@@ -272,9 +272,9 @@ classdef PoissonDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -752,7 +752,7 @@ classdef PoissonDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = false;
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -771,12 +771,12 @@ endfunction
 %! ## parameter lambda = 5.  Fit a Poisson distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Poisson", "lambda", 5)
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Poisson', 'lambda', 5)
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Poisson")
+%! pd_fitted = fitdist (data, 'Poisson')
 %! plot (pd_fitted)
-%! msg = "Fitted Poisson distribution with lambda = %0.2f";
+%! msg = 'Fitted Poisson distribution with lambda = %0.2f';
 %! title (sprintf (msg, pd_fitted.lambda))
 
 ## Test output
@@ -828,7 +828,7 @@ endfunction
 %!error <PoissonDistribution: LAMBDA must be a positive real scalar.> ...
 %! PoissonDistribution(i)
 %!error <PoissonDistribution: LAMBDA must be a positive real scalar.> ...
-%! PoissonDistribution("a")
+%! PoissonDistribution('a')
 %!error <PoissonDistribution: LAMBDA must be a positive real scalar.> ...
 %! PoissonDistribution([1, 2])
 %!error <PoissonDistribution: LAMBDA must be a positive real scalar.> ...
@@ -836,7 +836,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (PoissonDistribution, 2, "uper")
+%! cdf (PoissonDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (PoissonDistribution, 2, 3)
 
@@ -844,59 +844,59 @@ endfunction
 %!shared x
 %! x = poissrnd (1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha")
+%! paramci (PoissonDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 0)
+%! paramci (PoissonDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 1)
+%! paramci (PoissonDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (PoissonDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", "")
+%! paramci (PoissonDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", {0.05})
+%! paramci (PoissonDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "parameter", "lambda", "alpha", {0.05})
+%! paramci (PoissonDistribution.fit (x), 'parameter', 'lambda', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "parameter", {"lambda", "param"})
+%! paramci (PoissonDistribution.fit (x), 'parameter', {'lambda', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"lambda", "param"})
+%! paramci (PoissonDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'lambda', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (PoissonDistribution.fit (x), "parameter", "param")
+%! paramci (PoissonDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (PoissonDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (PoissonDistribution.fit (x), "NAME", "value")
+%! paramci (PoissonDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (PoissonDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (PoissonDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "lambda", "NAME", "value")
+%! paramci (PoissonDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'lambda', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (PoissonDistribution, "Parent")
+%! plot (PoissonDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (PoissonDistribution, "PlotType", 12)
+%! plot (PoissonDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (PoissonDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (PoissonDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (PoissonDistribution, "PlotType", "pdfcdf")
+%! plot (PoissonDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PoissonDistribution, "Discrete", "pdfcdf")
+%! plot (PoissonDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PoissonDistribution, "Discrete", [1, 0])
+%! plot (PoissonDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PoissonDistribution, "Discrete", {true})
+%! plot (PoissonDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (PoissonDistribution, "Parent", 12)
+%! plot (PoissonDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (PoissonDistribution, "Parent", "hax")
+%! plot (PoissonDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (PoissonDistribution, "invalidNAME", "pdf")
+%! plot (PoissonDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (PoissonDistribution, "PlotType", "probability")
+%! plot (PoissonDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -910,23 +910,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (PoissonDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display")
+%! proflik (PoissonDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display", 1)
+%! proflik (PoissonDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display", {1})
+%! proflik (PoissonDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (PoissonDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (PoissonDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (PoissonDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (PoissonDistribution.fit (x), 1, "NAME", "on")
+%! proflik (PoissonDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (PoissonDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (PoissonDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (PoissonDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

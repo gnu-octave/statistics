@@ -89,7 +89,7 @@ function [paramhat, paramci] = gevfit (x, alpha, varargin)
 
   ## Get X type and convert to double for computation
   is_type = class (x);
-  if (strcmpi (is_type, "single"))
+  if (strcmpi (is_type, 'single'))
     x = double (x);
   endif
 
@@ -122,7 +122,7 @@ function [paramhat, paramci] = gevfit (x, alpha, varargin)
 
   ## Add defaults
   freq = [];
-  options.Display = "off";
+  options.Display = 'off';
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
   options.TolX = 1e-6;
@@ -149,9 +149,9 @@ function [paramhat, paramci] = gevfit (x, alpha, varargin)
       error ("gevfit: FREQ must contain integer values.");
     endif
     ## Check for valid options structure
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("gevfit: 'options' argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -245,17 +245,17 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from 2 different exponential distributions
-%! rand ("seed", 1);   # for reproducibility
+%! rand ('seed', 1);   # for reproducibility
 %! r1 = gevrnd (-0.5, 1, 2, 5000, 1);
-%! rand ("seed", 2);   # for reproducibility
+%! rand ('seed', 2);   # for reproducibility
 %! r2 = gevrnd (0, 1, -4, 5000, 1);
 %! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 50, 5);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
 %! hold on
 %!
 %! ## Estimate their k, sigma, and mu parameters
@@ -265,18 +265,18 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [-10:0.5:20];
 %! y = gevpdf (x, k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = gevpdf (x, k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! ylim ([0, 0.7])
 %! xlim ([-7, 5])
-%! legend ({"Normalized HIST of sample 1 with k=-0.5, σ=1, μ=2", ...
-%!          "Normalized HIST of sample 2 with k=0, σ=1, μ=-4",
+%! legend ({'Normalized HIST of sample 1 with k=-0.5, σ=1, μ=2', ...
+%!          'Normalized HIST of sample 2 with k=0, σ=1, μ=-4',
 %!     sprintf("PDF for sample 1 with estimated k=%0.2f, σ=%0.2f, μ=%0.2f", ...
 %!                 k_sigma_muA(1), k_sigma_muA(2), k_sigma_muA(3)), ...
 %!     sprintf("PDF for sample 3 with estimated k=%0.2f, σ=%0.2f, μ=%0.2f", ...
 %!                 k_sigma_muB(1), k_sigma_muB(2), k_sigma_muB(3))})
-%! title ("Two population samples from different exponential distributions")
+%! title ('Two population samples from different exponential distributions')
 %! hold off
 
 ## Test output
@@ -299,7 +299,7 @@ endfunction
 %!error<gevfit: X must be a vector.> gevfit (ones (2,5));
 %!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 1.2);
 %!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 0);
-%!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], "alpha");
+%!error<gevfit: wrong value for ALPHA.> gevfit ([1, 2, 3, 4, 5], 'alpha');
 %!error<gevfit: X and FREQ vectors mismatch.> ...
 %! gevfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2]);
 %!error<gevfit: FREQ must not contain negative values.> ...
@@ -307,6 +307,6 @@ endfunction
 %!error<gevfit: FREQ must contain integer values.> ...
 %! gevfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, 1.5]);
 %!error<gevfit: 'options' argument must be a structure> ...
-%! gevfit ([1, 2, 3, 4, 5], 0.05, struct ("option", 234));
+%! gevfit ([1, 2, 3, 4, 5], 0.05, struct ('option', 234));
 %!error<gevfit: 'options' argument must be a structure> ...
-%! gevfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ("option", 234));
+%! gevfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ('option', 234));

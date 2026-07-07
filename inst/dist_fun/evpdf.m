@@ -89,14 +89,14 @@ endfunction
 %! y2 = evpdf (x, 1.0, 2);
 %! y3 = evpdf (x, 1.5, 3);
 %! y4 = evpdf (x, 3.0, 4);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c')
 %! grid on
 %! ylim ([0, 0.2])
-%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
-%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "northeast")
-%! title ("Extreme value PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 0.5, σ = 2', 'μ = 1.0, σ = 2', ...
+%!          'μ = 1.5, σ = 3', 'μ = 3.0, σ = 4'}, 'location', 'northeast')
+%! title ('Extreme value PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y0, y1

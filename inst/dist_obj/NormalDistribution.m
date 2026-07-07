@@ -92,7 +92,7 @@ classdef NormalDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "NormalDistribution";
+    DistributionName = 'NormalDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} NumParameters
@@ -114,7 +114,7 @@ classdef NormalDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "sigma"};
+    ParameterNames = {'mu', 'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} ParameterDescription
@@ -126,12 +126,12 @@ classdef NormalDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Mean", "Standard Deviation"};
+    ParameterDescription = {'Mean', 'Standard Deviation'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "norm";
+    DistributionCode = 'norm';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -249,11 +249,11 @@ classdef NormalDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "normal distribution");
+      __disp__ (this, 'normal distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "normal distribution");
+      __disp__ (this, 'normal distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -304,9 +304,9 @@ classdef NormalDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -733,7 +733,7 @@ classdef NormalDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -758,7 +758,7 @@ classdef NormalDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -780,12 +780,12 @@ endfunction
 %! ## parameters mu = 0 and sigma = 1.  Fit a Normal distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Normal", "mu", 0, "sigma", 1)
-%! randn ("seed", 2);
+%! pd_fixed = makedist ('Normal', 'mu', 0, 'sigma', 1)
+%! randn ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Normal")
+%! pd_fitted = fitdist (data, 'Normal')
 %! plot (pd_fitted)
-%! msg = "Fitted Normal distribution with mu = %0.2f and sigma = %0.2f";
+%! msg = 'Fitted Normal distribution with mu = %0.2f and sigma = %0.2f';
 %! title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma))
 
 ## Test output
@@ -825,7 +825,7 @@ endfunction
 %!error <NormalDistribution: MU must be a real scalar.> ...
 %! NormalDistribution(i, 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution("a", 1)
+%! NormalDistribution('a', 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
 %! NormalDistribution([1, 2], 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
@@ -839,7 +839,7 @@ endfunction
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
 %! NormalDistribution(1, i)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, "a")
+%! NormalDistribution(1, 'a')
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
 %! NormalDistribution(1, [1, 2])
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
@@ -847,7 +847,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (NormalDistribution, 2, "uper")
+%! cdf (NormalDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (NormalDistribution, 2, 3)
 
@@ -855,59 +855,59 @@ endfunction
 %!shared x
 %! x = normrnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (NormalDistribution.fit (x), "alpha")
+%! paramci (NormalDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 0)
+%! paramci (NormalDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 1)
+%! paramci (NormalDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (NormalDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", "")
+%! paramci (NormalDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", {0.05})
+%! paramci (NormalDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (NormalDistribution.fit (x), "parameter", "mu", "alpha", {0.05})
+%! paramci (NormalDistribution.fit (x), 'parameter', 'mu', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NormalDistribution.fit (x), "parameter", {"mu", "sigma", "param"})
+%! paramci (NormalDistribution.fit (x), 'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "sigma", "param"})
+%! paramci (NormalDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NormalDistribution.fit (x), "parameter", "param")
+%! paramci (NormalDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (NormalDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NormalDistribution.fit (x), "NAME", "value")
+%! paramci (NormalDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (NormalDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (NormalDistribution.fit (x), "alpha", 0.01, "parameter", "mu", ...
-%!          "NAME", "value")
+%! paramci (NormalDistribution.fit (x), 'alpha', 0.01, 'parameter', 'mu', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (NormalDistribution, "Parent")
+%! plot (NormalDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NormalDistribution, "PlotType", 12)
+%! plot (NormalDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (NormalDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (NormalDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (NormalDistribution, "PlotType", "pdfcdf")
+%! plot (NormalDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NormalDistribution, "Discrete", "pdfcdf")
+%! plot (NormalDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NormalDistribution, "Discrete", [1, 0])
+%! plot (NormalDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (NormalDistribution, "Discrete", {true})
+%! plot (NormalDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NormalDistribution, "Parent", 12)
+%! plot (NormalDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (NormalDistribution, "Parent", "hax")
+%! plot (NormalDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (NormalDistribution, "invalidNAME", "pdf")
+%! plot (NormalDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (NormalDistribution, "PlotType", "probability")
+%! plot (NormalDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -921,23 +921,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (NormalDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display")
+%! proflik (NormalDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display", 1)
+%! proflik (NormalDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display", {1})
+%! proflik (NormalDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (NormalDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (NormalDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (NormalDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (NormalDistribution.fit (x), 1, "NAME", "on")
+%! proflik (NormalDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (NormalDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (NormalDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (NormalDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

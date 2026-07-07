@@ -47,7 +47,7 @@ function p = betacdf (x, a, b, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("betacdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -70,10 +70,10 @@ function p = betacdf (x, a, b, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    is_type = "single";
+  if (isa (x, 'single') || isa (a, 'single') || isa (b, 'single'))
+    is_type = 'single';
   else
-    is_type = "double";
+    is_type = 'double';
   endif
 
   ## Find valid values in parameters and data
@@ -110,7 +110,7 @@ function p = betacdf (x, a, b, uflag)
 
   ## Call betainc for the actual work
   if (uflag)
-    pk = betainc (x, a, b, "upper");
+    pk = betainc (x, a, b, 'upper');
   else
     pk = betainc (x, a, b);
   endif
@@ -132,13 +132,13 @@ endfunction
 %! p3 = betacdf (x, 1, 3);
 %! p4 = betacdf (x, 2, 2);
 %! p5 = betacdf (x, 2, 5);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-m')
 %! grid on
-%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
-%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "northwest")
-%! title ("Beta CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'α = β = 0.5', 'α = 5, β = 1', 'α = 1, β = 3', ...
+%!          'α = 2, β = 2', 'α = 2, β = 5'}, 'location', 'northwest')
+%! title ('Beta CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y, x1, x2
@@ -152,7 +152,7 @@ endfunction
 %!assert (betacdf ([x(1:2) NaN x(4:5)], 1, 2), [y(1:2) NaN y(4:5)])
 %! x1 = [0.1:0.2:0.9];
 %!assert (betacdf (x1, 2, 2), [0.028, 0.216, 0.5, 0.784, 0.972], 1e-14);
-%!assert (betacdf (x1, 2, 2, "upper"), 1 - [0.028, 0.216, 0.5, 0.784, 0.972],...
+%!assert (betacdf (x1, 2, 2, 'upper'), 1 - [0.028, 0.216, 0.5, 0.784, 0.972],...
 %!        1e-14);
 %! x2 = [1, 2, 3];
 %!assert (betacdf (0.5, x2, x2), [0.5, 0.5, 0.5], 1e-14);
@@ -168,7 +168,7 @@ endfunction
 %!error<betacdf: function called with too few input arguments.> betacdf (1)
 %!error<betacdf: function called with too few input arguments.> betacdf (1, 2)
 %!error<betacdf: function called with too many inputs> betacdf (1, 2, 3, 4, 5)
-%!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, "tail")
+%!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, 'tail')
 %!error<betacdf: invalid argument for upper tail.> betacdf (1, 2, 3, 4)
 %!error<betacdf: X, A, and B must be of common size or scalars.> ...
 %! betacdf (ones (3), ones (2), ones (2))

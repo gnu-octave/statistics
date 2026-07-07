@@ -78,7 +78,7 @@ classdef ExponentialDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "ExponentialDistribution";
+    DistributionName = 'ExponentialDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} NumParameters
@@ -100,7 +100,7 @@ classdef ExponentialDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu"};
+    ParameterNames = {'mu'};
 
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} ParameterDescription
@@ -112,12 +112,12 @@ classdef ExponentialDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Mean"};
+    ParameterDescription = {'Mean'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "exp";
+    DistributionCode = 'exp';
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
@@ -232,11 +232,11 @@ classdef ExponentialDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "exponential distribution");
+      __disp__ (this, 'exponential distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "exponential distribution");
+      __disp__ (this, 'exponential distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -275,9 +275,9 @@ classdef ExponentialDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -730,7 +730,7 @@ classdef ExponentialDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = false;
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -785,7 +785,7 @@ endfunction
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
 %! ExponentialDistribution(i)
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution("a")
+%! ExponentialDistribution('a')
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
 %! ExponentialDistribution([1, 2])
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
@@ -793,7 +793,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (ExponentialDistribution, 2, "uper")
+%! cdf (ExponentialDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (ExponentialDistribution, 2, 3)
 
@@ -801,60 +801,60 @@ endfunction
 %!shared x
 %! x = exprnd (1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha")
+%! paramci (ExponentialDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 0)
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 1)
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (ExponentialDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", "")
+%! paramci (ExponentialDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", {0.05})
+%! paramci (ExponentialDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "parameter", "mu", ...
-%!          "alpha", {0.05})
+%! paramci (ExponentialDistribution.fit (x), 'parameter', 'mu', ...
+%!          'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "parameter", {"mu", "param"})
+%! paramci (ExponentialDistribution.fit (x), 'parameter', {'mu', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "param"})
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (ExponentialDistribution.fit (x), "parameter", "param")
+%! paramci (ExponentialDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 0.01, "parameter", "parm")
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 0.01, 'parameter', 'parm')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "NAME", "value")
+%! paramci (ExponentialDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExponentialDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "mu", "NAME", "value")
+%! paramci (ExponentialDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'mu', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (ExponentialDistribution, "Parent")
+%! plot (ExponentialDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (ExponentialDistribution, "PlotType", 12)
+%! plot (ExponentialDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (ExponentialDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (ExponentialDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (ExponentialDistribution, "PlotType", "pdfcdf")
+%! plot (ExponentialDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExponentialDistribution, "Discrete", "pdfcdf")
+%! plot (ExponentialDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExponentialDistribution, "Discrete", [1, 0])
+%! plot (ExponentialDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExponentialDistribution, "Discrete", {true})
+%! plot (ExponentialDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (ExponentialDistribution, "Parent", 12)
+%! plot (ExponentialDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (ExponentialDistribution, "Parent", "hax")
+%! plot (ExponentialDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (ExponentialDistribution, "invalidNAME", "pdf")
+%! plot (ExponentialDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (ExponentialDistribution, "PlotType", "probability")
+%! plot (ExponentialDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -868,23 +868,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (ExponentialDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display")
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display", 1)
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display", {1})
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (ExponentialDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, "NAME", "on")
+%! proflik (ExponentialDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (ExponentialDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (ExponentialDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (ExponentialDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

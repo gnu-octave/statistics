@@ -62,7 +62,7 @@ function p = gevcdf (x, k, sigma, mu, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 4)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("gevcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -85,11 +85,11 @@ function p = gevcdf (x, k, sigma, mu, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (k, "single") ...
-                        || isa (sigma, "single") || isa (mu, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (k, 'single') ...
+                        || isa (sigma, 'single') || isa (mu, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -138,17 +138,17 @@ endfunction
 %! p4 = gevcdf (x, 1, 2, 5);
 %! p5 = gevcdf (x, 1, 5, 5);
 %! p6 = gevcdf (x, 1, 0.5, 5);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
-%!       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', ...
+%!       x, p4, '-c', x, p5, '-m', x, p6, '-k')
 %! grid on
 %! xlim ([-1, 10])
-%! legend ({"k = 1, σ = 1, μ = 1", "k = 0.5, σ = 1, μ = 1", ...
-%!          "k = 1, σ = 1, μ = 5", "k = 1, σ = 2, μ = 5", ...
-%!          "k = 1, σ = 5, μ = 5", "k = 1, σ = 0.5, μ = 5"}, ...
-%!         "location", "southeast")
-%! title ("Generalized extreme value CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'k = 1, σ = 1, μ = 1', 'k = 0.5, σ = 1, μ = 1', ...
+%!          'k = 1, σ = 1, μ = 5', 'k = 1, σ = 2, μ = 5', ...
+%!          'k = 1, σ = 5, μ = 5', 'k = 1, σ = 0.5, μ = 5'}, ...
+%!         'location', 'southeast')
+%! title ('Generalized extreme value CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -183,7 +183,7 @@ endfunction
 %!error<gevcdf: function called with too few input arguments.> gevcdf (1, 2, 3)
 %!error<gevcdf: function called with too many inputs> ...
 %! gevcdf (1, 2, 3, 4, 5, 6)
-%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, "tail")
+%!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, 'tail')
 %!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, 5)
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
 %! gevcdf (ones (3), ones (2), ones(2), ones(2))

@@ -98,10 +98,10 @@ function r = nakarnd (mu, omega, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (omega, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (omega, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Nakagami distribution

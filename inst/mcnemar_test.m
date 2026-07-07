@@ -76,9 +76,9 @@ function [h, pval, chisq] = mcnemar_test (x, varargin)
   b = x(1,2);
   c = x(2,1);
   if (b + c < 25)
-    testtype = "mid-p";
+    testtype = 'mid-p';
   else
-    testtype = "asymptotic";
+    testtype = 'asymptotic';
   endif
 
   ## Parse optional arguments
@@ -99,23 +99,23 @@ function [h, pval, chisq] = mcnemar_test (x, varargin)
   if (! isscalar (alpha) || alpha <= 0 || alpha >= 1)
     error ("mcnemar_test: invalid value for ALPHA.");
   endif
-  types = {"exact", "asymptotic", "mid-p", "corrected"};
+  types = {'exact', 'asymptotic', 'mid-p', 'corrected'};
   if (! any (strcmpi (testtype, types)))
     error ("mcnemar_test: invalid value for TESTTYPE.");
   endif
 
   ## Calculate test
   switch (lower (testtype))
-    case "asymptotic"
+    case 'asymptotic'
       chisq = (b - c) .^2 / (b + c);
       pval = 1 - chi2cdf (chisq, 1);
-    case "corrected"
+    case 'corrected'
       chisq = (abs (b - c) - 1) .^2 / (b + c);
       pval = 1 - chi2cdf (chisq, 1);
-    case "exact"
+    case 'exact'
       chisq = [];
       pval = 2 * (binocdf (b, b + c, 0.5));
-    case "mid-p"
+    case 'mid-p'
       chisq = [];
       pval = 2 * (binocdf (b, b + c, 0.5)) - binopdf (b, b + c, 0.5);
   endswitch
@@ -148,31 +148,31 @@ endfunction
 %! assert (isempty (chisq), true);
 
 %!test
-%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], "mid-p");
+%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'mid-p');
 %! assert (h, 1);
 %! assert (pval, 0.034690, 1e-6);
 %! assert (isempty (chisq), true);
 
 %!test
-%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], "asymptotic");
+%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'asymptotic');
 %! assert (h, 1);
 %! assert (pval, 0.033006, 1e-6);
 %! assert (chisq, 4.5455, 1e-4);
 
 %!test
-%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], "exact");
+%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'exact');
 %! assert (h, 0);
 %! assert (pval, 0.052479, 1e-6);
 %! assert (isempty (chisq), true);
 
 %!test
-%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], "corrected");
+%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 'corrected');
 %! assert (h, 0);
 %! assert (pval, 0.055009, 1e-6);
 %! assert (chisq, 3.6818, 1e-4);
 
 %!test
-%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 0.1, "corrected");
+%! [h, pval, chisq] = mcnemar_test ([59,6;16,80], 0.1, 'corrected');
 %! assert (h, 1);
 %! assert (pval, 0.055009, 1e-6);
 %! assert (chisq, 3.6818, 1e-4);
@@ -184,7 +184,7 @@ endfunction
 %!error<mcnemar_test: all entries of X must be non-negative integers.> ...
 %! mcnemar_test ([59,6;16,4.5])
 %!error<mcnemar_test: invalid 2nd input argument.> ...
-%! mcnemar_test ([59,6;16,80], {""})
+%! mcnemar_test ([59,6;16,80], {''})
 %!error<mcnemar_test: invalid value for ALPHA.> ...
 %! mcnemar_test ([59,6;16,80], -0.2)
 %!error<mcnemar_test: invalid value for ALPHA.> ...
@@ -192,4 +192,4 @@ endfunction
 %!error<mcnemar_test: invalid value for ALPHA.> ...
 %! mcnemar_test ([59,6;16,80], 1)
 %!error<mcnemar_test: invalid value for TESTTYPE.> ...
-%! mcnemar_test ([59,6;16,80], "")
+%! mcnemar_test ([59,6;16,80], '')

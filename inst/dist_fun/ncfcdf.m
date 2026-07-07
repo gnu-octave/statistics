@@ -49,7 +49,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 4)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("ncfcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -70,10 +70,10 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df1, "single") || ...
-      isa (df2, "single") || isa (lambda, "single"))
-    p = zeros (size (x), "single");
-    c_eps = eps ("single") .^ (3/4);
+  if (isa (x, 'single') || isa (df1, 'single') || ...
+      isa (df2, 'single') || isa (lambda, 'single'))
+    p = zeros (size (x), 'single');
+    c_eps = eps ('single') .^ (3/4);
   else
     p = zeros (size (x));
     c_eps = eps .^ (3/4);
@@ -100,7 +100,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
   k0 = (lambda==0);
   if (any (k0(:)))
     if (uflag)
-      p(k0) = fcdf (x(k0), df1(k0), df2(k0), "upper");
+      p(k0) = fcdf (x(k0), df1(k0), df2(k0), 'upper');
     else
       p(k0) = fcdf (x(k0), df1(k0), df2(k0));
     endif
@@ -134,7 +134,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
 
   ## Compute Poisson pdf and beta cdf at the starting point
   if (uflag)
-    bcdf0 = betainc (tmp, j0 + df1, df2, "upper");
+    bcdf0 = betainc (tmp, j0 + df1, df2, 'upper');
   else
     bcdf0 = betacdf (tmp, j0 + df1, df2);
   endif
@@ -152,7 +152,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
     ## Use recurrence relation to compute new pdf and cdf
     ppdf(ok) = ppdf(ok) .* (j(ok) + 1) ./ lambda(ok);
     if (uflag)
-      bcdf(ok) = betainc (tmp(ok), j(ok) + df1(ok), df2(ok), "upper");
+      bcdf(ok) = betainc (tmp(ok), j(ok) + df1(ok), df2(ok), 'upper');
     else
       db = exp ((j + df1) .* logtmp + nu2const + ...
            localgammaln (j + df1 + df2) - localgammaln (j + df1 + 1));
@@ -177,7 +177,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
   for jj = 1:5000
     ppdf = ppdf .* lambda ./ j;
     if (uflag)
-      bcdf = betainc (tmp, j + df1, df2, "upper");
+      bcdf = betainc (tmp, j + df1, df2, 'upper');
     else
       bcdf = bcdf - exp ((j + df1 - 1) .* logtmp + nu2const + ...
              localgammaln (j + df1 + df2 - 1) - localgammaln (j + df1));
@@ -215,15 +215,15 @@ endfunction
 %! p2 = ncfcdf (x, 2, 5, 2);
 %! p3 = ncfcdf (x, 5, 10, 1);
 %! p4 = ncfcdf (x, 10, 20, 10);
-%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", x, p4, "-m")
+%! plot (x, p1, '-r', x, p2, '-g', x, p3, '-k', x, p4, '-m')
 %! grid on
 %! xlim ([0, 5])
-%! legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
-%!          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
-%!         "location", "southeast")
-%! title ("Noncentral F CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'df1 = 2, df2 = 5, λ = 1', 'df1 = 2, df2 = 5, λ = 2', ...
+%!          'df1 = 5, df2 = 10, λ = 1', 'df1 = 10, df2 = 20, λ = 10'}, ...
+%!         'location', 'southeast')
+%! title ('Noncentral F CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 %!demo
 %! ## Compare the noncentral F CDF with LAMBDA = 10 to the F CDF with the
@@ -232,13 +232,13 @@ endfunction
 %! x = 0.01:0.1:10.01;
 %! p1 = ncfcdf (x, 5, 20, 10);
 %! p2 = fcdf (x, 5, 20);
-%! plot (x, p1, "-", x, p2, "-");
+%! plot (x, p1, '-', x, p2, '-');
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "southeast")
-%! title ("Noncentral F vs F CDFs")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'Noncentral F(5,20,10)', 'F(5,20)'}, 'location', 'southeast')
+%! title ('Noncentral F vs F CDFs')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -255,10 +255,10 @@ endfunction
 %! p = ncfcdf (2, 3, 2, 1);
 %! assert (p, 0.5731985522994989, 1e-14);
 %!test
-%! p = ncfcdf (2, 3, 2, 1, "upper");
+%! p = ncfcdf (2, 3, 2, 1, 'upper');
 %! assert (p, 0.4268014477004823, 1e-14);
 %!test
-%! p = ncfcdf ([3, 6], 3, 2, 5, "upper");
+%! p = ncfcdf ([3, 6], 3, 2, 5, 'upper');
 %! assert (p, [0.530248523596927, 0.3350482341323044], 1e-14);
 
 ## Test input validation
@@ -266,7 +266,7 @@ endfunction
 %!error<ncfcdf: function called with too few input arguments.> ncfcdf (1)
 %!error<ncfcdf: function called with too few input arguments.> ncfcdf (1, 2)
 %!error<ncfcdf: function called with too few input arguments.> ncfcdf (1, 2, 3)
-%!error<ncfcdf: invalid argument for upper tail.> ncfcdf (1, 2, 3, 4, "tail")
+%!error<ncfcdf: invalid argument for upper tail.> ncfcdf (1, 2, 3, 4, 'tail')
 %!error<ncfcdf: invalid argument for upper tail.> ncfcdf (1, 2, 3, 4, 5)
 %!error<ncfcdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
 %! ncfcdf (ones (3), ones (2), ones (2), ones (2))

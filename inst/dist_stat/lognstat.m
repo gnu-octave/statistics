@@ -78,7 +78,7 @@ endfunction
 %!error<lognstat: function called with too few input arguments.> lognstat ()
 %!error<lognstat: function called with too few input arguments.> lognstat (1)
 %!error<lognstat: MU and SIGMA must be numeric.> lognstat ({}, 2)
-%!error<lognstat: MU and SIGMA must be numeric.> lognstat (1, "")
+%!error<lognstat: MU and SIGMA must be numeric.> lognstat (1, '')
 %!error<lognstat: MU and SIGMA must not be complex.> lognstat (i, 2)
 %!error<lognstat: MU and SIGMA must not be complex.> lognstat (1, i)
 %!error<lognstat: MU and SIGMA must be of common size or scalars.> ...

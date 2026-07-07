@@ -49,12 +49,12 @@ function h = manovacluster (stats, method)
   ## Check for valid input arguments
   narginchk (1, 2);
   if nargin > 1
-    valid_methods = {"single", "complete", "average", "centroid", "ward"};
+    valid_methods = {'single', 'complete', 'average', 'centroid', 'ward'};
     if ! any (strcmpi (method, valid_methods))
       error ("manovacluster: invalid method.");
     endif
   else
-    method = "single";
+    method = 'single';
   endif
   ## Get stats fields and create dendrogram
   dist = stats.gmdist;
@@ -62,9 +62,9 @@ function h = manovacluster (stats, method)
   [a, b] = meshgrid (1:length (dist));
   hh = dendrogram (linkage (dist(a < b)', method), 0);
   ## Fix tick labels on x-axis
-  oldlab = get (gca, "XTickLabel");
-  maxlen = max (cellfun ("length", group_names));
-  newlab = repmat(" ", size (oldlab, 1), maxlen);
+  oldlab = get (gca, 'XTickLabel');
+  maxlen = max (cellfun ('length', group_names));
+  newlab = repmat(' ', size (oldlab, 1), maxlen);
   ng = size (group_names, 1);
   for j = 1:size (oldlab, 1)
     k = str2num (oldlab(j,:));
@@ -73,7 +73,7 @@ function h = manovacluster (stats, method)
       newlab(j,1:length(x)) = x;
     endif
   endfor
-  set(gca, "XtickLabel", newlab);
+  set(gca, 'XtickLabel', newlab);
   ## Return plot handles if requested
   if nargout > 0
     h = hh;
@@ -88,7 +88,7 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   load carbig
 %!   X = [MPG Acceleration Weight Displacement];
@@ -99,4 +99,4 @@ endfunction
 %! end_unwind_protect
 
 ## Test input validation
-%!error manovacluster (stats, "some");
+%!error manovacluster (stats, 'some');

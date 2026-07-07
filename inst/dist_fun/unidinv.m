@@ -63,8 +63,8 @@ function x = unidinv (p, N)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (N, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (N, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -80,14 +80,14 @@ endfunction
 %! p = 0.001:0.001:0.999;
 %! x1 = unidinv (p, 5);
 %! x2 = unidinv (p, 9);
-%! plot (p, x1, "-b", p, x2, "-g")
+%! plot (p, x1, '-b', p, x2, '-g')
 %! grid on
 %! xlim ([0, 1])
 %! ylim ([0, 10])
-%! legend ({"N = 5", "N = 9"}, "location", "northwest")
-%! title ("Discrete uniform iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'N = 5', 'N = 9'}, 'location', 'northwest')
+%! title ('Discrete uniform iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

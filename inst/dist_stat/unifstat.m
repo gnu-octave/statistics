@@ -78,7 +78,7 @@ endfunction
 %!error<unifstat: function called with too few input arguments.> unifstat ()
 %!error<unifstat: function called with too few input arguments.> unifstat (1)
 %!error<unifstat: A and B must be numeric.> unifstat ({}, 2)
-%!error<unifstat: A and B must be numeric.> unifstat (1, "")
+%!error<unifstat: A and B must be numeric.> unifstat (1, '')
 %!error<unifstat: A and B must not be complex.> unifstat (i, 2)
 %!error<unifstat: A and B must not be complex.> unifstat (1, i)
 %!error<unifstat: A and B must be of common size or scalars.> ...

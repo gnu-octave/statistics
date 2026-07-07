@@ -67,16 +67,16 @@ endfunction
 %! y4 = chi2pdf (x, 4);
 %! y5 = chi2pdf (x, 6);
 %! y6 = chi2pdf (x, 9);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
-%!       x, y4, "-c", x, y5, "-m", x, y6, "-y")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', ...
+%!       x, y4, '-c', x, y5, '-m', x, y6, '-y')
 %! grid on
 %! xlim ([0, 8])
 %! ylim ([0, 0.5])
-%! legend ({"df = 1", "df = 2", "df = 3", ...
-%!          "df = 4", "df = 6", "df = 9"}, "location", "northeast")
-%! title ("Chi-squared PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'df = 1', 'df = 2', 'df = 3', ...
+%!          'df = 4', 'df = 6', 'df = 9'}, 'location', 'northeast')
+%! title ('Chi-squared PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

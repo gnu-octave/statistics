@@ -62,8 +62,8 @@ function y = gampdf (x, a, b)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (a, 'single') || isa (b, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -103,16 +103,16 @@ endfunction
 %! y5 = gampdf (x, 9, 0.5);
 %! y6 = gampdf (x, 7.5, 1);
 %! y7 = gampdf (x, 0.5, 1);
-%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-y", x, y4, "-m", ...
-%!       x, y5, "-k", x, y6, "-b", x, y7, "-c")
+%! plot (x, y1, '-r', x, y2, '-g', x, y3, '-y', x, y4, '-m', ...
+%!       x, y5, '-k', x, y6, '-b', x, y7, '-c')
 %! grid on
 %! ylim ([0,0.5])
-%! legend ({"α = 1, β = 2", "α = 2, β = 2", "α = 3, β = 2", ...
-%!          "α = 5, β = 1", "α = 9, β = 0.5", "α = 7.5, β = 1", ...
-%!          "α = 0.5, β = 1"}, "location", "northeast")
-%! title ("Gamma PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'α = 1, β = 2', 'α = 2, β = 2', 'α = 3, β = 2', ...
+%!          'α = 5, β = 1', 'α = 9, β = 0.5', 'α = 7.5, β = 1', ...
+%!          'α = 0.5, β = 1'}, 'location', 'northeast')
+%! title ('Gamma PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

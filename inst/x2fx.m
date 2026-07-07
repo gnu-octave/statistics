@@ -83,7 +83,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
   ## Get matrix size
   [m, n]  = size (x);
   ## Get data class
-  if (isa (x, "single"))
+  if (isa (x, 'single'))
     data_class = 'single';
   else
     data_class = 'double';
@@ -105,16 +105,16 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
 
   ## Convert models parsed as strings to numerical matrix
   if (ischar (model))
-    if (strcmpi (model, "linear") || strcmpi (model, "additive"))
+    if (strcmpi (model, 'linear') || strcmpi (model, 'additive'))
       interactions = false;
       quadratic = false;
-    elseif (strcmpi (model, "interaction"))
+    elseif (strcmpi (model, 'interaction'))
       interactions = true;
       quadratic = false;
-    elseif (strcmpi (model, "quadratic"))
+    elseif (strcmpi (model, 'quadratic'))
       interactions = true;
       quadratic = true;
-    elseif (strcmpi (model, "purequadratic"))
+    elseif (strcmpi (model, 'purequadratic'))
       interactions = false;
       quadratic = true;
     else

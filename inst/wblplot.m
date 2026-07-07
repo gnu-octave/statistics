@@ -296,11 +296,11 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     if (! isempty (confint))
       s2 = sprintf ('CB_H=%.2f', cb_high);
       s3 = sprintf ('CB_L=%.2f', cb_low);
-      legend ([h; h2; h3], "Data", s1, s2, s3, "location", "northeastoutside");
+      legend ([h; h2; h3], 'Data', s1, s2, s3, 'location', 'northeastoutside');
     else
-      legend ([h; h2], "Data", s1, "location", "northeastoutside");
+      legend ([h; h2], 'Data', s1, 'location', 'northeastoutside');
     endif
-    legend ("boxoff");
+    legend ('boxoff');
   endif
   axis ([xmin, xmax, ymin, (log (log (1 / (1 - 0.99))))]);
   hold off
@@ -360,7 +360,7 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [16, 34, 53, 75, 93, 120, 150, 191, 240 ,339];
 %!   [h, p] = wblplot (x, [], [], 0.05);

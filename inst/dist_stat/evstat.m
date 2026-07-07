@@ -80,7 +80,7 @@ endfunction
 %!error<evstat: function called with too few input arguments.> evstat ()
 %!error<evstat: function called with too few input arguments.> evstat (1)
 %!error<evstat: MU and SIGMA must be numeric.> evstat ({}, 2)
-%!error<evstat: MU and SIGMA must be numeric.> evstat (1, "")
+%!error<evstat: MU and SIGMA must be numeric.> evstat (1, '')
 %!error<evstat: MU and SIGMA must not be complex.> evstat (i, 2)
 %!error<evstat: MU and SIGMA must not be complex.> evstat (1, i)
 %!error<evstat: MU and SIGMA must be of common size or scalars.> ...

@@ -64,7 +64,7 @@ function s = nansum (x, dim)
     x(nanvals) = 0;
     s = sum (x);
     s(all (nanvals)) = 0;
-  elseif (nargin == 2 && strcmpi (dim, "all"))
+  elseif (nargin == 2 && strcmpi (dim, 'all'))
     x = x(:);
     nanvals = isnan (x);
     x(nanvals) = 0;
@@ -152,7 +152,7 @@ endfunction
 %!
 %! x = reshape (1:30, [2, 5, 3]);
 %! x([10:12, 25]) = NaN
-%! s = nansum (x, "all")
+%! s = nansum (x, 'all')
 
 %!demo
 %! ## Find the sum of a multidimensional array with missing values over
@@ -179,7 +179,7 @@ endfunction
 %!test
 %! x = reshape(1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
-%! assert (nansum (x, "all"), 269)
+%! assert (nansum (x, 'all'), 269)
 %!test
 %! x = reshape(1:24,[2, 4, 3]);
 %! x([5:6, 20]) = NaN;

@@ -104,7 +104,7 @@ classdef BurrDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "BurrDistribution";
+    DistributionName = 'BurrDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} NumParameters
@@ -126,7 +126,7 @@ classdef BurrDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"alpha", "c", "k"};
+    ParameterNames = {'alpha', 'c', 'k'};
 
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} ParameterDescription
@@ -138,12 +138,12 @@ classdef BurrDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Scale", "1st shape", "2nd shape"};
+    ParameterDescription = {'Scale', '1st shape', '2nd shape'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "burr";
+    DistributionCode = 'burr';
     ParameterRange = [realmin, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
@@ -260,11 +260,11 @@ classdef BurrDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Burr distribution");
+      __disp__ (this, 'Burr distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Burr distribution");
+      __disp__ (this, 'Burr distribution');
     endfunction
 
     function this = set.alpha (this, alpha)
@@ -327,9 +327,9 @@ classdef BurrDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -768,7 +768,7 @@ classdef BurrDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -790,7 +790,7 @@ classdef BurrDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -818,10 +818,10 @@ endfunction
 %! ## XII distribution to this data and plot a PDF of the fitted distribution
 %! ## superimposed on a histogram of the data
 %!
-%! pd = makedist ("Burr", "alpha", 1, "c", 2, "k", 1)
-%! rand ("seed", 21);
+%! pd = makedist ('Burr', 'alpha', 1, 'c', 2, 'k', 1)
+%! rand ('seed', 21);
 %! data = random (pd, 5000, 1);
-%! pd = fitdist (data, "Burr")
+%! pd = fitdist (data, 'Burr')
 %! plot (pd)
 %! msg = strcat ("Fitted Burr type XII distribution with", ...
 %!               " alpha = %0.2f, c =  %0.2f, and k = %0.2f");
@@ -868,7 +868,7 @@ endfunction
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
 %! BurrDistribution(i, 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution("a", 1, 1)
+%! BurrDistribution('a', 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
 %! BurrDistribution([1, 2], 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
@@ -882,7 +882,7 @@ endfunction
 %!error <BurrDistribution: C must be a positive real scalar.> ...
 %! BurrDistribution(1, i, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, "a", 1)
+%! BurrDistribution(1, 'a', 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
 %! BurrDistribution(1, [1, 2], 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
@@ -896,7 +896,7 @@ endfunction
 %!error <BurrDistribution: K must be a positive real scalar.> ...
 %! BurrDistribution(1, 1, i)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, "a")
+%! BurrDistribution(1, 1, 'a')
 %!error <BurrDistribution: K must be a positive real scalar.> ...
 %! BurrDistribution(1, 1, [1, 2])
 %!error <BurrDistribution: K must be a positive real scalar.> ...
@@ -904,68 +904,68 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (BurrDistribution, 2, "uper")
+%! cdf (BurrDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (BurrDistribution, 2, 3)
 
 ## 'paramci' method
 %!shared x
-%! rand ("seed", 4);
+%! rand ('seed', 4);
 %! x = burrrnd (1, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (BurrDistribution.fit (x), "alpha")
+%! paramci (BurrDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 0)
+%! paramci (BurrDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 1)
+%! paramci (BurrDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (BurrDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", "")
+%! paramci (BurrDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", {0.05})
+%! paramci (BurrDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BurrDistribution.fit (x), "parameter", "c", "alpha", {0.05})
+%! paramci (BurrDistribution.fit (x), 'parameter', 'c', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BurrDistribution.fit (x), "parameter", {"alpha", "c", "k", "param"})
+%! paramci (BurrDistribution.fit (x), 'parameter', {'alpha', 'c', 'k', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"alpha", "c", "k", "param"})
+%! paramci (BurrDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'alpha', 'c', 'k', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BurrDistribution.fit (x), "parameter", "param")
+%! paramci (BurrDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (BurrDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BurrDistribution.fit (x), "NAME", "value")
+%! paramci (BurrDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (BurrDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BurrDistribution.fit (x), "alpha", 0.01, "parameter", "c", ...
-%!          "NAME", "value")
+%! paramci (BurrDistribution.fit (x), 'alpha', 0.01, 'parameter', 'c', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (BurrDistribution, "Parent")
+%! plot (BurrDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BurrDistribution, "PlotType", 12)
+%! plot (BurrDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (BurrDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (BurrDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BurrDistribution, "PlotType", "pdfcdf")
+%! plot (BurrDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BurrDistribution, "Discrete", "pdfcdf")
+%! plot (BurrDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BurrDistribution, "Discrete", [1, 0])
+%! plot (BurrDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BurrDistribution, "Discrete", {true})
+%! plot (BurrDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BurrDistribution, "Parent", 12)
+%! plot (BurrDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BurrDistribution, "Parent", "hax")
+%! plot (BurrDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (BurrDistribution, "invalidNAME", "pdf")
+%! plot (BurrDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (BurrDistribution, "PlotType", "probability")
+%! plot (BurrDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -979,23 +979,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (BurrDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display")
+%! proflik (BurrDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display", 1)
+%! proflik (BurrDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display", {1})
+%! proflik (BurrDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (BurrDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (BurrDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (BurrDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (BurrDistribution.fit (x), 1, "NAME", "on")
+%! proflik (BurrDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (BurrDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BurrDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (BurrDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

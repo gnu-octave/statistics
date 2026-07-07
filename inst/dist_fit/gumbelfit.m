@@ -78,7 +78,7 @@
 function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
 
   ## Check X for being a double precision vector
-  if (! isvector (x) || ! isa (x, "double"))
+  if (! isvector (x) || ! isa (x, 'double'))
     error ("gumbelfit: X must be a double-precision vector.");
   endif
 
@@ -114,14 +114,14 @@ function [paramhat, paramci] = gumbelfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("gumbelfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -160,20 +160,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Gumbel distributions
-%! rand ("seed", 1);    # for reproducibility
+%! rand ('seed', 1);    # for reproducibility
 %! r1 = gumbelrnd (2, 5, 400, 1);
-%! rand ("seed", 11);    # for reproducibility
+%! rand ('seed', 11);    # for reproducibility
 %! r2 = gumbelrnd (-5, 3, 400, 1);
-%! rand ("seed", 16);    # for reproducibility
+%! rand ('seed', 16);    # for reproducibility
 %! r3 = gumbelrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 25, 0.32);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 0.28])
 %! xlim ([-11, 50]);
 %! hold on
@@ -186,21 +186,21 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [min(r(:)):max(r(:))];
 %! y = gumbelpdf (x, mu_betaA(1), mu_betaA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = gumbelpdf (x, mu_betaB(1), mu_betaB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = gumbelpdf (x, mu_betaC(1), mu_betaC(2));
-%! plot (x, y, "-^c");
-%! legend ({"Normalized HIST of sample 1 with μ=2 and β=5", ...
-%!          "Normalized HIST of sample 2 with μ=-5 and β=3", ...
-%!          "Normalized HIST of sample 3 with μ=14 and β=8", ...
+%! plot (x, y, '-^c');
+%! legend ({'Normalized HIST of sample 1 with μ=2 and β=5', ...
+%!          'Normalized HIST of sample 2 with μ=-5 and β=3', ...
+%!          'Normalized HIST of sample 3 with μ=14 and β=8', ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f and β=%0.2f", ...
 %!                  mu_betaA(1), mu_betaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f and β=%0.2f", ...
 %!                  mu_betaB(1), mu_betaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and β=%0.2f", ...
 %!                  mu_betaC(1), mu_betaC(2))})
-%! title ("Three population samples from different Gumbel distributions")
+%! title ('Three population samples from different Gumbel distributions')
 %! hold off
 
 ## Test output

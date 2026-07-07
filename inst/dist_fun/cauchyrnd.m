@@ -95,10 +95,10 @@ function r = cauchyrnd (x0, gamma, varargin)
   endif
 
   ## Check for class type
-  if (isa (x0, "single") || isa (gamma, "single"))
-    cls = "single";
+  if (isa (x0, 'single') || isa (gamma, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Cauchy distribution

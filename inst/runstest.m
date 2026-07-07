@@ -97,7 +97,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
       x(rm) = [];
       N = numel(x);
       UD = false;
-    elseif (strcmpi (v, "ud"))
+    elseif (strcmpi (v, 'ud'))
       x = diff (x);
       rm = x == 0;
       if (sum (rm) > 0)
@@ -130,35 +130,35 @@ function [h, pval, stats] = runstest (x, v, varargin)
   ## Add defaults
   alpha = 0.05;
   if (N < 50 || ! UD)
-    method = "exact";
+    method = 'exact';
   else
-    method = "approximate";
+    method = 'approximate';
   endif
-  tail = "both";
+  tail = 'both';
 
   ## Parse optional arguments and validate parameters
   while (numel (varargin) > 1)
     switch (lower (varargin{1}))
-      case "alpha"
+      case 'alpha'
         alpha = varargin{2};
         if (! isscalar (alpha) ||
             ! isnumeric (alpha) || alpha <= 0 || alpha >= 1)
           error ("runstest: invalid value for alpha.");
         endif
 
-      case "method"
+      case 'method'
         method = varargin{2};
-        if (! any (strcmpi (method, {"exact", "approximate"})))
+        if (! any (strcmpi (method, {'exact', 'approximate'})))
           error ("runstest: invalid value for method.");
         endif
-        if (strcmpi (method, "exact") && N > 50)
+        if (strcmpi (method, 'exact') && N > 50)
           warning ("runstest: exact method is not available for N > 50.");
-          method = "approximate";
+          method = 'approximate';
         endif
 
-      case "tail"
+      case 'tail'
         tail = varargin{2};
-        if (! any (strcmpi (tail, {"both", "left", "right"})))
+        if (! any (strcmpi (tail, {'both', 'left', 'right'})))
           error ("runstest: invalid value for tail.");
         endif
 
@@ -188,9 +188,9 @@ function [h, pval, stats] = runstest (x, v, varargin)
                        (N ^ 2 * (N - 1)));
       endif
       ## Handle tail
-      if (strcmpi (tail, "both"))
+      if (strcmpi (tail, 'both'))
           tc = -0.5 * sign (R_num - R_bar);
-      elseif (strcmpi (tail, "left"))
+      elseif (strcmpi (tail, 'left'))
           tc = 0.5;
       else
           tc = -0.5;
@@ -203,11 +203,11 @@ function [h, pval, stats] = runstest (x, v, varargin)
       endif
     endif
     ## Exact method
-    if (strcmpi (method, "exact"))
+    if (strcmpi (method, 'exact'))
       if (UD)
         R_max = N - 1;
         ## Get precalculated results from rundist.mat file
-        temp = load ("rundist.mat");
+        temp = load ('rundist.mat');
         runD = temp.rundist;
         M = runD{N};
         p = M / sum (M);
@@ -263,9 +263,9 @@ function [h, pval, stats] = runstest (x, v, varargin)
   endif
 
   ## Compute tail probability
-  if (strcmpi (tail, "both"))
+  if (strcmpi (tail, 'both'))
     pval = min([1, 2*(p_ex + min ([p_lo, p_hi]))]);
-  elseif (strcmpi (tail, "left"))
+  elseif (strcmpi (tail, 'left'))
     pval = p_ex + p_lo;
   else
     pval = p_ex + p_hi;
@@ -327,31 +327,31 @@ endfunction
 %! assert (stats.n0, 3);
 %! assert (stats.z, 0.456435464587638, 1e-14);
 %!test
-%! [h, p, stats] = runstest (x, [], "method", "approximate");
+%! [h, p, stats] = runstest (x, [], 'method', 'approximate');
 %! assert (h, 0);
 %! assert (p, 0.6481, 1e-4);
 %! assert (stats.z, 0.456435464587638, 1e-14);
 %!test
-%! [h, p, stats] = runstest (x, [], "tail", "left");
+%! [h, p, stats] = runstest (x, [], 'tail', 'left');
 %! assert (h, 0);
 %! assert (p, 0.9, 1e-14);
 %! assert (stats.z, 1.369306393762915, 1e-14);
 
 %!error<runstest: X must be a vector a scalar values.> runstest (ones (2,20))
-%!error<runstest: X must be a vector a scalar values.> runstest (["asdasda"])
+%!error<runstest: X must be a vector a scalar values.> runstest (['asdasda'])
 %!error<runstest: V must be either a scalar number or> ...
-%! runstest ([2 3 4 3 2 3 4], "updown")
+%! runstest ([2 3 4 3 2 3 4], 'updown')
 %!error<runstest: invalid value for alpha.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "alpha", 0)
+%! runstest ([2 3 4 3 2 3 4], [], 'alpha', 0)
 %!error<runstest: invalid value for alpha.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "alpha", [0.02 0.2])
+%! runstest ([2 3 4 3 2 3 4], [], 'alpha', [0.02 0.2])
 %!error<runstest: invalid value for alpha.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "alpha", 1.2)
+%! runstest ([2 3 4 3 2 3 4], [], 'alpha', 1.2)
 %!error<runstest: invalid value for alpha.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "alpha", -0.05)
+%! runstest ([2 3 4 3 2 3 4], [], 'alpha', -0.05)
 %!error<runstest: invalid value for method.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "method", "some")
+%! runstest ([2 3 4 3 2 3 4], [], 'method', 'some')
 %!error<runstest: invalid value for tail.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "tail", "some")
+%! runstest ([2 3 4 3 2 3 4], [], 'tail', 'some')
 %!error<runstest: invalid optional argument.> ...
-%! runstest ([2 3 4 3 2 3 4], [], "option", "some")
+%! runstest ([2 3 4 3 2 3 4], [], 'option', 'some')

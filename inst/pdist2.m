@@ -543,82 +543,82 @@ endfunction
 %! d = [5.1962, 2.2361, 3.3166, 6.7082; ...
 %!      3.4641, 2.2361, 3.3166, 5.4772];
 %! i = [3, 1, 1, 1; 2, 3, 3, 2];
-%! [D, I] = pdist2 (x, y, "euclidean", "largest", 2);
+%! [D, I] = pdist2 (x, y, 'euclidean', 'largest', 2);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! d = [1.7321, 1.4142, 2.8284, 4.5826; ...
 %!      3.4641, 2.2361, 3.3166, 5.4772];
 %! i = [1, 2, 2, 3;2, 1, 1, 2];
-%! [D, I] = pdist2 (x, y, "euclidean", "smallest", 2);
+%! [D, I] = pdist2 (x, y, 'euclidean', 'smallest', 2);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! yy = [1 2 3;5 6 7;9 5 1];
 %! d = [0, 6.1644, 5.3852; 1.4142, 6.9282, 8.7750; ...
 %!      3.7417, 7.0711, 9.9499; 6.1644, 10.4881, 10.3441];
 %! i = [2, 4, 4; 3, 2, 2; 1, 3, 3; 4, 1, 1];
-%! [D, I] = pdist2 (y, yy, "euclidean", "smallest", 4);
+%! [D, I] = pdist2 (y, yy, 'euclidean', 'smallest', 4);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! yy = [1 2 3;5 6 7;9 5 1];
 %! d = [0, 38, 29; 2, 48, 77; 14, 50, 99; 38, 110, 107];
 %! i = [2, 4, 4; 3, 2, 2; 1, 3, 3; 4, 1, 1];
-%! [D, I] = pdist2 (y, yy, "squaredeuclidean", "smallest", 4);
+%! [D, I] = pdist2 (y, yy, 'squaredeuclidean', 'smallest', 4);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! yy = [1 2 3;5 6 7;9 5 1];
 %! d = [0, 3.3256, 2.7249; 0.7610, 3.3453, 4.4799; ...
 %!      1.8514, 3.3869, 5.0703; 2.5525, 5.0709, 5.1297];
 %! i = [2, 2, 4; 3, 4, 2; 1, 3, 1; 4, 1, 3];
-%! [D, I] = pdist2 (y, yy, "seuclidean", "smallest", 4);
+%! [D, I] = pdist2 (y, yy, 'seuclidean', 'smallest', 4);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! d = [2.1213, 4.2426, 6.3640; 1.2247, 2.4495, 4.4159; ...
 %!      3.2404, 4.8990, 6.8191; 2.7386, 4.2426, 6.1237];
-%! assert (pdist2 (y, x, "mahalanobis"), d, 1e-4);
+%! assert (pdist2 (y, x, 'mahalanobis'), d, 1e-4);
 %!test
 %! xx = [1, 3, 4; 3, 5, 4; 8, 7, 6];
 %! d = [1.3053, 1.8257, 15.0499; 1.3053, 3.3665, 16.5680];
 %! i = [2, 2, 2; 3, 4, 4];
-%! [D, I] = pdist2 (y, xx, "mahalanobis", "smallest", 2);
+%! [D, I] = pdist2 (y, xx, 'mahalanobis', 'smallest', 2);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! d = [2.5240, 4.1633, 17.3638; 2.0905, 3.9158, 17.0147];
 %! i = [1, 1, 3; 4, 3, 1];
-%! [D, I] = pdist2 (y, xx, "mahalanobis", "largest", 2);
+%! [D, I] = pdist2 (y, xx, 'mahalanobis', 'largest', 2);
 %! assert ({D, I}, {d, i}, 1e-4);
 %!test
 %! d = [3, 3, 5, 9; 6, 2, 4, 8; 9, 3, 5, 7];
-%! assert (pdist2 (x, y, "cityblock"), d);
+%! assert (pdist2 (x, y, 'cityblock'), d);
 %!test
 %! d = [1, 2, 3, 6; 2, 1, 2, 5; 3, 2, 3, 4];
-%! assert (pdist2 (x, y, "chebychev"), d);
+%! assert (pdist2 (x, y, 'chebychev'), d);
 %!test
 %! d = repmat ([NaN, 0.0742, 0.2254, 0.1472], [3, 1]);
-%! assert (pdist2 (x, y, "cosine"), d, 1e-4);
+%! assert (pdist2 (x, y, 'cosine'), d, 1e-4);
 %!test
 %! yy = [1 2 3;5 6 7;9 5 1];
 %! d = [0, 0, 0.5; 0, 0, 2; 1.5, 1.5, 2; NaN, NaN, NaN];
 %! i = [2, 2, 4; 3, 3, 2; 4, 4, 3; 1, 1, 1];
-%! [D, I] = pdist2 (y, yy, "correlation", "smallest", 4);
+%! [D, I] = pdist2 (y, yy, 'correlation', 'smallest', 4);
 %! assert ({D, I}, {d, i}, eps);
-%! [D, I] = pdist2 (y, yy, "spearman", "smallest", 4);
+%! [D, I] = pdist2 (y, yy, 'spearman', 'smallest', 4);
 %! assert ({D, I}, {d, i}, eps);
 %!test
 %! d = [1, 2/3, 1, 1; 1, 2/3, 1, 1; 1, 2/3, 2/3, 2/3];
 %! i = [1, 1, 1, 2; 2, 2, 3, 3; 3, 3, 2, 1];
-%! [D, I] = pdist2 (x, y, "hamming", "largest", 4);
+%! [D, I] = pdist2 (x, y, 'hamming', 'largest', 4);
 %! assert ({D, I}, {d, i}, eps);
-%! [D, I] = pdist2 (x, y, "jaccard", "largest", 4);
+%! [D, I] = pdist2 (x, y, 'jaccard', 'largest', 4);
 %! assert ({D, I}, {d, i}, eps);
 %!test
 %! xx = [1, 2, 3, 4; 2, 3, 4, 5; 3, 4, 5, 6];
 %! yy = [1, 2, 2, 3; 2, 3, 3, 4];
-%! [D, I] = pdist2 (x, y, "euclidean", "Smallest", 4);
+%! [D, I] = pdist2 (x, y, 'euclidean', 'Smallest', 4);
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
-%! [d, i] = pdist2 (x, y, eucldist, "Smallest", 4);
+%! [d, i] = pdist2 (x, y, eucldist, 'Smallest', 4);
 %! assert ({D, I}, {d, i});
 %!warning<pdist2: matrix is close to singular> ...
-%! pdist2 (xx, xx, "mahalanobis");
+%! pdist2 (xx, xx, 'mahalanobis');
 
 ## Test input validation
 %!error<pdist2: too few input arguments.> pdist2 (1)
@@ -627,31 +627,31 @@ endfunction
 %!error<pdist2: X and Y must be 2 dimensional matrices.> ...
 %! pdist2 (ones (4, 2, 3), ones (3, 2))
 %!error<pdist2: missing value in optional name/value paired arguments.> ...
-%! pdist2 (ones (3), ones (3), "euclidean", "Largest")
+%! pdist2 (ones (3), ones (3), 'euclidean', 'Largest')
 %!error<pdist2: missing value in optional name/value paired arguments.> ...
-%! pdist2 (ones (3), ones (3), "minkowski", 3, "Largest")
+%! pdist2 (ones (3), ones (3), 'minkowski', 3, 'Largest')
 %!error<pdist2: invalid NAME in optional pairs of arguments.> ...
-%! pdist2 (ones (3), ones (3), "minkowski", 3, "large", 4)
+%! pdist2 (ones (3), ones (3), 'minkowski', 3, 'large', 4)
 %!error<pdist2: K must be a positive integer value.> ...
-%! pdist2 (ones (3), ones (3), "minkowski", 3, "largest", 4.5)
+%! pdist2 (ones (3), ones (3), 'minkowski', 3, 'largest', 4.5)
 %!error<pdist2: you can only specify either 'Smallest' or 'Largest'.> ...
-%! pdist2 (ones (3), ones (3), "minkowski", 3, "Largest", 4, "smallest", 5)
+%! pdist2 (ones (3), ones (3), 'minkowski', 3, 'Largest', 4, 'smallest', 5)
 %!error<pdist2: 'Smallest' or 'Largest' must be specified to compute second output.> ...
-%! [d, i] = pdist2(ones (3), ones (3), "minkowski", 3)
+%! [d, i] = pdist2(ones (3), ones (3), 'minkowski', 3)
 %!error<pdist2: DistParameter for standardized euclidean must be a vector of> ...
-%! pdist2 (ones (3), ones (3), "seuclidean", 3)
+%! pdist2 (ones (3), ones (3), 'seuclidean', 3)
 %!error<pdist2: DistParameter for standardized euclidean must be a nonnegative> ...
-%! pdist2 (ones (3), ones (3), "seuclidean", [1, -1, 3])
+%! pdist2 (ones (3), ones (3), 'seuclidean', [1, -1, 3])
 %!error<pdist2: DistParameter for mahalanobis distance must be a covariance> ...
-%! pdist2 (ones (3), eye (3), "mahalanobis", eye(2))
+%! pdist2 (ones (3), eye (3), 'mahalanobis', eye(2))
 %!error<pdist2: covariance matrix for mahalanobis distance must be symmetric> ...
-%! pdist2 (ones (3), eye (3), "mahalanobis", ones(3))
+%! pdist2 (ones (3), eye (3), 'mahalanobis', ones(3))
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
-%! pdist2 (ones (3), eye (3), "minkowski", 0)
+%! pdist2 (ones (3), eye (3), 'minkowski', 0)
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
-%! pdist2 (ones (3), eye (3), "minkowski", -5)
+%! pdist2 (ones (3), eye (3), 'minkowski', -5)
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
-%! pdist2 (ones (3), eye (3), "minkowski", [1, 2])
+%! pdist2 (ones (3), eye (3), 'minkowski', [1, 2])
 %!error<pdist2: invalid function handle for distance metric.> ...
 %! pdist2 (ones (3), ones (3), @(v,m) sqrt(repmat(v,rows(m),1)-m,2))
 %!error<pdist2: custom distance function produces wrong output size.> ...

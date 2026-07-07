@@ -73,7 +73,7 @@ endfunction
 %!error<invgstat: function called with too few input arguments.> invgstat ()
 %!error<invgstat: function called with too few input arguments.> invgstat (1)
 %!error<invgstat: MU and LAMBDA must be numeric.> invgstat ({}, 2)
-%!error<invgstat: MU and LAMBDA must be numeric.> invgstat (1, "")
+%!error<invgstat: MU and LAMBDA must be numeric.> invgstat (1, '')
 %!error<invgstat: MU and LAMBDA must not be complex.> invgstat (i, 2)
 %!error<invgstat: MU and LAMBDA must not be complex.> invgstat (1, i)
 %!error<invgstat: MU and LAMBDA must be of common size or scalars.> ...

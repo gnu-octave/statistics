@@ -79,8 +79,8 @@ endfunction
 ## Test input validation
 %!error mahal ()
 %!error mahal (1, 2, 3)
-%!error mahal ("A", "B")
-%!error <must be numeric> mahal ([1, 2], ["A", "B"])
+%!error mahal ('A', 'B')
+%!error <must be numeric> mahal ([1, 2], ['A', 'B'])
 %!error mahal (ones (2, 2, 2))
 %!error <must be 2-D matrices> mahal (ones (2, 2), ones (2, 2, 2))
 %!error <same number of columns> mahal (ones (2, 2), ones (2, 3))

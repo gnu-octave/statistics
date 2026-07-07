@@ -58,7 +58,7 @@ function tbl = tabulate (x)
   elseif (! isvector (x) && ! isempty (x) && ! ischar (x))
     error ("tabulate: input must be a vector except for char array.");
   elseif (! (isnumeric (x) || islogical (x) || iscellstr (x) ||
-             iscategorical (x) || isa (x, "string")) && ! ischar (x))
+             iscategorical (x) || isa (x, 'string')) && ! ischar (x))
     error (strcat ("tabulate: X must be numeric, logical, categorical,", ...
                    " cellstring, string, or a char array."));
   endif
@@ -99,7 +99,7 @@ function tbl = tabulate (x)
     out(:,2) = num2cell (counts);
     out(:,3) = num2cell (percents);
 
-  elseif (isa (x, "string"))
+  elseif (isa (x, 'string'))
     ## Handle string arrays
     x(ismissing (x)) = [];
 
@@ -198,7 +198,7 @@ function tbl = tabulate (x)
 
     if (isempty (out))
        ## Handle empty case
-       disp ("   Value    Count    Percent");
+       disp ('   Value    Count    Percent');
        return;
     endif
 
@@ -214,8 +214,8 @@ function tbl = tabulate (x)
        Percent = cell2mat (out(:,3));
     endif
 
-    t = table (Value, Count, Percent, "VariableNames", {"Value", "Count", ...
-                                                        "Percent"});
+    t = table (Value, Count, Percent, 'VariableNames', {'Value', 'Count', ...
+                                                        'Percent'});
 
     disp (t);
   else
@@ -438,6 +438,6 @@ endfunction
 %!error<tabulate: input must be a vector except for char array.> ...
 %! tabulate (categorical ([true, true; false, true]))
 %!error<tabulate: input must be a vector except for char array.> ...
-%! tabulate (string ({"a", "b"; "a", "c"}))
+%! tabulate (string ({'a', 'b'; 'a', 'c'}))
 %!error<tabulate: X must be numeric, logical, categorical, cellstring, string, or a char array.> ...
 %! tabulate ({3, 3, 3, 3})

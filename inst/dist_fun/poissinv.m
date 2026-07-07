@@ -56,8 +56,8 @@ function x = poissinv (p, lambda)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (lambda, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (lambda, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -204,13 +204,13 @@ endfunction
 %! x1 = poissinv (p, 13);
 %! x2 = poissinv (p, 4);
 %! x3 = poissinv (p, 10);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r')
 %! grid on
 %! ylim ([0, 20])
-%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northwest")
-%! title ("Poisson iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x (number of occurrences)")
+%! legend ({'λ = 1', 'λ = 4', 'λ = 10'}, 'location', 'northwest')
+%! title ('Poisson iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x (number of occurrences)')
 
 ## Test output
 %!shared p

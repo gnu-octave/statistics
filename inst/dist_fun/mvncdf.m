@@ -86,7 +86,7 @@ function [p, err] = mvncdf (varargin)
 
   ## Check for 'options' structure and parse parameters or add defaults
   if (isstruct (varargin{end}))
-    if (isfield (varargin{end}, "TolFun"))
+    if (isfield (varargin{end}, 'TolFun'))
       TolFun = varargin{end}.TolFun;
     else
       error ("mvncdf: options structure missing 'TolFun' field.");
@@ -96,7 +96,7 @@ function [p, err] = mvncdf (varargin)
     elseif (isempty (TolFun) && size (varargin{1}, 2) < 26)
       TolFun = 1e-4;
     endif
-    if (isfield (varargin{end}, "MaxFunEvals"))
+    if (isfield (varargin{end}, 'MaxFunEvals'))
       MaxFunEvals = varargin{end}.MaxFunEvals;
     else
       error ("mvncdf: options structure missing 'MaxFunEvals' field.");
@@ -104,12 +104,12 @@ function [p, err] = mvncdf (varargin)
     if (isempty (MaxFunEvals))
       MaxFunEvals = 1e7;
     endif
-    if (isfield (varargin{end}, "Display"))
+    if (isfield (varargin{end}, 'Display'))
       Display = varargin{end}.Display;
     else
       error ("mvncdf: options structure missing 'Display' field.");
     endif
-    DispOptions = {"off", "final", "iter"};
+    DispOptions = {'off', 'final', 'iter'};
     if (sum (any (strcmpi (Display, DispOptions))) == 0)
       error ("mvncdf: 'Display' field in 'options' has invalid value.");
     endif
@@ -121,7 +121,7 @@ function [p, err] = mvncdf (varargin)
       TolFun = 1e-4;
     endif
     MaxFunEvals = 1e7;
-    Display = "off";
+    Display = 'off';
     rem_nargin = nargin;
   endif
 
@@ -137,7 +137,7 @@ function [p, err] = mvncdf (varargin)
 
     ## Create x_lo according to data type of x_lo
     x_lo = - Inf (size (x_up));
-    if isa (x_up, "single")
+    if isa (x_up, 'single')
       x_lo = single (x_lo);
     endif
 
@@ -174,9 +174,9 @@ function [p, err] = mvncdf (varargin)
   endif
 
   ## Check if data is single or double class
-  is_type = "double";
-  if (isa (x_lo, "single"))
-    is_type = "single";
+  is_type = 'double';
+  if (isa (x_lo, 'single'))
+    is_type = 'single';
   endif
 
   ## Get size of data
@@ -344,9 +344,9 @@ function p = tvncdf (x, rho, tol)
   n = size(x,1);
 
   ## Check if data is single or double class
-  is_type = "double";
-  if (isa (x, "single") || isa (rho, "single"))
-    is_type = "single";
+  is_type = 'double';
+  if (isa (x, 'single') || isa (rho, 'single'))
+    is_type = 'single';
   endif
 
   ## Find a permutation that makes rho_32 == max(rho)
@@ -422,9 +422,9 @@ endfunction
 %! p = mvncdf (X, mu, Sigma);
 %! Z = reshape (p, 25, 25);
 %! surf (X1, X2, Z);
-%! title ("Bivariate Normal Distribution");
-%! ylabel "X1"
-%! xlabel "X2"
+%! title ('Bivariate Normal Distribution');
+%! ylabel 'X1'
+%! xlabel 'X2'
 
 %!demo
 %! mu = [0, 0];
@@ -437,10 +437,10 @@ endfunction
 %! p = mvnpdf (X, mu, Sigma);
 %! p = reshape (p, length (x2), length (x1));
 %! contour (x1, x2, p, [0.0001, 0.001, 0.01, 0.05, 0.15, 0.25, 0.35]);
-%! xlabel ("x");
-%! ylabel ("p");
-%! title ("Probability over Rectangular Region");
-%! line ([0, 0, 1, 1, 0], [1, 0, 0, 1, 1], "Linestyle", "--", "Color", "k");
+%! xlabel ('x');
+%! ylabel ('p');
+%! title ('Probability over Rectangular Region');
+%! line ([0, 0, 1, 1, 0], [1, 0, 0, 1, 1], 'Linestyle', '--', 'Color', 'k');
 
 %!test
 %! fD = (-2:2)';

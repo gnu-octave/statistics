@@ -93,10 +93,10 @@ function r = ricernd (s, sigma, varargin)
   endif
 
   ## Check for class type
-  if (isa (s, "single") || isa (sigma, "single"))
-    cls = "single";
+  if (isa (s, 'single') || isa (sigma, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Return NaNs for out of range values of S and SIGMA

@@ -75,14 +75,14 @@ endfunction
 %! y3 = raylpdf (x, 2);
 %! y4 = raylpdf (x, 3);
 %! y5 = raylpdf (x, 4);
-%! plot (x, y1, "-b", x, y2, "g", x, y3, "-r", x, y4, "-m", x, y5, "-k")
+%! plot (x, y1, '-b', x, y2, 'g', x, y3, '-r', x, y4, '-m', x, y5, '-k')
 %! grid on
 %! ylim ([0, 1.25])
-%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
-%!          "σ = 3", "σ = 4"}, "location", "northeast")
-%! title ("Rayleigh PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'σ = 0,5', 'σ = 1', 'σ = 2', ...
+%!          'σ = 3', 'σ = 4'}, 'location', 'northeast')
+%! title ('Rayleigh PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!test

@@ -155,7 +155,7 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   C = [];                   # Covariance matrix for Mahalanobis distance
   BS = 50;                  # Maximum number of points per leaf node for Kd-tree
   SI = true;                # Sort returned indices according to distance
-  Distance = "euclidean";   # Distance metric to be used
+  Distance = 'euclidean';   # Distance metric to be used
   NSMethod = [];            # Nearest neighbor search method
   DistParameter = [];       # Distance parameter for pdist2
 
@@ -163,22 +163,22 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   PSC = 0;
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
-      case "p"
+      case 'p'
         P = varargin{2};
         PSC += 1;
-      case "scale"
+      case 'scale'
         S = varargin{2};
         PSC += 1;
-      case "cov"
+      case 'cov'
         C = varargin{2};
         PSC += 1;
-      case "bucketsize"
+      case 'bucketsize'
         BS = varargin{2};
-      case "sortindices"
+      case 'sortindices'
         SI = varargin{2};
-      case "distance"
+      case 'distance'
         Distance = varargin{2};
-      case "nsmethod"
+      case 'nsmethod'
         NSMethod = varargin{2};
       otherwise
         error ("rangesearch: invalid NAME in optional pairs of arguments.");
@@ -195,12 +195,12 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   endif
   if (! isempty (S))
     if (any (S) < 0 || numel (S) != columns (X)
-                    || ! strcmpi (Distance, "seuclidean"))
+                    || ! strcmpi (Distance, 'seuclidean'))
       error ("rangesearch: invalid value in Scale or the size of Scale.");
     endif
   endif
   if (! isempty (C))
-    if (! strcmp (Distance, "mahalanobis") || ! ismatrix (C) || ! isnumeric (C))
+    if (! strcmp (Distance, 'mahalanobis') || ! ismatrix (C) || ! isnumeric (C))
       error (strcat ("rangesearch: invalid value in Cov, Cov can only", ...
                      " be given for mahalanobis distance."));
     endif
@@ -210,11 +210,11 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   endif
 
   ## Select the appropriate distance parameter
-  if (strcmpi (Distance, "minkowski"))
+  if (strcmpi (Distance, 'minkowski'))
     DistParameter = P;
-  elseif (strcmpi (Distance, "seuclidean"))
+  elseif (strcmpi (Distance, 'seuclidean'))
     DistParameter = S;
-  elseif (strcmpi (Distance, "mahalanobis"))
+  elseif (strcmpi (Distance, 'mahalanobis'))
     DistParameter = C;
   endif
 
@@ -222,29 +222,29 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   if (isempty (NSMethod))
     ## Set default method 'kdtree' if conditions are satisfied;
     if (! issparse (X) && (columns (X) <= 10) &&
-       (strcmpi (Distance, "euclidean") || strcmpi (Distance, "cityblock")
-     || strcmpi (Distance, "minkowski") || strcmpi (Distance, "chebychev")))
-      NSMethod = "kdtree";
+       (strcmpi (Distance, 'euclidean') || strcmpi (Distance, 'cityblock')
+     || strcmpi (Distance, 'minkowski') || strcmpi (Distance, 'chebychev')))
+      NSMethod = 'kdtree';
     else
-      NSMethod = "exhaustive";
+      NSMethod = 'exhaustive';
     endif
   else
     ## Disallow kdtree with custom distance functions
-    if (strcmpi (NSMethod, "kdtree") && isa (Distance, "function_handle"))
+    if (strcmpi (NSMethod, 'kdtree') && isa (Distance, 'function_handle'))
       error (strcat ("rangesearch: 'kdtree' cannot be used", ...
                      " with custom distance functions."));
     endif
     ## Check if kdtree can be used
-    if (strcmpi (NSMethod, "kdtree") && ! (strcmpi (Distance, "euclidean")
-     || strcmpi (Distance, "cityblock") || strcmpi (Distance, "minkowski")
-     || strcmpi (Distance, "chebychev")))
+    if (strcmpi (NSMethod, 'kdtree') && ! (strcmpi (Distance, 'euclidean')
+     || strcmpi (Distance, 'cityblock') || strcmpi (Distance, 'minkowski')
+     || strcmpi (Distance, 'chebychev')))
       error (strcat ("rangesearch: 'kdtree' cannot be used", ...
                      " with the given distance metric."));
     endif
   endif
 
   ## Check for NSMethod
-  if (strcmpi (NSMethod, "kdtree"))
+  if (strcmpi (NSMethod, 'kdtree'))
     ## Build kdtree and search the query point
     kdtree = __build_kdtree__ (1:size(X,1), 0, X, BS);
     ## Return all neighbors as cell
@@ -313,7 +313,7 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
   if (nargin < 8)
     r = Inf;
   endif
-  if (strcmpi (dist, "minkowski"))
+  if (strcmpi (dist, 'minkowski'))
     if (! (isscalar (distparam) && isnumeric (distparam)
                                 && distparam > 0 && isfinite (distparam)))
       error (strcat("rangesearch.__search_kdtree__:", ...
@@ -337,7 +337,7 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
 
     if (isfield (node, 'indices'))
       leaf_indices = node.indices;
-      if (strcmpi (dist, "minkowski"))
+      if (strcmpi (dist, 'minkowski'))
         dists = pdist2 (X(leaf_indices,:), query, dist, distparam);
       else
         dists = pdist2 (X(leaf_indices,:), query, dist);
@@ -389,21 +389,21 @@ endfunction
 %! ## normal distributions that form five separate classes
 %! N = 100;
 %! d = 10;
-%! randn ("seed", 5);
+%! randn ('seed', 5);
 %! X1 = mvnrnd (d * [0, 0], eye (2), N);
-%! randn ("seed", 6);
+%! randn ('seed', 6);
 %! X2 = mvnrnd (d * [1, 1], eye (2), N);
-%! randn ("seed", 7);
+%! randn ('seed', 7);
 %! X3 = mvnrnd (d * [-1, -1], eye (2), N);
-%! randn ("seed", 8);
+%! randn ('seed', 8);
 %! X4 = mvnrnd (d * [1, -1], eye (2), N);
-%! randn ("seed", 8);
+%! randn ('seed', 8);
 %! X5 = mvnrnd (d * [-1, 1], eye (2), N);
 %! X = [X1; X2; X3; X4; X5];
 %!
 %! ## For each point in X, find the points in X that are within a radius d
 %! ## away from the points in X.
-%! Idx = rangesearch (X, X, d, "NSMethod", "exhaustive");
+%! Idx = rangesearch (X, X, d, 'NSMethod', 'exhaustive');
 %!
 %! ## Select the first point in X (corresponding to the first class) and find
 %! ## its nearest neighbors within the radius d.  Display these points in
@@ -416,7 +416,7 @@ endfunction
 %! scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
 %! hold on
 %! scatter (nearestPoints(:,1),nearestPoints(:,2))
-%! scatter (x(1), x(2), "black", "filled")
+%! scatter (x(1), x(2), 'black', 'filled')
 %! hold off
 %!
 %! ## Select the last point in X (corresponding to the fifth class) and find
@@ -431,7 +431,7 @@ endfunction
 %! scatter (X(nonNearestIdx,1), X(nonNearestIdx,2))
 %! hold on
 %! scatter (nearestPoints(:,1),nearestPoints(:,2))
-%! scatter (x(1), x(2), "black", "filled")
+%! scatter (x(1), x(2), 'black', 'filled')
 %! hold off
 
 
@@ -446,45 +446,45 @@ endfunction
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "exhaustive");
+%! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'exhaustive');
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree");
+%! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree');
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "SortIndices", true);
+%! [idx, D] = rangesearch (x, y, 4, 'SortIndices', true);
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "SortIndices", false);
+%! [idx, D] = rangesearch (x, y, 4, 'SortIndices', false);
 %! assert (idx, {[1, 2, 4]; [1, 4]});
 %! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "exhaustive", ...
-%!                         "SortIndices", false);
+%! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'exhaustive', ...
+%!                         'SortIndices', false);
 %! assert (idx, {[1, 2, 4]; [1, 4]});
 %! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
-%! [idx, D] = rangesearch (x, y, 4, "Distance", eucldist);
+%! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist);
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
-%! [idx, D] = rangesearch (x, y, 4, "Distance", eucldist, ...
-%!                         "NSMethod", "exhaustive");
+%! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist, ...
+%!                         'NSMethod', 'exhaustive');
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 1.5, "Distance", "seuclidean", ...
-%!                         "NSMethod", "exhaustive");
+%! [idx, D] = rangesearch (x, y, 1.5, 'Distance', 'seuclidean', ...
+%!                         'NSMethod', 'exhaustive');
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[0.6024, 1.0079, 1.2047]; [0.6963, 1.2047]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 1.5, "Distance", "seuclidean", ...
-%!                         "NSMethod", "exhaustive", "SortIndices", false);
+%! [idx, D] = rangesearch (x, y, 1.5, 'Distance', 'seuclidean', ...
+%!                         'NSMethod', 'exhaustive', 'SortIndices', false);
 %! assert (idx, {[1, 2, 4]; [1, 4]});
 %! assert (D, {[0.6024, 1.2047, 1.0079]; [0.6963, 1.2047]}, 1e-4);
 %!test
@@ -497,25 +497,25 @@ endfunction
 %! assert (D, {[1.4142]; [1.4142, 1.4142]}, 1e-4);
 %!test
 %! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
-%! [idx, D] = rangesearch (X, Y, 4, "Distance", eucldist);
+%! [idx, D] = rangesearch (X, Y, 4, 'Distance', eucldist);
 %! assert (idx, {[1, 2]; [1, 2, 3]});
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (X, Y, 4, "SortIndices", false);
+%! [idx, D] = rangesearch (X, Y, 4, 'SortIndices', false);
 %! assert (idx, {[1, 2]; [1, 2, 3]});
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (X, Y, 4, "Distance", "seuclidean", ...
-%!                         "NSMethod", "exhaustive");
+%! [idx, D] = rangesearch (X, Y, 4, 'Distance', 'seuclidean', ...
+%!                         'NSMethod', 'exhaustive');
 %! assert (idx, {[1, 2]; [1, 2, 3]});
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
 %!test
 %! X = ones (10, 2);
-%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree");
+%! [idx, D] = rangesearch (X, X, 0.1, 'NSMethod', 'kdtree');
 %! assert (numel (idx), 10);
 %!test
 %! X = ones (3, 2);
-%! [idx, D] = rangesearch (X, X, 0.1, "NSMethod", "kdtree", "BucketSize", 1);
+%! [idx, D] = rangesearch (X, X, 0.1, 'NSMethod', 'kdtree', 'BucketSize', 1);
 %! assert (numel (idx), 3);
 %! assert (cellfun (@numel, idx) == 3, [true; true; true]);
 %! assert (idx{1}, [1, 2, 3]);
@@ -525,11 +525,11 @@ endfunction
 %! assert (D{2}, [0, 0, 0]);
 %! assert (D{3}, [0, 0, 0]);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree", "SortIndices", true);
+%! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree', 'SortIndices', true);
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! [idx, D] = rangesearch (x, y, 4, "NSMethod", "kdtree", "SortIndices", false);
+%! [idx, D] = rangesearch (x, y, 4, 'NSMethod', 'kdtree', 'SortIndices', false);
 %! assert (idx, {[1, 2, 4]; [1, 4]});
 %! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 
@@ -541,34 +541,34 @@ endfunction
 %!error<rangesearch: number of columns in X and Y must match.> ...
 %! rangesearch (ones (4, 5), ones (4), 1)
 %!error<rangesearch: invalid NAME in optional pairs of arguments.> ...
-%! rangesearch (ones (4, 2), ones (3, 2), 1, "Distance", "euclidean", "some", "some")
+%! rangesearch (ones (4, 2), ones (3, 2), 1, 'Distance', 'euclidean', 'some', 'some')
 %!error<rangesearch: only a single distance parameter can be defined.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "scale", ones (1, 5), "P", 3)
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones (1, 5), 'P', 3)
 %!error<rangesearch: invalid value of Minkowski Exponent.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "P", -2)
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'P', -2)
 %!error<rangesearch: invalid value in Scale or the size of Scale.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "scale", ones(4,5), "distance", "euclidean")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones(4,5), 'distance', 'euclidean')
 %!error<rangesearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "cov", ["some" "some"])
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'cov', ['some' 'some'])
 %!error<rangesearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "cov", ones(4,5), "distance", "euclidean")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'cov', ones(4,5), 'distance', 'euclidean')
 %!error<rangesearch: invalid value of bucketsize.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "bucketsize", -1)
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'bucketsize', -1)
 %!error<rangesearch: invalid value of bucketsize.> ...
-%! rangesearch (ones (4,2), ones (1,2), 1, "BucketSize", 2.5)
+%! rangesearch (ones (4,2), ones (1,2), 1, 'BucketSize', 2.5)
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "cosine")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'cosine')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "mahalanobis")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'mahalanobis')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "correlation")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'correlation')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "seuclidean")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'seuclidean')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "spearman")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'spearman')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "hamming")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'hamming')
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, "NSmethod", "kdtree", "distance", "jaccard")
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'jaccard')
 %!error<rangesearch: 'kdtree' cannot be used with custom distance functions.> ...
-%! rangesearch (ones (4,2), ones (1,2), 1, "Distance", @(x,y) sqrt(sum((x-y).^2)), "NSMethod", "kdtree")
+%! rangesearch (ones (4,2), ones (1,2), 1, 'Distance', @(x,y) sqrt(sum((x-y).^2)), 'NSMethod', 'kdtree')

@@ -98,10 +98,10 @@ function r = ncfrnd (df1, df2, lambda, varargin)
   endif
 
   ## Check for class type
-  if (isa (df1, "single") || isa (df2, "single") || isa (lambda, "single"));
-    cls = "single";
+  if (isa (df1, 'single') || isa (df2, 'single') || isa (lambda, 'single'));
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Return NaNs for out of range values of DF1, DF2, and LAMBDA

@@ -99,10 +99,10 @@ function r = logirnd (mu, sigma, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (sigma, "single"))
-    is_type = "single";
+  if (isa (mu, 'single') || isa (sigma, 'single'))
+    is_type = 'single';
   else
-    is_type = "double";
+    is_type = 'double';
   endif
 
   ## Generate random sample from logistic distribution

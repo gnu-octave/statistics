@@ -80,7 +80,7 @@ endfunction
 %!error<nbinstat: function called with too few input arguments.> nbinstat ()
 %!error<nbinstat: function called with too few input arguments.> nbinstat (1)
 %!error<nbinstat: R and PS must be numeric.> nbinstat ({}, 2)
-%!error<nbinstat: R and PS must be numeric.> nbinstat (1, "")
+%!error<nbinstat: R and PS must be numeric.> nbinstat (1, '')
 %!error<nbinstat: R and PS must not be complex.> nbinstat (i, 2)
 %!error<nbinstat: R and PS must not be complex.> nbinstat (1, i)
 %!error<nbinstat: R and PS must be of common size or scalars.> ...

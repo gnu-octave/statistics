@@ -101,7 +101,7 @@ function normalised = normalise_distribution (data, distribution, dimension)
         ## Does it consist of strings only?
         if (all (cellfun (@ischar, distribution)))
             distribution = cellfun (@str2func, distribution, ...
-                                    "UniformOutput", false );
+                                    'UniformOutput', false );
         endif
 
         ## Does it eventually consist of function handles only
@@ -151,7 +151,7 @@ function normalised = normalise_distribution (data, distribution, dimension)
       ## original text. The author's original program, however, produces
       ## different values in the presence of ties, namely those you'd
       ## get replacing "last" by "first".
-      [uniq, indices] = unique (sort (data(:, k)), "last");
+      [uniq, indices] = unique (sort (data(:, k)), 'last');
 
       ## Does the sample have ties?
       if (rows (uniq) != r)

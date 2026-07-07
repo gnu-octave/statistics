@@ -99,10 +99,10 @@ function r = invgrnd (mu, lambda, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (lambda, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (lambda, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Expand parameters (if needed)

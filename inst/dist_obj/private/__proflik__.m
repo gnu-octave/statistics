@@ -44,7 +44,7 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
       param = varargin{1};
       varargin(1) = [];
     elseif (ischar (varargin{1}))
-      if (strcmpi (varargin{1}, "display"))
+      if (strcmpi (varargin{1}, 'display'))
         if (numel (varargin) < 2)
           error ("proflik: missing VALUE for 'Display' argument.");
         endif
@@ -54,9 +54,9 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
         if (size (varargin{2}, 1) != 1)
           error ("proflik: invalid VALUE size for 'Display' argument.");
         endif
-        if (strcmpi (varargin{2}, "off"))
+        if (strcmpi (varargin{2}, 'off'))
           Display = false;
-        elseif (strcmpi (varargin{2}, "on"))
+        elseif (strcmpi (varargin{2}, 'on'))
           Display = true;
         else
           error ("proflik: invalid VALUE for 'Display' argument.");
@@ -121,11 +121,11 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
     else
       nll_conf = - feval (fname, params, pd.InputData.data, pd.InputData.freq);
     endif
-    plot (optpar(pnum), optnll, "ok;Estimate;", ...
-          param, nlogl, "-r;Exact log likelihood;", ...
-          param, repmat (nll_conf, size (param)), ":b;95% confidence;");
+    plot (optpar(pnum), optnll, 'ok;Estimate;', ...
+          param, nlogl, '-r;Exact log likelihood;', ...
+          param, repmat (nll_conf, size (param)), ':b;95% confidence;');
     xlabel (pname);
-    ylabel ("log likelihood");
+    ylabel ('log likelihood');
     xlim ([param(1), param(end)]);
   endif
 

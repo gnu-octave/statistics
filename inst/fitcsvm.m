@@ -299,14 +299,14 @@ endfunction
 ## Test constructor
 %!test
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
-%! y = {"a"; "a"; "b"; "b"};
+%! y = {'a'; 'a'; 'b'; 'b'};
 %! a = fitcsvm (x, y);
 %! assert (class (a), "ClassificationSVM");
 %! assert ({a.X, a.Y}, {x, y})
 %! assert (a.NumObservations, 4)
-%! assert ({a.ResponseName, a.PredictorNames}, {"Y", {"x1", "x2", "x3"}})
+%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
 %! assert (a.ModelParameters.SVMtype, "c_svc")
-%! assert (a.ClassNames, {"a"; "b"})
+%! assert (a.ClassNames, {'a'; 'b'})
 
 ## Test Output
 %!test
@@ -314,17 +314,17 @@ endfunction
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! a = fitcsvm (x, y);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
 %! assert (a.ModelParameters.BoxConstraint, 1)
 %! assert (a.ModelParameters.KernelOffset, 0)
 %! assert (a.ClassNames, [-1; 1])
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
-%! a = fitcsvm (x, y, "KernelFunction", "rbf", "BoxConstraint", 2, ...
-%! "KernelOffset", 2);
+%! a = fitcsvm (x, y, 'KernelFunction', 'rbf', 'BoxConstraint', 2, ...
+%! 'KernelOffset', 2);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "rbf"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'rbf'})
 %! assert (a.ModelParameters.BoxConstraint, 2)
 %! assert (a.ModelParameters.KernelOffset, 2)
 %! assert (isempty (a.Alpha), true)
@@ -332,18 +332,18 @@ endfunction
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
-%! a = fitcsvm (x, y, "KernelFunction", "polynomial", "PolynomialOrder", 3);
+%! a = fitcsvm (x, y, 'KernelFunction', 'polynomial', 'PolynomialOrder', 3);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "polynomial"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'polynomial'})
 %! assert (a.ModelParameters.PolynomialOrder, 3)
 %! assert (isempty (a.Alpha), true)
 %! assert (isempty (a.Beta), false)
 %!test
 %! x = [1, 2; 2, 3; 3, 4; 4, 5; 2, 3; 3, 4; 2, 3; 3, 4; 2, 3; 3, 4];
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
-%! a = fitcsvm (x, y, "KernelFunction", "linear", "PolynomialOrder", 3);
+%! a = fitcsvm (x, y, 'KernelFunction', 'linear', 'PolynomialOrder', 3);
 %! assert (class (a), "ClassificationSVM");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
 %! assert (a.ModelParameters.PolynomialOrder, 3)
 %! assert (isempty (a.Alpha), false)
 %! assert (isempty (a.Beta), true)
@@ -352,11 +352,11 @@ endfunction
 %! y = [1; 1; -1; -1; 1; -1; -1; -1; -1; -1];
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! a = fitcsvm (x, y, "KernelFunction", "linear", "CrossVal", 'on');
+%! rand ('seed', 23);
+%! a = fitcsvm (x, y, 'KernelFunction', 'linear', 'CrossVal', 'on');
 %! warning (status);
 %! assert (class (a), "ClassificationPartitionedModel");
-%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, "linear"})
+%! assert ({a.X, a.Y, a.ModelParameters.KernelFunction}, {x, y, 'linear'})
 %! assert (a.ModelParameters.PolynomialOrder, 3)
 %! assert (isempty (a.Trained{1}.Alpha), false)
 %! assert (isempty (a.Trained{1}.Beta), true)
@@ -371,8 +371,8 @@ endfunction
 %!error<fitcsvm: number of rows in X and Y must be equal.>
 %! fitcsvm (ones (4,2), ones (3, 1), 'KFold', 2)
 %!error <fitcsvm: 'CrossVal' must be either 'off' or 'on'.>
-%! fitcsvm (ones (4,2), ones (4, 1), "CrossVal", 2)
+%! fitcsvm (ones (4,2), ones (4, 1), 'CrossVal', 2)
 %!error <fitcsvm: 'CrossVal' must be either 'off' or 'on'.>
-%! fitcsvm (ones (4,2), ones (4, 1), "CrossVal", 'a')
+%! fitcsvm (ones (4,2), ones (4, 1), 'CrossVal', 'a')
 %!error <fitcsvm: You can use only one cross-validation name-value pair argument> ...
-%! fitcsvm (ones (4,2), ones (4, 1), "KFold", 10, "Holdout", 0.3)
+%! fitcsvm (ones (4,2), ones (4, 1), 'KFold', 10, 'Holdout', 0.3)

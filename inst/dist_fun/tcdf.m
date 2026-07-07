@@ -47,9 +47,9 @@ function p = tcdf (x, df, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 2 && strcmpi (uflag, "upper"))
+  if (nargin > 2 && strcmpi (uflag, 'upper'))
     x = -x;
-  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 2  && ! strcmpi (uflag, 'upper'))
     error ("tcdf: invalid argument for upper tail.");
   endif
 
@@ -67,8 +67,8 @@ function p = tcdf (x, df, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (df, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -177,15 +177,15 @@ endfunction
 %! p2 = tcdf (x, 2);
 %! p3 = tcdf (x, 5);
 %! p4 = tcdf (x, Inf);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-m")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-m')
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 1])
-%! legend ({"df = 1", "df = 2", ...
-%!          "df = 5", 'df = \infty'}, "location", "southeast")
-%! title ("Student's T CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'df = 1', 'df = 2', ...
+%!          'df = 5', 'df = \infty'}, 'location', 'southeast')
+%! title ('Student''s T CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x,y
@@ -195,25 +195,25 @@ endfunction
 %!assert (tcdf (x, 1), y, eps)
 %!assert (tcdf (x, [0 1 NaN 1]), [NaN 1/2 NaN 1], eps)
 %!assert (tcdf ([x(1:2) NaN x(4)], 1), [y(1:2) NaN y(4)], eps)
-%!assert (tcdf (2, 3, "upper"), 0.0697, 1e-4)
-%!assert (tcdf (205, 5, "upper"), 2.6206e-11, 1e-14)
+%!assert (tcdf (2, 3, 'upper'), 0.0697, 1e-4)
+%!assert (tcdf (205, 5, 'upper'), 2.6206e-11, 1e-14)
 
 ## Test class of input preserved
 %!assert (tcdf ([x, NaN], 1), [y, NaN], eps)
-%!assert (tcdf (single ([x, NaN]), 1), single ([y, NaN]), eps ("single"))
-%!assert (tcdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
+%!assert (tcdf (single ([x, NaN]), 1), single ([y, NaN]), eps ('single'))
+%!assert (tcdf ([x, NaN], single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tcdf: function called with too few input arguments.> tcdf ()
 %!error<tcdf: function called with too few input arguments.> tcdf (1)
-%!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, "uper")
+%!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, 'uper')
 %!error<tcdf: invalid argument for upper tail.> tcdf (1, 2, 3)
 %!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2))
 %!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2))
 %!error<tcdf: X and DF must be of common size or scalars.> ...
-%! tcdf (ones (3), ones (2), "upper")
+%! tcdf (ones (3), ones (2), 'upper')
 %!error<tcdf: X and DF must not be complex.> tcdf (i, 2)
 %!error<tcdf: X and DF must not be complex.> tcdf (2, i)
 

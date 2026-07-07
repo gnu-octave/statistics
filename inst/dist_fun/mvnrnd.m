@@ -67,10 +67,10 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
   endif
 
   ## Get data type
-  if (isa (mu, "single") || isa (sigma, "single"))
-    is_class = "single";
+  if (isa (mu, 'single') || isa (sigma, 'single'))
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Check whether sigma is passed as a diagonal or a matrix

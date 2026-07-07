@@ -93,10 +93,10 @@ function r = ncx2rnd (df, lambda, varargin)
   endif
 
   ## Check for class type
-  if (isa (df, "single") || isa (lambda, "single"));
-    cls = "single";
+  if (isa (df, 'single') || isa (lambda, 'single'));
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Return NaNs for out of range values of DF and LAMBDA

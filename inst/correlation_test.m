@@ -101,14 +101,14 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
 
   ## Set default arguments
   alpha = 0.05;
-  tail = "both";
-  method = "pearson";
+  tail = 'both';
+  method = 'pearson';
 
   ## Check additional options
   i = 1;
   while (i <= length (varargin))
     switch lower (varargin{i})
-      case "alpha"
+      case 'alpha'
         i = i + 1;
         alpha = varargin{i};
         ## Check for valid alpha
@@ -116,16 +116,16 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
                     alpha <= 0 || alpha >= 1)
           error ("correlation_test: invalid value for alpha.");
         endif
-      case "tail"
+      case 'tail'
         i = i + 1;
         tail = varargin{i};
-        if (! any (strcmpi (tail, {"both", "left", "right"})))
+        if (! any (strcmpi (tail, {'both', 'left', 'right'})))
           error ("correlation_test: invalid value for tail.");
         endif
-      case "method"
+      case 'method'
         i = i + 1;
         method = varargin{i};
-        if (! any (strcmpi (method, {"pearson", "kendall", "spearman"})))
+        if (! any (strcmpi (method, {'pearson', 'kendall', 'spearman'})))
           error ("correlation_test: invalid value for method.");
         endif
       otherwise
@@ -136,39 +136,39 @@ function [h, pval, stats] = correlation_test (x, y, varargin)
 
   n = length (x);
 
-  if (strcmpi (method, "pearson"))
+  if (strcmpi (method, 'pearson'))
     r = corr (x, y);
-    stats.method = "Pearson's product moment correlation";
+    stats.method = 'Pearson''s product moment correlation';
     stats.df = n - 2;
     stats.corrcoef = r;
     stats.stat = sqrt (stats.df) .* r / sqrt (1 - r.^2);
-    stats.dist = "Student's t";
+    stats.dist = 'Student''s t';
     cdf = tcdf (stats.stat, stats.df);
-  elseif (strcmpi (method, "kendall"))
+  elseif (strcmpi (method, 'kendall'))
     tau = kendall (x, y);
-    stats.method = "Kendall's rank correlation tau";
+    stats.method = 'Kendall''s rank correlation tau';
     stats.df = [];
     stats.corrcoef = tau;
     stats.stat = tau / sqrt ((2 * (2*n+5)) / (9*n*(n-1)));
-    stats.dist = "standard normal";
+    stats.dist = 'standard normal';
     cdf = stdnormal_cdf (stats.stat);
   else  # spearman
     rho = spearman (x, y);
-    stats.method = "Spearman's rank correlation rho";
+    stats.method = 'Spearman''s rank correlation rho';
     stats.df = [];
     stats.corrcoef = rho;
     stats.stat = sqrt (n-1) * (rho - 6/(n^3-n));
-    stats.dist = "standard normal";
+    stats.dist = 'standard normal';
     cdf = stdnormal_cdf (stats.stat);
   endif
 
   ## Based on the "tail" argument determine the P-value
   switch lower (tail)
-    case "both"
+    case 'both'
       pval = 2 * min (cdf, 1 - cdf);
-    case "right"
+    case 'right'
       pval = 1 - cdf;
-    case "left"
+    case 'left'
       pval = cdf;
   endswitch
 
@@ -197,23 +197,23 @@ endfunction
 %!error<correlation_test: X and Y must be vectors of equal length.> ...
 %! correlation_test ([1 2 3]', [3 4 4 5]');
 %!error<correlation_test: invalid value for alpha.> ...
-%! correlation_test ([1 2 3]', [2 3 4]', "alpha", 0);
+%! correlation_test ([1 2 3]', [2 3 4]', 'alpha', 0);
 %!error<correlation_test: invalid value for alpha.> ...
-%! correlation_test ([1 2 3]', [2 3 4]', "alpha", 1.2);
+%! correlation_test ([1 2 3]', [2 3 4]', 'alpha', 1.2);
 %!error<correlation_test: invalid value for alpha.> ...
-%! correlation_test ([1 2 3]', [2 3 4]', "alpha", [.02 .1]);
+%! correlation_test ([1 2 3]', [2 3 4]', 'alpha', [.02 .1]);
 %!error<correlation_test: invalid value for alpha.> ...
-%! correlation_test ([1 2 3]', [2 3 4]', "alpha", "a");
+%! correlation_test ([1 2 3]', [2 3 4]', 'alpha', 'a');
 %!error<correlation_test: invalid Name argument.> ...
-%! correlation_test ([1 2 3]', [2 3 4]', "some", 0.05);
+%! correlation_test ([1 2 3]', [2 3 4]', 'some', 0.05);
 %!error<correlation_test: invalid value for tail.>  ...
-%! correlation_test ([1 2 3]', [2 3 4]', "tail", "val");
+%! correlation_test ([1 2 3]', [2 3 4]', 'tail', 'val');
 %!error<correlation_test: invalid value for tail.>  ...
-%! correlation_test ([1 2 3]', [2 3 4]', "alpha", 0.01, "tail", "val");
+%! correlation_test ([1 2 3]', [2 3 4]', 'alpha', 0.01, 'tail', 'val');
 %!error<correlation_test: invalid value for method.>  ...
-%! correlation_test ([1 2 3]', [2 3 4]', "method", 0.01);
+%! correlation_test ([1 2 3]', [2 3 4]', 'method', 0.01);
 %!error<correlation_test: invalid value for method.>  ...
-%! correlation_test ([1 2 3]', [2 3 4]', "method", "some");
+%! correlation_test ([1 2 3]', [2 3 4]', 'method', 'some');
 
 %!test
 %! x = [6 7 7 9 10 12 13 14 15 17];

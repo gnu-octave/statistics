@@ -348,70 +348,70 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           endif
         else  # it must be a function name
           switch (fcn_op)
-            case "mean"
+            case 'mean'
               new_vname = strcat ('mean_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                new_vdata(idx,:) = mean (gdata, 1, "omitnan");
+                new_vdata(idx,:) = mean (gdata, 1, 'omitnan');
               endfor
-            case "median"
+            case 'median'
               new_vname = strcat ('median_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                new_vdata(idx,:) = median (gdata, 1, "omitnan");
+                new_vdata(idx,:) = median (gdata, 1, 'omitnan');
               endfor
-            case "sem"
+            case 'sem'
               new_vname = strcat ('sem_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                new_vdata(idx,:) = std (gdata, 0, 1, "omitnan") ./ ...
+                new_vdata(idx,:) = std (gdata, 0, 1, 'omitnan') ./ ...
                                    sqrt (size (gdata, 1) - sum (isnan (gdata), 1));
               endfor
-            case "std"
+            case 'std'
               new_vname = strcat ('std_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                new_vdata(idx,:) = std (gdata, 0, 1, "omitnan");
+                new_vdata(idx,:) = std (gdata, 0, 1, 'omitnan');
               endfor
-            case "var"
+            case 'var'
               new_vname = strcat ('var_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                new_vdata(idx,:) = var (gdata, 0, 1, "omitnan");
+                new_vdata(idx,:) = var (gdata, 0, 1, 'omitnan');
               endfor
-            case "min"
+            case 'min'
               new_vname = strcat ('min_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
                 new_vdata(idx,:) = min (gdata, [], 1);
               endfor
-            case "max"
+            case 'max'
               new_vname = strcat ('max_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
                 new_vdata(idx,:) = max (gdata, [], 1);
               endfor
-            case "range"
+            case 'range'
               new_vname = strcat ('range_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
                 new_vdata(idx,:) = range (gdata, 1);
               endfor
-            case "numel"
+            case 'numel'
               new_vname = strcat ('numel_', vname);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
                 new_vdata(idx,:) = size (gdata, 1) - sum (isnan (gdata), 1);
               endfor
-            case "meanci"
+            case 'meanci'
               new_vname = strcat ('meanci_', vname);
               ## Preallocate twice the columns in variable (lower, upper)
               new_vdata = NaN (ngroups, ncols * 2);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                m = mean (gdata, 1, "omitnan");
+                m = mean (gdata, 1, 'omitnan');
                 n = size (gdata, 1) - sum (isnan (gdata), 1);
-                s = std (gdata, 0, 1, "omitnan") ./ sqrt (max (n,1));
+                s = std (gdata, 0, 1, 'omitnan') ./ sqrt (max (n,1));
                 ## Avoid invalid tinv calls for degenerate df
                 df = max (n - 1, 0);
                 tval = zeros (1, size (gdata, 2));
@@ -425,15 +425,15 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
                 new_vdata(idx,[2:2:end]) = m + d;
               endfor
 
-            case "predci"
+            case 'predci'
               new_vname = strcat ('predci_', vname);
               ## Preallocate twice the columns in variable (lower, upper)
               new_vdata = NaN (ngroups, ncols * 2);
               for idx = 1:ngroups
                 gdata = vdata(grp_idx == idx, :);
-                m = mean (gdata, 1, "omitnan");
+                m = mean (gdata, 1, 'omitnan');
                 n = size (gdata, 1) - sum (isnan (gdata), 1);
-                s = std (gdata, 0, 1, "omitnan") .* sqrt (1 + (1 ./ max (n,1)));
+                s = std (gdata, 0, 1, 'omitnan') .* sqrt (1 + (1 ./ max (n,1)));
                 df = max (n - 1, 0);
                 tval = zeros (1, size (gdata, 2));
                 pos = (df > 0);
@@ -507,9 +507,9 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
       ## Calculate mean and ci
       for idx = 1:ngroups
         group_x = x(find (grp_idx == idx), :);
-        mu(idx,:) = mean (group_x, 1, "omitnan");
+        mu(idx,:) = mean (group_x, 1, 'omitnan');
         n = size (group_x, 1) - sum (isnan (group_x), 1);
-        s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
+        s = std (group_x, 0, 1, 'omitnan') ./ sqrt (max (n,1));
         ## Avoid invalid tinv calls for degenerate df
         df = max (n - 1, 0);
         tval = zeros (1, size (group_x, 2));
@@ -554,70 +554,70 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
     ## From this point we can start applying functions on the entire array
     for fcn_idx = 1:fcn_num
       switch (fcn_names{fcn_idx})
-        case "mean"
+        case 'mean'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_mean(idx,:) = mean (group_x, 1, "omitnan");
+            group_mean(idx,:) = mean (group_x, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_mean;
-        case "median"
+        case 'median'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_mean(idx,:) = median (group_x, 1, "omitnan");
+            group_mean(idx,:) = median (group_x, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_mean;
-        case "sem"
+        case 'sem'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_sem(idx,:) = std (group_x, 0, 1, "omitnan") / ...
+            group_sem(idx,:) = std (group_x, 0, 1, 'omitnan') / ...
                              sqrt (size (group_x, 1) - sum (isnan (group_x), 1));
           endfor
           varargout{fcn_idx} = group_sem;
-        case "std"
+        case 'std'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_std(idx,:) = std (group_x, 0, 1, "omitnan");
+            group_std(idx,:) = std (group_x, 0, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_std;
-        case "var"
+        case 'var'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            group_var(idx,:) = var (group_x, 0, 1, "omitnan");
+            group_var(idx,:) = var (group_x, 0, 1, 'omitnan');
           endfor
           varargout{fcn_idx} = group_var;
-        case "min"
+        case 'min'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_min(idx,:) = nanmin (group_x);
           endfor
           varargout{fcn_idx} = group_min;
-        case "max"
+        case 'max'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_max(idx,:) = nanmax (group_x);
           endfor
           varargout{fcn_idx} = group_max;
-        case "range"
+        case 'range'
           func_handle = @(x) range (x, 1);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_range(idx,:) = range (group_x, 1);
           endfor
           varargout{fcn_idx} = group_range;
-        case "numel"
+        case 'numel'
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
             group_numel(idx,:) = size (group_x, 1) - sum (isnan (group_x), 1);
           endfor
           varargout{fcn_idx} = group_numel;
-        case "meanci"
+        case 'meanci'
           ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_meanci = NaN (ngroups, c, 2);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            m = mean (group_x, 1, "omitnan");
+            m = mean (group_x, 1, 'omitnan');
             n = size (group_x, 1) - sum (isnan (group_x), 1);
-            s = std (group_x, 0, 1, "omitnan") ./ sqrt (max (n,1));
+            s = std (group_x, 0, 1, 'omitnan') ./ sqrt (max (n,1));
             ## Avoid invalid tinv calls for degenerate df
             df = max (n - 1, 0);
             tval = zeros (1, size (group_x, 2));
@@ -639,14 +639,14 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
             varargout{fcn_idx} = group_meanci;
           endif
 
-        case "predci"
+        case 'predci'
           ## Allocate as 3-D: [ngroups x c x 2] (lower, upper)
           group_predci = NaN (ngroups, c, 2);
           for idx = 1:ngroups
             group_x = x(find (grp_idx == idx), :);
-            m = mean (group_x, 1, "omitnan");
+            m = mean (group_x, 1, 'omitnan');
             n = size (group_x, 1) - sum (isnan (group_x), 1);
-            s = std (group_x, 0, 1, "omitnan") .* sqrt (1 + (1 ./ max (n,1)));
+            s = std (group_x, 0, 1, 'omitnan') .* sqrt (1 + (1 ./ max (n,1)));
             df = max (n - 1, 0);
             tval = zeros (1, size (group_x, 2));
             pos = (df > 0);
@@ -663,7 +663,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           else
             varargout{fcn_idx} = group_predci;
           endif
-        case "gname"
+        case 'gname'
           varargout{fcn_idx} = g_names;
       endswitch
     endfor
@@ -676,8 +676,8 @@ endfunction
 %! [m, p, g] = grpstats (Weight, Model_Year, {'mean', 'predci', 'gname'})
 %! n = length (m);
 %! errorbar ((1:n)',m,p(:,2)-m);
-%! set (gca, "xtick", 1:n, "xticklabel", g);
-%! title ("95% prediction intervals for mean weight by year");
+%! set (gca, 'xtick', 1:n, 'xticklabel', g);
+%! title ('95% prediction intervals for mean weight by year');
 
 %!demo
 %! load carsmall;
@@ -685,20 +685,20 @@ endfunction
 %!                       {'mean', 'meanci', 'gname'}, 0.05)
 %! [c, r] = size (m);
 %! errorbar ((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
-%! set (gca, "xtick", 1:c, "xticklabel", g);
-%! title ("95% prediction intervals for mean weight by year");
+%! set (gca, 'xtick', 1:c, 'xticklabel', g);
+%! title ('95% prediction intervals for mean weight by year');
 
 %!demo
 %! ## Plot mean and 95% CI for a single grouping variable
 %! load carsmall;
 %! grpstats (Weight, Model_Year, 0.05);
-%! title ("Mean Weight by Model Year");
+%! title ('Mean Weight by Model Year');
 
 %!demo
 %! ## Plot mean and 95% CI for two grouping variables
 %! load carsmall;
 %! grpstats (Weight, {Origin, Cylinders}, 0.05);
-%! title ("Mean Weight by Origin and Number of Cylinders");
+%! title ('Mean Weight by Origin and Number of Cylinders');
 
 %!test
 %! load carsmall
@@ -847,9 +847,9 @@ endfunction
 %!test
 %! ## single statistic
 %! x = [10; 20; 30; 40; 50; 60];
-%! g = {"A"; "A"; "B"; "B"; "C"; "C"};
+%! g = {'A'; 'A'; 'B'; 'B'; 'C'; 'C'};
 %! names = grpstats (x, g, 'gname');
-%! expected = {"A"; "B"; "C"};
+%! expected = {'A'; 'B'; 'C'};
 %! assert (names, expected);
 %!test
 %! ## single statistic (default alpha)
@@ -1051,7 +1051,7 @@ endfunction
 %! ## unequal group sizes
 %! x = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
 %! g = [1; 1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! [m, v, n] = grpstats (x, g, {'mean', 'var', "numel"});
+%! [m, v, n] = grpstats (x, g, {'mean', 'var', 'numel'});
 %! expected_m = [2.5; 6; 9];
 %! expected_v = [1.66666666666667; 1; 1];
 %! expected_n = [4; 3; 3];
@@ -1071,7 +1071,7 @@ endfunction
 %! ## unsorted string groups
 %! x = [30; 10; 40; 20; 60; 50];
 %! g = {'C'; 'A'; 'C'; 'A'; 'B'; 'B'};
-%! [m, names] = grpstats (x, g, {"mean", "gname"});
+%! [m, names] = grpstats (x, g, {'mean', 'gname'});
 %! expected_m = [35; 15; 55];
 %! expected_names = {'C'; 'A'; 'B'};
 %! assert (m, expected_m);
@@ -1475,13 +1475,13 @@ endfunction
 %!error <grpstats: unrecognized input arguments.> ...
 %!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 'mean', 35)
 %!error <grpstats: unrecognized input arguments.> ...
-%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "somename", -0.1);
+%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, 'predci', 'somename', -0.1);
 %!error <grpstats: invalid data types for 'VarNames'.> ...
 %!       grpstats (ones (6, 2), [1; 1; 1; 2; 2; 2], 'mean', 'VarNames', 3)
 %!error <grpstats: X must be numeric to plot mean and CI for each group.> ...
 %!       grpstats ({ones(6, 2)}, [], 0.05)
 %!error <grpstats: 'alpha' must be a real scalar in the range \(0,1\).> ...
-%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, "predci", "alpha", -0.1);
+%!       grpstats ([1:4]', {'A'; 'B'; 'A'; 'B'}, 'predci', 'alpha', -0.1);
 %!error <grpstats: cannot resolve GROUPVARS in input table.> ...
 %!       grpstats (table ([1:5]'), {'Var_5'})
 %!error <grpstats: invalid 'DataVars' reference to table X.> ...

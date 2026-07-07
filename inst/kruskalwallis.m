@@ -170,10 +170,10 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
 
   ## Create results table (if requested)
   if (nargout > 1)
-    tbl = {"Source", "SS", "df", "MS", "Chi-sq", "Prob>Chi-sq"; ...
-           "Groups", SSM, dfm, MSM, ChiSq, p; ...
-           "Error", SSE, dfe, MSE, "", ""; ...
-           "Total", SST, dfm + dfe, "", "", ""};
+    tbl = {'Source', 'SS', 'df', 'MS', 'Chi-sq', 'Prob>Chi-sq'; ...
+           'Groups', SSM, dfm, MSM, ChiSq, p; ...
+           'Error', SSE, dfe, MSE, '', ''; ...
+           'Total', SST, dfm + dfe, '', '', ''};
   endif
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)
@@ -199,7 +199,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
-    boxplot (x, group_id, 'Notch', "on", 'Labels', group_names);
+    boxplot (x, group_id, 'Notch', 'on', 'Labels', group_names);
   endif
 endfunction
 
@@ -253,7 +253,7 @@ endfunction
 %!demo
 %! x = ones (30, 4) .* [-2, 0, 1, 5];
 %! x = x + normrnd (0, 2, 30, 4);
-%! group = {"A", "B", "C", "D"};
+%! group = {'A', 'B', 'C', 'D'};
 %! kruskalwallis (x, group);
 
 ## testing results against SPSS and R on the GEAR.DAT data file available from
@@ -271,13 +271,13 @@ endfunction
 %!         0.991, 0.995, 0.984, 0.994, 0.997, 0.997, 0.991, 0.998, 1.004, 0.997];
 %! group = [1:10] .* ones (10,10);
 %! group = group(:);
-%! [p, tbl] = kruskalwallis (data, group, "off");
+%! [p, tbl] = kruskalwallis (data, group, 'off');
 %! assert (p, 0.048229, 1e-6);
 %! assert (tbl{2,5}, 17.03124, 1e-5);
 %! assert (tbl{2,3}, 9, 0);
 %! assert (tbl{4,2}, 82655.5, 1e-16);
 %! data = reshape (data, 10, 10);
-%! [p, tbl, stats] = kruskalwallis (data, [], "off");
+%! [p, tbl, stats] = kruskalwallis (data, [], 'off');
 %! assert (p, 0.048229, 1e-6);
 %! assert (tbl{2,5}, 17.03124, 1e-5);
 %! assert (tbl{2,3}, 9, 0);

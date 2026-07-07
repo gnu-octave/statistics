@@ -76,10 +76,10 @@ function A = standardizeMissing (A, indicator)
       error ("standardizeMissing: INDICATOR must be a scalar or a vector.");
     endif
     switch (class (A))
-      case "double"
-        A(ismember (A, indicator)) = NaN ("double");
-      case "single"
-        A(ismember (A, indicator)) = NaN ("single");
+      case 'double'
+        A(ismember (A, indicator)) = NaN ('double');
+      case 'single'
+        A(ismember (A, indicator)) = NaN ('single');
     endswitch
 
   elseif (iscellstr (A))

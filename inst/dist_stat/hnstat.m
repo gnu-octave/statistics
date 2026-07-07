@@ -76,7 +76,7 @@ endfunction
 %!error<hnstat: function called with too few input arguments.> hnstat ()
 %!error<hnstat: function called with too few input arguments.> hnstat (1)
 %!error<hnstat: MU and SIGMA must be numeric.> hnstat ({}, 2)
-%!error<hnstat: MU and SIGMA must be numeric.> hnstat (1, "")
+%!error<hnstat: MU and SIGMA must be numeric.> hnstat (1, '')
 %!error<hnstat: MU and SIGMA must not be complex.> hnstat (i, 2)
 %!error<hnstat: MU and SIGMA must not be complex.> hnstat (1, i)
 %!error<hnstat: MU and SIGMA must be of common size or scalars.> ...

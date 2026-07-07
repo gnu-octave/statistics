@@ -149,15 +149,15 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
 
   ## Check options structure or add defaults
   if (nargin > 4 && ! isempty (options))
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("normfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
     endif
   else
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
@@ -174,9 +174,9 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   ## 1. Handle Infs and NaNs
   if (! isfinite (totalsum))
     muhat = totalsum;
-    sigmahat = NaN ("like", x);
-    muci = NaN (2, 1, "like", x);
-    sigmaci = NaN (2, 1, "like", x);
+    sigmahat = NaN ('like', x);
+    muci = NaN (2, 1, 'like', x);
+    sigmaci = NaN (2, 1, 'like', x);
     return
   endif
 
@@ -200,7 +200,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
       endif
       sigmahat = sqrt (sum (conj (xc) .* xc .* freq) ./ (n - 1));
     else
-      sigmahat = zeros (1, ncols, "like", x);
+      sigmahat = zeros (1, ncols, 'like', x);
     endif
 
     if (nargout > 2)
@@ -210,8 +210,8 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
         muci = ci(:,:,1);
         sigmaci = ci(:,:,2);
       else
-        muci = [-Inf; Inf] * ones (1, ncols, "like", x);
-        sigmaci = [0; Inf] * ones (1, ncols, "like", x);
+        muci = [-Inf; Inf] * ones (1, ncols, 'like', x);
+        sigmaci = [0; Inf] * ones (1, ncols, 'like', x);
       endif
     endif
     return
@@ -227,10 +227,10 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
       sigmahat = zeros ('like',x);
       if (n_uncensored > 1)
         muci = [muhat; muhat];
-        sigmaci = zeros (2, 1, "like", x);
+        sigmaci = zeros (2, 1, 'like', x);
       else
-        muci = cast ([-Inf; Inf], "like", x);
-        sigmaci = cast ([0; Inf], "like", x);
+        muci = cast ([-Inf; Inf], 'like', x);
+        sigmaci = cast ([0; Inf], 'like', x);
       endif
       return
     endif
@@ -239,9 +239,9 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   ## Get an initial estimate for parameters using the "least squares" method
   if (range_x_uncensored > 0)
     if (numel (freq) == numel (x))
-      [p,q] = ecdf (x, "censoring", censor, "frequency", freq);
+      [p,q] = ecdf (x, 'censoring', censor, 'frequency', freq);
     else
-      [p,q] = ecdf (x, "censoring", censor);
+      [p,q] = ecdf (x, 'censoring', censor);
     endif
     pmid = (p(1:(end-1)) + p(2:end)) / 2;
     linefit = polyfit (-sqrt (2) * erfcinv (2 * pmid), q(2:end), 1);
@@ -251,7 +251,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   endif
 
   ## Optimize the parameters as doubles, regardless of input data type
-  paramhat = cast (paramhat, "double");
+  paramhat = cast (paramhat, 'double');
 
   ## Search for parameter that minimizes the negative log likelihood function
   [paramhat, ~, err, output] = fminsearch ...
@@ -269,8 +269,8 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   endif
 
   ## Make sure the outputs match the input data type
-  muhat = cast (paramhat(1), "like", x);
-  sigmahat = cast (paramhat(2), "like", x);
+  muhat = cast (paramhat(1), 'like', x);
+  sigmahat = cast (paramhat(2), 'like', x);
 
   if (nargout > 2)
     paramhat = paramhat(:);
@@ -356,7 +356,7 @@ function ci = norm_ci (paramhat, cv, alpha, x, censor, freq)
     ## X is a vector
     muci = NaN(2,1);
     sigmaci = NaN(2,1);
-    ci = cast (cat (3, muci, sigmaci), "like", x);
+    ci = cast (cat (3, muci, sigmaci), 'like', x);
     return
   endif
   ## Get confidence intervals for each parameter
@@ -386,20 +386,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different normal distributions
-%! randn ("seed", 1);    # for reproducibility
+%! randn ('seed', 1);    # for reproducibility
 %! r1 = normrnd (2, 5, 5000, 1);
-%! randn ("seed", 2);    # for reproducibility
+%! randn ('seed', 2);    # for reproducibility
 %! r2 = normrnd (5, 2, 5000, 1);
-%! randn ("seed", 3);    # for reproducibility
+%! randn ('seed', 3);    # for reproducibility
 %! r3 = normrnd (9, 4, 5000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 15, 0.4);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! hold on
 %!
 %! ## Estimate their mu and sigma parameters
@@ -408,24 +408,24 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [min(r(:)):max(r(:))];
 %! y = normpdf (x, muhat(1), sigmahat(1));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = normpdf (x, muhat(2), sigmahat(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = normpdf (x, muhat(3), sigmahat(3));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! ylim ([0, 0.5])
 %! xlim ([-20, 20])
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with mu=2, σ=5", ...
-%!          "Normalized HIST of sample 2 with mu=5, σ=2", ...
-%!          "Normalized HIST of sample 3 with mu=9, σ=4", ...
+%! legend ({'Normalized HIST of sample 1 with mu=2, σ=5', ...
+%!          'Normalized HIST of sample 2 with mu=5, σ=2', ...
+%!          'Normalized HIST of sample 3 with mu=9, σ=4', ...
 %!          sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  muhat(1), sigmahat(1)), ...
 %!          sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  muhat(2), sigmahat(2)), ...
 %!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
-%!                  muhat(3), sigmahat(3))}, "location", "northwest")
-%! title ("Three population samples from different normal distributions")
+%!                  muhat(3), sigmahat(3))}, 'location', 'northwest')
+%! title ('Three population samples from different normal distributions')
 %! hold off
 
 ## Test output
@@ -437,7 +437,7 @@ endfunction
 %! assert (muHat, 9496.59586737857, 1e-11);
 %! assert (sigmaHat, 3064.021012796456, 2e-12);
 %!test
-%! randn ("seed", 234);
+%! randn ('seed', 234);
 %! x = normrnd (3, 5, [1000, 1]);
 %! [muHat, sigmaHat, muCI, sigmaCI] = normfit (x, 0.01);
 %! assert (muCI(1) < 3);
@@ -461,4 +461,4 @@ endfunction
 %! normfit (ones (20,1), [], zeros(20,1), ones(25,1))
 %!error<normfit: FREQ must not contain negative values.> ...
 %! normfit (ones (5,1), [], zeros(5,1), [1, 2, 1, 2, -1]')
-%!error<normfit: > normfit (ones (20,1), [], zeros(20,1), ones(20,1), "options")
+%!error<normfit: > normfit (ones (20,1), [], zeros(20,1), ones(20,1), 'options')

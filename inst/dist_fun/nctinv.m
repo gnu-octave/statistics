@@ -53,12 +53,12 @@ function x = nctinv (p, df, mu)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (df, "single") || isa (mu, "single"))
-    x = NaN (size (p), "single");
-    crit = sqrt (eps ("single"));
+  if (isa (p, 'single') || isa (df, 'single') || isa (mu, 'single'))
+    x = NaN (size (p), 'single');
+    crit = sqrt (eps ('single'));
   else
-    x = NaN (size (p), "double");
-    crit = sqrt (eps ("double"));
+    x = NaN (size (p), 'double');
+    crit = sqrt (eps ('double'));
   endif
 
   ## For mu == 0, call chi2inv
@@ -134,14 +134,14 @@ endfunction
 %! x2 = nctinv (p, 4, 0);
 %! x3 = nctinv (p, 1, 2);
 %! x4 = nctinv (p, 4, 2);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-k', p, x4, '-m')
 %! grid on
 %! ylim ([-5, 5])
-%! legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
-%!          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "northwest")
-%! title ("Noncentral T iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'df = 1, μ = 0', 'df = 4, μ = 0', ...
+%!          'df = 1, μ = 2', 'df = 4, μ = 2'}, 'location', 'northwest')
+%! title ('Noncentral T iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 %!demo
 %! ## Compare the noncentral T iCDF with MU = 1 to the T iCDF
@@ -150,13 +150,13 @@ endfunction
 %! p = 0.001:0.001:0.999;
 %! x1 = nctinv (p, 10, 1);
 %! x2 = tinv (p, 10);
-%! plot (p, x1, "-", p, x2, "-");
+%! plot (p, x1, '-', p, x2, '-');
 %! grid on
 %! ylim ([-5, 5])
-%! legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
-%! title ("Noncentral T vs T quantile functions")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'Noncentral T(10,1)', 'T(10)'}, 'location', 'northwest')
+%! title ('Noncentral T vs T quantile functions')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!test

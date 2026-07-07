@@ -109,10 +109,10 @@ function r = gevrnd (k, sigma, mu, varargin)
   endif
 
   ## Check for class type
-  if (isa (k, "single") || isa (sigma, "single") || isa (mu, "single"))
-    cls = "single";
+  if (isa (k, 'single') || isa (sigma, 'single') || isa (mu, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Burr type XII distribution

@@ -80,7 +80,7 @@ endfunction
 %!error<binostat: function called with too few input arguments.> binostat ()
 %!error<binostat: function called with too few input arguments.> binostat (1)
 %!error<binostat: N and PS must be numeric.> binostat ({}, 2)
-%!error<binostat: N and PS must be numeric.> binostat (1, "")
+%!error<binostat: N and PS must be numeric.> binostat (1, '')
 %!error<binostat: N and PS must not be complex.> binostat (i, 2)
 %!error<binostat: N and PS must not be complex.> binostat (1, i)
 %!error<binostat: N and PS must be of common size or scalars.> ...

@@ -55,8 +55,8 @@ function y = betapdf (x, a, b)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single"));
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (a, 'single') || isa (b, 'single'));
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -110,14 +110,14 @@ endfunction
 %! y3 = betapdf (x, 1, 3);
 %! y4 = betapdf (x, 2, 2);
 %! y5 = betapdf (x, 2, 5);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-m')
 %! grid on
 %! ylim ([0, 2.5])
-%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
-%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "north")
-%! title ("Beta PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'α = β = 0.5', 'α = 5, β = 1', 'α = 1, β = 3', ...
+%!          'α = 2, β = 2', 'α = 2, β = 5'}, 'location', 'north')
+%! title ('Beta PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

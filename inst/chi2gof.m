@@ -133,23 +133,23 @@ function [h, p, stats] = chi2gof (x, varargin)
   while (numarg)
     argname = varargin{argpos};
     switch (lower (argname))
-      case "nbins"
+      case 'nbins'
         nbins = varargin{argpos + 1};
-      case "ctrs"
+      case 'ctrs'
         binctrs = varargin{argpos + 1};
-      case "edges"
+      case 'edges'
         binedges = varargin{argpos + 1};
-      case "cdf"
+      case 'cdf'
         cdf_spec = varargin{argpos + 1};
-      case "expected"
+      case 'expected'
         expected = varargin{argpos + 1};
-      case "nparams"
+      case 'nparams'
         nparams = varargin{argpos + 1};
-      case "emin"
+      case 'emin'
         emin = varargin{argpos + 1};
-      case "frequency"
+      case 'frequency'
         frequency = varargin{argpos + 1};
-      case "alpha"
+      case 'alpha'
         alpha = varargin{argpos + 1};
     endswitch
     numarg -= 2;
@@ -198,9 +198,9 @@ function [h, p, stats] = chi2gof (x, varargin)
   endif
   ## Check for bin numbers, centers, or edges and calculate bins accordingly
   if (! isempty (binctrs))
-    [Observed, binedges] = calculatebins (x, frequency, "ctrs", binctrs);
+    [Observed, binedges] = calculatebins (x, frequency, 'ctrs', binctrs);
   elseif (! isempty (binedges))
-    [Observed, binedges] = calculatebins (x, frequency, "edges", binedges);
+    [Observed, binedges] = calculatebins (x, frequency, 'edges', binedges);
   else
     if (isempty (nbins))
       if (isempty (expected))
@@ -209,7 +209,7 @@ function [h, p, stats] = chi2gof (x, varargin)
         nbins = length (expected);    ## determined by Expected vector
       endif
     endif
-    [Observed, binedges] = calculatebins (x, frequency, "nbins", nbins);
+    [Observed, binedges] = calculatebins (x, frequency, 'nbins', nbins);
   endif
   Observed = Observed(:);
   nbins = length (Observed);
@@ -236,46 +236,46 @@ function [h, p, stats] = chi2gof (x, varargin)
       if (isempty (nparams))
         nparams = 2;
       endif
-    elseif (isa (cdf_spec, "function_handle"))
+    elseif (isa (cdf_spec, 'function_handle'))
       ## Split function handle to get function name and optional parameters
-      cstr = ostrsplit (func2str (cdf_spec), ",");
+      cstr = ostrsplit (func2str (cdf_spec), ',');
       ## Simple function handle, no parameters: e.g. @normcdf
-      if (isempty (strfind (cstr, "@")) && numel (cstr) == 1)
+      if (isempty (strfind (cstr, '@')) && numel (cstr) == 1)
         cdffunc = str2func (char (strcat ("@", cstr)));
         if (isempty (nparams))
           nparams = numel (cdfargs);
         endif
       ## Complex function handle, no parameters: e.g. @(x) normcdf(x)
-      elseif (! isempty (strfind (cstr, "@")) && numel (cstr) == 1)
+      elseif (! isempty (strfind (cstr, '@')) && numel (cstr) == 1)
         ## Remove white spaces
         cstr = char (cstr);
-        cstr(strfind (cstr, " ")) = [];
+        cstr(strfind (cstr, ' ')) = [];
         ## Remove input argument in parentheses
-        while (length (strfind (cstr,"(")))
-          cstr(index (cstr, "("):index (cstr, ")")) = [];
+        while (length (strfind (cstr,'(')))
+          cstr(index (cstr, '('):index (cstr, ')')) = [];
         endwhile
         cdffunc = str2func (cstr);
         if (isempty (nparams))
           nparams = numel (cdfargs);
         endif
-      elseif (! isempty (strfind (cstr, "@")) && numel (cstr) > 1)
+      elseif (! isempty (strfind (cstr, '@')) && numel (cstr) > 1)
         ## Evaluate function name in first cell
         cstr_f = char (cstr(1));
-        cstr_f(strfind (cstr_f, " ")) = [];
-        cstr_f(index (cstr_f, "("):index (cstr_f, ")")) = [];
-        cstr_f(index (cstr_f, "("):end) = [];
+        cstr_f(strfind (cstr_f, ' ')) = [];
+        cstr_f(index (cstr_f, '('):index (cstr_f, ')')) = [];
+        cstr_f(index (cstr_f, '('):end) = [];
         cdffunc = str2func (cstr_f);
         ## Evaluate optional parameters in remaining cells
         cstr_idx = 2;
         while (cstr_idx <= numel (cstr))
           cstr_p = char (cstr(cstr_idx));
-          cstr_p(strfind (cstr_p, " ")) = [];
+          cstr_p(strfind (cstr_p, ' ')) = [];
           ## Check for numerical value
           if (isscalar (str2num (cstr_p)))
             cdfargs{cstr_idx - 1} = cstr_p;
           else
             ## Get function handle: e.g. mean
-            cstr_p(index (cstr_p, "("):end) = [];
+            cstr_p(index (cstr_p, '('):end) = [];
             cdfargs{cstr_idx - 1} = feval (str2func (cstr_p), x .* frequency);
             cstr_idx += 1;
           endif
@@ -327,7 +327,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     df = 0;
     p = NaN;
   endif
-  h = cast (p <= alpha, "double");
+  h = cast (p <= alpha, 'double');
   ## Create 3rd output argument if necessary
   if (nargout > 2)
     stats.chi2stat = cstat;
@@ -367,7 +367,7 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   hi = double (max (x(:)));
   ## Check binspec for bin count, bin centers, or bin edges.
   switch (binspec)
-    case "nbins"
+    case 'nbins'
       nbins = specval;
       if (isempty (x))
         lo = 0;
@@ -380,12 +380,12 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
       binwidth = (hi - lo) ./ nbins;
       binedges = lo + binwidth * (0:nbins);
       binedges(length (binedges)) = hi;
-    case "ctrs"
+    case 'ctrs'
       binctrs = specval(:)';
       binwidth = diff (binctrs);
       binwidth = [binwidth binwidth(end)];
       binedges = [binctrs(1)-binwidth(1)/2 binctrs+binwidth/2];
-    case "edges"
+    case 'edges'
       binedges = specval(:)';
   endswitch
   ## Update bins
@@ -393,7 +393,7 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   ## Calculate bin numbers
   if (isempty (x))
     binnum = x;
-  elseif (! isequal (binspec, "edges"))
+  elseif (! isequal (binspec, 'edges'))
     binedges = binedges + eps(binedges);
     [ignore, binnum] = histc (x, [-Inf binedges(2:end-1) Inf]);
   else
@@ -413,34 +413,34 @@ endfunction
 %!demo
 %! x = normrnd (50, 5, 100, 1);
 %! [h, p, stats] = chi2gof (x)
-%! [h, p, stats] = chi2gof (x, "cdf", @(x)normcdf (x, mean(x), std(x)))
-%! [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
+%! [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean(x), std(x)))
+%! [h, p, stats] = chi2gof (x, 'cdf', {@normcdf, mean(x), std(x)})
 %!demo
 %! x = rand (100,1 );
 %! n = length (x);
 %! binedges = linspace (0, 1, 11);
 %! expectedCounts = n * diff (binedges);
-%! [h, p, stats] = chi2gof (x, "binedges", binedges, "expected", expectedCounts)
+%! [h, p, stats] = chi2gof (x, 'binedges', binedges, 'expected', expectedCounts)
 %!demo
 %! bins = 0:5;
 %! obsCounts = [6 16 10 12 4 2];
 %! n = sum(obsCounts);
 %! lambdaHat = sum(bins.*obsCounts) / n;
 %! expCounts = n * poisspdf(bins,lambdaHat);
-%! [h, p, stats] = chi2gof (bins, "binctrs", bins, "frequency", obsCounts, ...
-%!                          "expected", expCounts, "nparams",1)
+%! [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
+%!                          'expected', expCounts, 'nparams',1)
 
 ## Test input validation
 %!error chi2gof ()
 %!error chi2gof ([2,3;3,4])
-%!error chi2gof ([1,2,3,4], "nbins", 3, "ctrs", [2,3,4])
-%!error chi2gof ([1,2,3,4], "frequency", [2,3,2])
-%!error chi2gof ([1,2,3,4], "frequency", [2,3,2,-2])
-%!error chi2gof ([1,2,3,4], "frequency", [2,3,2,2], "nparams", i)
-%!error chi2gof ([1,2,3,4], "frequency", [2,3,2,2], "alpha", 1.3)
-%!error chi2gof ([1,2,3,4], "expected", [-3,2,2])
-%!error chi2gof ([1,2,3,4], "expected", [3,2,2], "nbins", 5)
-%!error chi2gof ([1,2,3,4], "cdf", @normcdff)
+%!error chi2gof ([1,2,3,4], 'nbins', 3, 'ctrs', [2,3,4])
+%!error chi2gof ([1,2,3,4], 'frequency', [2,3,2])
+%!error chi2gof ([1,2,3,4], 'frequency', [2,3,2,-2])
+%!error chi2gof ([1,2,3,4], 'frequency', [2,3,2,2], 'nparams', i)
+%!error chi2gof ([1,2,3,4], 'frequency', [2,3,2,2], 'alpha', 1.3)
+%!error chi2gof ([1,2,3,4], 'expected', [-3,2,2])
+%!error chi2gof ([1,2,3,4], 'expected', [3,2,2], 'nbins', 5)
+%!error chi2gof ([1,2,3,4], 'cdf', @normcdff)
 %!test
 %! x = [1 2 1 3 2 4 3 2 4 3 2 2];
 %! [h, p, stats] = chi2gof (x);

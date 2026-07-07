@@ -81,13 +81,13 @@ function cm = confusionchart (varargin)
 
   if (ishghandle (varargin{p_i}))
     ## parameter is a parent figure
-    handle_type = get (varargin{p_i}, "type");
-    if (strcmp (handle_type, "figure"))
+    handle_type = get (varargin{p_i}, 'type');
+    if (strcmp (handle_type, 'figure'))
       h = figure (varargin{p_i});
-      hax = axes ("parent", h);
-    elseif (strcmp (handle_type, "uipanel"))
+      hax = axes ('parent', h);
+    elseif (strcmp (handle_type, 'uipanel'))
       h = varargin{p_i};
-      hax = axes ("parent", varargin{p_i});
+      hax = axes ('parent', varargin{p_i});
     else
       ## MATLAB compatibility: on MATLAB are also available Tab objects,
       ## TiledChartLayout objects, GridLayout objects
@@ -96,7 +96,7 @@ function cm = confusionchart (varargin)
     p_i++;
   else
     h = figure ();
-    hax = axes ("parent", h);
+    hax = axes ('parent', h);
   endif
 
   if (ismatrix (varargin{p_i}) && rows (varargin{p_i}) == ...
@@ -162,29 +162,29 @@ endfunction
 %! ## Setting the chart properties
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
-%! confusionchart (Yt, Yp, "Title", ...
-%!   "Demonstration with summaries","Normalization",...
-%!   "absolute","ColumnSummary", "column-normalized","RowSummary",...
-%!   "row-normalized")
+%! confusionchart (Yt, Yp, 'Title', ...
+%!   'Demonstration with summaries','Normalization',...
+%!   'absolute','ColumnSummary', 'column-normalized','RowSummary',...
+%!   'row-normalized')
 
 ## example: confusion matrix and class labels
 %!demo
 %! close all
 %! ## Cellstr as inputs
-%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
-%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
+%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative'};
+%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative'};
 %! m = confusionmat (Yt, Yp);
-%! confusionchart (m, {"Positive", "Negative"});
+%! confusionchart (m, {'Positive', 'Negative'});
 %! hold off
 
 ## example: editing the properties of an existing ConfusionMatrixChart object
 %!demo
 %! close all
 %! ## Editing the object properties
-%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
-%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
+%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative'};
+%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative'};
 %! cm = confusionchart (Yt, Yp);
-%! cm.Title = "This is an example with a green diagonal";
+%! cm.Title = 'This is an example with a green diagonal';
 %! cm.DiagonalColor = [0.4660, 0.6740, 0.1880];
 %! hold off
 
@@ -193,8 +193,8 @@ endfunction
 %! close all
 %! ## Confusion chart in a uipanel
 %! h = uipanel ();
-%! Yt = {"Positive", "Positive", "Positive", "Negative", "Negative"};
-%! Yp = {"Positive", "Positive", "Negative", "Negative", "Negative"};
+%! Yt = {'Positive', 'Positive', 'Positive', 'Negative', 'Negative'};
+%! Yp = {'Positive', 'Positive', 'Negative', 'Negative', 'Negative'};
 %! cm = confusionchart (h, Yt, Yp);
 %! hold off
 
@@ -204,116 +204,116 @@ endfunction
 %! ## Sorting classes
 %! Yt = [8 5 6 8 5 3 1 6 4 2 5 3 1 4]';
 %! Yp = [8 5 6 8 5 2 3 4 4 5 5 7 2 6]';
-%! cm = confusionchart (Yt, Yp, "Title", ...
-%!   "Classes are sorted in ascending order");
-%! cm = confusionchart (Yt, Yp, "Title", ...
-%!   "Classes are sorted according to clusters");
-%! sortClasses (cm, "cluster");
+%! cm = confusionchart (Yt, Yp, 'Title', ...
+%!   'Classes are sorted in ascending order');
+%! cm = confusionchart (Yt, Yp, 'Title', ...
+%!   'Classes are sorted according to clusters');
+%! sortClasses (cm, 'cluster');
 
 
 ## Test input validation
 ## Get current figure visibility so it can be restored after tests
 %!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+%! visibility_setting = get (0, 'DefaultFigureVisible');
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ()", "Invalid call");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ()', 'Invalid call');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 1; 2 2; 3 3])", "invalid argument");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 1; 2 2; 3 3])', 'invalid argument');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'xxx', 1)", "invalid property");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''xxx'', 1)', 'invalid property');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'XLabel', 1)", "XLabel .* string");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''XLabel'', 1)', 'XLabel .* string');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'YLabel', [1 0])", ...
-%!       ".* YLabel .* string");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''YLabel'', [1 0])', ...
+%!       '.* YLabel .* string');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'Title', .5)", ".* Title .* string");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''Title'', .5)', '.* Title .* string');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'FontName', [])", ...
-%!       ".* FontName .* string");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''FontName'', [])', ...
+%!       '.* FontName .* string');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'FontSize', 'b')", ...
-%!       ".* FontSize .* numeric");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''FontSize'', ''b'')', ...
+%!       '.* FontSize .* numeric');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'DiagonalColor', 'h')", ...
-%!       ".* DiagonalColor .* color");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''DiagonalColor'', ''h'')', ...
+%!       '.* DiagonalColor .* color');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'OffDiagonalColor', [])", ...
-%!       ".* OffDiagonalColor .* color");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''OffDiagonalColor'', [])', ...
+%!       '.* OffDiagonalColor .* color');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'Normalization', '')", ...
-%!       ".* invalid .* Normalization");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''Normalization'', '''')', ...
+%!       '.* invalid .* Normalization');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'ColumnSummary', [])", ...
-%!       ".* invalid .* ColumnSummary");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''ColumnSummary'', [])', ...
+%!       '.* invalid .* ColumnSummary');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'RowSummary', 1)", ...
-%!       ".* invalid .* RowSummary");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''RowSummary'', 1)', ...
+%!       '.* invalid .* RowSummary');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'GridVisible', .1)", ...
-%!       ".* invalid .* GridVisible");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''GridVisible'', .1)', ...
+%!       '.* invalid .* GridVisible');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'HandleVisibility', .1)", ...
-%!       ".* invalid .* HandleVisibility");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''HandleVisibility'', .1)', ...
+%!       '.* invalid .* HandleVisibility');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'OuterPosition', .1)", ...
-%!       ".* invalid .* OuterPosition");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''OuterPosition'', .1)', ...
+%!       '.* invalid .* OuterPosition');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'Position', .1)", ...
-%!       ".* invalid .* Position");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''Position'', .1)', ...
+%!       '.* invalid .* Position');
+%! set (0, 'DefaultFigureVisible', visibility_setting);
 
 %!test
-%! set (0, "DefaultFigureVisible", "off");
-%! fail ("confusionchart ([1 2], [0 1], 'Units', .1)", ".* invalid .* Units");
-%! set (0, "DefaultFigureVisible", visibility_setting);
+%! set (0, 'DefaultFigureVisible', 'off');
+%! fail ('confusionchart ([1 2], [0 1], ''Units'', .1)', '.* invalid .* Units');
+%! set (0, 'DefaultFigureVisible', visibility_setting);

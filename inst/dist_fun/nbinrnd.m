@@ -115,10 +115,10 @@ function rnd = nbinrnd (r, ps, varargin)
   endif
 
   ## Check for class type
-  if (isa (r, "single") || isa (ps, "single"))
-    cls = "single";
+  if (isa (r, 'single') || isa (ps, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from negative binomial distribution

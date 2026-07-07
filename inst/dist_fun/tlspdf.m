@@ -55,11 +55,11 @@ function y = tlspdf (x, mu, sigma, nu)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") ||
-      isa (sigma, "single") || isa (nu, "single"))
-    cls = "single";
+  if (isa (x, 'single') || isa (mu, 'single') ||
+      isa (sigma, 'single') || isa (nu, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Force invalid SIGMA parameter to NaN
@@ -80,16 +80,16 @@ endfunction
 %! y2 = tlspdf (x, 0, 2, 2);
 %! y3 = tlspdf (x, 3, 2, 5);
 %! y4 = tlspdf (x, -1, 3, Inf);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-m')
 %! grid on
 %! xlim ([-8, 8])
 %! ylim ([0, 0.41])
-%! legend ({"mu = 0, sigma = 1, nu = 1", "mu = 0, sigma = 2, nu = 2", ...
-%!          "mu = 3, sigma = 2, nu = 5", 'mu = -1, sigma = 3, nu = \infty'}, ...
-%!         "location", "northwest")
-%! title ("Location-scale Student's T PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'mu = 0, sigma = 1, nu = 1', 'mu = 0, sigma = 2, nu = 2', ...
+%!          'mu = 3, sigma = 2, nu = 5', 'mu = -1, sigma = 3, nu = \infty'}, ...
+%!         'location', 'northwest')
+%! title ('Location-scale Student''s T PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!test

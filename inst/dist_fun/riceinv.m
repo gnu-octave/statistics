@@ -53,8 +53,8 @@ function x = riceinv (p, s, sigma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (s, "single") || isa (sigma, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (s, 'single') || isa (sigma, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -76,13 +76,13 @@ endfunction
 %! x3 = riceinv (p, 1, 1);
 %! x4 = riceinv (p, 2, 1);
 %! x5 = riceinv (p, 4, 1);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-m', p, x5, '-k')
 %! grid on
-%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
-%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "northwest")
-%! title ("Rician iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'s = 0, σ = 1', 's = 0.5, σ = 1', 's = 1, σ = 1', ...
+%!          's = 2, σ = 1', 's = 4, σ = 1'}, 'location', 'northwest')
+%! title ('Rician iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

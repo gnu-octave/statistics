@@ -52,7 +52,7 @@ function p = vmcdf (x, mu, k, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("vmcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -75,8 +75,8 @@ function p = vmcdf (x, mu, k, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (k, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (k, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -85,7 +85,7 @@ function p = vmcdf (x, mu, k, uflag)
   interval = linspace (-pi, pi, 1e5)'; # accurate to >10 significant digits
   f = exp (k .* cos (interval)) ./ (2 .* pi .* besseli (0, k));
   c = cumtrapz (interval, f);
-  p = diag (interp1 (interval, c, x - mu, "spline"))';
+  p = diag (interp1 (interval, c, x - mu, 'spline'))';
 
   ## Force Nan for negative K
   p(k < 0) = NaN;
@@ -104,14 +104,14 @@ endfunction
 %! p2 = vmcdf (x1, 0, 1);
 %! p3 = vmcdf (x1, 0, 2);
 %! p4 = vmcdf (x1, 0, 4);
-%! plot (x1, p1, "-r", x1, p2, "-g", x1, p3, "-b", x1, p4, "-c")
+%! plot (x1, p1, '-r', x1, p2, '-g', x1, p3, '-b', x1, p4, '-c')
 %! grid on
 %! xlim ([-pi, pi])
-%! legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
-%!          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
-%! title ("Von Mises CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0, k = 0.5', 'μ = 0, k = 1', ...
+%!          'μ = 0, k = 2', 'μ = 0, k = 4'}, 'location', 'northwest')
+%! title ('Von Mises CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, p0, p1
@@ -119,22 +119,22 @@ endfunction
 %! p0 = [0, 0.10975, 0.5, 0.89025, 1];
 %! p1 = [0, 0.03752, 0.5, 0.99622, 1];
 %!assert (vmcdf (x, 0, 1), p0, 1e-5)
-%!assert (vmcdf (x, 0, 1, "upper"), 1 - p0, 1e-5)
+%!assert (vmcdf (x, 0, 1, 'upper'), 1 - p0, 1e-5)
 %!assert (vmcdf (x, zeros (1,5), ones (1,5)), p0, 1e-5)
-%!assert (vmcdf (x, zeros (1,5), ones (1,5), "upper"), 1 - p0, 1e-5)
+%!assert (vmcdf (x, zeros (1,5), ones (1,5), 'upper'), 1 - p0, 1e-5)
 %!assert (vmcdf (x, 0, [1 2 3 4 5]), p1, 1e-5)
-%!assert (vmcdf (x, 0, [1 2 3 4 5], "upper"), 1 - p1, 1e-5)
+%!assert (vmcdf (x, 0, [1 2 3 4 5], 'upper'), 1 - p1, 1e-5)
 
 ## Test class of input preserved
-%!assert (isa (vmcdf (single (pi), 0, 1), "single"), true)
-%!assert (isa (vmcdf (pi, single (0), 1), "single"), true)
-%!assert (isa (vmcdf (pi, 0, single (1)), "single"), true)
+%!assert (isa (vmcdf (single (pi), 0, 1), 'single'), true)
+%!assert (isa (vmcdf (pi, single (0), 1), 'single'), true)
+%!assert (isa (vmcdf (pi, 0, single (1)), 'single'), true)
 
 ## Test input validation
 %!error<vmcdf: function called with too few input arguments.> vmcdf ()
 %!error<vmcdf: function called with too few input arguments.> vmcdf (1)
 %!error<vmcdf: function called with too few input arguments.> vmcdf (1, 2)
-%!error<vmcdf: invalid argument for upper tail.> vmcdf (1, 2, 3, "tail")
+%!error<vmcdf: invalid argument for upper tail.> vmcdf (1, 2, 3, 'tail')
 %!error<vmcdf: invalid argument for upper tail.> vmcdf (1, 2, 3, 4)
 %!error<vmcdf: X, MU, and K must be of common size or scalars.> ...
 %! vmcdf (ones (3), ones (2), ones (2))

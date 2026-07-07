@@ -53,13 +53,13 @@ function x = ncfinv (p, df1, df2, lambda)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (df1, "single") || ...
-      isa (df2, "single") || isa (lambda, "single"))
-    x = NaN (size (p), "single");
-    crit = sqrt (eps ("single"));
+  if (isa (p, 'single') || isa (df1, 'single') || ...
+      isa (df2, 'single') || isa (lambda, 'single'))
+    x = NaN (size (p), 'single');
+    crit = sqrt (eps ('single'));
   else
-    x = NaN (size (p), "double");
-    crit = sqrt (eps ("double"));
+    x = NaN (size (p), 'double');
+    crit = sqrt (eps ('double'));
   endif
 
   ## For lambda == 0, call finv
@@ -154,15 +154,15 @@ endfunction
 %! x2 = ncfinv (p, 2, 5, 2);
 %! x3 = ncfinv (p, 5, 10, 1);
 %! x4 = ncfinv (p, 10, 20, 10);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-k", p, x4, "-m")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-k', p, x4, '-m')
 %! grid on
 %! ylim ([0, 5])
-%! legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
-%!          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
-%!         "location", "northwest")
-%! title ("Noncentral F iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'df1 = 2, df2 = 5, λ = 1', 'df1 = 2, df2 = 5, λ = 2', ...
+%!          'df1 = 5, df2 = 10, λ = 1', 'df1 = 10, df2 = 20, λ = 10'}, ...
+%!         'location', 'northwest')
+%! title ('Noncentral F iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 %!demo
 %! ## Compare the noncentral F iCDF with LAMBDA = 10 to the F iCDF with the
@@ -171,13 +171,13 @@ endfunction
 %! p = 0.001:0.001:0.999;
 %! x1 = ncfinv (p, 5, 20, 10);
 %! x2 = finv (p, 5, 20);
-%! plot (p, x1, "-", p, x2, "-");
+%! plot (p, x1, '-', p, x2, '-');
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northwest")
-%! title ("Noncentral F vs F quantile functions")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'Noncentral F(5,20,10)', 'F(5,20)'}, 'location', 'northwest')
+%! title ('Noncentral F vs F quantile functions')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!test

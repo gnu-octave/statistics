@@ -79,7 +79,7 @@
 function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Check X for being a double precision vector
-  if (! isvector (x) || ! isa (x, "double"))
+  if (! isvector (x) || ! isa (x, 'double'))
     error ("evfit: X must be a double-precision vector.");
   endif
 
@@ -115,14 +115,14 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("evfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -195,7 +195,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     x_0 = (x - x_max) ./ x_range;
     ## Get a rough initial estimate for scale parameter
     if (uncensored_x_range > 0)
-      [F_y, y] = ecdf (x_0, "censoring", censor', "frequency", freq');
+      [F_y, y] = ecdf (x_0, 'censoring', censor', 'frequency', freq');
       pmid = (F_y(1:(end-1)) + F_y(2:end)) / 2;
       linefit = polyfit (log (- log (1 - pmid)), y(2:end), 1);
       initial_sigma_parm = linefit(1);
@@ -214,7 +214,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     while (evscale_lkeq (lower, x_0, freq, uncensored_weights) > 0)
       upper = lower;
       lower = 0.5 * upper;
-      if (lower <= realmin ("double"))
+      if (lower <= realmin ('double'))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
@@ -225,7 +225,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
     while (evscale_lkeq (upper, x_0, freq, uncensored_weights) < 0)
       lower = upper;
       upper = 2 * lower;
-      if (upper > realmax ("double"))
+      if (upper > realmax ('double'))
         error ("evfit: no solution for maximum likelihood estimates.");
       endif
     endwhile
@@ -298,20 +298,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different extreme value distributions
-%! rand ("seed", 1);    # for reproducibility
+%! rand ('seed', 1);    # for reproducibility
 %! r1 = evrnd (2, 5, 400, 1);
-%! rand ("seed", 12);    # for reproducibility
+%! rand ('seed', 12);    # for reproducibility
 %! r2 = evrnd (-5, 3, 400, 1);
-%! rand ("seed", 13);    # for reproducibility
+%! rand ('seed', 13);    # for reproducibility
 %! r3 = evrnd (14, 8, 400, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 25, 0.4);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 0.28])
 %! xlim ([-30, 30]);
 %! hold on
@@ -324,21 +324,21 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [min(r(:)):max(r(:))];
 %! y = evpdf (x, mu_sigmaA(1), mu_sigmaA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = evpdf (x, mu_sigmaB(1), mu_sigmaB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
-%! plot (x, y, "-^c");
-%! legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
-%!          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
-%!          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
+%! plot (x, y, '-^c');
+%! legend ({'Normalized HIST of sample 1 with μ=2 and σ=5', ...
+%!          'Normalized HIST of sample 2 with μ=-5 and σ=3', ...
+%!          'Normalized HIST of sample 3 with μ=14 and σ=8', ...
 %!          sprintf("PDF for sample 1 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaA(1), mu_sigmaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaB(1), mu_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaC(1), mu_sigmaC(2))})
-%! title ("Three population samples from different extreme value distributions")
+%! title ('Three population samples from different extreme value distributions')
 %! hold off
 
 ## Test output

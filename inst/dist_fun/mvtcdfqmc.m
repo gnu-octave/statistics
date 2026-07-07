@@ -54,7 +54,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   ## Add defaults
   TolFun = 1e-4;
   MaxFunEvals = 1e7;
-  Display = "off";
+  Display = 'off';
   ## Parse optional arguments (TolFun, MaxFunEvals, Display)
   if (nargin > 4)
     TolFun = varargin{1};
@@ -71,15 +71,15 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   endif
   if (nargin > 6)
     Display = varargin{3};
-    DispOptions = {"off", "final", "iter"};
+    DispOptions = {'off', 'final', 'iter'};
     if (sum (any (strcmpi (Display, DispOptions))) == 0)
       error ("mvtcdfqmc: invalid value for 'Display' argument.");
     endif
   endif
   ## Check if input is single or double class
-  is_type = "double";
-  if (isa (A, "single") || isa (B, "single") || isa (Rho, "single"))
-    is_type = "single";
+  is_type = 'double';
+  if (isa (A, 'single') || isa (B, 'single') || isa (Rho, 'single'))
+    is_type = 'single';
   endif
   ## Check for appropriate lower upper limits and NaN values in data
   if (! all (A < B))
@@ -157,12 +157,12 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
     ## Compute a conservative estimate of error
     err = 3.5 * sqrt (sigsq);
     ## Display output for every iteration
-    if (strcmpi (Display, "iter"))
+    if (strcmpi (Display, 'iter'))
       printf ("mvtcdfqmc: Probability estimate: %0.4f ",p);
       printf ("Error estimate: %0.4e Iterations: %d\n", err, FunEvals);
     endif
     if (err < TolFun)
-      if (strcmpi (Display, "final"))
+      if (strcmpi (Display, 'final'))
         printf ("mvtcdfqmc: Successfully converged!\n");
         printf ("Final probability estimate: %0.4f ",p);
         printf ("Final error estimate: %0.4e Iterations: %d\n", err, FunEvals);
@@ -207,7 +207,7 @@ function TBar = F_qrsvn (A, B, C, df, w)
   rA = norm_cdf (rho .* A(1));       # A is already scaled by diag(C)
   rB = norm_cdf (rho .* B(1)) - rA;  # B is already scaled by diag(C)
   T = rB;
-  Y = zeros (N, m, "like", T);
+  Y = zeros (N, m, 'like', T);
   for i = 2:m
     z = min (max (rA + rB .* w(:,i-1), eps / 2), 1 - eps / 2);
     Y(:,i-1) = norm_inv (z);

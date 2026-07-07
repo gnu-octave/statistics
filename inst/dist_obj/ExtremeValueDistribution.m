@@ -92,7 +92,7 @@ classdef ExtremeValueDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "ExtremeValueDistribution";
+    DistributionName = 'ExtremeValueDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} NumParameters
@@ -114,7 +114,7 @@ classdef ExtremeValueDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "sigma"};
+    ParameterNames = {'mu', 'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterDescription
@@ -126,12 +126,12 @@ classdef ExtremeValueDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Location", "Scale"};
+    ParameterDescription = {'Location', 'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "ev";
+    DistributionCode = 'ev';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -249,11 +249,11 @@ classdef ExtremeValueDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "extreme value distribution");
+      __disp__ (this, 'extreme value distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "extreme value distribution");
+      __disp__ (this, 'extreme value distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -304,9 +304,9 @@ classdef ExtremeValueDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -745,7 +745,7 @@ classdef ExtremeValueDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -767,7 +767,7 @@ classdef ExtremeValueDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -821,7 +821,7 @@ endfunction
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
 %! ExtremeValueDistribution(i, 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution("a", 1)
+%! ExtremeValueDistribution('a', 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
 %! ExtremeValueDistribution([1, 2], 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
@@ -835,7 +835,7 @@ endfunction
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
 %! ExtremeValueDistribution(1, i)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, "a")
+%! ExtremeValueDistribution(1, 'a')
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
 %! ExtremeValueDistribution(1, [1, 2])
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
@@ -843,71 +843,71 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (ExtremeValueDistribution, 2, "uper")
+%! cdf (ExtremeValueDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (ExtremeValueDistribution, 2, 3)
 
 ## 'paramci' method
 %!shared x
-%! rand ("seed", 1);
+%! rand ('seed', 1);
 %! x = evrnd (1, 1, [1000, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha")
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 0)
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 1)
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", "")
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", {0.05})
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (ExtremeValueDistribution.fit (x), ...
-%!          "parameter", "mu", "alpha", {0.05})
+%!          'parameter', 'mu', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (ExtremeValueDistribution.fit (x), ...
-%!          "parameter", {"mu", "sigma", "param"})
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "sigma", "param"})
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "parameter", "param")
+%! paramci (ExtremeValueDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "NAME", "value")
+%! paramci (ExtremeValueDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (ExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "mu", "NAME", "value")
+%! paramci (ExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'mu', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (ExtremeValueDistribution, "Parent")
+%! plot (ExtremeValueDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (ExtremeValueDistribution, "PlotType", 12)
+%! plot (ExtremeValueDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (ExtremeValueDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (ExtremeValueDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (ExtremeValueDistribution, "PlotType", "pdfcdf")
+%! plot (ExtremeValueDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExtremeValueDistribution, "Discrete", "pdfcdf")
+%! plot (ExtremeValueDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExtremeValueDistribution, "Discrete", [1, 0])
+%! plot (ExtremeValueDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (ExtremeValueDistribution, "Discrete", {true})
+%! plot (ExtremeValueDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (ExtremeValueDistribution, "Parent", 12)
+%! plot (ExtremeValueDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (ExtremeValueDistribution, "Parent", "hax")
+%! plot (ExtremeValueDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (ExtremeValueDistribution, "invalidNAME", "pdf")
+%! plot (ExtremeValueDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (ExtremeValueDistribution, "PlotType", "probability")
+%! plot (ExtremeValueDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -921,23 +921,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (ExtremeValueDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display")
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display", 1)
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display", {1})
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, "NAME", "on")
+%! proflik (ExtremeValueDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (ExtremeValueDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (ExtremeValueDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (ExtremeValueDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

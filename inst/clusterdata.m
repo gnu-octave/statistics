@@ -42,40 +42,40 @@ function T = clusterdata (X, varargin)
     error ("clusterdata: function called with too few input arguments.");
   endif
 
-  linkage_criterion = "single";
-  distance_method = "euclidean";
-  savememory = "off";
+  linkage_criterion = 'single';
+  distance_method = 'euclidean';
+  savememory = 'off';
   clustering_method = [];
-  criterion = "inconsistent";
+  criterion = 'inconsistent';
   D = 2;
 
   if (isnumeric (varargin{1}))              # clusterdata (X, cutoff)
     C = varargin{1};
     if (fix (C) == C && (C >= 2))
-      clustering_method = "MaxClust";
+      clustering_method = 'MaxClust';
     else
-      clustering_method = "Cutoff";
+      clustering_method = 'Cutoff';
     endif
 
   else                                      # clusterdata (Name, Value)
     pair_index = 1;
     while (pair_index < (nargin - 1))
       switch (lower (varargin{pair_index}))
-        case "criterion"
+        case 'criterion'
           criterion = varargin{pair_index + 1};
-        case "cutoff"
-          clustering_method = "Cutoff";
+        case 'cutoff'
+          clustering_method = 'Cutoff';
           C = varargin{pair_index + 1};
-        case "depth"
+        case 'depth'
           D = varargin{pair_index + 1};
-        case "distance"
+        case 'distance'
           distance_method = varargin{pair_index + 1};
-        case "linkage"
+        case 'linkage'
           linkage_criterion = varargin{pair_index + 1};
-        case "maxclust"
-          clustering_method = "MaxClust";
+        case 'maxclust'
+          clustering_method = 'MaxClust';
           C = varargin{pair_index + 1};
-        case "savememory"
+        case 'savememory'
           savememory = varargin{pair_index + 1};
         otherwise
           error ("clusterdata: unknown property %s", varargin{pair_index});
@@ -90,29 +90,29 @@ function T = clusterdata (X, varargin)
   endif
 
   ## main body
-  Z = linkage (X, linkage_criterion, distance_method, "savememory");
-  if (strcmp (lower (clustering_method), "cutoff"))
-    T = cluster (Z, clustering_method, C, "Criterion", criterion, "Depth", D);
+  Z = linkage (X, linkage_criterion, distance_method, 'savememory');
+  if (strcmp (lower (clustering_method), 'cutoff'))
+    T = cluster (Z, clustering_method, C, 'Criterion', criterion, 'Depth', D);
   else
     T = cluster (Z, clustering_method, C);
   endif
 endfunction
 
 %!demo
-%! randn ("seed", 1)  # for reproducibility
+%! randn ('seed', 1)  # for reproducibility
 %! r1 = randn (10, 2) * 0.25 + 1;
-%! randn ("seed", 5)  # for reproducibility
+%! randn ('seed', 5)  # for reproducibility
 %! r2 = randn (20, 2) * 0.5 - 1;
 %! X = [r1; r2];
 %!
-%! wnl = warning ("off", "Octave:linkage_savemem", "local");
-%! T = clusterdata (X, "linkage", "ward", "MaxClust", 2);
-%! scatter (X(:,1), X(:,2), 36, T, "filled");
+%! wnl = warning ("off", 'Octave:linkage_savemem', 'local');
+%! T = clusterdata (X, 'linkage', 'ward', 'MaxClust', 2);
+%! scatter (X(:,1), X(:,2), 36, T, 'filled');
 
 ## Test input validation
 %!error<clusterdata: function called with too few input arguments.> ...
 %! clusterdata ()
 %!error<clusterdata: function called with too few input arguments.> ...
 %! clusterdata (1)
-%!error <unknown property .*> clusterdata ([1 1], "Bogus", 1)
-%!error <specify .* 'MaxClust' or 'Cutoff' .*> clusterdata ([1 1], "Depth", 1)
+%!error <unknown property .*> clusterdata ([1 1], 'Bogus', 1)
+%!error <specify .* 'MaxClust' or 'Cutoff' .*> clusterdata ([1 1], 'Depth', 1)

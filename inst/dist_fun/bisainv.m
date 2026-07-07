@@ -57,8 +57,8 @@ function x = bisainv (p, beta, gamma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (beta, "single") || isa (gamma, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (beta, 'single') || isa (gamma, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -98,14 +98,14 @@ endfunction
 %! x3 = bisainv (p, 1, 2);
 %! x4 = bisainv (p, 1, 5);
 %! x5 = bisainv (p, 1, 10);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
-%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "northwest")
-%! title ("Birnbaum-Saunders iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'β = 1, γ = 0.5', 'β = 1, γ = 1', 'β = 1, γ = 2', ...
+%!          'β = 1, γ = 5', 'β = 1, γ = 10'}, 'location', 'northwest')
+%! title ('Birnbaum-Saunders iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 %!demo
 %! ## Plot various iCDFs from the Birnbaum-Saunders distribution
@@ -115,14 +115,14 @@ endfunction
 %! x3 = bisainv (p, 1, 0.5);
 %! x4 = bisainv (p, 3, 0.5);
 %! x5 = bisainv (p, 5, 0.5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
-%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "northwest")
-%! title ("Birnbaum-Saunders iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'β = 1, γ = 0.3', 'β = 2, γ = 0.3', 'β = 1, γ = 0.5', ...
+%!          'β = 3, γ = 0.5', 'β = 5, γ = 0.5'}, 'location', 'northwest')
+%! title ('Birnbaum-Saunders iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, y, f
@@ -138,9 +138,9 @@ endfunction
 %!assert (bisainv ([p, NaN], 1, 1), [y, NaN])
 
 ## Test class of input preserved
-%!assert (bisainv (single ([p, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
-%!assert (bisainv ([p, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
-%!assert (bisainv ([p, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
+%!assert (bisainv (single ([p, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (bisainv ([p, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert (bisainv ([p, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisainv: function called with too few input arguments.> bisainv ()

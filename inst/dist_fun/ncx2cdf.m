@@ -47,7 +47,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("ncx2cdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -68,10 +68,10 @@ function p = ncx2cdf (x, df, lambda, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df, "single") || isa (lambda, "single"))
-    p = zeros (size (x), "single");
-    c_eps = eps ("single");
-    c_min = realmin ("single");
+  if (isa (x, 'single') || isa (df, 'single') || isa (lambda, 'single'))
+    p = zeros (size (x), 'single');
+    c_eps = eps ('single');
+    c_min = realmin ('single');
   else
     p = zeros (size (x));
     c_eps = eps;
@@ -103,7 +103,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
   ## Central chi2cdf
   k = df >= 0 & x > 0 & lambda == 0 & isfinite (x) & ! is_nan;
   if (uflag)
-    p(k) = chi2cdf (x(k), df(k), "upper");
+    p(k) = chi2cdf (x(k), df(k), 'upper');
   else
     p(k) = chi2cdf (x(k), df(k));
   endif
@@ -150,7 +150,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
   endif
   pois = poisspdf (K, lambda);
   if (uflag)
-    full = pois .* gammainc (x, df + K, "upper");
+    full = pois .* gammainc (x, df + K, 'upper');
   else
     full = pois .* gammainc (x, df + K);
   endif
@@ -169,7 +169,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
     k(keep) = k(keep) - 1;
     if (uflag)
       fullterm(keep) = poisterm(keep) .* ...
-                       gammainc (x(keep), df(keep) + k(keep), "upper");
+                       gammainc (x(keep), df(keep) + k(keep), 'upper');
     else
       fullterm(keep) = poisterm(keep) .* ...
                        gammainc (x(keep), df(keep) + k(keep));
@@ -188,7 +188,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
     poisterm(keep) = poisterm(keep) .* lambda(keep) ./ k(keep);
     if (uflag)
       fullterm(keep) = poisterm(keep) .* ...
-                       gammainc (x(keep), df(keep) + k(keep), "upper");
+                       gammainc (x(keep), df(keep) + k(keep), 'upper');
     else
       fullterm(keep) = poisterm(keep) .* ...
                        gammainc (x(keep), df(keep) + k(keep));
@@ -219,8 +219,8 @@ function r = gammaincratio (x, s)
     idx = find (! small);
     x = x(idx);
     s = s(idx);
-    r(idx) = gammainc (x, s, "scaledlower") ./ ...
-             gammainc (x, s - 1, "scaledlower") .* x ./ s;
+    r(idx) = gammainc (x, s, 'scaledlower') ./ ...
+             gammainc (x, s - 1, 'scaledlower') .* x ./ s;
   endif
 endfunction
 
@@ -233,16 +233,16 @@ endfunction
 %! p4 = ncx2cdf (x, 4, 1);
 %! p5 = ncx2cdf (x, 4, 2);
 %! p6 = ncx2cdf (x, 4, 3);
-%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", ...
-%!       x, p4, "-m", x, p5, "-c", x, p6, "-y")
+%! plot (x, p1, '-r', x, p2, '-g', x, p3, '-k', ...
+%!       x, p4, '-m', x, p5, '-c', x, p6, '-y')
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
-%!          "df = 2, λ = 3", "df = 4, λ = 1", ...
-%!          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "southeast")
-%! title ("Noncentral chi-squared CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'df = 2, λ = 1', 'df = 2, λ = 2', ...
+%!          'df = 2, λ = 3', 'df = 4, λ = 1', ...
+%!          'df = 4, λ = 2', 'df = 4, λ = 3'}, 'location', 'southeast')
+%! title ('Noncentral chi-squared CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 %!demo
 %! ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
@@ -251,13 +251,13 @@ endfunction
 %! x = 0:0.1:10;
 %! p1 = ncx2cdf (x, 4, 2);
 %! p2 = chi2cdf (x, 4);
-%! plot (x, p1, "-", x, p2, "-")
+%! plot (x, p1, '-', x, p2, '-')
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
-%! title ("Noncentral chi-squared vs chi-squared CDFs")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'Noncentral χ^2(4,2)', 'χ^2(4)'}, 'location', 'northwest')
+%! title ('Noncentral chi-squared vs chi-squared CDFs')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -274,17 +274,17 @@ endfunction
 %! p = ncx2cdf (2, 3, 2);
 %! assert (p, 0.2207330870741212, 1e-14);
 %!test
-%! p = ncx2cdf (2, 3, 2, "upper");
+%! p = ncx2cdf (2, 3, 2, 'upper');
 %! assert (p, 0.7792669129258789, 1e-14);
 %!test
-%! p = ncx2cdf ([3, 6], 3, 2, "upper");
+%! p = ncx2cdf ([3, 6], 3, 2, 'upper');
 %! assert (p, [0.6423318186400054, 0.3152299878943012], 1e-14);
 
 ## Test input validation
 %!error<ncx2cdf: function called with too few input arguments.> ncx2cdf ()
 %!error<ncx2cdf: function called with too few input arguments.> ncx2cdf (1)
 %!error<ncx2cdf: function called with too few input arguments.> ncx2cdf (1, 2)
-%!error<ncx2cdf: invalid argument for upper tail.> ncx2cdf (1, 2, 3, "tail")
+%!error<ncx2cdf: invalid argument for upper tail.> ncx2cdf (1, 2, 3, 'tail')
 %!error<ncx2cdf: invalid argument for upper tail.> ncx2cdf (1, 2, 3, 4)
 %!error<ncx2cdf: X, DF, and LAMBDA must be of common size or scalars.> ...
 %! ncx2cdf (ones (3), ones (2), ones (2))

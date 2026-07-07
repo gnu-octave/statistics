@@ -85,13 +85,13 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
 
   ## Set default arguments
   alpha = 0.05;
-  tail = "both";
+  tail = 'both';
 
   ## Check additional options
   i = 1;
   while (i <= length (varargin))
     switch lower (varargin{i})
-      case "alpha"
+      case 'alpha'
         i = i + 1;
         alpha = varargin{i};
         ## Check for valid alpha
@@ -99,10 +99,10 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
                     alpha <= 0 || alpha >= 1)
           error ("regression_ttest: invalid value for alpha.");
         endif
-      case "tail"
+      case 'tail'
         i = i + 1;
         tail = varargin{i};
-        if (! any (strcmpi (tail, {"both", "left", "right"})))
+        if (! any (strcmpi (tail, {'both', 'left', 'right'})))
           error ("regression_ttest: invalid value for tail.");
         endif
       otherwise
@@ -128,15 +128,15 @@ function [h, pval, ci, stats] = regression_ttest (y, x, varargin)
   ## Based on the "tail" argument determine the P-value, the critical values,
   ## and the confidence interval.
   switch lower (tail)
-    case "both"
+    case 'both'
       pval = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
       tcrit = - tinv (alpha / 2, stats.df);
       ci = [stats.beta1 - tcrit * term; stats.beta1 + tcrit * term];
-    case "left"
+    case 'left'
       pval = tcdf (stats.tstat, stats.df);
       tcrit = - tinv (alpha, stats.df);
       ci = [-inf; stats.beta1 + tcrit * term];
-    case "right"
+    case 'right'
       pval = 1 - tcdf (stats.tstat, stats.df);
       tcrit = - tinv (alpha, stats.df);
       ci = [stats.beta1 - tcrit * term; inf];
@@ -166,16 +166,16 @@ endfunction
 %!error<regression_ttest: Y and X must be vectors of equal length.> ...
 %! regression_ttest ([1 2 3]', [3 4 4 5]');
 %!error<regression_ttest: invalid value for alpha.> ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 0);
+%! regression_ttest ([1 2 3]', [2 3 4]', 'alpha', 0);
 %!error<regression_ttest: invalid value for alpha.> ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 1.2);
+%! regression_ttest ([1 2 3]', [2 3 4]', 'alpha', 1.2);
 %!error<regression_ttest: invalid value for alpha.> ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", [.02 .1]);
+%! regression_ttest ([1 2 3]', [2 3 4]', 'alpha', [.02 .1]);
 %!error<regression_ttest: invalid value for alpha.> ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", "a");
+%! regression_ttest ([1 2 3]', [2 3 4]', 'alpha', 'a');
 %!error<regression_ttest: invalid Name argument.> ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "some", 0.05);
+%! regression_ttest ([1 2 3]', [2 3 4]', 'some', 0.05);
 %!error<regression_ttest: invalid value for tail.>  ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "tail", "val");
+%! regression_ttest ([1 2 3]', [2 3 4]', 'tail', 'val');
 %!error<regression_ttest: invalid value for tail.>  ...
-%! regression_ttest ([1 2 3]', [2 3 4]', "alpha", 0.01, "tail", "val");
+%! regression_ttest ([1 2 3]', [2 3 4]', 'alpha', 0.01, 'tail', 'val');

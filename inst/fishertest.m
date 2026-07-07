@@ -96,7 +96,7 @@ function [h, p, stats] = fishertest (x, varargin)
 
   ## Add defaults and parse optional arguments
   alpha = 0.05;
-  tail = "both";
+  tail = 'both';
   if (nargin > 1)
     params = numel (varargin);
     if ((params / 2) != fix (params / 2))
@@ -106,15 +106,15 @@ function [h, p, stats] = fishertest (x, varargin)
       name = varargin{idx};
       value = varargin{idx+1};
       switch (lower (name))
-        case "alpha"
+        case 'alpha'
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
             error ("fishertest: invalid value for alpha.");
           endif
-        case "tail"
+        case 'tail'
           tail = value;
-          if (! any (strcmpi (tail, {"both", "left", "right"})))
+          if (! any (strcmpi (tail, {'both', 'left', 'right'})))
             error ("fishertest: invalid value for tail.");
           endif
         otherwise
@@ -137,7 +137,7 @@ function [h, p, stats] = fishertest (x, varargin)
 
     ## Use try_catch block to avoid memory overflow for large numbers
     try
-      if (strcmp (tail, "left"))
+      if (strcmp (tail, 'left'))
           p = hygecdf (x(1,1), sz, r1, c1);
       else
           if (min (r1, c1) <=  min (r2, c2))
@@ -148,11 +148,11 @@ function [h, p, stats] = fishertest (x, varargin)
               x11 = r1 - x12;
           endif
           switch tail
-            case "both"
+            case 'both'
               p1 = hygepdf (x11, sz, r1, c1);
               p2 = hygepdf (x(1,1), sz, r1, c1);
               p = sum (p1(p1 < p2 + 10 * eps (p2)));
-            case "right"
+            case 'right'
               xr = x11(x11 >= x(1,1));
               p = sum(hygepdf(xr,sz,r1,c1));
           endswitch
@@ -175,7 +175,7 @@ function [h, p, stats] = fishertest (x, varargin)
           UB = OR * exp (norminv (1 - alpha / 2) * SE);
           CI = [LB, UB];
       endif
-      stats = struct ("OddsRatio", OR, "ConfidenceInterval", CI);
+      stats = struct ('OddsRatio', OR, 'ConfidenceInterval', CI);
     endif
 
   else
@@ -192,7 +192,7 @@ endfunction
 
 ## Test output against MATLAB R2018
 %!assert (fishertest ([3, 4; 5, 7]), false);
-%!assert (isa (fishertest ([3, 4; 5, 7]), "logical"), true);
+%!assert (isa (fishertest ([3, 4; 5, 7]), 'logical'), true);
 %!test
 %! [h, pval, stats] = fishertest ([3, 4; 5, 7]);
 %! assert (pval, 1, 1e-14);
@@ -224,14 +224,14 @@ endfunction
 %!error<fishertest: cannot handle large entries.> ...
 %! fishertest (ones (2) * 1e8);
 %!error<fishertest: invalid value for alpha.> ...
-%! fishertest ([1, 2; 3, 4], "alpha", 0);
+%! fishertest ([1, 2; 3, 4], 'alpha', 0);
 %!error<fishertest: invalid value for alpha.> ...
-%! fishertest ([1, 2; 3, 4], "alpha", 1.2);
+%! fishertest ([1, 2; 3, 4], 'alpha', 1.2);
 %!error<fishertest: invalid value for alpha.> ...
-%! fishertest ([1, 2; 3, 4], "alpha", "val");
+%! fishertest ([1, 2; 3, 4], 'alpha', 'val');
 %!error<fishertest: invalid value for tail.>  ...
-%! fishertest ([1, 2; 3, 4], "tail", "val");
+%! fishertest ([1, 2; 3, 4], 'tail', 'val');
 %!error<fishertest: invalid value for tail.>  ...
-%! fishertest ([1, 2; 3, 4], "alpha", 0.01, "tail", "val");
+%! fishertest ([1, 2; 3, 4], 'alpha', 0.01, 'tail', 'val');
 %!error<fishertest: invalid name for optional arguments.> ...
-%! fishertest ([1, 2; 3, 4], "alpha", 0.01, "badoption", 3);
+%! fishertest ([1, 2; 3, 4], 'alpha', 0.01, 'badoption', 3);

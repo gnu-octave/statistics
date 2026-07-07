@@ -100,10 +100,10 @@ function r = gumbelrnd (mu, beta, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (beta, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (beta, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Return NaNs for out of range values of BETA

@@ -122,12 +122,12 @@ function [nlogL, avar] = betalike (params, x, freq)
 
   ## Include log likelihood for zeros
   if (num0 > 0)
-    nlogL = nlogL - num0 * log (betainc (x_lo, a, b, "lower"));
+    nlogL = nlogL - num0 * log (betainc (x_lo, a, b, 'lower'));
   endif
 
   ## Include log likelihood for ones
   if (num1 > 0)
-    nlogL = nlogL - num1 * log (betainc (x_hi, a, b, "upper"));
+    nlogL = nlogL - num1 * log (betainc (x_hi, a, b, 'upper'));
   endif
 
   ## Compute the asymptotic covariance
@@ -150,13 +150,13 @@ function [nlogL, avar] = betalike (params, x, freq)
       ad = 2 * a *dd;
       bd = 2 * b *dd;
       if (num0 > 0)
-        da = diff (log (betainc (x_lo, aa, b, "lower"))) / ad;
-        db = diff (log (betainc (x_lo, a, bb, "lower"))) / bd;
+        da = diff (log (betainc (x_lo, aa, b, 'lower'))) / ad;
+        db = diff (log (betainc (x_lo, a, bb, 'lower'))) / bd;
         J = [J; repmat([da, db], num0, 1)];
       endif
       if num1 > 0
-        da = diff (log (betainc (x_hi, aa, b, "upper"))) / ad;
-        db = diff (log (betainc (x_hi, a, bb, "upper"))) / bd;
+        da = diff (log (betainc (x_hi, aa, b, 'upper'))) / ad;
+        db = diff (log (betainc (x_hi, a, bb, 'upper'))) / bd;
         J = [J; repmat([da, db], num1, 1)];
       endif
     endif

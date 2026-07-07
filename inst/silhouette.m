@@ -75,7 +75,7 @@
 ## @seealso{dendrogram, evalclusters, kmeans, linkage, pdist}
 ## @end deftypefn
 
-function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
+function [si, h] = silhouette (X, clust, metric = 'squaredeuclidean', varargin)
   ## check the input parameters
   if (nargin < 2)
     print_usage ();
@@ -87,7 +87,7 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
   DisplayPlot = true;
   if (numel (varargin) > 0)
     if (ischar (varargin{end}))
-      if (strcmp (varargin{end}, "DoNotPlot"))
+      if (strcmp (varargin{end}, 'DoNotPlot'))
         DisplayPlot = false;
         varargin{end} = [];
       endif
@@ -108,11 +108,11 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
   if (ischar (metric))
     metric = lower (metric);
     switch (metric)
-      case "sqeuclidean"
-        metric = "squaredeuclidean";
-      case {"euclidean", "squaredeuclidean", "seuclidean", "mahalanobis", ...
-            "cityblock", "minkowski", "chebychev", "cosine", "correlation", ...
-            "hamming", "jaccard", "spearman"}
+      case 'sqeuclidean'
+        metric = 'squaredeuclidean';
+      case {'euclidean', 'squaredeuclidean', 'seuclidean', 'mahalanobis', ...
+            'cityblock', 'minkowski', 'chebychev', 'cosine', 'correlation', ...
+            'hamming', 'jaccard', 'spearman'}
         ;
       otherwise
         error ("silhouette: invalid metric '%s'", metric);
@@ -185,13 +185,13 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
       ## Compute distances from point iii to all other points
       diffs = X - X(iii, :);
       switch (metric)
-        case "squaredeuclidean"
+        case 'squaredeuclidean'
           dists = sum (diffs .^ 2, 2);
-        case "euclidean"
+        case 'euclidean'
           dists = sqrt (sum (diffs .^ 2, 2));
-        case "cityblock"
+        case 'cityblock'
           dists = sum (abs (diffs), 2);
-        case "chebychev"
+        case 'chebychev'
           dists = max (abs (diffs), [], 2);
         otherwise
           ## Fall back to pdist2-style computation for other metrics
@@ -234,17 +234,17 @@ function [si, h] = silhouette (X, clust, metric = "squaredeuclidean", varargin)
     for i = 1 : m
       vBar = si(find (clust == clusterIDs(i)));
       vBarsc(i) = length (Bars) + (length (vBar) / 2);
-      Bars = [Bars; (sort (vBar, "descend")); vPadding];
+      Bars = [Bars; (sort (vBar, 'descend')); vPadding];
     endfor
 
     figure();
-    h = barh (Bars, "hist", "facecolor", [0 0.4471 0.7412]);
+    h = barh (Bars, 'hist', 'facecolor', [0 0.4471 0.7412]);
 
-    xlabel ("Silhouette Value");
-    ylabel ("Cluster");
-    set (gca, "ytick", vBarsc, "yticklabel", clusterIDs);
+    xlabel ('Silhouette Value');
+    ylabel ('Cluster');
+    set (gca, 'ytick', vBarsc, 'yticklabel', clusterIDs);
     ylim ([0 (length (Bars))]);
-    axis ("ij");
+    axis ('ij');
   endif
 endfunction
 
@@ -252,14 +252,14 @@ endfunction
 %!demo
 %! load fisheriris;
 %! X = meas(:,3:4);
-%! cidcs = kmeans (X, 3, "Replicates", 5);
+%! cidcs = kmeans (X, 3, 'Replicates', 5);
 %! silhouette (X, cidcs);
 %! y_labels(cidcs([1 51 101])) = unique (species);
-%! set (gca, "yticklabel", y_labels);
-%! title ("Fisher's iris data");
+%! set (gca, 'yticklabel', y_labels);
+%! title ('Fisher''s iris data');
 
 ## Test input validation
 %!error silhouette ();
 %!error silhouette ([1 2; 1 1]);
 %!error <X .* doesn't match .* clust> silhouette ([1 2; 1 1], [1 2 3]');
-%!error <invalid metric> silhouette ([1 2; 1 1], [1 2]', "xxx");
+%!error <invalid metric> silhouette ([1 2; 1 1], [1 2]', 'xxx');

@@ -107,7 +107,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
 
   ## Add defaults and parse optional arguments
   scaling = true;
-  reflection = "best";
+  reflection = 'best';
   if (nargin > 2)
     params = numel (varargin);
     if ((params / 2) != fix (params / 2))
@@ -117,14 +117,14 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
       name = varargin{idx};
       value = varargin{idx+1};
       switch (lower (name))
-        case "scaling"
+        case 'scaling'
           scaling = value;
           if (! (isscalar (scaling) && islogical (scaling)))
             error ("procrustes: invalid value for scaling.");
           endif
-        case "reflection"
+        case 'reflection'
           reflection = value;
-          if (! (strcmpi (reflection, "best") || islogical (reflection)))
+          if (! (strcmpi (reflection, 'best') || islogical (reflection)))
             error ("procrustes: invalid value for reflection.");
           endif
         otherwise
@@ -164,7 +164,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
     [U, S, V] = svd (A);
     T = V * U';
     ## Handle reflection only if 'true' or 'false' was given
-    if (! strcmpi (reflection, "best"))
+    if (! strcmpi (reflection, 'best'))
       is_reflection = (det(T) < 0);
       ## Force a reflection if data and reflection option disagree
       if (reflection != is_reflection)
@@ -196,7 +196,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
         T = T(1:Yd,:);
       endif
       c = Xmu - b * Ymu * T;
-      transform = struct ("T", T, "b", b, "c", repmat (c, Xp, 1));
+      transform = struct ('T', T, 'b', b, 'c', repmat (c, Xp, 1));
     endif
 
   ## Special cases
@@ -204,19 +204,19 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
     d = 0;
     Z = repmat (Xmu, Xp, 1);
     T = eye (Yd, Xd);
-    transform = struct ("T", T, "b", 0, "c", Z);
+    transform = struct ('T', T, 'b', 0, 'c', Z);
   else            # Identical points in Y
     d = 1;
     Z = repmat (Xmu, Xp, 1);
     T = eye (Yd, Xd);
-    transform = struct ("T", T, "b", 0, "c", Z);
+    transform = struct ('T', T, 'b', 0, 'c', Z);
   endif
 endfunction
 
 %!demo
 %! ## Create some random points in two dimensions
 %! n = 10;
-%! randn ("seed", 1);
+%! randn ('seed', 1);
 %! X = normrnd (0, 1, [n, 2]);
 %!
 %! ## Those same points, rotated, scaled, translated, plus some noise
@@ -225,22 +225,22 @@ endfunction
 %!
 %! ## Conform Y to X, plot original X and Y, and transformed Y
 %! [d, Z] = procrustes (X, Y);
-%! plot (X(:,1), X(:,2), "rx", Y(:,1), Y(:,2), "b.", Z(:,1), Z(:,2), "bx");
+%! plot (X(:,1), X(:,2), 'rx', Y(:,1), Y(:,2), 'b.', Z(:,1), Z(:,2), 'bx');
 
 %!demo
 %! ## Find Procrustes distance and plot superimposed shape
 %!
 %! X = [40 88; 51 88; 35 78; 36 75; 39 72; 44 71; 48 71; 52 74; 55 77];
 %! Y = [36 43; 48 42; 31 26; 33 28; 37 30; 40 31; 45 30; 48 28; 51 24];
-%! plot (X(:,1),X(:,2),"x");
+%! plot (X(:,1),X(:,2),'x');
 %! hold on
-%! plot (Y(:,1),Y(:,2),"o");
+%! plot (Y(:,1),Y(:,2),'o');
 %! xlim ([0 100]);
 %! ylim ([0 100]);
-%! legend ("Target shape (X)", "Source shape (Y)");
+%! legend ('Target shape (X)', 'Source shape (Y)');
 %! [d, Z] = procrustes (X, Y)
-%! plot (Z(:,1), Z(:,2), "s");
-%! legend ("Target shape (X)", "Source shape (Y)", "Transformed shape (Z)");
+%! plot (Z(:,1), Z(:,2), 's');
+%! legend ('Target shape (X)', 'Source shape (Y)', 'Transformed shape (Z)');
 %! hold off
 
 %!demo
@@ -256,14 +256,14 @@ endfunction
 %!         linspace(Y(3,1),Y(1,1),10)', linspace(Y(3,2),Y(1,2),10)'];
 %!
 %! ## Plot both shapes, including the larger set of points for the source shape
-%! plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], "bx-");
+%! plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], 'bx-');
 %! hold on
-%! plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], "ro-", "MarkerFaceColor", "r");
-%! plot (Y_mp(:,1), Y_mp(:,2), "ro");
+%! plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], 'ro-', 'MarkerFaceColor', 'r');
+%! plot (Y_mp(:,1), Y_mp(:,2), 'ro');
 %! xlim ([-1 10]);
 %! ylim ([-1 6]);
-%! legend ("Target shape (X)", "Source shape (Y)", ...
-%!         "More points on Y", "Location", "northwest");
+%! legend ('Target shape (X)', 'Source shape (Y)', ...
+%!         'More points on Y', 'Location', 'northwest');
 %! hold off
 %!
 %! ## Obtain the Procrustes transformation
@@ -273,17 +273,17 @@ endfunction
 %! ## on the source shape onto the target shape, and then visualize the results.
 %! Z_mp = transform.b * Y_mp * transform.T + transform.c(1,:);
 %! figure
-%! plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], "bx-");
+%! plot ([X(:,1); X(1,1)], [X(:,2); X(1,2)], 'bx-');
 %! hold on
-%! plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], "ro-", "MarkerFaceColor", "r");
-%! plot (Y_mp(:,1), Y_mp(:,2), "ro");
+%! plot ([Y(:,1); Y(1,1)], [Y(:,2); Y(1,2)], 'ro-', 'MarkerFaceColor', 'r');
+%! plot (Y_mp(:,1), Y_mp(:,2), 'ro');
 %! xlim ([-1 10]);
 %! ylim ([-1 6]);
-%! plot ([Z(:,1); Z(1,1)],[Z(:,2); Z(1,2)],"ks-","MarkerFaceColor","k");
-%! plot (Z_mp(:,1),Z_mp(:,2),"ks");
-%! legend ("Target shape (X)", "Source shape (Y)", ...
-%!         "More points on Y", "Transformed source shape (Z)", ...
-%!         "Transformed additional points", "Location", "northwest");
+%! plot ([Z(:,1); Z(1,1)],[Z(:,2); Z(1,2)],'ks-','MarkerFaceColor','k');
+%! plot (Z_mp(:,1),Z_mp(:,2),'ks');
+%! legend ('Target shape (X)', 'Source shape (Y)', ...
+%!         'More points on Y', 'Transformed source shape (Z)', ...
+%!         'Transformed additional points', 'Location', 'northwest');
 %! hold off
 
 %!demo
@@ -293,16 +293,16 @@ endfunction
 %!      28, 72; 25, 69; 22, 64; 23, 59; 26, 57; 30, 57];
 %! S = [48, 83; 48, 77; 48, 70; 48, 65; 49, 59; 49, 56; 50, 66; ...
 %!      52, 66; 56, 65; 58, 61; 57, 57; 54, 56; 51, 55];
-%! plot (T(:,1), T(:,2), "x-");
+%! plot (T(:,1), T(:,2), 'x-');
 %! hold on
-%! plot (S(:,1), S(:,2), "o-");
-%! legend ("Target shape (d)", "Source shape (b)");
+%! plot (S(:,1), S(:,2), 'o-');
+%! legend ('Target shape (d)', 'Source shape (b)');
 %! hold off
-%! d_false = procrustes (T, S, "reflection", false);
+%! d_false = procrustes (T, S, 'reflection', false);
 %! printf ("Procrustes distance without reflection: %f\n", d_false);
-%! d_true = procrustes (T, S, "reflection", true);
+%! d_true = procrustes (T, S, 'reflection', true);
 %! printf ("Procrustes distance with reflection: %f\n", d_true);
-%! d_best = procrustes (T, S, "reflection", "best");
+%! d_best = procrustes (T, S, 'reflection', 'best');
 %! printf ("Procrustes distance with best fit: %f\n", d_true);
 
 ## Test input validation
@@ -322,16 +322,16 @@ endfunction
 %!error<procrustes: X must have at least as many columns as Y.> ...
 %! procrustes (ones (10 ,3), ones (10, 4));
 %!error<procrustes: optional arguments must be in Name-Value pairs.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "reflection");
+%! procrustes (ones (10 ,3), ones (10, 3), 'reflection');
 %!error<procrustes: optional arguments must be in Name-Value pairs.> ...
 %! procrustes (ones (10 ,3), ones (10, 3), true);
 %!error<procrustes: invalid value for scaling.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "scaling", 0);
+%! procrustes (ones (10 ,3), ones (10, 3), 'scaling', 0);
 %!error<procrustes: invalid value for scaling.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "scaling", [true true]);
+%! procrustes (ones (10 ,3), ones (10, 3), 'scaling', [true true]);
 %!error<procrustes: invalid value for reflection.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "reflection", 1);
+%! procrustes (ones (10 ,3), ones (10, 3), 'reflection', 1);
 %!error<procrustes: invalid value for reflection.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "reflection", "some");
+%! procrustes (ones (10 ,3), ones (10, 3), 'reflection', 'some');
 %!error<procrustes: invalid name for optional arguments.> ...
-%! procrustes (ones (10 ,3), ones (10, 3), "param1", "some");
+%! procrustes (ones (10 ,3), ones (10, 3), 'param1', 'some');

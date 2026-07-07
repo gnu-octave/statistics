@@ -66,8 +66,8 @@ function y = plpdf (data, x, Fx)
   Fx = Fx(:)';
 
   ## Check for class type
-  if (isa (data, "single") || isa (x, "single") || isa (Fx, "single"));
-    y = zeros (size (data), "single");
+  if (isa (data, 'single') || isa (x, 'single') || isa (Fx, 'single'));
+    y = zeros (size (data), 'single');
   else
     y = zeros (size (data));
   endif
@@ -98,14 +98,14 @@ endfunction
 %! Fx2 = [0, 0.1, 0.3, 0.6, 0.9, 1];
 %! y1 = plpdf (data, x1, Fx1);
 %! y2 = plpdf (data, x2, Fx2);
-%! plot (data, y1, "-b", data, y2, "g")
+%! plot (data, y1, '-b', data, y2, 'g')
 %! grid on
 %! ylim ([0, 0.6])
 %! xlim ([0, 10])
-%! legend ({"x1, Fx1", "x2, Fx2"}, "location", "northeast")
-%! title ("Piecewise linear CDF")
-%! xlabel ("values in data")
-%! ylabel ("density")
+%! legend ({'x1, Fx1', 'x2, Fx2'}, 'location', 'northeast')
+%! title ('Piecewise linear CDF')
+%! xlabel ('values in data')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, Fx

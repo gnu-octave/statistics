@@ -58,10 +58,10 @@ function x = vminv (p, mu, k)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (k, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (k, 'single'))
+    x = NaN (size (p), 'single');
   else
-    x = NaN (size (p), "double");
+    x = NaN (size (p), 'double');
   endif
 
   ## Process edge cases p=0, p=0.5, p=1
@@ -130,14 +130,14 @@ endfunction
 %! x2 = vminv (p1, 0, 1);
 %! x3 = vminv (p1, 0, 2);
 %! x4 = vminv (p1, 0, 4);
-%! plot (p1, x1, "-r", p1, x2, "-g", p1, x3, "-b", p1, x4, "-c")
+%! plot (p1, x1, '-r', p1, x2, '-g', p1, x3, '-b', p1, x4, '-c')
 %! grid on
 %! ylim ([-pi, pi])
-%! legend ({"μ = 0, k = 0.5", "μ = 0, k = 1", ...
-%!          "μ = 0, k = 2", "μ = 0, k = 4"}, "location", "northwest")
-%! title ("Von Mises iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0, k = 0.5', 'μ = 0, k = 1', ...
+%!          'μ = 0, k = 2', 'μ = 0, k = 4'}, 'location', 'northwest')
+%! title ('Von Mises iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared x, p0, p1

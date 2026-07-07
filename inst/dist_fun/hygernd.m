@@ -99,10 +99,10 @@ function r = hygernd (m, k, n, varargin)
   endif
 
   ## Check for class type
-  if (isa (m, "single") || isa (k, "single") || isa (n, "single"))
-    cls = "single";
+  if (isa (m, 'single') || isa (k, 'single') || isa (n, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ok = ((m >= 0) & (k >= 0) & (n > 0) & (k <= m) & (n <= m) &
@@ -115,7 +115,7 @@ function r = hygernd (m, k, n, varargin)
       p = hygepdf (v, m, k, n);
       r = v(lookup (cumsum (p(1:end-1)) / sum (p), rand (sz)) + 1);
       r = reshape (r, sz);
-      if (strcmp (cls, "single"))
+      if (strcmp (cls, 'single'))
         r = single (r);
       endif
     else
@@ -126,7 +126,7 @@ function r = hygernd (m, k, n, varargin)
     n = n(ok);
     num_n = numel (n);
     v = 0 : max (n(:));
-    p = cumsum (hygepdf (v, m(ok), k(ok), n, "vectorexpand"), 2);
+    p = cumsum (hygepdf (v, m(ok), k(ok), n, 'vectorexpand'), 2);
 
     ## Manual row-wise vectorization of lookup, which returns index of element
     ## less than or equal to test value, zero if test value is less than lowest

@@ -281,7 +281,7 @@ classdef CompactClassificationSVM
       ## Check for appropriate class
       if (isempty (Mdl))
         return;
-      elseif (! strcmpi (class (Mdl), "ClassificationSVM"))
+      elseif (! strcmpi (class (Mdl), 'ClassificationSVM'))
         error (strcat ("CompactClassificationSVM: invalid", ...
                        " classification object."));
       endif
@@ -392,9 +392,9 @@ classdef CompactClassificationSVM
 
       if (nargout > 1)
         ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
+        if (! strcmp (this.ScoreTransform, 'none'))
           f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
+          if (! strcmp (class (f), 'function_handle'))
             error (strcat ("CompactClassificationSVM.predict: 'Score", ...
                            "Transform' must be a 'function_handle' object."));
           endif
@@ -561,21 +561,21 @@ classdef CompactClassificationSVM
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "lossfun"
+          case 'lossfun'
             LossFun = varargin{2};
             if (! (ischar (LossFun)))
               error (strcat ("CompactClassificationSVM.loss: 'LossFun'", ...
                              " must be a character vector."));
             endif
             LossFun = tolower (LossFun);
-            if (! any (strcmpi (LossFun, {"binodeviance", "classiferror", ...
-                                          "exponential", "hinge", "logit", ...
-                                          "quadratic"})))
+            if (! any (strcmpi (LossFun, {'binodeviance', 'classiferror', ...
+                                          'exponential', 'hinge', 'logit', ...
+                                          'quadratic'})))
               error (strcat ("CompactClassificationSVM.loss:", ...
                              " unsupported Loss function."));
             endif
 
-          case "weights"
+          case 'weights'
             Weights = varargin{2};
             ## Validate if weights is a numeric vector
             if(! (isnumeric (Weights) && isvector (Weights)))
@@ -605,22 +605,22 @@ classdef CompactClassificationSVM
 
         ## Compute the loss based on the specified loss function
         switch (LossFun)
-          case "classiferror"
+          case 'classiferror'
             L = mean ((margin <= 0) .* Weights);
 
-          case "hinge"
+          case 'hinge'
             L = mean (max (0, 1 - margin) .* Weights);
 
-          case "logit"
+          case 'logit'
             L = mean (log (1 + exp (-margin)) .* Weights);
 
-          case "exponential"
+          case 'exponential'
             L = mean (exp (-margin) .* Weights);
 
-          case "quadratic"
+          case 'quadratic'
             L = mean (((1 - margin) .^2) .* Weights);
 
-          case "binodeviance"
+          case 'binodeviance'
             L = mean (log (1 + exp (-2 * margin)) .* Weights);
 
           otherwise
@@ -646,7 +646,7 @@ classdef CompactClassificationSVM
 
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "CompactClassificationSVM";
+      classdef_name = 'CompactClassificationSVM';
 
       ## Create variables from model properties
       NumPredictors       = this.NumPredictors;
@@ -667,11 +667,11 @@ classdef CompactClassificationSVM
       SupportVectors      = this.SupportVectors;
 
       ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", ...
-            "ScoreTransform", "Standardize", "Sigma", "Mu", ...
-            "ModelParameters", "Model", "Alpha", "Beta", "Bias", ...
-            "IsSupportVector", "SupportVectorLabels", "SupportVectors");
+      save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
+            'PredictorNames', 'ResponseName', 'ClassNames', ...
+            'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
+            'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
+            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors');
     endfunction
 
   endmethods
@@ -687,7 +687,7 @@ classdef CompactClassificationSVM
       names = fieldnames (data);
       props = fieldnames (mdl);
       if (! isequal (sort (names), sort (props)))
-        msg = "CompactClassificationSVM.load_model: invalid model in '%s'.";
+        msg = 'CompactClassificationSVM.load_model: invalid model in ''%s''.';
         error (msg, filename);
       endif
 
@@ -755,13 +755,13 @@ endclassdef
 %!error<CompactClassificationSVM.predict: XC must have the same number of predictors as the trained SVM model.> ...
 %! predict (CMdl, 1)
 %!test
-%! CMdl.ScoreTransform = "a";
+%! CMdl.ScoreTransform = 'a';
 %!error<CompactClassificationSVM.predict: 'ScoreTransform' must be a 'function_handle' object.> ...
 %! [labels, scores] = predict (CMdl, x);
 
 ## Test output for margin method
 %!test
-%! rand ("seed", 1);
+%! rand ('seed', 1);
 %! C = cvpartition (y, 'HoldOut', 0.15);
 %! Mdl = fitcsvm (x(training (C),:), y(training (C)), ...
 %!                'KernelFunction', 'rbf', 'Tolerance', 1e-7);
@@ -789,7 +789,7 @@ endclassdef
 
 ## Test output for loss method
 %!test
-%! rand ("seed", 1);
+%! rand ('seed', 1);
 %! C = cvpartition (y, 'HoldOut', 0.15);
 %! Mdl = fitcsvm (x(training (C),:), y(training (C)), ...
 %!                'KernelFunction', 'rbf', 'Tolerance', 1e-7);
@@ -814,7 +814,7 @@ endclassdef
 %!error<CompactClassificationSVM.loss: too few input arguments.> ...
 %! loss (CMdl, zeros (2))
 %!error<CompactClassificationSVM.loss: Name-Value arguments must be in pairs.> ...
-%! loss (CMdl, [1, 2], 1, "LossFun")
+%! loss (CMdl, [1, 2], 1, 'LossFun')
 %!error<CompactClassificationSVM.loss: X is empty.> ...
 %! loss (CMdl, [], zeros (2))
 %!error<CompactClassificationSVM.loss: X must have the same number of predictors as the trained SVM model.> ...
@@ -824,14 +824,14 @@ endclassdef
 %!error<CompactClassificationSVM.loss: Y must have the same number of rows as X.> ...
 %! loss (CMdl, [1, 2], [1; 2])
 %!error<CompactClassificationSVM.loss: 'LossFun' must be a character vector.> ...
-%! loss (CMdl, [1, 2], 1, "LossFun", 1)
+%! loss (CMdl, [1, 2], 1, 'LossFun', 1)
 %!error<CompactClassificationSVM.loss: unsupported Loss function.> ...
-%! loss (CMdl, [1, 2], 1, "LossFun", "some")
+%! loss (CMdl, [1, 2], 1, 'LossFun', 'some')
 %!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
-%! loss (CMdl, [1, 2], 1, "Weights", ['a', 'b'])
+%! loss (CMdl, [1, 2], 1, 'Weights', ['a', 'b'])
 %!error<CompactClassificationSVM.loss: 'Weights' must be a numeric vector.> ...
-%! loss (CMdl, [1, 2], 1, "Weights", 'a')
+%! loss (CMdl, [1, 2], 1, 'Weights', 'a')
 %!error<CompactClassificationSVM.loss: size of 'Weights' must be equal to the number of rows in X.> ...
-%! loss (CMdl, [1, 2], 1, "Weights", [1, 2])
+%! loss (CMdl, [1, 2], 1, 'Weights', [1, 2])
 %!error<CompactClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
-%! loss (CMdl, [1, 2], 1, "some", "some")
+%! loss (CMdl, [1, 2], 1, 'some', 'some')

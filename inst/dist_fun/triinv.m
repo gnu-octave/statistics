@@ -63,9 +63,9 @@ function x = triinv (p, a, b, c)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single") ...
-                        || isa (c, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (a, 'single') || isa (b, 'single') ...
+                        || isa (c, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -97,15 +97,15 @@ endfunction
 %! x2 = triinv (p, 1, 5, 2);
 %! x3 = triinv (p, 2, 9, 3);
 %! x4 = triinv (p, 2, 9, 5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"a = 3, b = 6, c = 4", "a = 1, b = 5, c = 2", ...
-%!          "a = 2, b = 9, c = 3", "a = 2, b = 9, c = 5"}, ...
-%!         "location", "northwest")
-%! title ("Triangular CDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'a = 3, b = 6, c = 4', 'a = 1, b = 5, c = 2', ...
+%!          'a = 2, b = 9, c = 3', 'a = 2, b = 9, c = 5'}, ...
+%!         'location', 'northwest')
+%! title ('Triangular CDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, y

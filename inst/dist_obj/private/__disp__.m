@@ -28,7 +28,7 @@ function ci = __disp__ (pd, distname)
   if (isscalar (pd))
 
     ## Handle special case of PiecewiseLinearDistribution
-    if (strcmpi (pd.DistributionName, "PiecewiseLinearDistribution"))
+    if (strcmpi (pd.DistributionName, 'PiecewiseLinearDistribution'))
       ## Print distribution header
       fprintf ("  %s\n\n", pd.DistributionName);
       ## Print parameter values
@@ -43,7 +43,7 @@ function ci = __disp__ (pd, distname)
       endif
 
     ## Handle special case of MultinomialDistribution
-    elseif (strcmpi (pd.DistributionName, "MultinomialDistribution"))
+    elseif (strcmpi (pd.DistributionName, 'MultinomialDistribution'))
       ## Print distribution header
       fprintf ("  %s\n\n", pd.DistributionName);
       ## Print parameter values
@@ -63,11 +63,11 @@ function ci = __disp__ (pd, distname)
       PVstr = sprintf ("%%%dg", PVlen);
 
       ## Prepare template for fitted and not fitted distributions
-      pat1 = ["  %+7s = ", PVstr, "   [%g, %g]\n"];
-      pat2 = ["  %+7s = ", PVstr, "\n"];
+      pat1 = ['  %+7s = ', PVstr, "   [%g, %g]\n"];
+      pat2 = ['  %+7s = ', PVstr, "\n"];
 
       ## Grad distributions that are non fittable
-      if (any (strcmpi (pd.DistributionCode, {"unif", "tri", "logu"})))
+      if (any (strcmpi (pd.DistributionCode, {'unif', 'tri', 'logu'})))
         fitted = false;
         ParameterIsFixed = true;
       elseif (all (pd.ParameterIsFixed))

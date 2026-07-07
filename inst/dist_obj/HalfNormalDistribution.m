@@ -90,7 +90,7 @@ classdef HalfNormalDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "HalfNormalDistribution";
+    DistributionName = 'HalfNormalDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} NumParameters
@@ -112,7 +112,7 @@ classdef HalfNormalDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "sigma"};
+    ParameterNames = {'mu', 'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} ParameterDescription
@@ -124,12 +124,12 @@ classdef HalfNormalDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Location", "Scale"};
+    ParameterDescription = {'Location', 'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "hn";
+    DistributionCode = 'hn';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -247,11 +247,11 @@ classdef HalfNormalDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Half-normal distribution");
+      __disp__ (this, 'Half-normal distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Half-normal distribution");
+      __disp__ (this, 'Half-normal distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -302,9 +302,9 @@ classdef HalfNormalDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -749,7 +749,7 @@ classdef HalfNormalDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [true, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -803,7 +803,7 @@ endfunction
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
 %! HalfNormalDistribution(i, 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution("a", 1)
+%! HalfNormalDistribution('a', 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
 %! HalfNormalDistribution([1, 2], 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
@@ -817,7 +817,7 @@ endfunction
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
 %! HalfNormalDistribution(1, i)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, "a")
+%! HalfNormalDistribution(1, 'a')
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
 %! HalfNormalDistribution(1, [1, 2])
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
@@ -825,7 +825,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (HalfNormalDistribution, 2, "uper")
+%! cdf (HalfNormalDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (HalfNormalDistribution, 2, 3)
 
@@ -833,63 +833,63 @@ endfunction
 %!shared x
 %! x = hnrnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 0)
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 1)
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", [0.5 2])
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", "")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", {0.05})
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "parameter", "sigma", ...
-%!          "alpha", {0.05})
+%! paramci (HalfNormalDistribution.fit (x, 1), 'parameter', 'sigma', ...
+%!          'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (HalfNormalDistribution.fit (x, 1), ...
-%!          "parameter", {"mu", "sigma", "param"})
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", {"mu", "sigma", "param"})
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "parameter", "param")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1),"NAME", "value")
+%! paramci (HalfNormalDistribution.fit (x, 1),'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "NAME", "value")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (HalfNormalDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", "sigma", "NAME", "value")
+%! paramci (HalfNormalDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', 'sigma', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (HalfNormalDistribution, "Parent")
+%! plot (HalfNormalDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (HalfNormalDistribution, "PlotType", 12)
+%! plot (HalfNormalDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (HalfNormalDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (HalfNormalDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (HalfNormalDistribution, "PlotType", "pdfcdf")
+%! plot (HalfNormalDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (HalfNormalDistribution, "Discrete", "pdfcdf")
+%! plot (HalfNormalDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (HalfNormalDistribution, "Discrete", [1, 0])
+%! plot (HalfNormalDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (HalfNormalDistribution, "Discrete", {true})
+%! plot (HalfNormalDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (HalfNormalDistribution, "Parent", 12)
+%! plot (HalfNormalDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (HalfNormalDistribution, "Parent", "hax")
+%! plot (HalfNormalDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (HalfNormalDistribution, "invalidNAME", "pdf")
+%! plot (HalfNormalDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (HalfNormalDistribution, "PlotType", "probability")
+%! plot (HalfNormalDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -905,24 +905,24 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (HalfNormalDistribution.fit (x, 1), 2, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display")
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display", 1)
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display", {1})
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display", {"on"})
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display", ["on"; "on"])
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "Display", "onnn")
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, "NAME", "on")
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (HalfNormalDistribution.fit (x, 1), 2, {"NAME"}, "on")
+%! proflik (HalfNormalDistribution.fit (x, 1), 2, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
 %! proflik (HalfNormalDistribution.fit (x, 1), 2, {[1 2 3 4]}, ...
-%!          "Display", "on")
+%!          'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

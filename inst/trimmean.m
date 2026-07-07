@@ -98,10 +98,10 @@ function m = trimmean (x, p, varargin)
     flag = [];
     dim = [];
   elseif (nargin < 4)
-    if (ischar (varargin{1}) && ! strcmpi (varargin{1}, "all"))
+    if (ischar (varargin{1}) && ! strcmpi (varargin{1}, 'all'))
       flag = varargin{1};
       dim = [];
-    elseif (isnumeric (varargin{1}) || strcmpi (varargin{1}, "all"))
+    elseif (isnumeric (varargin{1}) || strcmpi (varargin{1}, 'all'))
       flag = [];
       dim = varargin{1};
     endif
@@ -122,9 +122,9 @@ function m = trimmean (x, p, varargin)
 
   ## Check FLAG
   if (isempty (flag))
-    flag = "round";
+    flag = 'round';
   endif
-  if (! any (strcmpi (flag, {"round", "floor", "weighted"})))
+  if (! any (strcmpi (flag, {'round', 'floor', 'weighted'})))
     error ("trimmean: invalid FLAG argument.");
   endif
 
@@ -132,7 +132,7 @@ function m = trimmean (x, p, varargin)
   if (isempty (dim))
     (dim = find (szx != 1, 1)) || (dim = 1);
   endif
-  if (strcmpi (dim, "all"))
+  if (strcmpi (dim, 'all'))
     x = x(:);
     dim = 1;
     szx = size (x);
@@ -213,7 +213,7 @@ function m = trimmean (x, p, varargin)
   else
     m = NaN (sizem, class (x));
     for j = 1:prod (sizem(2:end))
-      n = find (! isnan (x(:,j)), 1, "last");
+      n = find (! isnan (x(:,j)), 1, 'last');
       m(j) = trim (x(:,j), n, p, flag, [1, 1]);
     endfor
   endif
@@ -228,7 +228,7 @@ endfunction
 ## Help function for handling different flags
 function m = trim (x, n, p, flag, sizem)
   switch (lower (flag))
-    case "round"
+    case 'round'
       k = n * p / 200;
       k0 = round (k - eps (k));
       if (! isempty (n) && n > 0 && k0 < n / 2)
@@ -236,14 +236,14 @@ function m = trim (x, n, p, flag, sizem)
       else
         m = NaN (sizem, class (x));
       endif
-    case "floor"
+    case 'floor'
       k0 = floor (n * p / 200);
       if (! isempty (n) && n > 0 && k0 < n / 2)
         m = mean (x((k0+1):(n-k0),:), 1);
       else
         m = NaN (sizem, class (x));
       endif
-    case "weighted"
+    case 'weighted'
       k = n * p / 200;
       k0 = floor (k);
       fr = 1 + k0 - k;
@@ -260,7 +260,7 @@ endfunction
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
-%! assert (trimmean (x, 10, "all"), 19.4722, 1e-4);
+%! assert (trimmean (x, 10, 'all'), 19.4722, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
@@ -271,7 +271,7 @@ endfunction
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
-%! assert (trimmean (x, 10, "all"), 19.3824, 1e-4);
+%! assert (trimmean (x, 10, 'all'), 19.3824, 1e-4);
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
@@ -302,7 +302,7 @@ endfunction
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
 %! out = trimmean (x, 10, [1, 2, 3]);
-%! assert (out, trimmean (x, 10, "all"));
+%! assert (out, trimmean (x, 10, 'all'));
 
 ## Test N-D array with NaNs
 %!test
@@ -330,7 +330,7 @@ endfunction
 %! x([3, 37]) = -100;
 %! x([4, 38]) = NaN;
 %! out = trimmean (x, 10, [1, 2, 3]);
-%! assert (out, trimmean (x, 10, "all"));
+%! assert (out, trimmean (x, 10, 'all'));
 %!test
 %! x = reshape (1:40, [5, 4, 2]);
 %! x([3, 37]) = -100;
@@ -367,12 +367,12 @@ endfunction
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1,2,3,4,5)
 %!error<trimmean: invalid percent.> trimmean ([1 2 3 4], -10)
 %!error<trimmean: invalid percent.> trimmean ([1 2 3 4], 100)
-%!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, "flag")
-%!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, "flag", 1)
+%!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, 'flag')
+%!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, 'flag', 1)
 %!error<trimmean: DIM must be a positive integer scalar or vector.> ...
 %! trimmean ([1 2 3 4], 10, -1)
 %!error<trimmean: DIM must be a positive integer scalar or vector.> ...
-%! trimmean ([1 2 3 4], 10, "floor", -1)
+%! trimmean ([1 2 3 4], 10, 'floor', -1)
 %!error<trimmean: DIM must be a positive integer scalar or vector.> ...
 %! trimmean (reshape (1:40, [5, 4, 2]), 10, [-1, 2])
 %!error<trimmean: VECDIM must contain non-repeating positive integers.> ...

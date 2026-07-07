@@ -96,10 +96,10 @@ function r = bisarnd (beta, gamma, varargin)
   endif
 
   ## Check for class type
-  if (isa (beta, "single") || isa (gamma, "single"))
-    cls = "single";
+  if (isa (beta, 'single') || isa (gamma, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Birnbaum-Saunders distribution

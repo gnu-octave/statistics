@@ -27,7 +27,7 @@ function h = __plot__ (pd, DistType, varargin)
 
   ## Add defaults (Discrete is passed by the calling method)
   ax = [];
-  PlotType = "pdf";
+  PlotType = 'pdf';
   Discrete = DistType;
 
   ## Parse optional arguments
@@ -37,8 +37,8 @@ function h = __plot__ (pd, DistType, varargin)
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
 
-      case "plottype"
-        ValidTypes = {"pdf", "cdf", "probability"};
+      case 'plottype'
+        ValidTypes = {'pdf', 'cdf', 'probability'};
         try
           selected_T = strcmpi (varargin{2}, ValidTypes);
         catch
@@ -49,7 +49,7 @@ function h = __plot__ (pd, DistType, varargin)
         endif
         PlotType = ValidTypes{selected_T};
 
-      case "discrete"
+      case 'discrete'
         if (! (islogical (varargin{2}) && isscalar (varargin{2})))
           error ("plot: invalid VALUE for 'Discrete' argument.");
         endif
@@ -58,7 +58,7 @@ function h = __plot__ (pd, DistType, varargin)
           Discrete = varargin{2};
         endif
 
-      case "parent"
+      case 'parent'
         if (! isaxes (varargin{2}))
           error ("plot: invalid VALUE for 'Parent' argument.");
         endif
@@ -72,9 +72,9 @@ function h = __plot__ (pd, DistType, varargin)
   endwhile
 
   ## Check for invalid cases of probability type before creating new axes
-  if (strcmpi (PlotType, "probability"))
-    if (! isprop (pd, "InputData"))
-      msg = "plot: 'probability' PlotType is not supported for '%s'.";
+  if (strcmpi (PlotType, 'probability'))
+    if (! isprop (pd, 'InputData'))
+      msg = 'plot: ''probability'' PlotType is not supported for ''%s''.';
       error (sprintf (msg, pd.DistributionName));
     endif
     if (isempty (pd.InputData))
@@ -89,11 +89,11 @@ function h = __plot__ (pd, DistType, varargin)
 
   ## Switch to PlotType
   switch (PlotType)
-    case "pdf"
+    case 'pdf'
       h = plot_pdf (pd, ax, DistType, Discrete);
-    case "cdf"
+    case 'cdf'
       h = plot_cdf (pd, ax, DistType, Discrete);
-    case "probability"
+    case 'probability'
       h = plot_prob (pd, ax, DistType, Discrete);
   endswitch
 
@@ -115,22 +115,22 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   xmin = m - 3.5 * s;
   xmax = m + 3.5 * s;
   ## Fix boundaries for specific distributions
-  PD = {"bino", "bisa", "exp", "gam", "invg", "logl", "logn", ...
-        "naka", "nbin", "poiss", "rayl", "rice", "wbl"};
-  if (strcmpi (pd.DistributionCode, "beta"))
+  PD = {'bino', 'bisa', 'exp', 'gam', 'invg', 'logl', 'logn', ...
+        'naka', 'nbin', 'poiss', 'rayl', 'rice', 'wbl'};
+  if (strcmpi (pd.DistributionCode, 'beta'))
     lb = xmin = 0;
     ub = xmax = 1;
-  elseif (strcmpi (pd.DistributionCode, "burr"))
+  elseif (strcmpi (pd.DistributionCode, 'burr'))
     lb = xmin = 0;
     ub = xmax = m + 3 * iqr (pd);
   elseif (any (strcmpi (pd.DistributionCode, PD)))
     lb = max (m - 3 * s, 0);
     xmin = max (m - 3.5 * s, 0);
-  elseif (strcmpi (pd.DistributionCode, "gev"))
+  elseif (strcmpi (pd.DistributionCode, 'gev'))
 
-  elseif (strcmpi (pd.DistributionCode, "gp"))
+  elseif (strcmpi (pd.DistributionCode, 'gp'))
 
-  elseif (strcmpi (pd.DistributionCode, "hn"))
+  elseif (strcmpi (pd.DistributionCode, 'hn'))
     lb = max (m - 3 * s, m);
     xmin = max (m - 3.5 * s, m);
   endif
@@ -139,59 +139,59 @@ endfunction
 function h = plot_pdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of multinomial distribution
-  if (strcmpi (pd.DistributionCode, "mn"))
+  if (strcmpi (pd.DistributionCode, 'mn'))
     y = pd.ParameterValues';
     x = [1:numel(y)]';
     if (Discrete)
-      h = stem (ax, x, y, "color", "b");
+      h = stem (ax, x, y, 'color', 'b');
     else
-      h = plot (ax, x, y, ";;b-");
+      h = plot (ax, x, y, ';;b-');
     endif
     xlim (ax, [0.5, max(x)+0.5]);
-    xlabel ("Data");
-    ylabel ("Probability");
+    xlabel ('Data');
+    ylabel ('Probability');
     return
   endif
 
   ## Handle special case of piecewise linear distribution
-  if (strcmpi (pd.DistributionCode, "pl"))
+  if (strcmpi (pd.DistributionCode, 'pl'))
     x = pd.ParameterValues(:,1);
     y = pd.ParameterValues(:,2);
-    h = plot (ax, x, y, ";;b-");
+    h = plot (ax, x, y, ';;b-');
     xgap = (x(end) - x(1)) * 0.1;
     xlim (ax, [x(1)-xgap, x(end)+xgap]);
-    xlabel ("Data");
-    ylabel ("Probability");
+    xlabel ('Data');
+    ylabel ('Probability');
     return
   endif
 
   ## Handle special case of triangular distribution
-  if (strcmpi (pd.DistributionCode, "tri"))
+  if (strcmpi (pd.DistributionCode, 'tri'))
     lb = pd.A;
     ub = pd.C;
     xmin = lb - (ub - lb) * 0.1;
     xmax = ub + (ub - lb) * 0.1;
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
-    h = plot (ax, x, y, ";;r-", "linewidth", 2);
+    h = plot (ax, x, y, ';;r-', 'linewidth', 2);
     xlim (ax, [xmin, xmax]);
-    xlabel ("Data");
-    ylabel ("PDF");
+    xlabel ('Data');
+    ylabel ('PDF');
     return
   endif
 
   ## Handle special case of log-uniform and uniform distributions
-  if (any (strcmpi (pd.DistributionCode, {"logu", "unif"})))
+  if (any (strcmpi (pd.DistributionCode, {'logu', 'unif'})))
     lb = pd.Lower;
     ub = pd.Upper;
     xmin = lb - (ub - lb) * 0.1;
     xmax = ub + (ub - lb) * 0.1;
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
-    h = plot (ax, x, y, ";;r-", "linewidth", 2);
+    h = plot (ax, x, y, ';;r-', 'linewidth', 2);
     xlim (ax, [xmin, xmax]);
-    xlabel ("Data");
-    ylabel ("PDF");
+    xlabel ('Data');
+    ylabel ('PDF');
     return
   endif
 
@@ -213,15 +213,15 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
     ## Plot
     if (Discrete)
       xlim (ax, [min(x)-0.5, max(x)+0.5]);
-      h = stem (ax, x, y, "color", "r");
+      h = stem (ax, x, y, 'color', 'r');
       #xlim (ax, [min(x)-0.5, max(x)+0.5]); # before Octave 11 this emits an error
-      xlabel ("Data");
-      ylabel ("Probability");
+      xlabel ('Data');
+      ylabel ('Probability');
     else
-      h = plot (ax, x, y, ";;r-", "linewidth", 2);
+      h = plot (ax, x, y, ';;r-', 'linewidth', 2);
       xlim (ax, [xmin, xmax]);
-      xlabel ("Data");
-      ylabel ("PDF");
+      xlabel ('Data');
+      ylabel ('PDF');
     endif
 
   else # fitted distribution, data available
@@ -266,24 +266,24 @@ function h = plot_pdf (pd, ax, DistType, Discrete)
 
     ## Plot
     if (DistType)
-      h(2) = patch (ax, bincenter, binsize, 1, "facecolor", "b");
+      h(2) = patch (ax, bincenter, binsize, 1, 'facecolor', 'b');
       xlim (ax, [xmin, xmax]);
       hold on;
       if (Discrete)
-        h(1) = stem (ax, x, y, "color", "r");
+        h(1) = stem (ax, x, y, 'color', 'r');
       else
-        h(1) = plot (ax, x, y, ";;r-");
+        h(1) = plot (ax, x, y, ';;r-');
       endif
-      xlabel ("Data");
-      ylabel ("Probability");
+      xlabel ('Data');
+      ylabel ('Probability');
       hold off;
     else
-      h(2) = bar (ax, bincenter, binsize, 1, "facecolor", "b");
+      h(2) = bar (ax, bincenter, binsize, 1, 'facecolor', 'b');
       hold on;
-      h(1) = plot (ax, x, y, ";;r-", "linewidth", 2);
+      h(1) = plot (ax, x, y, ';;r-', 'linewidth', 2);
       xlim (ax, [xmin, xmax]);
-      xlabel ("Data");
-      ylabel ("PDF");
+      xlabel ('Data');
+      ylabel ('PDF');
       hold off;
     endif
   endif
@@ -293,59 +293,59 @@ endfunction
 function h = plot_cdf (pd, ax, DistType, Discrete)
 
   ## Handle special case of multinomial distribution
-  if (strcmpi (pd.DistributionCode, "mn"))
+  if (strcmpi (pd.DistributionCode, 'mn'))
     y = pd.ParameterValues';
     x = [1:numel(y)]';
     xlim (ax, [0.5, max(x)+0.5]);
     if (Discrete)
-      h = stem (ax, x, y, "color", "b");
+      h = stem (ax, x, y, 'color', 'b');
     else
-      h = plot (ax, x, y, ";;b-");
+      h = plot (ax, x, y, ';;b-');
     endif
-    xlabel ("Data");
-    ylabel ("Probability");
+    xlabel ('Data');
+    ylabel ('Probability');
     return
   endif
 
   ## Handle special case of piecewise linear distribution
-  if (strcmpi (pd.DistributionCode, "pl"))
+  if (strcmpi (pd.DistributionCode, 'pl'))
     x = pd.ParameterValues(:,1);
     y = pd.ParameterValues(:,2);
-    h = plot (ax, x, y, ";;b-");
+    h = plot (ax, x, y, ';;b-');
     xgap = (x(end) - x(1)) * 0.1;
     xlim (ax, [x(1)-xgap, x(end)+xgap]);
-    xlabel ("Data");
-    ylabel ("Probability");
+    xlabel ('Data');
+    ylabel ('Probability');
     return
   endif
 
   ## Handle special case of triangular distribution
-  if (strcmpi (pd.DistributionCode, "tri"))
+  if (strcmpi (pd.DistributionCode, 'tri'))
     lb = pd.A;
     ub = pd.C;
     xmin = lb - (ub - lb) * 0.1;
     xmax = ub + (ub - lb) * 0.1;
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
-    h = plot (ax, x, y, ";;r-", "linewidth", 2);
+    h = plot (ax, x, y, ';;r-', 'linewidth', 2);
     xlim (ax, [xmin, xmax]);
-    xlabel ("Data");
-    ylabel ("PDF");
+    xlabel ('Data');
+    ylabel ('PDF');
     return
   endif
 
   ## Handle special case of log-uniform and uniform distributions
-  if (any (strcmpi (pd.DistributionCode, {"logu", "unif"})))
+  if (any (strcmpi (pd.DistributionCode, {'logu', 'unif'})))
     lb = pd.Lower;
     ub = pd.Upper;
     xmin = lb - (ub - lb) * 0.1;
     xmax = ub + (ub - lb) * 0.1;
     x = [lb:(ub-lb)/100:ub]';
     y = pdf (pd, x);
-    h = plot (ax, x, y, ";;r-", "linewidth", 2);
+    h = plot (ax, x, y, ';;r-', 'linewidth', 2);
     xlim (ax, [xmin, xmax]);
-    xlabel ("Data");
-    ylabel ("PDF");
+    xlabel ('Data');
+    ylabel ('PDF');
     return
   endif
 
@@ -366,17 +366,17 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
 
     ## Plot
     if (Discrete)
-      h = stairs (ax, x, p, "color", "r");
+      h = stairs (ax, x, p, 'color', 'r');
       xlim (ax, [lb-0.5, ub+0.5]);
       ylim (ax, [0, 1]);
-      xlabel ("Data");
-      ylabel ("CDF");
+      xlabel ('Data');
+      ylabel ('CDF');
     else
-      h = plot (ax, x, p, ";;r-", "linewidth", 2);
+      h = plot (ax, x, p, ';;r-', 'linewidth', 2);
       xlim (ax, [xmin, xmax]);
       ylim (ax, [0, 1]);
-      xlabel ("Data");
-      ylabel ("CDF");
+      xlabel ('Data');
+      ylabel ('CDF');
     endif
 
   else # fitted distribution, data available
@@ -407,26 +407,26 @@ function h = plot_cdf (pd, ax, DistType, Discrete)
 
     ## Plot
     if (DistType)
-      h(2) = plot (ax, xCDF, yCDF, ";;b-");
+      h(2) = plot (ax, xCDF, yCDF, ';;b-');
       xlim (ax, [xmin, xmax]);
       ylim (ax, [0, 1]);
       hold on;
       if (Discrete)
-        h(1) = stem (ax, x, p, "color", "r");
+        h(1) = stem (ax, x, p, 'color', 'r');
       else
-        h(1) = plot (ax, x, p, ";;r-");
+        h(1) = plot (ax, x, p, ';;r-');
       endif
-      xlabel ("Data");
-      ylabel ("CDF");
+      xlabel ('Data');
+      ylabel ('CDF');
       hold off;
     else
-      h(2) = plot (ax, xCDF, yCDF, ";;b-");
+      h(2) = plot (ax, xCDF, yCDF, ';;b-');
       xlim (ax, [xmin, xmax]);
       ylim (ax, [0, 1]);
       hold on;
-      h(1) = plot (ax, x, p, ";;r-", "linewidth", 2);
-      xlabel ("Data");
-      ylabel ("CDF");
+      h(1) = plot (ax, x, p, ';;r-', 'linewidth', 2);
+      xlabel ('Data');
+      ylabel ('CDF');
       hold off;
     endif
   endif
@@ -449,30 +449,30 @@ function h = plot_prob (pd, ax, DistType, Discrete)
 
   ## Plot reference line
   X = Y = [x(1); x(end)];
-  h(2) = line (ax, X, Y, "LineStyle", "-.", "Marker", "none", "color", "red");
+  h(2) = line (ax, X, Y, 'LineStyle', '-.', 'Marker', 'none', 'color', 'red');
   hold on;
-  h(1) = plot (ax, x, y, "LineStyle", "none", "Marker", "+", "color", "blue");
+  h(1) = plot (ax, x, y, 'LineStyle', 'none', 'Marker', '+', 'color', 'blue');
 
   ## Plot labels
-  ylabel "Probability"
-  xlabel "Data"
+  ylabel 'Probability'
+  xlabel 'Data'
 
   ## Plot grid
   p = [0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.25, 0.5, ...
        0.75, 0.90, 0.95, 0.98, 0.99, 0.995, 0.999];
-  label = {"0.001", "0.005", "0.01", "0.02", "0.05", "0.10", "0.25", "0.50", ...
-           "0.75", "0.90", "0.95", "0.98", "0.99", "0.995", "0.999"};
+  label = {'0.001', '0.005', '0.01', '0.02', '0.05', '0.10', '0.25', '0.50', ...
+           '0.75', '0.90', '0.95', '0.98', '0.99', '0.995', '0.999'};
   tick = icdf (pd, p);
-  set (ax, "ytick", tick, "yticklabel", label);
+  set (ax, 'ytick', tick, 'yticklabel', label);
 
   ## Compute plot boundaries
   [~, ~, xmin, xmax] = compute_boundaries (pd);
   ## Set view range with a bit of space around data
   ymin = icdf (pd, 0.25 ./ n);
   ymax = icdf (pd, (n - 0.25) ./ n);
-  set (ax, "ylim", [ymin, ymax], "xlim", [xmin, xmax]);
-  grid (ax, "on");
-  box (ax, "off");
+  set (ax, 'ylim', [ymin, ymax], 'xlim', [xmin, xmax]);
+  grid (ax, 'on');
+  box (ax, 'off');
   hold off;
 
 endfunction

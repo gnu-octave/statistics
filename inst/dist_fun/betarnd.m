@@ -95,10 +95,10 @@ function r = betarnd (a, b, varargin)
   endif
 
   ## Check for class type
-  if (isa (a, "single") || isa (b, "single"))
-    cls = "single";
+  if (isa (a, 'single') || isa (b, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Beta distribution

@@ -106,15 +106,15 @@ function [varargout] = expinv (p, varargin)
   endif
 
   ## Check for appropriate class
-  if (isa (p, "single") || isa (mu, "single"));
-    is_class = "single";
+  if (isa (p, 'single') || isa (mu, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Create output matrix
-  if (isa (p, "single") || isa (mu, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -163,13 +163,13 @@ endfunction
 %! x1 = expinv (p, 2/3);
 %! x2 = expinv (p, 1.0);
 %! x3 = expinv (p, 2.0);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r')
 %! grid on
 %! ylim ([0, 5])
-%! legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "northwest")
-%! title ("Exponential iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 2/3', 'μ = 1', 'μ = 2'}, 'location', 'northwest')
+%! title ('Exponential iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

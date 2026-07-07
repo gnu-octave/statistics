@@ -285,7 +285,7 @@ classdef CompactClassificationDiscriminant
       ## Check for appropriate class
       if (isempty (Mdl))
         return;
-      elseif (! strcmpi (class (Mdl), "ClassificationDiscriminant"))
+      elseif (! strcmpi (class (Mdl), 'ClassificationDiscriminant'))
         error (strcat ("CompactClassificationDiscriminant: invalid", ...
                        " classification object."));
       endif
@@ -327,11 +327,11 @@ classdef CompactClassificationDiscriminant
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       if (iscellstr (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
       else # numeric
-        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
@@ -393,7 +393,7 @@ classdef CompactClassificationDiscriminant
           endif
           switch (s.subs)
             case 'ScoreTransform'
-              name = "CompactClassificationDiscriminant";
+              name = 'CompactClassificationDiscriminant';
               [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                                    (varargin{2}, name);
             otherwise
@@ -593,8 +593,8 @@ classdef CompactClassificationDiscriminant
         Value = varargin{2};
         switch (tolower (varargin{1}))
           case 'lossfun'
-            lf_opt = {"binodeviance", "classifcost", "classiferror", ...
-                      "exponential", "hinge","logit", "mincost", "quadratic"};
+            lf_opt = {'binodeviance', 'classifcost', 'classiferror', ...
+                      'exponential', 'hinge','logit', 'mincost', 'quadratic'};
             if (isa (Value, 'function_handle'))
               ## Check if the loss function is valid
               if (nargin (Value) != 4)
@@ -897,7 +897,7 @@ classdef CompactClassificationDiscriminant
     ## @end deftypefn
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "CompactClassificationDiscriminant";
+      classdef_name = 'CompactClassificationDiscriminant';
 
       ## Create variables from model properties
       NumPredictors   = this.NumPredictors;
@@ -918,10 +918,10 @@ classdef CompactClassificationDiscriminant
       LogDetSigma     = this.LogDetSigma;
 
       ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", "Prior", ...
-            "Cost", "ScoreTransform", "STname", "Sigma", "Mu", "Coeffs", ...
-            "Delta", "DiscrimType", "Gamma", "MinGamma", "LogDetSigma");
+      save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
+            'PredictorNames', 'ResponseName', 'ClassNames', 'Prior', ...
+            'Cost', 'ScoreTransform', 'STname', 'Sigma', 'Mu', 'Coeffs', ...
+            'Delta', 'DiscrimType', 'Gamma', 'MinGamma', 'LogDetSigma');
     endfunction
 
   endmethods
@@ -969,7 +969,7 @@ endclassdef
 %! x = meas;
 %! y = species;
 %! PredictorNames = {'Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'};
-%! Mdl = fitcdiscr (x, y, "PredictorNames", PredictorNames);
+%! Mdl = fitcdiscr (x, y, 'PredictorNames', PredictorNames);
 %! CMdl = compact (Mdl);
 %! sigma = [0.265008, 0.092721, 0.167514, 0.038401; ...
 %!          0.092721, 0.115388, 0.055244, 0.032710; ...
@@ -982,7 +982,7 @@ endclassdef
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
 %! assert (class (CMdl), "CompactClassificationDiscriminant");
-%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {"linear", "Y"})
+%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
 %! assert ({CMdl.Gamma, CMdl.MinGamma}, {0, 0}, 1e-15)
 %! assert (CMdl.ClassNames, unique (species))
 %! assert (CMdl.Sigma, sigma, 1e-6)
@@ -993,7 +993,7 @@ endclassdef
 %! load fisheriris
 %! x = meas;
 %! y = species;
-%! Mdl = fitcdiscr (x, y, "Gamma", 0.5);
+%! Mdl = fitcdiscr (x, y, 'Gamma', 0.5);
 %! CMdl = compact (Mdl);
 %! sigma = [0.265008, 0.046361, 0.083757, 0.019201; ...
 %!          0.046361, 0.115388, 0.027622, 0.016355; ...
@@ -1006,7 +1006,7 @@ endclassdef
 %!              -1.0600e-01, -4.2800e-01, -6.2000e-02, -4.6000e-02; ...
 %!              -3.0600e-01, -2.2800e-01, -1.6200e-01, -4.6000e-02];
 %! assert (class (CMdl), "CompactClassificationDiscriminant");
-%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {"linear", "Y"})
+%! assert ({CMdl.DiscrimType, CMdl.ResponseName}, {'linear', 'Y'})
 %! assert ({CMdl.Gamma, CMdl.MinGamma}, {0.5, 0})
 %! assert (CMdl.ClassNames, unique (species))
 %! assert (CMdl.Sigma, sigma, 1e-6)
@@ -1022,7 +1022,7 @@ endclassdef
 %! load fisheriris
 %! x = meas;
 %! y = species;
-%! Mdl = fitcdiscr (meas, species, "Gamma", 0.5);
+%! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
 %! CMdl = compact (Mdl);
 %! [label, score, cost] = predict (CMdl, [2, 2, 2, 2]);
 %! assert (label, {'versicolor'})
@@ -1071,7 +1071,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
-%! model = fitcdiscr (x, y, "Gamma", 0.4);
+%! model = fitcdiscr (x, y, 'Gamma', 0.4);
 %! x_test = [1, 6; 3, 3];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_test, y_test);
@@ -1079,7 +1079,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
-%! model = fitcdiscr (x, y, "gamma" , 0.5);
+%! model = fitcdiscr (x, y, 'gamma' , 0.5);
 %! x_test = [3, 3];
 %! y_test = ['1'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'quadratic');
@@ -1087,7 +1087,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
-%! model = fitcdiscr (x, y, "gamma" , 0.5);
+%! model = fitcdiscr (x, y, 'gamma' , 0.5);
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'classifcost');
@@ -1095,7 +1095,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
-%! model = fitcdiscr (x, y, "gamma" , 0.5);
+%! model = fitcdiscr (x, y, 'gamma' , 0.5);
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! L = loss (model, x_test, y_test, 'LossFun', 'hinge');
@@ -1103,7 +1103,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8];
 %! y = ['1'; '2'; '3'; '1'];
-%! model = fitcdiscr (x, y, "gamma" , 0.5);
+%! model = fitcdiscr (x, y, 'gamma' , 0.5);
 %! x_test = [3, 3; 5, 7];
 %! y_test = ['1'; '2'];
 %! W = [1; 2];
@@ -1112,7 +1112,7 @@ endclassdef
 %!test
 %! x = [1, 2; 3, 4; 5, 6];
 %! y = {'A'; 'B'; 'A'};
-%! model = fitcdiscr (x, y, "gamma" , 0.5);
+%! model = fitcdiscr (x, y, 'gamma' , 0.5);
 %! x_with_nan = [1, 2; NaN, 4];
 %! y_test = {'A'; 'B'};
 %! L = loss (model, x_with_nan, y_test);
@@ -1163,7 +1163,7 @@ endclassdef
 %!test
 %! X = [1, 2; 3, 4; 5, 6];
 %! Y = [1; 2; 1];
-%! mdl = fitcdiscr (X, Y, "gamma", 0.5);
+%! mdl = fitcdiscr (X, Y, 'gamma', 0.5);
 %! m = margin (mdl, X, Y);
 %! assert (m, [0.3333; -0.3333; 0.3333], 1e-4)
 

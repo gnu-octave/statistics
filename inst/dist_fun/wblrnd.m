@@ -96,10 +96,10 @@ function r = wblrnd (lambda, k, varargin)
   endif
 
   ## Check for class type
-  if (isa (lambda, "single") || isa (k, "single"))
-    cls = "single";
+  if (isa (lambda, 'single') || isa (k, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from Weibull distribution

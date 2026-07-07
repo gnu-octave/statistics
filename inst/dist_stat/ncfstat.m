@@ -61,8 +61,8 @@ function [m, v] = ncfstat (df1, df2, lambda)
   endif
 
   ## Initialize mean and variance
-  if (isa (df1, "single") || isa (df2, "single") || isa (lambda, "single"))
-    m = zeros (size (df1), "single");
+  if (isa (df1, 'single') || isa (df2, 'single') || isa (lambda, 'single'))
+    m = zeros (size (df1), 'single');
     v = m;
   else
     m = zeros (size (df1));
@@ -94,8 +94,8 @@ endfunction
 %!error<ncfstat: function called with too few input arguments.> ncfstat (1)
 %!error<ncfstat: function called with too few input arguments.> ncfstat (1, 2)
 %!error<ncfstat: DF1, DF2, and LAMBDA must be numeric.> ncfstat ({}, 2, 3)
-%!error<ncfstat: DF1, DF2, and LAMBDA must be numeric.> ncfstat (1, "", 3)
-%!error<ncfstat: DF1, DF2, and LAMBDA must be numeric.> ncfstat (1, 2, "")
+%!error<ncfstat: DF1, DF2, and LAMBDA must be numeric.> ncfstat (1, '', 3)
+%!error<ncfstat: DF1, DF2, and LAMBDA must be numeric.> ncfstat (1, 2, '')
 %!error<ncfstat: DF1, DF2, and LAMBDA must not be complex.> ncfstat (i, 2, 3)
 %!error<ncfstat: DF1, DF2, and LAMBDA must not be complex.> ncfstat (1, i, 3)
 %!error<ncfstat: DF1, DF2, and LAMBDA must not be complex.> ncfstat (1, 2, i)

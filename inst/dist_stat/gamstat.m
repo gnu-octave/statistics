@@ -84,7 +84,7 @@ endfunction
 %!error<gamstat: function called with too few input arguments.> gamstat ()
 %!error<gamstat: function called with too few input arguments.> gamstat (1)
 %!error<gamstat: A and B must be numeric.> gamstat ({}, 2)
-%!error<gamstat: A and B must be numeric.> gamstat (1, "")
+%!error<gamstat: A and B must be numeric.> gamstat (1, '')
 %!error<gamstat: A and B must not be complex.> gamstat (i, 2)
 %!error<gamstat: A and B must not be complex.> gamstat (1, i)
 %!error<gamstat: A and B must be of common size or scalars.> ...

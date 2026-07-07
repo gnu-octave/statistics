@@ -46,9 +46,9 @@ function p = poisscdf (x, lambda, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin == 3 && strcmpi (uflag, "upper"))
+  if (nargin == 3 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin == 3  && ! strcmpi (uflag, "upper"))
+  elseif (nargin == 3  && ! strcmpi (uflag, 'upper'))
     error ("poisscdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -68,8 +68,8 @@ function p = poisscdf (x, lambda, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (lambda, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (lambda, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -107,7 +107,7 @@ function p = poisscdf (x, lambda, uflag)
   if (uflag)
     p(k) = gammainc (lambda, x + 1);
   else
-    p(k) = gammainc (lambda, x + 1, "upper");
+    p(k) = gammainc (lambda, x + 1, 'upper');
   endif
 
 endfunction
@@ -118,18 +118,18 @@ endfunction
 %! p1 = poisscdf (x, 1);
 %! p2 = poisscdf (x, 4);
 %! p3 = poisscdf (x, 10);
-%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! plot (x, p1, '*b', x, p2, '*g', x, p3, '*r')
 %! grid on
 %! ylim ([0, 1])
-%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "southeast")
-%! title ("Poisson CDF")
-%! xlabel ("values in x (number of occurrences)")
-%! ylabel ("probability")
+%! legend ({'λ = 1', 'λ = 4', 'λ = 10'}, 'location', 'southeast')
+%! title ('Poisson CDF')
+%! xlabel ('values in x (number of occurrences)')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
 %! x = [-1 0 1 2 Inf];
-%! y = [0, gammainc(1, (x(2:4) +1), "upper"), 1];
+%! y = [0, gammainc(1, (x(2:4) +1), 'upper'), 1];
 %!assert (poisscdf (x, ones (1,5)), y)
 %!assert (poisscdf (x, 1), y)
 %!assert (poisscdf (x, [1 0 NaN 1 1]), [y(1) 1 NaN y(4:5)])
@@ -137,14 +137,14 @@ endfunction
 
 ## Test class of input preserved
 %!assert (poisscdf ([x, NaN], 1), [y, NaN])
-%!assert (poisscdf (single ([x, NaN]), 1), single ([y, NaN]), eps ("single"))
-%!assert (poisscdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
+%!assert (poisscdf (single ([x, NaN]), 1), single ([y, NaN]), eps ('single'))
+%!assert (poisscdf ([x, NaN], single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<poisscdf: function called with too few input arguments.> poisscdf ()
 %!error<poisscdf: function called with too few input arguments.> poisscdf (1)
 %!error<poisscdf: invalid argument for upper tail.> poisscdf (1, 2, 3)
-%!error<poisscdf: invalid argument for upper tail.> poisscdf (1, 2, "tail")
+%!error<poisscdf: invalid argument for upper tail.> poisscdf (1, 2, 'tail')
 %!error<poisscdf: X and LAMBDA must be of common size or scalars.> ...
 %! poisscdf (ones (3), ones (2))
 %!error<poisscdf: X and LAMBDA must be of common size or scalars.> ...

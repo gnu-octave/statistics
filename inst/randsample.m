@@ -117,7 +117,7 @@ function y = weighted_replacement (k, w)
   w = w / sum (w);
   w = [0, (cumsum (w(:))')];
   ## distribute k uniform random deviates based on the given weighting
-  y = arrayfun (@(x) find (w <= x, 1, "last"), rand (1, k));
+  y = arrayfun (@(x) find (w <= x, 1, 'last'), rand (1, k));
 endfunction
 
 %!test

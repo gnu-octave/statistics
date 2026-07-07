@@ -75,8 +75,8 @@ function y = nbinpdf (x, r, ps)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (r, "single") || isa (ps, "single"))
-    y = NaN (size (x), "single");
+  if (isa (x, 'single') || isa (r, 'single') || isa (ps, 'single'))
+    y = NaN (size (x), 'single');
   else
     y = NaN (size (x));
   endif
@@ -103,15 +103,15 @@ endfunction
 %! y2 = nbinpdf (x, 5, 0.2);
 %! y3 = nbinpdf (x, 4, 0.4);
 %! y4 = nbinpdf (x, 10, 0.3);
-%! plot (x, y1, "*r", x, y2, "*g", x, y3, "*k", x, y4, "*m")
+%! plot (x, y1, '*r', x, y2, '*g', x, y3, '*k', x, y4, '*m')
 %! grid on
 %! xlim ([0, 40])
 %! ylim ([0, 0.12])
-%! legend ({"r = 2, ps = 0.15", "r = 5, ps = 0.2", "r = 4, p = 0.4", ...
-%!          "r = 10, ps = 0.3"}, "location", "northeast")
-%! title ("Negative binomial PDF")
-%! xlabel ("values in x (number of failures)")
-%! ylabel ("density")
+%! legend ({'r = 2, ps = 0.15', 'r = 5, ps = 0.2', 'r = 4, p = 0.4', ...
+%!          'r = 10, ps = 0.3'}, 'location', 'northeast')
+%! title ('Negative binomial PDF')
+%! xlabel ('values in x (number of failures)')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

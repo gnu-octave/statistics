@@ -90,10 +90,10 @@ function r = trnd (df, varargin)
   endif
 
   ## Check for class type
-  if (isa (df, "single"))
-    cls = "single";
+  if (isa (df, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   if (isscalar (df))

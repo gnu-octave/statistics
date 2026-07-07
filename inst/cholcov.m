@@ -62,9 +62,9 @@ function [T, p] = cholcov (sigma, flag)
   ## Check if sigma is a sparse matrix
   is_sparse = issparse (sigma);
   ## Check if sigma is single or double class
-  is_type = "double";
-  if (isa (sigma, "single"))
-    is_type = "single";
+  is_type = 'double';
+  if (isa (sigma, 'single'))
+    is_type = 'single';
   endif
   ## Check if sigma is square and symmetric
   [col, row] = size (sigma);

@@ -87,7 +87,7 @@ endfunction
 %!error<loglstat: function called with too few input arguments.> loglstat ()
 %!error<loglstat: function called with too few input arguments.> loglstat (1)
 %!error<loglstat: MU and SIGMA must be numeric.> loglstat ({}, 2)
-%!error<loglstat: MU and SIGMA must be numeric.> loglstat (1, "")
+%!error<loglstat: MU and SIGMA must be numeric.> loglstat (1, '')
 %!error<loglstat: MU and SIGMA must not be complex.> loglstat (i, 2)
 %!error<loglstat: MU and SIGMA must not be complex.> loglstat (1, i)
 %!error<loglstat: MU and SIGMA must be of common size or scalars.> ...

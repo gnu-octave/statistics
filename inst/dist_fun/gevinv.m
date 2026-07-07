@@ -94,17 +94,17 @@ endfunction
 %! x4 = gevinv (p, 1, 2, 5);
 %! x5 = gevinv (p, 1, 5, 5);
 %! x6 = gevinv (p, 1, 0.5, 5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
-%!       p, x4, "-c", p, x5, "-m", p, x6, "-k")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', ...
+%!       p, x4, '-c', p, x5, '-m', p, x6, '-k')
 %! grid on
 %! ylim ([-1, 10])
-%! legend ({"k = 1, σ = 1, μ = 1", "k = 0.5, σ = 1, μ = 1", ...
-%!          "k = 1, σ = 1, μ = 5", "k = 1, σ = 2, μ = 5", ...
-%!          "k = 1, σ = 5, μ = 5", "k = 1, σ = 0.5, μ = 5"}, ...
-%!         "location", "northwest")
-%! title ("Generalized extreme value iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'k = 1, σ = 1, μ = 1', 'k = 0.5, σ = 1, μ = 1', ...
+%!          'k = 1, σ = 1, μ = 5', 'k = 1, σ = 2, μ = 5', ...
+%!          'k = 1, σ = 5, μ = 5', 'k = 1, σ = 0.5, μ = 5'}, ...
+%!         'location', 'northwest')
+%! title ('Generalized extreme value iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!test

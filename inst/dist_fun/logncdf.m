@@ -70,11 +70,11 @@ function [varargout] = logncdf (x, varargin)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 1 && strcmpi (varargin{end}, 'upper'))
     uflag = true;
     varargin(end) = [];
   elseif (nargin > 1  && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
+          ! strcmpi (varargin{end}, 'upper'))
     error ("logncdf: invalid argument for upper tail.");
   elseif (nargin > 2 && isempty (varargin{end}))
     uflag = false;
@@ -159,10 +159,10 @@ function [varargout] = logncdf (x, varargin)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -180,13 +180,13 @@ endfunction
 %! p1 = logncdf (x, 0, 1);
 %! p2 = logncdf (x, 0, 0.5);
 %! p3 = logncdf (x, 0, 0.25);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r')
 %! grid on
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 0.5", "μ = 0, σ = 0.25"}, ...
-%!         "location", "southeast")
-%! title ("Log-normal CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 0.5', 'μ = 0, σ = 0.25'}, ...
+%!         'location', 'southeast')
+%! title ('Log-normal CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -202,14 +202,14 @@ endfunction
 
 ## Test class of input preserved
 %!assert (logncdf ([x, NaN], 0, sqrt(2)), [y, NaN], eps)
-%!assert (logncdf (single ([x, NaN]), 0, sqrt(2)), single ([y, NaN]), eps ("single"))
-%!assert (logncdf ([x, NaN], single (0), sqrt(2)), single ([y, NaN]), eps ("single"))
-%!assert (logncdf ([x, NaN], 0, single (sqrt(2))), single ([y, NaN]), eps ("single"))
+%!assert (logncdf (single ([x, NaN]), 0, sqrt(2)), single ([y, NaN]), eps ('single'))
+%!assert (logncdf ([x, NaN], single (0), sqrt(2)), single ([y, NaN]), eps ('single'))
+%!assert (logncdf ([x, NaN], 0, single (sqrt(2))), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<logncdf: invalid number of input arguments.> logncdf ()
 %!error<logncdf: invalid number of input arguments.> logncdf (1,2,3,4,5,6,7)
-%!error<logncdf: invalid argument for upper tail.> logncdf (1, 2, 3, 4, "uper")
+%!error<logncdf: invalid argument for upper tail.> logncdf (1, 2, 3, 4, 'uper')
 %!error<logncdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! logncdf (ones (3), ones (2), ones (2))
 %!error<logncdf: invalid size of covariance matrix.> logncdf (2, 3, 4, [1, 2])
@@ -220,7 +220,7 @@ endfunction
 %!error<logncdf: invalid value for alpha.> [p, plo, pup] = ...
 %! logncdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<logncdf: invalid value for alpha.> [p, plo, pup] = ...
-%! logncdf (1, 2, 3, [1, 0; 0, 1], "alpha", "upper")
+%! logncdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
 %!error<logncdf: X, MU, and SIGMA must not be complex.> logncdf (i, 2, 2)
 %!error<logncdf: X, MU, and SIGMA must not be complex.> logncdf (2, i, 2)
 %!error<logncdf: X, MU, and SIGMA must not be complex.> logncdf (2, 2, i)

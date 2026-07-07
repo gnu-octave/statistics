@@ -255,59 +255,59 @@ endfunction
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'completeKK');
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
 %!test
 %! numbers = [1, 2, 3, 4, 5, 6];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'completeKK');
 %! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
 %!test
 %! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'completeKK');
 %! assert (sort (cellfun (@sum, partition)), sort ([38, 38, 37]));
 %!test
 %! numbers = [10, 10, 10];
 %! num_parts = 3;
-%! [~, partition] = multiway (numbers, num_parts, "completeKK");
+%! [~, partition] = multiway (numbers, num_parts, 'completeKK');
 %! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
 %!test
 %! numbers = 1:10;
 %! num_parts = 2;
-%! [~, partition] = multiway (numbers, num_parts, "completeKK");
+%! [~, partition] = multiway (numbers, num_parts, 'completeKK');
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test greedy method
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
 %!test
 %! numbers = [1, 2, 3, 4, 5, 6];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), sort ([7, 7, 7]));
 %!test
 %! numbers = [10, 7, 5, 5, 6, 4, 10, 11, 12, 9, 10, 4, 3, 4, 5];
 %! num_parts = 4;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), sort ([27, 27, 27, 24]));
 %!test
 %! numbers = [24, 21, 18, 17, 12, 11, 8, 2];
 %! num_parts = 3;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), sort ([35, 37, 41]));
 %!test
 %! numbers = [10, 10, 10];
 %! num_parts = 3;
-%! [~, partition] = multiway (numbers, num_parts, "greedy");
+%! [~, partition] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), [10, 10, 10]);
 %!test
 %! numbers = 1:10;
 %! num_parts = 2;
-%! [~, partition] = multiway (numbers, num_parts, "greedy");
+%! [~, partition] = multiway (numbers, num_parts, 'greedy');
 %! assert (sort (cellfun (@sum, partition)), [27, 28]);
 
 ## Test algorithm switch
@@ -320,13 +320,13 @@ endfunction
 %!test
 %! numbers = [4; 5; 6; 7; 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'completeKK');
 %! assert (iscolumn (groupindex), true)
 %! assert (iscolumn (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
 %! numbers = [4; 5; 6; 7; 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (iscolumn (groupindex), true)
 %! assert (iscolumn (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
@@ -335,14 +335,14 @@ endfunction
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "completeKK");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'completeKK');
 %! assert (isrow (groupindex), true)
 %! assert (isrow (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([15, 15]));
 %!test
 %! numbers = [4, 5, 6, 7, 8];
 %! num_parts = 2;
-%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, "greedy");
+%! [groupindex, partition, groupsizes] = multiway (numbers, num_parts, 'greedy');
 %! assert (isrow (groupindex), true)
 %! assert (isrow (groupsizes), true);
 %! assert (sort (cellfun (@sum, partition)), sort ([13, 17]));
@@ -361,11 +361,11 @@ endfunction
 %! multiway ([1, 2, NaN], 2)
 %!error<multiway: NUM_PARTS must be a scalar.> multiway ([1,2,3], [1,2])
 %!error<multiway: NUM_PARTS must be a real numeric value.> ...
-%! multiway ([1, 2, 3], "2")
+%! multiway ([1, 2, 3], '2')
 %!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], 0)
 %!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], 1.5)
 %!error<multiway: NUM_PARTS must be a positive integer.> multiway ([1, 2, 3], -1)
 %!error<multiway: NUM_PARTS cannot be greater than number of elements in NUMBERS.> ...
 %! multiway ([1, 2], 3)
 %!error <multiway: unsupported method 'greedyalgo'.> ...
-%! multiway ([1,2,3], 2, "greedyalgo")
+%! multiway ([1,2,3], 2, 'greedyalgo')

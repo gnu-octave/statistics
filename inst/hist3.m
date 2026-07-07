@@ -98,18 +98,18 @@ function [N, C] = hist3 (X, varargin)
     error ("hist3: X must be a 2 columns matrix");
   endif
 
-  method = "nbins";
+  method = 'nbins';
   val = [10 10];
   if (numel (varargin) >= next_argin)
     this_arg = varargin{next_argin++};
     if (isnumeric (this_arg))
-      method = "nbins";
+      method = 'nbins';
       val = this_arg;
     elseif (iscell (this_arg))
-      method = "ctrs";
+      method = 'ctrs';
       val = this_arg;
     elseif (numel (varargin) >= next_argin
-            && any (strcmpi ({"nbins", "ctrs", "edges"}, this_arg)))
+            && any (strcmpi ({'nbins', 'ctrs', 'edges'}, this_arg)))
       method = tolower (this_arg);
       val = varargin{next_argin++};
     else
@@ -119,13 +119,13 @@ function [N, C] = hist3 (X, varargin)
 
   have_centers = false;
   switch (tolower (method))
-    case "nbins"
+    case 'nbins'
       [r_edges, c_edges] = edges_from_nbins (X, val);
-    case "ctrs"
+    case 'ctrs'
       have_centers = true;
       centers = val;
       [r_edges, c_edges] = edges_from_centers (val);
-    case "centers"
+    case 'centers'
       ## This was supported until 1.2.4 when the Matlab compatible option
       ## 'Ctrs' was added.
       persistent warned = false;
@@ -135,7 +135,7 @@ function [N, C] = hist3 (X, varargin)
       have_centers = true;
       centers = val;
       [r_edges, c_edges] = edges_from_centers (val);
-    case "edges"
+    case 'edges'
       if (! iscell (val) || numel (val) != 2
           || ! all (cellfun (@isvector, val)))
         error ("hist3: EDGES must be a cell array with 2 vectors");
@@ -157,8 +157,8 @@ function [N, C] = hist3 (X, varargin)
   ## edges.
   X(any (isnan (X), 2), :) = [];
 
-  r_idx = lookup (r_edges, X(:,1), "l");
-  c_idx = lookup (c_edges, X(:,2), "l");
+  r_idx = lookup (r_edges, X(:,1), 'l');
+  c_idx = lookup (c_edges, X(:,2), 'l');
 
   counts_size = [numel(r_edges) numel(c_edges)];
   counts = accumarray ([r_idx, c_idx], 1, counts_size);
@@ -171,7 +171,7 @@ function [N, C] = hist3 (X, varargin)
     ## seems straight wrong but that's how Matlab plots look.
     y = [kron(c_edges, ones (1, 2)) (c_edges(end)*2-c_edges(end-1))([1 1])];
     x = [kron(r_edges, ones (1, 2)) (r_edges(end)*2-r_edges(end-1))([1 1])];
-    mesh (hax, x, y, z, "facecolor", [.75 .85 .95], varargin{next_argin:end});
+    mesh (hax, x, y, z, 'facecolor', [.75 .85 .95], varargin{next_argin:end});
   else
     N = counts;
     if (nargout > 1)
@@ -276,13 +276,13 @@ endfunction
 
 %!test
 %! for i = 10
-%!   assert (size (hist3 (rand (9, 2), "Edges", {[0:.2:1]; [0:.2:1]})), [6 6])
+%!   assert (size (hist3 (rand (9, 2), 'Edges', {[0:.2:1]; [0:.2:1]})), [6 6])
 %! endfor
 
 %!test
 %! edge_1 = linspace (0, 10, 10);
 %! edge_2 = linspace (0, 50, 10);
-%! [c, nn] = hist3 ([1:10; 1:5:50]', "Edges", {edge_1, edge_2});
+%! [c, nn] = hist3 ([1:10; 1:5:50]', 'Edges', {edge_1, edge_2});
 %! exp_c = zeros (10, 10);
 %! exp_c([1 12 13 24 35 46 57 68 79 90]) = 1;
 %! assert (c, exp_c);
@@ -314,21 +314,21 @@ endfunction
 %! N([1 5 17 18 20 31 34 35]) = [1 1 1 1 3 1 1 1];
 %! C = {(1.4:0.8:4.6), ((2+(1/7)):(2/7):(4-(1/7)))};
 %! assert (nthargout ([1 2], @hist3, X, [5 7]), {N C}, eps*10^3)
-%! assert (nthargout ([1 2], @hist3, X, "Nbins", [5 7]), {N C}, eps*10^3)
+%! assert (nthargout ([1 2], @hist3, X, 'Nbins', [5 7]), {N C}, eps*10^3)
 
 %!test
 %! N = [0 1 0; 0 1 0; 0 0 1; 0 0 0];
 %! C = {(2:5), (2.5:1:4.5)};
-%! assert (nthargout ([1 2], @hist3, X, "Edges", {(1.5:4.5), (2:4)}), {N C})
+%! assert (nthargout ([1 2], @hist3, X, 'Edges', {(1.5:4.5), (2:4)}), {N C})
 
 %!test
 %! N = [0 0 1 0 1 0; 0 0 0 1 0 0; 0 0 1 4 2 0];
 %! C = {(1.2:3.2), (0:5)};
-%! assert (nthargout ([1 2], @hist3, X, "Ctrs", C), {N C})
+%! assert (nthargout ([1 2], @hist3, X, 'Ctrs', C), {N C})
 %! assert (nthargout ([1 2], @hist3, X, C), {N C})
 
 %!test
-%! [~, C] = hist3 (rand (10, 2), "Edges", {[0 .05 .15 .35 .55 .95],
+%! [~, C] = hist3 (rand (10, 2), 'Edges', {[0 .05 .15 .35 .55 .95],
 %!                                         [-1 .05 .07 .2 .3 .5 .89 1.2]});
 %! C_exp = {[ 0.025  0.1   0.25   0.45  0.75  1.15], ...
 %!          [-0.475  0.06  0.135  0.25  0.4   0.695  1.045  1.355]};
@@ -340,29 +340,29 @@ endfunction
 %! Xv = repmat ([1:10]', [1 2]);
 %!
 %! ## Test Centers
-%! assert (hist3 (Xv, "Ctrs", {1:10, 1:10}), eye (10))
+%! assert (hist3 (Xv, 'Ctrs', {1:10, 1:10}), eye (10))
 %!
 %! N_exp = eye (6);
 %! N_exp([1 end]) = 3;
-%! assert (hist3 (Xv, "Ctrs", {3:8, 3:8}), N_exp)
+%! assert (hist3 (Xv, 'Ctrs', {3:8, 3:8}), N_exp)
 %!
 %! N_exp = zeros (8, 6);
 %! N_exp([1 2 11 20 29 38 47 48]) = [2 1 1 1 1 1 1 2];
-%! assert (hist3 (Xv, "Ctrs", {2:9, 3:8}), N_exp)
+%! assert (hist3 (Xv, 'Ctrs', {2:9, 3:8}), N_exp)
 %!
 %! ## Test Edges
-%! assert (hist3 (Xv, "Edges", {1:10, 1:10}), eye (10))
-%! assert (hist3 (Xv, "Edges", {3:8, 3:8}), eye (6))
-%! assert (hist3 (Xv, "Edges", {2:9, 3:8}), [zeros(1, 6); eye(6); zeros(1, 6)])
+%! assert (hist3 (Xv, 'Edges', {1:10, 1:10}), eye (10))
+%! assert (hist3 (Xv, 'Edges', {3:8, 3:8}), eye (6))
+%! assert (hist3 (Xv, 'Edges', {2:9, 3:8}), [zeros(1, 6); eye(6); zeros(1, 6)])
 %!
 %! N_exp = zeros (14);
 %! N_exp(3:12, 3:12) = eye (10);
-%! assert (hist3 (Xv, "Edges", {-1:12, -1:12}), N_exp)
+%! assert (hist3 (Xv, 'Edges', {-1:12, -1:12}), N_exp)
 %!
 %! ## Test for Nbins
 %! assert (hist3 (Xv), eye (10))
 %! assert (hist3 (Xv, [10 10]), eye (10))
-%! assert (hist3 (Xv, "nbins", [10 10]), eye (10))
+%! assert (hist3 (Xv, 'nbins', [10 10]), eye (10))
 %! assert (hist3 (Xv, [5 5]), eye (5) * 2)
 %!
 %! N_exp = zeros (7, 5);

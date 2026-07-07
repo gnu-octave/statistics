@@ -98,10 +98,10 @@ function r = plrnd (x, Fx, varargin)
   Fx = Fx(:)';
 
   ## Check for class type
-  if (isa (x, "single") || isa (Fx, "single"))
-    cls = "single";
+  if (isa (x, 'single') || isa (Fx, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from the piecewise linear distribution

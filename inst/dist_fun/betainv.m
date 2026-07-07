@@ -54,8 +54,8 @@ function x = betainv (p, a, b)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (a, 'single') || isa (b, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -77,8 +77,8 @@ function x = betainv (p, a, b)
     endif
     p = p(k);
 
-    if (isa (y, "single"))
-      myeps = eps ("single");
+    if (isa (y, 'single'))
+      myeps = eps ('single');
     else
       myeps = eps;
     endif
@@ -126,13 +126,13 @@ endfunction
 %! x3 = betainv (p, 1, 3);
 %! x4 = betainv (p, 2, 2);
 %! x5 = betainv (p, 2, 5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! grid on
-%! legend ({"α = β = 0.5", "α = 5, β = 1", "α = 1, β = 3", ...
-%!          "α = 2, β = 2", "α = 2, β = 5"}, "location", "southeast")
-%! title ("Beta iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'α = β = 0.5', 'α = 5, β = 1', 'α = 1, β = 3', ...
+%!          'α = 2, β = 2', 'α = 2, β = 5'}, 'location', 'southeast')
+%! title ('Beta iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p
@@ -147,8 +147,8 @@ endfunction
 ## Test class of input preserved
 %!assert (betainv ([p, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)
 %!assert (betainv (single ([p, NaN]), 1, 2), single ([NaN 0 0.5 1 NaN NaN]))
-%!assert (betainv ([p, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
-%!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps("single"))
+%!assert (betainv ([p, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps('single'))
+%!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps('single'))
 
 ## Test input validation
 %!error<betainv: function called with too few input arguments.> betainv ()

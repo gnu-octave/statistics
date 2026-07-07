@@ -86,7 +86,7 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   endif
 
   ## Check precision of X
-  if (isa (x, "single"))
+  if (isa (x, 'single'))
     ranks = single (ranks);
     tieadj = single (tieadj);
   endif
@@ -147,12 +147,12 @@ endfunction
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], [1, 1])
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], "A")
+%! tiedrank ([1, 2, 3, 4, 5], 'A')
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], [true, true])
 %!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], 0, [1, 1])
 %!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
-%! tiedrank ([1, 2, 3, 4, 5], 0, "A")
+%! tiedrank ([1, 2, 3, 4, 5], 0, 'A')
 %!error <tiedrank: BIDIR must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], 0, [true, true])

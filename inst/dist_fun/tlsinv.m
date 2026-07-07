@@ -56,11 +56,11 @@ function x = tlsinv (p, mu, sigma, nu)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") ||
-      isa (sigma, "single") || isa (nu, "single"))
-    cls = "single";
+  if (isa (p, 'single') || isa (mu, 'single') ||
+      isa (sigma, 'single') || isa (nu, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Force invalid SIGMA parameter to NaN
@@ -81,16 +81,16 @@ endfunction
 %! x2 = tlsinv (p, 0, 2, 2);
 %! x3 = tlsinv (p, 3, 2, 5);
 %! x4 = tlsinv (p, -1, 3, Inf);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-m')
 %! grid on
 %! xlim ([0, 1])
 %! ylim ([-8, 8])
-%! legend ({"mu = 0, sigma = 1, nu = 1", "mu = 0, sigma = 2, nu = 2", ...
-%!          "mu = 3, sigma = 2, nu = 5", 'mu = -1, sigma = 3, nu = \infty'}, ...
-%!         "location", "southeast")
-%! title ("Location-scale Student's T iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'mu = 0, sigma = 1, nu = 1', 'mu = 0, sigma = 2, nu = 2', ...
+%!          'mu = 3, sigma = 2, nu = 5', 'mu = -1, sigma = 3, nu = \infty'}, ...
+%!         'location', 'southeast')
+%! title ('Location-scale Student''s T iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

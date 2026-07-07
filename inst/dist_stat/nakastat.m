@@ -75,7 +75,7 @@ endfunction
 %!error<nakastat: function called with too few input arguments.> nakastat ()
 %!error<nakastat: function called with too few input arguments.> nakastat (1)
 %!error<nakastat: MU and OMEGA must be numeric.> nakastat ({}, 2)
-%!error<nakastat: MU and OMEGA must be numeric.> nakastat (1, "")
+%!error<nakastat: MU and OMEGA must be numeric.> nakastat (1, '')
 %!error<nakastat: MU and OMEGA must not be complex.> nakastat (i, 2)
 %!error<nakastat: MU and OMEGA must not be complex.> nakastat (1, i)
 %!error<nakastat: MU and OMEGA must be of common size or scalars.> ...

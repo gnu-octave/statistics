@@ -151,7 +151,7 @@ endfunction
 %! X = [x1, x2];
 %!
 %! # create an object
-%! a = fitrgam (X, y, "tol", 1e-3)
+%! a = fitrgam (X, y, 'tol', 1e-3)
 
 
 ## Test constructor
@@ -163,25 +163,25 @@ endfunction
 %! assert ({a.BaseModel.Intercept}, {2.5000})
 %! assert ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
 %! assert ({a.NumObservations, a.NumPredictors}, {4, 3})
-%! assert ({a.ResponseName, a.PredictorNames}, {"Y", {"x1", "x2", "x3"}})
+%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
 %! assert ({a.Formula}, {[]})
 %!test
 %! x = [1, 2, 3, 4; 4, 5, 6, 7; 7, 8, 9, 1; 3, 2, 1, 2];
 %! y = [1; 2; 3; 4];
-%! pnames = {"A", "B", "C", "D"};
-%! formula = "Y ~ A + B + C + D + A:C";
+%! pnames = {'A', 'B', 'C', 'D'};
+%! formula = 'Y ~ A + B + C + D + A:C';
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
-%! a = fitrgam (x, y, "predictors", pnames, "formula", formula);
+%! a = fitrgam (x, y, 'predictors', pnames, 'formula', formula);
 %! assert (a.IntMatrix, double (intMat))
-%! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
+%! assert ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
 %! assert (a.Formula, formula)
 
 ## Test input validation
 %!error<fitrgam: too few arguments.> fitrgam ()
 %!error<fitrgam: too few arguments.> fitrgam (ones(10,2))
 %!error<fitrgam: Name-Value arguments must be in pairs.>
-%! fitrgam (ones (4,2), ones (4, 1), "K")
+%! fitrgam (ones (4,2), ones (4, 1), 'K')
 %!error<fitrgam: number of rows in X and Y must be equal.>
 %! fitrgam (ones (4,2), ones (3, 1))
 %!error<fitrgam: number of rows in X and Y must be equal.>
-%! fitrgam (ones (4,2), ones (3, 1), "K", 2)
+%! fitrgam (ones (4,2), ones (3, 1), 'K', 2)

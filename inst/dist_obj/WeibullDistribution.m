@@ -92,7 +92,7 @@ classdef WeibullDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "WeibullDistribution";
+    DistributionName = 'WeibullDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} NumParameters
@@ -114,7 +114,7 @@ classdef WeibullDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"lambda", "k"};
+    ParameterNames = {'lambda', 'k'};
 
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} ParameterDescription
@@ -126,12 +126,12 @@ classdef WeibullDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Scale", "Shape"};
+    ParameterDescription = {'Scale', 'Shape'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "wbl";
+    DistributionCode = 'wbl';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -249,11 +249,11 @@ classdef WeibullDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Weibull distribution");
+      __disp__ (this, 'Weibull distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Weibull distribution");
+      __disp__ (this, 'Weibull distribution');
     endfunction
 
     function this = set.lambda (this, lambda)
@@ -304,9 +304,9 @@ classdef WeibullDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -743,7 +743,7 @@ classdef WeibullDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -765,7 +765,7 @@ classdef WeibullDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -787,12 +787,12 @@ endfunction
 %! ## parameters lambda = 1 and k = 2.  Fit a Weibull distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of a data.
 %!
-%! pd_fixed = makedist ("Weibull", "lambda", 1, "k", 2)
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Weibull', 'lambda', 1, 'k', 2)
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Weibull")
+%! pd_fitted = fitdist (data, 'Weibull')
 %! plot (pd_fitted)
-%! msg = "Fitted Weibull distribution with lambda = %0.2f and k = %0.2f";
+%! msg = 'Fitted Weibull distribution with lambda = %0.2f and k = %0.2f';
 %! title (sprintf (msg, pd_fitted.lambda, pd_fitted.k))
 
 ## Test output
@@ -836,7 +836,7 @@ endfunction
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
 %! WeibullDistribution(i, 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution("a", 1)
+%! WeibullDistribution('a', 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
 %! WeibullDistribution([1, 2], 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
@@ -850,7 +850,7 @@ endfunction
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
 %! WeibullDistribution(1, i)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, "a")
+%! WeibullDistribution(1, 'a')
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
 %! WeibullDistribution(1, [1, 2])
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
@@ -858,7 +858,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (WeibullDistribution, 2, "uper")
+%! cdf (WeibullDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (WeibullDistribution, 2, 3)
 
@@ -866,59 +866,59 @@ endfunction
 %!shared x
 %! x = wblrnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha")
+%! paramci (WeibullDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 0)
+%! paramci (WeibullDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 1)
+%! paramci (WeibullDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (WeibullDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", "")
+%! paramci (WeibullDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", {0.05})
+%! paramci (WeibullDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "parameter", "k", "alpha", {0.05})
+%! paramci (WeibullDistribution.fit (x), 'parameter', 'k', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "parameter", {"lambda", "k", "param"})
+%! paramci (WeibullDistribution.fit (x), 'parameter', {'lambda', 'k', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"lambda", "k", "param"})
+%! paramci (WeibullDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'lambda', 'k', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (WeibullDistribution.fit (x), "parameter", "param")
+%! paramci (WeibullDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (WeibullDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (x), "NAME", "value")
+%! paramci (WeibullDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (WeibullDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (WeibullDistribution.fit (x), "alpha", 0.01, "parameter", "k", ...
-%!          "NAME", "value")
+%! paramci (WeibullDistribution.fit (x), 'alpha', 0.01, 'parameter', 'k', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (WeibullDistribution, "Parent")
+%! plot (WeibullDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (WeibullDistribution, "PlotType", 12)
+%! plot (WeibullDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (WeibullDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (WeibullDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (WeibullDistribution, "PlotType", "pdfcdf")
+%! plot (WeibullDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", "pdfcdf")
+%! plot (WeibullDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", [1, 0])
+%! plot (WeibullDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (WeibullDistribution, "Discrete", {true})
+%! plot (WeibullDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (WeibullDistribution, "Parent", 12)
+%! plot (WeibullDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (WeibullDistribution, "Parent", "hax")
+%! plot (WeibullDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (WeibullDistribution, "invalidNAME", "pdf")
+%! plot (WeibullDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (WeibullDistribution, "PlotType", "probability")
+%! plot (WeibullDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -932,23 +932,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (WeibullDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display")
+%! proflik (WeibullDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display", 1)
+%! proflik (WeibullDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display", {1})
+%! proflik (WeibullDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (WeibullDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (WeibullDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (WeibullDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (WeibullDistribution.fit (x), 1, "NAME", "on")
+%! proflik (WeibullDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (WeibullDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (WeibullDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (WeibullDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

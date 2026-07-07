@@ -85,7 +85,7 @@ function [g, gn, gl] = grp2idx (s)
     undef = isundefined (s);
     cats = categories (s);
     s = cellstr (s);
-    s(undef) = {""};
+    s(undef) = {''};
   elseif (ischar (s))
     is_char_array = true;
     s = cellstr (s);
@@ -172,12 +172,12 @@ function [g, gn, gl] = grp2idx (s)
         gn = cell (0,1);
       endif
     elseif (iscell (gl))
-      gn = cellfun (@num2str, gl, "UniformOutput", false);
+      gn = cellfun (@num2str, gl, 'UniformOutput', false);
       if (isempty (gn))
         gn = cell (0,1);
       endif
     else
-      gn = arrayfun (@num2str, gl, "UniformOutput", false);
+      gn = arrayfun (@num2str, gl, 'UniformOutput', false);
       if (isempty (gn))
         gn = cell (0,1);
       endif
@@ -242,7 +242,7 @@ endfunction
 
 ## test numeric arrays
 %!assert (nthargout (1:3, @grp2idx, [1, -3, -2, -3, -3,  2,  1, -1,  3, -3]),
-%!        {[4; 1; 2; 1; 1; 5; 4; 3; 6; 1], {"-3"; "-2"; "-1"; "1"; "2"; "3"}, ...
+%!        {[4; 1; 2; 1; 1; 5; 4; 3; 6; 1], {'-3'; '-2'; '-1'; '1'; '2'; '3'}, ...
 %!         [-3; -2; -1; 1; 2; 3]})
 
 %!test

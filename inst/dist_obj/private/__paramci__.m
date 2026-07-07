@@ -39,14 +39,14 @@ function ci = __paramci__ (pd, varargin)
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
 
-      case "alpha"
+      case 'alpha'
         alpha = varargin{2};
         if (! isscalar (alpha) || ! isnumeric (alpha) || ...
               alpha <= 0 || alpha >= 1)
           error ("paramci: invalid VALUE for 'Alpha' argument.");
         endif
 
-      case "parameter"
+      case 'parameter'
         if (! isvector (varargin{2}) ||
             ((iscellstr (varargin{2}) || isnumeric (varargin{2})) &&
             numel (varargin{2}) > numel (parnames)))
@@ -54,7 +54,7 @@ function ci = __paramci__ (pd, varargin)
         endif
         if (iscellstr (varargin{2}))
           tmp = cellfun (@(x) strcmpi (x, parnames), varargin{2}, ...
-                        "UniformOutput", false);
+                        'UniformOutput', false);
           param = or (tmp{:});
         elseif (isnumeric (varargin{2}))
           param = ismember (parnames, varargin{2});
@@ -65,7 +65,7 @@ function ci = __paramci__ (pd, varargin)
           error ("paramci: unknown distribution parameter.");
         endif
 
-      case {"type", "logflag"}
+      case {'type', 'logflag'}
         printf ("paramci: '%s' argument not supported yet.", varargin{1});
 
       otherwise
@@ -76,31 +76,31 @@ function ci = __paramci__ (pd, varargin)
   endwhile
 
   ## Get confidence intervals for all parameters from selected distribution
-  if (strcmpi (distname, "bino"))
+  if (strcmpi (distname, 'bino'))
     ntrials = pd.N;
-    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
-                   "alpha", alpha, "ntrials", ntrials, ...
-                   "frequency", pd.InputData.freq);
+    [~, ci] = mle (pd.InputData.data, 'distribution', distname, ...
+                   'alpha', alpha, 'ntrials', ntrials, ...
+                   'frequency', pd.InputData.freq);
 
-  elseif (strcmpi (distname, "gp"))
+  elseif (strcmpi (distname, 'gp'))
     theta = pd.theta;
-    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
-                   "alpha", alpha, "theta", theta, ...
-                   "frequency", pd.InputData.freq);
+    [~, ci] = mle (pd.InputData.data, 'distribution', distname, ...
+                   'alpha', alpha, 'theta', theta, ...
+                   'frequency', pd.InputData.freq);
 
-  elseif (strcmpi (distname, "hn"))
+  elseif (strcmpi (distname, 'hn'))
     mu = pd.mu;
-    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
-                   "alpha", alpha, "mu", mu, "frequency", pd.InputData.freq);
+    [~, ci] = mle (pd.InputData.data, 'distribution', distname, ...
+                   'alpha', alpha, 'mu', mu, 'frequency', pd.InputData.freq);
 
   elseif (! pd.CensoringAllowed)
-    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
-                   "alpha", alpha, "frequency", pd.InputData.freq);
+    [~, ci] = mle (pd.InputData.data, 'distribution', distname, ...
+                   'alpha', alpha, 'frequency', pd.InputData.freq);
 
   else
-    [~, ci] = mle (pd.InputData.data, "distribution", distname, ...
-                   "alpha", alpha, "censoring", pd.InputData.cens, ...
-                   "frequency", pd.InputData.freq);
+    [~, ci] = mle (pd.InputData.data, 'distribution', distname, ...
+                   'alpha', alpha, 'censoring', pd.InputData.cens, ...
+                   'frequency', pd.InputData.freq);
 
   endif
 

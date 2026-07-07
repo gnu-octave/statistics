@@ -208,7 +208,7 @@ function [y, dy, d2y] = dgammainc (x, k)
     stsum = step;
     d1sum = d1st;
     d2sum = d2st;
-    while norm (step, "inf") >= 100 * eps (norm (stsum, "inf"))
+    while norm (step, 'inf') >= 100 * eps (norm (stsum, 'inf'))
       k_1 += 1;
       step = step .* x_lo ./ k_1;
       d1st = (d1st .* x_lo - step) ./ k_1;
@@ -256,7 +256,7 @@ function [y, dy, d2y] = dgammainc (x, k)
     d1kx = 1 ./ x_hi;
     d2kx = 0;
     start = 1;
-    while norm (d2kx - start, "Inf") > 100 * eps (norm (d2kx, "Inf"))
+    while norm (d2kx - start, 'Inf') > 100 * eps (norm (d2kx, 'Inf'))
       rescale = 1 ./ x1;
       zc += 1;
       n_k = zc - k_hi;

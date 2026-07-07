@@ -138,7 +138,7 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
   ## Create ANOVA table data for output
   if (reps > 1)
     ## When there are replicates, include interaction row
-    source_list = {"Columns"; "Interaction"; "Error"; "Total"};
+    source_list = {'Columns'; 'Interaction'; 'Error'; 'Total'};
     ss_list = [anova_table{2,2}; anova_table{3,2}; ...
                anova_table{end - 1,2}; anova_table{end,2}];
     df_list = [anova_table{2,3}; anova_table{3,3}; ...
@@ -149,7 +149,7 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
     prob_list = [p; anova_table{3,6}; 0; 0];
   else
     ## When there are no replicates (reps = 1), exclude interaction row
-    source_list = {"Columns"; "Error"; "Total"};
+    source_list = {'Columns'; 'Error'; 'Total'};
     ss_list = [anova_table{2,2}; anova_table{end - 1,2}; anova_table{end,2}];
     df_list = [anova_table{2,3}; anova_table{end - 1,3}; anova_table{end,3}];
     ms_list = [anova_table{2,4}; anova_table{end - 1,4}; 0];
@@ -159,8 +159,8 @@ function [p, tbl, stats] = friedman (x, reps, displayopt)
 
   ## Create output table using datatypes package
   tbl = table (source_list, ss_list, df_list, ms_list, chi_sq_list, ...
-               prob_list, "VariableNames", {"Source", "SS", "df", "MS", ...
-               "Chi_sq", "Prob_Chi_sq"});
+               prob_list, 'VariableNames', {'Source', 'SS', 'df', 'MS', ...
+               'Chi_sq', 'Prob_Chi_sq'});
 
   ## Create stats structure (if requested) for MULTCOMPARE
   if (nargout > 2)

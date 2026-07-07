@@ -96,7 +96,7 @@ endfunction
 %! endfor
 %! hold off
 %! axis image
-%! legend (h, arrayfun (@(x) sprintf ("l:%.2g", x), l, "unif", 0));
+%! legend (h, arrayfun (@(x) sprintf ("l:%.2g", x), l, 'unif', 0));
 
 
 %!test

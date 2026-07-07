@@ -49,7 +49,7 @@ function p = invgcdf (x, mu, lambda, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("invgcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -72,10 +72,10 @@ function p = invgcdf (x, mu, lambda, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (lambda, "single"))
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (lambda, 'single'))
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -117,14 +117,14 @@ endfunction
 %! p3 = invgcdf (x, 1, 3);
 %! p4 = invgcdf (x, 3, 0.2);
 %! p5 = invgcdf (x, 3, 1);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-y")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-y')
 %! grid on
 %! xlim ([0, 3])
-%! legend ({"μ = 1, σ = 0.2", "μ = 1, σ = 1", "μ = 1, σ = 3", ...
-%!          "μ = 3, σ = 0.2", "μ = 3, σ = 1"}, "location", "southeast")
-%! title ("Inverse Gaussian CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 1, σ = 0.2', 'μ = 1, σ = 1', 'μ = 1, σ = 3', ...
+%!          'μ = 3, σ = 0.2', 'μ = 3, σ = 1'}, 'location', 'southeast')
+%! title ('Inverse Gaussian CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, p1, p1u, y2, y2u, y3, y3u
@@ -138,10 +138,10 @@ endfunction
 %!assert (invgcdf (x, 1, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
 %!assert (invgcdf (x, [1, 1, 1, NaN, 1, 1], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
 %!assert (invgcdf ([x(1:3), NaN, x(5:6)], 1, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (invgcdf (x, ones (1,6), ones (1,6), "upper"), p1u, 1e-4)
-%!assert (invgcdf (x, 1, 1, "upper"), p1u, 1e-4)
-%!assert (invgcdf (x, 1, ones (1,6), "upper"), p1u, 1e-4)
-%!assert (invgcdf (x, ones (1,6), 1, "upper"), p1u, 1e-4)
+%!assert (invgcdf (x, ones (1,6), ones (1,6), 'upper'), p1u, 1e-4)
+%!assert (invgcdf (x, 1, 1, 'upper'), p1u, 1e-4)
+%!assert (invgcdf (x, 1, ones (1,6), 'upper'), p1u, 1e-4)
+%!assert (invgcdf (x, ones (1,6), 1, 'upper'), p1u, 1e-4)
 
 ## Test class of input preserved
 %!assert (class (invgcdf (single ([x, NaN]), 1, 1)), "single")
@@ -152,7 +152,7 @@ endfunction
 %!error<invgcdf: function called with too few input arguments.> invgcdf ()
 %!error<invgcdf: function called with too few input arguments.> invgcdf (1)
 %!error<invgcdf: function called with too few input arguments.> invgcdf (1, 2)
-%!error<invgcdf: invalid argument for upper tail.> invgcdf (1, 2, 3, "tail")
+%!error<invgcdf: invalid argument for upper tail.> invgcdf (1, 2, 3, 'tail')
 %!error<invgcdf: invalid argument for upper tail.> invgcdf (1, 2, 3, 5)
 %!error<invgcdf: X, MU, and LAMBDA must be of common size or scalars.> ...
 %! invgcdf (ones (3), ones (2), ones(2))

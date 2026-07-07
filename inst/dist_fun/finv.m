@@ -55,8 +55,8 @@ function x = finv (p, df1, df2)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (df1, "single") || isa (df2, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (df1, 'single') || isa (df2, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -102,15 +102,15 @@ endfunction
 %! x3 = finv (p, 5, 2);
 %! x4 = finv (p, 10, 1);
 %! x5 = finv (p, 100, 100);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! grid on
 %! ylim ([0, 4])
-%! legend ({"df1 = 1, df2 = 2", "df1 = 2, df2 = 1", ...
-%!          "df1 = 5, df2 = 2", "df1 = 10, df2 = 1", ...
-%!          "df1 = 100, df2 = 100"}, "location", "northwest")
-%! title ("F iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'df1 = 1, df2 = 2', 'df1 = 2, df2 = 1', ...
+%!          'df1 = 5, df2 = 2', 'df1 = 10, df2 = 1', ...
+%!          'df1 = 100, df2 = 100'}, 'location', 'northwest')
+%! title ('F iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

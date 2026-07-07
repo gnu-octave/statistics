@@ -51,7 +51,7 @@ function p = nakacdf (x, mu, omega, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("nakacdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -74,8 +74,8 @@ function p = nakacdf (x, mu, omega, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (omega, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (omega, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -94,7 +94,7 @@ function p = nakacdf (x, mu, omega, uflag)
     p(k2) = 0;
     left = mu .* ones (size (x));
     right = (mu ./ omega) .* x .^ 2;
-    p(k) = gammainc (right(k), left(k), "upper");
+    p(k) = gammainc (right(k), left(k), 'upper');
   else
     p(k2) = 1;
     left = mu .* ones (size (x));
@@ -114,16 +114,16 @@ endfunction
 %! p5 = nakacdf (x, 2, 1);
 %! p6 = nakacdf (x, 2, 2);
 %! p7 = nakacdf (x, 5, 1);
-%! plot (x, p1, "-r", x, p2, "-g", x, p3, "-y", x, p4, "-m", ...
-%!       x, p5, "-k", x, p6, "-b", x, p7, "-c")
+%! plot (x, p1, '-r', x, p2, '-g', x, p3, '-y', x, p4, '-m', ...
+%!       x, p5, '-k', x, p6, '-b', x, p7, '-c')
 %! grid on
 %! xlim ([0, 3])
-%! legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
-%!          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
-%!          "μ = 5, ω = 1"}, "location", "southeast")
-%! title ("Nakagami CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0.5, ω = 1', 'μ = 1, ω = 1', 'μ = 1, ω = 2', ...
+%!          'μ = 1, ω = 3', 'μ = 2, ω = 1', 'μ = 2, ω = 2', ...
+%!          'μ = 5, ω = 1'}, 'location', 'southeast')
+%! title ('Nakagami CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -136,15 +136,15 @@ endfunction
 %!assert (nakacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps("single"))
-%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps("single"))
-%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps("single"))
+%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps('single'))
+%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps('single'))
+%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error<nakacdf: function called with too few input arguments.> nakacdf ()
 %!error<nakacdf: function called with too few input arguments.> nakacdf (1)
 %!error<nakacdf: function called with too few input arguments.> nakacdf (1, 2)
-%!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, "tail")
+%!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, 'tail')
 %!error<nakacdf: invalid argument for upper tail.> nakacdf (1, 2, 3, 4)
 %!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...
 %! nakacdf (ones (3), ones (2), ones (2))

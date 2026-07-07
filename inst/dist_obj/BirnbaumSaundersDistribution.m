@@ -95,7 +95,7 @@ classdef BirnbaumSaundersDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "BirnbaumSaundersDistribution";
+    DistributionName = 'BirnbaumSaundersDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} NumParameters
@@ -117,7 +117,7 @@ classdef BirnbaumSaundersDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"beta", "gamma"};
+    ParameterNames = {'beta', 'gamma'};
 
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} ParameterDescription
@@ -129,12 +129,12 @@ classdef BirnbaumSaundersDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Scale", "Shape"};
+    ParameterDescription = {'Scale', 'Shape'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "bisa";
+    DistributionCode = 'bisa';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -252,11 +252,11 @@ classdef BirnbaumSaundersDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Birnbaum-Saunders distribution");
+      __disp__ (this, 'Birnbaum-Saunders distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Birnbaum-Saunders distribution");
+      __disp__ (this, 'Birnbaum-Saunders distribution');
     endfunction
 
     function this = set.beta (this, beta)
@@ -307,9 +307,9 @@ classdef BirnbaumSaundersDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -748,7 +748,7 @@ classdef BirnbaumSaundersDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -770,7 +770,7 @@ classdef BirnbaumSaundersDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -794,12 +794,12 @@ endfunction
 %! ## distribution to this data and plot a PDF of the fitted distribution
 %! ## superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("BirnbaumSaunders", "beta", 1, "gamma", 0.5)
-%! randg ("seed", 21);
+%! pd_fixed = makedist ('BirnbaumSaunders', 'beta', 1, 'gamma', 0.5)
+%! randg ('seed', 21);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "BirnbaumSaunders")
+%! pd_fitted = fitdist (data, 'BirnbaumSaunders')
 %! plot (pd_fitted)
-%! msg = "Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f";
+%! msg = 'Fitted Birnbaum-Saunders distribution with beta = %0.2f and gamma = %0.2f';
 %! title (sprintf (msg, pd_fitted.beta, pd_fitted.gamma))
 
 ## Test output
@@ -841,7 +841,7 @@ endfunction
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
 %! BirnbaumSaundersDistribution(i, 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution("beta", 1)
+%! BirnbaumSaundersDistribution('beta', 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
 %! BirnbaumSaundersDistribution([1, 2], 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
@@ -855,7 +855,7 @@ endfunction
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
 %! BirnbaumSaundersDistribution(1, i)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, "beta")
+%! BirnbaumSaundersDistribution(1, 'beta')
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
 %! BirnbaumSaundersDistribution(1, [1, 2])
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
@@ -863,72 +863,72 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (BirnbaumSaundersDistribution, 2, "uper")
+%! cdf (BirnbaumSaundersDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (BirnbaumSaundersDistribution, 2, 3)
 
 ## 'paramci' method
 %!shared x
-%! rand ("seed", 5);
+%! rand ('seed', 5);
 %! x = bisarnd (1, 1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 0)
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 1)
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", "")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", {0.05})
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "parameter", ...
-%!          "beta", "alpha", {0.05})
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'parameter', ...
+%!          'beta', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (BirnbaumSaundersDistribution.fit (x), ...
-%!          "parameter", {"beta", "gamma", "param"})
+%!          'parameter', {'beta', 'gamma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"beta", "gamma", "param"})
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'beta', 'gamma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "parameter", "param")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "NAME", "value")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 0.01, ...
-%!          "NAME", "value")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 0.01, ...
+%!          'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BirnbaumSaundersDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "beta", "NAME", "value")
+%! paramci (BirnbaumSaundersDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'beta', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (BirnbaumSaundersDistribution, "Parent")
+%! plot (BirnbaumSaundersDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "PlotType", 12)
+%! plot (BirnbaumSaundersDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (BirnbaumSaundersDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "PlotType", "pdfcdf")
+%! plot (BirnbaumSaundersDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "Discrete", "pdfcdf")
+%! plot (BirnbaumSaundersDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "Discrete", [1, 0])
+%! plot (BirnbaumSaundersDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "Discrete", {true})
+%! plot (BirnbaumSaundersDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "Parent", 12)
+%! plot (BirnbaumSaundersDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BirnbaumSaundersDistribution, "Parent", "hax")
+%! plot (BirnbaumSaundersDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (BirnbaumSaundersDistribution, "invalidNAME", "pdf")
+%! plot (BirnbaumSaundersDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (BirnbaumSaundersDistribution, "PlotType", "probability")
+%! plot (BirnbaumSaundersDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -942,23 +942,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (BirnbaumSaundersDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display")
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display", 1)
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display", {1})
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, "NAME", "on")
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BirnbaumSaundersDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (BirnbaumSaundersDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

@@ -84,7 +84,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
   endif
 
   ## Add defaults
-  kernel = "linear";
+  kernel = 'linear';
   Sp = 100 * eye (size (X, 2) + 1);
   theta = 5;
   g = 0.01;
@@ -93,18 +93,18 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
   ## Parse extra arguments
   if (nargin > 3)
     tmp = varargin{1};
-    if (ischar (tmp) && strcmpi (tmp, "linear"))
-      kernel = "linear";
+    if (ischar (tmp) && strcmpi (tmp, 'linear'))
+      kernel = 'linear';
       sinput = true;
-    elseif (ischar (tmp) && strcmpi (tmp, "rbf"))
-      kernel = "rbf";
+    elseif (ischar (tmp) && strcmpi (tmp, 'rbf'))
+      kernel = 'rbf';
       sinput = true;
     elseif (isnumeric (tmp) && ! isscalar (tmp))
-      kernel = "linear";
+      kernel = 'linear';
       sinput = false;
       Sp = tmp;
     elseif (isnumeric (tmp) && isscalar (tmp))
-      kernel = "rbf";
+      kernel = 'rbf';
       sinput = false;
       theta = tmp;
     else
@@ -115,7 +115,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
     tmp = varargin{2};
     if (sinput)
       if (isnumeric (tmp) && ! isscalar (tmp))
-        if (strcmpi (kernel, "rbf"))
+        if (strcmpi (kernel, 'rbf'))
           error ("regress_gp: theta must be a scalar when using RBF kernel.");
         endif
         Sp = tmp;
@@ -123,7 +123,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
           error ("regress_gp: wrong size for prior covariance matrix Sp.");
         endif
       elseif (isnumeric (tmp) && isscalar (tmp))
-        if (strcmpi (kernel, "linear"))
+        if (strcmpi (kernel, 'linear'))
           error ("regress_gp: wrong size for prior covariance matrix Sp.");
         endif
         theta = tmp;
@@ -131,7 +131,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
         error ("regress_gp: invalid 5th argument.");
       endif
     else
-      if (strcmpi (kernel, "linear"))
+      if (strcmpi (kernel, 'linear'))
         error ("regress_gp: invalid 5th argument.");
       endif
       g = tmp;
@@ -157,7 +157,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
   endif
 
   ## User linear kernel
-  if (strcmpi (kernel, "linear"))
+  if (strcmpi (kernel, 'linear'))
     ## Add constant vector
     X = [ones(1,size(X,1)); X'];
 
@@ -202,7 +202,7 @@ function [Yfit, Yint, varargout] = regress_gp (X, Y, Xfit, varargin)
   endif
 
   ## User RBF kernel
-  if (strcmpi (kernel, "rbf"))
+  if (strcmpi (kernel, 'rbf'))
     ## Normalize predictors
     if (size (X, 2) > 1)
       [X, MU, SIGMA] = zscore (X);
@@ -251,9 +251,9 @@ endfunction
 
 %!demo
 %! ## Linear fitting of 1D Data
-%! rand ("seed", 125);
+%! rand ('seed', 125);
 %! X = 2 * rand (5, 1) - 1;
-%! randn ("seed", 25);
+%! randn ('seed', 25);
 %! Y = 2 * X - 1 + 0.3 * randn (5, 1);
 %!
 %! ## Points for interpolation/extrapolation
@@ -263,14 +263,14 @@ endfunction
 %! [Yfit, Yint, m] = regress_gp (X, Y, Xfit);
 %!
 %! ## Plot fitted data
-%! plot (X, Y, "xk", Xfit, Yfit, "r-", Xfit, Yint, "b-");
-%! title ("Gaussian process regression with linear kernel");
+%! plot (X, Y, 'xk', Xfit, Yfit, 'r-', Xfit, Yint, 'b-');
+%! title ('Gaussian process regression with linear kernel');
 
 %!demo
 %! ## Linear fitting of 2D Data
-%! rand ("seed", 135);
+%! rand ('seed', 135);
 %! X = 2 * rand (4, 2) - 1;
-%! randn ("seed", 35);
+%! randn ('seed', 35);
 %! Y = 2 * X(:,1) - 3 * X(:,2) - 1 + 1 * randn (4, 1);
 %!
 %! ## Mesh for interpolation/extrapolation
@@ -284,26 +284,26 @@ endfunction
 %! YintL = reshape (Yint(:,2), 10, 10);
 %!
 %! ## Plot fitted data
-%! plot3 (X(:,1), X(:,2), Y, ".k", "markersize", 16);
+%! plot3 (X(:,1), X(:,2), Y, '.k', 'markersize', 16);
 %! hold on;
 %! h = mesh (x1, x2, Ypred, zeros (10, 10));
-%! set (h, "facecolor", "none", "edgecolor", "yellow");
+%! set (h, 'facecolor', 'none', 'edgecolor', 'yellow');
 %! h = mesh (x1, x2, YintU, ones (10, 10));
-%! set (h, "facecolor", "none", "edgecolor", "cyan");
+%! set (h, 'facecolor', 'none', 'edgecolor', 'cyan');
 %! h = mesh (x1, x2, YintL, ones (10, 10));
-%! set (h, "facecolor", "none", "edgecolor", "cyan");
+%! set (h, 'facecolor', 'none', 'edgecolor', 'cyan');
 %! hold off
 %! axis tight
 %! view (75, 25)
-%! title ("Gaussian process regression with linear kernel");
+%! title ('Gaussian process regression with linear kernel');
 
 %!demo
 %! ## Projection over basis function with linear kernel
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ("seed", 145);
+%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ("seed", 45);
+%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -321,22 +321,22 @@ endfunction
 %! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, Sp);
 %!
 %! ## Plot fitted data
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("Linear kernel over basis function with prior covariance");
+%! title ('Linear kernel over basis function with prior covariance');
 
 %!demo
 %! ## Projection over basis function with linear kernel
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ("seed", 145);
+%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ("seed", 45);
+%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -350,22 +350,22 @@ endfunction
 %! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi);
 %!
 %! ## Plot fitted data
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("Linear kernel over basis function without prior covariance");
+%! title ('Linear kernel over basis function without prior covariance');
 
 %!demo
 %! ## Projection over basis function with rbf kernel
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ("seed", 145);
+%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ("seed", 45);
+%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -376,26 +376,26 @@ endfunction
 %! pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
 %!
 %! ## Fit regression model with RBF kernel (standard parameters)
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf");
+%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf');
 %!
 %! ## Plot fitted data
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("RBF kernel over basis function with standard parameters");
+%! title ('RBF kernel over basis function with standard parameters');
 %! text (-0.5, 4, "theta = 5\n g = 0.01");
 
 %!demo
 %! ## Projection over basis function with rbf kernel
 %! pp = [2, 2, 0.3, 1];
 %! n = 10;
-%! rand ("seed", 145);
+%! rand ('seed', 145);
 %! X = 2 * rand (n, 1) - 1;
-%! randn ("seed", 45);
+%! randn ('seed', 45);
 %! Y = polyval (pp, X) + 0.3 * randn (n, 1);
 %!
 %! ## Powers
@@ -406,62 +406,62 @@ endfunction
 %! pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
 %!
 %! ## Fit regression model with RBF kernel with different parameters
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 10, 0.01);
+%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 10, 0.01);
 %!
 %! ## Plot fitted data
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("GP regression with RBF kernel and non default parameters");
+%! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 10\n g = 0.01");
 %!
 %! ## Fit regression model with RBF kernel with different parameters
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.01);
+%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.01);
 %!
 %! ## Plot fitted data
 %! figure
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("GP regression with RBF kernel and non default parameters");
+%! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.01");
 %!
 %! ## Fit regression model with RBF kernel with different parameters
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.001);
+%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.001);
 %!
 %! ## Plot fitted data
 %! figure
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("GP regression with RBF kernel and non default parameters");
+%! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.001");
 %!
 %! ## Fit regression model with RBF kernel with different parameters
-%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.05);
+%! [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.05);
 %!
 %! ## Plot fitted data
 %! figure
-%! plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-%!                         Xfit, polyval (pp, Xfit), "g-;True;");
+%! plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+%!                         Xfit, polyval (pp, Xfit), 'g-;True;');
 %! axis tight
 %! axis manual
 %! hold on
-%! plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+%! plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
 %! hold off
-%! title ("GP regression with RBF kernel and non default parameters");
+%! title ('GP regression with RBF kernel and non default parameters');
 %! text (-0.5, 4, "theta = 50\n g = 0.05");
 
 %!demo
@@ -473,19 +473,19 @@ endfunction
 %! xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';
 %!
 %! ## Fit regression model with RBF kernel
-%! [Yfit, Yint, Ysd] = regress_gp (x, y, xi, "rbf");
+%! [Yfit, Yint, Ysd] = regress_gp (x, y, xi, 'rbf');
 %!
 %! ## Plot fitted data
 %! r = mvnrnd (Yfit, diag (Ysd)', 50);
-%! plot (xi, r', "c-");
+%! plot (xi, r', 'c-');
 %! hold on
-%! plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
-%! plot (x, y, ".k;Predictor points;", "markersize", 20)
-%! plot (xi, 5 * sin (xi), "-y;True Function;");
+%! plot (xi, Yfit, 'r-;Estimation;', xi, Yint, 'b-;Confidence interval;');
+%! plot (x, y, '.k;Predictor points;', 'markersize', 20)
+%! plot (xi, 5 * sin (xi), '-y;True Function;');
 %! xlim ([-0.5,2*pi+0.5]);
 %! ylim ([-10,10]);
 %! hold off
-%! title ("GP regression with RBF kernel on noiseless 1D data");
+%! title ('GP regression with RBF kernel on noiseless 1D data');
 %! text (0, -7, "theta = 5\n g = 0.01");
 
 %!demo
@@ -498,19 +498,19 @@ endfunction
 %! xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';
 %!
 %! ## Fit regression model with RBF kernel
-%! [Yfit, Yint, Ysd] = regress_gp (x, y, xi, "rbf");
+%! [Yfit, Yint, Ysd] = regress_gp (x, y, xi, 'rbf');
 %!
 %! ## Plot fitted data
 %! r = mvnrnd (Yfit, diag (Ysd)', 50);
-%! plot (xi, r', "c-");
+%! plot (xi, r', 'c-');
 %! hold on
-%! plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
-%! plot (x, y, ".k;Predictor points;", "markersize", 20)
-%! plot (xi, 5 * sin (xi), "-y;True Function;");
+%! plot (xi, Yfit, 'r-;Estimation;', xi, Yint, 'b-;Confidence interval;');
+%! plot (x, y, '.k;Predictor points;', 'markersize', 20)
+%! plot (xi, 5 * sin (xi), '-y;True Function;');
 %! xlim ([-0.5,2*pi+0.5]);
 %! ylim ([-10,10]);
 %! hold off
-%! title ("GP regression with RBF kernel on noisy 1D data");
+%! title ('GP regression with RBF kernel on noisy 1D data');
 %! text (0, -7, "theta = 5\n g = 0.01");
 
 ## Test input validation
@@ -527,32 +527,32 @@ endfunction
 %!error<regress_gp: invalid 4th argument.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), {[3]})
 %!error<regress_gp: invalid 4th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "kernel")
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'kernel')
 %!error<regress_gp: theta must be a scalar when using RBF kernel.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", ones (4))
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', ones (4))
 %!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "linear", 1)
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'linear', 1)
 %!error<regress_gp: invalid 5th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", "value")
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', 'value')
 %!error<regress_gp: invalid 5th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", {5})
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', {5})
 %!error<regress_gp: invalid 5th argument.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), ones (3), 5)
 %!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "linear", 5)
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'linear', 5)
 %!error<regress_gp: invalid 6th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", 5, {5})
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', 5, {5})
 %!error<regress_gp: invalid 6th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", 5, ones (2))
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', 5, ones (2))
 %!error<regress_gp: invalid 6th argument.> ...
 %! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 5, 0.01, [1, 1])
 %!error<regress_gp: invalid 6th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 5, 0.01, "f")
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 5, 0.01, 'f')
 %!error<regress_gp: invalid 6th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 5, 0.01, "f")
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 5, 0.01, 'f')
 %!error<regress_gp: invalid 7th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", 5, 0.01, "f")
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', 5, 0.01, 'f')
 %!error<regress_gp: invalid 7th argument.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "rbf", 5, 0.01, [1, 1])
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'rbf', 5, 0.01, [1, 1])
 %!error<regress_gp: wrong size for prior covariance matrix Sp.> ...
-%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), "linear", 1)
+%! regress_gp (ones (20, 2), ones (20, 1), ones (10, 2), 'linear', 1)

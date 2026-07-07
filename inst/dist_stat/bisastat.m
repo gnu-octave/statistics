@@ -76,7 +76,7 @@ endfunction
 %!error<bisastat: function called with too few input arguments.> bisastat ()
 %!error<bisastat: function called with too few input arguments.> bisastat (1)
 %!error<bisastat: BETA and GAMMA must be numeric.> bisastat ({}, 2)
-%!error<bisastat: BETA and GAMMA must be numeric.> bisastat (1, "")
+%!error<bisastat: BETA and GAMMA must be numeric.> bisastat (1, '')
 %!error<bisastat: BETA and GAMMA must not be complex.> bisastat (i, 2)
 %!error<bisastat: BETA and GAMMA must not be complex.> bisastat (1, i)
 %!error<bisastat: BETA and GAMMA must be of common size or scalars.> ...

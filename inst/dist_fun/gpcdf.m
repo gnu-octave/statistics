@@ -61,7 +61,7 @@ function p = gpcdf (x, k, sigma, theta, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 4)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("gpcdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -84,11 +84,11 @@ function p = gpcdf (x, k, sigma, theta, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (k, "single") ...
-                        || isa (sigma, "single") || isa (theta, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (k, 'single') ...
+                        || isa (sigma, 'single') || isa (theta, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -141,17 +141,17 @@ endfunction
 %! p4 = gpcdf (x, 1, 2, 0);
 %! p5 = gpcdf (x, 5, 2, 0);
 %! p6 = gpcdf (x, 20, 2, 0);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", ...
-%!       x, p4, "-c", x, p5, "-m", x, p6, "-k")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', ...
+%!       x, p4, '-c', x, p5, '-m', x, p6, '-k')
 %! grid on
 %! xlim ([0, 5])
-%! legend ({"k = 1, σ = 1, θ = 0", "k = 5, σ = 1, θ = 0", ...
-%!          "k = 20, σ = 1, θ = 0", "k = 1, σ = 2, θ = 0", ...
-%!          "k = 5, σ = 2, θ = 0", "k = 20, σ = 2, θ = 0"}, ...
-%!         "location", "northwest")
-%! title ("Generalized Pareto CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'k = 1, σ = 1, θ = 0', 'k = 5, σ = 1, θ = 0', ...
+%!          'k = 20, σ = 1, θ = 0', 'k = 1, σ = 2, θ = 0', ...
+%!          'k = 5, σ = 2, θ = 0', 'k = 20, σ = 2, θ = 0'}, ...
+%!         'location', 'northwest')
+%! title ('Generalized Pareto CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y1, y1u, y2, y2u, y3, y3u
@@ -171,11 +171,11 @@ endfunction
 %!assert (gpcdf (x, 0, [1, 1, 1, NaN, 1, 1], 0), [y1(1:3), NaN, y1(5:6)], eps)
 %!assert (gpcdf (x, [0, 0, 0, NaN, 0, 0], 1, 0), [y1(1:3), NaN, y1(5:6)], eps)
 %!assert (gpcdf ([x(1:3), NaN, x(5:6)], 0, 1, 0), [y1(1:3), NaN, y1(5:6)], eps)
-%!assert (gpcdf (x, zeros (1,6), ones (1,6), zeros (1,6), "upper"), y1u, eps)
-%!assert (gpcdf (x, 0, 1, zeros (1,6), "upper"), y1u, eps)
-%!assert (gpcdf (x, 0, ones (1,6), 0, "upper"), y1u, eps)
-%!assert (gpcdf (x, zeros (1,6), 1, 0, "upper"), y1u, eps)
-%!assert (gpcdf (x, 0, 1, 0, "upper"), y1u, eps)
+%!assert (gpcdf (x, zeros (1,6), ones (1,6), zeros (1,6), 'upper'), y1u, eps)
+%!assert (gpcdf (x, 0, 1, zeros (1,6), 'upper'), y1u, eps)
+%!assert (gpcdf (x, 0, ones (1,6), 0, 'upper'), y1u, eps)
+%!assert (gpcdf (x, zeros (1,6), 1, 0, 'upper'), y1u, eps)
+%!assert (gpcdf (x, 0, 1, 0, 'upper'), y1u, eps)
 %!assert (gpcdf (x, ones (1,6), ones (1,6), zeros (1,6)), y2, eps)
 %!assert (gpcdf (x, 1, 1, zeros (1,6)), y2, eps)
 %!assert (gpcdf (x, 1, ones (1,6), 0), y2, eps)
@@ -185,18 +185,18 @@ endfunction
 %!assert (gpcdf (x, 1, [1, 1, 1, NaN, 1, 1], 0), [y2(1:3), NaN, y2(5:6)], eps)
 %!assert (gpcdf (x, [1, 1, 1, NaN, 1, 1], 1, 0), [y2(1:3), NaN, y2(5:6)], eps)
 %!assert (gpcdf ([x(1:3), NaN, x(5:6)], 1, 1, 0), [y2(1:3), NaN, y2(5:6)], eps)
-%!assert (gpcdf (x, ones (1,6), ones (1,6), zeros (1,6), "upper"), y2u, eps)
-%!assert (gpcdf (x, 1, 1, zeros (1,6), "upper"), y2u, eps)
-%!assert (gpcdf (x, 1, ones (1,6), 0, "upper"), y2u, eps)
-%!assert (gpcdf (x, ones (1,6), 1, 0, "upper"), y2u, eps)
-%!assert (gpcdf (x, 1, 1, 0, "upper"), y2u, eps)
-%!assert (gpcdf (x, 1, 1, [0, 0, 0, NaN, 0, 0], "upper"), ...
+%!assert (gpcdf (x, ones (1,6), ones (1,6), zeros (1,6), 'upper'), y2u, eps)
+%!assert (gpcdf (x, 1, 1, zeros (1,6), 'upper'), y2u, eps)
+%!assert (gpcdf (x, 1, ones (1,6), 0, 'upper'), y2u, eps)
+%!assert (gpcdf (x, ones (1,6), 1, 0, 'upper'), y2u, eps)
+%!assert (gpcdf (x, 1, 1, 0, 'upper'), y2u, eps)
+%!assert (gpcdf (x, 1, 1, [0, 0, 0, NaN, 0, 0], 'upper'), ...
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
-%!assert (gpcdf (x, 1, [1, 1, 1, NaN, 1, 1], 0, "upper"), ...
+%!assert (gpcdf (x, 1, [1, 1, 1, NaN, 1, 1], 0, 'upper'), ...
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
-%!assert (gpcdf (x, [1, 1, 1, NaN, 1, 1], 1, 0, "upper"), ...
+%!assert (gpcdf (x, [1, 1, 1, NaN, 1, 1], 1, 0, 'upper'), ...
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
-%!assert (gpcdf ([x(1:3), NaN, x(5:6)], 1, 1, 0, "upper"), ...
+%!assert (gpcdf ([x(1:3), NaN, x(5:6)], 1, 1, 0, 'upper'), ...
 %!                        [y2u(1:3), NaN, y2u(5:6)], eps)
 %!assert (gpcdf (x, -ones (1,6), ones (1,6), zeros (1,6)), y3, eps)
 %!assert (gpcdf (x, -1, 1, zeros (1,6)), y3, eps)
@@ -207,40 +207,40 @@ endfunction
 %!assert (gpcdf (x, -1, [1, 1, 1, NaN, 1, 1], 0), [y3(1:3), NaN, y3(5:6)], eps)
 %!assert (gpcdf (x, [-1, -1, -1, NaN, -1, -1], 1, 0), [y3(1:3), NaN, y3(5:6)], eps)
 %!assert (gpcdf ([x(1:3), NaN, x(5:6)], -1, 1, 0), [y3(1:3), NaN, y3(5:6)], eps)
-%!assert (gpcdf (x, -ones (1,6), ones (1,6), zeros (1,6), "upper"), y3u, eps)
-%!assert (gpcdf (x, -1, 1, zeros (1,6), "upper"), y3u, eps)
-%!assert (gpcdf (x, -1, ones (1,6), 0, "upper"), y3u, eps)
-%!assert (gpcdf (x, -ones (1,6), 1, 0, "upper"), y3u, eps)
-%!assert (gpcdf (x, -1, 1, 0, "upper"), y3u, eps)
-%!assert (gpcdf (x, -1, 1, [0, 0, 0, NaN, 0, 0], "upper"), ...
+%!assert (gpcdf (x, -ones (1,6), ones (1,6), zeros (1,6), 'upper'), y3u, eps)
+%!assert (gpcdf (x, -1, 1, zeros (1,6), 'upper'), y3u, eps)
+%!assert (gpcdf (x, -1, ones (1,6), 0, 'upper'), y3u, eps)
+%!assert (gpcdf (x, -ones (1,6), 1, 0, 'upper'), y3u, eps)
+%!assert (gpcdf (x, -1, 1, 0, 'upper'), y3u, eps)
+%!assert (gpcdf (x, -1, 1, [0, 0, 0, NaN, 0, 0], 'upper'), ...
 %!                         [y3u(1:3), NaN, y3u(5:6)], eps)
-%!assert (gpcdf (x, -1, [1, 1, 1, NaN, 1, 1], 0, "upper"), ...
+%!assert (gpcdf (x, -1, [1, 1, 1, NaN, 1, 1], 0, 'upper'), ...
 %!                          [y3u(1:3), NaN, y3u(5:6)], eps)
-%!assert (gpcdf (x, [-1, -1, -1, NaN, -1, -1], 1, 0, "upper"), ...
+%!assert (gpcdf (x, [-1, -1, -1, NaN, -1, -1], 1, 0, 'upper'), ...
 %!                          [y3u(1:3), NaN, y3u(5:6)], eps)
-%!assert (gpcdf ([x(1:3), NaN, x(5:6)], -1, 1, 0, "upper"), ...
+%!assert (gpcdf ([x(1:3), NaN, x(5:6)], -1, 1, 0, 'upper'), ...
 %!                          [y3u(1:3), NaN, y3u(5:6)], eps)
 
 ## Test class of input preserved
-%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps("single"))
-%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps("single"))
-%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps("single"))
-%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps("single"))
+%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps('single'))
 
 ## Test input validation
 %!error<gpcdf: function called with too few input arguments.> gpcdf ()
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1)
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2)
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2, 3)
-%!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, "tail")
+%!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 'tail')
 %!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 5)
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (3), ones (2), ones(2), ones(2))

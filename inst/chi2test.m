@@ -138,7 +138,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
   ## For 3-way contingency table
   elseif (length (sz) == 3)
     ## Check optional arguments
-    if (nargin == 1 || strcmpi (varargin{1}, "mutual"))
+    if (nargin == 1 || strcmpi (varargin{1}, 'mutual'))
       ## Calculate degrees of freedom
       df = prod (sz) - sum (sz) + 2;
       ## Calculate marginal table sums
@@ -153,7 +153,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
           endfor
         endfor
       endfor
-    elseif (strcmpi (varargin{1}, "joint"))
+    elseif (strcmpi (varargin{1}, 'joint'))
       ## Get dimension of independent variable (dim)
       c_dim = varargin{2};
       ## Calculate degrees of freedom
@@ -180,7 +180,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       x = permute (x, [c_dim, dm]);
       E = permute (E, [c_dim, dm]);
       E = permute (E, [c_dim, dm]);
-    elseif (strcmpi (varargin{1}, "marginal"))
+    elseif (strcmpi (varargin{1}, 'marginal'))
       ## Get dimension of marginal variable (dim)
       c_dim = varargin{2};
       ## Calculate degrees of freedom
@@ -206,7 +206,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       ## Rearrange OBSERVED and EXPECTED matrices in original dimensions
       x = permute (x, [c_dim, dm]);
       E = permute (E, [c_dim, dm]);
-    elseif (strcmpi (varargin{1}, "conditional"))
+    elseif (strcmpi (varargin{1}, 'conditional'))
       ## Get dimension of conditional variable (dim)
       c_dim = varargin{2};
       ## Calculate degrees of freedom
@@ -234,7 +234,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       x = permute (x, [c_dim, dm]);
       E = permute (E, [c_dim, dm]);
       E = permute (E, [c_dim, dm]);
-    elseif (strcmpi (varargin{1}, "homogeneous"))
+    elseif (strcmpi (varargin{1}, 'homogeneous'))
       ## Calculate degrees of freedom
       df = prod(sz - 1);
       ## Compute observed marginal totals for any two dimensions
@@ -359,17 +359,17 @@ endfunction
 %!error chi2test ([1, 2; 2, 1+3i]);
 %!error chi2test ([NaN, 6; 34, 12]);
 %!error<chi2test: optional arguments are not supported for 2-way> ...
-%! p = chi2test (ones (3, 3), "mutual", []);
+%! p = chi2test (ones (3, 3), 'mutual', []);
 %!error<chi2test: invalid model name for testing a 3-way table.> ...
-%! p = chi2test (ones (3, 3, 3), "testtype", 2);
+%! p = chi2test (ones (3, 3, 3), 'testtype', 2);
 %!error<chi2test: optional arguments must be in pairs.> ...
-%! p = chi2test (ones (3, 3, 3), "mutual");
+%! p = chi2test (ones (3, 3, 3), 'mutual');
 %!error<chi2test: value must be numeric in optional argument> ...
-%! p = chi2test (ones (3, 3, 3), "joint", ["a"]);
+%! p = chi2test (ones (3, 3, 3), 'joint', ['a']);
 %!error<chi2test: value must be empty or scalar in optional argument> ...
-%! p = chi2test (ones (3, 3, 3), "joint", [2, 3]);
+%! p = chi2test (ones (3, 3, 3), 'joint', [2, 3]);
 %!error<chi2test: optional arguments are not supported for k> ...
-%! p = chi2test (ones (3, 3, 3, 4), "mutual", [])
+%! p = chi2test (ones (3, 3, 3, 4), 'mutual', [])
 
 ## Check warning
 %!warning<chi2test: Expected values less than 5.> p = chi2test (ones (2));
@@ -394,39 +394,39 @@ endfunction
 %! x(:,:,2) = [55, 24;12,33];
 %! x(:,:,3) = [107,80;17,56];%!
 %!assert (chi2test (x), 2.282063427117009e-11, 1e-14);
-%!assert (chi2test (x, "mutual", []), 2.282063427117009e-11, 1e-14);
-%!assert (chi2test (x, "joint", 1), 1.164834895206468e-11, 1e-14);
-%!assert (chi2test (x, "joint", 2), 7.771350230001417e-11, 1e-14);
-%!assert (chi2test (x, "joint", 3), 0.07151361728026107, 1e-14);
-%!assert (chi2test (x, "marginal", 1), 0, 1e-14);
-%!assert (chi2test (x, "marginal", 2), 6.347555814301131e-11, 1e-14);
-%!assert (chi2test (x, "marginal", 3), 0, 1e-14);
-%!assert (chi2test (x, "conditional", 1), 0.2303114201312508, 1e-14);
-%!assert (chi2test (x, "conditional", 2), 0.0958810684407079, 1e-14);
-%!assert (chi2test (x, "conditional", 3), 2.648037344954446e-11, 1e-14);
-%!assert (chi2test (x, "homogeneous", []), 0.4485579470993741, 1e-14);
+%!assert (chi2test (x, 'mutual', []), 2.282063427117009e-11, 1e-14);
+%!assert (chi2test (x, 'joint', 1), 1.164834895206468e-11, 1e-14);
+%!assert (chi2test (x, 'joint', 2), 7.771350230001417e-11, 1e-14);
+%!assert (chi2test (x, 'joint', 3), 0.07151361728026107, 1e-14);
+%!assert (chi2test (x, 'marginal', 1), 0, 1e-14);
+%!assert (chi2test (x, 'marginal', 2), 6.347555814301131e-11, 1e-14);
+%!assert (chi2test (x, 'marginal', 3), 0, 1e-14);
+%!assert (chi2test (x, 'conditional', 1), 0.2303114201312508, 1e-14);
+%!assert (chi2test (x, 'conditional', 2), 0.0958810684407079, 1e-14);
+%!assert (chi2test (x, 'conditional', 3), 2.648037344954446e-11, 1e-14);
+%!assert (chi2test (x, 'homogeneous', []), 0.4485579470993741, 1e-14);
 %!test
 %! [pval, chisq, df, E] = chi2test (x);
 %! assert (chisq, 64.0982, 1e-4);
 %! assert (df, 7);
 %! assert (E(:,:,1), [42.903, 39.921; 17.185, 15.991], ones (2, 2) * 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, "joint", 2);
+%! [pval, chisq, df, E] = chi2test (x, 'joint', 2);
 %! assert (chisq, 56.0943, 1e-4);
 %! assert (df, 5);
 %! assert (E(:,:,2), [40.922, 23.310; 38.078, 21.690], ones (2, 2) * 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, "marginal", 3);
+%! [pval, chisq, df, E] = chi2test (x, 'marginal', 3);
 %! assert (chisq, 146.6058, 1e-4);
 %! assert (df, 9);
 %! assert (E(:,1,1), [61.642; 57.358], ones (2, 1) * 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, "conditional", 3);
+%! [pval, chisq, df, E] = chi2test (x, 'conditional', 3);
 %! assert (chisq, 52.2509, 1e-4);
 %! assert (df, 3);
 %! assert (E(:,:,1), [53.345, 37.655; 14.655, 10.345], ones (2, 2) * 1e-3);
 %!test
-%! [pval, chisq, df, E] = chi2test (x, "homogeneous", []);
+%! [pval, chisq, df, E] = chi2test (x, 'homogeneous', []);
 %! assert (chisq, 1.6034, 1e-4);
 %! assert (df, 2);
 %! assert (E(:,:,1), [60.827, 31.382; 7.173, 16.618], ones (2, 2) * 1e-3);

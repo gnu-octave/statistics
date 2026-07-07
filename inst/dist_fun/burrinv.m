@@ -55,9 +55,9 @@ function x = burrinv (p, lambda, c, k)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (lambda, "single") || isa (c, "single") ...
-                        || isa (k, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (lambda, 'single') || isa (c, 'single') ...
+                        || isa (k, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -91,17 +91,17 @@ endfunction
 %! x4 = burrinv (p, 1, 2, 1);
 %! x5 = burrinv (p, 1, 3, 1);
 %! x6 = burrinv (p, 1, 0.5, 2);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
-%!       p, x4, "-c", p, x5, "-m", p, x6, "-k")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', ...
+%!       p, x4, '-c', p, x5, '-m', p, x6, '-k')
 %! grid on
 %! ylim ([0, 5])
-%! legend ({"λ = 1, c = 1, k = 1", "λ = 1, c = 1, k = 2", ...
-%!          "λ = 1, c = 1, k = 3", "λ = 1, c = 2, k = 1", ...
-%!          "λ = 1, c = 3, k = 1", "λ = 1, c = 0.5, k = 2"}, ...
-%!         "location", "northwest")
-%! title ("Burr type XII iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'λ = 1, c = 1, k = 1', 'λ = 1, c = 1, k = 2', ...
+%!          'λ = 1, c = 1, k = 3', 'λ = 1, c = 2, k = 1', ...
+%!          'λ = 1, c = 3, k = 1', 'λ = 1, c = 0.5, k = 2'}, ...
+%!         'location', 'northwest')
+%! title ('Burr type XII iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, y
@@ -115,10 +115,10 @@ endfunction
 %!assert (burrinv ([p, NaN], 1, 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps("single"))
-%!assert (burrinv ([p, NaN], single (1), 1, 1), single ([y, NaN]), eps("single"))
-%!assert (burrinv ([p, NaN], 1, single (1), 1), single ([y, NaN]), eps("single"))
-%!assert (burrinv ([p, NaN], 1, 1, single (1)), single ([y, NaN]), eps("single"))
+%!assert (burrinv (single ([p, NaN]), 1, 1, 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], single (1), 1, 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], 1, single (1), 1), single ([y, NaN]), eps('single'))
+%!assert (burrinv ([p, NaN], 1, 1, single (1)), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error<burrinv: function called with too few input arguments.> burrinv ()

@@ -45,7 +45,7 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   [Qx Rx] = qr (X, 0);
   [Qy Ry] = qr (Y, 0);
 
-  [U S V] = svd (Qx' * Qy, "econ");
+  [U S V] = svd (Qx' * Qy, 'econ');
 
   A = Rx \ U(:, 1:d);
   B = Ry \ V(:, 1:d);
@@ -99,5 +99,5 @@ endfunction
 %!assert (V, center(Y) * B, 10 * eps);
 %!assert (cov(U), eye (size (U, 2)), 10 * eps);
 %!assert (cov(V), eye (size (V, 2)), 10 * eps);
-%! rand ("state", 1); [A, B, r] = canoncorr (rand (5, 10), rand (5, 20));
+%! rand ('state', 1); [A, B, r] = canoncorr (rand (5, 10), rand (5, 20));
 %!assert (r, ones(1, 5), 10*eps);

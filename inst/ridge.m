@@ -148,13 +148,13 @@ endfunction
 %! b = ridge (y, D, k);
 %!
 %! figure
-%! plot (k, b, "LineWidth", 2)
+%! plot (k, b, 'LineWidth', 2)
 %! ylim ([-100, 100])
 %! grid on
-%! xlabel ("Ridge Parameter")
-%! ylabel ("Standardized Coefficient")
-%! title ("Ridge Trace")
-%! legend ("x1", "x2", "x3", "x1x2", "x1x3", "x2x3")
+%! xlabel ('Ridge Parameter')
+%! ylabel ('Standardized Coefficient')
+%! title ('Ridge Trace')
+%! legend ('x1', 'x2', 'x3', 'x1x2', 'x1x3', 'x2x3')
 %!
 %!demo
 %!
@@ -164,7 +164,7 @@ endfunction
 %!
 %! n = length(y);
 %!
-%! rand("seed",1); % For reproducibility
+%! rand('seed',1); % For reproducibility
 %!
 %! c = cvpartition(n,'HoldOut',0.3);
 %! idxTrain = training(c,1);
@@ -181,7 +181,7 @@ endfunction
 %! scatter(y(idxTest),yhat)
 %!
 %! hold on
-%! plot(y(idxTest),y(idxTest),"r")
+%! plot(y(idxTest),y(idxTest),'r')
 %! xlabel('Actual MPG')
 %! ylabel('Predicted MPG')
 %! hold off
@@ -237,4 +237,4 @@ endfunction
 %!error<ridge: wrong value for SCALED argument.> ...
 %! ridge ([1; 2; 3], ones (3), 3, 2)
 %!error<ridge: wrong value for SCALED argument.> ...
-%! ridge ([1; 2; 3], ones (3), 3, "some")
+%! ridge ([1; 2; 3], ones (3), 3, 'some')

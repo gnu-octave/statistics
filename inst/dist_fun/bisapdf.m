@@ -57,8 +57,8 @@ function y = bisapdf (x, beta, gamma)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (beta, "single") || isa (gamma, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (beta, 'single') || isa (gamma, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -93,14 +93,14 @@ endfunction
 %! y3 = bisapdf (x, 1, 2);
 %! y4 = bisapdf (x, 1, 5);
 %! y5 = bisapdf (x, 1, 10);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-m')
 %! grid on
 %! ylim ([0, 1.5])
-%! legend ({"β = 1 ,γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
-%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "northeast")
-%! title ("Birnbaum-Saunders PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'β = 1 ,γ = 0.5', 'β = 1, γ = 1', 'β = 1, γ = 2', ...
+%!          'β = 1, γ = 5', 'β = 1, γ = 10'}, 'location', 'northeast')
+%! title ('Birnbaum-Saunders PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 %!demo
 %! ## Plot various PDFs from the Birnbaum-Saunders distribution
@@ -110,14 +110,14 @@ endfunction
 %! y3 = bisapdf (x, 1, 0.5);
 %! y4 = bisapdf (x, 3, 0.5);
 %! y5 = bisapdf (x, 5, 0.5);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c", x, y5, "-m")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c', x, y5, '-m')
 %! grid on
 %! ylim ([0, 1.5])
-%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
-%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "northeast")
-%! title ("Birnbaum-Saunders CDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'β = 1, γ = 0.3', 'β = 2, γ = 0.3', 'β = 1, γ = 0.5', ...
+%!          'β = 3, γ = 0.5', 'β = 5, γ = 0.5'}, 'location', 'northeast')
+%! title ('Birnbaum-Saunders CDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y
@@ -132,9 +132,9 @@ endfunction
 %!assert (bisapdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bisapdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
-%!assert (bisapdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
-%!assert (bisapdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
+%!assert (bisapdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (bisapdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert (bisapdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisapdf: function called with too few input arguments.> bisapdf ()

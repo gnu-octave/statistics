@@ -88,10 +88,10 @@ function r = geornd (ps, varargin)
   endif
 
   ## Check for class type
-  if (isa (ps, "single"))
-    cls = "single";
+  if (isa (ps, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from geometric distribution

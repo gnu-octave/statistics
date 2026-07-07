@@ -300,7 +300,7 @@ classdef CompactClassificationNeuralNetwork
       ## Check for appropriate class
       if (isempty (Mdl))
         return;
-      elseif (! strcmpi (class (Mdl), "ClassificationNeuralNetwork"))
+      elseif (! strcmpi (class (Mdl), 'ClassificationNeuralNetwork'))
         error (strcat ("CompactClassificationNeuralNetwork: invalid", ...
                        " classification object."));
       endif
@@ -345,23 +345,23 @@ classdef CompactClassificationNeuralNetwork
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       if (iscellstr (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
       else # numeric
-        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
       fprintf ("%+25s: '%s'\n", 'ClassNames', str);
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.ScoreTransform);
       fprintf ("%+25s: '%d'\n", 'NumPredictors', this.NumPredictors);
-      str = repmat ({"%d"}, 1, numel (this.LayerSizes));
+      str = repmat ({'%d'}, 1, numel (this.LayerSizes));
       str = strcat ('[', strjoin (str, ' '), ']');
       str = sprintf (str, this.LayerSizes);
       fprintf ("%+25s: '%s'\n", 'LayerSizes', str);
       if (iscellstr (this.Activations))
-        str = repmat ({"'%s'"}, 1, numel (this.Activations));
+        str = repmat ({'''%s'''}, 1, numel (this.Activations));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.Activations{:});
         fprintf ("%+25s: '%s'\n", 'Activations', str);
@@ -423,7 +423,7 @@ classdef CompactClassificationNeuralNetwork
           endif
           switch (s.subs)
             case 'ScoreTransform'
-              name = "CompactClassificationNeuralNetwork";
+              name = 'CompactClassificationNeuralNetwork';
               this.ScoreTransform = parseScoreTransform (val, name);
             otherwise
               error (strcat ("CompactClassificationNeuralNetwork.subsasgn:", ...
@@ -504,9 +504,9 @@ classdef CompactClassificationNeuralNetwork
 
       if (nargout > 1)
         ## Apply ScoreTransform to return probability estimates
-        if (! strcmp (this.ScoreTransform, "none"))
+        if (! strcmp (this.ScoreTransform, 'none'))
           f = this.ScoreTransform;
-          if (! strcmp (class (f), "function_handle"))
+          if (! strcmp (class (f), 'function_handle'))
             error (strcat ("CompactClassificationNeuralNetwork.predict:", ...
                            " 'ScoreTransform' must be a", ...
                            " 'function_handle' object."));
@@ -534,7 +534,7 @@ classdef CompactClassificationNeuralNetwork
 
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "CompactClassificationNeuralNetwork";
+      classdef_name = 'CompactClassificationNeuralNetwork';
 
       ## Create variables from model properties
       NumPredictors           = this.NumPredictors;
@@ -556,12 +556,12 @@ classdef CompactClassificationNeuralNetwork
       Solver                  = this.Solver;
 
       ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "NumPredictors", ...
-            "PredictorNames", "ResponseName", "ClassNames", ...
-            "ScoreTransform", "Standardize", "Sigma", "Mu", "LayerSizes", ...
-            "Activations", "OutputLayerActivation", "LearningRate", ...
-            "IterationLimit", "ModelParameters", "ConvergenceInfo", ...
-            "DisplayInfo", "Solver");
+      save ('-binary', fname, 'classdef_name', 'NumPredictors', ...
+            'PredictorNames', 'ResponseName', 'ClassNames', ...
+            'ScoreTransform', 'Standardize', 'Sigma', 'Mu', 'LayerSizes', ...
+            'Activations', 'OutputLayerActivation', 'LearningRate', ...
+            'IterationLimit', 'ModelParameters', 'ConvergenceInfo', ...
+            'DisplayInfo', 'Solver');
     endfunction
 
   endmethods
@@ -612,7 +612,7 @@ endclassdef
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
-%! Mdl = fitcnet (x, y, "IterationLimit", 100);
+%! Mdl = fitcnet (x, y, 'IterationLimit', 100);
 %! CMdl = compact (Mdl);
 
 ## Test input validation for predict method
@@ -625,4 +625,4 @@ endclassdef
 
 ## Test input validation for assigning a new ScoreTransform
 %!error<CompactClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
-%! CMdl.ScoreTransform = "a";
+%! CMdl.ScoreTransform = 'a';

@@ -94,7 +94,7 @@ endfunction
 ## Test input validation
 %!error<barttest: invalid number of input arguments.> barttest ()
 %!error<barttest: NaN values in input are not allowed.> barttest ([2,NaN;3,4])
-%!error<barttest: wrong value for alpha.> barttest (ones (30, 4), "alpha")
+%!error<barttest: wrong value for alpha.> barttest (ones (30, 4), 'alpha')
 %!error<barttest: wrong value for alpha.> barttest (ones (30, 4), 0)
 %!error<barttest: wrong value for alpha.> barttest (ones (30, 4), 1.2)
 %!error<barttest: wrong value for alpha.> barttest (ones (30, 4), [0.2, 0.05])

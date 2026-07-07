@@ -47,13 +47,13 @@ function p = fcdf (x, df1, df2, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 3 && strcmpi (uflag, "upper"))
+  if (nargin > 3 && strcmpi (uflag, 'upper'))
     notnan = ! isnan (x);
     x(notnan) = 1 ./ max (0, x(notnan));
     tmp=df1;
     df1=df2;
     df2=tmp;
-  elseif (nargin > 3  && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 3  && ! strcmpi (uflag, 'upper'))
     error ("fcdf: invalid argument for upper tail.");
   endif
 
@@ -71,8 +71,8 @@ function p = fcdf (x, df1, df2, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df1, "single") || isa (df2, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (df1, 'single') || isa (df2, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -94,24 +94,24 @@ function p = fcdf (x, df1, df2, uflag)
     if (any (k1))
       kk = k(k1);
       xx = df2(kk) ./ (df2(kk) + x(kk) .* df1(kk));
-      p(kk) = betainc (xx, df2(kk)/2, df1(kk)/2, "upper");
+      p(kk) = betainc (xx, df2(kk)/2, df1(kk)/2, 'upper');
     endif
     if (any (! k1))
       kk = k(! k1);
       num = df1(kk) .* x(kk);
       xx = num ./ (num + df2(kk));
-      p(kk) = betainc (xx, df1(kk)/2, df2(kk)/2, "lower");
+      p(kk) = betainc (xx, df1(kk)/2, df2(kk)/2, 'lower');
     endif
   endif
 
   if any(! isfinite(df1(:)) | ! isfinite(df2(:)))
     k = find (x > 0 & ! make_nan & isfinite (df1) & ! isfinite (df2) & df2 > 0);
     if (any (k))
-      p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, "lower");
+      p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, 'lower');
     endif
     k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & isfinite (df2));
     if (any (k))
-      p(k) = gammainc (df2(k) ./ x(k) ./ 2, df2(k) ./ 2, "upper");
+      p(k) = gammainc (df2(k) ./ x(k) ./ 2, df2(k) ./ 2, 'upper');
     endif
     k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & ...
                                    ! isfinite (df2) & df2 > 0);
@@ -134,14 +134,14 @@ endfunction
 %! p3 = fcdf (x, 5, 2);
 %! p4 = fcdf (x, 10, 1);
 %! p5 = fcdf (x, 100, 100);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-m')
 %! grid on
-%! legend ({"df1 = 1, df2 = 2", "df1 = 2, df2 = 1", ...
-%!          "df1 = 5, df2 = 2", "df1 = 10, df2 = 1", ...
-%!          "df1 = 100, df2 = 100"}, "location", "southeast")
-%! title ("F CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'df1 = 1, df2 = 2', 'df1 = 2, df2 = 1', ...
+%!          'df1 = 5, df2 = 2', 'df1 = 10, df2 = 1', ...
+%!          'df1 = 100, df2 = 100'}, 'location', 'southeast')
+%! title ('F CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -156,16 +156,16 @@ endfunction
 
 ## Test class of input preserved
 %!assert (fcdf ([x, NaN], 2, 2), [y, NaN], eps)
-%!assert (fcdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ("single"))
-%!assert (fcdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ("single"))
-%!assert (fcdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ("single"))
+%!assert (fcdf (single ([x, NaN]), 2, 2), single ([y, NaN]), eps ('single'))
+%!assert (fcdf ([x, NaN], single (2), 2), single ([y, NaN]), eps ('single'))
+%!assert (fcdf ([x, NaN], 2, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<fcdf: function called with too few input arguments.> fcdf ()
 %!error<fcdf: function called with too few input arguments.> fcdf (1)
 %!error<fcdf: function called with too few input arguments.> fcdf (1, 2)
 %!error<fcdf: invalid argument for upper tail.> fcdf (1, 2, 3, 4)
-%!error<fcdf: invalid argument for upper tail.> fcdf (1, 2, 3, "tail")
+%!error<fcdf: invalid argument for upper tail.> fcdf (1, 2, 3, 'tail')
 %!error<fcdf: X, DF1, and DF2 must be of common size or scalars.> ...
 %! fcdf (ones (3), ones (2), ones (2))
 %!error<fcdf: X, DF1, and DF2 must be of common size or scalars.> ...

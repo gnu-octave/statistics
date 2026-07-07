@@ -71,8 +71,8 @@ function [qout, sout] = qqplot (x, dist, varargin)
   else
     if (isnumeric (dist))
       f = @(y) empirical_inv (y, dist);
-    elseif (ischar (dist) && (exist (invname = [dist "inv"])
-                              || exist (invname = [dist "_inv"])))
+    elseif (ischar (dist) && (exist (invname = [dist 'inv'])
+                              || exist (invname = [dist '_inv'])))
       f = str2func (invname);
     else
       error ("qqplot: no inverse CDF found for distribution DIST");
@@ -97,13 +97,13 @@ function [qout, sout] = qqplot (x, dist, varargin)
   endif
 
   if (nargout == 0)
-    plot (q, s, "-x");
+    plot (q, s, '-x');
     q_label = strrep (q_label, '_inv', '\_inv');
     if (q_label(1) == '@')
       q_label = q_label(6:end);  # Strip "@(y) " from anon. function
     endif
     xlabel (q_label);
-    ylabel ("sample points");
+    ylabel ('sample points');
   else
     qout = q;
     sout = s;
@@ -114,7 +114,7 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   qqplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
 %! unwind_protect_cleanup
@@ -125,5 +125,5 @@ endfunction
 %!error qqplot ()
 %!error <qqplot: X must be a numeric vector> qqplot ({1})
 %!error <qqplot: X must be a numeric vector> qqplot (ones (2,2))
-%!error <qqplot: X must be a numeric vector> qqplot (1, "foobar")
-%!error <qqplot: no inverse CDF found> qqplot ([1 2 3], "foobar")
+%!error <qqplot: X must be a numeric vector> qqplot (1, 'foobar')
+%!error <qqplot: no inverse CDF found> qqplot ([1 2 3], 'foobar')

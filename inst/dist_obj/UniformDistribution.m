@@ -88,7 +88,7 @@ classdef UniformDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "UniformDistribution";
+    DistributionName = 'UniformDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} NumParameters
@@ -110,7 +110,7 @@ classdef UniformDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"Lower", "Upper"};
+    ParameterNames = {'Lower', 'Upper'};
 
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} ParameterDescription
@@ -122,12 +122,12 @@ classdef UniformDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Lower limit", "Upper limit"};
+    ParameterDescription = {'Lower limit', 'Upper limit'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "unif";
+    DistributionCode = 'unif';
   endproperties
 
   properties (GetAccess = public, SetAccess = protected)
@@ -184,11 +184,11 @@ classdef UniformDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Uniform distribution (continuous)");
+      __disp__ (this, 'Uniform distribution (continuous)');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Uniform distribution (continuous)");
+      __disp__ (this, 'Uniform distribution (continuous)');
     endfunction
 
     function this = set.Lower (this, Lower)
@@ -233,9 +233,9 @@ classdef UniformDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -549,8 +549,8 @@ endfunction
 %! ## parameters Lower = 0 and Upper = 10. Create a Uniform distribution with these
 %! ## parameters and plot its PDF superimposed on a histogram of the data.
 %!
-%! pd = makedist ("Uniform", "Lower", 0, "Upper", 10);
-%! rand ("seed", 21);
+%! pd = makedist ('Uniform', 'Lower', 0, 'Upper', 10);
+%! rand ('seed', 21);
 %! data = random (pd, 5000, 1);
 %! 
 %! x = linspace (pd.Lower - 1, pd.Upper + 1, 500);
@@ -563,9 +563,9 @@ endfunction
 %! normalized_counts = counts / (sum (counts) * bin_width);
 %! bar (centers, normalized_counts, 1);
 %! 
-%! msg = "Uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! msg = 'Uniform distribution with Lower = %0.2f and Upper = %0.2f';
 %! title (sprintf (msg, pd.Lower, pd.Upper));
-%! legend ("PDF", "Histogram", "location", "northeast");
+%! legend ('PDF', 'Histogram', 'location', 'northeast');
 %! 
 %! hold off;
 
@@ -608,7 +608,7 @@ endfunction
 %!error <UniformDistribution: LOWER must be a real scalar.> ...
 %! UniformDistribution ([1, 2], 1)
 %!error <UniformDistribution: LOWER must be a real scalar.> ...
-%! UniformDistribution ("a", 1)
+%! UniformDistribution ('a', 1)
 %!error <UniformDistribution: LOWER must be a real scalar.> ...
 %! UniformDistribution (NaN, 1)
 %!error <UniformDistribution: UPPER must be a real scalar.> ...
@@ -618,7 +618,7 @@ endfunction
 %!error <UniformDistribution: UPPER must be a real scalar.> ...
 %! UniformDistribution (1, [1, 2])
 %!error <UniformDistribution: UPPER must be a real scalar.> ...
-%! UniformDistribution (1, "a")
+%! UniformDistribution (1, 'a')
 %!error <UniformDistribution: UPPER must be a real scalar.> ...
 %! UniformDistribution (1, NaN)
 %!error <UniformDistribution: LOWER must be less than UPPER.> ...
@@ -626,33 +626,33 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (UniformDistribution, 2, "uper")
+%! cdf (UniformDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (UniformDistribution, 2, 3)
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (UniformDistribution, "Parent")
+%! plot (UniformDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (UniformDistribution, "PlotType", 12)
+%! plot (UniformDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (UniformDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (UniformDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (UniformDistribution, "PlotType", "pdfcdf")
+%! plot (UniformDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", "pdfcdf")
+%! plot (UniformDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", [1, 0])
+%! plot (UniformDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (UniformDistribution, "Discrete", {true})
+%! plot (UniformDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (UniformDistribution, "Parent", 12)
+%! plot (UniformDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (UniformDistribution, "Parent", "hax")
+%! plot (UniformDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (UniformDistribution, "invalidNAME", "pdf")
+%! plot (UniformDistribution, 'invalidNAME', 'pdf')
 %!error <plot: 'probability' PlotType is not supported for 'UniformDistribution'.> ...
-%! plot (UniformDistribution, "PlotType", "probability")
+%! plot (UniformDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

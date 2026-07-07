@@ -95,10 +95,10 @@ function r = frnd (df1, df2, varargin)
   endif
 
   ## Check for class type
-  if (isa (df1, "single") || isa (df2, "single"))
-    cls = "single";
+  if (isa (df1, 'single') || isa (df2, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from F distribution

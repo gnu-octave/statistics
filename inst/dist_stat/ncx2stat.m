@@ -61,8 +61,8 @@ function [m, v] = ncx2stat (df, lambda)
   endif
 
   ## Initialize mean and variance
-  if (isa (df, "single") || isa (lambda, "single"))
-    m = NaN (size (df), "single");
+  if (isa (df, 'single') || isa (lambda, 'single'))
+    m = NaN (size (df), 'single');
     v = m;
   else
     m = NaN (size (df));
@@ -82,7 +82,7 @@ endfunction
 %!error<ncx2stat: function called with too few input arguments.> ncx2stat ()
 %!error<ncx2stat: function called with too few input arguments.> ncx2stat (1)
 %!error<ncx2stat: DF and LAMBDA must be numeric.> ncx2stat ({}, 2)
-%!error<ncx2stat: DF and LAMBDA must be numeric.> ncx2stat (1, "")
+%!error<ncx2stat: DF and LAMBDA must be numeric.> ncx2stat (1, '')
 %!error<ncx2stat: DF and LAMBDA must not be complex.> ncx2stat (i, 2)
 %!error<ncx2stat: DF and LAMBDA must not be complex.> ncx2stat (1, i)
 %!error<ncx2stat: DF and LAMBDA must be of common size or scalars.> ...

@@ -96,43 +96,43 @@ function r = random (name, varargin)
 
   ## implemented functions
   persistent allDF = { ...
-    {"beta"     , "Beta"},                      @betarnd,      2, ...
-    {"bino"     , "Binomial"},                  @binornd,      2, ...
-    {"bisa"     , "Birnbaum-Saunders"},         @bisarnd,      2, ...
-    {"burr"     , "Burr"},                      @burrrnd,      3, ...
-    {"cauchy"   , "Cauchy"},                    @cauchyrnd,    2, ...
-    {"chi2"     , "Chi-squared"},               @chi2rnd,      1, ...
-    {"ev"       , "Extreme Value"},             @evrnd,        2, ...
-    {"exp"      , "Exponential"},               @exprnd,       1, ...
-    {"f"        , "F-Distribution"},            @frnd,         2, ...
-    {"gam"      , "Gamma"},                     @gamrnd,       2, ...
-    {"geo"      , "Geometric"},                 @geornd,       1, ...
-    {"gev"      , "Generalized Extreme Value"}, @gevrnd,       3, ...
-    {"gp"       , "Generalized Pareto"},        @gprnd,        3, ...
-    {"gumbel"   , "Gumbel"},                    @gumbelrnd,    2, ...
-    {"hn"       , "Half-normal"},               @hnrnd,        2, ...
-    {"hyge"     , "Hypergeometric"},            @hygernd,      3, ...
-    {"invg"     , "Inverse Gaussian"},          @invgrnd,      2, ...
-    {"laplace"  , "Laplace"},                   @laplacernd,   2, ...
-    {"logi"     , "Logistic"},                  @logirnd,      2, ...
-    {"logl"     , "Log-Logistic"},              @loglrnd,      2, ...
-    {"logn"     , "Lognormal"},                 @lognrnd,      2, ...
-    {"naka"     , "Nakagami"},                  @nakarnd,      2, ...
-    {"nbin"     , "Negative Binomial"},         @nbinrnd,      2, ...
-    {"ncf"      , "Noncentral F-Distribution"}, @ncfrnd,       3, ...
-    {"nct"      , "Noncentral Student T"},      @nctrnd,       2, ...
-    {"ncx2"     , "Noncentral Chi-squared"},    @ncx2rnd,      2, ...
-    {"norm"     , "Normal"},                    @normrnd,      2, ...
-    {"poiss"    , "Poisson"},                   @poissrnd,     1, ...
-    {"rayl"     , "Rayleigh"},                  @raylrnd,      1, ...
-    {"rice"     , "Rician"},                    @ricernd,      2, ...
-    {"t"        , "Student T"},                 @trnd,         1, ...
-    {"tls"      , "location-scale T"},          @tlsrnd,       3, ...
-    {"tri"      , "Triangular"},                @trirnd,       3, ...
-    {"unid"     , "Discrete Uniform"},          @unidrnd,      1, ...
-    {"unif"     , "Uniform"},                   @unifrnd,      2, ...
-    {"vm"       , "Von Mises"},                 @vmrnd,        2, ...
-    {"wbl"      , "Weibull"},                   @wblrnd,       2};
+    {'beta'     , 'Beta'},                      @betarnd,      2, ...
+    {'bino'     , 'Binomial'},                  @binornd,      2, ...
+    {'bisa'     , 'Birnbaum-Saunders'},         @bisarnd,      2, ...
+    {'burr'     , 'Burr'},                      @burrrnd,      3, ...
+    {'cauchy'   , 'Cauchy'},                    @cauchyrnd,    2, ...
+    {'chi2'     , 'Chi-squared'},               @chi2rnd,      1, ...
+    {'ev'       , 'Extreme Value'},             @evrnd,        2, ...
+    {'exp'      , 'Exponential'},               @exprnd,       1, ...
+    {'f'        , 'F-Distribution'},            @frnd,         2, ...
+    {'gam'      , 'Gamma'},                     @gamrnd,       2, ...
+    {'geo'      , 'Geometric'},                 @geornd,       1, ...
+    {'gev'      , 'Generalized Extreme Value'}, @gevrnd,       3, ...
+    {'gp'       , 'Generalized Pareto'},        @gprnd,        3, ...
+    {'gumbel'   , 'Gumbel'},                    @gumbelrnd,    2, ...
+    {'hn'       , 'Half-normal'},               @hnrnd,        2, ...
+    {'hyge'     , 'Hypergeometric'},            @hygernd,      3, ...
+    {'invg'     , 'Inverse Gaussian'},          @invgrnd,      2, ...
+    {'laplace'  , 'Laplace'},                   @laplacernd,   2, ...
+    {'logi'     , 'Logistic'},                  @logirnd,      2, ...
+    {'logl'     , 'Log-Logistic'},              @loglrnd,      2, ...
+    {'logn'     , 'Lognormal'},                 @lognrnd,      2, ...
+    {'naka'     , 'Nakagami'},                  @nakarnd,      2, ...
+    {'nbin'     , 'Negative Binomial'},         @nbinrnd,      2, ...
+    {'ncf'      , 'Noncentral F-Distribution'}, @ncfrnd,       3, ...
+    {'nct'      , 'Noncentral Student T'},      @nctrnd,       2, ...
+    {'ncx2'     , 'Noncentral Chi-squared'},    @ncx2rnd,      2, ...
+    {'norm'     , 'Normal'},                    @normrnd,      2, ...
+    {'poiss'    , 'Poisson'},                   @poissrnd,     1, ...
+    {'rayl'     , 'Rayleigh'},                  @raylrnd,      1, ...
+    {'rice'     , 'Rician'},                    @ricernd,      2, ...
+    {'t'        , 'Student T'},                 @trnd,         1, ...
+    {'tls'      , 'location-scale T'},          @tlsrnd,       3, ...
+    {'tri'      , 'Triangular'},                @trirnd,       3, ...
+    {'unid'     , 'Discrete Uniform'},          @unidrnd,      1, ...
+    {'unif'     , 'Uniform'},                   @unifrnd,      2, ...
+    {'vm'       , 'Von Mises'},                 @vmrnd,        2, ...
+    {'wbl'      , 'Weibull'},                   @wblrnd,       2};
 
   if (! ischar (name))
     error ("random: distribution NAME must be a char string.");
@@ -184,99 +184,99 @@ function r = random (name, varargin)
 endfunction
 
 ## Test results
-%!assert (size (random ("Beta", 5, 2, 2, 10)), size (betarnd (5, 2, 2, 10)))
-%!assert (size (random ("beta", 5, 2, 2, 10)), size (betarnd (5, 2, 2, 10)))
-%!assert (size (random ("Binomial", 5, 2, [10, 20])), size (binornd (5, 2, 10, 20)))
-%!assert (size (random ("bino", 5, 2, [10, 20])), size (binornd (5, 2, 10, 20)))
-%!assert (size (random ("Birnbaum-Saunders", 5, 2, [10, 20])), size (bisarnd (5, 2, 10, 20)))
-%!assert (size (random ("bisa", 5, 2, [10, 20])), size (bisarnd (5, 2, 10, 20)))
-%!assert (size (random ("Burr", 5, 2, 2, [10, 20])), size (burrrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("burr", 5, 2, 2, [10, 20])), size (burrrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Cauchy", 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
-%!assert (size (random ("cauchy", 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
-%!assert (size (random ("Chi-squared", 5, [10, 20])), size (chi2rnd (5, 10, 20)))
-%!assert (size (random ("chi2", 5, [10, 20])), size (chi2rnd (5, 10, 20)))
-%!assert (size (random ("Extreme Value", 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
-%!assert (size (random ("ev", 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
-%!assert (size (random ("Exponential", 5, [10, 20])), size (exprnd (5, 10, 20)))
-%!assert (size (random ("exp", 5, [10, 20])), size (exprnd (5, 10, 20)))
-%!assert (size (random ("F-Distribution", 5, 2, [10, 20])), size (frnd (5, 2, 10, 20)))
-%!assert (size (random ("f", 5, 2, [10, 20])), size (frnd (5, 2, 10, 20)))
-%!assert (size (random ("Gamma", 5, 2, [10, 20])), size (gamrnd (5, 2, 10, 20)))
-%!assert (size (random ("gam", 5, 2, [10, 20])), size (gamrnd (5, 2, 10, 20)))
-%!assert (size (random ("Geometric", 5, [10, 20])), size (geornd (5, 10, 20)))
-%!assert (size (random ("geo", 5, [10, 20])), size (geornd (5, 10, 20)))
-%!assert (size (random ("Generalized Extreme Value", 5, 2, 2, [10, 20])), size (gevrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("gev", 5, 2, 2, [10, 20])), size (gevrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Generalized Pareto", 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("gp", 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
-%!assert (size (random ("gumbel", 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
-%!assert (size (random ("Half-normal", 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
-%!assert (size (random ("hn", 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
-%!assert (size (random ("Hypergeometric", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
-%!assert (size (random ("hyge", 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Inverse Gaussian", 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
-%!assert (size (random ("invg", 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
-%!assert (size (random ("Laplace", 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
-%!assert (size (random ("laplace", 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
-%!assert (size (random ("Logistic", 5, 2, [10, 20])), size (logirnd (5, 2, 10, 20)))
-%!assert (size (random ("logi", 5, 2, [10, 20])), size (logirnd (5, 2, 10, 20)))
-%!assert (size (random ("Log-Logistic", 5, 2, [10, 20])), size (loglrnd (5, 2, 10, 20)))
-%!assert (size (random ("logl", 5, 2, [10, 20])), size (loglrnd (5, 2, 10, 20)))
-%!assert (size (random ("Lognormal", 5, 2, [10, 20])), size (lognrnd (5, 2, 10, 20)))
-%!assert (size (random ("logn", 5, 2, [10, 20])), size (lognrnd (5, 2, 10, 20)))
-%!assert (size (random ("Nakagami", 5, 2, [10, 20])), size (nakarnd (5, 2, 10, 20)))
-%!assert (size (random ("naka", 5, 2, [10, 20])), size (nakarnd (5, 2, 10, 20)))
-%!assert (size (random ("Negative Binomial", 5, 2, [10, 20])), size (nbinrnd (5, 2, 10, 20)))
-%!assert (size (random ("nbin", 5, 2, [10, 20])), size (nbinrnd (5, 2, 10, 20)))
-%!assert (size (random ("Noncentral F-Distribution", 5, 2, 2, [10, 20])), size (ncfrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("ncf", 5, 2, 2, [10, 20])), size (ncfrnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Noncentral Student T", 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
-%!assert (size (random ("nct", 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
-%!assert (size (random ("Noncentral Chi-Squared", 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
-%!assert (size (random ("ncx2", 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
-%!assert (size (random ("Normal", 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
-%!assert (size (random ("norm", 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
-%!assert (size (random ("Poisson", 5, [10, 20])), size (poissrnd (5, 10, 20)))
-%!assert (size (random ("poiss", 5, [10, 20])), size (poissrnd (5, 10, 20)))
-%!assert (size (random ("Rayleigh", 5, [10, 20])), size (raylrnd (5, 10, 20)))
-%!assert (size (random ("rayl", 5, [10, 20])), size (raylrnd (5, 10, 20)))
-%!assert (size (random ("Rician", 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
-%!assert (size (random ("rice", 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
-%!assert (size (random ("Student T", 5, [10, 20])), size (trnd (5, 10, 20)))
-%!assert (size (random ("t", 5, [10, 20])), size (trnd (5, 10, 20)))
-%!assert (size (random ("location-scale T", 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
-%!assert (size (random ("tls", 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
-%!assert (size (random ("Triangular", 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("tri", 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
-%!assert (size (random ("Discrete Uniform", 5, [10, 20])), size (unidrnd (5, 10, 20)))
-%!assert (size (random ("unid", 5, [10, 20])), size (unidrnd (5, 10, 20)))
-%!assert (size (random ("Uniform", 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
-%!assert (size (random ("unif", 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
-%!assert (size (random ("Von Mises", 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
-%!assert (size (random ("vm", 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
-%!assert (size (random ("Weibull", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
-%!assert (size (random ("wbl", 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
+%!assert (size (random ('Beta', 5, 2, 2, 10)), size (betarnd (5, 2, 2, 10)))
+%!assert (size (random ('beta', 5, 2, 2, 10)), size (betarnd (5, 2, 2, 10)))
+%!assert (size (random ('Binomial', 5, 2, [10, 20])), size (binornd (5, 2, 10, 20)))
+%!assert (size (random ('bino', 5, 2, [10, 20])), size (binornd (5, 2, 10, 20)))
+%!assert (size (random ('Birnbaum-Saunders', 5, 2, [10, 20])), size (bisarnd (5, 2, 10, 20)))
+%!assert (size (random ('bisa', 5, 2, [10, 20])), size (bisarnd (5, 2, 10, 20)))
+%!assert (size (random ('Burr', 5, 2, 2, [10, 20])), size (burrrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('burr', 5, 2, 2, [10, 20])), size (burrrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Cauchy', 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
+%!assert (size (random ('cauchy', 5, 2, [10, 20])), size (cauchyrnd (5, 2, 10, 20)))
+%!assert (size (random ('Chi-squared', 5, [10, 20])), size (chi2rnd (5, 10, 20)))
+%!assert (size (random ('chi2', 5, [10, 20])), size (chi2rnd (5, 10, 20)))
+%!assert (size (random ('Extreme Value', 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
+%!assert (size (random ('ev', 5, 2, [10, 20])), size (evrnd (5, 2, 10, 20)))
+%!assert (size (random ('Exponential', 5, [10, 20])), size (exprnd (5, 10, 20)))
+%!assert (size (random ('exp', 5, [10, 20])), size (exprnd (5, 10, 20)))
+%!assert (size (random ('F-Distribution', 5, 2, [10, 20])), size (frnd (5, 2, 10, 20)))
+%!assert (size (random ('f', 5, 2, [10, 20])), size (frnd (5, 2, 10, 20)))
+%!assert (size (random ('Gamma', 5, 2, [10, 20])), size (gamrnd (5, 2, 10, 20)))
+%!assert (size (random ('gam', 5, 2, [10, 20])), size (gamrnd (5, 2, 10, 20)))
+%!assert (size (random ('Geometric', 5, [10, 20])), size (geornd (5, 10, 20)))
+%!assert (size (random ('geo', 5, [10, 20])), size (geornd (5, 10, 20)))
+%!assert (size (random ('Generalized Extreme Value', 5, 2, 2, [10, 20])), size (gevrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('gev', 5, 2, 2, [10, 20])), size (gevrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Generalized Pareto', 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('gp', 5, 2, 2, [10, 20])), size (gprnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Gumbel', 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
+%!assert (size (random ('gumbel', 5, 2, [10, 20])), size (gumbelrnd (5, 2, 10, 20)))
+%!assert (size (random ('Half-normal', 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
+%!assert (size (random ('hn', 5, 2, [10, 20])), size (hnrnd (5, 2, 10, 20)))
+%!assert (size (random ('Hypergeometric', 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
+%!assert (size (random ('hyge', 5, 2, 2, [10, 20])), size (hygernd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Inverse Gaussian', 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
+%!assert (size (random ('invg', 5, 2, [10, 20])), size (invgrnd (5, 2, 10, 20)))
+%!assert (size (random ('Laplace', 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
+%!assert (size (random ('laplace', 5, 2, [10, 20])), size (laplacernd (5, 2, 10, 20)))
+%!assert (size (random ('Logistic', 5, 2, [10, 20])), size (logirnd (5, 2, 10, 20)))
+%!assert (size (random ('logi', 5, 2, [10, 20])), size (logirnd (5, 2, 10, 20)))
+%!assert (size (random ('Log-Logistic', 5, 2, [10, 20])), size (loglrnd (5, 2, 10, 20)))
+%!assert (size (random ('logl', 5, 2, [10, 20])), size (loglrnd (5, 2, 10, 20)))
+%!assert (size (random ('Lognormal', 5, 2, [10, 20])), size (lognrnd (5, 2, 10, 20)))
+%!assert (size (random ('logn', 5, 2, [10, 20])), size (lognrnd (5, 2, 10, 20)))
+%!assert (size (random ('Nakagami', 5, 2, [10, 20])), size (nakarnd (5, 2, 10, 20)))
+%!assert (size (random ('naka', 5, 2, [10, 20])), size (nakarnd (5, 2, 10, 20)))
+%!assert (size (random ('Negative Binomial', 5, 2, [10, 20])), size (nbinrnd (5, 2, 10, 20)))
+%!assert (size (random ('nbin', 5, 2, [10, 20])), size (nbinrnd (5, 2, 10, 20)))
+%!assert (size (random ('Noncentral F-Distribution', 5, 2, 2, [10, 20])), size (ncfrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('ncf', 5, 2, 2, [10, 20])), size (ncfrnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Noncentral Student T', 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
+%!assert (size (random ('nct', 5, 2, [10, 20])), size (nctrnd (5, 2, 10, 20)))
+%!assert (size (random ('Noncentral Chi-Squared', 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
+%!assert (size (random ('ncx2', 5, 2, [10, 20])), size (ncx2rnd (5, 2, 10, 20)))
+%!assert (size (random ('Normal', 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
+%!assert (size (random ('norm', 5, 2, [10, 20])), size (normrnd (5, 2, 10, 20)))
+%!assert (size (random ('Poisson', 5, [10, 20])), size (poissrnd (5, 10, 20)))
+%!assert (size (random ('poiss', 5, [10, 20])), size (poissrnd (5, 10, 20)))
+%!assert (size (random ('Rayleigh', 5, [10, 20])), size (raylrnd (5, 10, 20)))
+%!assert (size (random ('rayl', 5, [10, 20])), size (raylrnd (5, 10, 20)))
+%!assert (size (random ('Rician', 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
+%!assert (size (random ('rice', 5, 1, [10, 20])), size (ricernd (5, 1, 10, 20)))
+%!assert (size (random ('Student T', 5, [10, 20])), size (trnd (5, 10, 20)))
+%!assert (size (random ('t', 5, [10, 20])), size (trnd (5, 10, 20)))
+%!assert (size (random ('location-scale T', 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
+%!assert (size (random ('tls', 5, 1, 2, [10, 20])), size (tlsrnd (5, 1, 2, 10, 20)))
+%!assert (size (random ('Triangular', 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('tri', 5, 2, 2, [10, 20])), size (trirnd (5, 2, 2, 10, 20)))
+%!assert (size (random ('Discrete Uniform', 5, [10, 20])), size (unidrnd (5, 10, 20)))
+%!assert (size (random ('unid', 5, [10, 20])), size (unidrnd (5, 10, 20)))
+%!assert (size (random ('Uniform', 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
+%!assert (size (random ('unif', 5, 2, [10, 20])), size (unifrnd (5, 2, 10, 20)))
+%!assert (size (random ('Von Mises', 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
+%!assert (size (random ('vm', 5, 2, [10, 20])), size (vmrnd (5, 2, 10, 20)))
+%!assert (size (random ('Weibull', 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
+%!assert (size (random ('wbl', 5, 2, [10, 20])), size (wblrnd (5, 2, 10, 20)))
 
 ## Test input validation
 %!error<random: distribution NAME must be a char string.> random (1)
-%!error<random: distribution NAME must be a char string.> random ({"beta"})
+%!error<random: distribution NAME must be a char string.> random ({'beta'})
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", "a", 2)
+%! random ('Beta', 'a', 2)
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", 5, "")
+%! random ('Beta', 5, '')
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", 5, {2})
+%! random ('Beta', 5, {2})
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", "a", 2, 2, 10)
+%! random ('Beta', 'a', 2, 2, 10)
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", 5, "", 2, 10)
+%! random ('Beta', 5, '', 2, 10)
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", 5, {2}, 2, 10)
+%! random ('Beta', 5, {2}, 2, 10)
 %!error<random: distribution parameters must be numeric.> ...
-%! random ("Beta", 5, "", 2, 10)
-%!error<random: chi2 distribution requires 1 parameter.> random ("chi2")
-%!error<random: Beta distribution requires 2 parameters.> random ("Beta", 5)
-%!error<random: Burr distribution requires 3 parameters.> random ("Burr", 5)
-%!error<random: Burr distribution requires 3 parameters.> random ("Burr", 5, 2)
+%! random ('Beta', 5, '', 2, 10)
+%!error<random: chi2 distribution requires 1 parameter.> random ('chi2')
+%!error<random: Beta distribution requires 2 parameters.> random ('Beta', 5)
+%!error<random: Burr distribution requires 3 parameters.> random ('Burr', 5)
+%!error<random: Burr distribution requires 3 parameters.> random ('Burr', 5, 2)

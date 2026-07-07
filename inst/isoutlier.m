@@ -187,7 +187,7 @@ function [TF, L, U, C] = isoutlier (x, varargin)
 
   ## Add defaults
   dim = [];
-  method = "median";
+  method = 'median';
   window = [];
   SamplePoints = [];
   ThresholdFactor = 3;
@@ -201,34 +201,34 @@ function [TF, L, U, C] = isoutlier (x, varargin)
   while (numel (varargin) > 0)
     if (ischar (varargin{1}))
       switch (lower (varargin{1}))
-        case "median"
-          method = "median";
+        case 'median'
+          method = 'median';
           ThresholdFactor = 3;
           varargin(1) = [];
 
-        case "mean"
-          method = "mean";
+        case 'mean'
+          method = 'mean';
           ThresholdFactor = 3;
           varargin(1) = [];
 
-        case "quartiles"
-          method = "quartiles";
+        case 'quartiles'
+          method = 'quartiles';
           ThresholdFactor = 1.5;
           varargin(1) = [];
 
-        case "grubbs"
-          method = "grubbs";
+        case 'grubbs'
+          method = 'grubbs';
           ThresholdFactor = 0.05;
           varargin(1) = [];
 
-        case "gesd"
-          method = "gesd";
+        case 'gesd'
+          method = 'gesd';
           ThresholdFactor = 0.05;
           MaxNumOutliers = [];
           varargin(1) = [];
 
-        case "movmedian"
-          method = "movmedian";
+        case 'movmedian'
+          method = 'movmedian';
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
@@ -237,8 +237,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           endif
           varargin([1:2]) = [];
 
-        case "movmean"
-          method = "movmean";
+        case 'movmean'
+          method = 'movmean';
           window = varargin{2};
           if (! isnumeric (window) || numel (window) < 1  ||
                 numel (window) > 2 || any (window <= 0))
@@ -247,8 +247,8 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           endif
           varargin([1:2]) = [];
 
-        case "percentiles"
-          method = "percentiles";
+        case 'percentiles'
+          method = 'percentiles';
           threshold = varargin{2};
           if (! isnumeric (threshold) || ! (numel (threshold) == 2))
             error (strcat ("isoutlier: THRESHOLD must be a two-element", ...
@@ -263,7 +263,7 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           endif
           varargin([1:2]) = [];
 
-        case "samplepoints"
+        case 'samplepoints'
           SamplePoints = varargin{2};
           if (! isvector (SamplePoints) || isscalar (SamplePoints))
             error ("isoutlier: sample points must be a vector.");
@@ -276,14 +276,14 @@ function [TF, L, U, C] = isoutlier (x, varargin)
           endif
           varargin([1:2]) = [];
 
-        case "thresholdfactor"
+        case 'thresholdfactor'
           ThresholdFactor = varargin{2};
           if (! isscalar (ThresholdFactor) || ThresholdFactor <= 0)
             error ("isoutlier: threshold factor must be a nonnegative scalar.");
           endif
           varargin([1:2]) = [];
 
-        case "maxnumoutliers"
+        case 'maxnumoutliers'
           MaxNumOutliers = varargin{2};
           if (! isscalar (MaxNumOutliers) || MaxNumOutliers <= 0 ||
               ! (fix (MaxNumOutliers) == MaxNumOutliers))
@@ -324,36 +324,36 @@ function [TF, L, U, C] = isoutlier (x, varargin)
   endif
 
   ## Check for valid value of ThresholdFactor for 'grubbs' and 'geds' methods
-  if (any (strcmpi (method, {"grubbs", "gesd"})) && ThresholdFactor > 1)
+  if (any (strcmpi (method, {'grubbs', 'gesd'})) && ThresholdFactor > 1)
     error (strcat ("isoutlier: threshold factor must be in [0 1]", ...
                    " range for 'grubbs' and 'gesd' methods."));
   endif
 
   ## Switch methods
   switch method
-    case "median"
+    case 'median'
       [L, U, C] = median_method (x, dim, ThresholdFactor, c);
       TF = x < L | x > U;
-    case "mean"
+    case 'mean'
       [L, U, C] = mean_method (x, dim, ThresholdFactor);
       TF = x < L | x > U;
-    case "quartiles"
+    case 'quartiles'
       [L, U, C] = quartiles_method (x, dim, ThresholdFactor);
       TF = x < L | x > U;
-    case "grubbs"
+    case 'grubbs'
       [TF, L, U, C] = grubbs_method (x, dim, ThresholdFactor);
-    case "gesd"
+    case 'gesd'
       [L, U, C] = gesd_method (x, dim, ThresholdFactor, MaxNumOutliers);
       TF = x < L | x > U;
-    case "movmedian"
+    case 'movmedian'
       sp = SamplePoints;
       [L, U, C] = movmedian_method (x, dim, ThresholdFactor, c, window, sp);
       TF = x < L | x > U;
-    case "movmean"
+    case 'movmean'
       sp = SamplePoints;
       [L, U, C] = movmean_method (x, dim, ThresholdFactor, window, sp);
       TF = x < L | x > U;
-    case "percentiles"
+    case 'percentiles'
       [L, U, C] = percentiles_method (x, dim, threshold);
       TF = x < L | x > U;
   endswitch
@@ -362,7 +362,7 @@ endfunction
 
 ## Find lower and upper outlier thresholds with median method
 function [L, U, C] = median_method (x, dim, ThresholdFactor, c)
-  C = median (x, dim, "omitnan");
+  C = median (x, dim, 'omitnan');
   sMAD = c * mad (x, 1, dim);
   L = C - ThresholdFactor * sMAD;
   U = C + ThresholdFactor * sMAD;
@@ -370,8 +370,8 @@ endfunction
 
 ## Find lower and upper outlier thresholds with mean method
 function [L, U, M] = mean_method (x, dim, ThresholdFactor)
-  M = mean (x, dim, "omitnan");
-  S = std (x, [], dim, "omitnan");
+  M = mean (x, dim, 'omitnan');
+  S = std (x, [], dim, 'omitnan');
   L = M - ThresholdFactor * S;
   U = M + ThresholdFactor * S;
 endfunction
@@ -489,7 +489,7 @@ function [L, U, C] = gesd_method (x, dim, ThresholdFactor, MaxNumOutliers)
         lambda(j) = (n - j) * t / sqrt ((n - j - 1 + t .^ 2) * (n - j + 1));
       endfor
       ## Find largest index
-      idx = find (R > lambda, 1, "last");
+      idx = find (R > lambda, 1, 'last');
       if (isempty (idx))
           TFidx = 1;
       else
@@ -517,10 +517,10 @@ function [L, U, C] = movmedian_method (x, dim, ThresholdFactor, c, window, sp);
     window = N;
   endif
   if (isempty (sp))
-    FCN = @(x) median (x, "omitnan");
-    C = movfun (FCN, x, window, "dim", dim);
+    FCN = @(x) median (x, 'omitnan');
+    C = movfun (FCN, x, window, 'dim', dim);
     FCN = @(x) mad (x, 1);
-    MAD = movfun (FCN, x, window, "dim", dim);
+    MAD = movfun (FCN, x, window, 'dim', dim);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
@@ -555,7 +555,7 @@ function [L, U, C] = movmedian_method (x, dim, ThresholdFactor, c, window, sp);
         nb = length (cp(cp < 0 & cp >= -w_lo));
         na = length (cp(cp > 0 & cp <= w_hi));
         sp_ind = [j-nb:j+na];
-        C(j,i) = median (tmp_x(sp_ind), "omitnan");
+        C(j,i) = median (tmp_x(sp_ind), 'omitnan');
         MAD(j,i) = mad (tmp_x(sp_ind), 1);
       endfor
     endfor
@@ -580,10 +580,10 @@ function [L, U, M] = movmean_method (x, dim, ThresholdFactor, window, sp);
     window = N;
   endif
   if (isempty (sp))
-    FCN = @(x) mean (x, "omitnan");
-    M = movfun (FCN, x, window, "dim", dim);
-    FCN = @(x) std (x, [], "omitnan");
-    S = movfun (FCN, x, window, "dim", dim);
+    FCN = @(x) mean (x, 'omitnan');
+    M = movfun (FCN, x, window, 'dim', dim);
+    FCN = @(x) std (x, [], 'omitnan');
+    S = movfun (FCN, x, window, 'dim', dim);
   else
     ## Check that sample points(sp) have the N elements
     if (numel (sp) != N)
@@ -618,8 +618,8 @@ function [L, U, M] = movmean_method (x, dim, ThresholdFactor, window, sp);
         nb = length (cp(cp < 0 & cp >= -w_lo));
         na = length (cp(cp > 0 & cp <= w_hi));
         sp_ind = [j-nb:j+na];
-        M(j,i) = mean (tmp_x(sp_ind), "omitnan");
-        S(j,i) = std (tmp_x(sp_ind), [], "omitnan");
+        M(j,i) = mean (tmp_x(sp_ind), 'omitnan');
+        S(j,i) = std (tmp_x(sp_ind), [], 'omitnan');
       endfor
     endfor
     ## Restore shape
@@ -642,7 +642,7 @@ endfunction
 
 %!demo
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! TF = isoutlier (A, "mean")
+%! TF = isoutlier (A, 'mean')
 
 %!demo
 %! ## Use a moving detection method to detect local outliers in a sine wave
@@ -651,12 +651,12 @@ endfunction
 %! A = sin(x);
 %! A(47) = 0;
 %! time = datenum (2023,1,1,0,0,0) + (1/24)*[0:length(x)-1] - 730485;
-%! TF = isoutlier (A, "movmedian", 5*(1/24), "SamplePoints", time);
+%! TF = isoutlier (A, 'movmedian', 5*(1/24), 'SamplePoints', time);
 %! plot (time, A)
 %! hold on
-%! plot (time(TF), A(TF), "x")
+%! plot (time(TF), A(TF), 'x')
 %! datetick ('x', 20, 'keepticks')
-%! legend ("Original Data", "Outlier Data")
+%! legend ('Original Data', 'Outlier Data')
 
 %!demo
 %! ## Locate an outlier in a vector of data and visualize the outlier
@@ -666,34 +666,34 @@ endfunction
 %! [TF, L, U, C] = isoutlier (A);
 %! plot (x, A);
 %! hold on
-%! plot (x(TF), A(TF), "x");
+%! plot (x(TF), A(TF), 'x');
 %! xlim ([1,10]);
-%! line ([1,10], [L, L], "Linestyle", ":");
-%! text (1.1, L-2, "Lower Threshold");
-%! line ([1,10], [U, U], "Linestyle", ":");
-%! text (1.1, U-2, "Upper Threshold");
-%! line ([1,10], [C, C], "Linestyle", ":");
-%! text (1.1, C-3, "Center Value");
-%! legend ("Original Data", "Outlier Data");
+%! line ([1,10], [L, L], 'Linestyle', ':');
+%! text (1.1, L-2, 'Lower Threshold');
+%! line ([1,10], [U, U], 'Linestyle', ':');
+%! text (1.1, U-2, 'Upper Threshold');
+%! line ([1,10], [C, C], 'Linestyle', ':');
+%! text (1.1, C-3, 'Center Value');
+%! legend ('Original Data', 'Outlier Data');
 
 
 ## Output validation tests (checked against MATLAB)
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! assert (isoutlier (A, "mean"), logical([zeros(1,8) 1 zeros(1,6)]))
-%! assert (isoutlier (A, "median"), ...
+%! assert (isoutlier (A, 'mean'), logical([zeros(1,8) 1 zeros(1,6)]))
+%! assert (isoutlier (A, 'median'), ...
 %! logical([zeros(1,3) 1 zeros(1,4) 1 zeros(1,6)]))
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "mean");
+%! [TF, L, U, C] = isoutlier (A, 'mean');
 %! assert (L, -109.2459044922864, 1e-12)
 %! assert (U, 264.9792378256198, 1e-12)
 %! assert (C, 77.8666666666666, 1e-12)
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "median");
+%! [TF, L, U, C] = isoutlier (A, 'median');
 %! assert (L, 50.104386688966386, 1e-12)
 %! assert (U, 67.895613311033610, 1e-12)
 %! assert (C, 59)
@@ -705,7 +705,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "movmedian", 5);
+%! [TF, L, U, C] = isoutlier (A, 'movmedian', 5);
 %! l = [54.5522, 52.8283, 54.5522, 54.5522, 54.5522, 53.5522, 53.5522, ...
 %!      53.5522, 47.6566, 56.5522, 57.5522, 56.5522, 51.1044, 52.3283, 53.5522];
 %! u = [63.4478, 66.1717, 63.4478, 63.4478, 63.4478, 62.4478, 62.4478, ...
@@ -717,7 +717,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "movmedian", 5, "SamplePoints", [1:15]);
+%! [TF, L, U, C] = isoutlier (A, 'movmedian', 5, 'SamplePoints', [1:15]);
 %! l = [54.5522, 52.8283, 54.5522, 54.5522, 54.5522, 53.5522, 53.5522, ...
 %!      53.5522, 47.6566, 56.5522, 57.5522, 56.5522, 51.1044, 52.3283, 53.5522];
 %! u = [63.4478, 66.1717, 63.4478, 63.4478, 63.4478, 62.4478, 62.4478, ...
@@ -729,7 +729,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "movmean", 5);
+%! [TF, L, U, C] = isoutlier (A, 'movmean', 5);
 %! l = [54.0841,  6.8872, 11.5608, 12.1518, 11.0210, 10.0112, -218.2840, ...
 %!      -217.2375, -215.1239, -213.4890, -211.3264, 55.5800, 52.9589, ...
 %!      52.5979, 51.0627];
@@ -744,7 +744,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "movmean", 5, "SamplePoints", [1:15]);
+%! [TF, L, U, C] = isoutlier (A, 'movmean', 5, 'SamplePoints', [1:15]);
 %! l = [54.0841,  6.8872, 11.5608, 12.1518, 11.0210, 10.0112, -218.2840, ...
 %!      -217.2375, -215.1239, -213.4890, -211.3264, 55.5800, 52.9589, ...
 %!      52.5979, 51.0627];
@@ -759,7 +759,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "gesd");
+%! [TF, L, U, C] = isoutlier (A, 'gesd');
 %! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 34.235977035439944, 1e-12)
 %! assert (U, 89.764022964560060, 1e-12)
@@ -767,7 +767,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "gesd", "ThresholdFactor", 0.01);
+%! [TF, L, U, C] = isoutlier (A, 'gesd', 'ThresholdFactor', 0.01);
 %! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 31.489256770616173, 1e-12)
 %! assert (U, 92.510743229383820, 1e-12)
@@ -775,7 +775,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "gesd", "ThresholdFactor", 5e-10);
+%! [TF, L, U, C] = isoutlier (A, 'gesd', 'ThresholdFactor', 5e-10);
 %! assert (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 23.976664158788935, 1e-12)
 %! assert (U, 100.02333584121110, 1e-12)
@@ -783,7 +783,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "grubbs");
+%! [TF, L, U, C] = isoutlier (A, 'grubbs');
 %! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 54.642809574646606, 1e-12)
 %! assert (U, 63.511036579199555, 1e-12)
@@ -791,7 +791,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A, "grubbs", "ThresholdFactor", 0.01);
+%! [TF, L, U, C] = isoutlier (A, 'grubbs', 'ThresholdFactor', 0.01);
 %! assert (TF, logical ([0 0 0 1 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 54.216083184201850, 1e-12)
 %! assert (U, 63.937762969644310, 1e-12)
@@ -799,7 +799,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A,  "percentiles", [10 90]);
+%! [TF, L, U, C] = isoutlier (A,  'percentiles', [10 90]);
 %! assert (TF, logical ([0 0 0 0 0 0 0 0 1 0 0 0 0 0 0]))
 %! assert (L, 57)
 %! assert (U, 100)
@@ -807,7 +807,7 @@ endfunction
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! [TF, L, U, C] = isoutlier (A,  "percentiles", [20 80]);
+%! [TF, L, U, C] = isoutlier (A,  'percentiles', [20 80]);
 %! assert (TF, logical ([1 0 0 1 0 0 1 0 1 0 0 0 0 0 1]))
 %! assert (L, 57.5)
 %! assert (U, 62)
@@ -817,87 +817,87 @@ endfunction
 %!shared A
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", 0);
+%! isoutlier (A, 'movmedian', 0);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", []);
+%! isoutlier (A, 'movmedian', []);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", [2 3 4]);
+%! isoutlier (A, 'movmedian', [2 3 4]);
 %!error<isoutlier: WINDOW must be a positive integer> ...
-%! isoutlier (A, "movmedian", 1.4);
+%! isoutlier (A, 'movmedian', 1.4);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", [0 1]);
+%! isoutlier (A, 'movmedian', [0 1]);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", [2 -1]);
+%! isoutlier (A, 'movmedian', [2 -1]);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", {2 3});
+%! isoutlier (A, 'movmedian', {2 3});
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmedian", "char");
+%! isoutlier (A, 'movmedian', 'char');
 %!
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", 0);
+%! isoutlier (A, 'movmean', 0);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", []);
+%! isoutlier (A, 'movmean', []);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", [2 3 4]);
+%! isoutlier (A, 'movmean', [2 3 4]);
 %!error<isoutlier: WINDOW must be a positive integer> ...
-%! isoutlier (A, "movmean", 1.4);
+%! isoutlier (A, 'movmean', 1.4);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", [0 1]);
+%! isoutlier (A, 'movmean', [0 1]);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", [2 -1]);
+%! isoutlier (A, 'movmean', [2 -1]);
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", {2 3});
+%! isoutlier (A, 'movmean', {2 3});
 %!error<isoutlier: WINDOW must be a positive scalar> ...
-%! isoutlier (A, "movmean", "char");
+%! isoutlier (A, 'movmean', 'char');
 %!
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [-1 90]);
+%! isoutlier (A, 'percentiles', [-1 90]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [10 -90]);
+%! isoutlier (A, 'percentiles', [10 -90]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [90]);
+%! isoutlier (A, 'percentiles', [90]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [90 20]);
+%! isoutlier (A, 'percentiles', [90 20]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [90 20]);
+%! isoutlier (A, 'percentiles', [90 20]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", [10 20 90]);
+%! isoutlier (A, 'percentiles', [10 20 90]);
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", {10 90});
+%! isoutlier (A, 'percentiles', {10 90});
 %!error<isoutlier: THRESHOLD must be a two-element> ...
-%! isoutlier (A, "percentiles", "char");
+%! isoutlier (A, 'percentiles', 'char');
 %!
 %!error<isoutlier: sample points must be a vector.> ...
-%! isoutlier (A, "movmean", 5, "SamplePoints", ones(3,15));
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', ones(3,15));
 %!error<isoutlier: sample points must be a vector.> ...
-%! isoutlier (A, "movmean", 5, "SamplePoints", 15);
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', 15);
 %!error<isoutlier: sample points must be unique.> ...
-%! isoutlier (A, "movmean", 5, "SamplePoints", [1,1:14]);
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', [1,1:14]);
 %!error<isoutlier: sample points must be sorted.> ...
-%! isoutlier (A, "movmean", 5, "SamplePoints", [2,1,3:15]);
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', [2,1,3:15]);
 %!error<isoutlier: sample points must have the same size> ...
-%! isoutlier (A, "movmean", 5, "SamplePoints", [1:14]);
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', [1:14]);
 %!
 %!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
-%! isoutlier (A, "movmean", 5, "ThresholdFactor", [1:14]);
+%! isoutlier (A, 'movmean', 5, 'ThresholdFactor', [1:14]);
 %!error<isoutlier: threshold factor must be a nonnegative scalar.> ...
-%! isoutlier (A, "movmean", 5, "ThresholdFactor", -1);
+%! isoutlier (A, 'movmean', 5, 'ThresholdFactor', -1);
 %!error<isoutlier: threshold factor must be in> ...
-%! isoutlier (A, "gesd", "ThresholdFactor", 3);
+%! isoutlier (A, 'gesd', 'ThresholdFactor', 3);
 %!error<isoutlier: threshold factor must be in> ...
-%! isoutlier (A, "grubbs", "ThresholdFactor", 3);
+%! isoutlier (A, 'grubbs', 'ThresholdFactor', 3);
 %!
 %!error<isoutlier: maximum outlier count must be a positive integer scalar.> ...
-%! isoutlier (A, "movmean", 5, "MaxNumOutliers", [1:14]);
+%! isoutlier (A, 'movmean', 5, 'MaxNumOutliers', [1:14]);
 %!error<isoutlier: maximum outlier count must be a positive integer scalar.> ...
-%! isoutlier (A, "movmean", 5, "MaxNumOutliers", -1);
+%! isoutlier (A, 'movmean', 5, 'MaxNumOutliers', -1);
 %!error<isoutlier: maximum outlier count must be a positive integer scalar.> ...
-%! isoutlier (A, "movmean", 5, "MaxNumOutliers", 0);
+%! isoutlier (A, 'movmean', 5, 'MaxNumOutliers', 0);
 %!error<isoutlier: maximum outlier count must be a positive integer scalar.> ...
-%! isoutlier (A, "movmean", 5, "MaxNumOutliers", 1.5);
+%! isoutlier (A, 'movmean', 5, 'MaxNumOutliers', 1.5);
 %!
 %!error<isoutlier: invalid input argument.> ...
-%! isoutlier (A, {"movmean"}, 5, "SamplePoints", [1:15]);
+%! isoutlier (A, {'movmean'}, 5, 'SamplePoints', [1:15]);
 %!error<isoutlier: invalid input argument.> isoutlier (A, {1});
 %!error<isoutlier: invalid input argument.> isoutlier (A, true);
 %!error<isoutlier: invalid input argument.> isoutlier (A, false);

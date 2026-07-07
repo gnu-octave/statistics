@@ -72,7 +72,7 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
   # Check if there are more variables then observations
   if nvars <= nobs
 
-    [U,S,COEFF] = svd (Xcentered, "econ");
+    [U,S,COEFF] = svd (Xcentered, 'econ');
 
   else
 
@@ -138,7 +138,7 @@ endfunction
 %!    8 2 2];
 %! R = corrcoef (x);
 %! [V, lambda] = eig (R);
-%! [~, i] = sort(diag(lambda), "descend"); #arrange largest PC first
+%! [~, i] = sort(diag(lambda), 'descend'); #arrange largest PC first
 %! S = V(:, i) * diag(sqrt(diag(lambda)(i)));
 %! ## contribution of first 2 PCs to each original variable
 %!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
@@ -174,7 +174,7 @@ endfunction
 %!assert(tsquare,[0.5;0.5],10*eps)
 
 %!test
-%! [COEFF,SCORE,latent,tsquare] = princomp(x, "econ");
+%! [COEFF,SCORE,latent,tsquare] = princomp(x, 'econ');
 
 %!assert(COEFF,m(:, 1),10*eps);
 %!assert(SCORE,-m(1:2,1),10*eps);

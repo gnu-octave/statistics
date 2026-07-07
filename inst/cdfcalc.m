@@ -48,8 +48,8 @@ function [yCDF, xCDF, n, emsg, eid] = cdfcalc (x)
   ## Check that x is a vector
   if (! isvector (x))
     warning ("cdfcalc: vector required as input.");
-    emsg = "VectorRequired";
-    eid = "VectorRequired";
+    emsg = 'VectorRequired';
+    eid = 'VectorRequired';
     return
   endif
   ## Remove NaNs and check if there are remaining data to calculate ecdf
@@ -57,8 +57,8 @@ function [yCDF, xCDF, n, emsg, eid] = cdfcalc (x)
   n = length (x);
   if (n == 0)
     warning ("cdfcalc: not enough data.");
-    emsg = "NotEnoughData";
-    eid = "NotEnoughData";
+    emsg = 'NotEnoughData';
+    eid = 'NotEnoughData';
     return
   endif
   ## Sort data in ascending order

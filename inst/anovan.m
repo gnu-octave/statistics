@@ -256,8 +256,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if ((numel (varargin) / 2) != fix (numel (varargin) / 2))
       error ("anovan: wrong number of arguments.")
     endif
-    MODELTYPE = "linear";
-    DISPLAY = "on";
+    MODELTYPE = 'linear';
+    DISPLAY = 'on';
     SSTYPE = 3;
     VARNAMES = [];
     CONTINUOUS = [];
@@ -269,26 +269,26 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       name = varargin{idx-2};
       value = varargin{idx-1};
       switch (lower (name))
-        case "model"
+        case 'model'
           MODELTYPE = value;
-        case "continuous"
+        case 'continuous'
           CONTINUOUS = value;
-        case "random"
+        case 'random'
           RANDOM = value;
-        case "nested"
+        case 'nested'
           error (strcat ("anovan: nested ANOVA is not supported. Please use", ...
                          " anova2 for fully balanced nested ANOVA designs."));
-        case "sstype"
+        case 'sstype'
           SSTYPE = value;
-        case "varnames"
+        case 'varnames'
           VARNAMES = value;
-        case {"display","displayopt"}
+        case {'display','displayopt'}
           DISPLAY = value;
-        case "contrasts"
+        case 'contrasts'
           CONTRASTS = value;
-        case "alpha"
+        case 'alpha'
           ALPHA = value;
-        case "weights"
+        case 'weights'
           WEIGHTS = value;
         otherwise
           error ("anovan: parameter '%s' is not supported.", name);
@@ -371,7 +371,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
     else
       nvarnames = N;
-      VARNAMES = arrayfun(@(x) ["X",num2str(x)], 1:N, "UniformOutput", 0);
+      VARNAMES = arrayfun(@(x) ['X',num2str(x)], 1:N, 'UniformOutput', 0);
     endif
     if (nvarnames != N)
       error (strcat ("anovan: number of variable names is not equal", ...
@@ -436,13 +436,13 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endif
           else
             if (! ismember (lower (CONTRASTS{i}), ...
-                            {"simple","anova","poly","helmert","effect",...
-                              "sdif","sdiff","treatment"}))
+                            {'simple','anova','poly','helmert','effect',...
+                              'sdif','sdiff','treatment'}))
               error (strcat ("anovan: valid built-in contrasts are:", ...
                              " 'simple', 'poly', 'helmert',",...
                              "'effect', 'sdif' or 'treatment'."));
             endif
-            if (strcmpi (CONTRASTS{i}, "treatment") && (SSTYPE==3))
+            if (strcmpi (CONTRASTS{i}, 'treatment') && (SSTYPE==3))
               warning (msg);
               SSTYPE = 2;
             endif
@@ -501,11 +501,11 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
                   " cannot exceed the number of columns of GROUP.");
     if (ischar (MODELTYPE))
       switch (lower (MODELTYPE))
-        case "linear"
+        case 'linear'
           MODELTYPE = 1;
-        case {"interaction","interactions"}
+        case {'interaction','interactions'}
           MODELTYPE = 2;
-        case "full"
+        case 'full'
           MODELTYPE = N;
         otherwise
           error ("anovan: model type not recognised");
@@ -547,7 +547,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           endfor
           for j = 1:MODELTYPE
             v(1:j) = 1;
-            TERMS(j) = flipud (unique (perms (v), "rows"));
+            TERMS(j) = flipud (unique (perms (v), 'rows'));
           endfor
           TERMS = cell2mat (TERMS);
       endswitch
@@ -603,7 +603,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           R = sse;
         endfor
         [b, sse, resid, ucov, hat] = lmfit (XS, Y, W);
-        sstype_char = "I";
+        sstype_char = 'I';
       case {2,'h'}
         ## Type II (partially sequential, or hierarchical) sums-of-squares
         ss = zeros (Nt,1);
@@ -618,7 +618,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           ss(j) = R1 - R2;
         endfor
         [b, sse, resid, ucov, hat] = lmfit (cell2mat (X), Y, W);
-        sstype_char = "II";
+        sstype_char = 'II';
       case 3
         ## Type III (partial, constrained or marginal) sums-of-squares
         ss = zeros (Nt, 1);
@@ -628,7 +628,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           [jnk, R] = lmfit (XS, Y, W);
           ss(j) = R - sse;
         endfor
-        sstype_char = "III";
+        sstype_char = 'III';
       otherwise
         error ("anovan: sstype value not supported.");
     endswitch
@@ -643,17 +643,17 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Prepare model formula and cell array containing the ANOVA table
     T = cell (Nt + 3, 7);
-    T(1,:) = {"Source", "Sum Sq.", "d.f.", "Mean Sq.", "Eta Sq.", "F", "Prob>F"};
+    T(1,:) = {'Source', 'Sum Sq.', 'd.f.', 'Mean Sq.', 'Eta Sq.', 'F', 'Prob>F'};
     T(2:Nt+1,2:7) = num2cell ([ss df ms partial_eta_sq F P]);
-    T(end-1,1:4) = {"Error", sse, dfe, mse};
-    T(end,1:3) = {"Total", sst, dft};
+    T(end-1,1:4) = {'Error', sse, dfe, mse};
+    T(end,1:3) = {'Total', sst, dft};
     formula = sprintf ("Y ~ 1");  # Initialize model formula
     for i = 1:Nt
       str = sprintf ("%s*", VARNAMES{find (TERMS(i,:))});
       T(i+1,1) = str(1:end-1);
       ## Append model term to formula
-      str = regexprep (str, "\\*", ":");
-      if (strcmp (str(end-1), "'"))
+      str = regexprep (str, "\\*", ':');
+      if (strcmp (str(end-1), ''''))
         ## Random intercept term
         formula = sprintf ("%s + (1|%s)", formula, str(1:end-2));
         ## Remove statistics for random factors from the ANOVA table
@@ -691,54 +691,54 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         .* h ./ (1 - h).^2;  % Cook's distance
 
     ## Create STATS structure for MULTCOMPARE
-    STATS = struct ("source","anovan", ...
-                    "resid", resid, ...      # These are weighted (not raw) residuals
-                    "coeffs", coeff_stats, ...
-                    "Rtr", [], ...           # Not used by Octave
-                    "rowbasis", [], ...      # Not used by Octave
-                    "dfe", dfe, ...
-                    "mse", mse, ...
-                    "nullproject", [], ...   # Not used by Octave
-                    "terms", TERMS, ...
-                    "nlevels", nlevels, ...
-                    "continuous", cont_vec, ...
-                    "vmeans", vmeans, ...
-                    "termcols", termcols, ...
-                    "coeffnames", {cellstr(char(coeffnames{:}))}, ...
-                    "vars", [], ...          # Not used by Octave
-                    "varnames", {VARNAMES}, ...
-                    "grpnames", {levels}, ...
-                    "vnested", [], ...       # Not used since "nested" argument name is not supported
-                    "ems", [], ...           # Not used since "nested" argument name is not supported
-                    "denom", [], ...         # Not used since interactions with random factors is not supported
-                    "dfdenom", [], ...       # Not used since interactions with random factors is not supported
-                    "msdenom", [], ...       # Not used since interactions with random factors is not supported
-                    "varest", [], ...        # Not used since interactions with random factors is not supported
-                    "varci", [], ...         # Not used since interactions with random factors is not supported
-                    "txtdenom", [], ...      # Not used since interactions with random factors is not supported
-                    "txtems", [], ...        # Not used since interactions with random factors is not supported
-                    "rtnames", [], ...       # Not used since interactions with random factors is not supported
+    STATS = struct ('source','anovan', ...
+                    'resid', resid, ...      # These are weighted (not raw) residuals
+                    'coeffs', coeff_stats, ...
+                    'Rtr', [], ...           # Not used by Octave
+                    'rowbasis', [], ...      # Not used by Octave
+                    'dfe', dfe, ...
+                    'mse', mse, ...
+                    'nullproject', [], ...   # Not used by Octave
+                    'terms', TERMS, ...
+                    'nlevels', nlevels, ...
+                    'continuous', cont_vec, ...
+                    'vmeans', vmeans, ...
+                    'termcols', termcols, ...
+                    'coeffnames', {cellstr(char(coeffnames{:}))}, ...
+                    'vars', [], ...          # Not used by Octave
+                    'varnames', {VARNAMES}, ...
+                    'grpnames', {levels}, ...
+                    'vnested', [], ...       # Not used since "nested" argument name is not supported
+                    'ems', [], ...           # Not used since "nested" argument name is not supported
+                    'denom', [], ...         # Not used since interactions with random factors is not supported
+                    'dfdenom', [], ...       # Not used since interactions with random factors is not supported
+                    'msdenom', [], ...       # Not used since interactions with random factors is not supported
+                    'varest', [], ...        # Not used since interactions with random factors is not supported
+                    'varci', [], ...         # Not used since interactions with random factors is not supported
+                    'txtdenom', [], ...      # Not used since interactions with random factors is not supported
+                    'txtems', [], ...        # Not used since interactions with random factors is not supported
+                    'rtnames', [], ...       # Not used since interactions with random factors is not supported
                     ## Additional STATS fields used exclusively by Octave
-                    "center_continuous", center_continuous, ...
-                    "random", RANDOM, ...
-                    "formula", formula, ...
-                    "alpha", ALPHA, ...
-                    "df", df, ...
-                    "contrasts", {CONTRASTS}, ...
-                    "X", sparse (cell2mat (X)), ...
-                    "Y", Y, ...
-                    "W", sparse (W), ...
-                    "lmfit", @lmfit, ...
-                    "vcov", sparse (ucov * mse), ...
-                    "CooksD", D, ...
-                    "grps", gid, ...
-                    "eta_squared", eta_sq, ...
-                    "partial_eta_squared", partial_eta_sq);
+                    'center_continuous', center_continuous, ...
+                    'random', RANDOM, ...
+                    'formula', formula, ...
+                    'alpha', ALPHA, ...
+                    'df', df, ...
+                    'contrasts', {CONTRASTS}, ...
+                    'X', sparse (cell2mat (X)), ...
+                    'Y', Y, ...
+                    'W', sparse (W), ...
+                    'lmfit', @lmfit, ...
+                    'vcov', sparse (ucov * mse), ...
+                    'CooksD', D, ...
+                    'grps', gid, ...
+                    'eta_squared', eta_sq, ...
+                    'partial_eta_squared', partial_eta_sq);
 
     ## Print ANOVA table
     switch (lower (DISPLAY))
 
-      case {"on", true}
+      case {'on', true}
 
         ## Print model formula
         fprintf("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
@@ -795,10 +795,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         fprintf("\n");
 
         ## Make figure of diagnostic plots
-        figure ("Name", "Diagnostic Plots: Model Residuals");
+        figure ('Name', 'Diagnostic Plots: Model Residuals');
         t = STATS.resid ./ (sqrt (mse * (1 - h))); % Studentized residuals
         fit = STATS.X * STATS.coeffs(:,1);         % Fitted values
-        [jnk, DI] = sort (D, "descend");           % Indices of sorted D
+        [jnk, DI] = sort (D, 'descend');           % Indices of sorted D
         nk = 4;                               % Top nk residuals with largest D
 
         ## Normal quantile-quantile plot
@@ -806,12 +806,12 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         x = ((1 : n)' - .5) / n;
         [ts, I] = sort (t);
         q = norminv (x);
-        plot (q, ts, "ok", "markersize", 3);
+        plot (q, ts, 'ok', 'markersize', 3);
         box off;
         grid on;
-        xlabel ("Theoretical quantiles");
-        ylabel ("Studentized Residuals");
-        title ("Normal Q-Q Plot");
+        xlabel ('Theoretical quantiles');
+        ylabel ('Studentized Residuals');
+        title ('Normal Q-Q Plot');
         arrayfun (@(i) text (q(I == DI(i)), t(DI(i)), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)])
         iqr = [0.25; 0.75];
@@ -819,22 +819,22 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         xl = norminv (iqr);
         slope = diff (yl) / diff (xl);
         int = yl(1) - slope * xl(1);
-        ax1_xlim = get (gca, "XLim");
-        hold on; plot (ax1_xlim, slope * ax1_xlim + int, "k-"); hold off;
-        set (gca, "Xlim", ax1_xlim);
+        ax1_xlim = get (gca, 'XLim');
+        hold on; plot (ax1_xlim, slope * ax1_xlim + int, 'k-'); hold off;
+        set (gca, 'Xlim', ax1_xlim);
 
         ## Spread-Location Plot
         subplot (2, 2, 2);
-        plot (fit, sqrt (abs (t)), "ko", "markersize", 3);
+        plot (fit, sqrt (abs (t)), 'ko', 'markersize', 3);
         box off;
-        xlabel ("Fitted values");
-        ylabel ("sqrt ( | Studentized Residuals | )");
-        title ("Spread-Location Plot")
-        ax2_xlim = get (gca, "XLim");
+        xlabel ('Fitted values');
+        ylabel ('sqrt ( | Studentized Residuals | )');
+        title ('Spread-Location Plot')
+        ax2_xlim = get (gca, 'XLim');
         hold on;
-        plot (ax2_xlim, ones (1, 2) * sqrt (2), "k:");
-        plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-.");
-        plot (ax2_xlim, ones (1, 2) * sqrt (4), "k--");
+        plot (ax2_xlim, ones (1, 2) * sqrt (2), 'k:');
+        plot (ax2_xlim, ones (1, 2) * sqrt (3), 'k-.');
+        plot (ax2_xlim, ones (1, 2) * sqrt (4), 'k--');
         hold off;
         arrayfun (@(i) text (fit(DI(i)), sqrt (abs (t(DI(i)))), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)]);
@@ -842,41 +842,41 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
         ## Residual-Leverage plot
         subplot (2, 2, 3);
-        plot (h, t, "ko", "markersize", 3);
+        plot (h, t, 'ko', 'markersize', 3);
         box off;
-        xlabel ("Leverage")
-        ylabel ("Studentized Residuals");
-        title ("Residual-Leverage Plot")
-        ax3_xlim = get (gca, "XLim");
-        ax3_ylim = get (gca, "YLim");
-        hold on; plot (ax3_xlim, zeros (1, 2), "k-"); hold off;
+        xlabel ('Leverage')
+        ylabel ('Studentized Residuals');
+        title ('Residual-Leverage Plot')
+        ax3_xlim = get (gca, 'XLim');
+        ax3_ylim = get (gca, 'YLim');
+        hold on; plot (ax3_xlim, zeros (1, 2), 'k-'); hold off;
         arrayfun (@(i) text (h(DI(i)), t(DI(i)), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)]);
-        set (gca, "ygrid", "on");
+        set (gca, 'ygrid', 'on');
         xlim (ax3_xlim); ylim (ax3_ylim);
 
         ## Cook's distance stem plot
         subplot (2, 2, 4);
-        stem (D, "ko", "markersize", 3);
+        stem (D, 'ko', 'markersize', 3);
         box off;
-        xlabel ("Obs. number")
-        ylabel ("Cook's distance")
-        title ("Cook's Distance Stem Plot")
+        xlabel ('Obs. number')
+        ylabel ('Cook''s distance')
+        title ('Cook''s Distance Stem Plot')
         xlim ([0, n]);
-        ax4_xlim = get (gca, "XLim");
-        ax4_ylim = get (gca, "YLim");
+        ax4_xlim = get (gca, 'XLim');
+        ax4_ylim = get (gca, 'YLim');
         hold on;
-        plot (ax4_xlim, ones (1, 2) * 4 / dfe, "k:");
-        plot (ax4_xlim, ones (1, 2) * 0.5, "k-.");
-        plot (ax4_xlim, ones (1, 2), "k--");
+        plot (ax4_xlim, ones (1, 2) * 4 / dfe, 'k:');
+        plot (ax4_xlim, ones (1, 2) * 0.5, 'k-.');
+        plot (ax4_xlim, ones (1, 2), 'k--');
         hold off;
         arrayfun (@(i) text (DI(i), D(DI(i)), ...
                              sprintf ("  %u", DI(i))), [1:min(nk,n)]);
         xlim (ax4_xlim); ylim (ax4_ylim);
 
-        set (findall ( gcf, "-property", "FontSize"), "FontSize", 7)
+        set (findall ( gcf, '-property', 'FontSize'), 'FontSize', 7)
 
-      case {"off", false}
+      case {'off', false}
 
         ## do nothing
 
@@ -917,7 +917,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         else
 
           ## CATEGORICAL PREDICTOR
-          levels{j} = unique (GROUP(:,j), "stable");
+          levels{j} = unique (GROUP(:,j), 'stable');
           if isnumeric (levels{j})
             levels{j} = num2cell (levels{j});
           endif
@@ -937,7 +937,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       X = cell (1, 1 + Nm + Nx);
       X(1) = ones (n, 1);
       coeffnames = cell (1, 1 + Nm + Nx);
-      coeffnames(1) = "(Intercept)";
+      coeffnames(1) = '(Intercept)';
       vmeans = zeros (Nm, 1);
       center_continuous = cont_vec;
       for j = 1:Nm
@@ -968,23 +968,23 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             CONTRASTS{j} = contr_simple (nlevels(j));
           else
             switch (lower (CONTRASTS{j}))
-              case {"simple","anova"}
+              case {'simple','anova'}
                 ## SIMPLE EFFECT CODING (DEFAULT)
                 ## The first level is the reference level
                 CONTRASTS{j} = contr_simple (nlevels(j));
-              case "poly"
+              case 'poly'
                 ## POLYNOMIAL CONTRAST CODING
                 CONTRASTS{j} = contr_poly (nlevels(j));
-              case "helmert"
+              case 'helmert'
                 ## HELMERT CONTRAST CODING
                 CONTRASTS{j} = contr_helmert (nlevels(j));
-              case "effect"
+              case 'effect'
                 ## DEVIATION EFFECT CONTRAST CODING
                 CONTRASTS{j} = contr_sum (nlevels(j));
-              case {"sdif","sdiff"}
+              case {'sdif','sdiff'}
                 ## SUCCESSIVE DEVIATIONS CONTRAST CODING
                 CONTRASTS{j} = contr_sdif (nlevels(j));
-              case "treatment"
+              case 'treatment'
                 ## The first level is the reference level
                 CONTRASTS{j} = contr_treatment (nlevels(j));
               otherwise
@@ -1010,7 +1010,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           C = CONTRASTS{j};
           func = @(x) x(gid(:,j));
           X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), ...
-                                      "UniformOutput", false));
+                                      'UniformOutput', false));
           ## Create names of the coefficients relating to continuous main effects
           coeffnames{1+j} = cell (df(j),1);
           for v = 1:df(j)
@@ -1163,10 +1163,10 @@ endfunction
 %! # t = sqrt (1.44) = 1.20.
 %!
 %! score = [54 23 45 54 45 43 34 65 77 46 65]';
-%! gender = {"male" "male" "male" "male" "male" "female" "female" "female" ...
-%!           "female" "female" "female"}';
+%! gender = {'male' 'male' 'male' 'male' 'male' 'female' 'female' 'female' ...
+%!           'female' 'female' 'female'}';
 %!
-%! [P, ATAB, STATS] = anovan (score, gender, "display", "on", "varnames", "gender");
+%! [P, ATAB, STATS] = anovan (score, gender, 'display', 'on', 'varnames', 'gender');
 
 %!demo
 %!
@@ -1177,14 +1177,14 @@ endfunction
 %! # subject as a random factor (').
 %!
 %! score = [4.5 5.6; 3.7 6.4; 5.3 6.4; 5.4 6.0; 3.9 5.7]';
-%! treatment = {"before" "after"; "before" "after"; "before" "after";
-%!              "before" "after"; "before" "after"}';
-%! subject = {"GS" "GS"; "JM" "JM"; "HM" "HM"; "JW" "JW"; "PS" "PS"}';
+%! treatment = {'before' 'after'; 'before' 'after'; 'before' 'after';
+%!              'before' 'after'; 'before' 'after'}';
+%! subject = {'GS' 'GS'; 'JM' 'JM'; 'HM' 'HM'; 'JW' 'JW'; 'PS' 'PS'}';
 %!
 %! [P, ATAB, STATS] = anovan (score(:), {treatment(:), subject(:)}, ...
-%!                            "model", "full", "random", 2, "sstype", 2, ...
-%!                            "varnames", {"treatment", "subject"}, ...
-%!                            "display", "on");
+%!                            'model', 'full', 'random', 2, 'sstype', 2, ...
+%!                            'varnames', {'treatment', 'subject'}, ...
+%!                            'display', 'on');
 
 %!demo
 %!
@@ -1193,12 +1193,12 @@ endfunction
 %!
 %! strength = [82 86 79 83 84 85 86 87 74 82 ...
 %!            78 75 76 77 79 79 77 78 82 79]';
-%! alloy = {"st","st","st","st","st","st","st","st", ...
-%!          "al1","al1","al1","al1","al1","al1", ...
-%!          "al2","al2","al2","al2","al2","al2"}';
+%! alloy = {'st','st','st','st','st','st','st','st', ...
+%!          'al1','al1','al1','al1','al1','al1', ...
+%!          'al2','al2','al2','al2','al2','al2'}';
 %!
-%! [P, ATAB, STATS] = anovan (strength, alloy, "display", "on", ...
-%!                            "varnames", "alloy");
+%! [P, ATAB, STATS] = anovan (strength, alloy, 'display', 'on', ...
+%!                            'varnames', 'alloy');
 
 %!demo
 %!
@@ -1216,8 +1216,8 @@ endfunction
 %!             6  6  6;  7  7  7;  8  8  8;  9  9  9; 10 10 10];
 %!
 %! [P, ATAB, STATS] = anovan (words(:), {seconds(:), subject(:)}, ...
-%!                            "model", "full", "random", 2, "sstype", 2, ...
-%!                            "display", "on", "varnames", {"seconds", "subject"});
+%!                            'model', 'full', 'random', 2, 'sstype', 2, ...
+%!                            'display', 'on', 'varnames', {'seconds', 'subject'});
 
 %!demo
 %!
@@ -1227,18 +1227,18 @@ endfunction
 %!
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! brands = {"Gourmet", "National", "Generic"; ...
-%!           "Gourmet", "National", "Generic"; ...
-%!           "Gourmet", "National", "Generic"; ...
-%!           "Gourmet", "National", "Generic"; ...
-%!           "Gourmet", "National", "Generic"; ...
-%!           "Gourmet", "National", "Generic"};
-%! popper = {"oil", "oil", "oil"; "oil", "oil", "oil"; "oil", "oil", "oil"; ...
-%!           "air", "air", "air"; "air", "air", "air"; "air", "air", "air"};
+%! brands = {'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'; ...
+%!           'Gourmet', 'National', 'Generic'};
+%! popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
+%!           'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
 %!
 %! [P, ATAB, STATS] = anovan (popcorn(:), {brands(:), popper(:)}, ...
-%!                            "display", "on", "model", "full", ...
-%!                            "varnames", {"brands", "popper"});
+%!                            'display', 'on', 'model', 'full', ...
+%!                            'varnames', {'brands', 'popper'});
 
 %!demo
 %!
@@ -1248,13 +1248,13 @@ endfunction
 %!
 %! salary = [24 26 25 24 27 24 27 23 15 17 20 16, ...
 %!           25 29 27 19 18 21 20 21 22 19]';
-%! gender = {"f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f" "f"...
-%!           "m" "m" "m" "m" "m" "m" "m" "m" "m" "m"}';
+%! gender = {'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f' 'f'...
+%!           'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm' 'm'}';
 %! degree = [1 1 1 1 1 1 1 1 0 0 0 0 1 1 1 0 0 0 0 0 0 0]';
 %!
-%! [P, ATAB, STATS] = anovan (salary, {gender, degree}, "model", "full", ...
-%!                            "sstype", 3, "display", "on", "varnames", ...
-%!                            {"gender", "degree"});
+%! [P, ATAB, STATS] = anovan (salary, {gender, degree}, 'model', 'full', ...
+%!                            'sstype', 3, 'display', 'on', 'varnames', ...
+%!                            {'gender', 'degree'});
 
 %!demo
 %!
@@ -1262,16 +1262,16 @@ endfunction
 %! # adding sugar and/or milk on the tendency of coffee to make people babble,
 %! # in from Navarro (2019): 16.10
 %!
-%! sugar = {"real" "fake" "fake" "real" "real" "real" "none" "none" "none" ...
-%!          "fake" "fake" "fake" "real" "real" "real" "none" "none" "fake"}';
-%! milk = {"yes" "no" "no" "yes" "yes" "no" "yes" "yes" "yes" ...
-%!         "no" "no" "yes" "no" "no" "no" "no" "no" "yes"}';
+%! sugar = {'real' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'none' ...
+%!          'fake' 'fake' 'fake' 'real' 'real' 'real' 'none' 'none' 'fake'}';
+%! milk = {'yes' 'no' 'no' 'yes' 'yes' 'no' 'yes' 'yes' 'yes' ...
+%!         'no' 'no' 'yes' 'no' 'no' 'no' 'no' 'no' 'yes'}';
 %! babble = [4.6 4.4 3.9 5.6 5.1 5.5 3.9 3.5 3.7...
 %!           5.6 4.7 5.9 6.0 5.4 6.6 5.8 5.3 5.7]';
 %!
-%! [P, ATAB, STATS] = anovan (babble, {sugar, milk}, "model", "full",  ...
-%!                            "sstype", 3, "display", "on", ...
-%!                            "varnames", {"sugar", "milk"});
+%! [P, ATAB, STATS] = anovan (babble, {sugar, milk}, 'model', 'full',  ...
+%!                            'sstype', 3, 'display', 'on', ...
+%!                            'varnames', {'sugar', 'milk'});
 
 %!demo
 %!
@@ -1281,12 +1281,12 @@ endfunction
 %! # * Missing values introduced to make the sample sizes unequal to test the
 %! #   calculation of different types of sums-of-squares
 %!
-%! drug = {"X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" ...
-%!         "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X" "X";
-%!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" ...
-%!         "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y" "Y";
-%!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" ...
-%!         "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z" "Z"};
+%! drug = {'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' ...
+%!         'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X' 'X';
+%!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' ...
+%!         'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y' 'Y';
+%!         'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' ...
+%!         'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z' 'Z'};
 %! feedback = [1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0;
 %!             1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0];
@@ -1301,9 +1301,9 @@ endfunction
 %!       202 228 190 206 224 204 205 199 170 160 NaN NaN];
 %!
 %! [P, ATAB, STATS] = anovan (BP(:), {drug(:), feedback(:), diet(:)}, ...
-%!                                    "model", "full", "sstype", 3, ...
-%!                                    "display", "on", ...
-%!                                    "varnames", {"drug", "feedback", "diet"});
+%!                                    'model', 'full', 'sstype', 3, ...
+%!                                    'display', 'on', ...
+%!                                    'varnames', {'drug', 'feedback', 'diet'});
 
 %!demo
 %!
@@ -1316,15 +1316,15 @@ endfunction
 %!
 %! measurement = [444 614 423 625 408  856 447 719 ...
 %!                764 831 586 782 609 1002 606 766]';
-%! strain= {"NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola", ...
-%!          "NIH","NIH","BALB/C","BALB/C","A/J","A/J","129/Ola","129/Ola"}';
-%! treatment={"C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T" "C" "T"}';
+%! strain= {'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola', ...
+%!          'NIH','NIH','BALB/C','BALB/C','A/J','A/J','129/Ola','129/Ola'}';
+%! treatment={'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T' 'C' 'T'}';
 %! block = [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]';
 %!
 %! [P, ATAB, STATS] = anovan (measurement/10, {strain, treatment, block}, ...
-%!                            "sstype", 2, "model", "full", "random", 3, ...
-%!                            "display", "on", ...
-%!                            "varnames", {"strain", "treatment", "block"});
+%!                            'sstype', 2, 'model', 'full', 'random', 3, ...
+%!                            'display', 'on', ...
+%!                            'varnames', {'strain', 'treatment', 'block'});
 
 %!demo
 %!
@@ -1338,13 +1338,13 @@ endfunction
 %! temp = [20.8 20.8 24 24 24 24 26.2 26.2 26.2 26.2 28.4 ...
 %!         29 30.4 30.4 17.2 18.3 18.3 18.3 18.9 18.9 20.4 ...
 %!         21 21 22.1 23.5 24.2 25.9 26.5 26.5 26.5 28.6]';
-%! species = {"ex" "ex" "ex" "ex" "ex" "ex" "ex" "ex" "ex" "ex" "ex" ...
-%!            "ex" "ex" "ex" "niv" "niv" "niv" "niv" "niv" "niv" "niv" ...
-%!            "niv" "niv" "niv" "niv" "niv" "niv" "niv" "niv" "niv" "niv"};
+%! species = {'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' 'ex' ...
+%!            'ex' 'ex' 'ex' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' ...
+%!            'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv' 'niv'};
 %!
-%! [P, ATAB, STATS] = anovan (pulse, {species, temp}, "model", "linear", ...
-%!                           "continuous", 2, "sstype", "h", "display", "on", ...
-%!                           "varnames", {"species", "temp"});
+%! [P, ATAB, STATS] = anovan (pulse, {species, temp}, 'model', 'linear', ...
+%!                           'continuous', 2, 'sstype', 'h', 'display', 'on', ...
+%!                           'varnames', {'species', 'temp'});
 
 %!demo
 %!
@@ -1358,26 +1358,26 @@ endfunction
 %!          84.9 96.1 94.6 82.5 90.7 87.0 86.8 93.3 87.6 92.4 ...
 %!          100. 80.5 92.9 84.0 88.4 91.1 85.7 91.3 92.3 87.9 ...
 %!          91.7 88.6 75.8 75.7 75.3 82.4 80.1 86.0 81.8 82.5]';
-%! treatment = {"yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" "yes" ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  ...
-%!              "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"  "no"}';
-%! exercise = {"lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
-%!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
-%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  ...
-%!             "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  "lo"  ...
-%!             "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" "mid" ...
-%!             "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"  "hi"}';
+%! treatment = {'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' 'yes' ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  ...
+%!              'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'  'no'}';
+%! exercise = {'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
+%!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
+%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  ...
+%!             'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  'lo'  ...
+%!             'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' 'mid' ...
+%!             'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'  'hi'}';
 %! age = [59 65 70 66 61 65 57 61 58 55 62 61 60 59 55 57 60 63 62 57 ...
 %!        58 56 57 59 59 60 55 53 55 58 68 62 61 54 59 63 60 67 60 67 ...
 %!        75 54 57 62 65 60 58 61 65 57 56 58 58 58 52 53 60 62 61 61]';
 %!
 %! [P, ATAB, STATS] = anovan (score, {treatment, exercise, age}, ...
-%!                            "model", [1 0 0; 0 1 0; 0 0 1; 1 1 0], ...
-%!                            "continuous", 3, "sstype", "h", "display", "on", ...
-%!                            "varnames", {"treatment", "exercise", "age"});
+%!                            'model', [1 0 0; 0 1 0; 0 0 1; 1 1 0], ...
+%!                            'continuous', 3, 'sstype', 'h', 'display', 'on', ...
+%!                            'varnames', {'treatment', 'exercise', 'age'});
 
 %!demo
 %!
@@ -1398,8 +1398,8 @@ endfunction
 %!      -0.6002401  0.0000000  0.0  0.5
 %!      -0.6002401  0.0000000  0.0 -0.5];
 %!
-%! [P,ATAB, STATS] = anovan (dv, g, "contrasts", C, "varnames", "score", ...
-%!                          "alpha", 0.05, "display", "on");
+%! [P,ATAB, STATS] = anovan (dv, g, 'contrasts', C, 'varnames', 'score', ...
+%!                          'alpha', 0.05, 'display', 'on');
 
 %!demo
 %!
@@ -1418,15 +1418,15 @@ endfunction
 %!      10, 25, 66, 43, 47, 56,  6, 39, ...
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
 %!
-%! [P,ATAB,STATS] = anovan(y, g, "display", "off");
+%! [P,ATAB,STATS] = anovan(y, g, 'display', 'off');
 %! fitted = STATS.X * STATS.coeffs(:,1); # fitted values
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
-%! figure("Name", "Regression of the absolute residuals on the fitted values");
+%! figure('Name', 'Regression of the absolute residuals on the fitted values');
 %! plot (fitted, abs (STATS.resid),'ob');hold on; plot(fitted,v,'-r'); hold off;
-%! xlabel("Fitted values"); ylabel("Absolute residuals");
+%! xlabel('Fitted values'); ylabel('Absolute residuals');
 %!
-%! [P,ATAB,STATS] = anovan (y, g, "weights", v.^-1);
+%! [P,ATAB,STATS] = anovan (y, g, 'weights', v.^-1);
 
 
 ## Test 1 for anovan example 1

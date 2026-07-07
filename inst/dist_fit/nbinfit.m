@@ -104,7 +104,7 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
 
   ## Add defaults
   freq = [];
-  options.Display = "off";
+  options.Display = 'off';
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
   options.TolX = 1e-6;
@@ -131,9 +131,9 @@ function [paramhat, paramci] = nbinfit (x, alpha, varargin)
       error ("nbinfit: FREQ must contain integer values.");
     endif
     ## Check for valid options structure
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("nbinfit: 'options' argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -214,17 +214,17 @@ endfunction
 
 %!demo
 %! ## Sample 2 populations from different negative binomial distributions
-%! randp ("seed", 5); randg ("seed", 5);    # for reproducibility
+%! randp ('seed', 5); randg ('seed', 5);    # for reproducibility
 %! r1 = nbinrnd (2, 0.15, 5000, 1);
-%! randp ("seed", 8); randg ("seed", 8);    # for reproducibility
+%! randp ('seed', 8); randg ('seed', 8);    # for reproducibility
 %! r2 = nbinrnd (5, 0.2, 5000, 1);
 %! r = [r1, r2];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0:51], 1);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
 %! hold on
 %!
 %! ## Estimate their probability of success
@@ -234,19 +234,19 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:40];
 %! y = nbinpdf (x, r_psA(1), r_psA(2));
-%! plot (x, y, "-pg");
+%! plot (x, y, '-pg');
 %! x = [min(r(:,2)):max(r(:,2))];
 %! y = nbinpdf (x, r_psB(1), r_psB(2));
-%! plot (x, y, "-sc");
+%! plot (x, y, '-sc');
 %! ylim ([0, 0.1])
 %! xlim ([0, 50])
-%! legend ({"Normalized HIST of sample 1 with r=2 and ps=0.15", ...
-%!          "Normalized HIST of sample 2 with r=5 and ps=0.2", ...
+%! legend ({'Normalized HIST of sample 1 with r=2 and ps=0.15', ...
+%!          'Normalized HIST of sample 2 with r=5 and ps=0.2', ...
 %!          sprintf("PDF for sample 1 with estimated r=%0.2f and ps=%0.2f", ...
 %!                  r_psA(1), r_psA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated r=%0.2f and ps=%0.2f", ...
 %!                  r_psB(1), r_psB(2))})
-%! title ("Two population samples from negative different binomial distributions")
+%! title ('Two population samples from negative different binomial distributions')
 %! hold off
 
 ## Test output
@@ -290,6 +290,6 @@ endfunction
 %!error<nbinfit: FREQ must contain integer values.> ...
 %! nbinfit ([1, 2, 3, 4, 5], 0.05, [1, 2, 3, 2, 1.5]);
 %!error<nbinfit: 'options' argument must be a structure> ...
-%! nbinfit ([1, 2, 3, 4, 5], 0.05, struct ("option", 234));
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, struct ('option', 234));
 %!error<nbinfit: 'options' argument must be a structure> ...
-%! nbinfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ("option", 234));
+%! nbinfit ([1, 2, 3, 4, 5], 0.05, ones (1,5), struct ('option', 234));

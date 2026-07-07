@@ -83,7 +83,7 @@ endfunction
 %!error<fstat: function called with too few input arguments.> fstat ()
 %!error<fstat: function called with too few input arguments.> fstat (1)
 %!error<fstat: DF1 and DF2 must be numeric.> fstat ({}, 2)
-%!error<fstat: DF1 and DF2 must be numeric.> fstat (1, "")
+%!error<fstat: DF1 and DF2 must be numeric.> fstat (1, '')
 %!error<fstat: DF1 and DF2 must not be complex.> fstat (i, 2)
 %!error<fstat: DF1 and DF2 must not be complex.> fstat (1, i)
 %!error<fstat: DF1 and DF2 must be of common size or scalars.> ...

@@ -152,7 +152,7 @@ endfunction
 %!     1; 1; 1; 1; 1];
 %!
 %! ## Train the GAM model
-%! obj = fitcgam (X, Y, "Interactions", "all");
+%! obj = fitcgam (X, Y, 'Interactions', 'all');
 %!
 %! ## Create a grid of values for prediction
 %! x1 = [min(X(:,1)):0.1:max(X(:,1))];
@@ -166,16 +166,16 @@ endfunction
 %! gidx = predNumeric > 0.5;
 %!
 %! figure
-%! scatter(XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+%! scatter(XGrid(gidx,1), XGrid(gidx,2), 'markerfacecolor', 'magenta');
 %! hold on
-%! scatter(XGrid(! gidx,1), XGrid(! gidx,2), "markerfacecolor", "red");
-%! plot(X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
-%! xlabel("Feature 1");
-%! ylabel("Feature 2");
-%! title("Generalized Additive Model (GAM) Decision Boundary");
-%! legend({"Class 1 Region", "Class 0 Region", ...
-%!       "Class 1 Samples", "Class 0 Samples"}, ...
-%!       "location", "northwest")
+%! scatter(XGrid(! gidx,1), XGrid(! gidx,2), 'markerfacecolor', 'red');
+%! plot(X(Y == 0, 1), X(Y == 0, 2), 'ko', X(Y == 1, 1), X(Y == 1, 2), 'kx');
+%! xlabel('Feature 1');
+%! ylabel('Feature 2');
+%! title('Generalized Additive Model (GAM) Decision Boundary');
+%! legend({'Class 1 Region', 'Class 0 Region', ...
+%!       'Class 1 Samples', 'Class 0 Samples'}, ...
+%!       'location', 'northwest')
 %! axis tight
 %! hold off
 
@@ -184,20 +184,20 @@ endfunction
 %! x = [1, 2, 3; 4, 5, 6; 7, 8, 9; 3, 2, 1];
 %! y = [0; 0; 1; 1];
 %! PredictorNames = {'Feature1', 'Feature2', 'Feature3'};
-%! a = fitcgam (x, y, "PredictorNames", PredictorNames);
+%! a = fitcgam (x, y, 'PredictorNames', PredictorNames);
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {x, y, 4})
-%! assert ({a.NumPredictors, a.ResponseName}, {3, "Y"})
+%! assert ({a.NumPredictors, a.ResponseName}, {3, 'Y'})
 %! assert (a.ClassNames, {'0'; '1'})
 %! assert (a.PredictorNames, PredictorNames)
 %! assert (a.BaseModel.Intercept, 0)
 %!test
 %! x = [1, 2; 3, 4; 5, 6; 7, 8; 9, 10];
 %! y = [1; 0; 1; 0; 1];
-%! a = fitcgam (x, y, "interactions", "all");
+%! a = fitcgam (x, y, 'interactions', 'all');
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {x, y, 5})
-%! assert ({a.NumPredictors, a.ResponseName}, {2, "Y"})
+%! assert ({a.NumPredictors, a.ResponseName}, {2, 'Y'})
 %! assert (a.ClassNames, {'0'; '1'})
 %! assert (a.PredictorNames, {'x1', 'x2'})
 %! assert (a.ModelwInt.Intercept, 0.4055, 1e-1)
@@ -210,7 +210,7 @@ endfunction
 %! a = fitcgam (X, Y, 'Formula', 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3');
 %! assert (class (a), "ClassificationGAM");
 %! assert ({a.X, a.Y, a.NumObservations}, {X, Y, 100})
-%! assert ({a.NumPredictors, a.ResponseName}, {4, "Y"})
+%! assert ({a.NumPredictors, a.ResponseName}, {4, 'Y'})
 %! assert (a.ClassNames, {'0'; '1'})
 %! assert (a.Formula, 'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3')
 %! assert (a.PredictorNames, {'x1', 'x2', 'x3', 'x4'})
@@ -220,8 +220,8 @@ endfunction
 %!error<fitcgam: too few arguments.> fitcgam ()
 %!error<fitcgam: too few arguments.> fitcgam (ones (4,1))
 %!error<fitcgam: name-value arguments must be in pairs.>
-%! fitcgam (ones (4,2), ones (4, 1), "K")
+%! fitcgam (ones (4,2), ones (4, 1), 'K')
 %!error<fitcgam: number of rows in X and Y must be equal.>
 %! fitcgam (ones (4,2), ones (3, 1))
 %!error<fitcgam: number of rows in X and Y must be equal.>
-%! fitcgam (ones (4,2), ones (3, 1), "K", 2)
+%! fitcgam (ones (4,2), ones (3, 1), 'K', 2)

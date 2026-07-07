@@ -193,7 +193,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     error ("boxplot: numerical array or cell array containing data expected.");
   elseif (iscell (data))
     ## Check if cell contain numerical data
-    if (! all (cellfun ("isnumeric", data)))
+    if (! all (cellfun ('isnumeric', data)))
       error ("boxplot: data cells must contain numerical data.");
     endif
   endif
@@ -201,20 +201,20 @@ function [s_o, hs_o] = boxplot (data, varargin)
   ## Default values
   maxwhisker = 1.5;
   orientation = 1;
-  symbol = ["+", "o"];
+  symbol = ['+', 'o'];
   notched = 0;
   plot_opts = {};
   groups = [];
   sample_IDs = {};
   outlier_tags = 0;
-  box_width = "proportional";
+  box_width = 'proportional';
   widths = 0.4;
   capwid = 1;
   box_style = 0;
   positions = [];
   labels = {};
   nug = 0;
-  bcolor = "y";
+  bcolor = 'y';
 
   ## Optional arguments analysis
   numarg = nargin - 1;
@@ -229,7 +229,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
           error ("boxplot: grouping vector may only be passed as second arg.");
         endif
         if (isnumeric (dummy) || ischar (dummy) || iscell (dummy) || ...
-            iscategorical (dummy) || isa (dummy, "string"))
+            iscategorical (dummy) || isa (dummy, 'string'))
           groups = dummy;
           group_exists = 1;
         else
@@ -259,13 +259,13 @@ function [s_o, hs_o] = boxplot (data, varargin)
       else
         ## Check for additional paired arguments
         switch lower (dummy)
-          case "notch"
+          case 'notch'
             notched = varargin{indopt};
             ## Check for string input: "on" or "off"
             if (ischar (notched))
-              if (strcmpi (notched, "on"))
+              if (strcmpi (notched, 'on'))
                 notched = 1;
-              elseif (strcmpi (notched, "off"))
+              elseif (strcmpi (notched, 'off'))
                 notched = 0;
               else
                 error (strcat ("boxplot: 'Notch' input argument accepts", ...
@@ -275,19 +275,19 @@ function [s_o, hs_o] = boxplot (data, varargin)
               error ("boxplot: invalid 'Notch' value.");
             endif
 
-          case "symbol"
+          case 'symbol'
             symbol = varargin{indopt};
             if (! ischar (symbol))
               error ("boxplot; Symbol(s) must be character(s)");
             endif
 
-          case "orientation"
+          case 'orientation'
             orientation = varargin{indopt};
             if (ischar (orientation))
               ## Check for string input: "vertical" or "horizontal"
-              if (strcmpi (orientation, "vertical"))
+              if (strcmpi (orientation, 'vertical'))
                 orientation = 1;
-              elseif (strcmpi (orientation, "horizontal"))
+              elseif (strcmpi (orientation, 'horizontal'))
                 orientation = 0;
               else
               error (strcat ("boxplot: 'Orientation' input argument", ...
@@ -298,7 +298,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
               error ("boxplot: invalid 'Orientation' value.");
             endif
 
-          case "whisker"
+          case 'whisker'
             maxwhisker = varargin{indopt};
             if (! isscalar (maxwhisker) ||
                 ! (isnumeric (maxwhisker) && isreal (maxwhisker)))
@@ -306,13 +306,13 @@ function [s_o, hs_o] = boxplot (data, varargin)
                              " only a real scalar value as input parameter."));
             endif
 
-          case "outliertags"
+          case 'outliertags'
             outlier_tags = varargin{indopt};
             ## Check for string input: "on" or "off"
             if (ischar (outlier_tags))
-              if (strcmpi (outlier_tags, "on"))
+              if (strcmpi (outlier_tags, 'on'))
                 outlier_tags = 1;
-              elseif (strcmpi (outlier_tags, "off"))
+              elseif (strcmpi (outlier_tags, 'off'))
                 outlier_tags = 0;
               else
               error (strcat ("boxplot: 'OutlierTags' input argument accepts", ...
@@ -322,7 +322,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
               error ("boxplot: invalid 'OutlierTags' value.");
             endif
 
-          case "sample_ids"
+          case 'sample_ids'
             sample_IDs = varargin{indopt};
             if (! iscell (sample_IDs))
               error (strcat ("boxplot: 'Sample_IDs' input argument", ...
@@ -330,55 +330,55 @@ function [s_o, hs_o] = boxplot (data, varargin)
             endif
             outlier_tags = 1;
 
-          case "boxwidth"
+          case 'boxwidth'
             box_width = varargin{indopt};
             ## Check for string input: "fixed" or "proportional"
             if (! ischar (box_width) ||
-                ! ismember (lower (box_width), {"fixed", "proportional"}))
+                ! ismember (lower (box_width), {'fixed', 'proportional'}))
               error (strcat ("boxplot: 'BoxWidth' input argument accepts", ...
                              " only 'fixed' or 'proportional' as value."));
             endif
             box_width = lower (box_width);
 
-          case "widths"
+          case 'widths'
             widths = varargin{indopt};
             if (! isscalar (widths) || ! (isnumeric (widths) && isreal (widths)))
               error (strcat ("boxplot: 'Widths' input argument accepts", ...
                              " only a real scalar value as value."));
             endif
 
-          case "capwidths"
+          case 'capwidths'
             capwid = varargin{indopt};
             if (! isscalar (capwid) || ! (isnumeric (capwid) && isreal (capwid)))
               error (strcat ("boxplot: 'CapWidths' input argument accepts", ...
                              " only a real scalar value as value."));
             endif
 
-          case "boxstyle"
+          case 'boxstyle'
             box_style = varargin{indopt};
             ## Check for string input: "outline" or "filled"
             if (! ischar (box_style) ||
-                ! ismember (lower (box_style), {"outline", "filled"}))
+                ! ismember (lower (box_style), {'outline', 'filled'}))
               error (strcat ("boxplot: 'BoxStyle' input argument accepts", ...
                              " only 'outline' or 'filled' as value."));
             endif
             box_style = lower (box_style);
 
-          case "positions"
+          case 'positions'
             positions = varargin{indopt};
             if (! isvector (positions) || ! isnumeric (positions))
               error (strcat ("boxplot: 'Positions' input argument accepts", ...
                              " only a numeric vector as value."));
             endif
 
-          case "labels"
+          case 'labels'
             labels = varargin{indopt};
             if (! iscellstr (labels))
               error (strcat ("boxplot: 'Labels' input argument accepts", ...
                              " only a cellstr array as value."));
             endif
 
-          case "colors"
+          case 'colors'
             bcolor = varargin{indopt};
             if (! (ischar (bcolor) ||
                 (isnumeric (bcolor) && size (bcolor, 2) == 3)))
@@ -489,7 +489,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
     endfor
 
     ## find valid group combinations.
-    [valid_combinations, ~, final_numeric_groups] = unique (idx_matrix, "rows");
+    [valid_combinations, ~, final_numeric_groups] = unique (idx_matrix, 'rows');
     nc = size (valid_combinations, 1);
     nug = 1:nc;
 
@@ -522,10 +522,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
             lbl_parts{j} = num2str (val);
           elseif (ischar (val))
             lbl_parts{j} = val;
-          elseif (isa (val, "string") || iscategorical (val))
+          elseif (isa (val, 'string') || iscategorical (val))
             lbl_parts{j} = char (val);
           else
-            lbl_parts{j} = "";
+            lbl_parts{j} = '';
           endif
         endfor
         ## Join multiple group labels with a newline for hierarchical stacking
@@ -646,7 +646,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
   widths([nc+1:end]) = [];
   ## Draw a box around the quartiles, with box width being fixed or proportional
   ## to the number of items in the box.
-  if (strcmpi (box_width, "proportional"))
+  if (strcmpi (box_width, 'proportional'))
     box = box .* (widths ./ max (box));
   else
     box = box .* (widths ./ box);
@@ -671,7 +671,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
 
   ## Add caps to the remaining whiskers
   cap_x = whisker_x;
-  if (strcmpi (box_width, "proportional"))
+  if (strcmpi (box_width, 'proportional'))
     cap_x(1, :) -= repmat (((capwid * box .* (widths ./ max (box))) / 8), 1, 2);
     cap_x(2, :) += repmat (((capwid * box .* (widths ./ max (box))) / 8), 1, 2);
   else
@@ -690,16 +690,16 @@ function [s_o, hs_o] = boxplot (data, varargin)
   hold_status = ishold ();
   if (orientation)
     ## Define outlier_tags' vertical alignment
-    outlier_tags_alignment = {"horizontalalignment", "left"};
+    outlier_tags_alignment = {'horizontalalignment', 'left'};
     if (box_style)
       f = fillbox (quartile_x, quartile_y, bcolor);
     endif
-    h = plot (quartile_x, quartile_y, "b;;",
-              whisker_x, whisker_y, "b;;",
-              cap_x, cap_y, "b;;",
-              median_x, median_y, "r;;",
-              outliers_x, outliers_y, [symbol(1), "r;;"],
-              outliers2_x, outliers2_y, [symbol(2), "r;;"], plot_opts{:});
+    h = plot (quartile_x, quartile_y, 'b;;',
+              whisker_x, whisker_y, 'b;;',
+              cap_x, cap_y, 'b;;',
+              median_x, median_y, 'r;;',
+              outliers_x, outliers_y, [symbol(1), 'r;;'],
+              outliers2_x, outliers2_y, [symbol(2), 'r;;'], plot_opts{:});
     ## Print outlier tags
     if (outlier_tags == 1 && outliers_x > 0)
       t1 = plot_tags (outliers_tags_x, outliers_tags_y, outliers_idx,
@@ -711,16 +711,16 @@ function [s_o, hs_o] = boxplot (data, varargin)
     endif
   else
    ## Define outlier_tags' horizontal alignment
-    outlier_tags_alignment = {"horizontalalignment", "left", "rotation", 90};
+    outlier_tags_alignment = {'horizontalalignment', 'left', 'rotation', 90};
       if (box_style)
         f = fillbox (quartile_y, quartile_x, bcolor);
       endif
-      h = plot (quartile_y, quartile_x, "b;;",
-               whisker_y, whisker_x, "b;;",
-               cap_y, cap_x, "b;;",
-               median_y, median_x, "r;;",
-               outliers_y, outliers_x, [symbol(1), "r;;"],
-               outliers2_y, outliers2_x, [symbol(2), "r;;"], plot_opts{:});
+      h = plot (quartile_y, quartile_x, 'b;;',
+               whisker_y, whisker_x, 'b;;',
+               cap_y, cap_x, 'b;;',
+               median_y, median_x, 'r;;',
+               outliers_y, outliers_x, [symbol(1), 'r;;'],
+               outliers2_y, outliers2_x, [symbol(2), 'r;;'], plot_opts{:});
       ## Print outlier tags
       if (outlier_tags == 1 && outliers_x > 0)
         t1 = plot_tags (outliers_tags_y, outliers_tags_x, outliers_idx,
@@ -782,16 +782,16 @@ function [s_o, hs_o] = boxplot (data, varargin)
   ## Redraw the median lines to avoid colour overlapping in case of 'filled'
   ## BoxStyle
   if (box_style)
-    set (hs.median, "color", "r");
+    set (hs.median, 'color', 'r');
   endif
 
   ## Print labels according to orientation and return handle
   if (orientation)
-    set (gca(), "xtick", groups, "xticklabel", labels);
-    hs.labels = get (gcf, "currentaxes");
+    set (gca(), 'xtick', groups, 'xticklabel', labels);
+    hs.labels = get (gcf, 'currentaxes');
   else
-    set (gca(), "ytick", groups, "yticklabel", labels);
-    hs.labels = get (gcf, "currentaxes");
+    set (gca(), 'ytick', groups, 'yticklabel', labels);
+    hs.labels = get (gcf, 'currentaxes');
   endif
 
   ## retain original ishold status.
@@ -843,38 +843,38 @@ endfunction
 
 %!demo
 %! axis ([0, 3]);
-%! randn ("seed", 1);    # for reproducibility
+%! randn ('seed', 1);    # for reproducibility
 %! girls = randn (10, 1) * 5 + 140;
-%! randn ("seed", 2);    # for reproducibility
+%! randn ('seed', 2);    # for reproducibility
 %! boys = randn (13, 1) * 8 + 135;
 %! boxplot ({girls, boys});
-%! set (gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
-%! title ("Grade 3 heights");
+%! set (gca (), 'xtick', [1 2], 'xticklabel', {'girls', 'boys'})
+%! title ('Grade 3 heights');
 
 %!demo
-%! randn ("seed", 7);    # for reproducibility
+%! randn ('seed', 7);    # for reproducibility
 %! A = randn (10, 1) * 5 + 140;
-%! randn ("seed", 8);    # for reproducibility
+%! randn ('seed', 8);    # for reproducibility
 %! B = randn (25, 1) * 8 + 135;
-%! randn ("seed", 9);    # for reproducibility
+%! randn ('seed', 9);    # for reproducibility
 %! C = randn (20, 1) * 6 + 165;
 %! data = [A; B; C];
 %! groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
-%! labels = {"Team A", "Team B", "Team C"};
+%! labels = {'Team A', 'Team B', 'Team C'};
 %! pos = [2, 1, 3];
-%! boxplot (data, groups, "Notch", "on", "Labels", labels, "Positions", pos, ...
-%!          "OutlierTags", "on", "BoxStyle", "filled");
-%! title ("Example of Group splitting with paired vectors");
+%! boxplot (data, groups, 'Notch', 'on', 'Labels', labels, 'Positions', pos, ...
+%!          'OutlierTags', 'on', 'BoxStyle', 'filled');
+%! title ('Example of Group splitting with paired vectors');
 
 %!demo
-%! randn ("seed", 1);    # for reproducibility
+%! randn ('seed', 1);    # for reproducibility
 %! data = randn (100, 9);
-%! boxplot (data, "notch", "on", "boxstyle", "filled", ...
-%!          "colors", "ygcwkmb", "whisker", 1.2);
-%! title ("Example of different colors specified with characters");
+%! boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
+%!          'colors', 'ygcwkmb', 'whisker', 1.2);
+%! title ('Example of different colors specified with characters');
 
 %!demo
-%! randn ("seed", 5);    # for reproducibility
+%! randn ('seed', 5);    # for reproducibility
 %! data = randn (100, 13);
 %! colors = [0.7 0.7 0.7; ...
 %!           0.0 0.4 0.9; ...
@@ -883,64 +883,64 @@ endfunction
 %!           0.8 0.7 0.4; ...
 %!           0.1 0.8 0.5; ...
 %!           0.9 0.9 0.2];
-%! boxplot (data, "notch", "on", "boxstyle", "filled", ...
-%!          "colors", colors, "whisker", 1.3, "boxwidth", "proportional");
-%! title ("Example of different colors specified as RGB values");
+%! boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
+%!          'colors', colors, 'whisker', 1.3, 'boxwidth', 'proportional');
+%! title ('Example of different colors specified as RGB values');
 
 %!demo
-%! randn ("seed", 11); # for reproducibility
+%! randn ('seed', 11); # for reproducibility
 %! data = randn (30, 1);
 %! ## Using modern string arrays
-%! str_groups = string(repmat(["Control"; "TreatmentA"; "TreatmentB"], 10, 1));
-%! boxplot (data, str_groups, "colors", "rgb");
-%! title ("Example using modern string arrays for grouping");
+%! str_groups = string(repmat(['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
+%! boxplot (data, str_groups, 'colors', 'rgb');
+%! title ('Example using modern string arrays for grouping');
 
 %!demo
-%! randn ("seed", 10); # for reproducibility
+%! randn ('seed', 10); # for reproducibility
 %! data = randn (40, 1) * 5 + 50;
 %! ## Create two different grouping variables
 %! group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);
 %! group2 = repmat ([2022; 2022; 2023; 2023], 10, 1);
 %! ## Pass them together as a cell array
 %! boxplot (data, {group1, group2});
-%! title ("Example of Multiple Grouping Variables (Model & Year)");
+%! title ('Example of Multiple Grouping Variables (Model & Year)');
 
 ## Input data validation
-%!error <numerical array or cell array containing> boxplot ("a")
-%!error <data cells must contain> boxplot ({[1 2 3], "a"})
+%!error <numerical array or cell array containing> boxplot ('a')
+%!error <data cells must contain> boxplot ({[1 2 3], 'a'})
 %!error <grouping vector may only be passed> boxplot ([1 2 3], 1, {2, 3})
-%!error <all grouping variables must have the same length> boxplot ([1 2 3], {"a", "b"})
-%!error <'Notch' input argument accepts> boxplot ([1:10], "notch", "any")
-%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", i)
-%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], "notch", {})
-%!error <must be character> boxplot (1, "symbol", 1)
-%!error <'Orientation' input argument accepts only> boxplot (1, "orientation", "diagonal")
-%!error <boxplot: invalid 'Orientation' value.> boxplot (1, "orientation", {})
-%!error <'Whisker' input argument accepts only> boxplot (1, "whisker", "a")
-%!error <'Whisker' input argument accepts only> boxplot (1, "whisker", [1 3])
-%!error <'OutlierTags' input argument accepts only> boxplot (3, "OutlierTags", "maybe")
-%!error <boxplot: invalid 'OutlierTags' value.> boxplot (3, "OutlierTags", {})
-%!error <'Sample_IDs' input argument accepts only> boxplot (1, "sample_IDs", 1)
-%!error <'BoxWidth' input argument accepts only> boxplot (1, "boxwidth", 2)
-%!error <'BoxWidth' input argument accepts only> boxplot (1, "boxwidth", "anything")
-%!error <'Widths' input argument accepts only> boxplot (5, "widths", "a")
-%!error <'Widths' input argument accepts only> boxplot (5, "widths", [1:4])
-%!error <'Widths' input argument accepts only> boxplot (5, "widths", [])
-%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", "a")
-%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", [1:4])
-%!error <'CapWidths' input argument accepts only> boxplot (5, "capwidths", [])
-%!error <'BoxStyle' input argument accepts only> boxplot (1, "Boxstyle", 1)
-%!error <'BoxStyle' input argument accepts only> boxplot (1, "Boxstyle", "garbage")
-%!error <'Positions' input argument accepts only> boxplot (1, "positions", "aa")
-%!error <'Labels' input argument accepts only> boxplot (3, "labels", [1 5])
-%!error <'Colors' input argument accepts only> boxplot (1, "colors", {})
-%!error <'Colors' input argument accepts only> boxplot (2, "colors", [1 2 3 4])
-%!error <Sample_IDs must match the data> boxplot (randn (10, 3), 'Sample_IDs', {"a", "b"})
+%!error <all grouping variables must have the same length> boxplot ([1 2 3], {'a', 'b'})
+%!error <'Notch' input argument accepts> boxplot ([1:10], 'notch', 'any')
+%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], 'notch', i)
+%!error <boxplot: invalid 'Notch' value.> boxplot ([1:10], 'notch', {})
+%!error <must be character> boxplot (1, 'symbol', 1)
+%!error <'Orientation' input argument accepts only> boxplot (1, 'orientation', 'diagonal')
+%!error <boxplot: invalid 'Orientation' value.> boxplot (1, 'orientation', {})
+%!error <'Whisker' input argument accepts only> boxplot (1, 'whisker', 'a')
+%!error <'Whisker' input argument accepts only> boxplot (1, 'whisker', [1 3])
+%!error <'OutlierTags' input argument accepts only> boxplot (3, 'OutlierTags', 'maybe')
+%!error <boxplot: invalid 'OutlierTags' value.> boxplot (3, 'OutlierTags', {})
+%!error <'Sample_IDs' input argument accepts only> boxplot (1, 'sample_IDs', 1)
+%!error <'BoxWidth' input argument accepts only> boxplot (1, 'boxwidth', 2)
+%!error <'BoxWidth' input argument accepts only> boxplot (1, 'boxwidth', 'anything')
+%!error <'Widths' input argument accepts only> boxplot (5, 'widths', 'a')
+%!error <'Widths' input argument accepts only> boxplot (5, 'widths', [1:4])
+%!error <'Widths' input argument accepts only> boxplot (5, 'widths', [])
+%!error <'CapWidths' input argument accepts only> boxplot (5, 'capwidths', 'a')
+%!error <'CapWidths' input argument accepts only> boxplot (5, 'capwidths', [1:4])
+%!error <'CapWidths' input argument accepts only> boxplot (5, 'capwidths', [])
+%!error <'BoxStyle' input argument accepts only> boxplot (1, 'Boxstyle', 1)
+%!error <'BoxStyle' input argument accepts only> boxplot (1, 'Boxstyle', 'garbage')
+%!error <'Positions' input argument accepts only> boxplot (1, 'positions', 'aa')
+%!error <'Labels' input argument accepts only> boxplot (3, 'labels', [1 5])
+%!error <'Colors' input argument accepts only> boxplot (1, 'colors', {})
+%!error <'Colors' input argument accepts only> boxplot (2, 'colors', [1 2 3 4])
+%!error <Sample_IDs must match the data> boxplot (randn (10, 3), 'Sample_IDs', {'a', 'b'})
 %!error <with the formalism> boxplot (rand (3, 3), [1 2])
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   [a, b] = boxplot (rand (10, 3));
 %!   assert (size (a), [7, 3]);
@@ -951,15 +951,15 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   [~, b] = boxplot (rand (10, 3), "BoxStyle", "filled", "colors", "ybc");
+%!   [~, b] = boxplot (rand (10, 3), 'BoxStyle', 'filled', 'colors', 'ybc');
 %!   assert (numel (b.box_fill), 3);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   hold on
 %!   [a, b] = boxplot (rand (10, 3));
@@ -969,7 +969,7 @@ endfunction
 %! end_unwind_protect
 %!test
 %! ## Test multi-variable grouping.
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12];
 %!   g1 = [1; 1; 2; 2; 3; 3; 1; 1; 2; 2; 3; 3];
@@ -982,7 +982,7 @@ endfunction
 %! end_unwind_protect
 %!test
 %! ## Test multi-variable grouping with empty intersections dropping correctly.
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   data = [1; 2; 3; 4];
 %!   g1 = [1; 1; 2; 2];

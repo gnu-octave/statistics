@@ -182,7 +182,7 @@ classdef RegressionGAM
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "predictors"
+          case 'predictors'
             PredictorNames = varargin{2};
             if (! isempty (PredictorNames))
               if (! iscellstr (PredictorNames))
@@ -194,13 +194,13 @@ classdef RegressionGAM
               endif
             endif
 
-          case "responsename"
+          case 'responsename'
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
               error ("RegressionGAM: ResponseName must be a char string.");
             endif
 
-          case "formula"
+          case 'formula'
             if (F_I < 1)
               Formula = varargin{2};
               if (! ischar (Formula) && ! islogical (Formula))
@@ -211,7 +211,7 @@ classdef RegressionGAM
               error ("RegressionGAM: Interactions have been already defined.");
             endif
 
-          case "interactions"
+          case 'interactions'
             if (F_I < 1)
               tmp = varargin{2};
               if (isnumeric (tmp) && isscalar (tmp)
@@ -219,7 +219,7 @@ classdef RegressionGAM
                 Interactions = tmp;
               elseif (islogical (tmp))
                 Interactions = tmp;
-              elseif (ischar (tmp) && strcmpi (tmp, "all"))
+              elseif (ischar (tmp) && strcmpi (tmp, 'all'))
                 Interactions = tmp;
               else
                 error ("RegressionGAM: invalid Interactions parameter.");
@@ -229,7 +229,7 @@ classdef RegressionGAM
               error ("RegressionGAM: Formula has been already defined.");
             endif
 
-          case "knots"
+          case 'knots'
             if (KOD < 2)
               Knots = varargin{2};
               if (! isnumeric (Knots) || ! (isscalar (Knots) ||
@@ -243,7 +243,7 @@ classdef RegressionGAM
               error ("RegressionGAM: DoF and Order have been set already.");
             endif
 
-          case "order"
+          case 'order'
             if (KOD < 2)
               Order = varargin{2};
               if (! isnumeric (Order) || ! (isscalar (Order) ||
@@ -257,7 +257,7 @@ classdef RegressionGAM
               error ("RegressionGAM: DoF and Knots have been set already.");
             endif
 
-          case "dof"
+          case 'dof'
             if (KOD < 2)
               DoF = varargin{2};
               if (! isnumeric (DoF) ||
@@ -271,7 +271,7 @@ classdef RegressionGAM
               error ("RegressionGAM: Knots and Order have been set already.");
             endif
 
-          case "tol"
+          case 'tol'
             Tol = varargin{2};
             if (! (isnumeric (Tol) && isscalar (Tol) && (Tol > 0)))
               error ("RegressionGAM: Tolerance must be a Positive scalar.");
@@ -306,7 +306,7 @@ classdef RegressionGAM
       ## on the original data, which will be used for training the model,
       ## to the RegressionGAM object
       this.NumObservations = rows (X);
-      this.RowsUsed = cast (RowsUsed, "double");
+      this.RowsUsed = cast (RowsUsed, 'double');
 
       ## Assign the number of original predictors to the RegressionGAM object
       this.NumPredictors = ndims_X;
@@ -318,7 +318,7 @@ classdef RegressionGAM
         endfor
       endif
       if (isempty (ResponseName))
-        ResponseName = "Y";
+        ResponseName = 'Y';
       endif
 
       ## Assign predictors and response variable names
@@ -480,7 +480,7 @@ classdef RegressionGAM
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "includeinteractions"
+          case 'includeinteractions'
             tmpInt = varargin{2};
             if (! islogical (tmpInt) || (tmpInt != 0 && tmpInt != 1))
               error (strcat ("RegressionGAM.predict: includeinteractions", ...
@@ -493,7 +493,7 @@ classdef RegressionGAM
             endif
             incInt = tmpInt;
 
-          case "alpha"
+          case 'alpha'
             alpha = varargin{2};
             if (! (isnumeric (alpha) && isscalar (alpha)
                                       && alpha > 0 && alpha < 1))
@@ -593,7 +593,7 @@ classdef RegressionGAM
 
     function savemodel (obj, fname)
       ## Generate variable for class name
-      classdef_name = "RegressionGAM";
+      classdef_name = 'RegressionGAM';
 
       ## Create variables from model properties
       X = obj.X;
@@ -616,10 +616,10 @@ classdef RegressionGAM
       IntMatrix           = obj.IntMatrix;
 
       ## Save classdef name and all model properties as individual variables
-      save (fname, "classdef_name", "X", "Y", "NumObservations", "RowsUsed", ...
-            "NumPredictors", "PredictorNames", "ResponseName", "Formula", ...
-            "Interactions", "Knots", "Order", "DoF", "Tol", "BaseModel", ...
-            "ModelwInt", "IntMatrix");
+      save (fname, 'classdef_name', 'X', 'Y', 'NumObservations', 'RowsUsed', ...
+            'NumPredictors', 'PredictorNames', 'ResponseName', 'Formula', ...
+            'Interactions', 'Knots', 'Order', 'DoF', 'Tol', 'BaseModel', ...
+            'ModelwInt', 'IntMatrix');
     endfunction
 
   endmethods
@@ -651,7 +651,7 @@ classdef RegressionGAM
         ## Only keep interaction terms
         iterms = find (sum (allMat, 2) != 1);
         intMat = allMat(iterms);
-      elseif (strcmpi (this.Interactions, "all"))
+      elseif (strcmpi (this.Interactions, 'all'))
         ## Calculate all p*(p-1)/2 interaction terms
         allMat = flip (fullfact(p)([2:end],:), 2);
         ## Only keep interaction terms
@@ -731,7 +731,7 @@ classdef RegressionGAM
           endif
 
           ## Fit an spline to the data
-          gk = splinefit (X(:,j), res, Knots(j), "order", Order(j));
+          gk = splinefit (X(:,j), res, Knots(j), 'order', Order(j));
 
           ## This might be wrong! We need to check this out
           RSSk(j) = abs (sum (abs (Y - ppval (gk, X(:,j)) - Inter)) .^ 2) / ns;
@@ -796,7 +796,7 @@ endfunction
 %! y = f1(x1) + f2(x2);
 %! y = y + y .* 0.2 .* rand (50,1);
 %! X = [x1, x2];
-%! a = fitrgam (X, y, "tol", 1e-3)
+%! a = fitrgam (X, y, 'tol', 1e-3)
 
 %!demo
 %! ## Declare two different functions
@@ -809,7 +809,7 @@ endfunction
 %! X2 = f2 (x);
 %!
 %! ## Create a synthetic response by adding noise
-%! rand ("seed", 3);
+%! rand ('seed', 3);
 %! Ytrue = X1 + X2;
 %! Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
 %!
@@ -817,25 +817,25 @@ endfunction
 %! X = [X1, X2];
 %!
 %! ## Train the GAM and test on the same data
-%! a = fitrgam (X, Y, "order", [5, 5]);
+%! a = fitrgam (X, Y, 'order', [5, 5]);
 %! [ypred, ySDsd, yInt] = predict (a, X);
 %!
 %! ## Plot the results
 %! figure
 %! [sortedY, indY] = sort (Ytrue);
-%! plot (sortedY, "r-");
+%! plot (sortedY, 'r-');
 %! xlim ([0, 80]);
 %! hold on
-%! plot (ypred(indY), "g+")
-%! plot (yInt(indY,1), "k:")
-%! plot (yInt(indY,2), "k:")
-%! xlabel ("Predictor samples");
-%! ylabel ("Response");
-%! title ("actual vs predicted values for function f1(x) = cos (3x) ");
-%! legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+%! plot (ypred(indY), 'g+')
+%! plot (yInt(indY,1), 'k:')
+%! plot (yInt(indY,2), 'k:')
+%! xlabel ('Predictor samples');
+%! ylabel ('Response');
+%! title ('actual vs predicted values for function f1(x) = cos (3x) ');
+%! legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});
 %!
 %! ## Use 30% Holdout partitioning for training and testing data
-%! C = cvpartition (80, "HoldOut", 0.3);
+%! C = cvpartition (80, 'HoldOut', 0.3);
 %! [ypred, ySDsd, yInt] = predict (a, X(test(C),:));
 %!
 %! ## Plot the results
@@ -844,13 +844,13 @@ endfunction
 %! plot (sortedY, 'r-');
 %! xlim ([0, sum(test(C))]);
 %! hold on
-%! plot (ypred(indY), "g+")
+%! plot (ypred(indY), 'g+')
 %! plot (yInt(indY,1),'k:')
 %! plot (yInt(indY,2),'k:')
-%! xlabel ("Predictor samples");
-%! ylabel ("Response");
-%! title ("actual vs predicted values for function f1(x) = cos (3x) ");
-%! legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
+%! xlabel ('Predictor samples');
+%! ylabel ('Response');
+%! title ('actual vs predicted values for function f1(x) = cos (3x) ');
+%! legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});
 
 ## Test constructor
 %!test
@@ -861,28 +861,28 @@ endfunction
 %! assert ({a.BaseModel.Intercept}, {2.5000})
 %! assert ({a.Knots, a.Order, a.DoF}, {[5, 5, 5], [3, 3, 3], [8, 8, 8]})
 %! assert ({a.NumObservations, a.NumPredictors}, {4, 3})
-%! assert ({a.ResponseName, a.PredictorNames}, {"Y", {"x1", "x2", "x3"}})
+%! assert ({a.ResponseName, a.PredictorNames}, {'Y', {'x1', 'x2', 'x3'}})
 %! assert ({a.Formula}, {[]})
 %!test
 %! x = [1, 2, 3, 4; 4, 5, 6, 7; 7, 8, 9, 1; 3, 2, 1, 2];
 %! y = [1; 2; 3; 4];
-%! pnames = {"A", "B", "C", "D"};
-%! formula = "Y ~ A + B + C + D + A:C";
+%! pnames = {'A', 'B', 'C', 'D'};
+%! formula = 'Y ~ A + B + C + D + A:C';
 %! intMat = logical ([1,0,0,0;0,1,0,0;0,0,1,0;0,0,0,1;1,0,1,0]);
-%! a = RegressionGAM (x, y, "predictors", pnames, "formula", formula);
+%! a = RegressionGAM (x, y, 'predictors', pnames, 'formula', formula);
 %! assert (a.IntMatrix, double (intMat))
-%! assert ({a.ResponseName, a.PredictorNames}, {"Y", pnames})
+%! assert ({a.ResponseName, a.PredictorNames}, {'Y', pnames})
 %! assert (a.Formula, formula)
 
 %!test
 %! ## Test that predict() executes correctly when interactions are present
 %! X = [1, 2; 3, 4; 5, 6; 7, 8];
 %! Y = [10; 20; 30; 40];
-%! mdl = RegressionGAM (X, Y, "formula", "Y ~ x1 + x2 + x1:x2");
+%! mdl = RegressionGAM (X, Y, 'formula', 'Y ~ x1 + x2 + x1:x2');
 %! ypred = predict (mdl, X);
 %! assert (isnumeric (ypred));
 %! assert (size (ypred), [4, 1]);
-%! [ypred2, ySD, yInt] = predict (mdl, X, "includeinteractions", true);
+%! [ypred2, ySD, yInt] = predict (mdl, X, 'includeinteractions', true);
 %! assert (size (ypred2), [4, 1]);
 %! assert (size (ySD), [4, 1]);
 %! assert (size (yInt), [4, 2]);
@@ -916,55 +916,55 @@ endfunction
 %!error<RegressionGAM: number of rows in X and Y must be equal.> ...
 %! RegressionGAM (ones(10,2), ones (5,1))
 %!error<RegressionGAM: invalid values in X.> ...
-%! RegressionGAM ([1;2;3;"a";4], ones (5,1))
+%! RegressionGAM ([1;2;3;'a';4], ones (5,1))
 %!error<RegressionGAM: invalid parameter name in optional pair arguments.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "some", "some")
+%! RegressionGAM (ones(10,2), ones (10,1), 'some', 'some')
 %!error<RegressionGAM: Formula must be a string.>
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", {"y~x1+x2"})
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', {'y~x1+x2'})
 %!error<RegressionGAM: Formula must be a string.>
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", [0, 1, 0])
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', [0, 1, 0])
 %!error<RegressionGAM: invalid syntax in Formula.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something")
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', 'something')
 %!error<RegressionGAM: no predictor terms in Formula.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', 'something~')
 %!error<RegressionGAM: no predictor terms in Formula.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~")
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', 'something~')
 %!error<RegressionGAM: some predictors have not been identified> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "something~x1:")
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', 'something~x1:')
 %!error<RegressionGAM: invalid Interactions parameter.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "interactions", "some")
+%! RegressionGAM (ones(10,2), ones (10,1), 'interactions', 'some')
 %!error<RegressionGAM: invalid Interactions parameter.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "interactions", -1)
+%! RegressionGAM (ones(10,2), ones (10,1), 'interactions', -1)
 %!error<RegressionGAM: invalid Interactions parameter.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "interactions", [1 2 3 4])
+%! RegressionGAM (ones(10,2), ones (10,1), 'interactions', [1 2 3 4])
 %!error<RegressionGAM: number of interaction terms requested is larger than> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "interactions", 3)
+%! RegressionGAM (ones(10,2), ones (10,1), 'interactions', 3)
 %!error<RegressionGAM: Formula has been already defined.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "formula", "y ~ x1 + x2", "interactions", 1)
+%! RegressionGAM (ones(10,2), ones (10,1), 'formula', 'y ~ x1 + x2', 'interactions', 1)
 %!error<RegressionGAM: Interactions have been already defined.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "interactions", 1, "formula", "y ~ x1 + x2")
+%! RegressionGAM (ones(10,2), ones (10,1), 'interactions', 1, 'formula', 'y ~ x1 + x2')
 %!error<RegressionGAM: invalid value for Knots.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "knots", "a")
+%! RegressionGAM (ones(10,2), ones (10,1), 'knots', 'a')
 %!error<RegressionGAM: DoF and Order have been set already.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "order", 3, "dof", 2, "knots", 5)
+%! RegressionGAM (ones(10,2), ones (10,1), 'order', 3, 'dof', 2, 'knots', 5)
 %!error<RegressionGAM: invalid value for DoF.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "dof", 'a')
+%! RegressionGAM (ones(10,2), ones (10,1), 'dof', 'a')
 %!error<RegressionGAM: Knots and Order have been set already.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "knots", 5, "order", 3, "dof", 2)
+%! RegressionGAM (ones(10,2), ones (10,1), 'knots', 5, 'order', 3, 'dof', 2)
 %!error<RegressionGAM: invalid value for Order.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "order", 'a')
+%! RegressionGAM (ones(10,2), ones (10,1), 'order', 'a')
 %!error<RegressionGAM: DoF and Knots have been set already.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "knots", 5, "dof", 2, "order", 2)
+%! RegressionGAM (ones(10,2), ones (10,1), 'knots', 5, 'dof', 2, 'order', 2)
 %!error<RegressionGAM: Tolerance must be a Positive scalar.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "tol", -1)
+%! RegressionGAM (ones(10,2), ones (10,1), 'tol', -1)
 %!error<RegressionGAM: ResponseName must be a char string.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "responsename", -1)
+%! RegressionGAM (ones(10,2), ones (10,1), 'responsename', -1)
 %!error<RegressionGAM: PredictorNames must be a cellstring array.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "predictors", -1)
+%! RegressionGAM (ones(10,2), ones (10,1), 'predictors', -1)
 %!error<RegressionGAM: PredictorNames must be a cellstring array.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "predictors", ['a','b','c'])
+%! RegressionGAM (ones(10,2), ones (10,1), 'predictors', ['a','b','c'])
 %!error<RegressionGAM: PredictorNames must have same number of columns as X.> ...
-%! RegressionGAM (ones(10,2), ones (10,1), "predictors", {'a','b','c'})
+%! RegressionGAM (ones(10,2), ones (10,1), 'predictors', {'a','b','c'})
 
 ## Test input validation for predict method
 %!error<RegressionGAM.predict: too few arguments.> ...
@@ -974,14 +974,14 @@ endfunction
 %!error<RegressionGAM.predict: Xfit must have the same number of features> ...
 %! predict (RegressionGAM(ones(10,2), ones(10,1)), 2)
 %!error<RegressionGAM.predict: invalid NAME in optional pairs of arguments.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "some", "some")
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'some', 'some')
 %!error<RegressionGAM.predict: includeinteractions must be a logical value.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", "some")
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'includeinteractions', 'some')
 %!error<RegressionGAM.predict: includeinteractions must be a logical value.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "includeinteractions", 5)
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'includeinteractions', 5)
 %!error<RegressionGAM.predict: alpha must be a scalar value between 0 and 1.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", 5)
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'alpha', 5)
 %!error<RegressionGAM.predict: alpha must be a scalar value between 0 and 1.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", -1)
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'alpha', -1)
 %!error<RegressionGAM.predict: alpha must be a scalar value between 0 and 1.> ...
-%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), "alpha", 'a')
+%! predict (RegressionGAM(ones(10,2), ones(10,1)), ones (10,2), 'alpha', 'a')

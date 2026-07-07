@@ -67,11 +67,11 @@ function [varargout] = expcdf (x, varargin)
   endif
 
   ## Check for "upper" flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 1 && strcmpi (varargin{end}, 'upper'))
     uflag = true;
     varargin(end) = [];
   elseif (nargin > 1 && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
+          ! strcmpi (varargin{end}, 'upper'))
     error ("expcdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -123,10 +123,10 @@ function [varargout] = expcdf (x, varargin)
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (mu, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Return NaNs for out of range parameters.
@@ -184,12 +184,12 @@ endfunction
 %! p1 = expcdf (x, 2/3);
 %! p2 = expcdf (x, 1.0);
 %! p3 = expcdf (x, 2.0);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r')
 %! grid on
-%! legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "southeast")
-%! title ("Exponential CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 2/3', 'μ = 1', 'μ = 2'}, 'location', 'southeast')
+%! title ('Exponential CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, p
@@ -215,7 +215,7 @@ endfunction
 %! assert (plo, 0.14466318041675, 1e-14);
 %! assert (pup, 0.79808291849140, 1e-14);
 %!test
-%! [p, plo, pup] = expcdf (1, 2, 2, 0.1, "upper");
+%! [p, plo, pup] = expcdf (1, 2, 2, 0.1, 'upper');
 %! assert (p, 0.60653065971263, 1e-14);
 %! assert (plo, 0.20191708150860, 1e-14);
 %! assert (pup, 0.85533681958325, 1e-14);
@@ -223,7 +223,7 @@ endfunction
 ## Test input validation
 %!error<expcdf: invalid number of input arguments.> expcdf ()
 %!error<expcdf: invalid number of input arguments.> expcdf (1, 2 ,3 ,4 ,5, 6)
-%!error<expcdf: invalid argument for upper tail.> expcdf (1, 2, 3, 4, "uper")
+%!error<expcdf: invalid argument for upper tail.> expcdf (1, 2, 3, 4, 'uper')
 %!error<expcdf: X and MU must be of common size or scalars.> ...
 %! expcdf (ones (3), ones (2))
 %!error<expcdf: invalid size of variance, PCOV must be a scalar.> ...
@@ -235,7 +235,7 @@ endfunction
 %!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! expcdf (1, 2, 3, 1.22)
 %!error<expcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! expcdf (1, 2, 3, "alpha", "upper")
+%! expcdf (1, 2, 3, 'alpha', 'upper')
 %!error<expcdf: X and MU must not be complex.> expcdf (i, 2)
 %!error<expcdf: X and MU must not be complex.> expcdf (2, i)
 %!error<expcdf: variance, PCOV, cannot be negative.> ...

@@ -68,8 +68,8 @@ function leafOrder = optimalleaforder ( varargin )
 
   tree = varargin{1};
   D = varargin{2};
-  criterion = "adjacent";               # default and only value at the moment
-  transformation = "linear";
+  criterion = 'adjacent';               # default and only value at the moment
+  transformation = 'linear';
 
   if ((columns (tree) != 3) || (! isnumeric (tree)) || ...
       (! (max (tree(end, 1:2)) == rows (tree) * 2)))
@@ -77,7 +77,7 @@ function leafOrder = optimalleaforder ( varargin )
   endif
 
   ## read the paired arguments
-  if (! all (cellfun ("ischar", varargin(3:end))))
+  if (! all (cellfun ('ischar', varargin(3:end))))
     error ("optimalleaforder: character inputs expected for arguments 3 and up");
   else
     varargin(3:end) = lower (varargin(3:end));
@@ -85,16 +85,16 @@ function leafOrder = optimalleaforder ( varargin )
   pair_index = 3;
   while (pair_index <= (nargin - 1))
     switch (varargin{pair_index})
-      case "criteria"
+      case 'criteria'
         criterion = varargin{pair_index + 1};
-        if (strcmp (criterion, "group"))
+        if (strcmp (criterion, 'group'))
           ## MATLAB compatibility:
           ## the 'group' criterion is not implemented
           error ("optimalleaforder: unavailable criterion 'group'");
-        elseif (! strcmp (criterion, "adjacent"))
+        elseif (! strcmp (criterion, 'adjacent'))
           error ("optimalleaforder: invalid criterion %s", criterion);
         endif
-      case "transformation"
+      case 'transformation'
         transformation = varargin{pair_index + 1};
       otherwise
         error ("optimalleaforder: unknown property %s", varargin{pair_index});
@@ -120,11 +120,11 @@ function leafOrder = optimalleaforder ( varargin )
   ## the similarity matrix, basically an inverted distance matrix
   S = zeros (n);
 
-  if (strcmpi (transformation, "linear"))
+  if (strcmpi (transformation, 'linear'))
     ## linear similarity
     maxD = max (max (D));
     S = maxD - D;
-  elseif (strcmpi (transformation, "inverse"))
+  elseif (strcmpi (transformation, 'inverse'))
     ## similarity as inverted distance
     S = 1 ./ D;
   elseif (is_function_handle (transformation))
@@ -308,7 +308,7 @@ function leafOrder = optimalleaforder ( varargin )
 endfunction
 
 %!demo
-%! randn ("seed", 5)  # for reproducibility
+%! randn ('seed', 5)  # for reproducibility
 %! X = randn (10, 2);
 %! D = pdist (X);
 %! tree = linkage(D, 'average');
@@ -318,7 +318,7 @@ endfunction
 %!error optimalleaforder ()
 %!error optimalleaforder (1)
 %!error <tree must be .*> optimalleaforder (ones (2, 2), 1)
-%!error <character inputs expected> optimalleaforder ([1 2 3], [1 2; 3 4], "criteria", 5)
+%!error <character inputs expected> optimalleaforder ([1 2 3], [1 2; 3 4], 'criteria', 5)
 %!error <D must be .*> optimalleaforder ([1 2 1], [1 2 3])
-%!error <unknown property .*> optimalleaforder ([1 2 1], 1, "xxx", "xxx")
-%!error optimalleaforder ([1 2 1], 1, "Transformation", "xxx")
+%!error <unknown property .*> optimalleaforder ([1 2 1], 1, 'xxx', 'xxx')
+%!error optimalleaforder ([1 2 1], 1, 'Transformation', 'xxx')

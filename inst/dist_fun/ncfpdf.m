@@ -51,9 +51,9 @@ function y = ncfpdf (x, df1, df2, lambda)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df1, "single") || ...
-      isa (df2, "single") || isa (lambda, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (df1, 'single') || ...
+      isa (df2, 'single') || isa (lambda, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -311,7 +311,7 @@ endfunction
 ## Deviance term for binomial and Poisson probability calculation.
 function BP = BinoPoisson (x, np)
   if (isa (x,'single') || isa (np,'single'))
-    BP = zeros (size (x), "single");
+    BP = zeros (size (x), 'single');
   else
     BP = zeros (size (x));
   endif
@@ -346,16 +346,16 @@ endfunction
 %! y2 = ncfpdf (x, 2, 5, 2);
 %! y3 = ncfpdf (x, 5, 10, 1);
 %! y4 = ncfpdf (x, 10, 20, 10);
-%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+%! plot (x, y1, '-r', x, y2, '-g', x, y3, '-k', x, y4, '-m')
 %! grid on
 %! xlim ([0, 5])
 %! ylim ([0, 0.8])
-%! legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
-%!          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
-%!         "location", "northeast")
-%! title ("Noncentral F PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'df1 = 2, df2 = 5, λ = 1', 'df1 = 2, df2 = 5, λ = 2', ...
+%!          'df1 = 5, df2 = 10, λ = 1', 'df1 = 10, df2 = 20, λ = 10'}, ...
+%!         'location', 'northeast')
+%! title ('Noncentral F PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 %!demo
 %! ## Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the
@@ -364,14 +364,14 @@ endfunction
 %! x = 0.01:0.1:10.01;
 %! y1 = ncfpdf (x, 5, 20, 10);
 %! y2 = fpdf (x, 5, 20);
-%! plot (x, y1, "-", x, y2, "-");
+%! plot (x, y1, '-', x, y2, '-');
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.8])
-%! legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northeast")
-%! title ("Noncentral F vs F PDFs")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'Noncentral F(5,20,10)', 'F(5,20)'}, 'location', 'northeast')
+%! title ('Noncentral F vs F PDFs')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x1, df1, df2, lambda

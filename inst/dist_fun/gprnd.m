@@ -106,10 +106,10 @@ function r = gprnd (k, sigma, theta, varargin)
   endif
 
   ## Check for class type
-  if (isa (k, "single") || isa (sigma, "single") || isa (theta, "single"))
-    cls = "single";
+  if (isa (k, 'single') || isa (sigma, 'single') || isa (theta, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from generalized Pareto distribution

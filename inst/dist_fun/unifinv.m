@@ -56,8 +56,8 @@ function x = unifinv (p, a, b)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (a, 'single') || isa (b, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -73,14 +73,14 @@ endfunction
 %! p = 0.001:0.001:0.999;
 %! x1 = unifinv (p, 2, 5);
 %! x2 = unifinv (p, 3, 9);
-%! plot (p, x1, "-b", p, x2, "-g")
+%! plot (p, x1, '-b', p, x2, '-g')
 %! grid on
 %! xlim ([0, 1])
 %! ylim ([0, 10])
-%! legend ({"a = 2, b = 5", "a = 3, b = 9"}, "location", "northwest")
-%! title ("Continuous uniform iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'a = 2, b = 5', 'a = 3, b = 9'}, 'location', 'northwest')
+%! title ('Continuous uniform iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

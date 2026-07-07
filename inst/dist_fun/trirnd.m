@@ -107,10 +107,10 @@ function r = trirnd (a, b, c, varargin)
   endif
 
   ## Check for class type
-  if (isa (a, "single") || isa (b, "single") || isa (c, "single"))
-    cls = "single";
+  if (isa (a, 'single') || isa (b, 'single') || isa (c, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from triangular distribution

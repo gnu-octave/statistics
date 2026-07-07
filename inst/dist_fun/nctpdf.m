@@ -51,8 +51,8 @@ function y = nctpdf (x, df, mu)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (df, "single") || isa (mu, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (df, 'single') || isa (mu, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -107,15 +107,15 @@ endfunction
 %! y2 = nctpdf (x, 4, 0);
 %! y3 = nctpdf (x, 1, 2);
 %! y4 = nctpdf (x, 4, 2);
-%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+%! plot (x, y1, '-r', x, y2, '-g', x, y3, '-k', x, y4, '-m')
 %! grid on
 %! xlim ([-5, 10])
 %! ylim ([0, 0.4])
-%! legend ({"df = 1, μ = 0", "df = 4, μ = 0", ...
-%!          "df = 1, μ = 2", "df = 4, μ = 2"}, "location", "northeast")
-%! title ("Noncentral T PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'df = 1, μ = 0', 'df = 4, μ = 0', ...
+%!          'df = 1, μ = 2', 'df = 4, μ = 2'}, 'location', 'northeast')
+%! title ('Noncentral T PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 %!demo
 %! ## Compare the noncentral T PDF with MU = 1 to the T PDF
@@ -124,14 +124,14 @@ endfunction
 %! x = -5:0.1:5;
 %! y1 = nctpdf (x, 10, 1);
 %! y2 = tpdf (x, 10);
-%! plot (x, y1, "-", x, y2, "-");
+%! plot (x, y1, '-', x, y2, '-');
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 0.4])
-%! legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
-%! title ("Noncentral T vs T PDFs")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'Noncentral χ^2(4,2)', 'χ^2(4)'}, 'location', 'northwest')
+%! title ('Noncentral T vs T PDFs')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x1, df, mu

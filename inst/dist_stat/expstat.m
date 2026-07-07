@@ -72,7 +72,7 @@ endfunction
 ## Input validation tests
 %!error<expstat: function called with too few input arguments.> expstat ()
 %!error<expstat: MU must be numeric.> expstat ({})
-%!error<expstat: MU must be numeric.> expstat ("")
+%!error<expstat: MU must be numeric.> expstat ('')
 %!error<expstat: MU must not be complex.> expstat (i)
 
 ## Output validation tests

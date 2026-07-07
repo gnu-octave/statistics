@@ -91,10 +91,10 @@ function r = exprnd (mu, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single"))
-    cls = "single";
+  if (isa (mu, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from exponential distribution

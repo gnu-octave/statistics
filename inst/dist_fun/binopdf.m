@@ -64,8 +64,8 @@ function y = binopdf (x, n, ps)
   x = x(:); n = n(:); ps = ps(:); # columns for easier vectorization
 
   ## Initialize output, preserve class of output if any are singles
-  if (isa (x, "single") || isa (n, "single") || isa (ps, "single"));
-    y = zeros (numel (x), 1, "single");
+  if (isa (x, 'single') || isa (n, 'single') || isa (ps, 'single'));
+    y = zeros (numel (x), 1, 'single');
   else
     y = zeros (numel (x), 1);
   endif
@@ -234,14 +234,14 @@ endfunction
 %! y1 = binopdf (x, 20, 0.5);
 %! y2 = binopdf (x, 20, 0.7);
 %! y3 = binopdf (x, 40, 0.5);
-%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! plot (x, y1, '*b', x, y2, '*g', x, y3, '*r')
 %! grid on
 %! ylim ([0, 0.25])
-%! legend ({"n = 20, ps = 0.5", "n = 20, ps = 0.7", ...
-%!          "n = 40, ps = 0.5"}, "location", "northeast")
-%! title ("Binomial PDF")
-%! xlabel ("values in x (number of successes)")
-%! ylabel ("density")
+%! legend ({'n = 20, ps = 0.5', 'n = 20, ps = 0.7', ...
+%!          'n = 40, ps = 0.5'}, 'location', 'northeast')
+%! title ('Binomial PDF')
+%! xlabel ('values in x (number of successes)')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

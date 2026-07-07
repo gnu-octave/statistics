@@ -69,7 +69,7 @@ function [p, y] = ppplot (x, dist, varargin)
   elseif (! ischar (dist))
     error ("ppplot: DIST must be a string");
   else
-    F = str2func ([dist "cdf"]);
+    F = str2func ([dist 'cdf']);
   endif
 
   if (nargin <= 2)
@@ -92,7 +92,7 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   ppplot ([2 3 3 4 4 5 6 5 6 7 8 9 8 7 8 9 0 8 7 6 5 4 6 13 8 15 9 9]);
 %! unwind_protect_cleanup

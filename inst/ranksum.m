@@ -109,7 +109,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
   ## Check for extra input arguments
   alpha = 0.05;
   method = [];
-  tail = "both";
+  tail = 'both';
   ## Old syntax: ranksum (x, y, alpha)
   if nargin > 2 && isnumeric (varargin{1}) && isscalar (varargin{1})
     alpha = varargin{1};
@@ -128,20 +128,20 @@ function [p, h, stats] = ranksum(x, y, varargin)
     name = varargin{num_pair};
     value = varargin{num_pair + 1};
     switch (lower (name))
-      case "alpha"
+      case 'alpha'
         alpha = value;
         if (isnan (alpha) || alpha <= 0 || alpha >= 1 || ! isnumeric (alpha) ...
             || ! isscalar (alpha))
           error ("Alpha does not have a valid value");
         endif
-      case "method"
+      case 'method'
         method = value;
-        if ! any (strcmpi (method, {"exact", "approximate", "oldexact"}))
+        if ! any (strcmpi (method, {'exact', 'approximate', 'oldexact'}))
           error ("Wrong value for method option");
         endif
-      case "tail"
+      case 'tail'
         tail = value;
-        if ! any (strcmpi (tail, {"both", "right", "left"}))
+        if ! any (strcmpi (tail, {'both', 'right', 'left'}))
           error ("Wrong value for tail option");
         endif
     endswitch
@@ -155,23 +155,23 @@ function [p, h, stats] = ranksum(x, y, varargin)
   ns = min (nx, ny);
   if isempty (method)
     if (ns < 10)  &&  ((nx + ny) < 20)
-      method = "exact";
+      method = 'exact';
     else
-      method = "approximate";
+      method = 'approximate';
     endif
   endif
 
   % Determine computational technique
   switch method
-    case "approximate"
-      technique = "approximation";
-    case "oldexact"
-      technique = "exact";
-    case "exact"
+    case 'approximate'
+      technique = 'approximation';
+    case 'oldexact'
+      technique = 'exact';
+    case 'exact'
       if (nx + ny) < 10
-        technique = "exact";
+        technique = 'exact';
       else
-        technique = "network_algorithm";
+        technique = 'network_algorithm';
       endif
   endswitch
 
@@ -188,32 +188,32 @@ function [p, h, stats] = ranksum(x, y, varargin)
 
   ## Calculate p-value according to selected technique
   switch technique
-    case "exact"
+    case 'exact'
       allpos = nchoosek (ranks, ns);
       sumranks = sum (allpos, 2);
       np = size (sumranks, 1);
       switch tail
-        case "both"
+        case 'both'
           p_low = sum (sumranks <= ranksumstat) / np;
           p_high = sum (sumranks >= ranksumstat) / np;
           p = 2 * min (p_low, p_high);
           if p > 1
             p = 1;
           endif
-        case "right"
+        case 'right'
           if x_y
             p = sum (sumranks >= ranksumstat) / np;
           else
             p = sum (sumranks <= ranksumstat) / np;
           endif
-        case "left"
+        case 'left'
           if x_y
             p = sum (sumranks <= ranksumstat) / np;
           else
             p = sum (sumranks >= ranksumstat) / np;
           endif
       endswitch
-    case "network_algorithm"
+    case 'network_algorithm'
       ## Calculate contingency table
       u = unique ([x; y]);
       ct = zeros (2, length (u));
@@ -235,18 +235,18 @@ function [p, h, stats] = ranksum(x, y, varargin)
         p = NaN;
       else
         switch tail
-          case "both"
+          case 'both'
             p = 2 * p_net;
             if p > 1
               p = 1;
             endif
-          case "right"
+          case 'right'
             if x_y
               p = p_val(2) + p_val(3);
             else
               p = p_val(2) + p_val(1);
             endif
-          case "left"
+          case 'left'
             if x_y
               p = p_val(2) + p_val(1);
             else
@@ -254,27 +254,27 @@ function [p, h, stats] = ranksum(x, y, varargin)
             endif
         endswitch
       endif
-    case "approximation"
+    case 'approximation'
       wmean = ns * (nx + ny + 1) / 2;
       tiescores = 2 * tieadj / ((nx + ny) * (nx + ny - 1));
       wvar  = nx * ny * ((nx + ny + 1) - tiescores) / 12;
       wc = ranksumstat - wmean;
       ## compute z-value, including continuity correction
       switch tail
-        case "both"
+        case 'both'
           z = (wc - 0.5 * sign (wc)) / sqrt (wvar);
           if ! x_y
             z = -z;
           endif
           p = 2 * normcdf (-abs(z));
-        case "right"
+        case 'right'
           if x_y
             z = (wc - 0.5) / sqrt (wvar);
           else
             z = -(wc + 0.5) / sqrt (wvar);
           endif
           p = normcdf (-z);
-        case "left"
+        case 'left'
           if x_y
             z = (wc + 0.5) / sqrt (wvar);
           else
@@ -315,13 +315,13 @@ endfunction
 %!          49 47 50 60 59 60 62 61 71]';
 %! year2 = [54 53 64 66 57 53 54 54 62 66 59 59 67 76 75 86 82 67 74 80 75 ...
 %!          54 50 53 62 62 62 72 60 67]';
-%! [p,h,stats] = ranksum(year1, year2, "alpha", 0.01, "tail", "left");
+%! [p,h,stats] = ranksum(year1, year2, 'alpha', 0.01, 'tail', 'left');
 %! assert (p, 0.1270832752950605, 1e-14);
 %! assert (h, false);
 %! assert (stats.ranksum, 837.5);
 %! assert (stats.zval, -1.140287483634606, 1e-14);
-%! [p,h,stats] = ranksum(year1, year2, "alpha", 0.01, "tail", "left", ...
-%!                       "method", "exact");
+%! [p,h,stats] = ranksum(year1, year2, 'alpha', 0.01, 'tail', 'left', ...
+%!                       'method', 'exact');
 %! assert (p, 0.127343916432862, 1e-14);
 %! assert (h, false);
 %! assert (stats.ranksum, 837.5);

@@ -49,7 +49,7 @@ function p = bisacdf (x, beta, gamma, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("bisacdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -73,8 +73,8 @@ function p = bisacdf (x, beta, gamma, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (beta, "single") || isa (gamma, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (beta, 'single') || isa (gamma, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -116,13 +116,13 @@ endfunction
 %! p3 = bisacdf (x, 1, 2);
 %! p4 = bisacdf (x, 1, 5);
 %! p5 = bisacdf (x, 1, 10);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-m')
 %! grid on
-%! legend ({"β = 1, γ = 0.5", "β = 1, γ = 1", "β = 1, γ = 2", ...
-%!          "β = 1, γ = 5", "β = 1, γ = 10"}, "location", "southeast")
-%! title ("Birnbaum-Saunders CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'β = 1, γ = 0.5', 'β = 1, γ = 1', 'β = 1, γ = 2', ...
+%!          'β = 1, γ = 5', 'β = 1, γ = 10'}, 'location', 'southeast')
+%! title ('Birnbaum-Saunders CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 %!demo
 %! ## Plot various CDFs from the Birnbaum-Saunders distribution
@@ -132,13 +132,13 @@ endfunction
 %! p3 = bisacdf (x, 1, 0.5);
 %! p4 = bisacdf (x, 3, 0.5);
 %! p5 = bisacdf (x, 5, 0.5);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c", x, p5, "-m")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c', x, p5, '-m')
 %! grid on
-%! legend ({"β = 1, γ = 0.3", "β = 2, γ = 0.3", "β = 1, γ = 0.5", ...
-%!          "β = 3, γ = 0.5", "β = 5, γ = 0.5"}, "location", "southeast")
-%! title ("Birnbaum-Saunders CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'β = 1, γ = 0.3', 'β = 2, γ = 0.3', 'β = 1, γ = 0.5', ...
+%!          'β = 3, γ = 0.5', 'β = 5, γ = 0.5'}, 'location', 'southeast')
+%! title ('Birnbaum-Saunders CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -154,9 +154,9 @@ endfunction
 %!assert (bisacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (bisacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ("single"))
-%!assert (bisacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ("single"))
-%!assert (bisacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ("single"))
+%!assert (bisacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (bisacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
+%!assert (bisacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<bisacdf: function called with too few input arguments.> bisacdf ()
@@ -164,7 +164,7 @@ endfunction
 %!error<bisacdf: function called with too few input arguments.> bisacdf (1, 2)
 %!error<bisacdf: function called with too many inputs> ...
 %! bisacdf (1, 2, 3, 4, 5)
-%!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, "tail")
+%!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 'tail')
 %!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 4)
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
 %! bisacdf (ones (3), ones (2), ones(2))

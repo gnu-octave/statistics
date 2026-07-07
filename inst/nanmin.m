@@ -69,7 +69,7 @@ function [v, idx] = nanmin (x, y, dim)
     x(nanvals) = Inf;
     [v, idx] = min (x);
     v(all (nanvals)) = NaN;
-  elseif (nargin == 3 && strcmpi (dim, "all") && isempty (y))
+  elseif (nargin == 3 && strcmpi (dim, 'all') && isempty (y))
     x = x(:);
     nanvals = isnan (x);
     x(nanvals) = Inf;

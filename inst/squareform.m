@@ -86,7 +86,7 @@ function y = squareform (x, method)
         error ("squareform: distance input is not a hollow matrix.");
       endif
 
-      y = vec (tril (x, -1, "pack"), 2);
+      y = vec (tril (x, -1, 'pack'), 2);
 
     case {'tomatrix', 'tom'}
       ## the dimensions of y are the solution to the quadratic formula for:

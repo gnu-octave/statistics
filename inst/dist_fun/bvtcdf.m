@@ -41,10 +41,10 @@ function p = bvtcdf (x, rho, df, TolFun)
     TolFun = 1e-8;
   endif
 
-  if (isa (x, "single") || isa (rho, "single") || isa (df, "single"))
-    is_type = "single";
+  if (isa (x, 'single') || isa (rho, 'single') || isa (df, 'single'))
+    is_type = 'single';
   else
-    is_type = "double";
+    is_type = 'double';
   endif
 
   if (abs (rho) < 1)
@@ -182,7 +182,7 @@ function p = generalDF (x, rho, df, TolFun)
     b1 = x(i,1); b2 = x(i,2);
     v = df(i);
     if (isfinite (b1) && isfinite (b2))
-      p2(i) = quadgk (@bvtIntegrand, lo, hi, "AbsTol", TolFun, "RelTol", 0);
+      p2(i) = quadgk (@bvtIntegrand, lo, hi, 'AbsTol', TolFun, 'RelTol', 0);
     endif
   endfor
   p = p1 - p2 ./ (2 .* pi);

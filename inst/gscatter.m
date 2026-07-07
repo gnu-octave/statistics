@@ -121,7 +121,7 @@ function h = gscatter (varargin)
       if (iscellstr (gv))
         g_names = unique (gv);  # avoid warning
       else
-        g_names = unique (gv, "rows");
+        g_names = unique (gv, 'rows');
       endif
       g_len = numel (g_names);
       if (iscellstr (g_names))
@@ -184,9 +184,9 @@ function h = gscatter (varargin)
       case 7
         ## legend
         switch (lower (varargin{7}))
-          case "on"
+          case 'on'
             do_legend = 1;
-          case "off"
+          case 'off'
             do_legend = 0;
           otherwise
             error ("gscatter: invalid dolegend parameter '%s'", varargin{7});
@@ -206,7 +206,7 @@ function h = gscatter (varargin)
 
 
   ## scatter plot with grouping
-  if (! exist ("hax", "var"))
+  if (! exist ('hax', 'var'))
     hax = gca ();
   endif
 
@@ -216,15 +216,15 @@ function h = gscatter (varargin)
   hold on;
   for i = 1 : g_len
     idcs = find (g == i);
-    h(i) = line (hax, x(idcs), y(idcs), "linestyle", "none", ...
-            "markersize", g_size(i), "color", g_col(i,:), "marker", g_sym(i));
+    h(i) = line (hax, x(idcs), y(idcs), 'linestyle', 'none', ...
+            'markersize', g_size(i), 'color', g_col(i,:), 'marker', g_sym(i));
   endfor
   if (do_legend)
     if (isnumeric (g_names))
       g_names = num2str (g_names);
     endif
-    warning ("off", "Octave:legend:unimplemented-location", "local");
-    legend (hax, g_names, "location", "best");
+    warning ("off", 'Octave:legend:unimplemented-location', 'local');
+    legend (hax, g_names, 'location', 'best');
   endif
   xlabel (hax, x_nam);
   ylabel (hax, y_nam);
@@ -235,21 +235,21 @@ endfunction
 %!demo
 %! load fisheriris;
 %! X = meas(:,3:4);
-%! cidcs = kmeans (X, 3, "Replicates", 5);
-%! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
-%! title ("Fisher's iris data");
+%! cidcs = kmeans (X, 3, 'Replicates', 5);
+%! gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], 'os^');
+%! title ('Fisher''s iris data');
 
 ## Test plotting
 %!shared visibility_setting
-%! visibility_setting = get (0, "DefaultFigureVisible");
+%! visibility_setting = get (0, 'DefaultFigureVisible');
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   load fisheriris;
 %!   X = meas(:,3:4);
-%!   cidcs = kmeans (X, 3, "Replicates", 5);
-%!   gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], "os^");
-%!   title ("Fisher's iris data");
+%!   cidcs = kmeans (X, 3, 'Replicates', 5);
+%!   gscatter (X(:,1), X(:,2), cidcs, [.75 .75 0; 0 .75 .75; .75 0 .75], 'os^');
+%!   title ('Fisher''s iris data');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

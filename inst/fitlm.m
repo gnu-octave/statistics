@@ -242,8 +242,8 @@ function mdl = fitlm (varargin)
   endif
 
   ## List of Name-Value keys used to check if the response variable y is missing.
-  nv_keys = {"varnames", "intercept", "responsevar", "predictorvars", ...
-             "categoricalvars", "exclude", "weights", "robustopts"};
+  nv_keys = {'varnames', 'intercept', 'responsevar', 'predictorvars', ...
+             'categoricalvars', 'exclude', 'weights', 'robustopts'};
   is_nv = @(s) (ischar (s) || isstring (s)) && ...
                any (strcmpi (char (s), nv_keys));
 
@@ -592,7 +592,7 @@ endfunction
 
 %!error <Not enough input arguments> fitlm ()
 %!error <Predictor variables must be numeric vectors, numeric matrices, or categorical vectors> ...
-%! fitlm ("hello", y)
+%! fitlm ('hello', y)
 %!error <Predictor variables must be numeric vectors, numeric matrices, or categorical vectors> ...
 %! fitlm (struct ('a', 1), [1;2])
 %!error <Predictor variables must be numeric vectors, numeric matrices, or categorical vectors> ...

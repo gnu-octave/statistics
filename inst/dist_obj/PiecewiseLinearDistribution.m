@@ -85,7 +85,7 @@ classdef PiecewiseLinearDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "PiecewiseLinearDistribution";
+    DistributionName = 'PiecewiseLinearDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} NumParameters
@@ -106,7 +106,7 @@ classdef PiecewiseLinearDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"x", "Fx"};
+    ParameterNames = {'x', 'Fx'};
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} ParameterDescription
     ##
@@ -117,12 +117,12 @@ classdef PiecewiseLinearDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"x", "cdf = F(x)"};
+    ParameterDescription = {'x', 'cdf = F(x)'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "pl";
+    DistributionCode = 'pl';
     ParameterRange = [-Inf, Inf; -Inf, Inf; 0, 1; 0, 1];
     ParameterLogCI = [false, false, false, false];
   endproperties
@@ -182,11 +182,11 @@ classdef PiecewiseLinearDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Piecewise Linear distribution");
+      __disp__ (this, 'Piecewise Linear distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Piecewise Linear distribution");
+      __disp__ (this, 'Piecewise Linear distribution');
     endfunction
 
     function this = set.x (this, x)
@@ -231,9 +231,9 @@ classdef PiecewiseLinearDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -317,7 +317,7 @@ classdef PiecewiseLinearDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2), ...
-                      "ArrayValued", 1);
+                      'ArrayValued', 1);
       else
         m = plstat (this.x, this.Fx);
       endif
@@ -525,10 +525,10 @@ classdef PiecewiseLinearDistribution
       if (this.IsTruncated)
         fm = @(x) x .* pdf (this, x);
         m = integral (fm, this.Truncation(1), this.Truncation(2), ...
-                      "ArrayValued", 1);
+                      'ArrayValued', 1);
         fv =  @(x) ((x - m) .^ 2) .* pdf (this, x);
         v = integral (fv, this.Truncation(1), this.Truncation(2), ...
-                      "ArrayValued", 1);
+                      'ArrayValued', 1);
       else
         [~, v] = plstat (this.x, this.Fx);
       endif
@@ -565,7 +565,7 @@ endfunction
 %! ## Compute empirical CDF, subsample, create PiecewiseLinearDistribution,
 %! ## and plot the PDF superimposed on a histogram of the data.
 %!
-%! randg ("seed", 2);
+%! randg ('seed', 2);
 %! data = betarnd (2, 5, 5000, 1) * 10;
 %! [f, x] = ecdf (data);
 %! f = f(1:5:end);
@@ -577,10 +577,10 @@ endfunction
 %! hold on
 %! vals = min (data):0.1:max (data);
 %! y = pdf (pd, vals);
-%! plot (vals, y, "-r", "LineWidth", 2)
+%! plot (vals, y, '-r', 'LineWidth', 2)
 %! hold off
-%! title ("Piecewise Linear approximation to scaled Beta(2,5) data")
-%! legend ("Histogram", "Piecewise PDF")
+%! title ('Piecewise Linear approximation to scaled Beta(2,5) data')
+%! legend ('Histogram', 'Piecewise PDF')
 
 ## Test output
 %!shared pd, t
@@ -623,7 +623,7 @@ endfunction
 %!error <PiecewiseLinearDistribution: X must be a real vector.> ...
 %! PiecewiseLinearDistribution ([0, Inf], [0, 1])
 %!error <PiecewiseLinearDistribution: X must be a real vector.> ...
-%! PiecewiseLinearDistribution (["a", "c"], [0, 1])
+%! PiecewiseLinearDistribution (['a', 'c'], [0, 1])
 %!error <PiecewiseLinearDistribution: X must be a real vector.> ...
 %! PiecewiseLinearDistribution ([NaN, 1], [0, 1])
 %!error <PiecewiseLinearDistribution: Fx must be a real vector.> ...
@@ -631,7 +631,7 @@ endfunction
 %!error <PiecewiseLinearDistribution: Fx must be a real vector.> ...
 %! PiecewiseLinearDistribution ([0, 1], [0, Inf])
 %!error <PiecewiseLinearDistribution: Fx must be a real vector.> ...
-%! PiecewiseLinearDistribution ([0, 1], ["a", "c"])
+%! PiecewiseLinearDistribution ([0, 1], ['a', 'c'])
 %!error <PiecewiseLinearDistribution: Fx must be a real vector.> ...
 %! PiecewiseLinearDistribution ([0, 1], [NaN, 1])
 %!error <PiecewiseLinearDistribution: X and FX must be vectors of equal size.> ...
@@ -643,33 +643,33 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (PiecewiseLinearDistribution, 2, "uper")
+%! cdf (PiecewiseLinearDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (PiecewiseLinearDistribution, 2, 3)
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (PiecewiseLinearDistribution, "Parent")
+%! plot (PiecewiseLinearDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (PiecewiseLinearDistribution, "PlotType", 12)
+%! plot (PiecewiseLinearDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (PiecewiseLinearDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (PiecewiseLinearDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (PiecewiseLinearDistribution, "PlotType", "pdfcdf")
+%! plot (PiecewiseLinearDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PiecewiseLinearDistribution, "Discrete", "pdfcdf")
+%! plot (PiecewiseLinearDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PiecewiseLinearDistribution, "Discrete", [1, 0])
+%! plot (PiecewiseLinearDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (PiecewiseLinearDistribution, "Discrete", {true})
+%! plot (PiecewiseLinearDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (PiecewiseLinearDistribution, "Parent", 12)
+%! plot (PiecewiseLinearDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (PiecewiseLinearDistribution, "Parent", "hax")
+%! plot (PiecewiseLinearDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (PiecewiseLinearDistribution, "invalidNAME", "pdf")
+%! plot (PiecewiseLinearDistribution, 'invalidNAME', 'pdf')
 %!error <plot: 'probability' PlotType is not supported for 'PiecewiseLinearDistribution'.> ...
-%! plot (PiecewiseLinearDistribution, "PlotType", "probability")
+%! plot (PiecewiseLinearDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

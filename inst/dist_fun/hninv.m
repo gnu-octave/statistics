@@ -53,8 +53,8 @@ function x = hninv (p, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -77,14 +77,14 @@ endfunction
 %! x2 = hninv (p, 0, 2);
 %! x3 = hninv (p, 0, 3);
 %! x4 = hninv (p, 0, 5);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 2", ...
-%!          "μ = 0, σ = 3", "μ = 0, σ = 5"}, "location", "northwest")
-%! title ("Half-normal iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 2', ...
+%!          'μ = 0, σ = 3', 'μ = 0, σ = 5'}, 'location', 'northwest')
+%! title ('Half-normal iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
 
 ## Test output
 %!shared p, x

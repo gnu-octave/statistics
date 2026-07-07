@@ -71,8 +71,8 @@ function y = wblpdf (x, varargin)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (lambda, "single") || isa (k, "single"))
-    y = NaN (size (x), "single");
+  if (isa (x, 'single') || isa (lambda, 'single') || isa (k, 'single'))
+    y = NaN (size (x), 'single');
   else
     y = NaN (size (x));
   endif
@@ -102,14 +102,14 @@ endfunction
 %! y2 = wblpdf (x, 1, 1);
 %! y3 = wblpdf (x, 1, 1.5);
 %! y4 = wblpdf (x, 1, 5);
-%! plot (x, y1, "-b", x, y2, "-r", x, y3, "-m", x, y4, "-g")
+%! plot (x, y1, '-b', x, y2, '-r', x, y3, '-m', x, y4, '-g')
 %! grid on
 %! ylim ([0, 2.5])
-%! legend ({"λ = 5, k = 0.5", "λ = 9, k = 1", ...
-%!          "λ = 6, k = 1.5", "λ = 2, k = 5"}, "location", "northeast")
-%! title ("Weibull PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'λ = 5, k = 0.5', 'λ = 9, k = 1', ...
+%!          'λ = 6, k = 1.5', 'λ = 2, k = 5'}, 'location', 'northeast')
+%! title ('Weibull PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x,y

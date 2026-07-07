@@ -90,7 +90,7 @@ classdef RicianDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "RicianDistribution";
+    DistributionName = 'RicianDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} NumParameters
@@ -112,7 +112,7 @@ classdef RicianDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"s", "sigma"};
+    ParameterNames = {'s', 'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} ParameterDescription
@@ -124,12 +124,12 @@ classdef RicianDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Noncentrality", "Scale"};
+    ParameterDescription = {'Noncentrality', 'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "rice";
+    DistributionCode = 'rice';
     ParameterRange = [0, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -247,11 +247,11 @@ classdef RicianDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Rician distribution");
+      __disp__ (this, 'Rician distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Rician distribution");
+      __disp__ (this, 'Rician distribution');
     endfunction
 
     function this = set.s (this, s)
@@ -302,9 +302,9 @@ classdef RicianDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -741,7 +741,7 @@ classdef RicianDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -763,7 +763,7 @@ classdef RicianDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -786,12 +786,12 @@ endfunction
 %! ## parameters s = 2 and sigma = 1. Fit a Rician distribution to this data and
 %! ## plot a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Rician", "s", 2, "sigma", 1)
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Rician', 's', 2, 'sigma', 1)
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Rician")
+%! pd_fitted = fitdist (data, 'Rician')
 %! plot (pd_fitted)
-%! msg = "Fitted Rician distribution with s = %0.2f and sigma = %0.2f";
+%! msg = 'Fitted Rician distribution with s = %0.2f and sigma = %0.2f';
 %! title (sprintf (msg, pd_fitted.s, pd_fitted.sigma))
 
 ## Test output
@@ -835,7 +835,7 @@ endfunction
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
 %! RicianDistribution(i, 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution("a", 1)
+%! RicianDistribution('a', 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
 %! RicianDistribution([1, 2], 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
@@ -849,7 +849,7 @@ endfunction
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
 %! RicianDistribution(1, i)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, "a")
+%! RicianDistribution(1, 'a')
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
 %! RicianDistribution(1, [1, 2])
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
@@ -857,7 +857,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (RicianDistribution, 2, "uper")
+%! cdf (RicianDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (RicianDistribution, 2, 3)
 
@@ -865,59 +865,59 @@ endfunction
 %!shared x
 %! x = gevrnd (1, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (RicianDistribution.fit (x), "alpha")
+%! paramci (RicianDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0)
+%! paramci (RicianDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 1)
+%! paramci (RicianDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (RicianDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", "")
+%! paramci (RicianDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", {0.05})
+%! paramci (RicianDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (RicianDistribution.fit (x), "parameter", "s", "alpha", {0.05})
+%! paramci (RicianDistribution.fit (x), 'parameter', 's', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (RicianDistribution.fit (x), "parameter", {"s", "sigma", "param"})
+%! paramci (RicianDistribution.fit (x), 'parameter', {'s', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"s", "sigma", "param"})
+%! paramci (RicianDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'s', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (RicianDistribution.fit (x), "parameter", "param")
+%! paramci (RicianDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (RicianDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RicianDistribution.fit (x), "NAME", "value")
+%! paramci (RicianDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (RicianDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (RicianDistribution.fit (x), "alpha", 0.01, "parameter", "s", ...
-%!          "NAME", "value")
+%! paramci (RicianDistribution.fit (x), 'alpha', 0.01, 'parameter', 's', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (RicianDistribution, "Parent")
+%! plot (RicianDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (RicianDistribution, "PlotType", 12)
+%! plot (RicianDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (RicianDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (RicianDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (RicianDistribution, "PlotType", "pdfcdf")
+%! plot (RicianDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RicianDistribution, "Discrete", "pdfcdf")
+%! plot (RicianDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RicianDistribution, "Discrete", [1, 0])
+%! plot (RicianDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (RicianDistribution, "Discrete", {true})
+%! plot (RicianDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (RicianDistribution, "Parent", 12)
+%! plot (RicianDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (RicianDistribution, "Parent", "hax")
+%! plot (RicianDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (RicianDistribution, "invalidNAME", "pdf")
+%! plot (RicianDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (RicianDistribution, "PlotType", "probability")
+%! plot (RicianDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -931,23 +931,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (RicianDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display")
+%! proflik (RicianDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display", 1)
+%! proflik (RicianDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display", {1})
+%! proflik (RicianDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (RicianDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (RicianDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (RicianDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (RicianDistribution.fit (x), 1, "NAME", "on")
+%! proflik (RicianDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (RicianDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (RicianDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (RicianDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

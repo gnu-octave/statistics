@@ -119,7 +119,7 @@ endfunction
 %! X = [X1(:), X2(:)];
 %! y = mvtpdf (X, rho, df);
 %! surf (X1, X2, reshape (y, 25, 25));
-%! title ("Bivariate Student's t probability density function");
+%! title ('Bivariate Student''s t probability density function');
 
 ## Test results verified with R mvtnorm package dmvt function
 ## dmvt(x = c(0,0), rho = diag(2), log = FALSE)

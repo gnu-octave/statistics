@@ -107,7 +107,7 @@ classdef GeneralizedParetoDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "GeneralizedParetoDistribution";
+    DistributionName = 'GeneralizedParetoDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} NumParameters
@@ -129,7 +129,7 @@ classdef GeneralizedParetoDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"k", "sigma", "theta"};
+    ParameterNames = {'k', 'sigma', 'theta'};
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} ParameterDescription
@@ -141,12 +141,12 @@ classdef GeneralizedParetoDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Shape", "Scale", "Location"};
+    ParameterDescription = {'Shape', 'Scale', 'Location'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "gp";
+    DistributionCode = 'gp';
     ParameterRange = [-Inf, realmin, -Inf; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
@@ -265,11 +265,11 @@ classdef GeneralizedParetoDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Generalized Pareto distribution");
+      __disp__ (this, 'Generalized Pareto distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Generalized Pareto distribution");
+      __disp__ (this, 'Generalized Pareto distribution');
     endfunction
 
     function this = set.k (this, k)
@@ -332,9 +332,9 @@ classdef GeneralizedParetoDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -769,7 +769,7 @@ classdef GeneralizedParetoDistribution
         freq = varargin{2};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -791,7 +791,7 @@ classdef GeneralizedParetoDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false, true];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -849,7 +849,7 @@ endfunction
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution(i, 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution("a", 1, 1)
+%! GeneralizedParetoDistribution('a', 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
 %! GeneralizedParetoDistribution([1, 2], 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
@@ -863,7 +863,7 @@ endfunction
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
 %! GeneralizedParetoDistribution(1, i, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, "a", 1)
+%! GeneralizedParetoDistribution(1, 'a', 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
 %! GeneralizedParetoDistribution(1, [1, 2], 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
@@ -873,7 +873,7 @@ endfunction
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
 %! GeneralizedParetoDistribution(1, 1, i)
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, "a")
+%! GeneralizedParetoDistribution(1, 1, 'a')
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
 %! GeneralizedParetoDistribution(1, 1, [1, 2])
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
@@ -881,7 +881,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (GeneralizedParetoDistribution, 2, "uper")
+%! cdf (GeneralizedParetoDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (GeneralizedParetoDistribution, 2, 3)
 
@@ -889,63 +889,63 @@ endfunction
 %!shared x
 %! x = gprnd (1, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 0)
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 1)
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", [0.5 2])
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", "")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", {0.05})
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (GeneralizedParetoDistribution.fit (x, 1), ...
-%!          "parameter", "sigma", "alpha", {0.05})
+%!          'parameter', 'sigma', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (GeneralizedParetoDistribution.fit (x, 1), ...
-%!          "parameter", {"k", "sigma", "param"})
+%!          'parameter', {'k', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", {"k", "sigma", "param"})
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', {'k', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "parameter", "param")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "NAME", "value")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "NAME", "value")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedParetoDistribution.fit (x, 1), "alpha", 0.01, ...
-%!          "parameter", "sigma", "NAME", "value")
+%! paramci (GeneralizedParetoDistribution.fit (x, 1), 'alpha', 0.01, ...
+%!          'parameter', 'sigma', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (GeneralizedParetoDistribution, "Parent")
+%! plot (GeneralizedParetoDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GeneralizedParetoDistribution, "PlotType", 12)
+%! plot (GeneralizedParetoDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (GeneralizedParetoDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (GeneralizedParetoDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GeneralizedParetoDistribution, "PlotType", "pdfcdf")
+%! plot (GeneralizedParetoDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedParetoDistribution, "Discrete", "pdfcdf")
+%! plot (GeneralizedParetoDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedParetoDistribution, "Discrete", [1, 0])
+%! plot (GeneralizedParetoDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedParetoDistribution, "Discrete", {true})
+%! plot (GeneralizedParetoDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GeneralizedParetoDistribution, "Parent", 12)
+%! plot (GeneralizedParetoDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GeneralizedParetoDistribution, "Parent", "hax")
+%! plot (GeneralizedParetoDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (GeneralizedParetoDistribution, "invalidNAME", "pdf")
+%! plot (GeneralizedParetoDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (GeneralizedParetoDistribution, "PlotType", "probability")
+%! plot (GeneralizedParetoDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -959,25 +959,25 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "Display")
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "Display", 1)
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "Display", {1})
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "Display", {"on"})
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
 %! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, ...
-%!          "Display", ["on"; "on"])
+%!          'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "Display", "onnn")
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, "NAME", "on")
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, {"NAME"}, "on")
+%! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
 %! proflik (GeneralizedParetoDistribution.fit (x, 1), 1, {[1 2 3 4]}, ...
-%!          "Display", "on")
+%!          'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

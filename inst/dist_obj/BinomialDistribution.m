@@ -90,7 +90,7 @@ classdef BinomialDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "BinomialDistribution";
+    DistributionName = 'BinomialDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} NumParameters
@@ -112,7 +112,7 @@ classdef BinomialDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"N", "p"};
+    ParameterNames = {'N', 'p'};
 
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} ParameterDescription
@@ -124,12 +124,12 @@ classdef BinomialDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Number of trials", "Probability of success"};
+    ParameterDescription = {'Number of trials', 'Probability of success'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "bino";
+    DistributionCode = 'bino';
     ParameterRange = [realmin, realmin; Inf, 1];
     ParameterLogCI = [true, true];
   endproperties
@@ -245,11 +245,11 @@ classdef BinomialDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "binomial distribution");
+      __disp__ (this, 'binomial distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "binomial distribution");
+      __disp__ (this, 'binomial distribution');
     endfunction
 
     function this = set.N (this, N)
@@ -300,9 +300,9 @@ classdef BinomialDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -766,8 +766,8 @@ classdef BinomialDistribution
         freq = varargin{2};
       endif
       ## Fit data
-      [pshat, psci] = mle (x, "distribution", "binomial", "alpha", alpha, ...
-                              "ntrials", ntrials, "frequency", freq);
+      [pshat, psci] = mle (x, 'distribution', 'binomial', 'alpha', alpha, ...
+                              'ntrials', ntrials, 'frequency', freq);
       phat = [ntrials, pshat];
       pci = [[ntrials; ntrials], psci(:)];
       [~, acov] = binolike (phat, x, freq);
@@ -782,7 +782,7 @@ classdef BinomialDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [true, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -845,7 +845,7 @@ endfunction
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
 %! BinomialDistribution(i, 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution("a", 0.5)
+%! BinomialDistribution('a', 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
 %! BinomialDistribution([1, 2], 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
@@ -859,7 +859,7 @@ endfunction
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
 %! BinomialDistribution(1, i)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, "a")
+%! BinomialDistribution(1, 'a')
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
 %! BinomialDistribution(1, [1, 2])
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
@@ -867,74 +867,74 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (BinomialDistribution, 2, "uper")
+%! cdf (BinomialDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (BinomialDistribution, 2, 3)
 
 ## 'paramci' method
 %!shared x
-%! rand ("seed", 2);
+%! rand ('seed', 2);
 %! x = binornd (5, 0.5, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha")
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 0)
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 1)
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", [0.5 2])
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", "")
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", {0.05})
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "parameter", "p", ...
-%!          "alpha", {0.05})
+%! paramci (BinomialDistribution.fit (x, 6), 'parameter', 'p', ...
+%!          'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (BinomialDistribution.fit (x, 6), ...
-%!          "parameter", {"N", "p", "param"})
+%!          'parameter', {'N', 'p', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 0.01, ...
-%!          "parameter", {"N", "p", "param"})
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0.01, ...
+%!          'parameter', {'N', 'p', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "parameter", "param")
+%! paramci (BinomialDistribution.fit (x, 6), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "parameter", "N")
+%! paramci (BinomialDistribution.fit (x, 6), 'parameter', 'N')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "NAME", "value")
+%! paramci (BinomialDistribution.fit (x, 6), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 0.01, ...
-%!          "NAME", "value")
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0.01, ...
+%!          'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BinomialDistribution.fit (x, 6), "alpha", 0.01, ...
-%!          "parameter", "p", "NAME", "value")
+%! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0.01, ...
+%!          'parameter', 'p', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (BinomialDistribution, "Parent")
+%! plot (BinomialDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BinomialDistribution, "PlotType", 12)
+%! plot (BinomialDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (BinomialDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (BinomialDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BinomialDistribution, "PlotType", "pdfcdf")
+%! plot (BinomialDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BinomialDistribution, "Discrete", "pdfcdf")
+%! plot (BinomialDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BinomialDistribution, "Discrete", [1, 0])
+%! plot (BinomialDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BinomialDistribution, "Discrete", {true})
+%! plot (BinomialDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BinomialDistribution, "Parent", 12)
+%! plot (BinomialDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BinomialDistribution, "Parent", "hax")
+%! plot (BinomialDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (BinomialDistribution, "invalidNAME", "pdf")
+%! plot (BinomialDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (BinomialDistribution, "PlotType", "probability")
+%! plot (BinomialDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -948,23 +948,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (BinomialDistribution.fit (x, 6), 2, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display")
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display", 1)
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display", {1})
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display", {"on"})
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display", ["on"; "on"])
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "Display", "onnn")
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, "NAME", "on")
+%! proflik (BinomialDistribution.fit (x, 6), 2, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, {"NAME"}, "on")
+%! proflik (BinomialDistribution.fit (x, 6), 2, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BinomialDistribution.fit (x, 6), 2, {[1 2 3]}, "Display", "on")
+%! proflik (BinomialDistribution.fit (x, 6), 2, {[1 2 3]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

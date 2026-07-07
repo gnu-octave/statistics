@@ -47,7 +47,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
     function this = DaviesBouldinEvaluation (x, clust, KList)
       this@ClusterCriterion(x, clust, KList);
 
-      this.CriterionName = "DaviesBouldin";
+      this.CriterionName = 'DaviesBouldin';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
@@ -92,9 +92,9 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
       yLabel = sprintf ("%s value", this.CriterionName);
       h = gca ();
       hold on;
-      plot (this.InspectedK, this.CriterionValues, "bo-");
-      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
-      xlabel ("number of clusters");
+      plot (this.InspectedK, this.CriterionValues, 'bo-');
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), 'b*');
+      xlabel ('number of clusters');
       ylabel (yLabel);
       hold off;
     endfunction
@@ -123,7 +123,7 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
         for iter = 1 : length (this.InspectedK)
           ## do it only for the specified K values
           if (any (this.InspectedK(iter) == K))
-            if (isa (this.ClusteringFunction, "function_handle"))
+            if (isa (this.ClusteringFunction, 'function_handle'))
               ## custom function
               ClusteringSolution = ...
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -148,22 +148,22 @@ classdef DaviesBouldinEvaluation < ClusterCriterion
                 this.ClusteringFunction(UsableX, this.InspectedK(iter));
             else
               switch (this.ClusteringFunction)
-                case "kmeans"
+                case 'kmeans'
                   [this.ClusteringSolutions(:, iter), this.Centroids{iter}] =...
                     kmeans (UsableX, this.InspectedK(iter),  ...
-                    "Distance", "sqeuclidean", "EmptyAction", "singleton", ...
-                    "Replicates", 5);
+                    'Distance', 'sqeuclidean', 'EmptyAction', 'singleton', ...
+                    'Replicates', 5);
 
-                case "linkage"
+                case 'linkage'
                   ## use clusterdata
                   this.ClusteringSolutions(:, iter) = clusterdata (UsableX, ...
-                    "MaxClust", this.InspectedK(iter), ...
-                    "Distance", "euclidean", "Linkage", "ward");
+                    'MaxClust', this.InspectedK(iter), ...
+                    'Distance', 'euclidean', 'Linkage', 'ward');
                   this.Centroids{iter} = this.computeCentroids (UsableX, iter);
 
-                case "gmdistribution"
+                case 'gmdistribution'
                   gmm = fitgmdist (UsableX, this.InspectedK(iter), ...
-                        "SharedCov", true, "Replicates", 5);
+                        'SharedCov', true, 'Replicates', 5);
                   this.ClusteringSolutions(:, iter) = cluster (gmm, UsableX);
                   this.Centroids{iter} = gmm.mu;
 
@@ -244,30 +244,30 @@ endclassdef
 
 %!test
 %! load fisheriris
-%! eva = evalclusters (meas, "kmeans", "DaviesBouldin", "KList", [1:6]);
+%! eva = evalclusters (meas, 'kmeans', 'DaviesBouldin', 'KList', [1:6]);
 %! assert (class (eva), "DaviesBouldinEvaluation");
 
 %!test
 %! ## Verify DB index for a known 2-cluster case
 %! X = [ones(5,1); 5 * ones(5,1)];
 %! clust = [ones(5,1); 2 * ones(5,1)];
-%! eva = evalclusters (X, clust, "DaviesBouldin", "KList", 2);
+%! eva = evalclusters (X, clust, 'DaviesBouldin', 'KList', 2);
 %! assert (eva.CriterionValues, 0, 1);
 
 %!test
 %! ## Deterministic 1-D example; expected value is 7/30 (matches MATLAB)
-%! rand ("seed", 1);
-%! randn ("seed", 1);
+%! rand ('seed', 1);
+%! randn ('seed', 1);
 %! X = [0; 1; 4; 5; 9; 10];
-%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 3);
+%! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 3);
 %! assert (eva.CriterionValues, 7 / 30, 1e-12);
 
 %!test
 %! ## Verify aggregation uses all cluster rows in Dij
-%! rand ("seed", 1);
-%! randn ("seed", 1);
+%! rand ('seed', 1);
+%! randn ('seed', 1);
 %! X = [0; 1; 4; 5; 9; 10];
-%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 3);
+%! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 3);
 %! idx = eva.OptimalY;
 %! k = 3;
 %! vD = zeros (k, 1);
@@ -289,18 +289,18 @@ endclassdef
 
 %!test
 %! ## MATLAB reference case: well-separated tight clusters
-%! rand ("seed", 1);
-%! randn ("seed", 1);
+%! rand ('seed', 1);
+%! randn ('seed', 1);
 %! X = [0; 0.1; 0.2; 5; 5.1; 5.2];
 %! X = horzcat (X, zeros (rows (X), 1));
-%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 2);
 %! assert (eva.CriterionValues, 0.0267, 1e-4);
 
 %!test
 %! ## MATLAB reference case: uneven spread clusters
-%! rand ("seed", 1);
-%! randn ("seed", 1);
+%! rand ('seed', 1);
+%! randn ('seed', 1);
 %! X = [0; 0.1; 0.2; 10; 20; 30];
 %! X = horzcat (X, zeros (rows (X), 1));
-%! eva = evalclusters (X, "kmeans", "DaviesBouldin", "KList", 2);
+%! eva = evalclusters (X, 'kmeans', 'DaviesBouldin', 'KList', 2);
 %! assert (eva.CriterionValues, 0.3885, 1e-4);

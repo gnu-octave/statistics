@@ -117,11 +117,11 @@ function [p, h, stats] = signrank (x, my, varargin)
 
   ## Add defaults
   alpha = 0.05;
-  tail  = "both";
+  tail  = 'both';
   if (numel (x) <= 15)
-    method = "exact";
+    method = 'exact';
   else
-    method = "approximate";
+    method = 'approximate';
   endif
   method_present = false;
 
@@ -146,11 +146,11 @@ function [p, h, stats] = signrank (x, my, varargin)
   endif
   while (numel (varargin) > 0)
     switch (lower (varargin{1}))
-      case "alpha"
+      case 'alpha'
         alpha = varargin{2};
-      case "tail"
+      case 'tail'
         tail = varargin{2};
-      case "method"
+      case 'method'
         method = varargin{2};
         method_present = true;
       otherwise
@@ -166,12 +166,12 @@ function [p, h, stats] = signrank (x, my, varargin)
   endif
   if (! ischar (tail))
     error ("signrank: 'tail' argument must be a character vector.");
-  elseif (sum (strcmpi (tail, {"both", "right", "left"})) != 1)
+  elseif (sum (strcmpi (tail, {'both', 'right', 'left'})) != 1)
     error ("signrank: 'tail' value must be either 'both', right' or 'left'.");
   endif
   if (! ischar (method))
     error("signrank: 'method' argument must be a character vector.");
-  elseif (sum (strcmpi (method, {"exact", "approximate"})) != 1)
+  elseif (sum (strcmpi (method, {'exact', 'approximate'})) != 1)
     error ("signrank: 'method' value must be either 'exact' or 'approximate'.");
   endif
 
@@ -194,9 +194,9 @@ function [p, h, stats] = signrank (x, my, varargin)
   ## Re-evaluate method selection
   if (! method_present)
     if (n <= 15)
-      method = "exact";
+      method = 'exact';
     else
-      method = "approximate";
+      method = 'approximate';
     endif
   endif
 
@@ -208,7 +208,7 @@ function [p, h, stats] = signrank (x, my, varargin)
   ## Calculate stats according to selected method and tail
   switch (lower (method))
 
-    case "exact"
+    case 'exact'
       w_max = n * (n + 1) / 2;
       ## Always compute lower tail
       switch_tail = false;
@@ -256,7 +256,7 @@ function [p, h, stats] = signrank (x, my, varargin)
       endswitch
       stats.zval = NaN;
 
-    case "approximate"
+    case 'approximate'
       ## Compute z-value
       z_nom = w - n * (n + 1) / 4;
       z_den = sqrt ((n * (n + 1) * (2 * n + 1) - tieadj) / 24);
@@ -337,22 +337,22 @@ endfunction
 %!error <signrank: 'alpha' must be a numeric scalar in the range 0 to 1.> ...
 %! signrank ([1, 2, 3, 4], [], 'alpha', -0.05)
 %!error <signrank: 'alpha' must be a numeric scalar in the range 0 to 1.> ...
-%! signrank ([1, 2, 3, 4], [], 'alpha', "a")
+%! signrank ([1, 2, 3, 4], [], 'alpha', 'a')
 %!error <signrank: 'alpha' must be a numeric scalar in the range 0 to 1.> ...
 %! signrank ([1, 2, 3, 4], [], 'alpha', [0.01, 0.05])
 %!error <signrank: 'tail' argument must be a character vector.> ...
 %! signrank ([1, 2, 3, 4], [], 'tail', 0.01)
 %!error <signrank: 'tail' argument must be a character vector.> ...
-%! signrank ([1, 2, 3, 4], [], 'tail', {"both"})
+%! signrank ([1, 2, 3, 4], [], 'tail', {'both'})
 %!error <signrank: 'tail' value must be either 'both', right' or 'left'.> ...
-%! signrank ([1, 2, 3, 4], [], 'tail', "some")
+%! signrank ([1, 2, 3, 4], [], 'tail', 'some')
 %!error <signrank: 'tail' value must be either 'both', right' or 'left'.> ...
-%! signrank ([1, 2, 3, 4], [], 'method', 'exact', 'tail', "some")
+%! signrank ([1, 2, 3, 4], [], 'method', 'exact', 'tail', 'some')
 %!error <signrank: 'method' argument must be a character vector.> ...
 %! signrank ([1, 2, 3, 4], [], 'method', 0.01)
 %!error <signrank: 'method' argument must be a character vector.> ...
-%! signrank ([1, 2, 3, 4], [], 'method', {"exact"})
+%! signrank ([1, 2, 3, 4], [], 'method', {'exact'})
 %!error <signrank: 'method' value must be either 'exact' or 'approximate'.> ...
-%! signrank ([1, 2, 3, 4], [], 'method', "some")
+%! signrank ([1, 2, 3, 4], [], 'method', 'some')
 %!error <signrank: 'method' value must be either 'exact' or 'approximate'.> ...
-%! signrank ([1, 2, 3, 4], [], 'tail', "both", 'method', "some")
+%! signrank ([1, 2, 3, 4], [], 'tail', 'both', 'method', 'some')

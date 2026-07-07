@@ -79,7 +79,7 @@ endfunction
 %!error<betastat: function called with too few input arguments.> betastat ()
 %!error<betastat: function called with too few input arguments.> betastat (1)
 %!error<betastat: A and B must be numeric.> betastat ({}, 2)
-%!error<betastat: A and B must be numeric.> betastat (1, "")
+%!error<betastat: A and B must be numeric.> betastat (1, '')
 %!error<betastat: A and B must not be complex.> betastat (i, 2)
 %!error<betastat: A and B must not be complex.> betastat (1, i)
 %!error<betastat: A and B must be of common size or scalars.> ...

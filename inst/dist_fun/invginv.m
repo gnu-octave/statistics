@@ -59,8 +59,8 @@ function x = invginv (p, mu, lambda)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (lambda, "single"));
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (lambda, 'single'));
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -160,14 +160,14 @@ endfunction
 %! x3 = invginv (p, 1, 3);
 %! x4 = invginv (p, 3, 0.2);
 %! x5 = invginv (p, 3, 1);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-y")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-y')
 %! grid on
 %! ylim ([0, 3])
-%! legend ({"μ = 1, σ = 0.2", "μ = 1, σ = 1", "μ = 1, σ = 3", ...
-%!          "μ = 3, σ = 0.2", "μ = 3, σ = 1"}, "location", "northwest")
-%! title ("Inverse Gaussian iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
+%! legend ({'μ = 1, σ = 0.2', 'μ = 1, σ = 1', 'μ = 1, σ = 3', ...
+%!          'μ = 3, σ = 0.2', 'μ = 3, σ = 1'}, 'location', 'northwest')
+%! title ('Inverse Gaussian iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
 
 ## Test output
 %!shared p, x

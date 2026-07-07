@@ -92,7 +92,7 @@ classdef BetaDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "BetaDistribution";
+    DistributionName = 'BetaDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} NumParameters
@@ -114,7 +114,7 @@ classdef BetaDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"a", "b"};
+    ParameterNames = {'a', 'b'};
 
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} ParameterDescription
@@ -126,12 +126,12 @@ classdef BetaDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"First shape parameter", "Second shape parameter"};
+    ParameterDescription = {'First shape parameter', 'Second shape parameter'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "beta";
+    DistributionCode = 'beta';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -247,11 +247,11 @@ classdef BetaDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "beta distribution");
+      __disp__ (this, 'beta distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "beta distribution");
+      __disp__ (this, 'beta distribution');
     endfunction
 
     function this = set.a (this, a)
@@ -302,9 +302,9 @@ classdef BetaDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -738,7 +738,7 @@ classdef BetaDistribution
         freq = varargin{2};
       endif
       if (nargin < 4)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -759,7 +759,7 @@ classdef BetaDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -782,12 +782,12 @@ endfunction
 %! ## parameters a = 2 and b = 5.  Fit a Beta distribution to this data and plot
 %! ## a PDF of the fitted distribution superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Beta", "a", 2, "b", 5)
-%! randg ("seed", 2);
+%! pd_fixed = makedist ('Beta', 'a', 2, 'b', 5)
+%! randg ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "Beta")
+%! pd_fitted = fitdist (data, 'Beta')
 %! plot (pd_fitted)
-%! msg = "Fitted Beta distribution with a = %0.2f and b = %0.2f";
+%! msg = 'Fitted Beta distribution with a = %0.2f and b = %0.2f';
 %! title (sprintf (msg, pd_fitted.a, pd_fitted.b))
 
 ## Test output
@@ -829,7 +829,7 @@ endfunction
 %!error <BetaDistribution: A must be a positive real scalar.> ...
 %! BetaDistribution(i, 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution("a", 1)
+%! BetaDistribution('a', 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
 %! BetaDistribution([1, 2], 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
@@ -843,7 +843,7 @@ endfunction
 %!error <BetaDistribution: B must be a positive real scalar.> ...
 %! BetaDistribution(1, i)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, "a")
+%! BetaDistribution(1, 'a')
 %!error <BetaDistribution: B must be a positive real scalar.> ...
 %! BetaDistribution(1, [1, 2])
 %!error <BetaDistribution: B must be a positive real scalar.> ...
@@ -851,68 +851,68 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (BetaDistribution, 2, "uper")
+%! cdf (BetaDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (BetaDistribution, 2, 3)
 
 ## 'paramci' method
 %!shared x
-%! randg ("seed", 1);
+%! randg ('seed', 1);
 %! x = betarnd (1, 1, [100, 1]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (BetaDistribution.fit (x), "alpha")
+%! paramci (BetaDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 0)
+%! paramci (BetaDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 1)
+%! paramci (BetaDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (BetaDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", "")
+%! paramci (BetaDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", {0.05})
+%! paramci (BetaDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (BetaDistribution.fit (x), "parameter", "a", "alpha", {0.05})
+%! paramci (BetaDistribution.fit (x), 'parameter', 'a', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BetaDistribution.fit (x), "parameter", {"a", "b", "param"})
+%! paramci (BetaDistribution.fit (x), 'parameter', {'a', 'b', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"a", "b", "param"})
+%! paramci (BetaDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'a', 'b', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BetaDistribution.fit (x), "parameter", "param")
+%! paramci (BetaDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (BetaDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BetaDistribution.fit (x), "NAME", "value")
+%! paramci (BetaDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (BetaDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (BetaDistribution.fit (x), "alpha", 0.01, "parameter", "a", ...
-%!          "NAME", "value")
+%! paramci (BetaDistribution.fit (x), 'alpha', 0.01, 'parameter', 'a', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (BetaDistribution, "Parent")
+%! plot (BetaDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BetaDistribution, "PlotType", 12)
+%! plot (BetaDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (BetaDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (BetaDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (BetaDistribution, "PlotType", "pdfcdf")
+%! plot (BetaDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BetaDistribution, "Discrete", "pdfcdf")
+%! plot (BetaDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BetaDistribution, "Discrete", [1, 0])
+%! plot (BetaDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (BetaDistribution, "Discrete", {true})
+%! plot (BetaDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BetaDistribution, "Parent", 12)
+%! plot (BetaDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (BetaDistribution, "Parent", "hax")
+%! plot (BetaDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (BetaDistribution, "invalidNAME", "pdf")
+%! plot (BetaDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (BetaDistribution, "PlotType", "probability")
+%! plot (BetaDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -926,23 +926,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (BetaDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display")
+%! proflik (BetaDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display", 1)
+%! proflik (BetaDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display", {1})
+%! proflik (BetaDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (BetaDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (BetaDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (BetaDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (BetaDistribution.fit (x), 1, "NAME", "on")
+%! proflik (BetaDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (BetaDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (BetaDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (BetaDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

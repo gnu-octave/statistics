@@ -85,7 +85,7 @@ function [p, err] = mvtcdf (varargin)
 
   ## Check for 'options' structure and parse parameters or add defaults
   if (isstruct (varargin{end}))
-    if (isfield (varargin{end}, "TolFun"))
+    if (isfield (varargin{end}, 'TolFun'))
       TolFun = varargin{end}.TolFun;
     else
       error ("mvtcdf: options structure missing 'TolFun' field.");
@@ -95,7 +95,7 @@ function [p, err] = mvtcdf (varargin)
     elseif (isempty (TolFun) && size (varargin{1}, 2) < 26)
       TolFun = 1e-4;
     endif
-    if (isfield (varargin{end}, "MaxFunEvals"))
+    if (isfield (varargin{end}, 'MaxFunEvals'))
       MaxFunEvals = varargin{end}.MaxFunEvals;
     else
       error ("mvtcdf: options structure missing 'MaxFunEvals' field.");
@@ -103,12 +103,12 @@ function [p, err] = mvtcdf (varargin)
     if (isempty (MaxFunEvals))
       MaxFunEvals = 1e7;
     endif
-    if (isfield (varargin{end}, "Display"))
+    if (isfield (varargin{end}, 'Display'))
       Display = varargin{end}.Display;
     else
       error ("mvtcdf: options structure missing 'Display' field.");
     endif
-    DispOptions = {"off", "final", "iter"};
+    DispOptions = {'off', 'final', 'iter'};
     if (sum (any (strcmpi (Display, DispOptions))) == 0)
       error ("mvtcdf: 'Display' field in 'options' has invalid value.");
     endif
@@ -120,7 +120,7 @@ function [p, err] = mvtcdf (varargin)
       TolFun = 1e-4;
     endif
     MaxFunEvals = 1e7;
-    Display = "off";
+    Display = 'off';
     rem_nargin = nargin;
   endif
 
@@ -136,7 +136,7 @@ function [p, err] = mvtcdf (varargin)
 
     ## Create x_lo according to data type of x_lo
     x_lo = - Inf (size (x_up));
-    if isa (x_up, "single")
+    if isa (x_up, 'single')
       x_lo = single (x_lo);
     endif
 
@@ -165,10 +165,10 @@ function [p, err] = mvtcdf (varargin)
   endif
 
   ## Check if data is single or double class
-  is_type = "double";
-  if (isa (x_up, "single") || isa (x_lo, "single") || ...
-      isa (rho, "single") || isa (df, "single"))
-    is_type = "single";
+  is_type = 'double';
+  if (isa (x_up, 'single') || isa (x_lo, 'single') || ...
+      isa (rho, 'single') || isa (df, 'single'))
+    is_type = 'single';
   endif
 
   ## Get size of data
@@ -318,7 +318,7 @@ function p = tvtcdf (x, rho, df, TolFun)
       x3 = x(i,3);
       if (isfinite (x2) && isfinite (x3) && isnan (x1))
         v = df(i);
-        p2(i) = quadgk (@tvtIntegr1, lo, hi, "AbsTol", TolFun / 4, "RelTol", 0);
+        p2(i) = quadgk (@tvtIntegr1, lo, hi, 'AbsTol', TolFun / 4, 'RelTol', 0);
       endif
     endfor
   else
@@ -337,7 +337,7 @@ function p = tvtcdf (x, rho, df, TolFun)
       xk = x(i,3);
       if (isfinite (x1) && isfinite (xj) && ! isnan (xk))
         v = df(i);
-        p3(i) = quadgk (@tvtIntegr2, lo, hi, "AbsTol", TolFun / 4, "RelTol", 0);
+        p3(i) = quadgk (@tvtIntegr2, lo, hi, 'AbsTol', TolFun / 4, 'RelTol', 0);
       endif
     endfor
   else
@@ -356,17 +356,17 @@ function p = tvtcdf (x, rho, df, TolFun)
       xk = x(i,2);
       if (isfinite (x1) && isfinite (xj) && ! isnan (xk))
         v = df(i);
-        p4(i) = quadgk (@tvtIntegr2, lo, hi, "AbsTol", TolFun / 4, "RelTol", 0);
+        p4(i) = quadgk (@tvtIntegr2, lo, hi, 'AbsTol', TolFun / 4, 'RelTol', 0);
       endif
     endfor
   else
     p4 = zeros (class (p1));
   endif
 
-  if (isa (x, "single") || isa (rho, "single") || isa (df, "single"))
-    p = cast (p1 + (-p2 + p3 + p4) ./ (2 .* pi), "single");
+  if (isa (x, 'single') || isa (rho, 'single') || isa (df, 'single'))
+    p = cast (p1 + (-p2 + p3 + p4) ./ (2 .* pi), 'single');
   else
-    p = cast (p1 + (-p2 + p3 + p4) ./ (2 .* pi), "double");
+    p = cast (p1 + (-p2 + p3 + p4) ./ (2 .* pi), 'double');
   endif
 
   ## Functions to compute the integrands
@@ -412,7 +412,7 @@ endfunction
 %! X = [X1(:), X2(:)];
 %! p = mvtcdf (X, rho, df);
 %! surf (X1, X2, reshape (p, 25, 25));
-%! title ("Bivariate Student's t cumulative distribution function");
+%! title ('Bivariate Student''s t cumulative distribution function');
 
 ## Test output against MATLAB R2018
 %!test

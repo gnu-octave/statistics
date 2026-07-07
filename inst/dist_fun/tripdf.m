@@ -63,9 +63,9 @@ function y = tripdf (x, a, b, c)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (a, "single") || isa (b, "single") ...
-                        || isa (c, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (a, 'single') || isa (b, 'single') ...
+                        || isa (c, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -93,15 +93,15 @@ endfunction
 %! y2 = tripdf (x, 1, 2, 5);
 %! y3 = tripdf (x, 2, 3, 9);
 %! y4 = tripdf (x, 2, 5, 9);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c')
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"a = 3, b = 4, c = 6", "a = 1, b = 2, c = 5", ...
-%!          "a = 2, b = 3, c = 9", "a = 2, b = 5, c = 9"}, ...
-%!         "location", "northeast")
-%! title ("Triangular CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'a = 3, b = 4, c = 6', 'a = 1, b = 2, c = 5', ...
+%!          'a = 2, b = 3, c = 9', 'a = 2, b = 5, c = 9'}, ...
+%!         'location', 'northeast')
+%! title ('Triangular CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y, deps
@@ -119,10 +119,10 @@ endfunction
 %!assert (tripdf ([x, NaN], 1, 1.5, 2), [y, NaN], deps)
 
 ## Test class of input preserved
-%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps("single"))
-%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps("single"))
+%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps('single'))
+%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps('single'))
+%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps('single'))
+%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps('single'))
 
 ## Test input validation
 %!error<tripdf: function called with too few input arguments.> tripdf ()

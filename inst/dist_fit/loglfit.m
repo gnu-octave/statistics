@@ -110,14 +110,14 @@ function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("loglfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -152,7 +152,7 @@ function [paramhat, paramci] = loglfit (x, alpha, censor, freq, options)
   ## Handle errors
   if (err == 0)
     if (output.funcCount >= options.MaxFunEvals)
-      msg = "loglfit: maximum number of function evaluations are exceeded.";
+      msg = 'loglfit: maximum number of function evaluations are exceeded.';
       warning (msg);
     elseif (output.iterations >= options.MaxIter)
       warning ("loglfit: maximum number of iterations are exceeded.");
@@ -179,20 +179,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different log-logistic distributions
-%! rand ("seed", 5)  # for reproducibility
+%! rand ('seed', 5)  # for reproducibility
 %! r1 = loglrnd (0, 1, 2000, 1);
-%! rand ("seed", 2)   # for reproducibility
+%! rand ('seed', 2)   # for reproducibility
 %! r2 = loglrnd (0, 0.5, 2000, 1);
-%! rand ("seed", 7)   # for reproducibility
+%! rand ('seed', 7)   # for reproducibility
 %! r3 = loglrnd (0, 0.125, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, [0.05:0.1:2.5], 10);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 3.5]);
 %! xlim ([0, 2.0]);
 %! hold on
@@ -205,21 +205,21 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0.01:0.1:2.01];
 %! y = loglpdf (x, a_bA(1), a_bA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = loglpdf (x, a_bB(1), a_bB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = loglpdf (x, a_bC(1), a_bC(2));
-%! plot (x, y, "-^c");
-%! legend ({"Normalized HIST of sample 1 with α=1 and β=1", ...
-%!          "Normalized HIST of sample 2 with α=1 and β=2", ...
-%!          "Normalized HIST of sample 3 with α=1 and β=8", ...
+%! plot (x, y, '-^c');
+%! legend ({'Normalized HIST of sample 1 with α=1 and β=1', ...
+%!          'Normalized HIST of sample 2 with α=1 and β=2', ...
+%!          'Normalized HIST of sample 3 with α=1 and β=8', ...
 %!          sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_bA(1), a_bA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_bB(1), a_bB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
 %!                  a_bC(1), a_bC(2))})
-%! title ("Three population samples from different log-logistic distributions")
+%! title ('Three population samples from different log-logistic distributions')
 %! hold off
 
 ## Test output
@@ -246,7 +246,7 @@ endfunction
 %!error<loglfit: X must be a vector.> loglfit (ones (2,5));
 %!error<loglfit: wrong value for ALPHA.> loglfit ([1, 2, 3, 4, 5], 1.2);
 %!error<loglfit: wrong value for ALPHA.> loglfit ([1, 2, 3, 4, 5], 0);
-%!error<loglfit: wrong value for ALPHA.> loglfit ([1, 2, 3, 4, 5], "alpha");
+%!error<loglfit: wrong value for ALPHA.> loglfit ([1, 2, 3, 4, 5], 'alpha');
 %!error<loglfit: X and CENSOR vectors mismatch.> ...
 %! loglfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<loglfit: X and CENSOR vectors mismatch.> ...

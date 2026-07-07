@@ -63,8 +63,8 @@ function y = unidpdf (x, N)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (N, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (N, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -82,14 +82,14 @@ endfunction
 %! x = 0:10;
 %! y1 = unidpdf (x, 5);
 %! y2 = unidpdf (x, 9);
-%! plot (x, y1, "*b", x, y2, "*g")
+%! plot (x, y1, '*b', x, y2, '*g')
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.25])
-%! legend ({"N = 5", "N = 9"}, "location", "northeast")
-%! title ("Discrete uniform PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'N = 5', 'N = 9'}, 'location', 'northeast')
+%! title ('Discrete uniform PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

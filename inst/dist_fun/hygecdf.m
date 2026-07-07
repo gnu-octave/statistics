@@ -67,18 +67,18 @@ function p = hygecdf (x, m, k, n, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (m, "single")
-                        || isa (k, "single") || isa (n, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (m, 'single')
+                        || isa (k, 'single') || isa (n, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
 
   ## Check for "upper" flag
-  if (nargin > 4 && strcmpi (uflag, "upper"))
+  if (nargin > 4 && strcmpi (uflag, 'upper'))
     x = n - floor(x) - 1;
     k = m - k;
-  elseif (nargin > 4 && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 4 && ! strcmpi (uflag, 'upper'))
     error ("hygecdf: invalid argument for upper tail.");
   endif
 
@@ -145,14 +145,14 @@ endfunction
 %! p1 = hygecdf (x, 500, 50, 100);
 %! p2 = hygecdf (x, 500, 60, 200);
 %! p3 = hygecdf (x, 500, 70, 300);
-%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! plot (x, p1, '*b', x, p2, '*g', x, p3, '*r')
 %! grid on
 %! xlim ([0, 60])
-%! legend ({"m = 500, k = 50, n = 100", "m = 500, k = 60, n = 200", ...
-%!          "m = 500, k = 70, n = 300"}, "location", "southeast")
-%! title ("Hypergeometric CDF")
-%! xlabel ("values in x (number of successes)")
-%! ylabel ("probability")
+%! legend ({'m = 500, k = 50, n = 100', 'm = 500, k = 60, n = 200', ...
+%!          'm = 500, k = 70, n = 300'}, 'location', 'southeast')
+%! title ('Hypergeometric CDF')
+%! xlabel ('values in x (number of successes)')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -162,34 +162,34 @@ endfunction
 %!assert (hygecdf (x, 4, 2*ones (1,5), 2), y, 5*eps)
 %!assert (hygecdf (x, 4, 2, 2*ones (1,5)), y, 5*eps)
 %!assert (hygecdf (x, 4*[1 -1 NaN 1.1 1], 2, 2), [y(1) NaN NaN NaN y(5)], 5*eps)
-%!assert (hygecdf (x, 4*[1 -1 NaN 1.1 1], 2, 2, "upper"), ...
+%!assert (hygecdf (x, 4*[1 -1 NaN 1.1 1], 2, 2, 'upper'), ...
 %! [y(5) NaN NaN NaN y(1)], 5*eps)
 %!assert (hygecdf (x, 4, 2*[1 -1 NaN 1.1 1], 2), [y(1) NaN NaN NaN y(5)], 5*eps)
-%!assert (hygecdf (x, 4, 2*[1 -1 NaN 1.1 1], 2, "upper"), ...
+%!assert (hygecdf (x, 4, 2*[1 -1 NaN 1.1 1], 2, 'upper'), ...
 %! [y(5) NaN NaN NaN y(1)], 5*eps)
 %!assert (hygecdf (x, 4, 5, 2), [NaN NaN NaN NaN NaN])
 %!assert (hygecdf (x, 4, 2, 2*[1 -1 NaN 1.1 1]), [y(1) NaN NaN NaN y(5)], 5*eps)
-%!assert (hygecdf (x, 4, 2, 2*[1 -1 NaN 1.1 1], "upper"), ...
+%!assert (hygecdf (x, 4, 2, 2*[1 -1 NaN 1.1 1], 'upper'), ...
 %! [y(5) NaN NaN NaN y(1)], 5*eps)
 %!assert (hygecdf (x, 4, 2, 5), [NaN NaN NaN NaN NaN])
 %!assert (hygecdf ([x(1:2) NaN x(4:5)], 4, 2, 2), [y(1:2) NaN y(4:5)], 5*eps)
 %!test
-%! p = hygecdf (x, 10, [1 2 3 4 5], 2, "upper");
+%! p = hygecdf (x, 10, [1 2 3 4 5], 2, 'upper');
 %! assert (p, [1, 34/90, 2/30, 0, 0], 10*eps);
 %!test
-%! p = hygecdf (2*x, 10, [1 2 3 4 5], 2, "upper");
+%! p = hygecdf (2*x, 10, [1 2 3 4 5], 2, 'upper');
 %! assert (p, [1, 34/90, 0, 0, 0], 10*eps);
 
 ## Test class of input preserved
 %!assert (hygecdf ([x, NaN], 4, 2, 2), [y, NaN], 5*eps)
 %!assert (hygecdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 %!assert (hygecdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 %!assert (hygecdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 %!assert (hygecdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 
 ## Test input validation
 %!error<hygecdf: function called with too few input arguments.> hygecdf ()
@@ -197,7 +197,7 @@ endfunction
 %!error<hygecdf: function called with too few input arguments.> hygecdf (1,2)
 %!error<hygecdf: function called with too few input arguments.> hygecdf (1,2,3)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,5)
-%!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,"uper")
+%!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,'uper')
 %!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
 %! hygecdf (ones (2), ones (3), 1, 1)
 %!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...

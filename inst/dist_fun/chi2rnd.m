@@ -85,10 +85,10 @@ function r = chi2rnd (df, varargin)
   endif
 
   ## Check for class type
-  if (isa (df, "single"))
-    cls = "single";
+  if (isa (df, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from chi-squared distribution

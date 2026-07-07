@@ -107,7 +107,7 @@ classdef tLocationScaleDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "tLocationScaleDistribution";
+    DistributionName = 'tLocationScaleDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} NumParameters
@@ -129,7 +129,7 @@ classdef tLocationScaleDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "sigma", "nu"};
+    ParameterNames = {'mu', 'sigma', 'nu'};
 
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} ParameterDescription
@@ -141,12 +141,12 @@ classdef tLocationScaleDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Location", "Scale", "Degrees of Freedom"};
+    ParameterDescription = {'Location', 'Scale', 'Degrees of Freedom'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "tls";
+    DistributionCode = 'tls';
     ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [false, true, true];
   endproperties
@@ -265,11 +265,11 @@ classdef tLocationScaleDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "t Location-Scale distribution");
+      __disp__ (this, 't Location-Scale distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "t Location-Scale distribution");
+      __disp__ (this, 't Location-Scale distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -332,9 +332,9 @@ classdef tLocationScaleDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -772,7 +772,7 @@ classdef tLocationScaleDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -795,7 +795,7 @@ classdef tLocationScaleDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -822,12 +822,12 @@ endfunction
 %! ## distribution to this data and plot a PDF of the fitted distribution
 %! ## superimposed on a histogram of the data.
 %!
-%! pd_fixed = makedist ("tLocationScale", "mu", 0, "sigma", 1, "nu", 5);
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('tLocationScale', 'mu', 0, 'sigma', 1, 'nu', 5);
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
-%! pd_fitted = fitdist (data, "tLocationScale");
+%! pd_fitted = fitdist (data, 'tLocationScale');
 %! plot (pd_fitted);
-%! msg = "Fitted t Location-Scale distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f";
+%! msg = 'Fitted t Location-Scale distribution with mu = %0.2f, sigma = %0.2f, nu = %0.2f';
 %! title (sprintf (msg, pd_fitted.mu, pd_fitted.sigma, pd_fitted.nu));
 
 ## Test output
@@ -869,7 +869,7 @@ endfunction
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
 %! tLocationScaleDistribution([1, 2], 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution("a", 1, 1)
+%! tLocationScaleDistribution('a', 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
 %! tLocationScaleDistribution(NaN, 1, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
@@ -881,7 +881,7 @@ endfunction
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, i, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, "a", 1)
+%! tLocationScaleDistribution(0, 'a', 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, [1, 2], 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
@@ -895,7 +895,7 @@ endfunction
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, i)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, "a")
+%! tLocationScaleDistribution(0, 1, 'a')
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
 %! tLocationScaleDistribution(0, 1, [1, 2])
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
@@ -903,7 +903,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (tLocationScaleDistribution, 2, "uper")
+%! cdf (tLocationScaleDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (tLocationScaleDistribution, 2, 3)
 
@@ -911,62 +911,62 @@ endfunction
 %!shared x
 %! x = tlsrnd (0, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha")
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 0)
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 1)
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", "")
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", {0.05})
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "parameter", "mu", ...
-%!          "alpha", {0.05})
+%! paramci (tLocationScaleDistribution.fit (x), 'parameter', 'mu', ...
+%!          'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (tLocationScaleDistribution.fit (x), ...
-%!          "parameter", {"mu", "sigma", "nu", "param"})
+%!          'parameter', {'mu', 'sigma', 'nu', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "sigma", "nu", "param"})
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'sigma', 'nu', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "parameter", "param")
+%! paramci (tLocationScaleDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "NAME", "value")
+%! paramci (tLocationScaleDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (tLocationScaleDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "mu", "NAME", "value")
+%! paramci (tLocationScaleDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'mu', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (tLocationScaleDistribution, "Parent")
+%! plot (tLocationScaleDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (tLocationScaleDistribution, "PlotType", 12)
+%! plot (tLocationScaleDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (tLocationScaleDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (tLocationScaleDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (tLocationScaleDistribution, "PlotType", "pdfcdf")
+%! plot (tLocationScaleDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (tLocationScaleDistribution, "Discrete", "pdfcdf")
+%! plot (tLocationScaleDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (tLocationScaleDistribution, "Discrete", [1, 0])
+%! plot (tLocationScaleDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (tLocationScaleDistribution, "Discrete", {true})
+%! plot (tLocationScaleDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (tLocationScaleDistribution, "Parent", 12)
+%! plot (tLocationScaleDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (tLocationScaleDistribution, "Parent", "hax")
+%! plot (tLocationScaleDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (tLocationScaleDistribution, "invalidNAME", "pdf")
+%! plot (tLocationScaleDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (tLocationScaleDistribution, "PlotType", "probability")
+%! plot (tLocationScaleDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -980,23 +980,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (tLocationScaleDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display")
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display", 1)
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display", {1})
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, "NAME", "on")
+%! proflik (tLocationScaleDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (tLocationScaleDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (tLocationScaleDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (tLocationScaleDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

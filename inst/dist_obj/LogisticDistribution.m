@@ -93,7 +93,7 @@ classdef LogisticDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "LogisticDistribution";
+    DistributionName = 'LogisticDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {LogisticDistribution} {property} NumParameters
@@ -115,7 +115,7 @@ classdef LogisticDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"mu", "sigma"};
+    ParameterNames = {'mu', 'sigma'};
 
     ## -*- texinfo -*-
     ## @deftp {LogisticDistribution} {property} ParameterDescription
@@ -127,12 +127,12 @@ classdef LogisticDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Location", "Scale"};
+    ParameterDescription = {'Location', 'Scale'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
-    DistributionCode = "logi";
+    DistributionCode = 'logi';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
@@ -250,11 +250,11 @@ classdef LogisticDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "logistic distribution");
+      __disp__ (this, 'logistic distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "logistic distribution");
+      __disp__ (this, 'logistic distribution');
     endfunction
 
     function this = set.mu (this, mu)
@@ -305,9 +305,9 @@ classdef LogisticDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -736,7 +736,7 @@ classdef LogisticDistribution
         freq = varargin{3};
       endif
       if (nargin < 5)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -758,7 +758,7 @@ classdef LogisticDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", censor, "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', censor, 'freq', freq);
     endfunction
 
   endmethods
@@ -812,7 +812,7 @@ endfunction
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
 %! LogisticDistribution(i, 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution("a", 1)
+%! LogisticDistribution('a', 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
 %! LogisticDistribution([1, 2], 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
@@ -826,7 +826,7 @@ endfunction
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
 %! LogisticDistribution(1, i)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, "a")
+%! LogisticDistribution(1, 'a')
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
 %! LogisticDistribution(1, [1, 2])
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
@@ -834,7 +834,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (LogisticDistribution, 2, "uper")
+%! cdf (LogisticDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (LogisticDistribution, 2, 3)
 
@@ -842,59 +842,59 @@ endfunction
 %!shared x
 %! x = logirnd (1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha")
+%! paramci (LogisticDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 0)
+%! paramci (LogisticDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 1)
+%! paramci (LogisticDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (LogisticDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", "")
+%! paramci (LogisticDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", {0.05})
+%! paramci (LogisticDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "parameter", "mu", "alpha", {0.05})
+%! paramci (LogisticDistribution.fit (x), 'parameter', 'mu', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "parameter", {"mu", "sigma", "param"})
+%! paramci (LogisticDistribution.fit (x), 'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"mu", "sigma", "param"})
+%! paramci (LogisticDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'mu', 'sigma', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (LogisticDistribution.fit (x), "parameter", "param")
+%! paramci (LogisticDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 0.01, "parameter", "param")
+%! paramci (LogisticDistribution.fit (x), 'alpha', 0.01, 'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (LogisticDistribution.fit (x), "NAME", "value")
+%! paramci (LogisticDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 0.01, "NAME", "value")
+%! paramci (LogisticDistribution.fit (x), 'alpha', 0.01, 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (LogisticDistribution.fit (x), "alpha", 0.01, "parameter", "mu", ...
-%!          "NAME", "value")
+%! paramci (LogisticDistribution.fit (x), 'alpha', 0.01, 'parameter', 'mu', ...
+%!          'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (LogisticDistribution, "Parent")
+%! plot (LogisticDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (LogisticDistribution, "PlotType", 12)
+%! plot (LogisticDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (LogisticDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (LogisticDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (LogisticDistribution, "PlotType", "pdfcdf")
+%! plot (LogisticDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LogisticDistribution, "Discrete", "pdfcdf")
+%! plot (LogisticDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LogisticDistribution, "Discrete", [1, 0])
+%! plot (LogisticDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LogisticDistribution, "Discrete", {true})
+%! plot (LogisticDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (LogisticDistribution, "Parent", 12)
+%! plot (LogisticDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (LogisticDistribution, "Parent", "hax")
+%! plot (LogisticDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (LogisticDistribution, "invalidNAME", "pdf")
+%! plot (LogisticDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (LogisticDistribution, "PlotType", "probability")
+%! plot (LogisticDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -908,23 +908,23 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (LogisticDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display")
+%! proflik (LogisticDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display", 1)
+%! proflik (LogisticDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display", {1})
+%! proflik (LogisticDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (LogisticDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display", ["on"; "on"])
+%! proflik (LogisticDistribution.fit (x), 1, 'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (LogisticDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (LogisticDistribution.fit (x), 1, "NAME", "on")
+%! proflik (LogisticDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (LogisticDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (LogisticDistribution.fit (x), 1, {[1 2 3 4]}, "Display", "on")
+%! proflik (LogisticDistribution.fit (x), 1, {[1 2 3 4]}, 'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

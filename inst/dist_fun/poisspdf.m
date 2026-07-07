@@ -54,8 +54,8 @@ function y = poisspdf (x, lambda)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (lambda, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (lambda, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -79,13 +79,13 @@ endfunction
 %! y1 = poisspdf (x, 1);
 %! y2 = poisspdf (x, 4);
 %! y3 = poisspdf (x, 10);
-%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! plot (x, y1, '*b', x, y2, '*g', x, y3, '*r')
 %! grid on
 %! ylim ([0, 0.4])
-%! legend ({"λ = 1", "λ = 4", "λ = 10"}, "location", "northeast")
-%! title ("Poisson PDF")
-%! xlabel ("values in x (number of occurrences)")
-%! ylabel ("density")
+%! legend ({'λ = 1', 'λ = 4', 'λ = 10'}, 'location', 'northeast')
+%! title ('Poisson PDF')
+%! xlabel ('values in x (number of occurrences)')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y
@@ -97,8 +97,8 @@ endfunction
 %!assert (poisspdf ([x, NaN], 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (poisspdf (single ([x, NaN]), 1), single ([y, NaN]), eps ("single"))
-%!assert (poisspdf ([x, NaN], single (1)), single ([y, NaN]), eps ("single"))
+%!assert (poisspdf (single ([x, NaN]), 1), single ([y, NaN]), eps ('single'))
+%!assert (poisspdf ([x, NaN], single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<poisspdf: function called with too few input arguments.> poisspdf ()

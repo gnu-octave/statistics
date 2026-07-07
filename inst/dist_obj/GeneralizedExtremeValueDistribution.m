@@ -107,7 +107,7 @@ classdef GeneralizedExtremeValueDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "GeneralizedExtremeValueDistribution";
+    DistributionName = 'GeneralizedExtremeValueDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} NumParameters
@@ -129,7 +129,7 @@ classdef GeneralizedExtremeValueDistribution
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"k", "sigma", "mu"};
+    ParameterNames = {'k', 'sigma', 'mu'};
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} ParameterDescription
@@ -141,12 +141,12 @@ classdef GeneralizedExtremeValueDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Shape", "Scale", "Location"};
+    ParameterDescription = {'Shape', 'Scale', 'Location'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "gev";
+    DistributionCode = 'gev';
     ParameterRange = [-Inf, realmin, -Inf; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
@@ -265,11 +265,11 @@ classdef GeneralizedExtremeValueDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Generalized Extreme Value distribution");
+      __disp__ (this, 'Generalized Extreme Value distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Generalized Extreme Value distribution");
+      __disp__ (this, 'Generalized Extreme Value distribution');
     endfunction
 
     function this = set.k (this, k)
@@ -332,9 +332,9 @@ classdef GeneralizedExtremeValueDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -769,7 +769,7 @@ classdef GeneralizedExtremeValueDistribution
         freq = varargin{2};
       endif
       if (nargin < 4)
-        options.Display = "off";
+        options.Display = 'off';
         options.MaxFunEvals = 400;
         options.MaxIter = 200;
         options.TolX = 1e-6;
@@ -792,7 +792,7 @@ classdef GeneralizedExtremeValueDistribution
       pd.ParameterCI = pci;
       pd.ParameterIsFixed = [false, false, false];
       pd.ParameterCovariance = acov;
-      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
+      pd.InputData = struct ('data', x, 'cens', [], 'freq', freq);
     endfunction
 
   endmethods
@@ -851,7 +851,7 @@ endfunction
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
 %! GeneralizedExtremeValueDistribution(i, 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution("a", 1, 1)
+%! GeneralizedExtremeValueDistribution('a', 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
 %! GeneralizedExtremeValueDistribution([1, 2], 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
@@ -865,7 +865,7 @@ endfunction
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
 %! GeneralizedExtremeValueDistribution(1, i, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, "a", 1)
+%! GeneralizedExtremeValueDistribution(1, 'a', 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
 %! GeneralizedExtremeValueDistribution(1, [1, 2], 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
@@ -875,7 +875,7 @@ endfunction
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
 %! GeneralizedExtremeValueDistribution(1, 1, i)
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, "a")
+%! GeneralizedExtremeValueDistribution(1, 1, 'a')
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
 %! GeneralizedExtremeValueDistribution(1, 1, [1, 2])
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
@@ -883,7 +883,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (GeneralizedExtremeValueDistribution, 2, "uper")
+%! cdf (GeneralizedExtremeValueDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (GeneralizedExtremeValueDistribution, 2, 3)
 
@@ -891,63 +891,63 @@ endfunction
 %!shared x
 %! x = gevrnd (1, 1, 1, [1, 100]);
 %!error <paramci: optional arguments must be in NAME-VALUE pairs.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 0)
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 0)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 1)
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 1)
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", [0.5 2])
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', [0.5 2])
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", "")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', '')
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", {0.05})
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', {0.05})
 %!error <paramci: invalid VALUE for 'Alpha' argument.> ...
 %! paramci (GeneralizedExtremeValueDistribution.fit (x), ...
-%!          "parameter", "sigma", "alpha", {0.05})
+%!          'parameter', 'sigma', 'alpha', {0.05})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
 %! paramci (GeneralizedExtremeValueDistribution.fit (x), ...
-%!          "parameter", {"k", "sigma", "mu", "param"})
+%!          'parameter', {'k', 'sigma', 'mu', 'param'})
 %!error <paramci: invalid VALUE size for 'Parameter' argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", {"k", "sigma", "mu", "param"})
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', {'k', 'sigma', 'mu', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "parameter", "param")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'parameter', 'param')
 %!error <paramci: unknown distribution parameter.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "param")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'param')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "NAME", "value")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "NAME", "value")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'NAME', 'value')
 %!error <paramci: invalid NAME for optional argument.> ...
-%! paramci (GeneralizedExtremeValueDistribution.fit (x), "alpha", 0.01, ...
-%!          "parameter", "sigma", "NAME", "value")
+%! paramci (GeneralizedExtremeValueDistribution.fit (x), 'alpha', 0.01, ...
+%!          'parameter', 'sigma', 'NAME', 'value')
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Parent")
+%! plot (GeneralizedExtremeValueDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "PlotType", 12)
+%! plot (GeneralizedExtremeValueDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (GeneralizedExtremeValueDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "PlotType", "pdfcdf")
+%! plot (GeneralizedExtremeValueDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Discrete", "pdfcdf")
+%! plot (GeneralizedExtremeValueDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Discrete", [1, 0])
+%! plot (GeneralizedExtremeValueDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Discrete", {true})
+%! plot (GeneralizedExtremeValueDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Parent", 12)
+%! plot (GeneralizedExtremeValueDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "Parent", "hax")
+%! plot (GeneralizedExtremeValueDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (GeneralizedExtremeValueDistribution, "invalidNAME", "pdf")
+%! plot (GeneralizedExtremeValueDistribution, 'invalidNAME', 'pdf')
 %!error <plot: no fitted DATA to plot a probability plot.> ...
-%! plot (GeneralizedExtremeValueDistribution, "PlotType", "probability")
+%! plot (GeneralizedExtremeValueDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
 %!error <proflik: no fitted data available.> ...
@@ -961,25 +961,25 @@ endfunction
 %!error <proflik: SETPARAM must be a numeric vector.> ...
 %! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, ones (2))
 %!error <proflik: missing VALUE for 'Display' argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "Display")
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'Display')
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "Display", 1)
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'Display', 1)
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "Display", {1})
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'Display', {1})
 %!error <proflik: invalid VALUE type for 'Display' argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "Display", {"on"})
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'Display', {'on'})
 %!error <proflik: invalid VALUE size for 'Display' argument.> ...
 %! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, ...
-%!          "Display", ["on"; "on"])
+%!          'Display', ['on'; 'on'])
 %!error <proflik: invalid VALUE for 'Display' argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "Display", "onnn")
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'Display', 'onnn')
 %!error <proflik: invalid NAME for optional arguments.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, "NAME", "on")
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, 'NAME', 'on')
 %!error <proflik: invalid optional argument.> ...
-%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, {"NAME"}, "on")
+%! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, {'NAME'}, 'on')
 %!error <proflik: invalid optional argument.> ...
 %! proflik (GeneralizedExtremeValueDistribution.fit (x), 1, {[1 2 3 4]}, ...
-%!          "Display", "on")
+%!          'Display', 'on')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

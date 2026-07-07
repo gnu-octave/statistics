@@ -108,7 +108,7 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
   n_censored = sum (freq .* censor);
   if (n_censored > 0)
     z_censored = z(logical (censor));
-    Scen = gammainc (z_censored, a, "upper");
+    Scen = gammainc (z_censored, a, 'upper');
     L(logical (censor)) = log (Scen);
   endif
 
@@ -122,8 +122,8 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
   ## Invert to get the observed information matrix.
   if (nargout == 2)
     ## Calculate all data
-    dL11 = -psi (1, a) * ones (size (z), "like", z);
-    dL12 = -(1 ./ b) * ones (size (z), "like", z);
+    dL11 = -psi (1, a) * ones (size (z), 'like', z);
+    dL12 = -(1 ./ b) * ones (size (z), 'like', z);
     dL22 = -(2 .* z - a) ./ (b .^ 2);
     ## Calculate censored data
     if (n_censored > 0)
@@ -144,7 +144,7 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
     nH22 = -sum(freq .* dL22);
     nH = [nH11 nH12; nH12 nH22];
     if (any (isnan (nH(:))))
-      acov = nan (2, "like", nH);
+      acov = nan (2, 'like', nH);
     else
       acov = inv (nH);
     endif
@@ -181,7 +181,7 @@ function [y, dy, d2y] = dgammainc (x, a)
     stsum = step;
     d1sum = d1st;
     d2sum = d2st;
-    while norm (step, "inf") >= 100 * eps (norm (stsum, "inf"))
+    while norm (step, 'inf') >= 100 * eps (norm (stsum, 'inf'))
       k_1 += 1;
       step = step .* x_lo ./ k_1;
       d1st = (d1st .* x_lo - step) ./ k_1;
@@ -229,7 +229,7 @@ function [y, dy, d2y] = dgammainc (x, a)
     d1kx = 1 ./ x_hi;
     d2kx = 0;
     start = 1;
-    while norm (d2kx - start, "Inf") > 100 * eps (norm (d2kx, "Inf"))
+    while norm (d2kx - start, 'Inf') > 100 * eps (norm (d2kx, 'Inf'))
       rescale = 1 ./ x1;
       zc += 1;
       n_k = zc - k_hi;

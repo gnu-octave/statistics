@@ -76,14 +76,14 @@ endfunction
 %! x3 = raylinv (p, 2);
 %! x4 = raylinv (p, 3);
 %! x5 = raylinv (p, 4);
-%! plot (p, x1, "-b", p, x2, "g", p, x3, "-r", p, x4, "-m", p, x5, "-k")
+%! plot (p, x1, '-b', p, x2, 'g', p, x3, '-r', p, x4, '-m', p, x5, '-k')
 %! grid on
 %! ylim ([0, 10])
-%! legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
-%!          "σ = 3", "σ = 4"}, "location", "northwest")
-%! title ("Rayleigh iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'σ = 0,5', 'σ = 1', 'σ = 2', ...
+%!          'σ = 3', 'σ = 4'}, 'location', 'northwest')
+%! title ('Rayleigh iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!test

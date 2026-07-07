@@ -161,12 +161,12 @@ classdef cvpartition
       fprintf ("%+25s: %d\n", 'NumTestSets', this.NumTestSets);
       vlen = numel (this.TrainSize);
       if (vlen <= 10)
-        str = repmat ({"%d"}, 1, vlen);
+        str = repmat ({'%d'}, 1, vlen);
         str = strcat ('[', strjoin (str, ' '), ']');
         str1 = sprintf (str, this.TrainSize);
         str2 = sprintf (str, this.TestSize);
       else
-        str = repmat ({"%d"}, 1, 10);
+        str = repmat ({'%d'}, 1, 10);
         str = strcat ('[', strjoin (str, ' '), ' ... ]');
         str1 = sprintf (str, this.TrainSize(1:10));
         str2 = sprintf (str, this.TestSize(1:10));
@@ -182,7 +182,7 @@ classdef cvpartition
     function varargout = subsref (this, s)
       chain_s = s(2:end);
       s = s(1);
-      t = "Invalid %s indexing for referencing values in a cvpartition object.";
+      t = 'Invalid %s indexing for referencing values in a cvpartition object.';
       switch (s.type)
         case '()'
           error (t, '()');
@@ -212,7 +212,7 @@ classdef cvpartition
         error (strcat ("cvpartition.subsasgn:", ...
                        " chained subscripts not allowed."));
       endif
-      t = "Invalid %s indexing for assigning values to a cvpartition object.";
+      t = 'Invalid %s indexing for assigning values to a cvpartition object.';
       switch s.type
         case '()'
           error (t, '()');
@@ -372,7 +372,7 @@ classdef cvpartition
       endif
 
       ## Check for custom partition
-      if (strcmpi (X, "CustomPartition"))
+      if (strcmpi (X, 'CustomPartition'))
         testSets = varargin{1};
         ## Check for valid test set
         if (! (isnumeric (testSets) || islogical (testSets)))
@@ -602,7 +602,7 @@ classdef cvpartition
               [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
               for i = 1:k
                 idxGV = find (GroupIdx == i);
-                vecGV = arrayfun(@(x) x == inds, idxGV, "UniformOutput", false);
+                vecGV = arrayfun(@(x) x == inds, idxGV, 'UniformOutput', false);
                 index = vecGV{1};
                 if (numel (vecGV) > 1)
                   for j = 2:numel (vecGV)
@@ -707,7 +707,7 @@ classdef cvpartition
             else
               f = p / X;
             endif
-            inds = zeros (X, 1, "logical");
+            inds = zeros (X, 1, 'logical');
             k_check = 0;
             for i = 1:NumClasses
               ki = round (f * ClassSize(i));
@@ -881,8 +881,8 @@ classdef cvpartition
       endif
 
       ## Handle legacy code with no randomization of kfold option
-      if (strcmpi (sval, "legacy"))
-        if (strcmpi (this.Type, "kfold"))
+      if (strcmpi (sval, 'legacy'))
+        if (strcmpi (this.Type, 'kfold'))
           X = this.NumObservations;
           k = this.NumTestSets;
           if (! (this.IsGrouped || this.IsStratified))
@@ -912,14 +912,14 @@ classdef cvpartition
                          " a real scalar or vector."));
         endif
         if (isscalar (sval))
-          rand ("sval", sval);
+          rand ('sval', sval);
         else
-          rand ("state", sval);
+          rand ('state', sval);
         endif
       endif
 
       ## Handle repartitioning of randomized holdout and kfold options
-      if (strcmpi (this.Type, "holdout"))
+      if (strcmpi (this.Type, 'holdout'))
         p = this.TestSize;
         if (this.IsStratified)
           X = sum (! this.missidx);
@@ -948,7 +948,7 @@ classdef cvpartition
         endif
         this.indices = inds;
 
-      elseif (strcmpi (this.Type, "kfold"))
+      elseif (strcmpi (this.Type, 'kfold'))
         k = this.NumTestSets;
         if (! (this.IsGrouped || this.IsStratified))
           X = this.NumObservations;
@@ -1279,10 +1279,10 @@ classdef cvpartition
         error ("cvpartition.test: too many input arguments.");
       elseif (nargin == 2)
         i = varargin{1};
-        if (strcmpi (i, "all"))
+        if (strcmpi (i, 'all'))
           idx = logical ([]);
           switch (this.Type)
-            case "kfold"
+            case 'kfold'
               for i = 1:this.NumTestSets
                 if (this.IsStratified || this.IsGrouped)
                   cid = false (this.NumObservations, 1);
@@ -1292,13 +1292,13 @@ classdef cvpartition
                 endif
                 idx = [idx, cid];
               endfor
-            case "leaveout" # no stratification
+            case 'leaveout' # no stratification
               for i = 1:this.NumTestSets
                 cid = false (this.NumObservations, 1);
                 cid(i) = true;
                 idx = [idx, cid];
               endfor
-            case "holdout"
+            case 'holdout'
               if (this.IsStratified)
                 idx = false (this.NumObservations, 1);
                 idx(! this.missidx) = this.indices;
@@ -1306,7 +1306,7 @@ classdef cvpartition
                 idx = this.indices;
               endif
               idx = this.indices;
-            case "resubstitution" # no stratification
+            case 'resubstitution' # no stratification
               idx = true (this.NumObservations, 1);
           endswitch
           return
@@ -1325,7 +1325,7 @@ classdef cvpartition
       endif
 
       switch (this.Type)
-        case  "kfold"
+        case  'kfold'
           if (isscalar (i))
             if (this.IsStratified || this.IsGrouped)
               idx = false (this.NumObservations, 1);
@@ -1345,7 +1345,7 @@ classdef cvpartition
               idx = [idx, cid];
             endfor
           endif
-        case "leaveout" # no stratification
+        case 'leaveout' # no stratification
           if (isscalar (i))
             idx = false (this.NumObservations, 1);
             idx(i) = true;
@@ -1357,14 +1357,14 @@ classdef cvpartition
               idx = [idx, new];
             endfor
           endif
-        case "holdout"
+        case 'holdout'
           if (this.IsStratified)
             idx = false (this.NumObservations, 1);
             idx(! this.missidx) = this.indices;
           else
             idx = this.indices;
           endif
-        case "resubstitution" # no stratification
+        case 'resubstitution' # no stratification
           idx = true (this.NumObservations, 1);
       endswitch
 
@@ -1406,10 +1406,10 @@ classdef cvpartition
         error ("cvpartition.training: too many input arguments.");
       elseif (nargin == 2)
         i = varargin{1};
-        if (strcmpi (i, "all"))
+        if (strcmpi (i, 'all'))
           idx = logical ([]);
           switch (this.Type)
-            case "kfold"
+            case 'kfold'
               for i = 1:this.NumTestSets
                 if (this.IsStratified || this.IsGrouped)
                   cid = false (this.NumObservations, 1);
@@ -1419,20 +1419,20 @@ classdef cvpartition
                 endif
                 idx = [idx, cid];
               endfor
-            case "leaveout" # no stratification
+            case 'leaveout' # no stratification
               for i = 1:this.NumTestSets
                 cid = true (this.NumObservations, 1);
                 cid(i) = false;
                 idx = [idx, cid];
               endfor
-            case "holdout"
+            case 'holdout'
               if (this.IsStratified)
                 idx = false (this.NumObservations, 1);
                 idx(! this.missidx) = ! this.indices;
               else
                 idx = ! this.indices;
               endif
-            case "resubstitution" # no stratification
+            case 'resubstitution' # no stratification
               idx = true (this.NumObservations, 1);
           endswitch
           return
@@ -1452,7 +1452,7 @@ classdef cvpartition
       endif
 
       switch (this.Type)
-        case  "kfold"
+        case  'kfold'
           if (isscalar (i))
             if (this.IsStratified || this.IsGrouped)
               idx = false (this.NumObservations, 1);
@@ -1472,7 +1472,7 @@ classdef cvpartition
               idx = [idx, cid];
             endfor
           endif
-        case "leaveout" # no stratification
+        case 'leaveout' # no stratification
           if (isscalar (i))
             idx = true (this.NumObservations, 1);
             idx(i) = false;
@@ -1484,14 +1484,14 @@ classdef cvpartition
               idx = [idx, new];
             endfor
           endif
-        case "holdout"
+        case 'holdout'
           if (this.IsStratified)
             idx = false (this.NumObservations, 1);
             idx(! this.missidx) = ! this.indices;
           else
             idx = ! this.indices;
           endif
-        case "resubstitution" # no stratification
+        case 'resubstitution' # no stratification
           idx = true (this.NumObservations, 1);
       endswitch
 
@@ -1955,109 +1955,109 @@ endclassdef
 %!error <cvpartition: too few input arguments.> cvpartition (2)
 %!error <cvpartition: too many input arguments.> cvpartition (1, 2, 3, 4, 5, 6)
 %!error <cvpartition: TESTSETS must be numeric of logical.> ...
-%! cvpartition ("CustomPartition", 'a')
+%! cvpartition ('CustomPartition', 'a')
 %!error <cvpartition: TESTSETS must be a numeric vector.> ...
-%! cvpartition ("CustomPartition", [2, 3; 2, 3])
+%! cvpartition ('CustomPartition', [2, 3; 2, 3])
 %!error <cvpartition: TESTSETS must be a logical vector or matrix.> ...
-%! cvpartition ("CustomPartition", false (3, 3, 3))
+%! cvpartition ('CustomPartition', false (3, 3, 3))
 %!error <cvpartition: each observation in TESTSETS must be exactly one in each row.> ...
-%! cvpartition ("CustomPartition", [false, true; true, true; true, false])
+%! cvpartition ('CustomPartition', [false, true; true, true; true, false])
 %!error <cvpartition: a logical matrix in TESTSETS must not have more columns that rows.> ...
-%! cvpartition ("CustomPartition", false (3, 5))
+%! cvpartition ('CustomPartition', false (3, 5))
 %!error <cvpartition: X must be a scalar positive integer value.> ...
-%! cvpartition (-20, "LeaveOut")
+%! cvpartition (-20, 'LeaveOut')
 %!error <cvpartition: X must be a scalar positive integer value.> ...
-%! cvpartition (20.5, "LeaveOut")
+%! cvpartition (20.5, 'LeaveOut')
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition (20, "HoldOut", [0.2, 0.3])
+%! cvpartition (20, 'HoldOut', [0.2, 0.3])
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition (20, "HoldOut", 'a')
+%! cvpartition (20, 'HoldOut', 'a')
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
-%! cvpartition (20, "HoldOut", 0)
+%! cvpartition (20, 'HoldOut', 0)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
-%! cvpartition (20, "HoldOut", -0.1)
+%! cvpartition (20, 'HoldOut', -0.1)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\).> ...
-%! cvpartition (20, "HoldOut", 21)
+%! cvpartition (20, 'HoldOut', 21)
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition (20, "kfold", [2, 3])
+%! cvpartition (20, 'kfold', [2, 3])
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition (20, "kfold", 'a')
+%! cvpartition (20, 'kfold', 'a')
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\].> ...
-%! cvpartition (20, "kfold", 2.5)
+%! cvpartition (20, 'kfold', 2.5)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\].> ...
-%! cvpartition (20, "kfold", 21)
+%! cvpartition (20, 'kfold', 21)
 %!error <cvpartition: invalid optional paired argument for 'GroupingVariables'.> ...
-%! cvpartition (10, "kfold", 3, "Group")
+%! cvpartition (10, 'kfold', 3, 'Group')
 %!error <cvpartition: missing value for optional paired argument 'GroupingVariables'.> ...
-%! cvpartition (10, "kfold", 3, "GroupingVariables")
+%! cvpartition (10, 'kfold', 3, 'GroupingVariables')
 %!error <cvpartition: invalid value for optional paired argument 'GroupingVariables'.> ...
-%! cvpartition (10, "kfold", 3, "GroupingVariables", ones (3, 3, 3))
+%! cvpartition (10, 'kfold', 3, 'GroupingVariables', ones (3, 3, 3))
 %!error <cvpartition: grouping variable does not match the number of observations.> ...
-%! cvpartition (10, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'})
+%! cvpartition (10, 'kfold', 3, 'GroupingVariables', {'a', 'a', 'a', 'b', 'b'})
 %!warning <cvpartition: number of folds K is greater than the groups in 'GroupingVariables'. K is set to the number of groups.> ...
-%! cvpartition (5, "kfold", 3, "GroupingVariables", {'a', 'a', 'a', 'b', 'b'});
+%! cvpartition (5, 'kfold', 3, 'GroupingVariables', {'a', 'a', 'a', 'b', 'b'});
 %!error <cvpartition: invalid optional paired argument.> ...
-%! cvpartition (20, "some")
+%! cvpartition (20, 'some')
 %!error <cvpartition: invalid optional paired argument for stratification.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 2, "strat")
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 2, 'strat')
 %!error <cvpartition: missing value for optional paired argument 'stratify'.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 2, "stratify")
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 2, 'stratify')
 %!error <cvpartition: invalid value for optional paired argument 'stratify'.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 2, "stratify", [true, true])
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 2, 'stratify', [true, true])
 %!error <cvpartition: invalid value for optional paired argument 'stratify'.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 2, "stratify", 'no')
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 2, 'stratify', 'no')
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 'a')
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 'a')
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 'a', "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 'a', 'stratify', true)
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", [0.2, 0.3])
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', [0.2, 0.3])
 %!error <cvpartition: P value for 'holdout' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", [0.2, 0.3], "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', [0.2, 0.3], 'stratify', true)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 0)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 0)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 0, "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 0, 'stratify', true)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", -0.1)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', -0.1)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", -0.1, "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', -0.1, 'stratify', true)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 1.2)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 1.2)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 1.2, "stratify", false)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 1.2, 'stratify', false)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 6)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 6)
 %!error <cvpartition: P value for 'holdout' must be a scalar in the range \(0,1\) or an integer scalar in the range \[1, N\), where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "holdout", 6, "stratify", false)
+%! cvpartition ([1, 1, 1, 2, 2], 'holdout', 6, 'stratify', false)
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 'a')
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 'a')
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 'a', "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 'a', 'stratify', true)
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", [2, 3])
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', [2, 3])
 %!error <cvpartition: K value for 'kfold' must be a numeric scalar.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", [2, 3], "stratify", false)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', [2, 3], 'stratify', false)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 0)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 0)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 0, "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 0, 'stratify', true)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 1.5)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 1.5)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 1.5, "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 1.5, 'stratify', true)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 6)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 6)
 %!error <cvpartition: K value for 'kfold' must be an integer scalar in the range \[1, N\], where N is the number of nonmissing observations in X.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "kfold", 6, "stratify", true)
+%! cvpartition ([1, 1, 1, 2, 2], 'kfold', 6, 'stratify', true)
 %!error <cvpartition: invalid optional paired argument.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "leaveout")
+%! cvpartition ([1, 1, 1, 2, 2], 'leaveout')
 %!error <cvpartition: invalid optional paired argument.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "resubstitution")
+%! cvpartition ([1, 1, 1, 2, 2], 'resubstitution')
 %!error <cvpartition: invalid optional paired argument.> ...
-%! cvpartition ([1, 1, 1, 2, 2], "some")
+%! cvpartition ([1, 1, 1, 2, 2], 'some')
 %!error <cvpartition: invalid first input argument.> ...
-%! cvpartition ({1, 1; 2, 2}, "kfold")
+%! cvpartition ({1, 1; 2, 2}, 'kfold')
 
 %!error <cvpartition.repartition: cannot repartition a custom partition.> ...
 %! repartition (cvpartition ('CustomPartition', [1,1,2,2,3,3]))
@@ -2073,64 +2073,64 @@ endclassdef
 %! repartition (cvpartition (20, 'KFold', 5), [34, 56; 2, 3])
 
 %!error <cvpartition.test: too many input arguments.> ...
-%! test (cvpartition (20, "kfold"), 2, 3)
+%! test (cvpartition (20, 'kfold'), 2, 3)
 %!error <cvpartition.test: set index must be a positive integer vector.> ...
-%! test (cvpartition (20, "kfold"), 0)
+%! test (cvpartition (20, 'kfold'), 0)
 %!error <cvpartition.test: set index must be a positive integer vector.> ...
-%! test (cvpartition (20, "kfold"), 1.5)
+%! test (cvpartition (20, 'kfold'), 1.5)
 %!error <cvpartition.test: set index must be a positive integer vector.> ...
-%! test (cvpartition (20, "kfold"), [1, 1.5])
+%! test (cvpartition (20, 'kfold'), [1, 1.5])
 %!error <cvpartition.test: set index must be a positive integer vector.> ...
-%! test (cvpartition (20, "kfold"), [2, 3; 2, 3])
+%! test (cvpartition (20, 'kfold'), [2, 3; 2, 3])
 %!error <cvpartition.test: set index exceeds 'NumTestSets'.> ...
-%! test (cvpartition (20, "kfold"), 21)
+%! test (cvpartition (20, 'kfold'), 21)
 %!error <cvpartition.test: set index exceeds 'NumTestSets'.> ...
-%! test (cvpartition (20, "kfold"), [18, 21])
+%! test (cvpartition (20, 'kfold'), [18, 21])
 
 %!error <cvpartition.training: too many input arguments.> ...
-%! training (cvpartition (20, "kfold"), 2, 3)
+%! training (cvpartition (20, 'kfold'), 2, 3)
 %!error <cvpartition.training: set index must be a positive integer vector.> ...
-%! training (cvpartition (20, "kfold"), 0)
+%! training (cvpartition (20, 'kfold'), 0)
 %!error <cvpartition.training: set index must be a positive integer vector.> ...
-%! training (cvpartition (20, "kfold"), 1.5)
+%! training (cvpartition (20, 'kfold'), 1.5)
 %!error <cvpartition.training: set index must be a positive integer vector.> ...
-%! training (cvpartition (20, "kfold"), [1, 1.5])
+%! training (cvpartition (20, 'kfold'), [1, 1.5])
 %!error <cvpartition.training: set index must be a positive integer vector.> ...
-%! training (cvpartition (20, "kfold"), [2, 3; 2, 3])
+%! training (cvpartition (20, 'kfold'), [2, 3; 2, 3])
 %!error <cvpartition.training: set index exceeds 'NumTestSets'.> ...
-%! training (cvpartition (20, "kfold"), 21)
+%! training (cvpartition (20, 'kfold'), 21)
 %!error <cvpartition.training: set index exceeds 'NumTestSets'.> ...
-%! training (cvpartition (20, "kfold"), [18, 21])
+%! training (cvpartition (20, 'kfold'), [18, 21])
 
 ## Test 'summary' method
 %!test
 %! ## 1. Stratified K-Fold: Basic Text Labels
-%! species = [repmat({"Setosa"}, 10, 1); repmat({"Versicolor"}, 10, 1)];
-%! rand ("state", 42);
-%! c = cvpartition (species, "KFold", 2);
+%! species = [repmat({'Setosa'}, 10, 1); repmat({'Versicolor'}, 10, 1)];
+%! rand ('state', 42);
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
 %! assert (height (T), 10);
-%! assert (all (ismember ({"Set", "SetSize", "StratificationLabel", ...
-%!                        "StratificationCount", "PercentInSet"}, ...
+%! assert (all (ismember ({'Set', 'SetSize', 'StratificationLabel', ...
+%!                        'StratificationCount', 'PercentInSet'}, ...
 %!                        T.Properties.VariableNames)));
 %!
 %! ## Check Output Type (String Array) and Counts
-%! if (exist ("string", "class"))
-%!   assert (isa (T.Set, "string"));
-%!   assert (isa (T.StratificationLabel, "string"));
-%!   mask = (T.Set == "all") & (T.StratificationLabel == "Setosa");
+%! if (exist ('string', 'class'))
+%!   assert (isa (T.Set, 'string'));
+%!   assert (isa (T.StratificationLabel, 'string'));
+%!   mask = (T.Set == 'all') & (T.StratificationLabel == 'Setosa');
 %! else
 %!   ## Fallback for older environments
-%!   mask = strcmp (T.Set, "all") & strcmp (T.StratificationLabel, "Setosa");
+%!   mask = strcmp (T.Set, 'all') & strcmp (T.StratificationLabel, 'Setosa');
 %! endif
 %! assert (T.StratificationCount(mask), 10);
 %!test
 %! ## 2. Grouped K-Fold: Basic Numeric Labels
 %! groups = [1; 1; 1; 2; 2; 3; 3; 3; 3; 3];
-%! rand ("state", 100);
-%! c = cvpartition (numel (groups), "KFold", 2, "GroupingVariables", groups);
+%! rand ('state', 100);
+%! c = cvpartition (numel (groups), 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! assert (any (strcmp ("GroupLabel", T.Properties.VariableNames)));
+%! assert (any (strcmp ('GroupLabel', T.Properties.VariableNames)));
 %!
 %! ## Verify Group Integrity
 %! if (iscell (T.GroupLabel))
@@ -2140,10 +2140,10 @@ endclassdef
 %! endif
 %! mask_g3 = (vals == 3);
 %!
-%! if (exist ("string", "class"))
-%!   mask_t1 = (T.Set == "test1");
+%! if (exist ('string', 'class'))
+%!   mask_t1 = (T.Set == 'test1');
 %! else
-%!   mask_t1 = strcmp (T.Set, "test1");
+%!   mask_t1 = strcmp (T.Set, 'test1');
 %! endif
 %!
 %! count_g3 = T.GroupCount(mask_g3 & mask_t1);
@@ -2153,29 +2153,29 @@ endclassdef
 %! g1 = [1; 1; 1; 2; 2; 2];
 %! g2 = [1; 1; 2; 1; 2; 2];
 %! groups = [g1, g2];
-%! c = cvpartition (6, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (6, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! ## 4 unique groups * 5 sets (all + 2 train + 2 test)
 %! assert (height (T), 20);
 %!test
 %! ## 4. Stratified Holdout: Basic
-%! species = [repmat({"A"}, 10, 1); repmat({"B"}, 10, 1)];
-%! c = cvpartition (species, "Holdout", 0.5);
+%! species = [repmat({'A'}, 10, 1); repmat({'B'}, 10, 1)];
+%! c = cvpartition (species, 'Holdout', 0.5);
 %! T = summary (c);
 %! sets = unique (T.Set);
 %! assert (numel (sets), 3); ## all, train1, test1
 %!test
 %! ## 5. Mathematical Consistency: Percentages
 %! classes = [1; 1; 2; 2; 3; 3];
-%! c = cvpartition (classes, "KFold", 2);
+%! c = cvpartition (classes, 'KFold', 2);
 %! T = summary (c);
 %!
-%! if (exist ("string", "class"))
-%!   mask_all = (T.Set == "all");
-%!   mask_tr1 = (T.Set == "train1");
+%! if (exist ('string', 'class'))
+%!   mask_all = (T.Set == 'all');
+%!   mask_tr1 = (T.Set == 'train1');
 %! else
-%!   mask_all = strcmp (T.Set, "all");
-%!   mask_tr1 = strcmp (T.Set, "train1");
+%!   mask_all = strcmp (T.Set, 'all');
+%!   mask_tr1 = strcmp (T.Set, 'train1');
 %! endif
 %!
 %! assert (sum (T.PercentInSet(mask_all)), 100, 1e-10);
@@ -2183,15 +2183,15 @@ endclassdef
 %!test
 %! ## 6. Mathematical Consistency: Set Sizes
 %! N = 20;
-%! c = cvpartition (ones (N, 1), "KFold", 4);
+%! c = cvpartition (ones (N, 1), 'KFold', 4);
 %! T = summary (c);
 %!
-%! if (exist ("string", "class"))
-%!   mask_tr1 = (T.Set == "train1");
-%!   mask_ts1 = (T.Set == "test1");
+%! if (exist ('string', 'class'))
+%!   mask_tr1 = (T.Set == 'train1');
+%!   mask_ts1 = (T.Set == 'test1');
 %! else
-%!   mask_tr1 = strcmp (T.Set, "train1");
-%!   mask_ts1 = strcmp (T.Set, "test1");
+%!   mask_tr1 = strcmp (T.Set, 'train1');
+%!   mask_ts1 = strcmp (T.Set, 'test1');
 %! endif
 %!
 %! size_tr1 = T.SetSize(find (mask_tr1, 1));
@@ -2200,7 +2200,7 @@ endclassdef
 %!test
 %! ## 7. Logical Grouping Variables
 %! groups = [true; true; true; false; false];
-%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! assert (height (T), 2 * 5);
 %! if (iscell (T.GroupLabel))
@@ -2212,14 +2212,14 @@ endclassdef
 %!test
 %! ## 8. Char Array Grouping Variables
 %! groups = ['A'; 'A'; 'B'; 'B'; 'C'];
-%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! assert (height (T), 3 * 5);
-%! assert (any (strcmp ("GroupLabel", T.Properties.VariableNames)));
+%! assert (any (strcmp ('GroupLabel', T.Properties.VariableNames)));
 %!test
 %! ## 9. Floating Point Grouping Variables
 %! groups = [1.1; 1.1; 2.2; 2.2];
-%! c = cvpartition (4, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (4, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! if (iscell (T.GroupLabel))
 %!   vals = cell2mat (T.GroupLabel);
@@ -2231,59 +2231,59 @@ endclassdef
 %!test
 %! ## 10. Negative Numeric Grouping
 %! groups = [-5; -5; -10; -10];
-%! c = cvpartition (4, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (4, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
 %! assert (height (T), 2 * 5);
 %!test
 %! ## 11. Missing Values in Stratification (NaN)
 %! classes = [1; 1; 2; 2; NaN; NaN];
-%! c = cvpartition (classes, "KFold", 2);
+%! c = cvpartition (classes, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   mask_all = (T.Set == "all");
+%! if (exist ('string', 'class'))
+%!   mask_all = (T.Set == 'all');
 %! else
-%!   mask_all = strcmp (T.Set, "all");
+%!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! total_obs = T.SetSize(find (mask_all, 1));
 %! assert (total_obs, 4);
 %!test
 %! ## 12. Missing Values in Grouping (NaN)
 %! groups = [1; 1; 2; 2; NaN];
-%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   mask_all = (T.Set == "all");
+%! if (exist ('string', 'class'))
+%!   mask_all = (T.Set == 'all');
 %! else
-%!   mask_all = strcmp (T.Set, "all");
+%!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! assert (T.SetSize(find (mask_all, 1)), 4);
 %!test
 %! ## 13. Unbalanced Stratification
-%! species = [repmat({"C1"}, 90, 1); repmat({"C2"}, 10, 1)];
-%! c = cvpartition (species, "KFold", 2);
+%! species = [repmat({'C1'}, 90, 1); repmat({'C2'}, 10, 1)];
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   mask_ts1 = (T.Set == "test1");
+%! if (exist ('string', 'class'))
+%!   mask_ts1 = (T.Set == 'test1');
 %!   subT = T(mask_ts1, :);
-%!   c1_count = subT.StratificationCount(subT.StratificationLabel == "C1");
-%!   c2_count = subT.StratificationCount(subT.StratificationLabel == "C2");
+%!   c1_count = subT.StratificationCount(subT.StratificationLabel == 'C1');
+%!   c2_count = subT.StratificationCount(subT.StratificationLabel == 'C2');
 %! else
-%!   mask_ts1 = strcmp (T.Set, "test1");
+%!   mask_ts1 = strcmp (T.Set, 'test1');
 %!   subT = T(mask_ts1, :);
-%!   c1_count = subT.StratificationCount(strcmp (subT.StratificationLabel, "C1"));
-%!   c2_count = subT.StratificationCount(strcmp (subT.StratificationLabel, "C2"));
+%!   c1_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C1'));
+%!   c2_count = subT.StratificationCount(strcmp (subT.StratificationLabel, 'C2'));
 %! endif
 %! assert (c1_count == 45);
 %! assert (c2_count == 5);
 %!test
 %! ## 14. Single Observation per Group (Edge Case)
 %! groups = [1; 2; 3; 4];
-%! c = cvpartition (4, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (4, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   mask_ts1 = (T.Set == "test1");
+%! if (exist ('string', 'class'))
+%!   mask_ts1 = (T.Set == 'test1');
 %! else
-%!   mask_ts1 = strcmp (T.Set, "test1");
+%!   mask_ts1 = strcmp (T.Set, 'test1');
 %! endif
 %! counts = T.GroupCount(mask_ts1);
 %! assert (sum (counts == 1), 2);
@@ -2291,11 +2291,11 @@ endclassdef
 %!test
 %! ## 15. Set Name Generation Verification
 %! species = [1; 1; 2; 2];
-%! c = cvpartition (species, "KFold", 2);
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
 %! set_names = unique (T.Set);
-%! expected = {"all"; "train1"; "test1"; "train2"; "test2"};
-%! if (exist ("string", "class"))
+%! expected = {'all'; 'train1'; 'test1'; 'train2'; 'test2'};
+%! if (exist ('string', 'class'))
 %!   ## Convert string array to cell for sort comparison
 %!   assert (sort (cellstr (set_names)), sort (expected));
 %! else
@@ -2304,159 +2304,159 @@ endclassdef
 %!test
 %! ## 16. Label Column Consistency
 %! groups = ['A'; 'B'];
-%! c = cvpartition (2, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (2, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   assert (isa (T.GroupLabel, "string"));
+%! if (exist ('string', 'class'))
+%!   assert (isa (T.GroupLabel, 'string'));
 %! else
 %!   assert (iscellstr (T.GroupLabel));
 %! endif
 %!test
 %! ## 17. Valid "Blank" Labels (Space) - FIX APPLIED
-%! species = {"A"; "A"; " "; " "};
-%! c = cvpartition (species, "KFold", 2);
+%! species = {'A'; 'A'; ' '; ' '};
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ("string", "class"))
+%! if (exist ('string', 'class'))
 %!   labels = cellstr (T.StratificationLabel);
 %!   sets = cellstr (T.Set);
-%!   assert (any (strcmp (labels, " ")));
-%!   mask_space = strcmp (labels, " ");
-%!   mask_all = strcmp (sets, "all");
+%!   assert (any (strcmp (labels, ' ')));
+%!   mask_space = strcmp (labels, ' ');
+%!   mask_all = strcmp (sets, 'all');
 %! else
-%!   assert (any (strcmp (T.StratificationLabel, " ")));
-%!   mask_space = strcmp (T.StratificationLabel, " ");
-%!   mask_all = strcmp (T.Set, "all");
+%!   assert (any (strcmp (T.StratificationLabel, ' ')));
+%!   mask_space = strcmp (T.StratificationLabel, ' ');
+%!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! assert (sum (T.StratificationCount(mask_space & mask_all)), 2);
 %!test
 %! ## 18. Large K (Leave-One-Out Simulation) - FIX APPLIED
 %! species = [1; 1; 2; 2];
-%! warn_state = warning ("off", "all");
-%! c = cvpartition (species, "KFold", 4);
+%! warn_state = warning ("off", 'all');
+%! c = cvpartition (species, 'KFold', 4);
 %! warning (warn_state);
 %! T = summary (c);
 %! assert (height (T), 18);
-%! if (exist ("string", "class"))
-%!   mask_test = startsWith (cellstr(T.Set), "test");
+%! if (exist ('string', 'class'))
+%!   mask_test = startsWith (cellstr(T.Set), 'test');
 %! else
-%!   mask_test = strncmp (T.Set, "test", 4);
+%!   mask_test = strncmp (T.Set, 'test', 4);
 %! endif
 %! assert (all (T.SetSize(mask_test) == 1));
 %!test
 %! ## 19. Repeated Holdout Integrity
 %! species = [1; 1; 2; 2];
-%! rand ("state", 42);
-%! c = cvpartition (species, "Holdout", 0.5);
+%! rand ('state', 42);
+%! c = cvpartition (species, 'Holdout', 0.5);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   mask_ts1 = (T.Set == "test1");
+%! if (exist ('string', 'class'))
+%!   mask_ts1 = (T.Set == 'test1');
 %! else
-%!   mask_ts1 = strcmp (T.Set, "test1");
+%!   mask_ts1 = strcmp (T.Set, 'test1');
 %! endif
 %! size_ts1 = T.SetSize(find (mask_ts1, 1));
 %! assert (size_ts1, 2);
 %!test
 %! ## 20. Empty String Handling (Missing Data)
-%! species = {"A"; "A"; ""; ""};
-%! c = cvpartition (species, "KFold", 2);
+%! species = {'A'; 'A'; ''; ''};
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! if (exist ("string", "class"))
-%!   assert (! any (T.StratificationLabel == ""));
-%!   mask_all = (T.Set == "all");
+%! if (exist ('string', 'class'))
+%!   assert (! any (T.StratificationLabel == ''));
+%!   mask_all = (T.Set == 'all');
 %! else
-%!   assert (! any (strcmp (T.StratificationLabel, "")));
-%!   mask_all = strcmp (T.Set, "all");
+%!   assert (! any (strcmp (T.StratificationLabel, '')));
+%!   mask_all = strcmp (T.Set, 'all');
 %! endif
 %! total_rows = T.SetSize(find (mask_all, 1));
 %! assert (total_rows, 2);
 %!test
 %! ## 21. Basic Unstacking (Stratified K-Fold)
-%! species = [repmat({"Alpha"}, 10, 1); repmat({"Beta"}, 10, 1)];
-%! c = cvpartition (species, "KFold", 2);
+%! species = [repmat({'Alpha'}, 10, 1); repmat({'Beta'}, 10, 1)];
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## Check dimensions: 3 sets (all, train1, test1, etc) x (Set+SetSize + 2 Labels)
 %! assert (height (T_wide), 5);
 %! assert (width (T_wide), 4);
-%! assert (all (ismember ({"Alpha", "Beta"}, T_wide.Properties.VariableNames)));
+%! assert (all (ismember ({'Alpha', 'Beta'}, T_wide.Properties.VariableNames)));
 %!test
 %! ## 22. Data Integrity Check (Row Sums)
-%! species = [repmat({"Control"}, 20, 1); repmat({"Treatment"}, 80, 1)];
-%! c = cvpartition (species, "Holdout", 0.25);
+%! species = [repmat({'Control'}, 20, 1); repmat({'Treatment'}, 80, 1)];
+%! c = cvpartition (species, 'Holdout', 0.25);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! row_sums = T_wide.Control + T_wide.Treatment;
 %! assert (all (row_sums == T_wide.SetSize));
 %!test
 %! ## 23. Unstacking Grouped Data (Numeric Labels)
 %! groups = [1; 1; 2; 2; 2];
-%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "GroupCount", "GroupLabel");
+%! T_wide = unstack (T(:, 1:4), 'GroupCount', 'GroupLabel');
 %! ## Check if numeric columns were created successfully
 %! col_names = T_wide.Properties.VariableNames;
-%! assert (any (cellfun (@(x) ! isempty (strfind (x, "1")), col_names)));
-%! assert (any (cellfun (@(x) ! isempty (strfind (x, "2")), col_names)));
+%! assert (any (cellfun (@(x) ! isempty (strfind (x, '1')), col_names)));
+%! assert (any (cellfun (@(x) ! isempty (strfind (x, '2')), col_names)));
 %!test
 %! ## 24. Unstacking with Missing/NaN Groups
 %! groups = [1; 1; 2; 2; NaN];
-%! c = cvpartition (5, "KFold", 2, "GroupingVariables", groups);
+%! c = cvpartition (5, 'KFold', 2, 'GroupingVariables', groups);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "GroupCount", "GroupLabel");
+%! T_wide = unstack (T(:, 1:4), 'GroupCount', 'GroupLabel');
 %! ## Should only have columns for 1 and 2, not NaN or 'undefined'
 %! assert (width (T_wide), 4); ## Set, SetSize, x1, x2
 %!test
 %! ## 25. Unstacking String Array Inputs
-%! species = {"Red"; "Blue"; "Red"; "Blue"};
-%! c = cvpartition (species, "KFold", 2);
+%! species = {'Red'; 'Blue'; 'Red'; 'Blue'};
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
 %! ## Verify input is actually string before unstacking checks
-%! if (exist ("string", "class"))
-%!   assert (isa (T.Set, "string"));
+%! if (exist ('string', 'class'))
+%!   assert (isa (T.Set, 'string'));
 %! endif
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## Check the 'all' row count for Red
-%! assert (T_wide.Red(strcmp(cellstr(T_wide.Set), "all")) == 2);
+%! assert (T_wide.Red(strcmp(cellstr(T_wide.Set), 'all')) == 2);
 %!test
 %! ## 26. Large K Unstacking (Many Rows)
-%! species = [repmat({"High"}, 10, 1); repmat({"Low"}, 10, 1)];
-%! c = cvpartition (species, "KFold", 10);
+%! species = [repmat({'High'}, 10, 1); repmat({'Low'}, 10, 1)];
+%! c = cvpartition (species, 'KFold', 10);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! ## 10 folds * 2 (train/test) + 1 (all) = 21 rows
 %! assert (height (T_wide), 21);
 %!test
 %! ## 27. Unstacking with Special Characters in Labels
-%! species = {"Type A"; "Type A"; "Type-B"; "Type-B"};
-%! c = cvpartition (species, "KFold", 2);
+%! species = {'Type A'; 'Type A'; 'Type-B'; 'Type-B'};
+%! c = cvpartition (species, 'KFold', 2);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
 %! vnames = T_wide.Properties.VariableNames;
 %! ## Check if spaces/dashes were handled/preserved in some valid form
 %! assert (numel (vnames), 4);
 %!test
 %! ## 28. Verification of 'all' row logic after Unstacking
-%! species = [repmat({"Yes"}, 50, 1); repmat({"No"}, 50, 1)];
-%! c = cvpartition (species, "Holdout", 0.2);
+%! species = [repmat({'Yes'}, 50, 1); repmat({'No'}, 50, 1)];
+%! c = cvpartition (species, 'Holdout', 0.2);
 %! T = summary (c);
-%! T_wide = unstack (T(:, 1:4), "StratificationCount", "StratificationLabel");
-%! mask = strcmp (cellstr (T_wide.Set), "all");
+%! T_wide = unstack (T(:, 1:4), 'StratificationCount', 'StratificationLabel');
+%! mask = strcmp (cellstr (T_wide.Set), 'all');
 %! assert (T_wide.Yes(mask) == 50);
 %! assert (T_wide.No(mask) == 50);
 %!test
 %! ## 29. Robustness against re-ordering
-%! species = {"Left"; "Left"; "Right"; "Right"};
-%! c = cvpartition (species, "Holdout", 0.5);
+%! species = {'Left'; 'Left'; 'Right'; 'Right'};
+%! c = cvpartition (species, 'Holdout', 0.5);
 %! T = summary (c);
 %! T_shuffled = T([3, 1, 2], :);
-%! T_wide = unstack (T_shuffled(:, 1:4), "StratificationCount", "StratificationLabel");
-%! mask = strcmp (cellstr (T_wide.Set), "all");
+%! T_wide = unstack (T_shuffled(:, 1:4), 'StratificationCount', 'StratificationLabel');
+%! mask = strcmp (cellstr (T_wide.Set), 'all');
 %! assert (T_wide.Left(mask) == 2);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
-%! c = cvpartition (20, "KFold", 5);
+%! c = cvpartition (20, 'KFold', 5);
 %! summary (c);
 %!error <cvpartition.summary: partition must be stratified or grouped.>
-%! c = cvpartition (10, "LeaveOut");
+%! c = cvpartition (10, 'LeaveOut');
 %! summary (c);
 
 

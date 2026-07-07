@@ -68,7 +68,7 @@ endfunction
 ## Input validation tests
 %!error<geostat: function called with too few input arguments.> geostat ()
 %!error<geostat: PS must be numeric.> geostat ({})
-%!error<geostat: PS must be numeric.> geostat ("")
+%!error<geostat: PS must be numeric.> geostat ('')
 %!error<geostat: PS must not be complex.> geostat (i)
 
 ## Output validation tests

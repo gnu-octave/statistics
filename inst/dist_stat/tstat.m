@@ -70,7 +70,7 @@ endfunction
 ## Input validation tests
 %!error<tstat: function called with too few input arguments.> tstat ()
 %!error<tstat: DF must be numeric.> tstat ({})
-%!error<tstat: DF must be numeric.> tstat ("")
+%!error<tstat: DF must be numeric.> tstat ('')
 %!error<tstat: DF must not be complex.> tstat (i)
 
 ## Output validation tests

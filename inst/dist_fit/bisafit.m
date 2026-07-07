@@ -104,14 +104,14 @@ function [paramhat, paramci] = bisafit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("bisafit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -164,20 +164,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from different Birnbaum-Saunders distributions
-%! rand ("seed", 5);    # for reproducibility
+%! rand ('seed', 5);    # for reproducibility
 %! r1 = bisarnd (1, 0.5, 2000, 1);
-%! rand ("seed", 2);    # for reproducibility
+%! rand ('seed', 2);    # for reproducibility
 %! r2 = bisarnd (2, 0.3, 2000, 1);
-%! rand ("seed", 7);    # for reproducibility
+%! rand ('seed', 7);    # for reproducibility
 %! r3 = bisarnd (4, 0.5, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 80, 4.2);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 1.1]);
 %! xlim ([0, 8]);
 %! hold on
@@ -190,22 +190,22 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:0.1:8];
 %! y = bisapdf (x, beta_gammaA(1), beta_gammaA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = bisapdf (x, beta_gammaB(1), beta_gammaB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = bisapdf (x, beta_gammaC(1), beta_gammaC(2));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with β=1 and γ=0.5", ...
-%!          "Normalized HIST of sample 2 with β=2 and γ=0.3", ...
-%!          "Normalized HIST of sample 3 with β=4 and γ=0.5", ...
+%! legend ({'Normalized HIST of sample 1 with β=1 and γ=0.5', ...
+%!          'Normalized HIST of sample 2 with β=2 and γ=0.3', ...
+%!          'Normalized HIST of sample 3 with β=4 and γ=0.5', ...
 %!          sprintf("PDF for sample 1 with estimated β=%0.2f and γ=%0.2f", ...
 %!                  beta_gammaA(1), beta_gammaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated β=%0.2f and γ=%0.2f", ...
 %!                  beta_gammaB(1), beta_gammaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated β=%0.2f and γ=%0.2f", ...
 %!                  beta_gammaC(1), beta_gammaC(2))})
-%! title ("Three population samples from different Birnbaum-Saunders distributions")
+%! title ('Three population samples from different Birnbaum-Saunders distributions')
 %! hold off
 
 ## Test output
@@ -223,7 +223,7 @@ endfunction
 %!error<bisafit: X must contain only positive values.> bisafit ([-1 2 3 4]);
 %!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 1.2);
 %!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 0);
-%!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], "alpha");
+%!error<bisafit: wrong value for ALPHA.> bisafit ([1, 2, 3, 4, 5], 'alpha');
 %!error<bisafit: X and CENSOR vectors mismatch.> ...
 %! bisafit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<bisafit: X and CENSOR vectors mismatch.> ...

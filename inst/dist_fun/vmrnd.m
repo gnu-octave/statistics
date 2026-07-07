@@ -95,10 +95,10 @@ function r = vmrnd (mu, k, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (k, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (k, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Handle zero size dimensions

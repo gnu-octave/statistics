@@ -96,10 +96,10 @@ function r = nctrnd (df, mu, varargin)
   endif
 
   ## Check for class type
-  if (isa (df, "single") || isa (mu, "single"));
-    cls = "single";
+  if (isa (df, 'single') || isa (mu, 'single'));
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Return NaNs for out of range values of DF

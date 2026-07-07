@@ -79,7 +79,7 @@ classdef gmdistribution
       ########################################
       ## Constructor
       function obj = gmdistribution (mu,sigma,p = [],extra = [])
-        obj.DistributionName = "gaussian mixture distribution";
+        obj.DistributionName = 'gaussian mixture distribution';
         obj.mu = mu;
         obj.Sigma = sigma;
         obj.NumComponents = rows (mu);
@@ -126,7 +126,7 @@ classdef gmdistribution
       ########################################
       ## Cumulative distribution function for Gaussian mixture distribution
       function c = cdf (obj, X)
-        X = checkX (obj, X, "cdf");
+        X = checkX (obj, X, 'cdf');
         p_x_l = zeros (rows (X), obj.NumComponents);
         if (obj.SharedCovariance)
           if (obj.DiagonalCovariance)
@@ -151,7 +151,7 @@ classdef gmdistribution
       ########################################
       ## Construct clusters from Gaussian mixture distribution
       function [idx, nlogl, P, logpdf, M] = cluster (obj,X)
-        X = checkX (obj, X, "cluster");
+        X = checkX (obj, X, 'cluster');
         [p_x_l, M] = componentProb (obj, X);
         [~, idx] = max (p_x_l, [], 2);
         if (nargout >= 2)
@@ -167,7 +167,7 @@ classdef gmdistribution
       ########################################
       ## Display Gaussian mixture distribution object
       function c = disp (obj)
-        msg = ["Gaussian mixture distribution with %d ", ...
+        msg = ['Gaussian mixture distribution with %d ', ...
                "components in %d dimension(s)\n"];
         fprintf (msg, obj.NumComponents, columns (obj.mu));
         for i = 1:obj.NumComponents
@@ -215,14 +215,14 @@ classdef gmdistribution
       ########################################
       ## Mahalanobis distance to component means
       function D = mahal (obj,X)
-        X = checkX (obj, X, "mahal");
+        X = checkX (obj, X, 'mahal');
         [~, D] = componentProb (obj,X);
       endfunction
 
       ########################################
       ## Probability density function for Gaussian mixture distribution
       function c = pdf (obj,X)
-        X = checkX (obj, X, "pdf");
+        X = checkX (obj, X, 'pdf');
         p_x_l = componentProb (obj, X);
         c = sum (p_x_l, 2);
       endfunction
@@ -230,7 +230,7 @@ classdef gmdistribution
       ########################################
       ## Posterior probabilities of components
       function c = posterior (obj,X)
-        X = checkX (obj, X, "posterior");
+        X = checkX (obj, X, 'posterior');
         p_x_l = componentProb (obj, X);
         c = bsxfun(@rdivide, p_x_l, sum (p_x_l, 2));
       endfunction

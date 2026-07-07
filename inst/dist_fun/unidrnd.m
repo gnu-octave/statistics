@@ -95,10 +95,10 @@ function r = unidrnd (N, varargin)
   endif
 
   ## Check for class type
-  if (isa (N, "single"))
-    cls = "single";
+  if (isa (N, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   if (isscalar (N))

@@ -106,7 +106,7 @@ function [p, stats] = vartestn (x, group, varargin)
   if (nargin < 2)
     group = [];
   endif
-  if (nargin > 1 && any (strcmpi (group, {"display", "testtype"})))
+  if (nargin > 1 && any (strcmpi (group, {'display', 'testtype'})))
     varargin = [{group} varargin];
     group = [];
   endif
@@ -115,26 +115,26 @@ function [p, stats] = vartestn (x, group, varargin)
   endif
   ## Add defaults
   plotdata = true;
-  testtype = "Bartlett";
+  testtype = 'Bartlett';
   if (numel (varargin(:)) > 0 && mod (numel (varargin(:)), 2) == 0)
     for idx = 1:2:numel (varargin(:))
       name = varargin{idx};
       value = varargin{idx+1};
       switch (lower (name))
-        case "display"
+        case 'display'
           plotdata = value;
-          if (! any (strcmpi (plotdata, {"on", "off"})))
+          if (! any (strcmpi (plotdata, {'on', 'off'})))
             error ("vartestn: invalid value for display.");
           endif
-          if (strcmpi (plotdata, "on"))
+          if (strcmpi (plotdata, 'on'))
             plotdata = true;
           else
             plotdata = false;
           endif
-        case "testtype"
+        case 'testtype'
           testtype = value;
-          if (! any (strcmpi (testtype, {"Bartlett", "LeveneAbsolute", ...
-                              "LeveneQuadratic", "BrownForsythe", "OBrien"})))
+          if (! any (strcmpi (testtype, {'Bartlett', 'LeveneAbsolute', ...
+                              'LeveneQuadratic', 'BrownForsythe', 'OBrien'})))
             error ("vartestn: invalid value for testtype.");
           endif
         otherwise
@@ -179,7 +179,7 @@ function [p, stats] = vartestn (x, group, varargin)
   group_id = group_id(:);
   ## Compute group summary statistics
   [group_mean, group_ster, group_size] = grpstats (x, group_id, ...
-                                                   {"mean", "sem", "numel"});
+                                                   {'mean', 'sem', 'numel'});
   ## Compute group degrees of freedom and variances
   group_DF = group_size - 1;
   groupVAR = group_size .* group_ster .^ 2;
@@ -194,7 +194,7 @@ function [p, stats] = vartestn (x, group, varargin)
   k = length (group_DF);
   ## Test for equal variance according to specified testtype
   switch (lower (testtype))
-    case "bartlett"
+    case 'bartlett'
       ## Calculate degrees of freedom
       Bdf = max(0, sum (group_DF > 0) - 1);
       ## Get valid groups
@@ -210,11 +210,11 @@ function [p, stats] = vartestn (x, group, varargin)
       endif
       ## Compute p-value
       p = 1 - chi2cdf (F, Bdf);
-      testname = "Bartlett's statistic            ";
+      testname = 'Bartlett''s statistic            ';
       if (nargout > 1)
-        stats = struct("chisqstat", F, "df", Bdf);
+        stats = struct('chisqstat', F, 'df', Bdf);
       endif
-    case {"leveneabsolute", "levenequadratic"}
+    case {'leveneabsolute', 'levenequadratic'}
       ## Remove single-sample groups
       ssgroups = find (group_size < 2);
       msgroups = ! ismember (group_id, ssgroups);
@@ -224,12 +224,12 @@ function [p, stats] = vartestn (x, group, varargin)
       n_groups = length (group_size) - length (ssgroups);
       ## Perform one-way anova and extract results from the anova table
       if (n_groups > 1)
-        if (strcmpi (testtype, "LeveneAbsolute"))
-         [p, atab] = anova1 (abs (x_center), group_id(msgroups), "off");
-         testname = "Levene's statistic (absolute)   ";
+        if (strcmpi (testtype, 'LeveneAbsolute'))
+         [p, atab] = anova1 (abs (x_center), group_id(msgroups), 'off');
+         testname = 'Levene''s statistic (absolute)   ';
         else
-         [p, atab] = anova1 (x_center .^ 2, group_id(msgroups), "off");
-         testname = "Levene's statistic (quadratic)  ";
+         [p, atab] = anova1 (x_center .^ 2, group_id(msgroups), 'off');
+         testname = 'Levene''s statistic (quadratic)  ';
         endif
         ## Get F statistic and both degrees of freedom
         F = atab{2,5};
@@ -240,21 +240,21 @@ function [p, stats] = vartestn (x, group, varargin)
         Bdf = [0, (length (x_center) - n_groups)];
       endif
       if (nargout > 1)
-        stats = struct("fstat", F, "df", Bdf);
+        stats = struct('fstat', F, 'df', Bdf);
       endif
-    case "brownforsythe"
+    case 'brownforsythe'
       ## Remove single-sample groups
       ssgroups = find (group_size < 2);
       msgroups = ! ismember (group_id, ssgroups);
       ## Calculate group medians
-      group_md = grpstats (x, group_id, "median");
+      group_md = grpstats (x, group_id, 'median');
       ## Center each group with median
       xcbf = x(msgroups) - group_md(group_id(msgroups));
       ## Get number of valid groups (group size > 1)
       n_groups = length(group_size) - length(ssgroups);
       ## Perform one-way anova and extract results from the anova table
       if (n_groups > 1)
-        [p, atab] = anova1 (abs (xcbf), group_id(msgroups), "off");
+        [p, atab] = anova1 (abs (xcbf), group_id(msgroups), 'off');
         ## Get F statistic and both degrees of freedom
         F = atab{2,5};
         Bdf = [atab{2,3}, atab{3,3}];
@@ -263,11 +263,11 @@ function [p, stats] = vartestn (x, group, varargin)
         F = NaN;
         Bdf = [0, (length (xcbf) - n_groups)];
       endif
-      testname = "Brown-Forsythe statistic        ";
+      testname = 'Brown-Forsythe statistic        ';
       if (nargout > 1)
-        stats = struct("fstat", F, "df", Bdf);
+        stats = struct('fstat', F, 'df', Bdf);
       endif
-    case "obrien"
+    case 'obrien'
       ## Remove single-sample groups
       ssgroups = find (group_size < 2);
       msgroups = ! ismember (group_id, ssgroups);
@@ -286,7 +286,7 @@ function [p, stats] = vartestn (x, group, varargin)
       n_groups = length(group_size) - length(ssgroups);
       ## Perform one-way anova and extract results from the anova table
       if (n_groups > 1)
-        [p, atab] = anova1 (xcw, group_id(msgroups), "off");
+        [p, atab] = anova1 (xcw, group_id(msgroups), 'off');
         ## Get F statistic and both degrees of freedom
         F = atab{2,5};
         Bdf = [atab{2,3}, atab{3,3}];
@@ -295,9 +295,9 @@ function [p, stats] = vartestn (x, group, varargin)
         F = NaN;
         Bdf = [0, length(xcw)-n_groups];
       endif
-      testname = "OBrien statistic                ";
+      testname = 'OBrien statistic                ';
       if (nargout > 1)
-        stats = struct("fstat", F, "df", Bdf);
+        stats = struct('fstat', F, 'df', Bdf);
       endif
   endswitch
   ## Print Group Summary Table (unless opted out)
@@ -326,7 +326,7 @@ function [p, stats] = vartestn (x, group, varargin)
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
-    boxplot (x, group_id, "Notch", "on", "Labels", group_names);
+    boxplot (x, group_id, 'Notch', 'on', 'Labels', group_names);
   endif
 
 endfunction
@@ -350,7 +350,7 @@ endfunction
 %! ## per gallon (MPG) are equal across different model years.
 %!
 %! load carsmall
-%! p = vartestn (MPG, Model_Year, "TestType", "LeveneAbsolute")
+%! p = vartestn (MPG, Model_Year, 'TestType', 'LeveneAbsolute')
 
 %!demo
 %! ## Test the null hypothesis that the variances are equal across the five
@@ -359,7 +359,7 @@ endfunction
 %! ## statistics and the box plot.
 %!
 %! load examgrades
-%! [p, stats] = vartestn (grades, "TestType", "BrownForsythe", "Display", "off")
+%! [p, stats] = vartestn (grades, 'TestType', 'BrownForsythe', 'Display', 'off')
 
 ## Test input validation
 %!error<vartestn: too few input arguments.> vartestn ();
@@ -369,49 +369,49 @@ endfunction
 %!error<vartestn: if X is a vector then a group vector is required.> ...
 %! vartestn ([1, 2, 3, 4, 5, 6, 7], []);
 %!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], "TestType", "LeveneAbsolute");
+%! vartestn ([1, 2, 3, 4, 5, 6, 7], 'TestType', 'LeveneAbsolute');
 %!error<vartestn: if X is a vector then a group vector is required.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], [], "TestType", "LeveneAbsolute");
+%! vartestn ([1, 2, 3, 4, 5, 6, 7], [], 'TestType', 'LeveneAbsolute');
 %!error<vartestn: invalid value for display.> ...
-%! vartestn ([1, 2, 3, 4, 5, 6, 7], [1, 1, 1, 2, 2, 2, 2], "Display", "some");
+%! vartestn ([1, 2, 3, 4, 5, 6, 7], [1, 1, 1, 2, 2, 2, 2], 'Display', 'some');
 %!error<vartestn: invalid value for display.> ...
-%! vartestn (ones (50,3), "Display", "some");
+%! vartestn (ones (50,3), 'Display', 'some');
 %!error<vartestn: invalid value for testtype.> ...
-%! vartestn (ones (50,3), "Display", "off", "testtype", "some");
+%! vartestn (ones (50,3), 'Display', 'off', 'testtype', 'some');
 %!error<vartestn: optional arguments must be in name/value pairs.> ...
-%! vartestn (ones (50,3), [], "som");
+%! vartestn (ones (50,3), [], 'som');
 %!error<vartestn: invalid name for optional arguments.> ...
-%! vartestn (ones (50,3), [], "some", "some");
+%! vartestn (ones (50,3), [], 'some', 'some');
 %!error<vartestn: columns in X and GROUP length do not match.> ...
-%! vartestn (ones (50,3), [1, 2], "Display", "off");
+%! vartestn (ones (50,3), [1, 2], 'Display', 'off');
 ## Test results
 %!test
 %! load examgrades
-%! [p, stat] = vartestn (grades, "Display", "off");
+%! [p, stat] = vartestn (grades, 'Display', 'off');
 %! assert (p, 7.908647337018238e-08, 1e-14);
 %! assert (stat.chisqstat, 38.7332, 1e-4);
 %! assert (stat.df, 4);
 %!test
 %! load examgrades
-%! [p, stat] = vartestn (grades, "Display", "off", "TestType", "LeveneAbsolute");
+%! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'LeveneAbsolute');
 %! assert (p, 9.523239714592791e-07, 1e-14);
 %! assert (stat.fstat, 8.5953, 1e-4);
 %! assert (stat.df, [4, 595]);
 %!test
 %! load examgrades
-%! [p, stat] = vartestn (grades, "Display", "off", "TestType", "LeveneQuadratic");
+%! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'LeveneQuadratic');
 %! assert (p, 7.219514351897161e-07, 1e-14);
 %! assert (stat.fstat, 8.7503, 1e-4);
 %! assert (stat.df, [4, 595]);
 %!test
 %! load examgrades
-%! [p, stat] = vartestn (grades, "Display", "off", "TestType", "BrownForsythe");
+%! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'BrownForsythe');
 %! assert (p, 1.312093241723211e-06, 1e-14);
 %! assert (stat.fstat, 8.4160, 1e-4);
 %! assert (stat.df, [4, 595]);
 %!test
 %! load examgrades
-%! [p, stat] = vartestn (grades, "Display", "off", "TestType", "OBrien");
+%! [p, stat] = vartestn (grades, 'Display', 'off', 'TestType', 'OBrien');
 %! assert (p, 8.235660885480556e-07, 1e-14);
 %! assert (stat.fstat, 8.6766, 1e-4);
 %! assert (stat.df, [4, 595]);

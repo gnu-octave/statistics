@@ -362,15 +362,15 @@ classdef ClassificationNeuralNetwork
       ## Print selected properties
       fprintf ("%+25s: '%s'\n", 'ResponseName', this.ResponseName);
       if (iscellstr (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, numel (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, numel (this.ClassNames));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.ClassNames{:});
       elseif (ischar (this.ClassNames))
-        str = repmat ({"'%s'"}, 1, rows (this.ClassNames));
+        str = repmat ({'''%s'''}, 1, rows (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, cellstr (this.ClassNames){:});
       else # single, double, logical
-        str = repmat ({"%d"}, 1, numel (this.ClassNames));
+        str = repmat ({'%d'}, 1, numel (this.ClassNames));
         str = strcat ('[', strjoin (str, ' '), ']');
         str = sprintf (str, this.ClassNames);
       endif
@@ -378,12 +378,12 @@ classdef ClassificationNeuralNetwork
       fprintf ("%+25s: '%s'\n", 'ScoreTransform', this.STname);
       fprintf ("%+25s: %d\n", 'NumObservations', this.NumObservations);
       fprintf ("%+25s: %d\n", 'NumPredictors', this.NumPredictors);
-      str = repmat ({"%d"}, 1, numel (this.LayerSizes));
+      str = repmat ({'%d'}, 1, numel (this.LayerSizes));
       str = strcat ('[', strjoin (str, ' '), ']');
       str = sprintf (str, this.LayerSizes);
       fprintf ("%+25s: %s\n", 'LayerSizes', str);
       if (iscellstr (this.Activations))
-        str = repmat ({"'%s'"}, 1, numel (this.Activations));
+        str = repmat ({'''%s'''}, 1, numel (this.Activations));
         str = strcat ('{', strjoin (str, ' '), '}');
         str = sprintf (str, this.Activations{:});
         fprintf ("%+25s: %s\n", 'Activations', str);
@@ -445,7 +445,7 @@ classdef ClassificationNeuralNetwork
           endif
           switch (s.subs)
             case 'ScoreTransform'
-              name = "ClassificationNeuralNetwork";
+              name = 'ClassificationNeuralNetwork';
               [this.ScoreTransform, this.STname] = parseScoreTransform (val, ...
                                                                         name);
             otherwise
@@ -572,23 +572,23 @@ classdef ClassificationNeuralNetwork
       LearningRate            = 0.01;
       IterationLimit          = 1000;
       DisplayInfo             = false;
-      this.Solver = "Gradient Descend";
+      this.Solver = 'Gradient Descend';
 
       ## Supported activation functions
-      acList = {"linear", "sigmoid", "relu", "tanh", "softmax", ...
-                          "lrelu", "prelu", "elu", "gelu"};
+      acList = {'linear', 'sigmoid', 'relu', 'tanh', 'softmax', ...
+                          'lrelu', 'prelu', 'elu', 'gelu'};
       ## Parse extra parameters
       while (numel (varargin) > 0)
         switch (tolower (varargin {1}))
 
-          case "standardize"
+          case 'standardize'
             Standardize = varargin{2};
             if (! (Standardize == true || Standardize == false))
               error (strcat ("ClassificationNeuralNetwork:", ...
                              " 'Standardize' must be either true or false."));
             endif
 
-          case "predictornames"
+          case 'predictornames'
             PredictorNames = varargin{2};
             if (! iscellstr (PredictorNames))
               error (strcat ("ClassificationNeuralNetwork: 'PredictorNames'", ...
@@ -598,14 +598,14 @@ classdef ClassificationNeuralNetwork
                              " must have the same number of columns as X."));
             endif
 
-          case "responsename"
+          case 'responsename'
             ResponseName = varargin{2};
             if (! ischar (ResponseName))
               error (strcat ("ClassificationNeuralNetwork: 'ResponseName'", ...
                              " must be a character vector."));
             endif
 
-          case "classnames"
+          case 'classnames'
             ClassNames = varargin{2};
             if (! (iscellstr (ClassNames) || isnumeric (ClassNames) ||
                    islogical (ClassNames) || ischar (ClassNames)))
@@ -618,20 +618,20 @@ classdef ClassificationNeuralNetwork
             if (iscellstr (ClassNames))
               ClassNames = cellstr (ClassNames);
               if (! all (cell2mat (cellfun (@(x) any (strcmp (x, gnY)),
-                                   ClassNames, "UniformOutput", false))))
+                                   ClassNames, 'UniformOutput', false))))
                 error (strcat ("ClassificationNeuralNetwork: not all", ...
                                " 'ClassNames' are present in Y."));
               endif
             else
               if (! all (cell2mat (arrayfun (@(x) any (x == glY),
-                                   ClassNames, "UniformOutput", false))))
+                                   ClassNames, 'UniformOutput', false))))
                 error (strcat ("ClassificationNeuralNetwork: not all", ...
                                " 'ClassNames' are present in Y."));
               endif
             endif
 
-          case "scoretransform"
-            name = "ClassificationNeuralNetwork";
+          case 'scoretransform'
+            name = 'ClassificationNeuralNetwork';
             [this.ScoreTransform, this.STname] = parseScoreTransform ...
                                                  (varargin{2}, name);
 
@@ -664,7 +664,7 @@ classdef ClassificationNeuralNetwork
               endif
             else
               if (! all (cell2mat (cellfun (@(x) any (strcmpi (x, acList)),
-                                   Activations, "UniformOutput", false))))
+                                   Activations, 'UniformOutput', false))))
                 error (strcat ("ClassificationNeuralNetwork: unsupported", ...
                                " 'Activation' functions."));
               endif
@@ -691,7 +691,7 @@ classdef ClassificationNeuralNetwork
                              " 'IterationLimit' must be a positive integer."));
             endif
 
-          case "displayinfo"
+          case 'displayinfo'
             DisplayInfo = varargin{2};
             if (! (DisplayInfo == true || DisplayInfo == false))
               error (strcat ("ClassificationNeuralNetwork: 'DisplayInfo'", ...
@@ -714,7 +714,7 @@ classdef ClassificationNeuralNetwork
         endfor
       endif
       if (isempty (ResponseName))
-        ResponseName = "Y";
+        ResponseName = 'Y';
       endif
 
       ## Assign predictors and response variable names
@@ -803,8 +803,8 @@ classdef ClassificationNeuralNetwork
       ConvergenceInfo.TrainingLoss = Mdl.Loss;
 
       ## Remove redundant fields
-      Mdl = rmfield (Mdl, "Accuracy");
-      Mdl = rmfield (Mdl, "Loss");
+      Mdl = rmfield (Mdl, 'Accuracy');
+      Mdl = rmfield (Mdl, 'Loss');
 
       ## Save ModelParameters and ConvergenceInfo
       this.ModelParameters = Mdl;
@@ -1082,7 +1082,7 @@ classdef ClassificationNeuralNetwork
     ## @end deftypefn
     function savemodel (this, fname)
       ## Generate variable for class name
-      classdef_name = "ClassificationNeuralNetwork";
+      classdef_name = 'ClassificationNeuralNetwork';
 
       ## Create variables from model properties
       X = this.X;
@@ -1109,12 +1109,12 @@ classdef ClassificationNeuralNetwork
       STname                  = this.STname;
 
       ## Save classdef name and all model properties as individual variables
-      save ("-binary", fname, "classdef_name", "X", "Y", "NumObservations", ...
-            "RowsUsed", "NumPredictors", "PredictorNames", "ResponseName", ...
-            "ClassNames", "ScoreTransform", "Standardize", "Sigma", "Mu", ...
-            "LayerSizes", "Activations", "OutputLayerActivation", ...
-            "LearningRate", "IterationLimit", "Solver", "ModelParameters", ...
-            "ConvergenceInfo", "DisplayInfo", "STname");
+      save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
+            'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
+            'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu', ...
+            'LayerSizes', 'Activations', 'OutputLayerActivation', ...
+            'LearningRate', 'IterationLimit', 'Solver', 'ModelParameters', ...
+            'ConvergenceInfo', 'DisplayInfo', 'STname');
     endfunction
 
   endmethods
@@ -1146,21 +1146,21 @@ endclassdef
 
 function numCode = activationCode (strCode)
   switch (strCode)
-    case "linear"
+    case 'linear'
       numCode = 0;
-    case "sigmoid"
+    case 'sigmoid'
       numCode = 1;
-    case "relu"
+    case 'relu'
       numCode = 2;
-    case "tanh"
+    case 'tanh'
       numCode = 3;
-    case "softmax"
+    case 'softmax'
       numCode = 4;
-    case {"lrelu", "prelu"}
+    case {'lrelu', 'prelu'}
       numCode = 5;
-    case "elu"
+    case 'elu'
       numCode = 6;
-    case "gelu"
+    case 'gelu'
       numCode = 7;
     otherwise
       error (strcat ("ClassificationNeuralNetwork: misspelling or unsupported", ...
@@ -1176,68 +1176,68 @@ endfunction
 %!error<ClassificationNeuralNetwork: number of rows in X and Y must be equal.> ...
 %! ClassificationNeuralNetwork (ones(10,2), ones (5,1))
 %!error<ClassificationNeuralNetwork: 'Standardize' must be either true or false.> ...
-%! ClassificationNeuralNetwork (ones (5,3), ones (5,1), "standardize", "a")
+%! ClassificationNeuralNetwork (ones (5,3), ones (5,1), 'standardize', 'a')
 %!error<ClassificationNeuralNetwork: 'PredictorNames' must be supplied as a cellstring array.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "PredictorNames", ["A"])
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), 'PredictorNames', ['A'])
 %!error<ClassificationNeuralNetwork: 'PredictorNames' must be supplied as a cellstring array.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "PredictorNames", "A")
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), 'PredictorNames', 'A')
 %!error<ClassificationNeuralNetwork: 'PredictorNames' must have the same number of columns as X.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "PredictorNames", {"A", "B", "C"})
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), 'PredictorNames', {'A', 'B', 'C'})
 %!error<ClassificationNeuralNetwork: 'ResponseName' must be a character vector.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "ResponseName", {"Y"})
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), 'ResponseName', {'Y'})
 %!error<ClassificationNeuralNetwork: 'ResponseName' must be a character vector.> ...
-%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), "ResponseName", 1)
+%! ClassificationNeuralNetwork (ones (5,2), ones (5,1), 'ResponseName', 1)
 %!error<ClassificationNeuralNetwork: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", @(x)x)
+%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), 'ClassNames', @(x)x)
 %!error<ClassificationNeuralNetwork: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", {1})
+%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), "ClassNames", [1, 2])
+%! ClassificationNeuralNetwork (ones(10,2), ones (10,1), 'ClassNames', [1, 2])
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
-%! ClassificationNeuralNetwork (ones(5,2), ['a';'b';'a';'a';'b'], "ClassNames", ['a';'c'])
+%! ClassificationNeuralNetwork (ones(5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
-%! ClassificationNeuralNetwork (ones(5,2), {'a';'b';'a';'a';'b'}, "ClassNames", {'a','c'})
+%! ClassificationNeuralNetwork (ones(5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
 %!error<ClassificationNeuralNetwork: not all 'ClassNames' are present in Y.> ...
-%! ClassificationNeuralNetwork (ones(10,2), logical (ones (10,1)), "ClassNames", [true, false])
+%! ClassificationNeuralNetwork (ones(10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", -1)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LayerSizes', -1)
 %!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", 0.5)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LayerSizes', 0.5)
 %!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [1,-2])
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LayerSizes', [1,-2])
 %!error<ClassificationNeuralNetwork: 'LayerSizes' must be a positive integer vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [10,20,30.5])
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LayerSizes', [10,20,30.5])
 %!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", -0.1)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LearningRate', -0.1)
 %!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", [0.1, 0.01])
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LearningRate', [0.1, 0.01])
 %!error<ClassificationNeuralNetwork: 'LearningRate' must be a positive scalar.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LearningRate", "a")
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LearningRate', 'a')
 %!error<ClassificationNeuralNetwork: 'Activations' must be a character vector or a cellstring vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", 123)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'Activations', 123)
 %!error<ClassificationNeuralNetwork: unsupported 'Activation' function.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", "unsupported_type")
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'Activations', 'unsupported_type')
 %!error<ClassificationNeuralNetwork: unsupported 'Activation' functions.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "LayerSizes", [10, 5], ...
-%! "Activations", {"sigmoid", "unsupported_type"})
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'LayerSizes', [10, 5], ...
+%! 'Activations', {'sigmoid', 'unsupported_type'})
 %!error<ClassificationNeuralNetwork: 'Activations' vector does not match the number of layers.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "Activations", {"sigmoid", "relu", "softmax"})
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'Activations', {'sigmoid', 'relu', 'softmax'})
 %!error<ClassificationNeuralNetwork: 'OutputLayerActivation' must be a character vector.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "OutputLayerActivation", 123)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'OutputLayerActivation', 123)
 %!error<ClassificationNeuralNetwork: unsupported 'OutputLayerActivation' function.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "OutputLayerActivation", "unsupported_type")
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'OutputLayerActivation', 'unsupported_type')
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", -1)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'IterationLimit', -1)
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", 0.5)
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'IterationLimit', 0.5)
 %!error<ClassificationNeuralNetwork: 'IterationLimit' must be a positive integer.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "IterationLimit", [1,2])
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'IterationLimit', [1,2])
 %!error<ClassificationNeuralNetwork: 'ScoreTransform' must be a character vector or a function handle.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "ScoreTransform", [1,2])
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'ScoreTransform', [1,2])
 %!error<ClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "ScoreTransform", "unsupported_type")
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'ScoreTransform', 'unsupported_type')
 %!error<ClassificationNeuralNetwork: invalid parameter name in optional pair arguments.> ...
-%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), "some", "some")
+%! ClassificationNeuralNetwork (ones(10,2), ones(10,1), 'some', 'some')
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
 %! ClassificationNeuralNetwork ([1;2;3;'a';4], ones (5,1))
 %!error<ClassificationNeuralNetwork: invalid values in X.> ...
@@ -1248,9 +1248,9 @@ endfunction
 %! load fisheriris
 %! x = meas;
 %! y = grp2idx (species);
-%! Mdl = fitcnet (x, y, "IterationLimit", 100);
+%! Mdl = fitcnet (x, y, 'IterationLimit', 100);
 %!error<ClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
-%! Mdl.ScoreTransform = "a";
+%! Mdl.ScoreTransform = 'a';
 
 ## Test input validation for predict method
 %!error<ClassificationNeuralNetwork.predict: too few input arguments.> ...
@@ -1264,8 +1264,8 @@ endfunction
 %!test
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! CVMdl = crossval (Mdl, "KFold", 5);
+%! rand ('seed', 23);
+%! CVMdl = crossval (Mdl, 'KFold', 5);
 %! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
@@ -1275,8 +1275,8 @@ endfunction
 %!test
 %! status = warning;
 %! warning ('off');
-%! rand ("seed", 23);
-%! CVMdl = crossval (Mdl, "HoldOut", 0.2);
+%! rand ('seed', 23);
+%! CVMdl = crossval (Mdl, 'HoldOut', 0.2);
 %! warning (status);
 %! assert (class (CVMdl), "ClassificationPartitionedModel")
 %! assert ({CVMdl.X, CVMdl.Y}, {x, y})
@@ -1285,34 +1285,34 @@ endfunction
 
 ## Test input validation for crossval method
 %!error<ClassificationNeuralNetwork.crossval: Name-Value arguments must be in pairs.> ...
-%! crossval (Mdl, "KFold")
+%! crossval (Mdl, 'KFold')
 %!error<ClassificationNeuralNetwork.crossval: specify only one of the optional Name-Value paired arguments.> ...
-%! crossval (Mdl, "KFold", 5, "leaveout", 'on')
+%! crossval (Mdl, 'KFold', 5, 'leaveout', 'on')
 %!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (Mdl, "KFold", 'a')
+%! crossval (Mdl, 'KFold', 'a')
 %!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (Mdl, "KFold", 1)
+%! crossval (Mdl, 'KFold', 1)
 %!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (Mdl, "KFold", -1)
+%! crossval (Mdl, 'KFold', -1)
 %!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (Mdl, "KFold", 11.5)
+%! crossval (Mdl, 'KFold', 11.5)
 %!error<ClassificationNeuralNetwork.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (Mdl, "KFold", [1,2])
+%! crossval (Mdl, 'KFold', [1,2])
 %!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (Mdl, "Holdout", 'a')
+%! crossval (Mdl, 'Holdout', 'a')
 %!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (Mdl, "Holdout", 11.5)
+%! crossval (Mdl, 'Holdout', 11.5)
 %!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (Mdl, "Holdout", -1)
+%! crossval (Mdl, 'Holdout', -1)
 %!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (Mdl, "Holdout", 0)
+%! crossval (Mdl, 'Holdout', 0)
 %!error<ClassificationNeuralNetwork.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (Mdl, "Holdout", 1)
+%! crossval (Mdl, 'Holdout', 1)
 %!error<ClassificationNeuralNetwork.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
-%! crossval (Mdl, "Leaveout", 1)
+%! crossval (Mdl, 'Leaveout', 1)
 %!error<ClassificationNeuralNetwork.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
-%! crossval (Mdl, "CVPartition", 1)
+%! crossval (Mdl, 'CVPartition', 1)
 %!error<ClassificationNeuralNetwork.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
-%! crossval (Mdl, "CVPartition", 'a')
+%! crossval (Mdl, 'CVPartition', 'a')
 %!error<ClassificationNeuralNetwork.crossval: invalid parameter name in optional paired arguments> ...
-%! crossval (Mdl, "some", "some")
+%! crossval (Mdl, 'some', 'some')

@@ -79,11 +79,11 @@ function [phat, pci] = mle (x, varargin)
   ntrials = [];
   mu = 0;
   theta = 1;
-  options.Display = "off";
+  options.Display = 'off';
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
   options.TolX = 1e-6;
-  distname = "normal";
+  distname = 'normal';
 
   ## Parse extra arguments
   if (mod (numel (varargin), 2) != 0)
@@ -91,15 +91,15 @@ function [phat, pci] = mle (x, varargin)
   endif
   while (numel (varargin) > 0)
     switch (tolower (varargin{1}))
-      case "distribution"
+      case 'distribution'
         distname = varargin{2};
-      case "censoring"
+      case 'censoring'
         censor = varargin{2};
         if (! isequal (size (x), size (censor)) && ! isempty (censor))
           error (strcat ("mle: 'censoring' argument must have the same", ...
                          " size as the input data in X."));
         endif
-      case "frequency"
+      case 'frequency'
         freq = varargin{2};
         if (! isequal (size (x), size (freq)))
           error (strcat ("mle: 'frequency' argument must have the same", ...
@@ -109,33 +109,33 @@ function [phat, pci] = mle (x, varargin)
           error (strcat ("mle: 'frequency' argument must contain", ...
                          " non-negative integer values."));
         endif
-      case "alpha"
+      case 'alpha'
         alpha = varargin{2};
         if (! isscalar (alpha) || ! isreal (alpha) || alpha <= 0 || alpha >= 1)
           error ("mle: invalid value for 'alpha' argument.");
         endif
-      case "ntrials"
+      case 'ntrials'
         ntrials = varargin{2};
         if (! (isscalar (ntrials) && isreal (ntrials) && ntrials > 0
                                   && fix (ntrials) == ntrials))
           error (strcat ("mle: 'ntrials' argument must be a positive", ...
                          " integer scalar value."));
         endif
-      case {"mu"}
+      case {'mu'}
         mu = varargin{2};
-      case {"theta"}
+      case {'theta'}
         theta = varargin{2};
-      case "options"
+      case 'options'
         options = varargin{2};
-        if (! isstruct (options) || ! isfield (options, "Display") ||
-            ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                               || ! isfield (options, "TolX"))
+        if (! isstruct (options) || ! isfield (options, 'Display') ||
+            ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                               || ! isfield (options, 'TolX'))
           error (strcat ("mle: 'options' argument must be a structure", ...
                          " compatible for 'fminsearch'."));
         endif
 
-      case {"pdf", "cdf", "logpdf", "logsf", "nloglf", "truncationbounds", ...
-            "start", "lowerbound", "upperbound", "optimfun"}
+      case {'pdf', 'cdf', 'logpdf', 'logsf', 'nloglf', 'truncationbounds', ...
+            'start', 'lowerbound', 'upperbound', 'optimfun'}
         printf ("mle: parameter not supported yet.");
       otherwise
         error ("mle: unknown parameter name.");
@@ -146,7 +146,7 @@ function [phat, pci] = mle (x, varargin)
   ## Switch to known distributions
   switch (tolower (distname))
 
-    case "bernoulli"
+    case 'bernoulli'
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Bernoulli distribution."));
@@ -162,7 +162,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = binofit (sum (x), numel (x), alpha);
       endif
 
-    case "beta"
+    case 'beta'
       if (! isempty (censor))
         error ("mle: censoring is not supported for the Beta distribution.");
       endif
@@ -172,7 +172,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = betafit (x, alpha, freq, options);
       endif
 
-    case {"binomial", "bino"}
+    case {'binomial', 'bino'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Binomial distribution."));
@@ -186,42 +186,42 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = binofit (sum (x .* freq), sum (freq) .* ntrials, alpha);
       endif
 
-    case {"bisa", "BirnbaumSaunders"}
+    case {'bisa', 'BirnbaumSaunders'}
       if (nargout < 2)
         phat = bisafit (x, alpha, censor, freq, options);
       else
         [phat, pci] = bisafit (x, alpha, censor, freq, options);
       endif
 
-    case "burr"
+    case 'burr'
       if (nargout < 2)
         phat = burrfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = burrfit (x, alpha, censor, freq, options);
       endif
 
-    case {"ev", "extreme value"}
+    case {'ev', 'extreme value'}
       if (nargout < 2)
         phat = evfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = evfit (x, alpha, censor, freq, options);
       endif
 
-    case {"exp", "exponential"}
+    case {'exp', 'exponential'}
       if (nargout < 2)
         phat = expfit (x, alpha, censor, freq);
       else
         [phat, pci] = expfit (x, alpha, censor, freq);
       endif
 
-    case {"gam", "gamma"}
+    case {'gam', 'gamma'}
       if (nargout < 2)
         phat = gamfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = gamfit (x, alpha, censor, freq, options);
       endif
 
-    case {"geo", "geometric"}
+    case {'geo', 'geometric'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for the", ...
                        " Geometric distribution."));
@@ -232,7 +232,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = geofit (x, alpha, freq);
       endif
 
-    case {"gev", "generalized extreme value"}
+    case {'gev', 'generalized extreme value'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for the", ...
                        " Generalized Extreme Value distribution."));
@@ -243,7 +243,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = gevfit (x, alpha, freq, options);
       endif
 
-    case {"gp", "generalized pareto"}
+    case {'gp', 'generalized pareto'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Generalized Pareto distribution."));
@@ -258,14 +258,14 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = gpfit (x, theta, alpha, freq, options);
       endif
 
-    case "gumbel"
+    case 'gumbel'
       if (nargout < 2)
         phat = gumbelfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = gumbelfit (x, alpha, censor, freq, options);
       endif
 
-    case {"hn", "half normal", "halfnormal"}
+    case {'hn', 'half normal', 'halfnormal'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Half Normal distribution."));
@@ -280,42 +280,42 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = hnfit (x, mu, alpha, freq);
       endif
 
-    case {"invg", "inversegaussian", "inverse gaussian"}
+    case {'invg', 'inversegaussian', 'inverse gaussian'}
       if (nargout < 2)
         phat = invgfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = invgfit (x, alpha, censor, freq, options);
       endif
 
-    case {"logi", "logistic"}
+    case {'logi', 'logistic'}
       if (nargout < 2)
         phat = logifit (x, alpha, censor, freq, options);
       else
         [phat, pci] = logifit (x, alpha, censor, freq, options);
       endif
 
-    case {"logl", "loglogistic"}
+    case {'logl', 'loglogistic'}
       if (nargout < 2)
         phat = loglfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = loglfit (x, alpha, censor, freq, options);
       endif
 
-    case {"logn", "lognormal"}
+    case {'logn', 'lognormal'}
       if (nargout < 2)
         phat = lognfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = lognfit (x, alpha, censor, freq, options);
       endif
 
-    case {"naka", "nakagami"}
+    case {'naka', 'nakagami'}
       if (nargout < 2)
         phat = nakafit (x, alpha, censor, freq, options);
       else
         [phat, pci] = nakafit (x, alpha, censor, freq, options);
       endif
 
-    case {"nbin", "negativebinomial", "negative binomial"}
+    case {'nbin', 'negativebinomial', 'negative binomial'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Negative Binomial distribution."));
@@ -326,7 +326,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = nbinfit (x, alpha, freq, options);
       endif
 
-    case {"norm", "normal"}
+    case {'norm', 'normal'}
       if (nargout < 2)
         [muhat, sigmahat] = normfit (x, alpha, censor, freq, options);
         phat = [muhat, sigmahat];
@@ -337,7 +337,7 @@ function [phat, pci] = mle (x, varargin)
         pci = [muci, sigmaci];
       endif
 
-    case {"poiss", "poisson"}
+    case {'poiss', 'poisson'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Poisson distribution."));
@@ -348,28 +348,28 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = poissfit (x, alpha, freq);
       endif
 
-    case {"rayl", "rayleigh"}
+    case {'rayl', 'rayleigh'}
       if (nargout < 2)
         phat = raylfit (x, alpha, censor, freq);
       else
         [phat, pci] = raylfit (x, alpha, censor, freq);
       endif
 
-    case {"rice", "rician"}
+    case {'rice', 'rician'}
       if (nargout < 2)
         phat = ricefit (x, alpha, censor, freq, options);
       else
         [phat, pci] = ricefit (x, alpha, censor, freq, options);
       endif
 
-    case {"tls", "tlocationscale"}
+    case {'tls', 'tlocationscale'}
       if (nargout < 2)
         phat = tlsfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = tlsfit (x, alpha, censor, freq, options);
       endif
 
-    case {"unid", "uniform discrete", "discrete uniform", "discrete"}
+    case {'unid', 'uniform discrete', 'discrete uniform', 'discrete'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Discrete Uniform distribution."));
@@ -380,7 +380,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = unidfit (x, alpha, freq);
       endif
 
-    case {"unif", "uniform", "continuous uniform"}
+    case {'unif', 'uniform', 'continuous uniform'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Continuous Uniform distribution."));
@@ -391,7 +391,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = uniffit (x, alpha, freq);
       endif
 
-    case {"wbl", "weibull"}
+    case {'wbl', 'weibull'}
       if (nargout < 2)
         phat = wblfit (x, alpha, censor, freq, options);
       else
@@ -422,65 +422,65 @@ endfunction
 
 ## Test input validation
 %!error <mle: X must be a numeric vector of real values.> mle (ones (2))
-%!error <mle: X must be a numeric vector of real values.> mle ("text")
+%!error <mle: X must be a numeric vector of real values.> mle ('text')
 %!error <mle: X must be a numeric vector of real values.> mle ([1, 2, 3, i, 5])
 %!error <mle: optional arguments must be in NAME-VALUE pairs.> ...
-%! mle ([1:50], "distribution")
+%! mle ([1:50], 'distribution')
 %!error <mle: 'censoring' argument must have the same size as the input data in X.> ...
-%! mle ([1:50], "censoring", logical ([1,0,1,0]))
+%! mle ([1:50], 'censoring', logical ([1,0,1,0]))
 %!error <mle: 'frequency' argument must have the same size as the input data in X.> ...
-%! mle ([1:50], "frequency", [1,0,1,0])
+%! mle ([1:50], 'frequency', [1,0,1,0])
 %!error <mle: 'frequency' argument must contain non-negative integer values.> ...
-%! mle ([1 0 1 0], "frequency", [-1 1 0 0])
+%! mle ([1 0 1 0], 'frequency', [-1 1 0 0])
 %!error <mle: 'frequency' argument must contain non-negative integer values.> ...
-%! mle ([1 0 1 0], "distribution", "nbin", "frequency", [-1 1 0 0])
-%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", [0.05, 0.01])
-%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", 1)
-%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", -1)
-%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], "alpha", i)
+%! mle ([1 0 1 0], 'distribution', 'nbin', 'frequency', [-1 1 0 0])
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], 'alpha', [0.05, 0.01])
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], 'alpha', 1)
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], 'alpha', -1)
+%!error <mle: invalid value for 'alpha' argument.> mle ([1:50], 'alpha', i)
 %!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
-%! mle ([1:50], "ntrials", -1)
+%! mle ([1:50], 'ntrials', -1)
 %!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
-%! mle ([1:50], "ntrials", [20, 50])
+%! mle ([1:50], 'ntrials', [20, 50])
 %!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
-%! mle ([1:50], "ntrials", [20.3])
+%! mle ([1:50], 'ntrials', [20.3])
 %!error <mle: 'ntrials' argument must be a positive integer scalar value.> ...
-%! mle ([1:50], "ntrials", 3i)
+%! mle ([1:50], 'ntrials', 3i)
 %!error <mle: 'options' argument must be a structure compatible for 'fminsearch'.> ...
-%! mle ([1:50], "options", 4)
+%! mle ([1:50], 'options', 4)
 %!error <mle: 'options' argument must be a structure compatible for 'fminsearch'.> ...
-%! mle ([1:50], "options", struct ("x", 3))
-%!error <mle: unknown parameter name.> mle ([1:50], "NAME", "value")
+%! mle ([1:50], 'options', struct ('x', 3))
+%!error <mle: unknown parameter name.> mle ([1:50], 'NAME', 'value')
 %!error <mle: censoring is not supported for the Bernoulli distribution.> ...
-%! mle ([1 0 1 0], "distribution", "bernoulli", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'bernoulli', 'censoring', [1 1 0 0])
 %!error <mle: invalid data for the Bernoulli distribution.> ...
-%! mle ([1 2 1 0], "distribution", "bernoulli")
+%! mle ([1 2 1 0], 'distribution', 'bernoulli')
 %!error <mle: censoring is not supported for the Beta distribution.> ...
-%! mle ([1 0 1 0], "distribution", "beta", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'beta', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Binomial distribution.> ...
-%! mle ([1 0 1 0], "distribution", "bino", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'bino', 'censoring', [1 1 0 0])
 %!error <mle: 'Ntrials' parameter is required for the Binomial distribution.> ...
-%! mle ([1 0 1 0], "distribution", "bino")
+%! mle ([1 0 1 0], 'distribution', 'bino')
 %!error <mle: censoring is not supported for the Geometric distribution.> ...
-%! mle ([1 0 1 0], "distribution", "geo", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'geo', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Generalized Extreme Value distribution.> ...
-%! mle ([1 0 1 0], "distribution", "gev", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'gev', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Generalized Pareto distribution.> ...
-%! mle ([1 0 1 0], "distribution", "gp", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'gp', 'censoring', [1 1 0 0])
 %!error <mle: invalid 'theta' location parameter for the Generalized Pareto distribution.> ...
-%! mle ([1 0 -1 0], "distribution", "gp")
+%! mle ([1 0 -1 0], 'distribution', 'gp')
 %!error <mle: censoring is not supported for the Half Normal distribution.> ...
-%! mle ([1 0 1 0], "distribution", "hn", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'hn', 'censoring', [1 1 0 0])
 %!error <mle: invalid 'mu' location parameter for the Half Normal distribution.> ...
-%! mle ([1 0 -1 0], "distribution", "hn")
+%! mle ([1 0 -1 0], 'distribution', 'hn')
 %!error <mle: censoring is not supported for the Negative Binomial distribution.> ...
-%! mle ([1 0 1 0], "distribution", "nbin", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'nbin', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Poisson distribution.> ...
-%! mle ([1 0 1 0], "distribution", "poisson", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'poisson', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Discrete Uniform distribution.> ...
-%! mle ([1 0 1 0], "distribution", "unid", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'unid', 'censoring', [1 1 0 0])
 %!error <mle: censoring is not supported for the Continuous Uniform distribution.> ...
-%! mle ([1 0 1 0], "distribution", "unif", "censoring", [1 1 0 0])
-%!error <mle: unrecognized distribution name.> mle ([1:50], "distribution", "value")
+%! mle ([1 0 1 0], 'distribution', 'unif', 'censoring', [1 1 0 0])
+%!error <mle: unrecognized distribution name.> mle ([1:50], 'distribution', 'value')
 %!error <mle: censoring is not supported for the Continuous Uniform distribution.> ...
-%! mle ([1 0 1 0], "distribution", "unif", "censoring", [1 1 0 0])
+%! mle ([1 0 1 0], 'distribution', 'unif', 'censoring', [1 1 0 0])

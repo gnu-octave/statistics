@@ -132,7 +132,7 @@ function [varargout] = bar3 (varargin)
   y = [];
   width = 0.8;
   depth = 0.8;
-  style = "detached";
+  style = 'detached';
   color = [];
   xlabel = [];
   ylabel = [];
@@ -183,13 +183,13 @@ function [varargout] = bar3 (varargin)
       color = tmp;
       varargin(1) = [];
     elseif (ischar (tmp))
-      if (any (strcmpi (tmp, {"detached", "grouped", "stacked"})))
+      if (any (strcmpi (tmp, {'detached', 'grouped', 'stacked'})))
         style = tmp;
         varargin(1) = [];
       elseif (any (strcmpi (tmp, vc)))
         color = tmp;
         varargin(1) = [];
-      elseif (strcmpi (tmp, "width"))
+      elseif (strcmpi (tmp, 'width'))
         if (numel (varargin) < 2)
           error ("bar3: missing value for optional argument 'width'.");
         endif
@@ -205,14 +205,14 @@ function [varargout] = bar3 (varargin)
           error ("bar3: invalid value for optional argument 'width'.");
         endif
         varargin([1:2]) = [];
-      elseif (strcmpi (tmp, "color"))
+      elseif (strcmpi (tmp, 'color'))
         if (numel (varargin) < 2)
           error ("bar3: missing value for optional argument 'color'.");
         endif
         c = varargin{2};
         if (iscellstr (c))
           is_vc = all (cell2mat (cellfun (@(x) any (strcmpi (vc, x)), ...
-                                          c, "UniformOutput", false)));
+                                          c, 'UniformOutput', false)));
           if (is_vc)
             color = c;
           else
@@ -234,7 +234,7 @@ function [varargout] = bar3 (varargin)
           error ("bar3: invalid value for optional argument 'color'.");
         endif
         varargin([1:2]) = [];
-      elseif (strcmpi (tmp, "xlabel"))
+      elseif (strcmpi (tmp, 'xlabel'))
         if (numel (varargin) < 2)
           error ("bar3: missing value for optional argument 'xlabel'.");
         endif
@@ -243,7 +243,7 @@ function [varargout] = bar3 (varargin)
           error ("bar3: invalid value for optional argument 'xlabel'.");
         endif
         varargin([1:2]) = [];
-      elseif (strcmpi (tmp, "ylabel"))
+      elseif (strcmpi (tmp, 'ylabel'))
         if (numel (varargin) < 2)
           error ("bar3: missing value for optional argument 'ylabel'.");
         endif
@@ -257,7 +257,7 @@ function [varargout] = bar3 (varargin)
       endif
     elseif (iscellstr (tmp))
       is_vc = all (cell2mat (cellfun (@(x) any (strcmpi (vc, x)), ...
-                                      tmp, "UniformOutput", false)));
+                                      tmp, 'UniformOutput', false)));
       if (is_vc)
         color = tmp;
       else
@@ -317,7 +317,7 @@ function [varargout] = bar3 (varargin)
   hw = width / 2;
   hd = depth / 2;
   ## Scale the bar's base when grouping together
-  if (strcmpi (style, "grouped"))
+  if (strcmpi (style, 'grouped'))
     sc = nx + 1;
     hw = hw / sc;
     hd = hd / sc;
@@ -338,10 +338,10 @@ function [varargout] = bar3 (varargin)
   V = bsxfun (@plus, V, permute (offset, [3, 2, 1]));
   V = reshape (permute (V, [2, 1, 3]), 3, []).';
 
-  if (strcmpi (style, "detached"))
+  if (strcmpi (style, 'detached'))
     ## Adjust bar heights according to values in z input
     V(:,3) = V(:,3) .* kron (z(:), ones (8,1));
-  elseif (strcmpi (style, "grouped"))
+  elseif (strcmpi (style, 'grouped'))
     ## Adjust bar heights according to values in z input
     V(:,3) = V(:,3) .* kron (z(:), ones (8,1));
     ## Move groups along x axis
@@ -350,7 +350,7 @@ function [varargout] = bar3 (varargin)
     offset = [-nx+1:2:nx-1] * (hd / width);
     V(:,2) = V(:,2) + kron (kron (ones (1, ny), offset)(:), ones (8,1));
     nx = 1;
-  elseif (strcmpi (style, "stacked"))
+  elseif (strcmpi (style, 'stacked'))
     ## Move groups along x axis
     V(:,1) = V(:,1) - kron (kron ([0:nx-1], ones (ny, 1))(:), ones (8,1));
     ## Adjust bar heights according to values in z input
@@ -445,7 +445,7 @@ endfunction
 %! b = bar3 (z, 0.5, 'stacked');
 
 ## Test input validation
-%!error <bar3: Z must be numeric.> bar3 ("A")
+%!error <bar3: Z must be numeric.> bar3 ('A')
 %!error <bar3: Z must be numeric.> bar3 ({2,3,4,5})
 %!error <bar3: inconsistent size in Y and Z input arguments.> ...
 %! bar3 ([1,2,3]', ones (2))
@@ -466,9 +466,9 @@ endfunction
 %!error <bar3: numeric COLOR must be a 1x3 vector of an Nx3 matrix> ...
 %! bar3 (ones (5), 'color', [0.8, 0.8])
 %!error <bar3: invalid value for optional argument 'color'.> ...
-%! bar3 (ones (5), 'color', "brown")
+%! bar3 (ones (5), 'color', 'brown')
 %!error <bar3: invalid value for optional argument 'color'.> ...
-%! bar3 (ones (5), 'color', {"r", "k", "c", "m", "brown"})
+%! bar3 (ones (5), 'color', {'r', 'k', 'c', 'm', 'brown'})
 %!error <bar3: missing value for optional argument 'xlabel'.> ...
 %! bar3 (ones (5), 'xlabel')
 %!error <bar3: invalid value for optional argument 'xlabel'.> ...
@@ -479,6 +479,6 @@ endfunction
 %! bar3 (ones (5), 'ylabel', 4)
 %!error <bar3: invalid optional argument.> bar3 (ones (5), 'this', 4)
 %!error <bar3: the elements in 'xlabel' must equal the columns in Z.> ...
-%! bar3 (ones (5), 'xlabel', {"A", "B", "C"})
+%! bar3 (ones (5), 'xlabel', {'A', 'B', 'C'})
 %!error <bar3: the elements in 'ylabel' must equal the rows in Z.> ...
-%! bar3 (ones (5), 'ylabel', {"A", "B", "C"})
+%! bar3 (ones (5), 'ylabel', {'A', 'B', 'C'})

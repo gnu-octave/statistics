@@ -186,9 +186,9 @@ endfunction
 %! p = bvncdf (x, mu, sigma);
 %! Z = reshape (p, 25, 25);
 %! surf (X1, X2, Z);
-%! title ("Bivariate Normal Distribution");
-%! ylabel "X1"
-%! xlabel "X2"
+%! title ('Bivariate Normal Distribution');
+%! ylabel 'X1'
+%! xlabel 'X2'
 
 ## Test output
 %!test

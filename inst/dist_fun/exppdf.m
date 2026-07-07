@@ -68,8 +68,8 @@ function y = exppdf (x, mu)
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (mu, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -92,13 +92,13 @@ endfunction
 %! y1 = exppdf (x, 2/3);
 %! y2 = exppdf (x, 1.0);
 %! y3 = exppdf (x, 2.0);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r')
 %! grid on
 %! ylim ([0, 1.5])
-%! legend ({"μ = 2/3", "μ = 1", "μ = 2"}, "location", "northeast")
-%! title ("Exponential PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 2/3', 'μ = 1', 'μ = 2'}, 'location', 'northeast')
+%! title ('Exponential PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x,y

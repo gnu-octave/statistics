@@ -107,11 +107,11 @@ function obj = createns (X, varargin)
   endif
 
   ## Set default NSMethod
-  NSMethod = "exhaustive";
+  NSMethod = 'exhaustive';
 
   ## Extract 'NSMethod' from varargin and remove it
   names = varargin(1:2:end);
-  idx = find (strcmpi (names, "nsmethod"));
+  idx = find (strcmpi (names, 'nsmethod'));
   if (! isempty (idx))
     if (length (idx) > 1)
       warning ("createns: multiple 'NSMethod' specified, using the last one.");
@@ -126,18 +126,18 @@ function obj = createns (X, varargin)
   endif
 
   ## Validate NSMethod value
-  allowed_methods = {"exhaustive", "kdtree", "hnsw"};
+  allowed_methods = {'exhaustive', 'kdtree', 'hnsw'};
   if (! any (strcmp (NSMethod, allowed_methods)))
     error ("createns: invalid 'NSMethod' value: '%s'.", NSMethod);
   endif
 
   ## Instantiate the appropriate searcher object
   switch (NSMethod)
-    case "exhaustive"
+    case 'exhaustive'
       obj = ExhaustiveSearcher (X, varargin{:});
-    case "kdtree"
+    case 'kdtree'
       obj = KDTreeSearcher (X, varargin{:});
-    case "hnsw"
+    case 'hnsw'
       obj = hnswSearcher (X, varargin{:});
   endswitch
 
@@ -149,23 +149,23 @@ endfunction
 %! ## Default ExhaustiveSearcher
 %! X = [1, 2; 3, 4; 5, 6];
 %! obj = createns (X);
-%! assert (isa (obj, "ExhaustiveSearcher"));
+%! assert (isa (obj, 'ExhaustiveSearcher'));
 %! assert (obj.X, X);
 %! assert (obj.Distance, "euclidean");
 
 %!test
 %! ## KDTreeSearcher with default parameters
 %! X = [1, 2; 3, 4; 5, 6];
-%! obj = createns (X, "NSMethod", "kdtree");
-%! assert (isa (obj, "KDTreeSearcher"));
+%! obj = createns (X, 'NSMethod', 'kdtree');
+%! assert (isa (obj, 'KDTreeSearcher'));
 %! assert (obj.X, X);
 %! assert (obj.Distance, "euclidean");
 
 %!test
 %! ## hnswSearcher with custom parameters
 %! X = [1, 2; 3, 4; 5, 6];
-%! obj = createns (X, "NSMethod", "hnsw", "MaxNumLinksPerNode", 2, "TrainSetSize", 3);
-%! assert (isa (obj, "hnswSearcher"));
+%! obj = createns (X, 'NSMethod', 'hnsw', 'MaxNumLinksPerNode', 2, 'TrainSetSize', 3);
+%! assert (isa (obj, 'hnswSearcher'));
 %! assert (obj.X, X);
 %! assert (obj.MaxNumLinksPerNode, 2);
 %! assert (obj.TrainSetSize, 3);
@@ -173,17 +173,17 @@ endfunction
 %!test
 %! ## ExhaustiveSearcher with custom distance
 %! X = [1, 2; 3, 4];
-%! obj = createns (X, "NSMethod", "exhaustive", "Distance", "cityblock");
-%! assert (isa (obj, "ExhaustiveSearcher"));
+%! obj = createns (X, 'NSMethod', 'exhaustive', 'Distance', 'cityblock');
+%! assert (isa (obj, 'ExhaustiveSearcher'));
 %! assert (obj.Distance, "cityblock");
 
 %!error<createns: too few input arguments.>
 %! createns ()
 %!error<createns: Name-Value arguments must be in pairs.>
-%! X = [1, 2; 3, 4]; createns (X, "NSMethod")
+%! X = [1, 2; 3, 4]; createns (X, 'NSMethod')
 %!error<createns: X must be a finite numeric matrix.>
 %! createns ([1; Inf; 3])
 %!error<createns: 'NSMethod' must be a string.>
-%! X = [1, 2; 3, 4]; createns (X, "NSMethod", 1)
+%! X = [1, 2; 3, 4]; createns (X, 'NSMethod', 1)
 %!error<createns: invalid 'NSMethod' value: 'invalid'.>
-%! X = [1, 2; 3, 4]; createns (X, "NSMethod", "invalid")
+%! X = [1, 2; 3, 4]; createns (X, 'NSMethod', 'invalid')

@@ -73,7 +73,7 @@ endfunction
 %!error<logistat: function called with too few input arguments.> logistat ()
 %!error<logistat: function called with too few input arguments.> logistat (1)
 %!error<logistat: MU and SIGMA must be numeric.> logistat ({}, 2)
-%!error<logistat: MU and SIGMA must be numeric.> logistat (1, "")
+%!error<logistat: MU and SIGMA must be numeric.> logistat (1, '')
 %!error<logistat: MU and SIGMA must not be complex.> logistat (i, 2)
 %!error<logistat: MU and SIGMA must not be complex.> logistat (1, i)
 %!error<logistat: MU and SIGMA must be of common size or scalars.> ...

@@ -67,11 +67,11 @@ function [varargout] = evcdf (x, varargin)
   endif
 
   ## Check for 'upper' flag
-  if (nargin > 1 && strcmpi (varargin{end}, "upper"))
+  if (nargin > 1 && strcmpi (varargin{end}, 'upper'))
     uflag = true;
     varargin(end) = [];
   elseif (nargin > 1 && ischar (varargin{end}) && ...
-          ! strcmpi (varargin{end}, "upper"))
+          ! strcmpi (varargin{end}, 'upper'))
     error ("evcdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -135,10 +135,10 @@ function [varargout] = evcdf (x, varargin)
   endif
 
   ## Check for appropriate class
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -194,13 +194,13 @@ endfunction
 %! p2 = evcdf (x, 1.0, 2);
 %! p3 = evcdf (x, 1.5, 3);
 %! p4 = evcdf (x, 3.0, 4);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c')
 %! grid on
-%! legend ({"μ = 0.5, σ = 2", "μ = 1.0, σ = 2", ...
-%!          "μ = 1.5, σ = 3", "μ = 3.0, σ = 4"}, "location", "southeast")
-%! title ("Extreme value CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0.5, σ = 2', 'μ = 1.0, σ = 2', ...
+%!          'μ = 1.5, σ = 3', 'μ = 3.0, σ = 4'}, 'location', 'southeast')
+%! title ('Extreme value CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, y
@@ -212,7 +212,7 @@ endfunction
 %!assert (evcdf (x, [0, -Inf, NaN, Inf], 1), [0, 1, NaN, NaN], 1e-4)
 %!assert (evcdf (x, 1, [Inf, NaN, -1, 0]), [NaN, NaN, NaN, NaN], 1e-4)
 %!assert (evcdf ([x(1:2), NaN, x(4)], 1, 1), [y(1:2), NaN, y(4)], 1e-4)
-%!assert (evcdf (x, "upper"), [1, 0.0660, 0.0006, 0], 1e-4)
+%!assert (evcdf (x, 'upper'), [1, 0.0660, 0.0006, 0], 1e-4)
 
 ## Test class of input preserved
 %!assert (evcdf ([x, NaN], 1, 1), [y, NaN], 1e-4)
@@ -223,7 +223,7 @@ endfunction
 ## Test input validation
 %!error<evcdf: invalid number of input arguments.> evcdf ()
 %!error<evcdf: invalid number of input arguments.> evcdf (1,2,3,4,5,6,7)
-%!error<evcdf: invalid argument for upper tail.> evcdf (1, 2, 3, 4, "uper")
+%!error<evcdf: invalid argument for upper tail.> evcdf (1, 2, 3, 4, 'uper')
 %!error<evcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! evcdf (ones (3), ones (2), ones (2))
 %!error<evcdf: invalid size of covariance matrix.> evcdf (2, 3, 4, [1, 2])
@@ -234,7 +234,7 @@ endfunction
 %!error<evcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! evcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<evcdf: invalid value for alpha.> [p, plo, pup] = ...
-%! evcdf (1, 2, 3, [1, 0; 0, 1], "alpha", "upper")
+%! evcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (i, 2, 2)
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (2, i, 2)
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (2, 2, i)

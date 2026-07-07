@@ -48,7 +48,7 @@ function p = hncdf (x, mu, sigma, uflag)
 
   ## Check for valid "upper" flag
   if (nargin > 3)
-    if (! strcmpi (uflag, "upper"))
+    if (! strcmpi (uflag, 'upper'))
       error ("hncdf: invalid argument for upper tail.");
     else
       uflag = true;
@@ -71,10 +71,10 @@ function p = hncdf (x, mu, sigma, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"))
-    is_class = "single";
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'))
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -102,28 +102,28 @@ endfunction
 %! p2 = hncdf (x, 0, 2);
 %! p3 = hncdf (x, 0, 3);
 %! p4 = hncdf (x, 0, 5);
-%! plot (x, p1, "-b", x, p2, "-g", x, p3, "-r", x, p4, "-c")
+%! plot (x, p1, '-b', x, p2, '-g', x, p3, '-r', x, p4, '-c')
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 2", ...
-%!          "μ = 0, σ = 3", "μ = 0, σ = 5"}, "location", "southeast")
-%! title ("Half-normal CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 2', ...
+%!          'μ = 0, σ = 3', 'μ = 0, σ = 5'}, 'location', 'southeast')
+%! title ('Half-normal CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 %!demo
 %! ## Plot half-normal against normal cumulative distribution function
 %! x = -5:0.001:5;
 %! p1 = hncdf (x, 0, 1);
 %! p2 = normcdf (x);
-%! plot (x, p1, "-b", x, p2, "-g")
+%! plot (x, p1, '-b', x, p2, '-g')
 %! grid on
 %! xlim ([-5, 5])
-%! legend ({"half-normal with μ = 0, σ = 1", ...
-%!          "standard normal (μ = 0, σ = 1)"}, "location", "southeast")
-%! title ("Half-normal against standard normal CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'half-normal with μ = 0, σ = 1', ...
+%!          'standard normal (μ = 0, σ = 1)'}, 'location', 'southeast')
+%! title ('Half-normal against standard normal CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!shared x, p1, p1u, y2, y2u, y3, y3u
@@ -137,10 +137,10 @@ endfunction
 %!assert (hncdf (x, 0, [1, 1, 1, NaN, 1, 1]), [p1(1:3), NaN, p1(5:6)], 1e-4)
 %!assert (hncdf (x, [0, 0, 0, NaN, 0, 0], 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
 %!assert (hncdf ([x(1:3), NaN, x(5:6)], 0, 1), [p1(1:3), NaN, p1(5:6)], 1e-4)
-%!assert (hncdf (x, zeros (1,6), ones (1,6), "upper"), p1u, 1e-4)
-%!assert (hncdf (x, 0, 1, "upper"), p1u, 1e-4)
-%!assert (hncdf (x, 0, ones (1,6), "upper"), p1u, 1e-4)
-%!assert (hncdf (x, zeros (1,6), 1, "upper"), p1u, 1e-4)
+%!assert (hncdf (x, zeros (1,6), ones (1,6), 'upper'), p1u, 1e-4)
+%!assert (hncdf (x, 0, 1, 'upper'), p1u, 1e-4)
+%!assert (hncdf (x, 0, ones (1,6), 'upper'), p1u, 1e-4)
+%!assert (hncdf (x, zeros (1,6), 1, 'upper'), p1u, 1e-4)
 
 ## Test class of input preserved
 %!assert (class (hncdf (single ([x, NaN]), 0, 1)), "single")
@@ -151,7 +151,7 @@ endfunction
 %!error<hncdf: function called with too few input arguments.> hncdf ()
 %!error<hncdf: function called with too few input arguments.> hncdf (1)
 %!error<hncdf: function called with too few input arguments.> hncdf (1, 2)
-%!error<hncdf: invalid argument for upper tail.> hncdf (1, 2, 3, "tail")
+%!error<hncdf: invalid argument for upper tail.> hncdf (1, 2, 3, 'tail')
 %!error<hncdf: invalid argument for upper tail.> hncdf (1, 2, 3, 5)
 %!error<hncdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! hncdf (ones (3), ones (2), ones(2))

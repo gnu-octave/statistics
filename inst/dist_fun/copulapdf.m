@@ -114,7 +114,7 @@ function y = copulapdf (family, x, theta)
     ## Compute the cumulative distribution function according to family
     lowerarg = lower (family);
 
-    if (strcmp (lowerarg, "clayton"))
+    if (strcmp (lowerarg, 'clayton'))
       ## The Clayton family
       log_cdf = -log (max (sum (x .^ (repmat (-theta, 1, d)), 2) ...
                 - d + 1, 0)) ./ theta;
@@ -132,7 +132,7 @@ function y = copulapdf (family, x, theta)
       else
         k = find (! (theta >= -1) | ! (theta < inf));
       endif
-    elseif (strcmp (lowerarg, "gumbel"))
+    elseif (strcmp (lowerarg, 'gumbel'))
       ## The Gumbel-Hougaard family
       g = sum ((-log (x)) .^ repmat (theta, 1, d), 2);
       c = exp (-g .^ (1 ./ theta));
@@ -140,7 +140,7 @@ function y = copulapdf (family, x, theta)
           (g .^ (2 ./ theta - 2) + (theta - 1) .* g .^ (1 ./ theta - 2));
       ## Check theta
       k = find (! (theta >= 1) | ! (theta < inf));
-    elseif (strcmp (lowerarg, "frank"))
+    elseif (strcmp (lowerarg, 'frank'))
       ## The Frank family
       if (d != 2)
         error ("copulapdf: Frank copula PDF implemented as bivariate only.");
@@ -155,7 +155,7 @@ function y = copulapdf (family, x, theta)
       endif
       ## Check theta
       k = find (! (theta > -inf) | ! (theta < inf));
-    elseif (strcmp (lowerarg, "amh"))
+    elseif (strcmp (lowerarg, 'amh'))
       ## The Ali-Mikhail-Haq family
       if (d != 2)
         error (strcat ("copulapdf: Ali-Mikhail-Haq copula PDF", ...
@@ -181,23 +181,23 @@ endfunction
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
 %! theta = [1; 2];
-%! y = copulapdf ("Clayton", x, theta);
+%! y = copulapdf ('Clayton', x, theta);
 %! expected_p = [0.9872; 0.7295];
 %! assert (y, expected_p, 0.001);
 %!test
 %! x = [0.2:0.2:0.6; 0.2:0.2:0.6];
-%! y = copulapdf ("Gumbel", x, 2);
+%! y = copulapdf ('Gumbel', x, 2);
 %! expected_p = [0.9468; 0.9468];
 %! assert (y, expected_p, 0.001);
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [1; 2];
-%! y = copulapdf ("Frank", x, theta);
+%! y = copulapdf ('Frank', x, theta);
 %! expected_p = [0.9378; 0.8678];
 %! assert (y, expected_p, 0.001);
 %!test
 %! x = [0.2, 0.6; 0.2, 0.6];
 %! theta = [0.3; 0.7];
-%! y = copulapdf ("AMH", x, theta);
+%! y = copulapdf ('AMH', x, theta);
 %! expected_p = [0.9540; 0.8577];
 %! assert (y, expected_p, 0.001);

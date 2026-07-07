@@ -106,7 +106,7 @@ function r = copularnd (family, theta, df, n)
   ## Check family and copula parameters
   switch (lower_family)
 
-    case {"gaussian"}
+    case {'gaussian'}
       ## Gaussian family
       if (isscalar (theta))
         ## Expand a scalar to a correlation matrix
@@ -133,7 +133,7 @@ function r = copularnd (family, theta, df, n)
         endif
       endif
 
-    case {"t"}
+    case {'t'}
       ## Student's t family
       if (nargin < 3)
         print_usage ();
@@ -159,7 +159,7 @@ function r = copularnd (family, theta, df, n)
         endif
       endif
 
-    case {"clayton"}
+    case {'clayton'}
       ## Archimedian one parameter family
       if (nargin < 4)
         ## Default is bivariate
@@ -200,19 +200,19 @@ function r = copularnd (family, theta, df, n)
     ## Draw random samples according to family
     switch (lower_family)
 
-      case {"gaussian"}
+      case {'gaussian'}
         ## The Gaussian family
         r = normcdf (mvnrnd (zeros (1, d), theta, n), 0, 1);
         ## No parameter bounds check
         k = [];
 
-      case {"t"}
+      case {'t'}
         ## The Student's t family
         r = tcdf (mvtrnd (theta, df, n), df);
         ## No parameter bounds check
         k = [];
 
-      case {"clayton"}
+      case {'clayton'}
         ## The Clayton family
         u = rand (n, d);
         if (d == 2)
@@ -254,30 +254,30 @@ endfunction
 ## Test output
 %!test
 %! theta = 0.5;
-%! r = copularnd ("Gaussian", theta);
+%! r = copularnd ('Gaussian', theta);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
 %!test
 %! theta = 0.5;
 %! df = 2;
-%! r = copularnd ("t", theta, df);
+%! r = copularnd ('t', theta, df);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
 %!test
 %! theta = 0.5;
-%! r = copularnd ("Clayton", theta);
+%! r = copularnd ('Clayton', theta);
 %! assert (size (r), [1, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
 %!test
 %! theta = 0.5;
 %! n = 2;
-%! r = copularnd ("Clayton", theta, n);
+%! r = copularnd ('Clayton', theta, n);
 %! assert (size (r), [n, 2]);
 %! assert (all ((r >= 0) & (r <= 1)));
 %!test
 %! theta = [1; 2];
 %! n = 2;
 %! d = 3;
-%! r = copularnd ("Clayton", theta, n, d);
+%! r = copularnd ('Clayton', theta, n, d);
 %! assert (size (r), [n, d]);
 %! assert (all ((r >= 0) & (r <= 1)));

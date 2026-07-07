@@ -61,8 +61,8 @@ function data = plinv (p, x, Fx)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (x, "single") || isa (Fx, "single"));
-    data = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (x, 'single') || isa (Fx, 'single'));
+    data = zeros (size (p), 'single');
   else
     data = zeros (size (p));
   endif
@@ -85,7 +85,7 @@ function data = plinv (p, x, Fx)
     Fx(idx+1) = Fx(idx) + eps(Fx(idx));
   endif
   p(p < 0 | 1 < p) = NaN;
-  data = interp1 (Fx, x, p, "linear");
+  data = interp1 (Fx, x, p, 'linear');
 
 endfunction
 
@@ -98,12 +98,12 @@ endfunction
 %! Fx2 = [0, 0.1, 0.3, 0.6, 0.9, 1];
 %! data1 = plinv (p, x1, Fx1);
 %! data2 = plinv (p, x2, Fx2);
-%! plot (p, data1, "-b", p, data2, "-g")
+%! plot (p, data1, '-b', p, data2, '-g')
 %! grid on
-%! legend ({"x1, Fx1", "x2, Fx2"}, "location", "northwest")
-%! title ("Piecewise linear iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in data")
+%! legend ({'x1, Fx1', 'x2, Fx2'}, 'location', 'northwest')
+%! title ('Piecewise linear iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in data')
 
 ## Test output
 %!test

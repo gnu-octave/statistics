@@ -65,9 +65,9 @@ function x = gpinv (p, k, sigma, theta)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (theta, "single") ...
-      || isa (sigma, "single") || isa (k, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (theta, 'single') ...
+      || isa (sigma, 'single') || isa (k, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -122,17 +122,17 @@ endfunction
 %! x4 = gpinv (p, 1, 2, 0);
 %! x5 = gpinv (p, 5, 2, 0);
 %! x6 = gpinv (p, 20, 2, 0);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
-%!       p, x4, "-c", p, x5, "-m", p, x6, "-k")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', ...
+%!       p, x4, '-c', p, x5, '-m', p, x6, '-k')
 %! grid on
 %! ylim ([0, 5])
-%! legend ({"k = 1, σ = 1, θ = 0", "k = 5, σ = 1, θ = 0", ...
-%!          "k = 20, σ = 1, θ = 0", "k = 1, σ = 2, θ = 0", ...
-%!          "k = 5, σ = 2, θ = 0", "k = 20, σ = 2, θ = 0"}, ...
-%!         "location", "southeast")
-%! title ("Generalized Pareto iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'k = 1, σ = 1, θ = 0', 'k = 5, σ = 1, θ = 0', ...
+%!          'k = 20, σ = 1, θ = 0', 'k = 1, σ = 2, θ = 0', ...
+%!          'k = 5, σ = 2, θ = 0', 'k = 20, σ = 2, θ = 0'}, ...
+%!         'location', 'southeast')
+%! title ('Generalized Pareto iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, y1, y2, y3

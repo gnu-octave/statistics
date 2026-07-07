@@ -54,9 +54,9 @@ function [hCDF, stats] = cdfplot (x)
   ## Calculate sample cdf
   [yy, xx, ~, ~, eid] = cdfcalc (x);
   ## Check for errors returned from cdfcalc
-  if (strcmpi (eid, "VectorRequired"))
+  if (strcmpi (eid, 'VectorRequired'))
     error ("cdfplot: vector required as input.");
-  elseif (strcmpi (eid, "NotEnoughData"))
+  elseif (strcmpi (eid, 'NotEnoughData'))
     error("cdfplot: not enough data.");
   endif
   ## Create vectors for plotting
@@ -67,9 +67,9 @@ function [hCDF, stats] = cdfplot (x)
   ## Plot cdf
   h = plot (xCDF, yCDF);
   grid  ('on')
-  xlabel ("x")
-  ylabel ("F(x)")
-  title ("CDF plot of x");
+  xlabel ('x')
+  ylabel ('F(x)')
+  title ('CDF plot of x');
 
   ## Return requested output arguments
   if (nargout > 0)
@@ -78,9 +78,9 @@ function [hCDF, stats] = cdfplot (x)
   if (nargout > 1)
     stats.min = nanmin (x);
     stats.max = nanmax (x);
-    stats.mean = mean (x, "omitnan");
-    stats.median = median (x, "omitnan");
-    stats.std = std (x, "omitnan");
+    stats.mean = mean (x, 'omitnan');
+    stats.median = median (x, 'omitnan');
+    stats.std = std (x, 'omitnan');
   endif
 endfunction
 
@@ -90,7 +90,7 @@ endfunction
 
 ## Test results
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4];
 %!   [hCDF, stats] = cdfplot (x);
@@ -102,7 +102,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = randn(100,1);
 %!   cdfplot (x);

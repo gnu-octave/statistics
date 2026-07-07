@@ -66,7 +66,7 @@ endfunction
 ## Input validation tests
 %!error<raylstat: function called with too few input arguments.> raylstat ()
 %!error<raylstat: SIGMA must be numeric.> raylstat ({})
-%!error<raylstat: SIGMA must be numeric.> raylstat ("")
+%!error<raylstat: SIGMA must be numeric.> raylstat ('')
 %!error<raylstat: SIGMA must not be complex.> raylstat (i)
 
 ## Output validation tests

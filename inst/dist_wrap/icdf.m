@@ -97,43 +97,43 @@ function x = icdf (name, p, varargin)
 
   ## implemented functions
   persistent allDF = { ...
-    {"beta"     , "Beta"},                      @betainv,      2, ...
-    {"bino"     , "Binomial"},                  @binoinv,      2, ...
-    {"bisa"     , "Birnbaum-Saunders"},         @bisainv,      2, ...
-    {"burr"     , "Burr"},                      @burrinv,      3, ...
-    {"cauchy"   , "Cauchy"},                    @cauchyinv,    2, ...
-    {"chi2"     , "Chi-squared"},               @chi2inv,      1, ...
-    {"ev"       , "Extreme Value"},             @evinv,        2, ...
-    {"exp"      , "Exponential"},               @expinv,       1, ...
-    {"f"        , "F-Distribution"},            @finv,         2, ...
-    {"gam"      , "Gamma"},                     @gaminv,       2, ...
-    {"geo"      , "Geometric"},                 @geoinv,       1, ...
-    {"gev"      , "Generalized Extreme Value"}, @gevinv,       3, ...
-    {"gp"       , "Generalized Pareto"},        @gpinv,        3, ...
-    {"gumbel"   , "Gumbel"},                    @gumbelinv,    2, ...
-    {"hn"       , "Half-normal"},               @hninv,        2, ...
-    {"hyge"     , "Hypergeometric"},            @hygeinv,      3, ...
-    {"invg"     , "Inverse Gaussian"},          @invginv,      2, ...
-    {"laplace"  , "Laplace"},                   @laplaceinv,   2, ...
-    {"logi"     , "Logistic"},                  @logiinv,      2, ...
-    {"logl"     , "Log-Logistic"},              @loglinv,      2, ...
-    {"logn"     , "Lognormal"},                 @logninv,      2, ...
-    {"naka"     , "Nakagami"},                  @nakainv,      2, ...
-    {"nbin"     , "Negative Binomial"},         @nbininv,      2, ...
-    {"ncf"      , "Noncentral F-Distribution"}, @ncfinv,       3, ...
-    {"nct"      , "Noncentral Student T"},      @nctinv,       2, ...
-    {"ncx2"     , "Noncentral Chi-squared"},    @ncx2inv,      2, ...
-    {"norm"     , "Normal"},                    @norminv,      2, ...
-    {"poiss"    , "Poisson"},                   @poissinv,     1, ...
-    {"rayl"     , "Rayleigh"},                  @raylinv,      1, ...
-    {"rice"     , "Rician"},                    @riceinv,      2, ...
-    {"t"        , "Student T"},                 @tinv,         1, ...
-    {"tls"      , "location-scale T"},          @tlsinv,       3, ...
-    {"tri"      , "Triangular"},                @triinv,       3, ...
-    {"unid"     , "Discrete Uniform"},          @unidinv,      1, ...
-    {"unif"     , "Uniform"},                   @unifinv,      2, ...
-    {"vm"       , "Von Mises"},                 @vminv,        2, ...
-    {"wbl"      , "Weibull"},                   @wblinv,       2};
+    {'beta'     , 'Beta'},                      @betainv,      2, ...
+    {'bino'     , 'Binomial'},                  @binoinv,      2, ...
+    {'bisa'     , 'Birnbaum-Saunders'},         @bisainv,      2, ...
+    {'burr'     , 'Burr'},                      @burrinv,      3, ...
+    {'cauchy'   , 'Cauchy'},                    @cauchyinv,    2, ...
+    {'chi2'     , 'Chi-squared'},               @chi2inv,      1, ...
+    {'ev'       , 'Extreme Value'},             @evinv,        2, ...
+    {'exp'      , 'Exponential'},               @expinv,       1, ...
+    {'f'        , 'F-Distribution'},            @finv,         2, ...
+    {'gam'      , 'Gamma'},                     @gaminv,       2, ...
+    {'geo'      , 'Geometric'},                 @geoinv,       1, ...
+    {'gev'      , 'Generalized Extreme Value'}, @gevinv,       3, ...
+    {'gp'       , 'Generalized Pareto'},        @gpinv,        3, ...
+    {'gumbel'   , 'Gumbel'},                    @gumbelinv,    2, ...
+    {'hn'       , 'Half-normal'},               @hninv,        2, ...
+    {'hyge'     , 'Hypergeometric'},            @hygeinv,      3, ...
+    {'invg'     , 'Inverse Gaussian'},          @invginv,      2, ...
+    {'laplace'  , 'Laplace'},                   @laplaceinv,   2, ...
+    {'logi'     , 'Logistic'},                  @logiinv,      2, ...
+    {'logl'     , 'Log-Logistic'},              @loglinv,      2, ...
+    {'logn'     , 'Lognormal'},                 @logninv,      2, ...
+    {'naka'     , 'Nakagami'},                  @nakainv,      2, ...
+    {'nbin'     , 'Negative Binomial'},         @nbininv,      2, ...
+    {'ncf'      , 'Noncentral F-Distribution'}, @ncfinv,       3, ...
+    {'nct'      , 'Noncentral Student T'},      @nctinv,       2, ...
+    {'ncx2'     , 'Noncentral Chi-squared'},    @ncx2inv,      2, ...
+    {'norm'     , 'Normal'},                    @norminv,      2, ...
+    {'poiss'    , 'Poisson'},                   @poissinv,     1, ...
+    {'rayl'     , 'Rayleigh'},                  @raylinv,      1, ...
+    {'rice'     , 'Rician'},                    @riceinv,      2, ...
+    {'t'        , 'Student T'},                 @tinv,         1, ...
+    {'tls'      , 'location-scale T'},          @tlsinv,       3, ...
+    {'tri'      , 'Triangular'},                @triinv,       3, ...
+    {'unid'     , 'Discrete Uniform'},          @unidinv,      1, ...
+    {'unif'     , 'Uniform'},                   @unifinv,      2, ...
+    {'vm'       , 'Von Mises'},                 @vminv,        2, ...
+    {'wbl'      , 'Weibull'},                   @wblinv,       2};
 
   if (! ischar (name))
     error ("icdf: distribution NAME must be a char string.");
@@ -186,94 +186,94 @@ endfunction
 ## Test results
 %!shared p
 %! p = [0.05:0.05:0.5];
-%!assert (icdf ("Beta", p, 5, 2), betainv (p, 5, 2))
-%!assert (icdf ("beta", p, 5, 2), betainv (p, 5, 2))
-%!assert (icdf ("Binomial", p, 5, 2), binoinv (p, 5, 2))
-%!assert (icdf ("bino", p, 5, 2), binoinv (p, 5, 2))
-%!assert (icdf ("Birnbaum-Saunders", p, 5, 2), bisainv (p, 5, 2))
-%!assert (icdf ("bisa", p, 5, 2), bisainv (p, 5, 2))
-%!assert (icdf ("Burr", p, 5, 2, 2), burrinv (p, 5, 2, 2))
-%!assert (icdf ("burr", p, 5, 2, 2), burrinv (p, 5, 2, 2))
-%!assert (icdf ("Cauchy", p, 5, 2), cauchyinv (p, 5, 2))
-%!assert (icdf ("cauchy", p, 5, 2), cauchyinv (p, 5, 2))
-%!assert (icdf ("Chi-squared", p, 5), chi2inv (p, 5))
-%!assert (icdf ("chi2", p, 5), chi2inv (p, 5))
-%!assert (icdf ("Extreme Value", p, 5, 2), evinv (p, 5, 2))
-%!assert (icdf ("ev", p, 5, 2), evinv (p, 5, 2))
-%!assert (icdf ("Exponential", p, 5), expinv (p, 5))
-%!assert (icdf ("exp", p, 5), expinv (p, 5))
-%!assert (icdf ("F-Distribution", p, 5, 2), finv (p, 5, 2))
-%!assert (icdf ("f", p, 5, 2), finv (p, 5, 2))
-%!assert (icdf ("Gamma", p, 5, 2), gaminv (p, 5, 2))
-%!assert (icdf ("gam", p, 5, 2), gaminv (p, 5, 2))
-%!assert (icdf ("Geometric", p, 5), geoinv (p, 5))
-%!assert (icdf ("geo", p, 5), geoinv (p, 5))
-%!assert (icdf ("Generalized Extreme Value", p, 5, 2, 2), gevinv (p, 5, 2, 2))
-%!assert (icdf ("gev", p, 5, 2, 2), gevinv (p, 5, 2, 2))
-%!assert (icdf ("Generalized Pareto", p, 5, 2, 2), gpinv (p, 5, 2, 2))
-%!assert (icdf ("gp", p, 5, 2, 2), gpinv (p, 5, 2, 2))
-%!assert (icdf ("Gumbel", p, 5, 2), gumbelinv (p, 5, 2))
-%!assert (icdf ("gumbel", p, 5, 2), gumbelinv (p, 5, 2))
-%!assert (icdf ("Half-normal", p, 5, 2), hninv (p, 5, 2))
-%!assert (icdf ("hn", p, 5, 2), hninv (p, 5, 2))
-%!assert (icdf ("Hypergeometric", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
-%!assert (icdf ("hyge", p, 5, 2, 2), hygeinv (p, 5, 2, 2))
-%!assert (icdf ("Inverse Gaussian", p, 5, 2), invginv (p, 5, 2))
-%!assert (icdf ("invg", p, 5, 2), invginv (p, 5, 2))
-%!assert (icdf ("Laplace", p, 5, 2), laplaceinv (p, 5, 2))
-%!assert (icdf ("laplace", p, 5, 2), laplaceinv (p, 5, 2))
-%!assert (icdf ("Logistic", p, 5, 2), logiinv (p, 5, 2))
-%!assert (icdf ("logi", p, 5, 2), logiinv (p, 5, 2))
-%!assert (icdf ("Log-Logistic", p, 5, 2), loglinv (p, 5, 2))
-%!assert (icdf ("logl", p, 5, 2), loglinv (p, 5, 2))
-%!assert (icdf ("Lognormal", p, 5, 2), logninv (p, 5, 2))
-%!assert (icdf ("logn", p, 5, 2), logninv (p, 5, 2))
-%!assert (icdf ("Nakagami", p, 5, 2), nakainv (p, 5, 2))
-%!assert (icdf ("naka", p, 5, 2), nakainv (p, 5, 2))
-%!assert (icdf ("Negative Binomial", p, 5, 2), nbininv (p, 5, 2))
-%!assert (icdf ("nbin", p, 5, 2), nbininv (p, 5, 2))
-%!assert (icdf ("Noncentral F-Distribution", p, 5, 2, 2), ncfinv (p, 5, 2, 2))
-%!assert (icdf ("ncf", p, 5, 2, 2), ncfinv (p, 5, 2, 2))
-%!assert (icdf ("Noncentral Student T", p, 5, 2), nctinv (p, 5, 2))
-%!assert (icdf ("nct", p, 5, 2), nctinv (p, 5, 2))
-%!assert (icdf ("Noncentral Chi-Squared", p, 5, 2), ncx2inv (p, 5, 2))
-%!assert (icdf ("ncx2", p, 5, 2), ncx2inv (p, 5, 2))
-%!assert (icdf ("Normal", p, 5, 2), norminv (p, 5, 2))
-%!assert (icdf ("norm", p, 5, 2), norminv (p, 5, 2))
-%!assert (icdf ("Poisson", p, 5), poissinv (p, 5))
-%!assert (icdf ("poiss", p, 5), poissinv (p, 5))
-%!assert (icdf ("Rayleigh", p, 5), raylinv (p, 5))
-%!assert (icdf ("rayl", p, 5), raylinv (p, 5))
-%!assert (icdf ("Rician", p, 5, 1), riceinv (p, 5, 1))
-%!assert (icdf ("rice", p, 5, 1), riceinv (p, 5, 1))
-%!assert (icdf ("Student T", p, 5), tinv (p, 5))
-%!assert (icdf ("t", p, 5), tinv (p, 5))
-%!assert (icdf ("location-scale T", p, 5, 1, 2), tlsinv (p, 5, 1, 2))
-%!assert (icdf ("tls", p, 5, 1, 2), tlsinv (p, 5, 1, 2))
-%!assert (icdf ("Triangular", p, 5, 2, 2), triinv (p, 5, 2, 2))
-%!assert (icdf ("tri", p, 5, 2, 2), triinv (p, 5, 2, 2))
-%!assert (icdf ("Discrete Uniform", p, 5), unidinv (p, 5))
-%!assert (icdf ("unid", p, 5), unidinv (p, 5))
-%!assert (icdf ("Uniform", p, 5, 2), unifinv (p, 5, 2))
-%!assert (icdf ("unif", p, 5, 2), unifinv (p, 5, 2))
-%!assert (icdf ("Von Mises", p, 5, 2), vminv (p, 5, 2))
-%!assert (icdf ("vm", p, 5, 2), vminv (p, 5, 2))
-%!assert (icdf ("Weibull", p, 5, 2), wblinv (p, 5, 2))
-%!assert (icdf ("wbl", p, 5, 2), wblinv (p, 5, 2))
+%!assert (icdf ('Beta', p, 5, 2), betainv (p, 5, 2))
+%!assert (icdf ('beta', p, 5, 2), betainv (p, 5, 2))
+%!assert (icdf ('Binomial', p, 5, 2), binoinv (p, 5, 2))
+%!assert (icdf ('bino', p, 5, 2), binoinv (p, 5, 2))
+%!assert (icdf ('Birnbaum-Saunders', p, 5, 2), bisainv (p, 5, 2))
+%!assert (icdf ('bisa', p, 5, 2), bisainv (p, 5, 2))
+%!assert (icdf ('Burr', p, 5, 2, 2), burrinv (p, 5, 2, 2))
+%!assert (icdf ('burr', p, 5, 2, 2), burrinv (p, 5, 2, 2))
+%!assert (icdf ('Cauchy', p, 5, 2), cauchyinv (p, 5, 2))
+%!assert (icdf ('cauchy', p, 5, 2), cauchyinv (p, 5, 2))
+%!assert (icdf ('Chi-squared', p, 5), chi2inv (p, 5))
+%!assert (icdf ('chi2', p, 5), chi2inv (p, 5))
+%!assert (icdf ('Extreme Value', p, 5, 2), evinv (p, 5, 2))
+%!assert (icdf ('ev', p, 5, 2), evinv (p, 5, 2))
+%!assert (icdf ('Exponential', p, 5), expinv (p, 5))
+%!assert (icdf ('exp', p, 5), expinv (p, 5))
+%!assert (icdf ('F-Distribution', p, 5, 2), finv (p, 5, 2))
+%!assert (icdf ('f', p, 5, 2), finv (p, 5, 2))
+%!assert (icdf ('Gamma', p, 5, 2), gaminv (p, 5, 2))
+%!assert (icdf ('gam', p, 5, 2), gaminv (p, 5, 2))
+%!assert (icdf ('Geometric', p, 5), geoinv (p, 5))
+%!assert (icdf ('geo', p, 5), geoinv (p, 5))
+%!assert (icdf ('Generalized Extreme Value', p, 5, 2, 2), gevinv (p, 5, 2, 2))
+%!assert (icdf ('gev', p, 5, 2, 2), gevinv (p, 5, 2, 2))
+%!assert (icdf ('Generalized Pareto', p, 5, 2, 2), gpinv (p, 5, 2, 2))
+%!assert (icdf ('gp', p, 5, 2, 2), gpinv (p, 5, 2, 2))
+%!assert (icdf ('Gumbel', p, 5, 2), gumbelinv (p, 5, 2))
+%!assert (icdf ('gumbel', p, 5, 2), gumbelinv (p, 5, 2))
+%!assert (icdf ('Half-normal', p, 5, 2), hninv (p, 5, 2))
+%!assert (icdf ('hn', p, 5, 2), hninv (p, 5, 2))
+%!assert (icdf ('Hypergeometric', p, 5, 2, 2), hygeinv (p, 5, 2, 2))
+%!assert (icdf ('hyge', p, 5, 2, 2), hygeinv (p, 5, 2, 2))
+%!assert (icdf ('Inverse Gaussian', p, 5, 2), invginv (p, 5, 2))
+%!assert (icdf ('invg', p, 5, 2), invginv (p, 5, 2))
+%!assert (icdf ('Laplace', p, 5, 2), laplaceinv (p, 5, 2))
+%!assert (icdf ('laplace', p, 5, 2), laplaceinv (p, 5, 2))
+%!assert (icdf ('Logistic', p, 5, 2), logiinv (p, 5, 2))
+%!assert (icdf ('logi', p, 5, 2), logiinv (p, 5, 2))
+%!assert (icdf ('Log-Logistic', p, 5, 2), loglinv (p, 5, 2))
+%!assert (icdf ('logl', p, 5, 2), loglinv (p, 5, 2))
+%!assert (icdf ('Lognormal', p, 5, 2), logninv (p, 5, 2))
+%!assert (icdf ('logn', p, 5, 2), logninv (p, 5, 2))
+%!assert (icdf ('Nakagami', p, 5, 2), nakainv (p, 5, 2))
+%!assert (icdf ('naka', p, 5, 2), nakainv (p, 5, 2))
+%!assert (icdf ('Negative Binomial', p, 5, 2), nbininv (p, 5, 2))
+%!assert (icdf ('nbin', p, 5, 2), nbininv (p, 5, 2))
+%!assert (icdf ('Noncentral F-Distribution', p, 5, 2, 2), ncfinv (p, 5, 2, 2))
+%!assert (icdf ('ncf', p, 5, 2, 2), ncfinv (p, 5, 2, 2))
+%!assert (icdf ('Noncentral Student T', p, 5, 2), nctinv (p, 5, 2))
+%!assert (icdf ('nct', p, 5, 2), nctinv (p, 5, 2))
+%!assert (icdf ('Noncentral Chi-Squared', p, 5, 2), ncx2inv (p, 5, 2))
+%!assert (icdf ('ncx2', p, 5, 2), ncx2inv (p, 5, 2))
+%!assert (icdf ('Normal', p, 5, 2), norminv (p, 5, 2))
+%!assert (icdf ('norm', p, 5, 2), norminv (p, 5, 2))
+%!assert (icdf ('Poisson', p, 5), poissinv (p, 5))
+%!assert (icdf ('poiss', p, 5), poissinv (p, 5))
+%!assert (icdf ('Rayleigh', p, 5), raylinv (p, 5))
+%!assert (icdf ('rayl', p, 5), raylinv (p, 5))
+%!assert (icdf ('Rician', p, 5, 1), riceinv (p, 5, 1))
+%!assert (icdf ('rice', p, 5, 1), riceinv (p, 5, 1))
+%!assert (icdf ('Student T', p, 5), tinv (p, 5))
+%!assert (icdf ('t', p, 5), tinv (p, 5))
+%!assert (icdf ('location-scale T', p, 5, 1, 2), tlsinv (p, 5, 1, 2))
+%!assert (icdf ('tls', p, 5, 1, 2), tlsinv (p, 5, 1, 2))
+%!assert (icdf ('Triangular', p, 5, 2, 2), triinv (p, 5, 2, 2))
+%!assert (icdf ('tri', p, 5, 2, 2), triinv (p, 5, 2, 2))
+%!assert (icdf ('Discrete Uniform', p, 5), unidinv (p, 5))
+%!assert (icdf ('unid', p, 5), unidinv (p, 5))
+%!assert (icdf ('Uniform', p, 5, 2), unifinv (p, 5, 2))
+%!assert (icdf ('unif', p, 5, 2), unifinv (p, 5, 2))
+%!assert (icdf ('Von Mises', p, 5, 2), vminv (p, 5, 2))
+%!assert (icdf ('vm', p, 5, 2), vminv (p, 5, 2))
+%!assert (icdf ('Weibull', p, 5, 2), wblinv (p, 5, 2))
+%!assert (icdf ('wbl', p, 5, 2), wblinv (p, 5, 2))
 
 ## Test input validation
 %!error<icdf: distribution NAME must be a char string.> icdf (1)
-%!error<icdf: distribution NAME must be a char string.> icdf ({"beta"})
-%!error<icdf: P must be numeric.> icdf ("beta", {[1 2 3 4 5]})
-%!error<icdf: P must be numeric.> icdf ("beta", "text")
-%!error<icdf: values in P must be real.> icdf ("beta", 1+i)
+%!error<icdf: distribution NAME must be a char string.> icdf ({'beta'})
+%!error<icdf: P must be numeric.> icdf ('beta', {[1 2 3 4 5]})
+%!error<icdf: P must be numeric.> icdf ('beta', 'text')
+%!error<icdf: values in P must be real.> icdf ('beta', 1+i)
 %!error<icdf: distribution parameters must be numeric.> ...
-%! icdf ("Beta", p, "a", 2)
+%! icdf ('Beta', p, 'a', 2)
 %!error<icdf: distribution parameters must be numeric.> ...
-%! icdf ("Beta", p, 5, "")
+%! icdf ('Beta', p, 5, '')
 %!error<icdf: distribution parameters must be numeric.> ...
-%! icdf ("Beta", p, 5, {2})
-%!error<icdf: chi2 distribution requires 1 parameter.> icdf ("chi2", p)
-%!error<icdf: Beta distribution requires 2 parameters.> icdf ("Beta", p, 5)
-%!error<icdf: Burr distribution requires 3 parameters.> icdf ("Burr", p, 5)
-%!error<icdf: Burr distribution requires 3 parameters.> icdf ("Burr", p, 5, 2)
+%! icdf ('Beta', p, 5, {2})
+%!error<icdf: chi2 distribution requires 1 parameter.> icdf ('chi2', p)
+%!error<icdf: Beta distribution requires 2 parameters.> icdf ('Beta', p, 5)
+%!error<icdf: Burr distribution requires 3 parameters.> icdf ('Burr', p, 5)
+%!error<icdf: Burr distribution requires 3 parameters.> icdf ('Burr', p, 5, 2)

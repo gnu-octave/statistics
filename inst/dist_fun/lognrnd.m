@@ -101,10 +101,10 @@ function r = lognrnd (mu, sigma, varargin)
   endif
 
   ## Check for class type
-  if (isa (mu, "single") || isa (sigma, "single"))
-    cls = "single";
+  if (isa (mu, 'single') || isa (sigma, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from lognormal distribution

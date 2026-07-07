@@ -97,10 +97,10 @@ function r = binornd (n, ps, varargin)
   endif
 
   ## Check for class type
-  if (isa (n, "single") || isa (ps, "single"))
-    cls = "single";
+  if (isa (n, 'single') || isa (ps, 'single'))
+    cls = 'single';
   else
-    cls = "double";
+    cls = 'double';
   endif
 
   ## Generate random sample from binomial distribution
@@ -110,7 +110,7 @@ function r = binornd (n, ps, varargin)
       tmp = rand (n, nel);
       r = sum (tmp < ps, 1);
       r = reshape (r, sz);
-      if (strcmp (cls, "single"))
+      if (strcmp (cls, 'single'))
         r = single (r);
       endif
     elseif ((n == 0) && (ps >= 0) && (ps <= 1))

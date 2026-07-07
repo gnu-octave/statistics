@@ -67,7 +67,7 @@ function y = hygepdf (x, m, k, n, vect_expand)
     vect_expand = [];
   endif
 
-  if strcmpi (vect_expand, "vectorexpand")
+  if strcmpi (vect_expand, 'vectorexpand')
     ## Expansion to improve vectorization of hyge calling functions.
     ## Project inputs over a 2D array with x(:) as a row vector and m,k,n as
     ## a column vector. each y(i,j) is hygepdf(x(j), m(i), k(i), n(i))
@@ -108,9 +108,9 @@ function y = hygepdf (x, m, k, n, vect_expand)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (m, "single")
-                        || isa (k, "single") || isa (n, "single"))
-    y = zeros (sz, "single");
+  if (isa (x, 'single') || isa (m, 'single')
+                        || isa (k, 'single') || isa (n, 'single'))
+    y = zeros (sz, 'single');
   else
     y = zeros (sz);
   endif
@@ -147,15 +147,15 @@ endfunction
 %! y1 = hygepdf (x, 500, 50, 100);
 %! y2 = hygepdf (x, 500, 60, 200);
 %! y3 = hygepdf (x, 500, 70, 300);
-%! plot (x, y1, "*b", x, y2, "*g", x, y3, "*r")
+%! plot (x, y1, '*b', x, y2, '*g', x, y3, '*r')
 %! grid on
 %! xlim ([0, 60])
 %! ylim ([0, 0.18])
-%! legend ({"m = 500, k = 50, μ = 100", "m = 500, k = 60, μ = 200", ...
-%!          "m = 500, k = 70, μ = 300"}, "location", "northeast")
-%! title ("Hypergeometric PDF")
-%! xlabel ("values in x (number of successes)")
-%! ylabel ("density")
+%! legend ({'m = 500, k = 50, μ = 100', 'm = 500, k = 60, μ = 200', ...
+%!          'm = 500, k = 70, μ = 300'}, 'location', 'northeast')
+%! title ('Hypergeometric PDF')
+%! xlabel ('values in x (number of successes)')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y
@@ -172,21 +172,21 @@ endfunction
 %!assert (hygepdf ([x, NaN], 4, 2, 2), [y, NaN], 3 * eps)
 
 ## Test class of input preserved
-%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps ("single"))
-%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps ("single"))
-%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps ("single"))
-%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps ("single"))
+%!assert (hygepdf (single ([x, NaN]), 4, 2, 2), single ([y, NaN]), eps ('single'))
+%!assert (hygepdf ([x, NaN], single (4), 2, 2), single ([y, NaN]), eps ('single'))
+%!assert (hygepdf ([x, NaN], 4, single (2), 2), single ([y, NaN]), eps ('single'))
+%!assert (hygepdf ([x, NaN], 4, 2, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Test vector expansion
 %!test
 %! z = zeros(3,5);
 %! z([4,5,6,8,9,12]) = [1, 0.5, 1/6, 0.5, 2/3, 1/6];
-%! assert (hygepdf (x, 4, [0, 1, 2], 2, "vectorexpand"), z, 3 * eps);
-%! assert (hygepdf (x, 4, [0, 1, 2]', 2, "vectorexpand"), z, 3 * eps);
-%! assert (hygepdf (x', 4, [0, 1, 2], 2, "vectorexpand"), z, 3 * eps);
-%! assert (hygepdf (2, 4, [0 ,1, 2], 2, "vectorexpand"), z(:,4), 3 * eps);
-%! assert (hygepdf (x, 4, 1, 2, "vectorexpand"), z(2,:), 3 *eps);
-%! assert (hygepdf ([NaN, x], 4, [0 1 2]', 2, "vectorexpand"), [NaN(3, 1), z], 3 * eps);
+%! assert (hygepdf (x, 4, [0, 1, 2], 2, 'vectorexpand'), z, 3 * eps);
+%! assert (hygepdf (x, 4, [0, 1, 2]', 2, 'vectorexpand'), z, 3 * eps);
+%! assert (hygepdf (x', 4, [0, 1, 2], 2, 'vectorexpand'), z, 3 * eps);
+%! assert (hygepdf (2, 4, [0 ,1, 2], 2, 'vectorexpand'), z(:,4), 3 * eps);
+%! assert (hygepdf (x, 4, 1, 2, 'vectorexpand'), z(2,:), 3 *eps);
+%! assert (hygepdf ([NaN, x], 4, [0 1 2]', 2, 'vectorexpand'), [NaN(3, 1), z], 3 * eps);
 
 ## Test input validation
 %!error<hygepdf: function called with too few input arguments.> hygepdf ()

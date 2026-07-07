@@ -104,7 +104,7 @@ function D = pdist (X, varargin)
   endif
 
   ## Add default values
-  Distance = "euclidean";   # Distance metric
+  Distance = 'euclidean';   # Distance metric
   DistParameter = [];       # Distance parameter
 
   ## Parse additional Distance metric and Distance parameter (if available)
@@ -193,13 +193,13 @@ function D = pdist (X, varargin)
     iy = order(:,2);
 
     switch (Distance)
-      case "euclidean"
+      case 'euclidean'
         D = sqrt (sum ((X(ix,:) - X(iy,:)) .^ 2, 2))';
 
-      case "squaredeuclidean"
+      case 'squaredeuclidean'
         D = sum ((X(ix,:) - X(iy,:)) .^ 2, 2)';
 
-      case "seuclidean"
+      case 'seuclidean'
         if (isempty (DistParameter))
           DistParameter = std (X, [], 1);
         else
@@ -216,7 +216,7 @@ function D = pdist (X, varargin)
         DistParameter(DistParameter == 0) = 1;
         D = sqrt (sum (((X(ix,:) - X(iy,:)) ./ DistParameter) .^ 2, 2))';
 
-      case "mahalanobis"
+      case 'mahalanobis'
         if (isempty (DistParameter))
           DistParameter = cov (X(! any (isnan (X), 2),:));
         else
@@ -240,10 +240,10 @@ function D = pdist (X, varargin)
         endif
         D = sqrt (sum ((dxx * DP_inv) .* dxx, 2))';
 
-      case "cityblock"
+      case 'cityblock'
         D = sum (abs (X(ix,:) - X(iy,:)), 2)';
 
-      case "minkowski"
+      case 'minkowski'
         if (isempty (DistParameter))
           DistParameter = 2;
         else
@@ -256,14 +256,14 @@ function D = pdist (X, varargin)
         D = (sum (abs (X(ix,:) - X(iy,:)) .^ DistParameter, 2) .^ ...
              (1 / DistParameter))';
 
-      case "chebychev"
+      case 'chebychev'
         D = max (abs (X(ix,:) - X(iy,:)), [], 2)';
 
-      case "cosine"
+      case 'cosine'
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
         D = (1 - sum (X(ix,:) .* X(iy,:), 2) .* sx(ix) .* sx(iy))';
 
-      case "correlation"
+      case 'correlation'
         mX = mean (X(ix,:), 2);
         mY = mean (X(iy,:), 2);
         xy = sum ((X(ix,:) - mX) .* (X(iy,:) - mY), 2);
@@ -271,14 +271,14 @@ function D = pdist (X, varargin)
         yy = sqrt (sum ((X(iy,:) - mY) .^ 2, 2));
         D = (1 - xy ./ (xx .* yy))';
 
-      case "hamming"
+      case 'hamming'
         D = mean (X(ix,:) != X(iy,:), 2)';
 
-      case "jaccard"
+      case 'jaccard'
         nz = (X(ix,:) != 0 | X(iy,:) != 0);
         D = (sum ((X(ix,:) != X(iy,:)) & nz, 2) ./ sum (nz, 2))';
 
-      case "spearman"
+      case 'spearman'
         rX = zeros (size (X));
         for i = 1:N
           rX(i,:) = tiedrank (X(i,:));
@@ -296,7 +296,7 @@ function D = pdist (X, varargin)
     D = zeros (1, num_pairs);
 
     switch (Distance)
-      case "euclidean"
+      case 'euclidean'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -307,7 +307,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "squaredeuclidean"
+      case 'squaredeuclidean'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -318,7 +318,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "seuclidean"
+      case 'seuclidean'
         if (isempty (DistParameter))
           DistParameter = std (X, [], 1);
         else
@@ -343,7 +343,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "mahalanobis"
+      case 'mahalanobis'
         if (isempty (DistParameter))
           DistParameter = cov (X(! any (isnan (X), 2),:));
         else
@@ -374,7 +374,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "cityblock"
+      case 'cityblock'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -384,7 +384,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "minkowski"
+      case 'minkowski'
         if (isempty (DistParameter))
           DistParameter = 2;
         else
@@ -405,7 +405,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "chebychev"
+      case 'chebychev'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -415,7 +415,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "cosine"
+      case 'cosine'
         sx = sum (X .^ 2, 2) .^ (-1 / 2);
         idx = 0;
         for i = 1:(N-1)
@@ -427,7 +427,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "correlation"
+      case 'correlation'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -445,7 +445,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "hamming"
+      case 'hamming'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -455,7 +455,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "jaccard"
+      case 'jaccard'
         idx = 0;
         for i = 1:(N-1)
           Xi = X(i,:);
@@ -467,7 +467,7 @@ function D = pdist (X, varargin)
           endfor
         endfor
 
-      case "spearman"
+      case 'spearman'
         rX = zeros (size (X));
         for i = 1:N
           rX(i,:) = tiedrank (X(i,:));
@@ -498,37 +498,37 @@ endfunction
 %! x = [1 2 3; 4 5 6; 7 8 9; 3 2 1];
 %!assert (pdist (xy),                 [1.000 8.602 7.071 8.062 6.403 2.000], t);
 %!assert (pdist (xy, eucl),           [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, "euclidean"),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, "seuclidean"),   [0.380 2.735 2.363 2.486 2.070 0.561], t);
-%!assert (pdist (xy, "mahalanobis"),  [1.384 1.967 2.446 2.384 1.535 2.045], t);
-%!assert (pdist (xy, "cityblock"),    [1.000 12.00 10.00 11.00 9.000 2.000], t);
-%!assert (pdist (xy, "minkowski"),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
-%!assert (pdist (xy, "minkowski", 3), [1.000 7.763 6.299 7.410 5.738 2.000], t);
-%!assert (pdist (xy, "cosine"),       [0.000 0.349 0.231 0.349 0.231 0.013], t);
-%!assert (pdist (xy, "correlation"),  [0.000 2.000 0.000 2.000 0.000 2.000], t);
-%!assert (pdist (xy, "spearman"),     [0.000 2.000 0.000 2.000 0.000 2.000], t);
-%!assert (pdist (xy, "hamming"),      [0.500 1.000 1.000 1.000 1.000 0.500], t);
-%!assert (pdist (xy, "jaccard"),      [1.000 1.000 1.000 1.000 1.000 0.500], t);
-%!assert (pdist (xy, "chebychev"),    [1.000 7.000 5.000 7.000 5.000 2.000], t);
+%!assert (pdist (xy, 'euclidean'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert (pdist (xy, 'seuclidean'),   [0.380 2.735 2.363 2.486 2.070 0.561], t);
+%!assert (pdist (xy, 'mahalanobis'),  [1.384 1.967 2.446 2.384 1.535 2.045], t);
+%!assert (pdist (xy, 'cityblock'),    [1.000 12.00 10.00 11.00 9.000 2.000], t);
+%!assert (pdist (xy, 'minkowski'),    [1.000 8.602 7.071 8.062 6.403 2.000], t);
+%!assert (pdist (xy, 'minkowski', 3), [1.000 7.763 6.299 7.410 5.738 2.000], t);
+%!assert (pdist (xy, 'cosine'),       [0.000 0.349 0.231 0.349 0.231 0.013], t);
+%!assert (pdist (xy, 'correlation'),  [0.000 2.000 0.000 2.000 0.000 2.000], t);
+%!assert (pdist (xy, 'spearman'),     [0.000 2.000 0.000 2.000 0.000 2.000], t);
+%!assert (pdist (xy, 'hamming'),      [0.500 1.000 1.000 1.000 1.000 0.500], t);
+%!assert (pdist (xy, 'jaccard'),      [1.000 1.000 1.000 1.000 1.000 0.500], t);
+%!assert (pdist (xy, 'chebychev'),    [1.000 7.000 5.000 7.000 5.000 2.000], t);
 %!assert (pdist (x), [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, "euclidean"), ...
+%!assert (pdist (x, 'euclidean'), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
 %!assert (pdist (x, eucl), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, "squaredeuclidean"), [27, 108, 8, 27, 35, 116]);
-%!assert (pdist (x, "seuclidean"), ...
+%!assert (pdist (x, 'squaredeuclidean'), [27, 108, 8, 27, 35, 116]);
+%!assert (pdist (x, 'seuclidean'), ...
 %!        [1.8071, 3.6142, 0.9831, 1.8071, 1.8143, 3.4854], 1e-4);
 %!warning<pdist: matrix is close to singular> ...
-%! pdist (x, "mahalanobis");
-%!assert (pdist (x, "cityblock"), [9, 18, 4, 9, 9, 18]);
-%!assert (pdist (x, "minkowski"), ...
+%! pdist (x, 'mahalanobis');
+%!assert (pdist (x, 'cityblock'), [9, 18, 4, 9, 9, 18]);
+%!assert (pdist (x, 'minkowski'), ...
 %!        [5.1962, 10.3923, 2.8284, 5.1962, 5.9161, 10.7703], 1e-4);
-%!assert (pdist (x, "minkowski", 3), ...
+%!assert (pdist (x, 'minkowski', 3), ...
 %!        [4.3267, 8.6535, 2.5198, 4.3267, 5.3485, 9.2521], 1e-4);
-%!assert (pdist (x, "cosine"), ...
+%!assert (pdist (x, 'cosine'), ...
 %!        [0.0254, 0.0406, 0.2857, 0.0018, 0.1472, 0.1173], 1e-4);
-%!assert (pdist (x, "correlation"), [0, 0, 2, 0, 2, 2], 1e-14);
-%!assert (pdist (x, "spearman"), [0, 0, 2, 0, 2, 2], 1e-14);
-%!assert (pdist (x, "hamming"), [1, 1, 2/3, 1, 1, 1]);
-%!assert (pdist (x, "jaccard"), [1, 1, 2/3, 1, 1, 1]);
-%!assert (pdist (x, "chebychev"), [3, 6, 2, 3, 5, 8]);
+%!assert (pdist (x, 'correlation'), [0, 0, 2, 0, 2, 2], 1e-14);
+%!assert (pdist (x, 'spearman'), [0, 0, 2, 0, 2, 2], 1e-14);
+%!assert (pdist (x, 'hamming'), [1, 1, 2/3, 1, 1, 1]);
+%!assert (pdist (x, 'jaccard'), [1, 1, 2/3, 1, 1, 1]);
+%!assert (pdist (x, 'chebychev'), [3, 6, 2, 3, 5, 8]);

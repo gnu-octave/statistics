@@ -105,43 +105,43 @@ function p = cdf (name, x, varargin)
 
   ## implemented functions
   persistent allDF = { ...
-    {"beta"     , "Beta"},                      @betacdf,      2, ...
-    {"bino"     , "Binomial"},                  @binocdf,      2, ...
-    {"bisa"     , "Birnbaum-Saunders"},         @bisacdf,      2, ...
-    {"burr"     , "Burr"},                      @burrcdf,      3, ...
-    {"cauchy"   , "Cauchy"},                    @cauchycdf,    2, ...
-    {"chi2"     , "Chi-squared"},               @chi2cdf,      1, ...
-    {"ev"       , "Extreme Value"},             @evcdf,        2, ...
-    {"exp"      , "Exponential"},               @expcdf,       1, ...
-    {"f"        , "F-Distribution"},            @fcdf,         2, ...
-    {"gam"      , "Gamma"},                     @gamcdf,       2, ...
-    {"geo"      , "Geometric"},                 @geocdf,       1, ...
-    {"gev"      , "Generalized Extreme Value"}, @gevcdf,       3, ...
-    {"gp"       , "Generalized Pareto"},        @gpcdf,        3, ...
-    {"gumbel"   , "Gumbel"},                    @gumbelcdf,    2, ...
-    {"hn"       , "Half-normal"},               @hncdf,        2, ...
-    {"hyge"     , "Hypergeometric"},            @hygecdf,      3, ...
-    {"invg"     , "Inverse Gaussian"},          @invgcdf,      2, ...
-    {"laplace"  , "Laplace"},                   @laplacecdf,   2, ...
-    {"logi"     , "Logistic"},                  @logicdf,      2, ...
-    {"logl"     , "Log-Logistic"},              @loglcdf,      2, ...
-    {"logn"     , "Lognormal"},                 @logncdf,      2, ...
-    {"naka"     , "Nakagami"},                  @nakacdf,      2, ...
-    {"nbin"     , "Negative Binomial"},         @nbincdf,      2, ...
-    {"ncf"      , "Noncentral F-Distribution"}, @ncfcdf,       3, ...
-    {"nct"      , "Noncentral Student T"},      @nctcdf,       2, ...
-    {"ncx2"     , "Noncentral Chi-squared"},    @ncx2cdf,      2, ...
-    {"norm"     , "Normal"},                    @normcdf,      2, ...
-    {"poiss"    , "Poisson"},                   @poisscdf,     1, ...
-    {"rayl"     , "Rayleigh"},                  @raylcdf,      1, ...
-    {"rice"     , "Rician"},                    @ricecdf,      2, ...
-    {"t"        , "Student T"},                 @tcdf,         1, ...
-    {"tls"      , "location-scale T"},          @tlscdf,       3, ...
-    {"tri"      , "Triangular"},                @tricdf,       3, ...
-    {"unid"     , "Discrete Uniform"},          @unidcdf,      1, ...
-    {"unif"     , "Uniform"},                   @unifcdf,      2, ...
-    {"vm"       , "Von Mises"},                 @vmcdf,        2, ...
-    {"wbl"      , "Weibull"},                   @wblcdf,       2};
+    {'beta'     , 'Beta'},                      @betacdf,      2, ...
+    {'bino'     , 'Binomial'},                  @binocdf,      2, ...
+    {'bisa'     , 'Birnbaum-Saunders'},         @bisacdf,      2, ...
+    {'burr'     , 'Burr'},                      @burrcdf,      3, ...
+    {'cauchy'   , 'Cauchy'},                    @cauchycdf,    2, ...
+    {'chi2'     , 'Chi-squared'},               @chi2cdf,      1, ...
+    {'ev'       , 'Extreme Value'},             @evcdf,        2, ...
+    {'exp'      , 'Exponential'},               @expcdf,       1, ...
+    {'f'        , 'F-Distribution'},            @fcdf,         2, ...
+    {'gam'      , 'Gamma'},                     @gamcdf,       2, ...
+    {'geo'      , 'Geometric'},                 @geocdf,       1, ...
+    {'gev'      , 'Generalized Extreme Value'}, @gevcdf,       3, ...
+    {'gp'       , 'Generalized Pareto'},        @gpcdf,        3, ...
+    {'gumbel'   , 'Gumbel'},                    @gumbelcdf,    2, ...
+    {'hn'       , 'Half-normal'},               @hncdf,        2, ...
+    {'hyge'     , 'Hypergeometric'},            @hygecdf,      3, ...
+    {'invg'     , 'Inverse Gaussian'},          @invgcdf,      2, ...
+    {'laplace'  , 'Laplace'},                   @laplacecdf,   2, ...
+    {'logi'     , 'Logistic'},                  @logicdf,      2, ...
+    {'logl'     , 'Log-Logistic'},              @loglcdf,      2, ...
+    {'logn'     , 'Lognormal'},                 @logncdf,      2, ...
+    {'naka'     , 'Nakagami'},                  @nakacdf,      2, ...
+    {'nbin'     , 'Negative Binomial'},         @nbincdf,      2, ...
+    {'ncf'      , 'Noncentral F-Distribution'}, @ncfcdf,       3, ...
+    {'nct'      , 'Noncentral Student T'},      @nctcdf,       2, ...
+    {'ncx2'     , 'Noncentral Chi-squared'},    @ncx2cdf,      2, ...
+    {'norm'     , 'Normal'},                    @normcdf,      2, ...
+    {'poiss'    , 'Poisson'},                   @poisscdf,     1, ...
+    {'rayl'     , 'Rayleigh'},                  @raylcdf,      1, ...
+    {'rice'     , 'Rician'},                    @ricecdf,      2, ...
+    {'t'        , 'Student T'},                 @tcdf,         1, ...
+    {'tls'      , 'location-scale T'},          @tlscdf,       3, ...
+    {'tri'      , 'Triangular'},                @tricdf,       3, ...
+    {'unid'     , 'Discrete Uniform'},          @unidcdf,      1, ...
+    {'unif'     , 'Uniform'},                   @unifcdf,      2, ...
+    {'vm'       , 'Von Mises'},                 @vmcdf,        2, ...
+    {'wbl'      , 'Weibull'},                   @wblcdf,       2};
 
   ## Check NAME being a char string
   if (! ischar (name))
@@ -170,7 +170,7 @@ function p = cdf (name, x, varargin)
 
     if (nargs == cdf_args{idx} + 1)
       ## Check for "upper" option
-      if (! strcmpi (varargin{nargs}, "upper"))
+      if (! strcmpi (varargin{nargs}, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         ## Check that all remaining distribution parameters are numeric
@@ -208,94 +208,94 @@ endfunction
 ## Test results
 %!shared x
 %! x = [1:5];
-%!assert (cdf ("Beta", x, 5, 2), betacdf (x, 5, 2))
-%!assert (cdf ("beta", x, 5, 2, "upper"), betacdf (x, 5, 2, "upper"))
-%!assert (cdf ("Binomial", x, 5, 2), binocdf (x, 5, 2))
-%!assert (cdf ("bino", x, 5, 2, "upper"), binocdf (x, 5, 2, "upper"))
-%!assert (cdf ("Birnbaum-Saunders", x, 5, 2), bisacdf (x, 5, 2))
-%!assert (cdf ("bisa", x, 5, 2, "upper"), bisacdf (x, 5, 2, "upper"))
-%!assert (cdf ("Burr", x, 5, 2, 2), burrcdf (x, 5, 2, 2))
-%!assert (cdf ("burr", x, 5, 2, 2, "upper"), burrcdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Cauchy", x, 5, 2), cauchycdf (x, 5, 2))
-%!assert (cdf ("cauchy", x, 5, 2, "upper"), cauchycdf (x, 5, 2, "upper"))
-%!assert (cdf ("Chi-squared", x, 5), chi2cdf (x, 5))
-%!assert (cdf ("chi2", x, 5, "upper"), chi2cdf (x, 5, "upper"))
-%!assert (cdf ("Extreme Value", x, 5, 2), evcdf (x, 5, 2))
-%!assert (cdf ("ev", x, 5, 2, "upper"), evcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Exponential", x, 5), expcdf (x, 5))
-%!assert (cdf ("exp", x, 5, "upper"), expcdf (x, 5, "upper"))
-%!assert (cdf ("F-Distribution", x, 5, 2), fcdf (x, 5, 2))
-%!assert (cdf ("f", x, 5, 2, "upper"), fcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Gamma", x, 5, 2), gamcdf (x, 5, 2))
-%!assert (cdf ("gam", x, 5, 2, "upper"), gamcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Geometric", x, 5), geocdf (x, 5))
-%!assert (cdf ("geo", x, 5, "upper"), geocdf (x, 5, "upper"))
-%!assert (cdf ("Generalized Extreme Value", x, 5, 2, 2), gevcdf (x, 5, 2, 2))
-%!assert (cdf ("gev", x, 5, 2, 2, "upper"), gevcdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Generalized Pareto", x, 5, 2, 2), gpcdf (x, 5, 2, 2))
-%!assert (cdf ("gp", x, 5, 2, 2, "upper"), gpcdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Gumbel", x, 5, 2), gumbelcdf (x, 5, 2))
-%!assert (cdf ("gumbel", x, 5, 2, "upper"), gumbelcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Half-normal", x, 5, 2), hncdf (x, 5, 2))
-%!assert (cdf ("hn", x, 5, 2, "upper"), hncdf (x, 5, 2, "upper"))
-%!assert (cdf ("Hypergeometric", x, 5, 2, 2), hygecdf (x, 5, 2, 2))
-%!assert (cdf ("hyge", x, 5, 2, 2, "upper"), hygecdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Inverse Gaussian", x, 5, 2), invgcdf (x, 5, 2))
-%!assert (cdf ("invg", x, 5, 2, "upper"), invgcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Laplace", x, 5, 2), laplacecdf (x, 5, 2))
-%!assert (cdf ("laplace", x, 5, 2, "upper"), laplacecdf (x, 5, 2, "upper"))
-%!assert (cdf ("Logistic", x, 5, 2), logicdf (x, 5, 2))
-%!assert (cdf ("logi", x, 5, 2, "upper"), logicdf (x, 5, 2, "upper"))
-%!assert (cdf ("Log-Logistic", x, 5, 2), loglcdf (x, 5, 2))
-%!assert (cdf ("logl", x, 5, 2, "upper"), loglcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Lognormal", x, 5, 2), logncdf (x, 5, 2))
-%!assert (cdf ("logn", x, 5, 2, "upper"), logncdf (x, 5, 2, "upper"))
-%!assert (cdf ("Nakagami", x, 5, 2), nakacdf (x, 5, 2))
-%!assert (cdf ("naka", x, 5, 2, "upper"), nakacdf (x, 5, 2, "upper"))
-%!assert (cdf ("Negative Binomial", x, 5, 2), nbincdf (x, 5, 2))
-%!assert (cdf ("nbin", x, 5, 2, "upper"), nbincdf (x, 5, 2, "upper"))
-%!assert (cdf ("Noncentral F-Distribution", x, 5, 2, 2), ncfcdf (x, 5, 2, 2))
-%!assert (cdf ("ncf", x, 5, 2, 2, "upper"), ncfcdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Noncentral Student T", x, 5, 2), nctcdf (x, 5, 2))
-%!assert (cdf ("nct", x, 5, 2, "upper"), nctcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Noncentral Chi-Squared", x, 5, 2), ncx2cdf (x, 5, 2))
-%!assert (cdf ("ncx2", x, 5, 2, "upper"), ncx2cdf (x, 5, 2, "upper"))
-%!assert (cdf ("Normal", x, 5, 2), normcdf (x, 5, 2))
-%!assert (cdf ("norm", x, 5, 2, "upper"), normcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Poisson", x, 5), poisscdf (x, 5))
-%!assert (cdf ("poiss", x, 5, "upper"), poisscdf (x, 5, "upper"))
-%!assert (cdf ("Rayleigh", x, 5), raylcdf (x, 5))
-%!assert (cdf ("rayl", x, 5, "upper"), raylcdf (x, 5, "upper"))
-%!assert (cdf ("Rician", x, 5, 1), ricecdf (x, 5, 1))
-%!assert (cdf ("rice", x, 5, 1, "upper"), ricecdf (x, 5, 1, "upper"))
-%!assert (cdf ("Student T", x, 5), tcdf (x, 5))
-%!assert (cdf ("t", x, 5, "upper"), tcdf (x, 5, "upper"))
-%!assert (cdf ("location-scale T", x, 5, 1, 2), tlscdf (x, 5, 1, 2))
-%!assert (cdf ("tls", x, 5, 1, 2, "upper"), tlscdf (x, 5, 1, 2, "upper"))
-%!assert (cdf ("Triangular", x, 5, 2, 2), tricdf (x, 5, 2, 2))
-%!assert (cdf ("tri", x, 5, 2, 2, "upper"), tricdf (x, 5, 2, 2, "upper"))
-%!assert (cdf ("Discrete Uniform", x, 5), unidcdf (x, 5))
-%!assert (cdf ("unid", x, 5, "upper"), unidcdf (x, 5, "upper"))
-%!assert (cdf ("Uniform", x, 5, 2), unifcdf (x, 5, 2))
-%!assert (cdf ("unif", x, 5, 2, "upper"), unifcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Von Mises", x, 5, 2), vmcdf (x, 5, 2))
-%!assert (cdf ("vm", x, 5, 2, "upper"), vmcdf (x, 5, 2, "upper"))
-%!assert (cdf ("Weibull", x, 5, 2), wblcdf (x, 5, 2))
-%!assert (cdf ("wbl", x, 5, 2, "upper"), wblcdf (x, 5, 2, "upper"))
+%!assert (cdf ('Beta', x, 5, 2), betacdf (x, 5, 2))
+%!assert (cdf ('beta', x, 5, 2, 'upper'), betacdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Binomial', x, 5, 2), binocdf (x, 5, 2))
+%!assert (cdf ('bino', x, 5, 2, 'upper'), binocdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Birnbaum-Saunders', x, 5, 2), bisacdf (x, 5, 2))
+%!assert (cdf ('bisa', x, 5, 2, 'upper'), bisacdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Burr', x, 5, 2, 2), burrcdf (x, 5, 2, 2))
+%!assert (cdf ('burr', x, 5, 2, 2, 'upper'), burrcdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Cauchy', x, 5, 2), cauchycdf (x, 5, 2))
+%!assert (cdf ('cauchy', x, 5, 2, 'upper'), cauchycdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Chi-squared', x, 5), chi2cdf (x, 5))
+%!assert (cdf ('chi2', x, 5, 'upper'), chi2cdf (x, 5, 'upper'))
+%!assert (cdf ('Extreme Value', x, 5, 2), evcdf (x, 5, 2))
+%!assert (cdf ('ev', x, 5, 2, 'upper'), evcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Exponential', x, 5), expcdf (x, 5))
+%!assert (cdf ('exp', x, 5, 'upper'), expcdf (x, 5, 'upper'))
+%!assert (cdf ('F-Distribution', x, 5, 2), fcdf (x, 5, 2))
+%!assert (cdf ('f', x, 5, 2, 'upper'), fcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Gamma', x, 5, 2), gamcdf (x, 5, 2))
+%!assert (cdf ('gam', x, 5, 2, 'upper'), gamcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Geometric', x, 5), geocdf (x, 5))
+%!assert (cdf ('geo', x, 5, 'upper'), geocdf (x, 5, 'upper'))
+%!assert (cdf ('Generalized Extreme Value', x, 5, 2, 2), gevcdf (x, 5, 2, 2))
+%!assert (cdf ('gev', x, 5, 2, 2, 'upper'), gevcdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Generalized Pareto', x, 5, 2, 2), gpcdf (x, 5, 2, 2))
+%!assert (cdf ('gp', x, 5, 2, 2, 'upper'), gpcdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Gumbel', x, 5, 2), gumbelcdf (x, 5, 2))
+%!assert (cdf ('gumbel', x, 5, 2, 'upper'), gumbelcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Half-normal', x, 5, 2), hncdf (x, 5, 2))
+%!assert (cdf ('hn', x, 5, 2, 'upper'), hncdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Hypergeometric', x, 5, 2, 2), hygecdf (x, 5, 2, 2))
+%!assert (cdf ('hyge', x, 5, 2, 2, 'upper'), hygecdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Inverse Gaussian', x, 5, 2), invgcdf (x, 5, 2))
+%!assert (cdf ('invg', x, 5, 2, 'upper'), invgcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Laplace', x, 5, 2), laplacecdf (x, 5, 2))
+%!assert (cdf ('laplace', x, 5, 2, 'upper'), laplacecdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Logistic', x, 5, 2), logicdf (x, 5, 2))
+%!assert (cdf ('logi', x, 5, 2, 'upper'), logicdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Log-Logistic', x, 5, 2), loglcdf (x, 5, 2))
+%!assert (cdf ('logl', x, 5, 2, 'upper'), loglcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Lognormal', x, 5, 2), logncdf (x, 5, 2))
+%!assert (cdf ('logn', x, 5, 2, 'upper'), logncdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Nakagami', x, 5, 2), nakacdf (x, 5, 2))
+%!assert (cdf ('naka', x, 5, 2, 'upper'), nakacdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Negative Binomial', x, 5, 2), nbincdf (x, 5, 2))
+%!assert (cdf ('nbin', x, 5, 2, 'upper'), nbincdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Noncentral F-Distribution', x, 5, 2, 2), ncfcdf (x, 5, 2, 2))
+%!assert (cdf ('ncf', x, 5, 2, 2, 'upper'), ncfcdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Noncentral Student T', x, 5, 2), nctcdf (x, 5, 2))
+%!assert (cdf ('nct', x, 5, 2, 'upper'), nctcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Noncentral Chi-Squared', x, 5, 2), ncx2cdf (x, 5, 2))
+%!assert (cdf ('ncx2', x, 5, 2, 'upper'), ncx2cdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Normal', x, 5, 2), normcdf (x, 5, 2))
+%!assert (cdf ('norm', x, 5, 2, 'upper'), normcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Poisson', x, 5), poisscdf (x, 5))
+%!assert (cdf ('poiss', x, 5, 'upper'), poisscdf (x, 5, 'upper'))
+%!assert (cdf ('Rayleigh', x, 5), raylcdf (x, 5))
+%!assert (cdf ('rayl', x, 5, 'upper'), raylcdf (x, 5, 'upper'))
+%!assert (cdf ('Rician', x, 5, 1), ricecdf (x, 5, 1))
+%!assert (cdf ('rice', x, 5, 1, 'upper'), ricecdf (x, 5, 1, 'upper'))
+%!assert (cdf ('Student T', x, 5), tcdf (x, 5))
+%!assert (cdf ('t', x, 5, 'upper'), tcdf (x, 5, 'upper'))
+%!assert (cdf ('location-scale T', x, 5, 1, 2), tlscdf (x, 5, 1, 2))
+%!assert (cdf ('tls', x, 5, 1, 2, 'upper'), tlscdf (x, 5, 1, 2, 'upper'))
+%!assert (cdf ('Triangular', x, 5, 2, 2), tricdf (x, 5, 2, 2))
+%!assert (cdf ('tri', x, 5, 2, 2, 'upper'), tricdf (x, 5, 2, 2, 'upper'))
+%!assert (cdf ('Discrete Uniform', x, 5), unidcdf (x, 5))
+%!assert (cdf ('unid', x, 5, 'upper'), unidcdf (x, 5, 'upper'))
+%!assert (cdf ('Uniform', x, 5, 2), unifcdf (x, 5, 2))
+%!assert (cdf ('unif', x, 5, 2, 'upper'), unifcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Von Mises', x, 5, 2), vmcdf (x, 5, 2))
+%!assert (cdf ('vm', x, 5, 2, 'upper'), vmcdf (x, 5, 2, 'upper'))
+%!assert (cdf ('Weibull', x, 5, 2), wblcdf (x, 5, 2))
+%!assert (cdf ('wbl', x, 5, 2, 'upper'), wblcdf (x, 5, 2, 'upper'))
 
 ## Test input validation
 %!error<cdf: distribution NAME must be a char string.> cdf (1)
-%!error<cdf: distribution NAME must be a char string.> cdf ({"beta"})
-%!error<cdf: X must be numeric.> cdf ("beta", {[1 2 3 4 5]})
-%!error<cdf: X must be numeric.> cdf ("beta", "text")
-%!error<cdf: values in X must be real.> cdf ("beta", 1+i)
+%!error<cdf: distribution NAME must be a char string.> cdf ({'beta'})
+%!error<cdf: X must be numeric.> cdf ('beta', {[1 2 3 4 5]})
+%!error<cdf: X must be numeric.> cdf ('beta', 'text')
+%!error<cdf: values in X must be real.> cdf ('beta', 1+i)
 %!error<cdf: distribution parameters must be numeric.> ...
-%! cdf ("Beta", x, "a", 2)
+%! cdf ('Beta', x, 'a', 2)
 %!error<cdf: distribution parameters must be numeric.> ...
-%! cdf ("Beta", x, 5, "")
+%! cdf ('Beta', x, 5, '')
 %!error<cdf: distribution parameters must be numeric.> ...
-%! cdf ("Beta", x, 5, {2})
-%!error<cdf: chi2 distribution requires 1 parameter.> cdf ("chi2", x)
-%!error<cdf: Beta distribution requires 2 parameters.> cdf ("Beta", x, 5)
-%!error<cdf: Burr distribution requires 3 parameters.> cdf ("Burr", x, 5)
-%!error<cdf: Burr distribution requires 3 parameters.> cdf ("Burr", x, 5, 2)
+%! cdf ('Beta', x, 5, {2})
+%!error<cdf: chi2 distribution requires 1 parameter.> cdf ('chi2', x)
+%!error<cdf: Beta distribution requires 2 parameters.> cdf ('Beta', x, 5)
+%!error<cdf: Burr distribution requires 3 parameters.> cdf ('Burr', x, 5)
+%!error<cdf: Burr distribution requires 3 parameters.> cdf ('Burr', x, 5, 2)

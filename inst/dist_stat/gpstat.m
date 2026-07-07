@@ -75,10 +75,10 @@ function [m, v] = gpstat (k, sigma, theta)
   sigma(sigma <= 0) = NaN;
 
   ## Check for appropriate class
-  if (isa (k, "single") || isa (sigma, "single") || isa (theta, "single"));
-    is_class = "single";
+  if (isa (k, 'single') || isa (sigma, 'single') || isa (theta, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Prepare output
@@ -115,8 +115,8 @@ endfunction
 %!error<gpstat: function called with too few input arguments.> gpstat (1)
 %!error<gpstat: function called with too few input arguments.> gpstat (1, 2)
 %!error<gpstat: K, SIGMA, and MU must be numeric.> gpstat ({}, 2, 3)
-%!error<gpstat: K, SIGMA, and MU must be numeric.> gpstat (1, "", 3)
-%!error<gpstat: K, SIGMA, and MU must be numeric.> gpstat (1, 2, "")
+%!error<gpstat: K, SIGMA, and MU must be numeric.> gpstat (1, '', 3)
+%!error<gpstat: K, SIGMA, and MU must be numeric.> gpstat (1, 2, '')
 %!error<gpstat: K, SIGMA, and MU must not be complex.> gpstat (i, 2, 3)
 %!error<gpstat: K, SIGMA, and MU must not be complex.> gpstat (1, i, 3)
 %!error<gpstat: K, SIGMA, and MU must not be complex.> gpstat (1, 2, i)
@@ -134,9 +134,9 @@ endfunction
 %!assert (gpstat (x, ones (1,6), zeros (1,6)), y, eps)
 
 ## Test class of input preserved
-%!assert (gpstat (single (x), 1, 0), single (y), eps("single"))
-%!assert (gpstat (x, single (1), 0), single (y), eps("single"))
-%!assert (gpstat (x, 1, single (0)), single (y), eps("single"))
-%!assert (gpstat (single ([x, NaN]), 1, 0), single ([y, NaN]), eps("single"))
-%!assert (gpstat ([x, NaN], single (1), 0), single ([y, NaN]), eps("single"))
-%!assert (gpstat ([x, NaN], 1, single (0)), single ([y, NaN]), eps("single"))
+%!assert (gpstat (single (x), 1, 0), single (y), eps('single'))
+%!assert (gpstat (x, single (1), 0), single (y), eps('single'))
+%!assert (gpstat (x, 1, single (0)), single (y), eps('single'))
+%!assert (gpstat (single ([x, NaN]), 1, 0), single ([y, NaN]), eps('single'))
+%!assert (gpstat ([x, NaN], single (1), 0), single ([y, NaN]), eps('single'))
+%!assert (gpstat ([x, NaN], 1, single (0)), single ([y, NaN]), eps('single'))

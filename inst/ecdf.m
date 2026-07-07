@@ -99,14 +99,14 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   cens = zeros (size (x));
   freq = ones (size (x));
   alpha = 0.05;
-  fname = "cdf";
-  bound = "off";
+  fname = 'cdf';
+  bound = 'off';
   ## Check for remaining varargins and parse extra parameters
   if (length (varargin) > 0 && mod (numel (varargin), 2) == 0)
     [~, prop] = parseparams (varargin);
     while (! isempty (prop))
       switch (lower (prop{1}))
-        case "censoring"
+        case 'censoring'
           cens = prop{2};
           ## Check for valid input
           if (! isequal (size (x), size (cens)))
@@ -116,7 +116,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
           if (islogical (cens))
             cens = double (cens);
           endif
-        case "frequency"
+        case 'frequency'
           freq = prop{2};
           ## Check for valid input
           if (! isequal (size (x), size (freq)))
@@ -126,22 +126,22 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
           if (islogical (freq))
             freq = double (freq);
           endif
-        case "alpha"
+        case 'alpha'
           alpha = prop{2};
           ## Check for valid alpha value
           if (numel (alpha) != 1 || ! isnumeric (alpha) || alpha <= 0 || alpha >= 1)
             error ("ecdf: alpha must be a numeric scalar in the range (0,1).");
           endif
-        case "function"
+        case 'function'
           fname = prop{2};
           ## Check for valid function name option
-          if (sum (strcmpi (fname, {"cdf", "survivor", "cumulative hazard"})) < 1)
+          if (sum (strcmpi (fname, {'cdf', 'survivor', 'cumulative hazard'})) < 1)
             error ("ecdf: wrong function name.");
           endif
-        case "bounds"
+        case 'bounds'
           bound = prop{2};
           ## Check for valid bounds option
-          if (! (strcmpi (bound, "off") || strcmpi (bound, "on")))
+          if (! (strcmpi (bound, 'off') || strcmpi (bound, 'on')))
             error ("ecdf: wrong bounds.");
           endif
         otherwise
@@ -165,7 +165,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   cens = cens(sr);
   freq = freq(sr);
   ## Keep class for data (single | double)
-  if (isa (x, "single"))
+  if (isa (x, 'single'))
     freq = single (freq);
   endif
   ## Calculate cumulative frequencies
@@ -187,20 +187,20 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   Death = Death(Death > 0);
   ## Estimate function
   switch (fname)
-    case "cdf"
+    case 'cdf'
       S = cumprod (1 - Death ./ NRisk);
       Fun_x = 1 - S;
       Fzero = 0;
-      fdisp = "F(x)";
-    case "survivor"
+      fdisp = 'F(x)';
+    case 'survivor'
       S = cumprod (1 - Death ./ NRisk);
       Fun_x = S;
       Fzero = 1;
-      fdisp = "S(x)";
-    case "cumulative hazard"
+      fdisp = 'S(x)';
+    case 'cumulative hazard'
       Fun_x = cumsum (Death ./ NRisk);
       Fzero = 0;
-      fdisp = "H(x)";
+      fdisp = 'H(x)';
   endswitch
   ## Check for remaining non-censored data and add a starting value
   if (! isempty (Death))
@@ -211,9 +211,9 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
     F = Fun_x;
   endif
   ## Calculate lower and upper confidence bounds if requested
-  if (nargout > 2 || (nargout == 0 && strcmpi (bound, "on")))
+  if (nargout > 2 || (nargout == 0 && strcmpi (bound, 'on')))
     switch (fname)
-      case {"cdf", "survivor"}
+      case {'cdf', 'survivor'}
         se = NaN (size (Death));
         if (! isempty (Death))
           if (NRisk(end) == Death(end))
@@ -224,7 +224,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
           se(t) = S(t) .* sqrt (cumsum (Death(t) ./ ...
                   (NRisk(t) .* (NRisk(t) - Death(t)))));
         endif
-      case "cumulative hazard"
+      case 'cumulative hazard'
         se = sqrt (cumsum (Death ./ (NRisk .* NRisk)));
     endswitch
     ## Calculate confidence limits
@@ -234,10 +234,10 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
       Flo = max (0, Fun_x - h_w);
       Flo(isnan (h_w)) = NaN;
       switch (fname)
-        case {"cdf", "survivor"}
+        case {'cdf', 'survivor'}
           Fup = min (1, Fun_x + h_w);
           Fup(isnan (h_w)) = NaN;
-        case "cumulative hazard"
+        case 'cumulative hazard'
           Fup = Fun_x + h_w;
       endswitch
       Flo = [NaN; Flo];
@@ -256,9 +256,9 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
       ax = newplot();
     endif
     h = stairs(ax, x , [F, Flo, Fup]);
-    xlabel (ax, "x");
+    xlabel (ax, 'x');
     ylabel (ax, fdisp);
-    title ("ecdf");
+    title ('ecdf');
   else
     Fout = F;
   endif
@@ -271,44 +271,44 @@ endfunction
 %! censored = (y > d);        ## we also observe whether the subject failed
 %!
 %! ## Calculate and plot the empirical cdf and confidence bounds
-%! [f, x, flo, fup] = ecdf (t, "censoring", censored);
+%! [f, x, flo, fup] = ecdf (t, 'censoring', censored);
 %! stairs (x, f);
 %! hold on;
-%! stairs (x, flo, "r:"); stairs (x, fup, "r:");
+%! stairs (x, flo, 'r:'); stairs (x, fup, 'r:');
 %!
 %! ## Superimpose a plot of the known true cdf
-%! xx = 0:.1:max (t); yy = 1 - exp (-xx / 10); plot (xx, yy, "g-");
+%! xx = 0:.1:max (t); yy = 1 - exp (-xx / 10); plot (xx, yy, 'g-');
 %! hold off;
 
 %!demo
 %! R = wblrnd (100, 2, 100, 1);
-%! ecdf (R, "Function", "survivor", "Alpha", 0.01, "Bounds", "on");
+%! ecdf (R, 'Function', 'survivor', 'Alpha', 0.01, 'Bounds', 'on');
 %! hold on
 %! x = 1:1:250;
-%! wblsurv = 1 - cdf ("weibull", x, 100, 2);
-%! plot (x, wblsurv, "g-", "LineWidth", 2)
-%! legend ("Empirical survivor function", "Lower confidence bound", ...
-%!         "Upper confidence bound", "Weibull survivor function", ...
-%!         "Location", "northeast");
+%! wblsurv = 1 - cdf ('weibull', x, 100, 2);
+%! plot (x, wblsurv, 'g-', 'LineWidth', 2)
+%! legend ('Empirical survivor function', 'Lower confidence bound', ...
+%!         'Upper confidence bound', 'Weibull survivor function', ...
+%!         'Location', 'northeast');
 %! hold off
 
 ## Test input
 %!error ecdf ();
 %!error ecdf (randi (15,2));
 %!error ecdf ([3,2,4,3+2i,5]);
-%!error kstest ([2,3,4,5,6],"tail");
-%!error kstest ([2,3,4,5,6],"tail", "whatever");
-%!error kstest ([2,3,4,5,6],"function", "");
-%!error kstest ([2,3,4,5,6],"badoption", 0.51);
-%!error kstest ([2,3,4,5,6],"tail", 0);
-%!error kstest ([2,3,4,5,6],"alpha", 0);
-%!error kstest ([2,3,4,5,6],"alpha", NaN);
-%!error kstest ([NaN,NaN,NaN,NaN,NaN],"tail", "unequal");
-%!error kstest ([2,3,4,5,6],"alpha", 0.05, "CDF", [2,3,4;1,3,4;1,2,1]);
+%!error kstest ([2,3,4,5,6],'tail');
+%!error kstest ([2,3,4,5,6],'tail', 'whatever');
+%!error kstest ([2,3,4,5,6],'function', '');
+%!error kstest ([2,3,4,5,6],'badoption', 0.51);
+%!error kstest ([2,3,4,5,6],'tail', 0);
+%!error kstest ([2,3,4,5,6],'alpha', 0);
+%!error kstest ([2,3,4,5,6],'alpha', NaN);
+%!error kstest ([NaN,NaN,NaN,NaN,NaN],'tail', 'unequal');
+%!error kstest ([2,3,4,5,6],'alpha', 0.05, 'CDF', [2,3,4;1,3,4;1,2,1]);
 
 ## Test output against MATLAB results
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
 %!   [F, x, Flo, Fup] = ecdf (x);
@@ -324,7 +324,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 3, 4, 3, 5, 4, 6, 5, 8, 3, 7, 8, 9, 0];
 %!   ecdf (x);

@@ -45,9 +45,9 @@ function p = ricecdf (x, s, sigma, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin == 4 && strcmpi (uflag, "upper"))
+  if (nargin == 4 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin == 4  && ! strcmpi (uflag, "upper"))
+  elseif (nargin == 4  && ! strcmpi (uflag, 'upper'))
     error ("ricecdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -67,8 +67,8 @@ function p = ricecdf (x, s, sigma, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (s, "single") || isa (sigma, "single"));
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (s, 'single') || isa (sigma, 'single'));
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -98,8 +98,8 @@ endfunction
 function Q = marcumQ1 (a, b)
 
   ## Prepare output matrix
-  if (isa (a, "single") || isa (b, "single"))
-   Q = NaN (size (b), "single");
+  if (isa (a, 'single') || isa (b, 'single'))
+   Q = NaN (size (b), 'single');
   else
    Q = NaN (size (b));
   endif
@@ -146,15 +146,15 @@ endfunction
 %! p3 = ricecdf (x, 1, 1);
 %! p4 = ricecdf (x, 2, 1);
 %! p5 = ricecdf (x, 4, 1);
-%! plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m", x, p5, "-k")
+%! plot (x, p1, '-b', x, p2, 'g', x, p3, '-r', x, p4, '-m', x, p5, '-k')
 %! grid on
 %! ylim ([0, 1])
 %! xlim ([0, 8])
-%! legend ({"s = 0, σ = 1", "s = 0.5, σ = 1", "s = 1, σ = 1", ...
-%!          "s = 2, σ = 1", "s = 4, σ = 1"}, "location", "southeast")
-%! title ("Rician CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'s = 0, σ = 1', 's = 0.5, σ = 1', 's = 1, σ = 1', ...
+%!          's = 2, σ = 1', 's = 4, σ = 1'}, 'location', 'southeast')
+%! title ('Rician CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 %!demo
 %! ## Plot various CDFs from the Rician distribution
@@ -164,15 +164,15 @@ endfunction
 %! p3 = ricecdf (x, 0, 3);
 %! p4 = ricecdf (x, 2, 2);
 %! p5 = ricecdf (x, 4, 2);
-%! plot (x, p1, "-b", x, p2, "g", x, p3, "-r", x, p4, "-m", x, p5, "-k")
+%! plot (x, p1, '-b', x, p2, 'g', x, p3, '-r', x, p4, '-m', x, p5, '-k')
 %! grid on
 %! ylim ([0, 1])
 %! xlim ([0, 8])
-%! legend ({"ν = 0, σ = 0.5", "ν = 0, σ = 2", "ν = 0, σ = 3", ...
-%!          "ν = 2, σ = 2", "ν = 4, σ = 2"}, "location", "southeast")
-%! title ("Rician CDF")
-%! xlabel ("values in x")
-%! ylabel ("probability")
+%! legend ({'ν = 0, σ = 0.5', 'ν = 0, σ = 2', 'ν = 0, σ = 3', ...
+%!          'ν = 2, σ = 2', 'ν = 4, σ = 2'}, 'location', 'southeast')
+%! title ('Rician CDF')
+%! xlabel ('values in x')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -201,13 +201,13 @@ endfunction
 %! x = [-1, 0, 1, 2, Inf];
 %! p = [0, 0, 0.26712019620318, 0.73098793996409, 1];
 %!assert (ricecdf (x, 1, 1), p, 1e-14)
-%!assert (ricecdf (x, 1, 1, "upper"), 1 - p, 1e-14)
+%!assert (ricecdf (x, 1, 1, 'upper'), 1 - p, 1e-14)
 
 ## Test input validation
 %!error<ricecdf: function called with too few input arguments.> ricecdf ()
 %!error<ricecdf: function called with too few input arguments.> ricecdf (1)
 %!error<ricecdf: function called with too few input arguments.> ricecdf (1, 2)
-%!error<ricecdf: invalid argument for upper tail.> ricecdf (1, 2, 3, "uper")
+%!error<ricecdf: invalid argument for upper tail.> ricecdf (1, 2, 3, 'uper')
 %!error<ricecdf: invalid argument for upper tail.> ricecdf (1, 2, 3, 4)
 %!error<ricecdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricecdf (ones (3), ones (2), ones (2))

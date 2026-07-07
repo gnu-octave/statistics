@@ -152,18 +152,18 @@ endif
 
   ## Parse Name–Value pairs
   InModel  = [];
-  Display  = "on";
+  Display  = 'on';
   ## MATLAB-compatible defaults
   PEnter  = 0.05;
   PRemove = [];
-  Scale   = "off";
+  Scale   = 'off';
   MaxIter = Inf;
   Keep    = [];
 
   ## Parse Name-Value paired arguments using pairedArgs
-  optNames = {"InModel", "Display", "PEnter", "PRemove", ...
-              "Scale", "MaxIter", "Keep"};
-  dfValues = {[], "on", 0.05, [], "off", Inf, []};
+  optNames = {'InModel', 'Display', 'PEnter', 'PRemove', ...
+              'Scale', 'MaxIter', 'Keep'};
+  dfValues = {[], 'on', 0.05, [], 'off', Inf, []};
 
   [InModel, Display, PEnter, PRemove, Scale, MaxIter, Keep, args] = ...
     pairedArgs (optNames, dfValues, varargin(:));
@@ -171,13 +171,13 @@ endif
   ## Semantic validation for Name-Value options
 
   ## Validate Display
-  if (! any (strcmpi (Display, {"on", "off"})))
+  if (! any (strcmpi (Display, {'on', 'off'})))
     error ("stepwisefit: Display must be 'on' or 'off'");
   endif
   Display = lower (Display);
 
   ## Validate Scale
-  if (! any (strcmpi (Scale, {"on", "off"})))
+  if (! any (strcmpi (Scale, {'on', 'off'})))
     error ("stepwisefit: Scale must be 'on' or 'off'");
   endif
   Scale = lower (Scale);
@@ -243,7 +243,7 @@ endif
     error ("stepwisefit: PRemove must be greater than or equal to PEnter");
   endif
 
-  if (strcmp (Scale, "on"))
+  if (strcmp (Scale, 'on'))
     muX = mean (Xc, 1);
     sigX = std (Xc, 0, 1);
     sigX(sigX == 0) = 1;   ## prevent division by zero
@@ -419,7 +419,7 @@ endif
 
   ## Stats structure
   stats = struct ();
-  stats.source    = "stepwisefit";
+  stats.source    = 'stepwisefit';
   stats.df0       = numel (X_use);
   stats.dfe       = n - stats.df0 - 1;
   stats.SStotal   = sum ((yc - mean (yc)).^2);
@@ -546,9 +546,9 @@ endfunction
 %! [~,~,~,~,stats] = stepwisefit (X, y);
 %!
 %! required_fields = {
-%!   "source", "df0", "dfe", "SStotal", "SSresid", "fstat", "pval", ...
-%!   "rmse", "xr", "yr", "B", "SE", "TSTAT", "PVAL", "covb", ...
-%!   "intercept", "wasnan"
+%!   'source', 'df0', 'dfe', 'SStotal', 'SSresid', 'fstat', 'pval', ...
+%!   'rmse', 'xr', 'yr', 'B', 'SE', 'TSTAT', 'PVAL', 'covb', ...
+%!   'intercept', 'wasnan'
 %! };
 %!
 %! for k = 1:numel (required_fields)
@@ -620,10 +620,10 @@ endfunction
 %!
 %! assert (nextstep == 0);
 %! assert (isstruct (history));
-%! assert (isfield (history, "in"));
-%! assert (isfield (history, "df0"));
-%! assert (isfield (history, "rmse"));
-%! assert (isfield (history, "B"));
+%! assert (isfield (history, 'in'));
+%! assert (isfield (history, 'df0'));
+%! assert (isfield (history, 'rmse'));
+%! assert (isfield (history, 'B'));
 %! assert (isequal (history.in, finalmodel));
 %! assert (history.df0 == stats.df0);
 %! assert (history.rmse == stats.rmse);
@@ -636,23 +636,23 @@ endfunction
 %! X = randn (30, 4);
 %! y = randn (30, 1);
 %! keep = [true false false false];
-%! [~,~,~,finalmodel] = stepwisefit (X, y, "Keep", keep);
+%! [~,~,~,finalmodel] = stepwisefit (X, y, 'Keep', keep);
 %! assert (finalmodel(1) == true);
 %!test
 %! X = randn (40, 6);
 %! y = randn (40, 1);
-%! [~,~,~,finalmodel] = stepwisefit (X, y, "MaxIter", 1);
+%! [~,~,~,finalmodel] = stepwisefit (X, y, 'MaxIter', 1);
 %! assert (islogical (finalmodel));
 %!test
 %! X = randn (50, 5);
 %! y = randn (50, 1);
 %! [b1] = stepwisefit (X, y);
-%! [b2] = stepwisefit (X, y, "Scale", "on");
+%! [b2] = stepwisefit (X, y, 'Scale', 'on');
 %! assert (rows (b1) == rows (b2));
 %!test
 %! X = randn (20,4);
 %! y = randn (20,1);
-%! fail ("stepwisefit (X,y,'Keep',[true false])");
+%! fail ('stepwisefit (X,y,''Keep'',[true false])');
 
 ## Test input validation
 %!error <stepwisefit: at least two input arguments required> ...
@@ -662,27 +662,27 @@ endfunction
 %!error <stepwisefit: X must be a matrix and y a vector> ...
 %!       stepwisefit (ones (3,2), ones (2,1))
 %!error <stepwisefit: unrecognized input arguments> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "UnknownOpt", 5)
+%!       stepwisefit (randn (10,2), randn (10,1), 'UnknownOpt', 5)
 %!error <stepwisefit: Display must be 'on' or 'off'> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "Display", "maybe")
+%!       stepwisefit (randn (10,2), randn (10,1), 'Display', 'maybe')
 %!error <stepwisefit: Scale must be 'on' or 'off'> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "Scale", 123)
+%!       stepwisefit (randn (10,2), randn (10,1), 'Scale', 123)
 %!error <stepwisefit: PEnter must be a scalar strictly between 0 and 1> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "PEnter", -0.1)
+%!       stepwisefit (randn (10,2), randn (10,1), 'PEnter', -0.1)
 %!error <stepwisefit: PRemove must be a scalar strictly between 0 and 1> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "PRemove", 1.5)
+%!       stepwisefit (randn (10,2), randn (10,1), 'PRemove', 1.5)
 %!error <stepwisefit: PRemove must be greater than or equal to PEnter> ...
 %!       stepwisefit (randn (10,2), randn (10,1), ...
-%!                     "PEnter", 0.05, "PRemove", 0.01)
+%!                     'PEnter', 0.05, 'PRemove', 0.01)
 %!error <stepwisefit: MaxIter must be a positive integer> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "MaxIter", -2)
+%!       stepwisefit (randn (10,2), randn (10,1), 'MaxIter', -2)
 %!error <stepwisefit: MaxIter must be a positive integer> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "MaxIter", 2.5)
+%!       stepwisefit (randn (10,2), randn (10,1), 'MaxIter', 2.5)
 %!error <stepwisefit: Keep must be a logical vector> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "Keep", [1 0])
+%!       stepwisefit (randn (10,2), randn (10,1), 'Keep', [1 0])
 %!error <stepwisefit: InModel must be a logical vector> ...
-%!       stepwisefit (randn (10,2), randn (10,1), "InModel", [1 0])
+%!       stepwisefit (randn (10,2), randn (10,1), 'InModel', [1 0])
 %!error <stepwisefit: Keep length must match number of predictors> ...
-%!       stepwisefit (randn (10,4), randn (10,1), "Keep", [true false])
+%!       stepwisefit (randn (10,4), randn (10,1), 'Keep', [true false])
 %!error <stepwisefit: InModel length must match number of predictors> ...
-%!       stepwisefit (randn (10,4), randn (10,1), "InModel", true)
+%!       stepwisefit (randn (10,4), randn (10,1), 'InModel', true)

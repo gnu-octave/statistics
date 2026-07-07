@@ -115,10 +115,10 @@ endfunction
 %! ## and plot the decision boundaries.
 %!
 %! load fisheriris
-%! idx = ! strcmp (species, "setosa");
+%! idx = ! strcmp (species, 'setosa');
 %! X = meas(idx,3:4);
-%! Y = cast (strcmpi (species(idx), "virginica"), "double");
-%! obj = fitcdiscr (X, Y, "Gamma", 0.5)
+%! Y = cast (strcmpi (species(idx), 'virginica'), 'double');
+%! obj = fitcdiscr (X, Y, 'Gamma', 0.5)
 %! x1 = [min(X(:,1)):0.03:max(X(:,1))];
 %! x2 = [min(X(:,2)):0.02:max(X(:,2))];
 %! [x1G, x2G] = meshgrid (x1, x2);
@@ -127,23 +127,23 @@ endfunction
 %! gidx = logical (pred);
 %!
 %! figure
-%! scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+%! scatter (XGrid(gidx,1), XGrid(gidx,2), 'markerfacecolor', 'magenta');
 %! hold on
-%! scatter (XGrid(! gidx,1), XGrid(! gidx,2), "markerfacecolor", "red");
-%! plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
-%! xlabel ("Petal length (cm)");
-%! ylabel ("Petal width (cm)");
-%! title ("Linear Discriminant Analysis Decision Boundary");
-%! legend ({"Versicolor Region", "Virginica Region", ...
-%!         "Sampled Versicolor", "Sampled Virginica"}, ...
-%!         "location", "northwest")
+%! scatter (XGrid(! gidx,1), XGrid(! gidx,2), 'markerfacecolor', 'red');
+%! plot (X(Y == 0, 1), X(Y == 0, 2), 'ko', X(Y == 1, 1), X(Y == 1, 2), 'kx');
+%! xlabel ('Petal length (cm)');
+%! ylabel ('Petal width (cm)');
+%! title ('Linear Discriminant Analysis Decision Boundary');
+%! legend ({'Versicolor Region', 'Virginica Region', ...
+%!         'Sampled Versicolor', 'Sampled Virginica'}, ...
+%!         'location', 'northwest')
 %! axis tight
 %! hold off
 
 ## Tests
 %!test
 %! load fisheriris
-%! Mdl = fitcdiscr (meas, species, "Gamma", 0.5);
+%! Mdl = fitcdiscr (meas, species, 'Gamma', 0.5);
 %! [label, score, cost] = predict (Mdl, [2, 2, 2, 2]);
 %! assert (label, {'versicolor'})
 %! assert (score, [0, 0.9999, 0.0001], 1e-4)
@@ -154,7 +154,7 @@ endfunction
 %! assert (cost, [1, 0.3632, 0.6368], 1e-4)
 %! assert (class (Mdl), "ClassificationDiscriminant");
 %! assert ({Mdl.X, Mdl.Y, Mdl.NumObservations}, {meas, species, 150})
-%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {"linear", "Y"})
+%! assert ({Mdl.DiscrimType, Mdl.ResponseName}, {'linear', 'Y'})
 %! assert ({Mdl.Gamma, Mdl.MinGamma}, {0.5, 0})
 %! assert (Mdl.ClassNames, unique (species))
 %! sigma = [0.265008, 0.046361, 0.083757, 0.019201; ...
@@ -172,8 +172,8 @@ endfunction
 %!error<fitcdiscr: too few arguments.> fitcdiscr ()
 %!error<fitcdiscr: too few arguments.> fitcdiscr (ones (4,1))
 %!error<fitcdiscr: name-value arguments must be in pairs.>
-%! fitcdiscr (ones (4,2), ones (4, 1), "K")
+%! fitcdiscr (ones (4,2), ones (4, 1), 'K')
 %!error<fitcdiscr: number of rows in X and Y must be equal.>
 %! fitcdiscr (ones (4,2), ones (3, 1))
 %!error<fitcdiscr: number of rows in X and Y must be equal.>
-%! fitcdiscr (ones (4,2), ones (3, 1), "K", 2)
+%! fitcdiscr (ones (4,2), ones (3, 1), 'K', 2)

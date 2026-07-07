@@ -87,7 +87,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
   ## Add defaults
   group = [];
   alpha = 0.05;
-  ttype = "absolute";
+  ttype = 'absolute';
 
   ## Check for 2nd argument being ALPHA, GROUP, or TESTTYPE
   if (nargin > 1)
@@ -98,7 +98,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
       if (alpha <= 0 || alpha >= 1)
        error ("levene_test: wrong value for alpha.");
       endif
-    elseif (any (strcmpi (varargin{1}, {"absolute", "quadratic", "median"})))
+    elseif (any (strcmpi (varargin{1}, {'absolute', 'quadratic', 'median'})))
       ttype = varargin{1};
     elseif (isvector (varargin{1}) && numel (varargin{1} > 1))
       if ((size (x, 2) == 1 && size (x, 1) == numel (varargin{1})) || ...
@@ -123,7 +123,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
       if (alpha <= 0 || alpha >= 1)
         error ("levene_test: wrong value for alpha.");
       endif
-    elseif (any (strcmpi (varargin{2}, {"absolute", "quadratic", "median"})))
+    elseif (any (strcmpi (varargin{2}, {'absolute', 'quadratic', 'median'})))
       ttype = varargin{2};
     else
       error ("levene_test: invalid third input argument.");
@@ -132,7 +132,7 @@ function [h, pval, W, df] = levene_test (x, varargin)
 
   ## Check for 3rd argument
   if (nargin > 3)
-    if (any (strcmpi (varargin{3}, {"absolute", "quadratic", "median"})))
+    if (any (strcmpi (varargin{3}, {'absolute', 'quadratic', 'median'})))
       ttype = varargin{3};
     else
       error ("levene_test: invalid option for TESTTYPE as 4th argument.");
@@ -214,15 +214,15 @@ function [h, pval, W, df] = levene_test (x, varargin)
 
   ## Compute Z_ij for "absolute" or "quadratic" Levene's test
   switch (lower (ttype))
-    case "absolute"
+    case 'absolute'
       for i = 1:k
         Z_ij{i} = abs (Y_ij{i} - Y_i(i));
       endfor
-    case "quadratic"
+    case 'quadratic'
       for i = 1:k
         Z_ij{i} = sqrt ((Y_ij{i} - Y_i(i)) .^ 2);
       endfor
-    case "median"
+    case 'median'
       for i = 1:k
         Z_ij{i} = abs (Y_ij{i} - Y_I(i));
       endfor
@@ -272,15 +272,15 @@ endfunction
 %!error<levene_test: wrong value for alpha.> ...
 %! levene_test (randn (50, 2), [], 1.2);
 %!error<levene_test: GROUP and X mismatch.> ...
-%! levene_test (randn (50, 2), "some_string");
+%! levene_test (randn (50, 2), 'some_string');
 %!error<levene_test: invalid third input argument.> ...
-%! levene_test (randn (50, 2), [], "alpha");
+%! levene_test (randn (50, 2), [], 'alpha');
 %!error<levene_test: wrong value for alpha.> ...
 %! levene_test (randn (50, 1), [ones(25, 1); 2*ones(25, 1)], 1.2);
 %!error<levene_test: invalid third input argument.> ...
-%! levene_test (randn (50, 1), [ones(25, 1); 2*ones(25, 1)], "err");
+%! levene_test (randn (50, 1), [ones(25, 1); 2*ones(25, 1)], 'err');
 %!error<levene_test: invalid option for TESTTYPE as 4th argument.> ...
-%! levene_test (randn (50, 1), [ones(25, 1); 2*ones(25, 1)], 0.05, "type");
+%! levene_test (randn (50, 1), [ones(25, 1); 2*ones(25, 1)], 0.05, 'type');
 %!warning<levene_test: GROUP> ...
 %! levene_test (randn (50, 1), [ones(24, 1); 2*ones(25, 1); 3]);
 ## Test results
@@ -293,14 +293,14 @@ endfunction
 %! assert (df, [4, 595]);
 %!test
 %! load examgrades
-%! [h, pval, W, df] = levene_test (grades, [], "quadratic");
+%! [h, pval, W, df] = levene_test (grades, [], 'quadratic');
 %! assert (h, 1);
 %! assert (pval, 9.523239714592791e-07, 1e-14);
 %! assert (W, 8.59529, 1e-5);
 %! assert (df, [4, 595]);
 %!test
 %! load examgrades
-%! [h, pval, W, df] = levene_test (grades, [], "median");
+%! [h, pval, W, df] = levene_test (grades, [], 'median');
 %! assert (h, 1);
 %! assert (pval, 1.312093241723211e-06, 1e-14);
 %! assert (W, 8.415969, 1e-6);
@@ -314,21 +314,21 @@ endfunction
 %! assert (df, [2, 357]);
 %!test
 %! load examgrades
-%! [h, pval, W, df] = levene_test (grades(:,[1:3]), "median");
+%! [h, pval, W, df] = levene_test (grades(:,[1:3]), 'median');
 %! assert (h, 1);
 %! assert (pval, 0.004355216763951453, 1e-14);
 %! assert (W, 5.52001, 1e-5);
 %! assert (df, [2, 357]);
 %!test
 %! load examgrades
-%! [h, pval, W, df] = levene_test (grades(:,[3,4]), "quadratic");
+%! [h, pval, W, df] = levene_test (grades(:,[3,4]), 'quadratic');
 %! assert (h, 0);
 %! assert (pval, 0.1807494957440653, 2e-14);
 %! assert (W, 1.80200, 1e-5);
 %! assert (df, [1, 238]);
 %!test
 %! load examgrades
-%! [h, pval, W, df] = levene_test (grades(:,[3,4]), "median");
+%! [h, pval, W, df] = levene_test (grades(:,[3,4]), 'median');
 %! assert (h, 0);
 %! assert (pval, 0.1978225622063785, 2e-14);
 %! assert (W, 1.66768, 1e-5);

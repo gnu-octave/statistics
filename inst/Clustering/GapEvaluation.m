@@ -60,7 +60,7 @@ classdef GapEvaluation < ClusterCriterion
     ## vector.  This property is read-only.
     ##
     ## @end deftp
-    Distance = "";
+    Distance = '';
 
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property} ReferenceDistribution
@@ -72,7 +72,7 @@ classdef GapEvaluation < ClusterCriterion
     ## @qcode{'uniform'}.  This property is read-only.
     ##
     ## @end deftp
-    ReferenceDistribution = "";
+    ReferenceDistribution = '';
 
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property} SearchMethod
@@ -85,7 +85,7 @@ classdef GapEvaluation < ClusterCriterion
     ## read-only.
     ##
     ## @end deftp
-    SearchMethod = "";
+    SearchMethod = '';
 
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property} ExpectedLogW
@@ -195,19 +195,19 @@ classdef GapEvaluation < ClusterCriterion
     ## @seealso{evalclusters, ClusterCriterion}
     ## @end deftypefn
     function this = GapEvaluation (x, clust, KList, b = 100, ...
-                    distanceMetric = "sqeuclidean", ...
-                    referenceDistribution = "pca", searchMethod = "globalmaxse")
+                    distanceMetric = 'sqeuclidean', ...
+                    referenceDistribution = 'pca', searchMethod = 'globalmaxse')
       this@ClusterCriterion(x, clust, KList);
 
       ## parsing the distance criterion
       if (ischar (distanceMetric))
-        if (any (strcmpi (distanceMetric, {"sqeuclidean", "euclidean", ...
-                 "cityblock", "cosine", "correlation", "hamming", "jaccard"})))
+        if (any (strcmpi (distanceMetric, {'sqeuclidean', 'euclidean', ...
+                 'cityblock', 'cosine', 'correlation', 'hamming', 'jaccard'})))
           this.Distance = lower (distanceMetric);
 
           ## kmeans can use only a subset
-          if (strcmpi (clust, "kmeans") && any (strcmpi (this.Distance, ...
-              {"euclidean", "jaccard"})))
+          if (strcmpi (clust, 'kmeans') && any (strcmpi (this.Distance, ...
+              {'euclidean', 'jaccard'})))
             error (strcat ("GapEvaluation: invalid distance criterion", ...
                            " '%s' for 'kmeans'"), distanceMetric);
           endif
@@ -215,19 +215,19 @@ classdef GapEvaluation < ClusterCriterion
           error ("GapEvaluation: unknown distance criterion '%s'", ...
                  distanceMetric);
         endif
-      elseif (isa (distanceMetric, "function_handle"))
+      elseif (isa (distanceMetric, 'function_handle'))
         this.Distance = distanceMetric;
 
         ## kmeans cannot use a function handle
-        if (strcmpi (clust, "kmeans"))
+        if (strcmpi (clust, 'kmeans'))
           error ("GapEvaluation: invalid distance criterion for 'kmeans'.");
         endif
       elseif (isvector (distanceMetric) && isnumeric (distanceMetric))
-        this.Distance = "";
+        this.Distance = '';
         this.DistanceVector = distanceMetric; # the validity check is delegated
 
         ## kmeans cannot use a distance vector
-        if (strcmpi (clust, "kmeans"))
+        if (strcmpi (clust, 'kmeans'))
           error ("GapEvaluation: invalid distance criterion for 'kmeans'.");
         endif
       else
@@ -242,17 +242,17 @@ classdef GapEvaluation < ClusterCriterion
 
       ## reference distribution
       if (! ischar (referenceDistribution) || ! any (strcmpi ...
-          (referenceDistribution, {"pca", "uniform"})))
+          (referenceDistribution, {'pca', 'uniform'})))
         error (strcat ("GapEvaluation: the reference distribution", ...
                        " must be either 'PCA' or 'uniform'."));
-      elseif (strcmpi (referenceDistribution, "pca"))
+      elseif (strcmpi (referenceDistribution, 'pca'))
         warning (strcat ("GapEvaluation: 'PCA' distribution not", ...
                          " implemented, defaulting to 'uniform'."));
       endif
       this.ReferenceDistribution = lower (referenceDistribution);
 
       if (! ischar (searchMethod) || ! any (strcmpi (searchMethod, ...
-          {"globalmaxse", "firstmaxse"})))
+          {'globalmaxse', 'firstmaxse'})))
         error (strcat ("evalclusters: the search method must be", ...
                        " either 'globalMaxSE' or 'firstMaxSE'."));
       endif
@@ -261,7 +261,7 @@ classdef GapEvaluation < ClusterCriterion
       ## a matrix to store the results from the Monte-Carlo runs
       this.mExpectedLogW = zeros (this.B, length (this.InspectedK));
 
-      this.CriterionName = "gap";
+      this.CriterionName = 'gap';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
@@ -313,9 +313,9 @@ classdef GapEvaluation < ClusterCriterion
       h = gca ();
       hold on;
       errorbar (this.InspectedK, this.CriterionValues, this.StdLogW);
-      plot (this.InspectedK, this.CriterionValues, "bo");
-      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), "b*");
-      xlabel ("number of clusters");
+      plot (this.InspectedK, this.CriterionValues, 'bo');
+      plot (this.OptimalK, this.CriterionValues(this.OptimalIndex), 'b*');
+      xlabel ('number of clusters');
       ylabel (yLabel);
       hold off;
     endfunction
@@ -361,7 +361,7 @@ classdef GapEvaluation < ClusterCriterion
           for iter = 1 : length (this.InspectedK)
             ## do it only for the specified K values
             if (any (this.InspectedK(iter) == K))
-              if (isa (this.ClusteringFunction, "function_handle"))
+              if (isa (this.ClusteringFunction, 'function_handle'))
                 ## custom function
                 ClusteringSolution = ...
                   this.ClusteringFunction(UsableX, this.InspectedK(iter));
@@ -384,36 +384,36 @@ classdef GapEvaluation < ClusterCriterion
                 endif
               else
                 switch (this.ClusteringFunction)
-                  case "kmeans"
+                  case 'kmeans'
                     this.ClusteringSolutions(:, iter) = kmeans (UsableX, ...
-                      this.InspectedK(iter), "Distance", this.Distance, ...
-                      "EmptyAction", "singleton", "Replicates", 5);
+                      this.InspectedK(iter), 'Distance', this.Distance, ...
+                      'EmptyAction', 'singleton', 'Replicates', 5);
 
-                  case "linkage"
+                  case 'linkage'
                     if (! isempty (this.Distance))
                       ## use clusterdata
                       Distance_tmp = this.Distance;
-                      LinkageMethod = "average"; # for non euclidean methods
-                      if (strcmpi (this.Distance, "sqeuclidean"))
+                      LinkageMethod = 'average'; # for non euclidean methods
+                      if (strcmpi (this.Distance, 'sqeuclidean'))
                         ## pdist uses different names for its algorithms
-                        Distance_tmp = "squaredeuclidean";
-                        LinkageMethod = "ward";
-                      elseif (strcmpi (this.Distance, "euclidean"))
-                        LinkageMethod = "ward";
+                        Distance_tmp = 'squaredeuclidean';
+                        LinkageMethod = 'ward';
+                      elseif (strcmpi (this.Distance, 'euclidean'))
+                        LinkageMethod = 'ward';
                       endif
                       this.ClusteringSolutions(:, iter) = clusterdata ...
-                        (UsableX, "MaxClust", this.InspectedK(iter), ...
-                        "Distance", Distance_tmp, "Linkage", LinkageMethod);
+                        (UsableX, 'MaxClust', this.InspectedK(iter), ...
+                        'Distance', Distance_tmp, 'Linkage', LinkageMethod);
                     else
                       ## use linkage
-                      Z = linkage (this.DistanceVector, "average");
+                      Z = linkage (this.DistanceVector, 'average');
                       this.ClusteringSolutions(:, iter) = ...
-                           cluster (Z, "MaxClust", this.InspectedK(iter));
+                           cluster (Z, 'MaxClust', this.InspectedK(iter));
                     endif
 
-                  case "gmdistribution"
+                  case 'gmdistribution'
                     gmm = fitgmdist (UsableX, this.InspectedK(iter), ...
-                          "SharedCov", true, "Replicates", 5);
+                          'SharedCov', true, 'Replicates', 5);
                     this.ClusteringSolutions(:, iter) = cluster (gmm, UsableX);
 
                   otherwise
@@ -427,8 +427,8 @@ classdef GapEvaluation < ClusterCriterion
 
         ## get the gap values for every clustering
         distance_pdist = this.Distance;
-        if (strcmpi (distance_pdist, "sqeuclidean"))
-          distance_pdist = "squaredeuclidean";
+        if (strcmpi (distance_pdist, 'sqeuclidean'))
+          distance_pdist = 'squaredeuclidean';
         endif
 
         ## compute LogW
@@ -465,7 +465,7 @@ classdef GapEvaluation < ClusterCriterion
     ## gapSearch
     ## find the best solution according to the gap method
     function ind = gapSearch (this)
-      if (strcmpi (this.SearchMethod, "globalmaxse"))
+      if (strcmpi (this.SearchMethod, 'globalmaxse'))
         [gapmax, indgp] = max (this.CriterionValues);
         for iter = 1 : length (this.InspectedK)
           ind = iter;
@@ -473,7 +473,7 @@ classdef GapEvaluation < ClusterCriterion
             return
           endif
         endfor
-      elseif (strcmpi (this.SearchMethod, "firstmaxse"))
+      elseif (strcmpi (this.SearchMethod, 'firstmaxse'))
         for iter = 1 : (length (this.InspectedK) - 1)
           ind = iter;
           if (this.CriterionValues(iter) > (this.CriterionValues(iter + 1) - ...
@@ -491,8 +491,8 @@ endclassdef
 
 %!test
 %! load fisheriris
-%! eva = evalclusters (meas([1:50],:), "kmeans", "gap", "KList", [1:3], ...
-%!                     "referencedistribution", "uniform");
+%! eva = evalclusters (meas([1:50],:), 'kmeans', 'gap', 'KList', [1:3], ...
+%!                     'referencedistribution', 'uniform');
 %! assert (class (eva), "GapEvaluation");
 
 %!function C = count_calls_gap (X, k)
@@ -504,7 +504,7 @@ endclassdef
 %! ## custom function must be called exactly once per inspected K per run
 %! global count_calls_gap_n;
 %! count_calls_gap_n = 0;
-%! evalclusters (rand (20, 2), @count_calls_gap, "gap", ...
-%!               "KList", [2, 3], "B", 2);
+%! evalclusters (rand (20, 2), @count_calls_gap, 'gap', ...
+%!               'KList', [2, 3], 'B', 2);
 %! assert (count_calls_gap_n, 6);
 %! clear -global count_calls_gap_n;

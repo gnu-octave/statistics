@@ -58,8 +58,8 @@ function x = nakainv (p, mu, omega)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (omega, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (omega, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -101,16 +101,16 @@ endfunction
 %! x5 = nakainv (p, 2, 1);
 %! x6 = nakainv (p, 2, 2);
 %! x7 = nakainv (p, 5, 1);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
-%!       p, x5, "-k", p, x6, "-b", p, x7, "-c")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-y', p, x4, '-m', ...
+%!       p, x5, '-k', p, x6, '-b', p, x7, '-c')
 %! grid on
 %! ylim ([0, 3])
-%! legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
-%!          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
-%!          "μ = 5, ω = 1"}, "location", "northwest")
-%! title ("Nakagami iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0.5, ω = 1', 'μ = 1, ω = 1', 'μ = 1, ω = 2', ...
+%!          'μ = 1, ω = 3', 'μ = 2, ω = 1', 'μ = 2, ω = 2', ...
+%!          'μ = 5, ω = 1'}, 'location', 'northwest')
+%! title ('Nakagami iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, y

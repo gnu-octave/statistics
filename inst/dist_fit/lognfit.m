@@ -109,9 +109,9 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
 
   ## Check options structure or add defaults
   if (nargin > 4 && ! isempty (options))
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("lognfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -135,20 +135,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different log-normal distributions
-%! randn ("seed", 1);    # for reproducibility
+%! randn ('seed', 1);    # for reproducibility
 %! r1 = lognrnd (0, 0.25, 1000, 1);
-%! randn ("seed", 2);    # for reproducibility
+%! randn ('seed', 2);    # for reproducibility
 %! r2 = lognrnd (0, 0.5, 1000, 1);
-%! randn ("seed", 3);    # for reproducibility
+%! randn ('seed', 3);    # for reproducibility
 %! r3 = lognrnd (0, 1, 1000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 30, 2);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! hold on
 %!
 %! ## Estimate their mu and sigma parameters
@@ -159,29 +159,29 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:0.1:6];
 %! y = lognpdf (x, mu_sigmaA(1), mu_sigmaA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = lognpdf (x, mu_sigmaB(1), mu_sigmaB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = lognpdf (x, mu_sigmaC(1), mu_sigmaC(2));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! ylim ([0, 2])
 %! xlim ([0, 6])
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with mu=0, σ=0.25", ...
-%!          "Normalized HIST of sample 2 with mu=0, σ=0.5", ...
-%!          "Normalized HIST of sample 3 with mu=0, σ=1", ...
+%! legend ({'Normalized HIST of sample 1 with mu=0, σ=0.25', ...
+%!          'Normalized HIST of sample 2 with mu=0, σ=0.5', ...
+%!          'Normalized HIST of sample 3 with mu=0, σ=1', ...
 %!          sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaA(1), mu_sigmaA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
 %!                  mu_sigmaB(1), mu_sigmaB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
-%!                  mu_sigmaC(1), mu_sigmaC(2))}, "location", "northeast")
-%! title ("Three population samples from different log-normal distributions")
+%!                  mu_sigmaC(1), mu_sigmaC(2))}, 'location', 'northeast')
+%! title ('Three population samples from different log-normal distributions')
 %! hold off
 
 ## Test output
 %!test
-%! randn ("seed", 1);
+%! randn ('seed', 1);
 %! x = lognrnd (3, 5, [1000, 1]);
 %! [paramhat, paramci] = lognfit (x, 0.01);
 %! assert (paramci(1,1) < 3);
@@ -205,4 +205,4 @@ endfunction
 %! lognfit (ones (20,1), [], zeros(15,1))
 %!error<lognfit: X and FREQ vectors mismatch.> ...
 %! lognfit (ones (20,1), [], zeros(20,1), ones(25,1))
-%!error<lognfit: > lognfit (ones (20,1), [], zeros(20,1), ones(20,1), "options")
+%!error<lognfit: > lognfit (ones (20,1), [], zeros(20,1), ones(20,1), 'options')

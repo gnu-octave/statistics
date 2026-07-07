@@ -25,11 +25,11 @@
 
 function [f, st] = parseScoreTransform (ScoreTransform, classname)
 
-  stList = {"doublelogit", "invlogit", "ismax", "logit", "none", ...
-            "identity", "sign", "symmetric", "symmetricismax", ...
-            "symmetriclogit"};
+  stList = {'doublelogit', 'invlogit', 'ismax', 'logit', 'none', ...
+            'identity', 'sign', 'symmetric', 'symmetricismax', ...
+            'symmetriclogit'};
   if (! (ischar (ScoreTransform) ||
-         strcmp (class (ScoreTransform), "function_handle")))
+         strcmp (class (ScoreTransform), 'function_handle')))
     error (strcat ("%s: 'ScoreTransform' must be a character", ...
                    " vector or a function handle."), classname);
   endif
@@ -47,23 +47,23 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
       error ("%s: unrecognized 'ScoreTransform' function.", classname);
     endif
     st = ScoreTransform;
-    if (strcmpi ("doublelogit", ScoreTransform))
+    if (strcmpi ('doublelogit', ScoreTransform))
       f = @(x) 1 ./ (1 + exp (-2 * x));
-    elseif (strcmpi ("invlogit", ScoreTransform))
+    elseif (strcmpi ('invlogit', ScoreTransform))
       f = @(x) log (x ./ (1 - x));
-    elseif (strcmpi ("ismax", ScoreTransform))
+    elseif (strcmpi ('ismax', ScoreTransform))
       f = eval (sprintf ("@(x) ismax (x)"));
-    elseif (strcmpi ("logit", ScoreTransform))
+    elseif (strcmpi ('logit', ScoreTransform))
       f = @(x) 1 ./ (1 + exp (-x));
-    elseif (any (strcmpi ({"identity", "none"}, ScoreTransform)))
+    elseif (any (strcmpi ({'identity', 'none'}, ScoreTransform)))
       f = 'none';
-    elseif (strcmpi ("sign", ScoreTransform))
+    elseif (strcmpi ('sign', ScoreTransform))
       f = @(x) sign (x);
-    elseif (strcmpi ("symmetric", ScoreTransform))
+    elseif (strcmpi ('symmetric', ScoreTransform))
       f = @(x) 2 * x - 1;
-    elseif (strcmpi ("symmetricismax", ScoreTransform))
+    elseif (strcmpi ('symmetricismax', ScoreTransform))
       f = eval (sprintf ("@(x) symmetricismax (x)"));
-    elseif (strcmpi ("symmetriclogit", ScoreTransform))
+    elseif (strcmpi ('symmetriclogit', ScoreTransform))
       f = @(x) 2 ./ (1 + exp (-x)) - 1;
     endif
   endif

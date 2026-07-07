@@ -863,22 +863,22 @@ endfunction
 %! ## Compute the mean closest to 100 that can be determined to be
 %! ## significantly different from 100 using a t-test with a sample size
 %! ## of 60 and a power of 0.8.
-%! mu1 = sampsizepwr ("t", [100, 10], [], 0.8, 60);
+%! mu1 = sampsizepwr ('t', [100, 10], [], 0.8, 60);
 %! disp (mu1);
 
 %!demo
 %! ## Compute the sample sizes required to distinguish mu0 = 100 from
 %! ## mu1 = 110 by a two-sample t-test with a ratio of the larger and the
 %! ## smaller sample sizes of 1.5 and a power of 0.6.
-%! [N1,N2] = sampsizepwr ("t2", [100, 10], 110, 0.6, [], "ratio", 1.5)
+%! [N1,N2] = sampsizepwr ('t2', [100, 10], 110, 0.6, [], 'ratio', 1.5)
 
 %!demo
 %! ## Compute the sample size N required to distinguish p=.26 from p=.2
 %! ## with a binomial test.  The result is approximate, so make a plot to
 %! ## see if any smaller N values also have the required power of 0.6.
-%! Napprox = sampsizepwr ("p", 0.2, 0.26, 0.6);
+%! Napprox = sampsizepwr ('p', 0.2, 0.26, 0.6);
 %! nn = 1:250;
-%! pwr = sampsizepwr ("p", 0.2, 0.26, [], nn);
+%! pwr = sampsizepwr ('p', 0.2, 0.26, [], nn);
 %! Nexact = min (nn(pwr >= 0.6));
 %! plot(nn,pwr,'b-', [Napprox Nexact],pwr([Napprox Nexact]),'ro');
 %! grid on
@@ -893,10 +893,10 @@ endfunction
 %! pwrout = sampsizepwr('t',[100 5],102,[],nn);
 %!
 %! figure;
-%! plot (nn, pwrout, "b-", nout, 0.8, "ro")
-%! title ("Power versus Sample Size")
-%! xlabel ("Sample Size")
-%! ylabel ("Power")
+%! plot (nn, pwrout, 'b-', nout, 0.8, 'ro')
+%! title ('Power versus Sample Size')
+%! xlabel ('Sample Size')
+%! ylabel ('Power')
 
 ## Input validation
 %!error<sampsizepwr: test type must be a non-empty character vector.> ...
@@ -904,153 +904,153 @@ endfunction
 %!error<sampsizepwr: test type must be a non-empty character vector.> ...
 %! out = sampsizepwr (3, [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: test type must be a non-empty character vector.> ...
-%! out = sampsizepwr ({"t", "t2"}, [100, 10], [], 0.8, 60);
+%! out = sampsizepwr ({'t', 't2'}, [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: invalid test type.> ...
-%! out = sampsizepwr ("reg", [100, 10], [], 0.8, 60);
+%! out = sampsizepwr ('reg', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: parameters must be numeric.> ...
-%! out = sampsizepwr ("t", ["a", "e"], [], 0.8, 60);
+%! out = sampsizepwr ('t', ['a', 'e'], [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("z", 100, [], 0.8, 60);
+%! out = sampsizepwr ('z', 100, [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("t", 100, [], 0.8, 60);
+%! out = sampsizepwr ('t', 100, [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("t2", 60, [], 0.8, 60);
+%! out = sampsizepwr ('t2', 60, [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("var", [100, 10], [], 0.8, 60);
+%! out = sampsizepwr ('var', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("p", [100, 10], [], 0.8, 60);
+%! out = sampsizepwr ('p', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: invalid size of parameters for this test type.> ...
-%! out = sampsizepwr ("r", [100, 10], [], 0.8, 60);
+%! out = sampsizepwr ('r', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: wrong number of output arguments for this test type.> ...
-%! [out, N1] = sampsizepwr ("z", [100, 10], [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('z', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: wrong number of output arguments for this test type.> ...
-%! [out, N1] = sampsizepwr ("t", [100, 10], [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('t', [100, 10], [], 0.8, 60);
 %!error<sampsizepwr: wrong number of output arguments for this test type.> ...
-%! [out, N1] = sampsizepwr ("var", 2, [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('var', 2, [], 0.8, 60);
 %!error<sampsizepwr: wrong number of output arguments for this test type.> ...
-%! [out, N1] = sampsizepwr ("p", 0.1, [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('p', 0.1, [], 0.8, 60);
 %!error<sampsizepwr: wrong number of output arguments for this test type.> ...
-%! [out, N1] = sampsizepwr ("r", 0.5, [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('r', 0.5, [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("z", [100, 0], [], 0.8, 60);
+%! out = sampsizepwr ('z', [100, 0], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("z", [100, -5], [], 0.8, 60);
+%! out = sampsizepwr ('z', [100, -5], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("t", [100, 0], [], 0.8, 60);
+%! out = sampsizepwr ('t', [100, 0], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("t", [100, -5], [], 0.8, 60);
+%! out = sampsizepwr ('t', [100, -5], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! [out, N1] = sampsizepwr ("t2", [100, 0], [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('t2', [100, 0], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! [out, N1] = sampsizepwr ("t2", [100, -5], [], 0.8, 60);
+%! [out, N1] = sampsizepwr ('t2', [100, -5], [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("var", 0, [], 0.8, 60);
+%! out = sampsizepwr ('var', 0, [], 0.8, 60);
 %!error<sampsizepwr: negative or zero variance.> ...
-%! out = sampsizepwr ("var", -5, [], 0.8, 60);
+%! out = sampsizepwr ('var', -5, [], 0.8, 60);
 %!error<sampsizepwr: out of range probability.> ...
-%! out = sampsizepwr ("p", 0, [], 0.8, 60);
+%! out = sampsizepwr ('p', 0, [], 0.8, 60);
 %!error<sampsizepwr: out of range probability.> ...
-%! out = sampsizepwr ("p", 1.2, [], 0.8, 60);
+%! out = sampsizepwr ('p', 1.2, [], 0.8, 60);
 %!error<sampsizepwr: out of range regression coefficient.> ...
-%! out = sampsizepwr ("r", -1.5, [], 0.8, 60);
+%! out = sampsizepwr ('r', -1.5, [], 0.8, 60);
 %!error<sampsizepwr: out of range regression coefficient.> ...
-%! out = sampsizepwr ("r", -1, [], 0.8, 60);
+%! out = sampsizepwr ('r', -1, [], 0.8, 60);
 %!error<sampsizepwr: out of range regression coefficient.> ...
-%! out = sampsizepwr ("r", 1.2, [], 0.8, 60);
+%! out = sampsizepwr ('r', 1.2, [], 0.8, 60);
 %!error<sampsizepwr: regression coefficient must not be 0.> ...
-%! out = sampsizepwr ("r", 0, [], 0.8, 60);
+%! out = sampsizepwr ('r', 0, [], 0.8, 60);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", -0.2);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'alpha', -0.2);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", 0);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'alpha', 0);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", 1.5);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'alpha', 1.5);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "alpha", "zero");
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'alpha', 'zero');
 %!error<sampsizepwr: 'tail' parameter must be a non-empty character vector.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", 1.5);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'tail', 1.5);
 %!error<sampsizepwr: 'tail' parameter must be a non-empty character vector.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", {"both", "left"});
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'tail', {'both', 'left'});
 %!error<sampsizepwr: invalid value for 'tail' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "tail", "other");
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'tail', 'other');
 %!error<sampsizepwr: invalid value for 'ratio' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "ratio", "some");
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'ratio', 'some');
 %!error<sampsizepwr: invalid value for 'ratio' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "ratio", 0.5);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'ratio', 0.5);
 %!error<sampsizepwr: invalid value for 'ratio' parameter.> ...
-%! out = sampsizepwr ("r", 0.2, [], 0.8, 60, "ratio", [2, 1.3, 0.3]);
+%! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'ratio', [2, 1.3, 0.3]);
 %!error<sampsizepwr: only one of either p1, power, or n must be missing.> ...
-%! out = sampsizepwr ("z", [100, 5], [], [], 60);
+%! out = sampsizepwr ('z', [100, 5], [], [], 60);
 %!error<sampsizepwr: only one of either p1, power, or n must be missing.> ...
-%! out = sampsizepwr ("z", [100, 5], 110, [], []);
+%! out = sampsizepwr ('z', [100, 5], 110, [], []);
 %!error<sampsizepwr: only one of either p1, power, or n must be missing.> ...
-%! out = sampsizepwr ("z", [100, 5], [], 0.8, []);
+%! out = sampsizepwr ('z', [100, 5], [], 0.8, []);
 %!error<sampsizepwr: only one of either p1, power, or n must be missing.> ...
-%! out = sampsizepwr ("z", [100, 5], 110, 0.8, 60);
+%! out = sampsizepwr ('z', [100, 5], 110, 0.8, 60);
 %!error<sampsizepwr: alternative hypothesis parameter must be numeric.> ...
-%! out = sampsizepwr ("z", [100, 5], "mu", [], 60);
+%! out = sampsizepwr ('z', [100, 5], 'mu', [], 60);
 %!error<sampsizepwr: alternative hypothesis parameter out of range.> ...
-%! out = sampsizepwr ("var", 5, -1, [], 60);
+%! out = sampsizepwr ('var', 5, -1, [], 60);
 %!error<sampsizepwr: alternative hypothesis parameter out of range.> ...
-%! out = sampsizepwr ("p", 0.8, 1.2, [], 60, "tail", "right");
+%! out = sampsizepwr ('p', 0.8, 1.2, [], 60, 'tail', 'right');
 %!error<sampsizepwr: alternative hypothesis parameter out of range.> ...
-%! out = sampsizepwr ("r", 0.8, 1.2, [], 60);
+%! out = sampsizepwr ('r', 0.8, 1.2, [], 60);
 %!error<sampsizepwr: alternative hypothesis parameter out of range.> ...
-%! out = sampsizepwr ("r", 0.8, -1.2, [], 60);
+%! out = sampsizepwr ('r', 0.8, -1.2, [], 60);
 %!error<sampsizepwr: invalid value for POWER.> ...
-%! out = sampsizepwr ("z", [100, 5], 110, 1.2);
+%! out = sampsizepwr ('z', [100, 5], 110, 1.2);
 %!error<sampsizepwr: invalid value for POWER.> ...
-%! out = sampsizepwr ("z", [100, 5], 110, 0);
+%! out = sampsizepwr ('z', [100, 5], 110, 0);
 %!error<sampsizepwr: Cannot compute N or P1 unless POWER> ...
-%! out = sampsizepwr ("z", [100, 5], 110, 0.05, [], "alpha", 0.1);
+%! out = sampsizepwr ('z', [100, 5], 110, 0.05, [], 'alpha', 0.1);
 %!error<sampsizepwr: input arguments size mismatch.> ...
-%! out = sampsizepwr ("z", [100, 5], [], [0.8, 0.7], [60, 80, 100]);
+%! out = sampsizepwr ('z', [100, 5], [], [0.8, 0.7], [60, 80, 100]);
 %!error<sampsizepwr: Same value for null and alternative hypothesis.> ...
-%! out = sampsizepwr ("t", [100, 5], 100, 0.8, []);
+%! out = sampsizepwr ('t', [100, 5], 100, 0.8, []);
 %!error<sampsizepwr: Invalid P1 for testing left tail.> ...
-%! out = sampsizepwr ("t", [100, 5], 110, 0.8, [], "tail", "left");
+%! out = sampsizepwr ('t', [100, 5], 110, 0.8, [], 'tail', 'left');
 %!error<sampsizepwr: Invalid P1 for testing right tail.> ...
-%! out = sampsizepwr ("t", [100, 5], 90, 0.8, [], "tail", "right");
+%! out = sampsizepwr ('t', [100, 5], 90, 0.8, [], 'tail', 'right');
 
 ## Warning test
 %!warning<sampsizepwr: approximate N.> ...
-%! Napprox = sampsizepwr ("p", 0.2, 0.26, 0.6);
+%! Napprox = sampsizepwr ('p', 0.2, 0.26, 0.6);
 %!warning<sampsizepwr: approximate N.> ...
-%! Napprox = sampsizepwr ("p", 0.30, 0.36, 0.8);
+%! Napprox = sampsizepwr ('p', 0.30, 0.36, 0.8);
 
 ## Results validation
 %!test
-%! mu1 = sampsizepwr ("t", [100, 10], [], 0.8, 60);
+%! mu1 = sampsizepwr ('t', [100, 10], [], 0.8, 60);
 %! assert (mu1, 103.67704316, 1e-8);
 %!test
-%! [N1,N2] = sampsizepwr ("t2", [100, 10], 110, 0.6, [], "ratio", 1.5);
+%! [N1,N2] = sampsizepwr ('t2', [100, 10], 110, 0.6, [], 'ratio', 1.5);
 %! assert (N1, 9);
 %! assert (N2, 14);
 %!test
 %! nn = 1:250;
-%! pwr = sampsizepwr ("p", 0.2, 0.26, [], nn);
+%! pwr = sampsizepwr ('p', 0.2, 0.26, [], nn);
 %! pwr_out = [0, 0.0676, 0.0176, 0.0566, 0.0181, 0.0431, 0.0802, 0.0322];
 %! assert (pwr([1:8]), pwr_out, 1e-4 * ones (1,8));
 %! pwr_out = [0.59275, 0.6073, 0.62166, 0.6358, 0.6497, 0.6087, 0.6229, 0.6369];
 %! assert (pwr([243:end]), pwr_out, 1e-4 * ones (1,8));
 %!test
-%! nout = sampsizepwr ("t", [100, 5], 102, 0.80);
+%! nout = sampsizepwr ('t', [100, 5], 102, 0.80);
 %! assert (nout, 52);
 %!test
-%! power = sampsizepwr ("t", [20, 5], 25, [], 5, "Tail", "right");
+%! power = sampsizepwr ('t', [20, 5], 25, [], 5, 'Tail', 'right');
 %! assert (power, 0.5797373588621888, 1e-14);
 %!test
-%! nout = sampsizepwr ("t", [20, 5], 25, 0.99, [], "Tail", "right");
+%! nout = sampsizepwr ('t', [20, 5], 25, 0.99, [], 'Tail', 'right');
 %! assert (nout, 18);
 %!test
-%! p1out = sampsizepwr ("t", [20, 5], [], 0.95, 10, "Tail", "right");
+%! p1out = sampsizepwr ('t', [20, 5], [], 0.95, 10, 'Tail', 'right');
 %! assert (p1out, 25.65317979360237, 5e-14);
 %!test
-%! pwr = sampsizepwr ("t2", [1.4, 0.2], 1.7, [], 5, "Ratio", 2);
+%! pwr = sampsizepwr ('t2', [1.4, 0.2], 1.7, [], 5, 'Ratio', 2);
 %! assert (pwr, 0.716504004686586, 1e-14);
 %!test
-%! n = sampsizepwr ("t2", [1.4, 0.2], 1.7, 0.9, []);
+%! n = sampsizepwr ('t2', [1.4, 0.2], 1.7, 0.9, []);
 %! assert (n, 11);
 %!test
-%! [n1, n2] = sampsizepwr ("t2", [1.4, 0.2], 1.7, 0.9, [], "Ratio", 2);
+%! [n1, n2] = sampsizepwr ('t2', [1.4, 0.2], 1.7, 0.9, [], 'Ratio', 2);
 %! assert ([n1, n2], [8, 16]);

@@ -60,8 +60,8 @@ function [m, v] = nctstat (df, mu)
   endif
 
   ## Initialize mean and variance
-  if (isa (df, "single") || isa (mu, "single"))
-    m = NaN (size (df), "single");
+  if (isa (df, 'single') || isa (mu, 'single'))
+    m = NaN (size (df), 'single');
     v = m;
   else
     m = NaN (size (df));
@@ -87,7 +87,7 @@ endfunction
 %!error<nctstat: function called with too few input arguments.> nctstat ()
 %!error<nctstat: function called with too few input arguments.> nctstat (1)
 %!error<nctstat: DF and MU must be numeric.> nctstat ({}, 2)
-%!error<nctstat: DF and MU must be numeric.> nctstat (1, "")
+%!error<nctstat: DF and MU must be numeric.> nctstat (1, '')
 %!error<nctstat: DF and MU must not be complex.> nctstat (i, 2)
 %!error<nctstat: DF and MU must not be complex.> nctstat (1, i)
 %!error<nctstat: DF and MU must be of common size or scalars.> ...

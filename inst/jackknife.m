@@ -88,7 +88,7 @@
 function jackstat = jackknife (anEstimator, varargin)
 
   ## Convert function name to handle if necessary, or throw an error.
-  if (! strcmp (typeinfo (anEstimator), "function handle"))
+  if (! strcmp (typeinfo (anEstimator), 'function handle'))
     if (isascii (anEstimator))
       anEstimator = str2func (anEstimator);
     else
@@ -119,7 +119,7 @@ function jackstat = jackknife (anEstimator, varargin)
 
     for k = 1:g
       jackstat(k) = anEstimator (cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
-                                 varargin, "UniformOutput", false));
+                                 varargin, 'UniformOutput', false));
     endfor
   endif
 
@@ -128,7 +128,7 @@ endfunction
 
 %!demo
 %! for k = 1:1000
-%!   rand ("seed", k);  # for reproducibility
+%!   rand ('seed', k);  # for reproducibility
 %!   x = rand (10, 1);
 %!   s(k) = std (x);
 %!   jackstat = jackknife (@std, x);
@@ -139,9 +139,9 @@ endfunction
 
 %!demo
 %! for k = 1:1000
-%!   randn ("seed", k); # for reproducibility
+%!   randn ('seed', k); # for reproducibility
 %!   x = randn (1, 50);
-%!   rand ("seed", k);  # for reproducibility
+%!   rand ('seed', k);  # for reproducibility
 %!   y = rand (1, 50);
 %!   jackstat = jackknife (@(x) std(x{1})/std(x{2}), y, x);
 %!   j(k) = 50 * std (y) / std (x) - 49 * mean (jackstat);
@@ -150,7 +150,7 @@ endfunction
 %! t = (j - sqrt (1 / 12)) ./ sqrt (v);
 %! figure();
 %! plot (sort (tcdf (t, 49)), ...
-%!       "-;Almost linear mapping indicates good fit with t-distribution.;")
+%!       '-;Almost linear mapping indicates good fit with t-distribution.;')
 
 ## Test output
 %!test

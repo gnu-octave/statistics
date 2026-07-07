@@ -46,9 +46,9 @@ function p = plcdf (data, x, Fx, uflag)
   endif
 
   ## Check for "upper" flag
-  if (nargin == 4 && strcmpi (uflag, "upper"))
+  if (nargin == 4 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin == 4  && ! strcmpi (uflag, "upper"))
+  elseif (nargin == 4  && ! strcmpi (uflag, 'upper'))
     error ("plcdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -75,15 +75,15 @@ function p = plcdf (data, x, Fx, uflag)
   endif
 
   ## Check for class type
-  if (isa (data, "single") || isa (x, "single") || isa (Fx, "single"));
-    p = zeros (size (data), "single");
+  if (isa (data, 'single') || isa (x, 'single') || isa (Fx, 'single'));
+    p = zeros (size (data), 'single');
   else
     p = zeros (size (data));
   endif
 
   ## Find data within supported range
   support = (data >= x(1) & data <= x(end));
-  p(support) = interp1 (x, Fx, data(support), "linear");
+  p(support) = interp1 (x, Fx, data(support), 'linear');
 
   ## Force right side outside support to 1 and invalid data to NaN
   p(data > x(end)) = 1;
@@ -105,14 +105,14 @@ endfunction
 %! Fx2 = [0, 0.1, 0.3, 0.6, 0.9, 1];
 %! p1 = plcdf (data, x1, Fx1);
 %! p2 = plcdf (data, x2, Fx2);
-%! plot (data, p1, "-b", data, p2, "g")
+%! plot (data, p1, '-b', data, p2, 'g')
 %! grid on
 %! ylim ([0, 1])
 %! xlim ([0, 10])
-%! legend ({"x1, Fx1", "x2, Fx2"}, "location", "southeast")
-%! title ("Piecewise linear CDF")
-%! xlabel ("values in data")
-%! ylabel ("probability")
+%! legend ({'x1, Fx1', 'x2, Fx2'}, 'location', 'southeast')
+%! title ('Piecewise linear CDF')
+%! xlabel ('values in data')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -133,14 +133,14 @@ endfunction
 %! assert (p, [0, 0.4, 0.8, 1, 1, 1]);
 %!test
 %! data = 0:0.2:1;
-%! p = plcdf (data, [0, 1], [0, 1], "upper");
+%! p = plcdf (data, [0, 1], [0, 1], 'upper');
 %! assert (p, 1 - data);
 
 ## Test input validation
 %!error<plcdf: function called with too few input arguments.> plcdf ()
 %!error<plcdf: function called with too few input arguments.> plcdf (1)
 %!error<plcdf: function called with too few input arguments.> plcdf (1, 2)
-%!error<plcdf: invalid argument for upper tail.> plcdf (1, 2, 3, "uper")
+%!error<plcdf: invalid argument for upper tail.> plcdf (1, 2, 3, 'uper')
 %!error<plcdf: invalid argument for upper tail.> plcdf (1, 2, 3, 4)
 %!error<plcdf: X and FX must be vectors of equal size.> ...
 %! plcdf (1, [0, 1, 2], [0, 1])

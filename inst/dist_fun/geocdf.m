@@ -63,8 +63,8 @@ function p = geocdf (x, ps, uflag)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (ps, "single"))
-    p = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (ps, 'single'))
+    p = zeros (size (x), 'single');
   else
     p = zeros (size (x));
   endif
@@ -81,9 +81,9 @@ function p = geocdf (x, ps, uflag)
   x(x < 0) = -1;
 
   ## Check for "upper" flag
-  if (nargin > 2 && strcmpi (uflag, "upper"))
+  if (nargin > 2 && strcmpi (uflag, 'upper'))
     uflag = true;
-  elseif (nargin > 2  && ! strcmpi (uflag, "upper"))
+  elseif (nargin > 2  && ! strcmpi (uflag, 'upper'))
     error ("geocdf: invalid argument for upper tail.");
   else
     uflag = false;
@@ -95,7 +95,7 @@ function p = geocdf (x, ps, uflag)
   ## Compute CDF
   if (uflag)
     if (any (k))
-      p(k) = betainc (ps(k), 1, (x(k)) + 1, "upper");
+      p(k) = betainc (ps(k), 1, (x(k)) + 1, 'upper');
     endif
   else
     if (isscalar (ps))
@@ -113,13 +113,13 @@ endfunction
 %! p1 = geocdf (x, 0.2);
 %! p2 = geocdf (x, 0.5);
 %! p3 = geocdf (x, 0.7);
-%! plot (x, p1, "*b", x, p2, "*g", x, p3, "*r")
+%! plot (x, p1, '*b', x, p2, '*g', x, p3, '*r')
 %! grid on
 %! xlim ([0, 10])
-%! legend ({"ps = 0.2", "ps = 0.5", "ps = 0.7"}, "location", "southeast")
-%! title ("Geometric CDF")
-%! xlabel ("values in x (number of failures)")
-%! ylabel ("probability")
+%! legend ({'ps = 0.2', 'ps = 0.5', 'ps = 0.7'}, 'location', 'southeast')
+%! title ('Geometric CDF')
+%! xlabel ('values in x (number of failures)')
+%! ylabel ('probability')
 
 ## Test output
 %!test
@@ -129,7 +129,7 @@ endfunction
 %! assert (p(3), 0.6835937500, 1e-14);
 %! assert (p(4), 0.7626953125, 1e-14);
 %!test
-%! p = geocdf ([1, 2, 3, 4], 0.25, "upper");
+%! p = geocdf ([1, 2, 3, 4], 0.25, 'upper');
 %! assert (p(1), 0.5625000000, 1e-14);
 %! assert (p(2), 0.4218750000, 1e-14);
 %! assert (p(3), 0.3164062500, 1e-14);
@@ -156,5 +156,5 @@ endfunction
 %! geocdf (ones (2), ones (3))
 %!error<geocdf: X and PS must not be complex.> geocdf (i, 2)
 %!error<geocdf: X and PS must not be complex.> geocdf (2, i)
-%!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, "tail")
+%!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, 'tail')
 %!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, 5)

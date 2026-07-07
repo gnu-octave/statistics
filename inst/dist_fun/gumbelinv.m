@@ -102,10 +102,10 @@ function [x, xlo, xup] = gumbelinv (p, mu, beta, pcov, alpha)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (beta, "single"));
-    is_class = "single";
+  if (isa (p, 'single') || isa (mu, 'single') || isa (beta, 'single'));
+    is_class = 'single';
   else
-    is_class = "double";
+    is_class = 'double';
   endif
 
   ## Compute inverse of type 1 extreme value cdf
@@ -147,14 +147,14 @@ endfunction
 %! x2 = gumbelinv (p, 1.0, 2);
 %! x3 = gumbelinv (p, 1.5, 3);
 %! x4 = gumbelinv (p, 3.0, 4);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([-5, 20])
-%! legend ({"μ = 0.5, β = 2", "μ = 1.0, β = 2", ...
-%!          "μ = 1.5, β = 3", "μ = 3.0, β = 4"}, "location", "northwest")
-%! title ("Gumbel iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0.5, β = 2', 'μ = 1.0, β = 2', ...
+%!          'μ = 1.5, β = 3', 'μ = 3.0, β = 4'}, 'location', 'northwest')
+%! title ('Gumbel iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p, x

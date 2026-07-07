@@ -36,53 +36,53 @@ function obj = loadmodel (filename)
   endif
 
   ## Supported Classification and Regression objects
-  supported = {"ClassificationKNN"};
+  supported = {'ClassificationKNN'};
 
   ## Read file into a structure
   data = load (filename);
 
   ## Check that 'classdef_name' variable exists and that it
   ## contains a valid Classification or Regression object
-  if (! isfield (data, "classdef_name"))
-    msg = " '%s' does not contain a Classification or Regression object.";
+  if (! isfield (data, 'classdef_name'))
+    msg = ' ''%s'' does not contain a Classification or Regression object.';
     error (strcat ("loadmodel:", msg), filename);
   endif
 
   ## Remove 'classdef_name' field from data structure
   classdef_name = data.classdef_name;
-  data = rmfield (data, "classdef_name");
+  data = rmfield (data, 'classdef_name');
 
   ## Parse data structure to the static load method of specified classdef
   switch (classdef_name)
 
-    case "ClassificationDiscriminant"
+    case 'ClassificationDiscriminant'
       obj = ClassificationDiscriminant.load_model (filename, data);
 
-    case "CompactClassificationDiscriminant"
+    case 'CompactClassificationDiscriminant'
       obj = CompactClassificationDiscriminant.load_model (filename, data);
 
-    case "ClassificationGAM"
+    case 'ClassificationGAM'
       obj = ClassificationGAM.load_model (filename, data);
 
-    case "CompactClassificationGAM"
+    case 'CompactClassificationGAM'
       obj = CompactClassificationGAM.load_model (filename, data);
 
-    case "ClassificationKNN"
+    case 'ClassificationKNN'
       obj = ClassificationKNN.load_model (filename, data);
 
-    case "ClassificationNeuralNetwork"
+    case 'ClassificationNeuralNetwork'
       obj = ClassificationNeuralNetwork.load_model (filename, data);
 
-    case "CompactClassificationNeuralNetwork"
+    case 'CompactClassificationNeuralNetwork'
       obj = CompactClassificationNeuralNetwork.load_model (filename, data);
 
-    case "ClassificationSVM"
+    case 'ClassificationSVM'
       obj = ClassificationSVM.load_model (filename, data);
 
-    case "CompactClassificationSVM"
+    case 'CompactClassificationSVM'
       obj = ClassificationSVM.load_model (filename, data);
 
-    case "RegressionGAM"
+    case 'RegressionGAM'
       obj = RegressionGAM.load_model (filename, data);
 
     otherwise
@@ -95,9 +95,9 @@ endfunction
 ## Test input validation
 %!error<loadmodel: too few arguments.> loadmodel ()
 %!error<loadmodel: 'fisheriris.mat' does not contain a Classification or Regression object.> ...
-%! loadmodel ("fisheriris.mat")
+%! loadmodel ('fisheriris.mat')
 %!error<loadmodel: 'ClassificationModel' is not supported.> ...
-%! loadmodel ("fail_loadmodel.mdl")
+%! loadmodel ('fail_loadmodel.mdl')
 %!error<ClassificationKNN.load_model: invalid model in 'fail_load_model.mdl'.> ...
-%! loadmodel ("fail_load_model.mdl")
+%! loadmodel ('fail_load_model.mdl')
 

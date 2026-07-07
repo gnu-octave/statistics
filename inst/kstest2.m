@@ -80,15 +80,15 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   endif
   ## Add defaults
   alpha = 0.05;
-  tail = "unequal";
+  tail = 'unequal';
   ## Parse extra parameters
   if nargin > 2 && mod (numel (varargin), 2) == 0
     [~, prop] = parseparams (varargin);
     while (! isempty (prop))
       switch (lower (prop{1}))
-        case "alpha"
+        case 'alpha'
           alpha = prop{2};
-        case "tail"
+        case 'tail'
           tail = prop{2};
         otherwise
           error ("kstest2: Unknown option %s", prop{1});
@@ -105,7 +105,7 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   endif
   if ! isa (tail, 'char')
     error ("kstest2: tail argument must be a string");
-  elseif sum (strcmpi (tail, {"unequal", "larger", "smaller"})) < 1
+  elseif sum (strcmpi (tail, {'unequal', 'larger', 'smaller'})) < 1
     error (strcat ("kstest2: tail value must be either", ...
                    " 'unequal', 'larger' or 'smaller'."));
   endif
@@ -131,11 +131,11 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   sampleCDF2  =  sumCounts2(1:end - 1);
   ## Calculate the suitable KS statistic according to tail
   switch tail
-    case "unequal"    # 2-sided test: T = max|F1(x) - F2(x)|.
+    case 'unequal'    # 2-sided test: T = max|F1(x) - F2(x)|.
       deltaCDF  =  abs (sampleCDF1 - sampleCDF2);
-    case "smaller"    # 1-sided test: T = max[F2(x) - F1(x)].
+    case 'smaller'    # 1-sided test: T = max[F2(x) - F1(x)].
       deltaCDF  =  sampleCDF2 - sampleCDF1;
-    case "larger"     # 1-sided test: T = max[F1(x) - F2(x)].
+    case 'larger'     # 1-sided test: T = max[F1(x) - F2(x)].
       deltaCDF  =  sampleCDF1 - sampleCDF2;
   endswitch
   ks2stat = max (deltaCDF);
@@ -144,7 +144,7 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   n_x2 = length(x2);
   n =  n_x1 * n_x2 /(n_x1 + n_x2);
   lambda = max ((sqrt (n) + 0.12 + 0.11 / sqrt (n)) * ks2stat, 0);
-  if strcmpi (tail, "unequal")    # 2-sided test
+  if strcmpi (tail, 'unequal')    # 2-sided test
     v = [1:101];
     pValue = 2 * sum ((-1) .^ (v-1) .* exp (-2 * lambda * lambda * v .^ 2));
     pValue = min (max (pValue, 0), 1);
@@ -159,13 +159,13 @@ endfunction
 %!error kstest2 ([1,2,3,4,5,5])
 %!error kstest2 (ones(2,4), [1,2,3,4,5,5])
 %!error kstest2 ([2,3,5,7,3+3i], [1,2,3,4,5,5])
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"tail")
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"tail", "whatever")
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"badoption", 0.51)
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"tail", 0)
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"alpha", 0)
-%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],"alpha", NaN)
-%!error kstest2 ([NaN,NaN,NaN,NaN,NaN],[3;5;7;8;7;6;5],"tail", "unequal")
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'tail')
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'tail', 'whatever')
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'badoption', 0.51)
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'tail', 0)
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'alpha', 0)
+%!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'alpha', NaN)
+%!error kstest2 ([NaN,NaN,NaN,NaN,NaN],[3;5;7;8;7;6;5],'tail', 'unequal')
 
 ## Test results
 %!test
@@ -175,16 +175,16 @@ endfunction
 %! assert (p, 0.1222791870137312, 1e-14);
 %!test
 %! load examgrades
-%! [h, p] = kstest2 (grades(:,1), grades(:,2), "tail", "larger");
+%! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'larger');
 %! assert (h, false);
 %! assert (p, 0.1844421391011258, 1e-14);
 %!test
 %! load examgrades
-%! [h, p] = kstest2 (grades(:,1), grades(:,2), "tail", "smaller");
+%! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'smaller');
 %! assert (h, false);
 %! assert (p, 0.06115357930171663, 1e-14);
 %!test
 %! load examgrades
-%! [h, p] = kstest2 (grades(:,1), grades(:,2), "tail", "smaller", "alpha", 0.1);
+%! [h, p] = kstest2 (grades(:,1), grades(:,2), 'tail', 'smaller', 'alpha', 0.1);
 %! assert (h, true);
 %! assert (p, 0.06115357930171663, 1e-14);

@@ -55,8 +55,8 @@ function y = hnpdf (x, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (sigma, "single"));
-    y = NaN (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    y = NaN (size (x), 'single');
   else
     y = NaN (size (x));
   endif
@@ -80,30 +80,30 @@ endfunction
 %! y2 = hnpdf (x, 0, 2);
 %! y3 = hnpdf (x, 0, 3);
 %! y4 = hnpdf (x, 0, 5);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", x, y4, "-c")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', x, y4, '-c')
 %! grid on
 %! xlim ([0, 10])
 %! ylim ([0, 0.9])
-%! legend ({"μ = 0, σ = 1", "μ = 0, σ = 2", ...
-%!          "μ = 0, σ = 3", "μ = 0, σ = 5"}, "location", "northeast")
-%! title ("Half-normal PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 0, σ = 1', 'μ = 0, σ = 2', ...
+%!          'μ = 0, σ = 3', 'μ = 0, σ = 5'}, 'location', 'northeast')
+%! title ('Half-normal PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 %!demo
 %! ## Plot half-normal against normal probability density function
 %! x = -5:0.001:5;
 %! y1 = hnpdf (x, 0, 1);
 %! y2 = normpdf (x);
-%! plot (x, y1, "-b", x, y2, "-g")
+%! plot (x, y1, '-b', x, y2, '-g')
 %! grid on
 %! xlim ([-5, 5])
 %! ylim ([0, 0.9])
-%! legend ({"half-normal with μ = 0, σ = 1", ...
-%!          "standard normal (μ = 0, σ = 1)"}, "location", "northeast")
-%! title ("Half-normal against standard normal PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'half-normal with μ = 0, σ = 1', ...
+%!          'standard normal (μ = 0, σ = 1)'}, 'location', 'northeast')
+%! title ('Half-normal against standard normal PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

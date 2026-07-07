@@ -58,8 +58,8 @@ function y = nakapdf (x, mu, omega)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (mu, "single") || isa (omega, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (mu, 'single') || isa (omega, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -92,17 +92,17 @@ endfunction
 %! y5 = nakapdf (x, 2, 1);
 %! y6 = nakapdf (x, 2, 2);
 %! y7 = nakapdf (x, 5, 1);
-%! plot (x, y1, "-r", x, y2, "-g", x, y3, "-y", x, y4, "-m", ...
-%!       x, y5, "-k", x, y6, "-b", x, y7, "-c")
+%! plot (x, y1, '-r', x, y2, '-g', x, y3, '-y', x, y4, '-m', ...
+%!       x, y5, '-k', x, y6, '-b', x, y7, '-c')
 %! grid on
 %! xlim ([0, 3])
 %! ylim ([0, 2])
-%! legend ({"μ = 0.5, ω = 1", "μ = 1, ω = 1", "μ = 1, ω = 2", ...
-%!          "μ = 1, ω = 3", "μ = 2, ω = 1", "μ = 2, ω = 2", ...
-%!          "μ = 5, ω = 1"}, "location", "northeast")
-%! title ("Nakagami PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'μ = 0.5, ω = 1', 'μ = 1, ω = 1', 'μ = 1, ω = 2', ...
+%!          'μ = 1, ω = 3', 'μ = 2, ω = 1', 'μ = 2, ω = 2', ...
+%!          'μ = 5, ω = 1'}, 'location', 'northeast')
+%! title ('Nakagami PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y

@@ -104,14 +104,14 @@ function [paramhat, paramci] = wblfit (x, alpha, censor, freq, options)
 
   ## Get options structure or add defaults
   if (nargin < 5)
-    options.Display = "off";
+    options.Display = 'off';
     options.MaxFunEvals = 400;
     options.MaxIter = 200;
     options.TolX = 1e-6;
   else
-    if (! isstruct (options) || ! isfield (options, "Display") ||
-        ! isfield (options, "MaxFunEvals") || ! isfield (options, "MaxIter")
-                                           || ! isfield (options, "TolX"))
+    if (! isstruct (options) || ! isfield (options, 'Display') ||
+        ! isfield (options, 'MaxFunEvals') || ! isfield (options, 'MaxIter')
+                                           || ! isfield (options, 'TolX'))
       error (strcat ("wblfit: 'options' 5th argument must be a", ...
                      " structure with 'Display', 'MaxFunEvals',", ...
                      " 'MaxIter', and 'TolX' fields present."));
@@ -130,20 +130,20 @@ endfunction
 
 %!demo
 %! ## Sample 3 populations from 3 different Weibull distributions
-%! rande ("seed", 1);    # for reproducibility
+%! rande ('seed', 1);    # for reproducibility
 %! r1 = wblrnd(2, 4, 2000, 1);
-%! rande ("seed", 2);    # for reproducibility
+%! rande ('seed', 2);    # for reproducibility
 %! r2 = wblrnd(5, 2, 2000, 1);
-%! rande ("seed", 5);    # for reproducibility
+%! rande ('seed', 5);    # for reproducibility
 %! r3 = wblrnd(1, 5, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors
 %! hist (r, 30, [2.5 2.1 3.2]);
-%! h = findobj (gca, "Type", "patch");
-%! set (h(1), "facecolor", "c");
-%! set (h(2), "facecolor", "g");
-%! set (h(3), "facecolor", "r");
+%! h = findobj (gca, 'Type', 'patch');
+%! set (h(1), 'facecolor', 'c');
+%! set (h(2), 'facecolor', 'g');
+%! set (h(3), 'facecolor', 'r');
 %! ylim ([0, 2]);
 %! xlim ([0, 10]);
 %! hold on
@@ -156,22 +156,22 @@ endfunction
 %! ## Plot their estimated PDFs
 %! x = [0:0.1:15];
 %! y = wblpdf (x, lambda_kA(1), lambda_kA(2));
-%! plot (x, y, "-pr");
+%! plot (x, y, '-pr');
 %! y = wblpdf (x, lambda_kB(1), lambda_kB(2));
-%! plot (x, y, "-sg");
+%! plot (x, y, '-sg');
 %! y = wblpdf (x, lambda_kC(1), lambda_kC(2));
-%! plot (x, y, "-^c");
+%! plot (x, y, '-^c');
 %! hold off
-%! legend ({"Normalized HIST of sample 1 with λ=2 and k=4", ...
-%!          "Normalized HIST of sample 2 with λ=5 and k=2", ...
-%!          "Normalized HIST of sample 3 with λ=1 and k=5", ...
+%! legend ({'Normalized HIST of sample 1 with λ=2 and k=4', ...
+%!          'Normalized HIST of sample 2 with λ=5 and k=2', ...
+%!          'Normalized HIST of sample 3 with λ=1 and k=5', ...
 %!          sprintf("PDF for sample 1 with estimated λ=%0.2f and k=%0.2f", ...
 %!                  lambda_kA(1), lambda_kA(2)), ...
 %!          sprintf("PDF for sample 2 with estimated λ=%0.2f and k=%0.2f", ...
 %!                  lambda_kB(1), lambda_kB(2)), ...
 %!          sprintf("PDF for sample 3 with estimated λ=%0.2f and k=%0.2f", ...
 %!                  lambda_kC(1), lambda_kC(2))})
-%! title ("Three population samples from different Weibull distributions")
+%! title ('Three population samples from different Weibull distributions')
 %! hold off
 
 ## Test output
@@ -193,7 +193,7 @@ endfunction
 %!error<wblfit: X must contain only positive values.> wblfit ([-1 2 3 4]);
 %!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 1.2);
 %!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 0);
-%!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], "alpha");
+%!error<wblfit: wrong value for ALPHA.> wblfit ([1, 2, 3, 4, 5], 'alpha');
 %!error<wblfit: X and CENSOR vectors mismatch.> ...
 %! wblfit ([1, 2, 3, 4, 5], 0.05, [1 1 0]);
 %!error<wblfit: X and CENSOR vectors mismatch.> ...

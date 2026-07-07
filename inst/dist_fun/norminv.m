@@ -71,8 +71,8 @@ function x = norminv (p, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"))
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'))
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -96,14 +96,14 @@ endfunction
 %! x2 = norminv (p, 0, 1);
 %! x3 = norminv (p, 0, 2);
 %! x4 = norminv (p, -2, 0.8);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c')
 %! grid on
 %! ylim ([-5, 5])
-%! legend ({"μ = 0, σ = 0.5", "μ = 0, σ = 1", ...
-%!          "μ = 0, σ = 2", "μ = -2, σ = 0.8"}, "location", "northwest")
-%! title ("Normal iCDF")
-%! xlabel ("probability")
-%! ylabel ("values in x")
+%! legend ({'μ = 0, σ = 0.5', 'μ = 0, σ = 1', ...
+%!          'μ = 0, σ = 2', 'μ = -2, σ = 0.8'}, 'location', 'northwest')
+%! title ('Normal iCDF')
+%! xlabel ('probability')
+%! ylabel ('values in x')
 
 ## Test output
 %!shared p

@@ -111,10 +111,10 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
     group = [];
   endif
   if (nargin < 3)
-    displayopt = "on";
+    displayopt = 'on';
   endif
   if (nargin < 4)
-    vartype = "equal";
+    vartype = 'equal';
   endif
   plotdata = ! (strcmp (displayopt, 'off'));
 
@@ -196,10 +196,10 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   ## Calculate F statistic
   if (SSE != 0)                     ## Regular Matrix case.
     switch (lower (vartype))
-      case "equal"
+      case 'equal'
         ## Assume equal variances (Fisher's One-way ANOVA)
         F = (SSM / dfm) / MSE;
-      case "unequal"
+      case 'unequal'
         ## Accommodate for unequal variances (Welch's One-way ANOVA)
         ## Calculate the sampling variance for each group (i.e. the square of the SEM)
         sv = xv ./ xs;
@@ -230,14 +230,14 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   ## Create results table (if requested)
   if (nargout > 1)
     switch (lower (vartype))
-      case "equal"
-        anovatab = {"Source", "SS", "df", "MS", "F", "Prob>F"; ...
-                    "Groups", SSM, dfm, MSM, F, p; ...
-                    "Error", SSE, dfe, MSE, "", ""; ...
-                    "Total", SST, dfm + dfe, "", "", ""};
-      case "unequal"
-        anovatab = {"Source", "F", "df", "dfe", "F", "Prob>F"; ...
-                    "Groups", SSM, dfm, dfe, F, p};
+      case 'equal'
+        anovatab = {'Source', 'SS', 'df', 'MS', 'F', 'Prob>F'; ...
+                    'Groups', SSM, dfm, MSM, F, p; ...
+                    'Error', SSE, dfe, MSE, '', ''; ...
+                    'Total', SST, dfm + dfe, '', '', ''};
+      case 'unequal'
+        anovatab = {'Source', 'F', 'df', 'dfe', 'F', 'Prob>F'; ...
+                    'Groups', SSM, dfm, dfe, F, p};
     endswitch
   endif
   ## Create stats structure (if requested) for MULTCOMPARE
@@ -258,14 +258,14 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
     switch (lower (vartype))
-      case "equal"
+      case 'equal'
         printf("\n                      ANOVA Table\n\n");
         printf("Source        SS      df        MS       F      Prob>F\n");
         printf("------------------------------------------------------\n");
         printf("Groups  %10.4f %5.0f %10.4f %8.2f %9.4f\n", SSM, dfm, MSM, F, p);
         printf("Error   %10.4f %5.0f %10.4f\n", SSE, dfe, MSE);
         printf("Total   %10.4f %5.0f\n\n", SST, dfm + dfe);
-      case "unequal"
+      case 'unequal'
         printf("\n           Welch's ANOVA Table\n\n");
         printf("Source        F     df     dfe     Prob>F\n");
         printf("-----------------------------------------\n");
@@ -276,14 +276,14 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   if (plotdata)
     ## Create a new figure and ensure it becomes active
     f = figure ();
-    set (0, "currentfigure", f);
+    set (0, 'currentfigure', f);
 
     ## Create a new axes inside this figure and make it current
-    ax = axes ("parent", f);
-    set (f, "currentaxes", ax);
+    ax = axes ('parent', f);
+    set (f, 'currentaxes', ax);
 
     ## Now boxplot will ALWAYS draw here
-    boxplot (x, group_id, "Notch", "on", "Labels", group_names);
+    boxplot (x, group_id, 'Notch', 'on', 'Labels', group_names);
 
   endif
 
@@ -292,27 +292,27 @@ endfunction
 
 %!demo
 %! x = meshgrid (1:6);
-%! randn ("seed", 15);    # for reproducibility
+%! randn ('seed', 15);    # for reproducibility
 %! x = x + normrnd (0, 1, 6, 6);
 %! anova1 (x, [], 'off');
 
 %!demo
 %! x = meshgrid (1:6);
-%! randn ("seed", 15);    # for reproducibility
+%! randn ('seed', 15);    # for reproducibility
 %! x = x + normrnd (0, 1, 6, 6);
 %! [p, atab] = anova1(x);
 
 %!demo
 %! x = ones (50, 4) .* [-2, 0, 1, 5];
-%! randn ("seed", 13);    # for reproducibility
+%! randn ('seed', 13);    # for reproducibility
 %! x = x + normrnd (0, 2, 50, 4);
-%! groups = {"A", "B", "C", "D"};
+%! groups = {'A', 'B', 'C', 'D'};
 %! anova1 (x, groups);
 
 %!demo
 %! y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
 %! g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
-%! anova1 (y(:), g(:), "on", "unequal");
+%! anova1 (y(:), g(:), 'on', 'unequal');
 
 ## testing against GEAR.DAT data file and results for one-factor ANOVA from
 ## https://www.itl.nist.gov/div898/handbook/eda/section3/eda354.htm
@@ -329,13 +329,13 @@ endfunction
 %!         0.991, 0.995, 0.984, 0.994, 0.997, 0.997, 0.991, 0.998, 1.004, 0.997];
 %! group = [1:10] .* ones (10,10);
 %! group = group(:);
-%! [p, tbl] = anova1 (data, group, "off");
+%! [p, tbl] = anova1 (data, group, 'off');
 %! assert (p, 0.022661, 1e-6);
 %! assert (tbl{2,5}, 2.2969, 1e-4);
 %! assert (tbl{2,3}, 9, 0);
 %! assert (tbl{4,2}, 0.003903, 1e-6);
 %! data = reshape (data, 10, 10);
-%! [p, tbl, stats] = anova1 (data, [], "off");
+%! [p, tbl, stats] = anova1 (data, [], 'off');
 %! assert (p, 0.022661, 1e-6);
 %! assert (tbl{2,5}, 2.2969, 1e-4);
 %! assert (tbl{2,3}, 9, 0);
@@ -350,12 +350,12 @@ endfunction
 %!test
 %! y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
 %! g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
-%! [p, tbl] = anova1 (y(:), g(:), "off", "equal");
+%! [p, tbl] = anova1 (y(:), g(:), 'off', 'equal');
 %! assert (p, 0.00004163, 1e-6);
 %! assert (tbl{2,5}, 22.573418, 1e-6);
 %! assert (tbl{2,3}, 2, 0);
 %! assert (tbl{3,3}, 14, 0);
-%! [p, tbl] = anova1 (y(:), g(:), "off", "unequal");
+%! [p, tbl] = anova1 (y(:), g(:), 'off', 'unequal');
 %! assert (p, 0.00208877, 1e-8);
 %! assert (tbl{2,5}, 15.523192, 1e-6);
 %! assert (tbl{2,3}, 2, 0);
@@ -367,12 +367,12 @@ endfunction
 %! y = [54, 87, 45; 23, 98, 39; 45, 64, 51; ...
 %!      54, 77, 49; 45, 89, 50; 47, NaN, 55];
 %! g = categorical ([1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3; 1, 2, 3]);
-%! [p, tbl] = anova1 (y(:), g(:), "off", "equal");
+%! [p, tbl] = anova1 (y(:), g(:), 'off', 'equal');
 %! assert (p, 0.00004163, 1e-6);
 %! assert (tbl{2,5}, 22.573418, 1e-6);
 %! assert (tbl{2,3}, 2, 0);
 %! assert (tbl{3,3}, 14, 0);
-%! [p, tbl] = anova1 (y(:), g(:), "off", "unequal");
+%! [p, tbl] = anova1 (y(:), g(:), 'off', 'unequal');
 %! assert (p, 0.00208877, 1e-8);
 %! assert (tbl{2,5}, 15.523192, 1e-6);
 %! assert (tbl{2,3}, 2, 0);
@@ -382,7 +382,7 @@ endfunction
 %!test
 %! y = [10; 20; 9999; NaN; 40; 50];
 %! g = [1; 1; NaN; 1; 2; 2];
-%! [p, tbl, stats] = anova1 (y, g, "off");
+%! [p, tbl, stats] = anova1 (y, g, 'off');
 %! assert (p, 0.051317, 1e-6);
 %! assert (tbl{2,5}, 18, 1e-6);
 %! assert (tbl{2,3}, 1, 0);
@@ -395,7 +395,7 @@ endfunction
 %!test
 %! y = [10; 20; 9999; NaN; 40; 50];
 %! g = categorical ([1; 1; NaN; 1; 2; 2]);
-%! [p, tbl, stats] = anova1 (y, g, "off");
+%! [p, tbl, stats] = anova1 (y, g, 'off');
 %! assert (p, 0.051317, 1e-6);
 %! assert (tbl{2,5}, 18, 1e-6);
 %! assert (tbl{2,3}, 1, 0);

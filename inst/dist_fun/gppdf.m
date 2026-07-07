@@ -67,9 +67,9 @@ function y = gppdf (x, k, sigma, theta)
   endif
 
   ## Check for class type
-  if (isa (x, "single") || isa (theta, "single") || isa (sigma, "single") ...
-      || isa (k, "single"))
-    y = zeros (size (x), "single");
+  if (isa (x, 'single') || isa (theta, 'single') || isa (sigma, 'single') ...
+      || isa (k, 'single'))
+    y = zeros (size (x), 'single');
   else
     y = zeros (size (x));
   endif
@@ -135,18 +135,18 @@ endfunction
 %! y4 = gppdf (x, 1, 2, 0);
 %! y5 = gppdf (x, 5, 2, 0);
 %! y6 = gppdf (x, 20, 2, 0);
-%! plot (x, y1, "-b", x, y2, "-g", x, y3, "-r", ...
-%!       x, y4, "-c", x, y5, "-m", x, y6, "-k")
+%! plot (x, y1, '-b', x, y2, '-g', x, y3, '-r', ...
+%!       x, y4, '-c', x, y5, '-m', x, y6, '-k')
 %! grid on
 %! xlim ([0, 5])
 %! ylim ([0, 1])
-%! legend ({"k = 1, σ = 1, θ = 0", "k = 5, σ = 1, θ = 0", ...
-%!          "k = 20, σ = 1, θ = 0", "k = 1, σ = 2, θ = 0", ...
-%!          "k = 5, σ = 2, θ = 0", "k = 20, σ = 2, θ = 0"}, ...
-%!         "location", "northeast")
-%! title ("Generalized Pareto PDF")
-%! xlabel ("values in x")
-%! ylabel ("density")
+%! legend ({'k = 1, σ = 1, θ = 0', 'k = 5, σ = 1, θ = 0', ...
+%!          'k = 20, σ = 1, θ = 0', 'k = 1, σ = 2, θ = 0', ...
+%!          'k = 5, σ = 2, θ = 0', 'k = 20, σ = 2, θ = 0'}, ...
+%!         'location', 'northeast')
+%! title ('Generalized Pareto PDF')
+%! xlabel ('values in x')
+%! ylabel ('density')
 
 ## Test output
 %!shared x, y1, y2, y3

@@ -73,7 +73,7 @@ classdef MultinomialDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "MultinomialDistribution";
+    DistributionName = 'MultinomialDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} NumParameters
@@ -95,7 +95,7 @@ classdef MultinomialDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"Probabilities"};
+    ParameterNames = {'Probabilities'};
 
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} ParameterDescription
@@ -107,12 +107,12 @@ classdef MultinomialDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Outcome probabilities"};
+    ParameterDescription = {'Outcome probabilities'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "mn";
+    DistributionCode = 'mn';
   endproperties
 
   properties (GetAccess = public , SetAccess = protected)
@@ -168,11 +168,11 @@ classdef MultinomialDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "multinomial distribution");
+      __disp__ (this, 'multinomial distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "multinomial distribution");
+      __disp__ (this, 'multinomial distribution');
     endfunction
 
     function this = set.Probabilities (this, Probabilities)
@@ -208,9 +208,9 @@ classdef MultinomialDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -581,17 +581,17 @@ endfunction
 %! ## the distribution and plot the PDF superimposed on a histogram of the data.
 %!
 %! probs = [0.1, 0.2, 0.3, 0.2, 0.1, 0.1];
-%! pd = makedist ("Multinomial", "Probabilities", probs);
-%! rand ("seed", 2);
+%! pd = makedist ('Multinomial', 'Probabilities', probs);
+%! rand ('seed', 2);
 %! data = random (pd, 5000, 1);
 %! hist (data, length (probs));
 %! hold on
 %! x = 1:length (probs);
 %! y = pdf (pd, x) * 5000;
-%! stem (x, y, "r", "LineWidth", 2);
+%! stem (x, y, 'r', 'LineWidth', 2);
 %! hold off
-%! msg = "Multinomial distribution with Probabilities = [%s]";
-%! probs_str = num2str (probs, "%0.1f ");
+%! msg = 'Multinomial distribution with Probabilities = [%s]';
+%! probs_str = num2str (probs, '%0.1f ');
 %! title (sprintf (msg, probs_str))
 
 ## Test output
@@ -642,7 +642,7 @@ endfunction
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
 %! MultinomialDistribution(i)
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution("a")
+%! MultinomialDistribution('a')
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
 %! MultinomialDistribution([1, 2])
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
@@ -650,7 +650,7 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (MultinomialDistribution, 2, "uper")
+%! cdf (MultinomialDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (MultinomialDistribution, 2, 3)
 %!error <cdf: X must be real.> ...
@@ -658,27 +658,27 @@ endfunction
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (MultinomialDistribution, "Parent")
+%! plot (MultinomialDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (MultinomialDistribution, "PlotType", 12)
+%! plot (MultinomialDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (MultinomialDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (MultinomialDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (MultinomialDistribution, "PlotType", "pdfcdf")
+%! plot (MultinomialDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (MultinomialDistribution, "Discrete", "pdfcdf")
+%! plot (MultinomialDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (MultinomialDistribution, "Discrete", [1, 0])
+%! plot (MultinomialDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (MultinomialDistribution, "Discrete", {true})
+%! plot (MultinomialDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (MultinomialDistribution, "Parent", 12)
+%! plot (MultinomialDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (MultinomialDistribution, "Parent", "hax")
+%! plot (MultinomialDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (MultinomialDistribution, "invalidNAME", "pdf")
+%! plot (MultinomialDistribution, 'invalidNAME', 'pdf')
 %!error <plot: 'probability' PlotType is not supported for 'MultinomialDistribution'.> ...
-%! plot (MultinomialDistribution, "PlotType", "probability")
+%! plot (MultinomialDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method
 %!error <truncate: is_nan input argument.> ...

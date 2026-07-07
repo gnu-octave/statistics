@@ -84,7 +84,7 @@ classdef LoguniformDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "LoguniformDistribution";
+    DistributionName = 'LoguniformDistribution';
 
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} NumParameters
@@ -106,7 +106,7 @@ classdef LoguniformDistribution
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
-    ParameterNames = {"Lower", "Upper"};
+    ParameterNames = {'Lower', 'Upper'};
 
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} ParameterDescription
@@ -118,12 +118,12 @@ classdef LoguniformDistribution
     ## read-only.
     ##
     ## @end deftp
-    ParameterDescription = {"Lower limit", "Upper limit"};
+    ParameterDescription = {'Lower limit', 'Upper limit'};
   endproperties
 
   properties (GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
-    DistributionCode = "logu";
+    DistributionCode = 'logu';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [false, false];
   endproperties
@@ -183,11 +183,11 @@ classdef LoguniformDistribution
 
     function display (this)
       fprintf ("%s =\n", inputname(1));
-      __disp__ (this, "Log-uniform distribution");
+      __disp__ (this, 'Log-uniform distribution');
     endfunction
 
     function disp (this)
-      __disp__ (this, "Log-uniform distribution");
+      __disp__ (this, 'Log-uniform distribution');
     endfunction
 
     function this = set.Lower (this, Lower)
@@ -232,9 +232,9 @@ classdef LoguniformDistribution
         error ("cdf: requires a scalar probability distribution.");
       endif
       ## Check for "upper" flag
-      if (nargin > 2 && strcmpi (uflag, "upper"))
+      if (nargin > 2 && strcmpi (uflag, 'upper'))
         utail = true;
-      elseif (nargin > 2 && ! strcmpi (uflag, "upper"))
+      elseif (nargin > 2 && ! strcmpi (uflag, 'upper'))
         error ("cdf: invalid argument for upper tail.");
       else
         utail = false;
@@ -536,14 +536,14 @@ endfunction
 %! ## parameters Lower = 1 and Upper = 10.  Plot a PDF of the distribution superimposed
 %! ## on a histogram of the data.
 %!
-%! pd_fixed = makedist ("Loguniform", "Lower", 1, "Upper", 10);
-%! rand ("seed", 2);
+%! pd_fixed = makedist ('Loguniform', 'Lower', 1, 'Upper', 10);
+%! rand ('seed', 2);
 %! data = random (pd_fixed, 5000, 1);
 %! plot (pd_fixed)
 %! hold on
 %! hist (data, 50)
 %! hold off
-%! msg = "Log-uniform distribution with Lower = %0.2f and Upper = %0.2f";
+%! msg = 'Log-uniform distribution with Lower = %0.2f and Upper = %0.2f';
 %! title (sprintf (msg, pd_fixed.Lower, pd_fixed.Upper))
 
 ## Test output
@@ -587,7 +587,7 @@ endfunction
 %!error <LoguniformDistribution: LOWER must be a positive real scalar.> ...
 %! LoguniformDistribution ([1, 2], 1)
 %!error <LoguniformDistribution: LOWER must be a positive real scalar.> ...
-%! LoguniformDistribution ("a", 1)
+%! LoguniformDistribution ('a', 1)
 %!error <LoguniformDistribution: LOWER must be a positive real scalar.> ...
 %! LoguniformDistribution (NaN, 1)
 %!error <LoguniformDistribution: UPPER must be a real scalar.> ...
@@ -597,7 +597,7 @@ endfunction
 %!error <LoguniformDistribution: UPPER must be a real scalar.> ...
 %! LoguniformDistribution (1, [1, 2])
 %!error <LoguniformDistribution: UPPER must be a real scalar.> ...
-%! LoguniformDistribution (1, "a")
+%! LoguniformDistribution (1, 'a')
 %!error <LoguniformDistribution: UPPER must be a real scalar.> ...
 %! LoguniformDistribution (1, NaN)
 %!error <LoguniformDistribution: LOWER must be less than UPPER.> ...
@@ -605,33 +605,33 @@ endfunction
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
-%! cdf (LoguniformDistribution, 2, "uper")
+%! cdf (LoguniformDistribution, 2, 'uper')
 %!error <cdf: invalid argument for upper tail.> ...
 %! cdf (LoguniformDistribution, 2, 3)
 
 ## 'plot' method
 %!error <plot: optional arguments must be in NAME-VALUE pairs.> ...
-%! plot (LoguniformDistribution, "Parent")
+%! plot (LoguniformDistribution, 'Parent')
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (LoguniformDistribution, "PlotType", 12)
+%! plot (LoguniformDistribution, 'PlotType', 12)
 %!error <plot: invalid VALUE size for 'Parameter' argument.> ...
-%! plot (LoguniformDistribution, "PlotType", {"pdf", "cdf"})
+%! plot (LoguniformDistribution, 'PlotType', {'pdf', 'cdf'})
 %!error <plot: invalid VALUE for 'PlotType' argument.> ...
-%! plot (LoguniformDistribution, "PlotType", "pdfcdf")
+%! plot (LoguniformDistribution, 'PlotType', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LoguniformDistribution, "Discrete", "pdfcdf")
+%! plot (LoguniformDistribution, 'Discrete', 'pdfcdf')
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LoguniformDistribution, "Discrete", [1, 0])
+%! plot (LoguniformDistribution, 'Discrete', [1, 0])
 %!error <plot: invalid VALUE for 'Discrete' argument.> ...
-%! plot (LoguniformDistribution, "Discrete", {true})
+%! plot (LoguniformDistribution, 'Discrete', {true})
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (LoguniformDistribution, "Parent", 12)
+%! plot (LoguniformDistribution, 'Parent', 12)
 %!error <plot: invalid VALUE for 'Parent' argument.> ...
-%! plot (LoguniformDistribution, "Parent", "hax")
+%! plot (LoguniformDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
-%! plot (LoguniformDistribution, "invalidNAME", "pdf")
+%! plot (LoguniformDistribution, 'invalidNAME', 'pdf')
 %!error <plot: 'probability' PlotType is not supported for 'LoguniformDistribution'.> ...
-%! plot (LoguniformDistribution, "PlotType", "probability")
+%! plot (LoguniformDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method
 %!error <truncate: missing input argument.> ...

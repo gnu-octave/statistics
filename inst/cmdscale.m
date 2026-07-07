@@ -206,7 +206,7 @@ endfunction
 %!test
 %! ## non euclidean distance.
 %! X = [1 2; 3 4; 5 6; 7 8; 9 10];
-%! D = pdist (X, "cityblock");
+%! D = pdist (X, 'cityblock');
 %! [Y, e] = cmdscale (D, 2);
 %! assert (size (Y, 2), 1);
 %! assert (length (e), 2);
@@ -220,7 +220,7 @@ endfunction
 %! assert (size (Y, 1), 10);
 %!test
 %! ## sign convention.
-%! rng (0, "twister");
+%! rng (0, 'twister');
 %! X = rand (10, 3);
 %! D = pdist (X);
 %! Y = cmdscale (D);
@@ -231,7 +231,7 @@ endfunction
 %! assert (all (Y(idx) >= 0));
 %!test
 %! ## testing with p = n and without p
-%! rng (1, "twister");
+%! rng (1, 'twister');
 %! X = rand (10, 4);
 %! D = pdist (X);
 %! n_points = size (X, 1);

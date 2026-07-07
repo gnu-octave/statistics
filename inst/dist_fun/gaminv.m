@@ -62,8 +62,8 @@ function x = gaminv (p, a, b)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (a, "single") || isa (b, "single"))
-    x = zeros (size (p), "single");
+  if (isa (p, 'single') || isa (a, 'single') || isa (b, 'single'))
+    x = zeros (size (p), 'single');
   else
     x = zeros (size (p));
   endif
@@ -113,16 +113,16 @@ endfunction
 %! x5 = gaminv (p, 9, 0.5);
 %! x6 = gaminv (p, 7.5, 1);
 %! x7 = gaminv (p, 0.5, 1);
-%! plot (p, x1, "-r", p, x2, "-g", p, x3, "-y", p, x4, "-m", ...
-%!       p, x5, "-k", p, x6, "-b", p, x7, "-c")
+%! plot (p, x1, '-r', p, x2, '-g', p, x3, '-y', p, x4, '-m', ...
+%!       p, x5, '-k', p, x6, '-b', p, x7, '-c')
 %! ylim ([0, 20])
 %! grid on
-%! legend ({"α = 1, β = 2", "α = 2, β = 2", "α = 3, β = 2", ...
-%!          "α = 5, β = 1", "α = 9, β = 0.5", "α = 7.5, β = 1", ...
-%!          "α = 0.5, β = 1"}, "location", "northwest")
-%! title ("Gamma iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
+%! legend ({'α = 1, β = 2', 'α = 2, β = 2', 'α = 3, β = 2', ...
+%!          'α = 5, β = 1', 'α = 9, β = 0.5', 'α = 7.5, β = 1', ...
+%!          'α = 0.5, β = 1'}, 'location', 'northwest')
+%! title ('Gamma iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
 
 ## Test output
 %!shared p
@@ -145,11 +145,11 @@ endfunction
 ## Test class of input preserved
 %!assert (gaminv ([p, NaN], 1, 1), [NaN 0 1 Inf NaN NaN], eps)
 %!assert (gaminv (single ([p, NaN]), 1, 1), single ([NaN 0 1 Inf NaN NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 %!assert (gaminv ([p, NaN], single (1), 1), single ([NaN 0 1 Inf NaN NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 %!assert (gaminv ([p, NaN], 1, single (1)), single ([NaN 0 1 Inf NaN NaN]), ...
-%! eps ("single"))
+%! eps ('single'))
 
 ## Test input validation
 %!error<gaminv: function called with too few input arguments.> gaminv ()

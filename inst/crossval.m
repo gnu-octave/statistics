@@ -186,28 +186,28 @@ function results = crossval (f, varargin)
       MCReps = 1;
     endif
   elseif (! isempty (Leaveout))
-    P = cvpartition (n, "LeaveOut");
+    P = cvpartition (n, 'LeaveOut');
     nSets = P.NumTestSets;
     MCReps = 1;
   elseif (! isempty (Holdout))
     if (isempty (Stratify))
-      P = cvpartition (n, "HoldOut", Holdout);
+      P = cvpartition (n, 'HoldOut', Holdout);
     else
-      P = cvpartition (Stratify, "HoldOut", Holdout);
+      P = cvpartition (Stratify, 'HoldOut', Holdout);
     endif
     nSets = P.NumTestSets;
   elseif (! isempty (KFold))
     if (isempty (Stratify))
-      P = cvpartition (n, "KFold", KFold);
+      P = cvpartition (n, 'KFold', KFold);
     else
-      P = cvpartition (Stratify, "KFold", KFold);
+      P = cvpartition (Stratify, 'KFold', KFold);
     endif
     nSets = P.NumTestSets;
   else # KFold by default
     if (isempty (Stratify))
-      P = cvpartition (n, "KFold");
+      P = cvpartition (n, 'KFold');
     else
-      P = cvpartition (Stratify, "KFold");
+      P = cvpartition (Stratify, 'KFold');
     endif
     nSets = P.NumTestSets;
   endif
@@ -223,13 +223,13 @@ function results = crossval (f, varargin)
         idx_train = training (P, idx);
         idx_test = test (P, idx);
         if (is_cellarray)
-          Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
-          Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+          Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
+          Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
           y_fit = Predfun (Xtrain{:}, y(idx_train), Xtest{:});
         else
           y_fit = Predfun (X(idx_train, :), y(idx_train), X(idx_test, :));
         endif
-        if (strcmp (f, "mse"))
+        if (strcmp (f, 'mse'))
           err = sum ((y_fit - y(idx_test)).^2) / numel (y_fit);
           results(rep, idx) = err;
         else # MCR
@@ -251,8 +251,8 @@ function results = crossval (f, varargin)
           idx_train = training (P, idx);
           idx_test = test (P, idx);
           if (is_cellarray)
-            Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
-            Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+            Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
+            Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
             result = f (Xtrain{:}, Xtest{:});
           else
             result = f (X(idx_train, :), X(idx_test, :));
@@ -271,8 +271,8 @@ function results = crossval (f, varargin)
           idx_train = training (P, idx);
           idx_test = test (P, idx);
           if (is_cellarray)
-            Xtrain = cellfun (@(x) x(idx_train, :), X, "UniformOutput", false);
-            Xtest = cellfun (@(x) x(idx_test, :), X, "UniformOutput", false);
+            Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
+            Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
             result = f (Xtrain{:}, Xtest{:});
           else
             result = f (X(idx_train, :), X(idx_test, :));
@@ -323,7 +323,7 @@ endfunction
 %!
 %! y = data(:,4);
 %! X = [ones(length(y),1) data(:,1:3)];
-%! rand ("seed", 3);
+%! rand ('seed', 3);
 %! cvMSE = crossval('mse',X,y,'Predfun',@regf);
 %! assert (cvMSE, 18.720, 1e-3);
 

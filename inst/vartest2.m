@@ -100,25 +100,25 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   endif
   ## Add defaults
   alpha = 0.05;
-  tail = "both";
+  tail = 'both';
   dim = [];
   if (nargin > 2 && mod (numel (varargin(:)), 2) == 0)
     for idx = 3:2:nargin
       name = varargin{idx-2};
       value = varargin{idx-1};
       switch (lower (name))
-        case "alpha"
+        case 'alpha'
           alpha = value;
           if (! isscalar (alpha) || ! isnumeric (alpha) || ...
                 alpha <= 0 || alpha >= 1)
             error ("vartest2: invalid value for alpha.");
           endif
-        case "tail"
+        case 'tail'
           tail = value;
-          if (! any (strcmpi (tail, {"both", "left", "right"})))
+          if (! any (strcmpi (tail, {'both', 'left', 'right'})))
             error ("vartest2: invalid value for tail.");
           endif
-        case "dim"
+        case 'dim'
           dim = value;
           if (! isscalar (dim) || ! ismember (dim, 1:ndims (x)))
             error ("vartest2: invalid value for operating dimension.");
@@ -152,20 +152,20 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   t2 = (x_var > 0) & ! t1;
   F(t2) = Inf;
   ## Calculate p-value for the test and confidence intervals (if requested)
-  if (strcmpi (tail, "both"))
+  if (strcmpi (tail, 'both'))
     pval = 2 * min (fcdf (F, df1, df2), 1 - fcdf (F, df1, df2));
     if (nargout > 2)
       ci = cat (dim, F .* finv (alpha / 2, df2, df1), ...
                      F ./ finv (alpha / 2, df1, df2));
     endif
-  elseif (strcmpi (tail, "right"))
+  elseif (strcmpi (tail, 'right'))
     Ftmp = F;
     Ftmp(Ftmp < 0) = 0;
     pval = fcdf (1 ./ Ftmp, df2, df1);
     if (nargout > 2)
       ci = cat (dim, F .* finv (alpha, df2, df1), Inf (size (F)));
     endif
-  elseif (strcmpi (tail, "left"))
+  elseif (strcmpi (tail, 'left'))
     pval = fcdf (F, df1, df2);
     if (nargout > 2)
       ci = cat (dim, zeros (size (F)), F ./ finv (alpha, df1, df2));
@@ -176,7 +176,7 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   h(isnan (pval)) = NaN;
   ## Create stats output structure (if requested)
   if (nargout > 3)
-    stats = struct ("fstat", F, "df1", df1, "df2", df2);
+    stats = struct ('fstat', F, 'df1', df1, 'df2', df2);
   endif
 
 endfunction
@@ -215,25 +215,25 @@ endfunction
 %!error<vartest2: X and Y must be vectors or matrices or N-D arrays.> ...
 %! vartest2 (rand (20,1), 5);
 %!error<vartest2: invalid value for alpha.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 0);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'alpha', 0);
 %!error<vartest2: invalid value for alpha.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 1.2);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'alpha', 1.2);
 %!error<vartest2: invalid value for alpha.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", "some");
+%! vartest2 (rand (20,1), rand (25,1)*2, 'alpha', 'some');
 %!error<vartest2: invalid value for alpha.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", [0.05, 0.001]);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'alpha', [0.05, 0.001]);
 %!error<vartest2: invalid value for tail.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "tail", [0.05, 0.001]);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'tail', [0.05, 0.001]);
 %!error<vartest2: invalid value for tail.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "tail", "some");
+%! vartest2 (rand (20,1), rand (25,1)*2, 'tail', 'some');
 %!error<vartest2: invalid value for operating dimension.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "dim", 3);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'dim', 3);
 %!error<vartest2: invalid value for operating dimension.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "alpha", 0.001, "dim", 3);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'alpha', 0.001, 'dim', 3);
 %!error<vartest2: invalid name for optional arguments.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "some", 3);
+%! vartest2 (rand (20,1), rand (25,1)*2, 'some', 3);
 %!error<vartest2: optional arguments must be in name/value pairs.> ...
-%! vartest2 (rand (20,1), rand (25,1)*2, "some");
+%! vartest2 (rand (20,1), rand (25,1)*2, 'some');
 ## Test results
 %!test
 %! load carsmall
@@ -247,7 +247,7 @@ endfunction
 %!test
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
-%!                                 "tail", "left");
+%!                                 'tail', 'left');
 %! assert (h, 0);
 %! assert (pval, 0.314401118135922, 1e-13);
 %! assert (ci, [0; 1.5287], 1e-4);
@@ -257,7 +257,7 @@ endfunction
 %!test
 %! load carsmall
 %! [h, pval, ci, stat] = vartest2 (MPG(Model_Year==82), MPG(Model_Year==76), ...
-%!                                 "tail", "right");
+%!                                 'tail', 'right');
 %! assert (h, 0);
 %! assert (pval, 0.685598881864077, 1e-13);
 %! assert (ci, [0.4643; Inf], 1e-4);

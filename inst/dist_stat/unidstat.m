@@ -68,7 +68,7 @@ endfunction
 ## Input validation tests
 %!error<unidstat: function called with too few input arguments.> unidstat ()
 %!error<unidstat: N must be numeric.> unidstat ({})
-%!error<unidstat: N must be numeric.> unidstat ("")
+%!error<unidstat: N must be numeric.> unidstat ('')
 %!error<unidstat: N must not be complex.> unidstat (i)
 
 ## Output validation tests

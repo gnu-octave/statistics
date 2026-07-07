@@ -71,7 +71,7 @@ function h = normplot (varargin)
   ## Get number of column vectors in x
   col = size (x, 2);
   ## Process each column and plot data and fit lines
-  color = {"blue", "black", "cyan", "green", "magenta", "red", "white", "yellow"};
+  color = {'blue', 'black', 'cyan', 'green', 'magenta', 'red', 'white', 'yellow'};
   hold on;
   for i = 1:col
     xc = x(:,i);
@@ -107,35 +107,35 @@ function h = normplot (varargin)
     ## Plot data and corresponding reference lines in the same color,
     ## following the default color order.  Plot reference line first,
     ## followed by the data, so that data will be on top of reference line.
-    h_end(i) = line (ax, mx, my, "LineStyle", "-.", "Marker", "none", ...
-                                 "color", color{mod(i,8)});
-    h_mid(i) = line (ax, qx, qy, "LineStyle", "-", "Marker", "none", ...
-                                 "color", color{mod(i,8)});
-    h_dat(i) = line (ax, xc, yc, "LineStyle", "none", "Marker", "+", ...
-                                 "color", color{mod(i,8)});
+    h_end(i) = line (ax, mx, my, 'LineStyle', '-.', 'Marker', 'none', ...
+                                 'color', color{mod(i,8)});
+    h_mid(i) = line (ax, qx, qy, 'LineStyle', '-', 'Marker', 'none', ...
+                                 'color', color{mod(i,8)});
+    h_dat(i) = line (ax, xc, yc, 'LineStyle', 'none', 'Marker', '+', ...
+                                 'color', color{mod(i,8)});
   endfor
   hold off;
   ## Change colors for single column vector
   if (i == 1)
-    set (h_dat, "Color", "b");
-    set (h_mid, "Color", "r");
-    set (h_end, "Color", "r");
+    set (h_dat, 'Color', 'b');
+    set (h_mid, 'Color', 'r');
+    set (h_end, 'Color', 'r');
   endif
   ## Bundle handles together if output requested
   if (nargout > 0)
     h = [h_dat, h_mid, h_end]';
   endif
   ## Plot labels
-  title "Normal Probability Plot"
-  ylabel "Probability"
-  xlabel "Data"
+  title 'Normal Probability Plot'
+  ylabel 'Probability'
+  xlabel 'Data'
   ## Plot grid
   p = [0.001, 0.003, 0.01, 0.02, 0.05, 0.10, 0.25, 0.5, ...
        0.75, 0.90, 0.95, 0.98, 0.99, 0.997, 0.999];
-  label = {"0.001", "0.003", "0.01", "0.02", "0.05", "0.10", "0.25", "0.50", ...
-           "0.75", "0.90", "0.95", "0.98", "0.99", "0.997", "0.999"};
+  label = {'0.001', '0.003', '0.01', '0.02', '0.05', '0.10', '0.25', '0.50', ...
+           '0.75', '0.90', '0.95', '0.98', '0.99', '0.997', '0.999'};
   tick = norminv (p, 0, 1);
-  set (ax, "ytick", tick, "yticklabel", label);
+  set (ax, 'ytick', tick, 'yticklabel', label);
   ## Set view range with a bit of space around data
   range = nanmax (x(:)) - nanmin (x(:));
   if (range > 0)
@@ -147,9 +147,9 @@ function h = normplot (varargin)
   endif
   minyaxis = norminv (0.25 ./ row_xc, 0, 1);
   maxyaxis = norminv ((row_xc - 0.25) ./ row_xc, 0, 1);
-  set (ax, "ylim", [minyaxis, maxyaxis], "xlim", [minxaxis, maxxaxis]);
-  grid (ax, "on");
-  box (ax, "off");
+  set (ax, 'ylim', [minyaxis, maxyaxis], 'xlim', [minxaxis, maxxaxis]);
+  grid (ax, 'on');
+  box (ax, 'off');
 endfunction
 
 %!demo
@@ -161,7 +161,7 @@ endfunction
 %! h = normplot(ax, [1:20]);
 %! ax = gca;
 %! h = normplot(ax, [-10:10]);
-%! set (ax, "xlim", [-11, 21]);
+%! set (ax, 'xlim', [-11, 21]);
 
 ## Test input validation
 %!error normplot ();
@@ -171,18 +171,18 @@ endfunction
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   ax = newplot (hf);
 %!   h = normplot (ax, [1:20]);
 %!   ax = gca;
 %!   h = normplot(ax, [-10:10]);
-%!   set (ax, "xlim", [-11, 21]);
+%!   set (ax, 'xlim', [-11, 21]);
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   h = normplot([1:20;5:2:44]');
 %! unwind_protect_cleanup

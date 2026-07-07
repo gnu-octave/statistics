@@ -62,7 +62,7 @@ function [varargout] = histfit (varargin)
          'Nakagami'; 'NegativeBinomial'; 'Normal'; 'Poisson'; 'Rayleigh'; ...
          'Rician'; 'tLocationScale'; 'Weibull'};
 
-  ABBR = {"bisa"; "ev"; "gev"; "gp"; "invg"; "nbin"; "tls"; "wbl"};
+  ABBR = {'bisa'; 'ev'; 'gev'; 'gp'; 'invg'; 'nbin'; 'tls'; 'wbl'};
 
   ## Check for zero input arguments
   if (numel (varargin) < 1)
@@ -112,13 +112,13 @@ function [varargout] = histfit (varargin)
     ## Check distribution name
     if (! (ischar (distname) && size (distname, 1) == 1))
       error ("histfit: DISTNAME must be a character vector.");
-    elseif (strcmpi (distname, "kernel"))
+    elseif (strcmpi (distname, 'kernel'))
       error ("histfit: 'Kernel' distribution is not supported yet.");
     elseif (! (any (strcmpi (distname, PDO)) || any (strcmpi (distname, ABBR))))
       error ("histfit: unrecognized distribution name.");
     endif
   else
-    distname = "normal";
+    distname = 'normal';
   endif
 
   ## Create axes handle (if necessary)
@@ -127,7 +127,7 @@ function [varargout] = histfit (varargin)
   endif
 
   ## Plot the histogram
-  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
+  if (any (strcmpi (distname, {'poisson', 'NegativeBinomial', 'nbin'})))
     binwidth = 1;
     xmin = min (x) - 1;
     xmax = max (x) + 1;
@@ -138,13 +138,13 @@ function [varargout] = histfit (varargin)
     xmin = min (x) - binwidth / 2;
     xmax = max (x) + binwidth / 2;
   endif
-  h = bar (ax, bincenter, binsize, 1, "facecolor", "b");
+  h = bar (ax, bincenter, binsize, 1, 'facecolor', 'b');
 
   ## Fit distribution to data
   pd = fitdist (x, distname);
 
   ## Compute density function
-  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
+  if (any (strcmpi (distname, {'poisson', 'NegativeBinomial', 'nbin'})))
     x = [min(x):max(x)]';
     y = pdf (pd, x);
   else
@@ -155,10 +155,10 @@ function [varargout] = histfit (varargin)
   ## Normalize density line and overplot the histogram
   y = xsize * y * binwidth;
   hold on;
-  if (any (strcmpi (distname, {"poisson", "NegativeBinomial", "nbin"})))
-    h(2) = plot (ax, x, y, ";;r-o");
+  if (any (strcmpi (distname, {'poisson', 'NegativeBinomial', 'nbin'})))
+    h(2) = plot (ax, x, y, ';;r-o');
   else
-    h(2) = plot (ax, x, y, ";;r-");
+    h(2) = plot (ax, x, y, ';;r-');
   endif
   xlim ([xmin, xmax]);
   hold off;
@@ -173,14 +173,14 @@ endfunction
 %! histfit (randn (100, 1))
 
 %!demo
-%! histfit (poissrnd (2, 1000, 1), 10, "Poisson")
+%! histfit (poissrnd (2, 1000, 1), 10, 'Poisson')
 
 %!demo
-%! histfit (betarnd (3, 10, 1000, 1), 10, "beta")
+%! histfit (betarnd (3, 10, 1000, 1), 10, 'beta')
 
 ## Test plotting
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 4, 3, 2, 4, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %!   histfit (x);
@@ -188,7 +188,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %!   histfit (x);
@@ -196,7 +196,7 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   x = [2, 4, 3, 2, NaN, 3, 2, 5, 6, 4, 7, 5, 9, 8, 10, 4, 11];
 %!   histfit (x, 3);
@@ -204,28 +204,28 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   histfit (randn (100, 1));
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   histfit (poissrnd (2, 1000, 1), 10, "Poisson");
+%!   histfit (poissrnd (2, 1000, 1), 10, 'Poisson');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   histfit (betarnd (3, 10, 1000, 1), 10, "beta");
+%!   histfit (betarnd (3, 10, 1000, 1), 10, 'beta');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   ax = gca ();
 %!   histfit (ax, randn (100, 1));
@@ -233,28 +233,28 @@ endfunction
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   ax = gca ();
-%!   histfit (ax, poissrnd (2, 1000, 1), 10, "Poisson");
+%!   histfit (ax, poissrnd (2, 1000, 1), 10, 'Poisson');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   ax = gca ();
-%!   histfit (ax, betarnd (3, 10, 1000, 1), 10, "beta");
+%!   histfit (ax, betarnd (3, 10, 1000, 1), 10, 'beta');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
 
 ## Test input validation
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   ax = axes ("parent", hf);
-%!   fail ("histfit (ax)", "histfit: too few input arguments.");
+%!   ax = axes ('parent', hf);
+%!   fail ('histfit (ax)', 'histfit: too few input arguments.');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

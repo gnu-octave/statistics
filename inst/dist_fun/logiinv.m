@@ -58,8 +58,8 @@ function x = logiinv (p, mu, sigma)
   endif
 
   ## Check for class type
-  if (isa (p, "single") || isa (mu, "single") || isa (sigma, "single"));
-    x = NaN (size (p), "single");
+  if (isa (p, 'single') || isa (mu, 'single') || isa (sigma, 'single'));
+    x = NaN (size (p), 'single');
   else
     x = NaN (size (p));
   endif
@@ -83,13 +83,13 @@ endfunction
 %! x3 = logiinv (p, 9, 4);
 %! x4 = logiinv (p, 6, 2);
 %! x5 = logiinv (p, 2, 1);
-%! plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", p, x4, "-c", p, x5, "-m")
+%! plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', p, x4, '-c', p, x5, '-m')
 %! grid on
-%! legend ({"μ = 5, σ = 2", "μ = 9, σ = 3", "μ = 9, σ = 4", ...
-%!          "μ = 6, σ = 2", "μ = 2, σ = 1"}, "location", "southeast")
-%! title ("Logistic iCDF")
-%! xlabel ("probability")
-%! ylabel ("x")
+%! legend ({'μ = 5, σ = 2', 'μ = 9, σ = 3', 'μ = 9, σ = 4', ...
+%!          'μ = 6, σ = 2', 'μ = 2, σ = 1'}, 'location', 'southeast')
+%! title ('Logistic iCDF')
+%! xlabel ('probability')
+%! ylabel ('x')
 
 ## Test output
 %!test
