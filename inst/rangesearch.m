@@ -141,7 +141,7 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   endif
 
   if (size (X, 2) != size (Y, 2))
-	  error ("rangesearch: number of columns in X and Y must match.");
+    error ("rangesearch: number of columns in X and Y must match.");
   endif
 
   if (! isscalar (r) || ! isnumeric (r) || r < 0)
@@ -251,7 +251,7 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
     idx = cell (rows (Y), 1);
     for i = 1:rows (Y)
       [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
-																							Distance, DistParameter, true, r);
+                                              Distance, DistParameter, true, r);
       if (SI)
         [sorted_D, sort_idx] = sort (temp_D);
         idx{i} = temp_idx(sort_idx)(:).';
@@ -308,7 +308,7 @@ endfunction
 
 ## Search KD-tree
 function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
-																									 distparam, is_range, r)
+                                                   distparam, is_range, r)
   if (nargin < 8)
     r = Inf;
   endif

@@ -105,7 +105,7 @@ function [nlogL, acov] = gevlike (params, x, freq)
   ## Optionally calculate the first and second derivatives of the negative log
   ## likelihood with respect to parameters
   if (nargout > 1)
-  	[Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
+    [Grad, kk_terms] = gevgrad (x, k, sigma, mu, k_terms);
     FIM = gevfim (x, k, sigma, mu, k_terms, kk_terms);
     acov = inv (FIM);
   endif

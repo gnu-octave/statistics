@@ -239,8 +239,8 @@ classdef gmdistribution
       ## Random numbers from Gaussian mixture distribution
       function c = random (obj,n)
         if nargin == 1
-	        n = 1;
-	      endif
+          n = 1;
+        endif
         c = zeros (n, obj.NumVariables);
         classes = randsample (obj.NumComponents, n, true, ...
                               obj.ComponentProportion);

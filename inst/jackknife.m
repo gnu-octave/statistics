@@ -86,40 +86,40 @@
 
 function jackstat = jackknife (anEstimator, varargin)
 
-	## Convert function name to handle if necessary, or throw an error.
-	if (! strcmp (typeinfo (anEstimator), "function handle"))
-		if (isascii (anEstimator))
-			anEstimator = str2func (anEstimator);
-		else
-			error (strcat ("jackknife: estimators must be passed as function", ...
+  ## Convert function name to handle if necessary, or throw an error.
+  if (! strcmp (typeinfo (anEstimator), "function handle"))
+    if (isascii (anEstimator))
+      anEstimator = str2func (anEstimator);
+    else
+      error (strcat ("jackknife: estimators must be passed as function", ...
                      " names or handles."));
-		endif
-	endif
+    endif
+  endif
 
-	## Simple jackknifing can be done with a single vector argument, and
-	## first and foremost with a function that does not care about cell-arrays.
-	if (length (varargin) == 1 && isnumeric (varargin {1}))
-		aSample = varargin{1};
-		g = length (aSample);
-		jackstat = zeros (1, g);
-		for k = 1:g
-			jackstat (k) = anEstimator (aSample([1:k - 1,k + 1:g]));
-		endfor
+  ## Simple jackknifing can be done with a single vector argument, and
+  ## first and foremost with a function that does not care about cell-arrays.
+  if (length (varargin) == 1 && isnumeric (varargin {1}))
+    aSample = varargin{1};
+    g = length (aSample);
+    jackstat = zeros (1, g);
+    for k = 1:g
+      jackstat (k) = anEstimator (aSample([1:k - 1,k + 1:g]));
+    endfor
 
-	## More complicated input requires more work, however.
-	else
-		g = cellfun (@(x) length (x), varargin);
+  ## More complicated input requires more work, however.
+  else
+    g = cellfun (@(x) length (x), varargin);
 
-		if (any (g - g(1)))
-			error ("jackknife: all passed data must be of equal length.");
-		endif
-		g = g(1);
-		jackstat = zeros (1, g);
+    if (any (g - g(1)))
+      error ("jackknife: all passed data must be of equal length.");
+    endif
+    g = g(1);
+    jackstat = zeros (1, g);
 
-		for k = 1:g
-			jackstat(k) = anEstimator (cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
+    for k = 1:g
+      jackstat(k) = anEstimator (cellfun (@(x) x( [ 1 : k - 1, k + 1 : g ]), ...
                                  varargin, "UniformOutput", false));
-		endfor
+    endfor
   endif
 
 endfunction

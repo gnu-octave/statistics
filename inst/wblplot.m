@@ -77,9 +77,9 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
     [mmf nnf] = size (freq);
     if ((mmf == mm && nnf == 1) || (mmf == 1 && nnf == mm))
       freq = freq(:);
-      N = sum (freq);	## Total number of samples
+      N = sum (freq);  ## Total number of samples
       if (any (freq <= 0))
-	      error ("wblplot: frequency vector must be positive non zero integers")
+        error ("wblplot: frequency vector must be positive non zero integers")
       endif
     else
       error ("wblplot: frequency must be vector of same length as data")

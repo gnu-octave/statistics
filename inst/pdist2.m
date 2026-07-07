@@ -112,10 +112,10 @@ function [D, I] = pdist2 (X, Y, varargin)
 
   ## Check input data
   if (nargin < 2)
-	  error ("pdist2: too few input arguments.");
+    error ("pdist2: too few input arguments.");
   endif
   if (size (X, 2) != size (Y, 2))
-	  error ("pdist2: X and Y must have equal number of columns.");
+    error ("pdist2: X and Y must have equal number of columns.");
   endif
   if (ndims (X) != 2 || ndims (Y) != 2)
     error ("pdist2: X and Y must be 2 dimensional matrices.");

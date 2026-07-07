@@ -89,13 +89,13 @@ function D = pdist (X, varargin)
 
   ## Check input data
   if (nargin < 1)
-	  error ("pdist: too few input arguments.");
+    error ("pdist: too few input arguments.");
   endif
   if (! isnumeric (X) || isempty (X))
     error ("pdist: X must be a nonempty numeric matrix.");
   endif
   if (ndims (X) != 2)
-	  error ("pdist: X must be a two-dimensional matrix.");
+    error ("pdist: X must be a two-dimensional matrix.");
   endif
   if (rows (X) < 2)
     D = cast (zeros (1, 0), class (X));

@@ -204,8 +204,8 @@ function [paramhat, paramci] = gevfit (x, alpha, varargin)
 
   ## Check for second output argument
   if (nargout > 1)
-  	[~, acov] = gevlike (paramhat, x);
-  	param_se = sqrt (diag (acov))';
+    [~, acov] = gevlike (paramhat, x);
+    param_se = sqrt (diag (acov))';
     if (any (iscomplex (param_se)))
       warning (["gevfit: Fisher information matrix not positive definite;", ...
                 " parameter optimization likely did not converge"]);

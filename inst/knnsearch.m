@@ -146,11 +146,11 @@ function [idx, dist] = knnsearch (X, Y, varargin)
 
   ## Check input data
   if (nargin < 2)
-	  error ("knnsearch: too few input arguments.");
+    error ("knnsearch: too few input arguments.");
   endif
 
   if (size (X, 2) != size (Y, 2))
-	  error ("knnsearch: number of columns in X and Y must match.");
+    error ("knnsearch: number of columns in X and Y must match.");
   endif
 
   ## Add default values
@@ -269,8 +269,8 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       idx = zeros (rows (Y), K);
       for i = 1:rows (Y)
         [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, X, ...
-																								Distance, DistParameter, ...
-																								false);
+                                                Distance, DistParameter, ...
+                                                false);
         if (SI)
           [sorted_D, sort_idx] = sort (temp_D);
           idx(i,:) = temp_idx(sort_idx);
@@ -286,12 +286,12 @@ function [idx, dist] = knnsearch (X, Y, varargin)
       idx = cell (rows (Y), 1);
       for i = 1:rows (Y)
         [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, ...
-																								X, Distance, DistParameter, ...
-																								false);
+                                                X, Distance, DistParameter, ...
+                                                false);
         r = temp_D(end) + 1e-10; # Add small epsilon to capture ties
         [idx{i}, dist{i}] = __search_kdtree__ (kdtree, Y(i,:), Inf, X, ...
-																							 Distance, DistParameter, ...
-																							 true, r);
+                                               Distance, DistParameter, ...
+                                               true, r);
         if (SI)
           [sorted_D, sort_idx] = sort (dist{i});
           dist{i} = sorted_D;
@@ -358,7 +358,7 @@ endfunction
 
 ## Search KD-tree
 function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
-																									 distparam, is_range, r)
+                                                   distparam, is_range, r)
   if (nargin < 8)
     r = Inf;
   endif
