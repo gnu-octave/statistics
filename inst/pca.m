@@ -69,7 +69,7 @@
 ## @qcode{"eig"}), the covariance of rows with missing data is computed using
 ## the available data, but the covariance matrix could be not positive definite,
 ## which triggers the termination of @code{pca}.
-## @item @qcode{"complete"}, missing values are not allowed, @code{pca}
+## @item @qcode{"all"}, missing values are not allowed, @code{pca}
 ## terminates with an error if there are any.
 ## @end itemize
 ##
