@@ -36,7 +36,8 @@
 ## standard normal distribution.
 ##
 ## The size of @var{h}, @var{pval}, and @var{zvalue} is the common size of
-## @var{x1}, @var{n1}, @var{x2}, and @var{n2}, which must be scalars or of common
+## @var{x1}, @var{n1}, @var{x2}, and @var{n2}, which must be scalars or of
+## common
 ## size.  A scalar input functions as a constant matrix of the same size as the
 ## other inputs.
 ##

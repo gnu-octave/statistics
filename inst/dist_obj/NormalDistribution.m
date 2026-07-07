@@ -36,7 +36,9 @@ classdef NormalDistribution
   ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{NormalDistribution (@var{mu}, @var{sigma})}
+  ## @item Use the constructor
+  ## @qcode{NormalDistribution (@var{mu},
+  ## @var{sigma})}
   ## to create a normal distribution with fixed parameter values @var{mu} and
   ## @var{sigma}.
   ## @item Use the static method @qcode{NormalDistribution.fit (@var{x},

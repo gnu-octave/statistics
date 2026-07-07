@@ -35,7 +35,9 @@ classdef MultinomialDistribution
   ## @itemize
   ## @item Create a distribution with specified parameter values using the
   ## @code{makedist} function.
-  ## @item Use the constructor @qcode{MultinomialDistribution (@var{Probabilities})}
+  ## @item Use the constructor
+  ## @qcode{MultinomialDistribution
+  ## (@var{Probabilities})}
   ## to create a multinomial distribution with specified parameter values.
   ## @end itemize
   ##

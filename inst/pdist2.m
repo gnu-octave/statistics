@@ -36,7 +36,8 @@
 ##
 ## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance})} returns the
 ## distance between each pair of observations in @var{X} and @var{Y} using the
-## metric specified by @var{Distance}, which can be any of the following options.
+## metric specified by @var{Distance}, which can be any of the following
+## options.
 ##
 ## @multitable @columnfractions 0.23 0.02 0.65
 ## @item @qcode{"euclidean"} @tab @tab Euclidean distance.
@@ -78,7 +79,8 @@
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##
-## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance}, @var{DistParameter})}
+## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance},
+## @var{DistParameter})}
 ## returns the distance using the metric specified by @var{Distance} and
 ## @var{DistParameter}.  The latter one can only be specified when the selected
 ## @var{Distance} is @qcode{"seuclidean"}, @qcode{"minkowski"}, and
@@ -93,7 +95,8 @@
 ## @var{Distance} and returns the @var{K} smallest pairwise distances to
 ## observations in @var{X} for each observation in @var{Y} in ascending order.
 ## @item
-## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance}, @var{DistParameter},
+## @code{@var{D} = pdist2 (@var{X}, @var{Y}, @var{Distance},
+## @var{DistParameter},
 ## @qcode{"Largest"}, @var{K})} computes the distance using the metric specified
 ## by @var{Distance} and @var{DistParameter} and returns the @var{K} largest
 ## pairwise distances in descending order.

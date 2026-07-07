@@ -485,7 +485,9 @@ classdef KDTreeSearcher
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r}, @var{name}, @var{value})}
+    ## @code{[@var{idx}, @var{D}] = rangesearch (@var{obj}, @var{Y}, @var{r},
+    ## @var{name},
+    ## @var{value})}
     ## allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8

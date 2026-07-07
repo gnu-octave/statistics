@@ -42,7 +42,9 @@ classdef NegativeBinomialDistribution
   ## @item Use the constructor @qcode{NegativeBinomialDistribution (@var{R},
   ## @var{P})} to create a negative binomial distribution with fixed parameter
   ## values @var{R} and @var{P}.
-  ## @item Use the static method @qcode{NegativeBinomialDistribution.fit (@var{x},
+  ## @item Use the static method
+  ## @qcode{NegativeBinomialDistribution.fit
+  ## (@var{x},
   ## @var{freq}, @var{options})} to fit a distribution to the data in @var{x}
   ## using the same input arguments as the @code{nbinfit} function.
   ## @end itemize

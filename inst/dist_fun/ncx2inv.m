@@ -18,7 +18,8 @@
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{x} =} ncx2inv (@var{p}, @var{df}, @var{lambda})
 ##
-## Inverse of the noncentral chi-squared cumulative distribution function (iCDF).
+## Inverse of the noncentral chi-squared cumulative distribution function
+## (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the noncentral chi-squared distribution with @var{df} degrees of freedom and
@@ -29,7 +30,8 @@
 ## @code{ncx2inv} uses Newton's method to converge to the solution.
 ##
 ## Further information about the noncentral chi-squared distribution can be
-## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
+## found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
 ## @seealso{ncx2cdf, ncx2pdf, ncx2rnd, ncx2stat, chi2inv}
 ## @end deftypefn

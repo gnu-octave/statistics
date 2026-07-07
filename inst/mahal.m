@@ -27,7 +27,8 @@
 ## Specifically, it uses a Cholesky decomposition to set
 ##
 ## @example
-##  answer(i) = (@var{y}(i,:) - mean (@var{x})) * inv (A) * (@var{y}(i,:)-mean (@var{x}))'
+##  answer(i) = (@var{y}(i,:) - mean (@var{x})) * inv (A) *
+##              (@var{y}(i,:)-mean (@var{x}))'
 ## @end example
 ##
 ## where A is the covariance of @var{x}.

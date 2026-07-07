@@ -152,7 +152,9 @@ classdef CompactClassificationDiscriminant
     ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp (-x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"sign"} @tab @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
     ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
     ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
@@ -181,7 +183,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## A @math{KxP} numeric matrix specifying the mean of the multivariate
     ## normal distribution of each corresponding class, where @math{K} is the
-    ## number of classes and @math{P} is the number of predictors.  This property
+    ## number of classes and @math{P} is the number of predictors. This property
     ## is read-only.
     ##
     ## @end deftp
@@ -194,9 +196,9 @@ classdef CompactClassificationDiscriminant
     ##
     ## A @math{KxK} structure containing the coefficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
-    ## was set to @qcode{'off'} in the original @code{ClassificationDiscriminant}
-    ## model, then @qcode{Coeffs} is empty @qcode{([])}.  This property is
-    ## read-only.
+    ## was set to @qcode{'off'} in the original
+    ## @code{ClassificationDiscriminant} model, then @qcode{Coeffs} is empty
+    ## @qcode{([])}. This property is read-only.
     ##
     ## @qcode{Coeffs(i,j)} contains the coefficients of the linear (currently
     ## supported) boundaries between the classes @code{i} and @code{j} in the
@@ -420,7 +422,8 @@ classdef CompactClassificationDiscriminant
     ##
     ## @itemize
     ## @item
-    ## @var{obj} must be a @qcode{CompactClassificationDiscriminant} class object.
+    ## @var{obj} must be a @qcode{CompactClassificationDiscriminant} class
+    ## object.
     ## @item
     ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the discriminant

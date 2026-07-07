@@ -407,7 +407,8 @@ classdef ExhaustiveSearcher
     ## @math{P} must match the number of columns in @var{obj.X}.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})}
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
+    ## @var{value})}
     ## allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8

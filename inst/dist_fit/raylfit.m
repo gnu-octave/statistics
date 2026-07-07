@@ -45,7 +45,8 @@
 ## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
 ## @code{[@dots{}] = raylfit (@var{x}, @var{alpha}, @var{censor}, @var{freq})}
-## accepts a frequency vector or matrix, @var{freq}, of the same size as @var{x}.
+## accepts a frequency vector or matrix, @var{freq}, of the same size as
+## @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
 ## elements in @var{x}.  @var{freq} cannot contain negative values.
 ##

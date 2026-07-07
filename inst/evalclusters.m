@@ -62,9 +62,9 @@
 ## The clustering result can be either an array of size @code{n} with @code{k}
 ## different integer values, or a matrix of size @code{n} by @code{k} with a
 ## likelihood value assigned to each one of the @code{n} observations for each
-## one of the @var{k} clusters.  In the latter case, each observation is assigned
-## to the cluster with the higher value.
-## If the @var{criterion} is @code{CalinskiHarabasz}, @code{DaviesBouldin}, or
+## one of the @var{k} clusters. In the latter case, each observation is assigned
+## to the cluster with the higher value. If the @var{criterion} is
+## @code{CalinskiHarabasz}, @code{DaviesBouldin}, or
 ## @code{silhouette}, @var{clust} can also be a matrix of size @code{n} by
 ## @code{k}, where @code{k} is the number of proposed clustering solutions, so
 ## that each column of @var{clust} is a clustering solution.

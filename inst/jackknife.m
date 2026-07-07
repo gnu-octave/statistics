@@ -30,7 +30,8 @@
 ##
 ## @example
 ## @group
-## jackstat (@var{i}) = @var{E}(@var{x}(1 : @var{i} - 1, @var{i} + 1 : length(@var{x})))
+## jackstat (@var{i}) = @var{E}(@var{x}(1 : @var{i} - 1,
+##                              @var{i} + 1 : length(@var{x})))
 ## @end group
 ## @end example
 ##

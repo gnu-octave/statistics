@@ -23,7 +23,8 @@
 ## @deftypefnx {statistics} {[@dots{}] =} bisafit (@var{x}, @var{alpha}, @var{censor}, @var{freq})
 ## @deftypefnx {statistics} {[@dots{}] =} bisafit (@var{x}, @var{alpha}, @var{censor}, @var{freq}, @var{options})
 ##
-## Estimate mean and confidence intervals for the Birnbaum-Saunders distribution.
+## Estimate mean and confidence intervals for the Birnbaum-Saunders
+## distribution.
 ##
 ## @code{@var{muhat} = bisafit (@var{x})} returns the maximum likelihood
 ## estimates of the parameters of the Birnbaum-Saunders distribution given the

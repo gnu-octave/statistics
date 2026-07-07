@@ -40,7 +40,8 @@
 ## observed exactly.  By default, or if left empty,
 ## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @code{[@dots{}] = gumbellike (@var{params}, @var{x}, @var{censor}, @var{freq})}
+## @code{[@dots{}] = gumbellike (@var{params}, @var{x}, @var{censor},
+## @var{freq})}
 ## accepts a frequency vector, @var{freq}, of the same size as @var{x}.
 ## @var{freq} typically contains integer frequencies for the corresponding
 ## elements in @var{x}, but it can contain any non-integer non-negative values.

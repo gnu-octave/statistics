@@ -23,7 +23,8 @@
 ## Random arrays from the noncentral @math{F}-distribution.
 ##
 ## @code{@var{x} = ncfrnd (@var{p}, @var{df1}, @var{df2}, @var{lambda})} returns
-## an array of random numbers chosen from the noncentral @math{F}-distribution with
+## an array of random numbers chosen from the noncentral @math{F}-distribution
+## with
 ## @var{df1} and @var{df2} degrees of freedom and noncentrality parameter
 ## @var{lambda}.  The size of @var{r} is the common size of @var{df1},
 ## @var{df2}, and @var{lambda}.  A scalar input functions as a constant matrix

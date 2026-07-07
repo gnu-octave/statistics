@@ -28,7 +28,8 @@
 ## @var{lambda}.  A scalar input functions as a constant matrix of the same size
 ## as the other inputs.
 ##
-## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda}, "upper")}
+## @code{@var{p} = ncfcdf (@var{x}, @var{df1}, @var{df2}, @var{lambda},
+## "upper")}
 ## computes the upper tail probability of the noncentral @math{F}-distribution
 ## with parameters @var{df1}, @var{df2}, and @var{lambda}, at the values in
 ## @var{x}.

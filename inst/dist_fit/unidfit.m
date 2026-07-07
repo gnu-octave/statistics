@@ -22,7 +22,8 @@
 ## @deftypefnx {statistics} {[@var{Nhat}, @var{Nci}] =} unidfit (@var{x}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{Nhat}, @var{Nci}] =} unidfit (@var{x}, @var{alpha}, @var{freq})
 ##
-## Estimate parameter and confidence intervals for the discrete uniform distribution.
+## Estimate parameter and confidence intervals for the discrete uniform
+## distribution.
 ##
 ## @code{@var{Nhat} = unidfit (@var{x})} returns the maximum likelihood estimate
 ## (MLE) of the maximum observable value for the discrete uniform distribution.

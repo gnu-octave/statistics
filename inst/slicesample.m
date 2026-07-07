@@ -54,8 +54,8 @@
 ##
 ## @itemize
 ## @item
-## "burnin" @var{burnin} the number of points to discard at the beginning, the default
-## is 0.
+## "burnin" @var{burnin} the number of points to discard at the beginning, the
+## default is 0.
 ##
 ## @item
 ## "thin" @var{thin} omits @var{m}-1 of every @var{m} points in the generated

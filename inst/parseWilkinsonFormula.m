@@ -82,7 +82,9 @@
 ## @headitem Formula String @tab Equation Output
 ## @item @code{y ~ x} @tab @code{"y = c1 + c2*x"}
 ## @item @code{y ~ A * B} @tab @code{"y = c1 + c2*A + c3*B + c4*A*B"}
-## @item @code{y ~ School / Class} @tab @code{"y = c1 + c2*School + c3*Class*School"}
+## @item @code{y ~ School / Class} @tab
+## @code{"y = c1 + c2*School +
+## c3*Class*School"}
 ## @item @code{y ~ x^2} @tab @code{"y = c1 + c2*x + c3*x^2"}
 ## @item @code{y1 - y2 ~ Trt} @tab @code{["y1 = c1 + c2*Trt", "y2 = ..."]}
 ## @end multitable

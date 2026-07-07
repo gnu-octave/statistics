@@ -37,7 +37,8 @@
 ## If not provided, no replicates are assumed.
 ## @item
 ## @var{displayopt} is an optional parameter for displaying the Friedman's ANOVA
-## table, when it is 'on' and suppressing the display when it is 'off' (default).
+## table, when it is 'on' and suppressing the display when it is 'off'
+## (default).
 ## @end itemize
 ##
 ## @qcode{friedman} returns up to three output arguments:

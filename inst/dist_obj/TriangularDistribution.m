@@ -423,7 +423,8 @@ classdef TriangularDistribution
     ## for continuous distributions.  When @var{pd} is a continuous distribution
     ## object, this option is ignored.
     ##
-    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for the plot.  If
+    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for the plot. 
+    ## If
     ## not specified, the @code{plot} function plots into the current axes or
     ## creates a new axes object if one does not exist.
     ## @end multitable

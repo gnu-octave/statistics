@@ -27,8 +27,9 @@
 ##
 ## @code{@var{r} = logirnd (@var{mu}, @var{sigma})} returns an array of
 ## random numbers chosen from the logistic distribution with location parameter
-## @var{mu} and scale parameter @var{sigma}.  The size of @var{r} is the common size
-## of @var{mu} and @var{sigma}.  A scalar input functions as a constant matrix of
+## @var{mu} and scale parameter @var{sigma}.  The size of @var{r} is the common
+## size
+## of @var{mu} and @var{sigma}. A scalar input functions as a constant matrix of
 ## the same size as the other inputs.
 ##
 ## Both parameters must be reals and @qcode{@var{sigma} > 0}.

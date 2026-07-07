@@ -399,24 +399,29 @@ classdef RegressionGAM
     ## @deftypefnx {RegressionGAM} {@var{yFit} =} predict (@dots{}, @var{Name}, @var{Value})
     ## @deftypefnx {RegressionGAM} {[@var{yFit}, @var{ySD}, @var{yInt}] =} predict (@dots{})
     ##
-    ## Predict new data points using generalized additive model regression object.
+    ## Predict new data points using generalized additive model regression
+    ## object.
     ##
     ## @code{@var{yFit} = predict (@var{obj}, @var{Xfit}} returns a vector of
-    ## predicted responses, @var{yFit}, for the predictor data in matrix @var{Xfit}
-    ## based on the Generalized Additive Model in @var{obj}.  @var{Xfit} must have
-    ## the same number of features/variables as the training data in @var{obj}.
+    ## predicted responses, @var{yFit}, for the predictor data in matrix
+    ## @var{Xfit} based on the Generalized Additive Model in @var{obj}.
+    ## @var{Xfit} must have the same number of features/variables as the
+    ## training data in @var{obj}.
     ##
     ## @itemize
     ## @item
     ## @var{obj} must be a @qcode{RegressionGAM} class object.
     ## @end itemize
     ##
-    ## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = predict (@var{obj}, @var{Xfit}}
-    ## also returns the standard deviations, @var{ySD}, and prediction intervals,
+    ## @code{[@var{yFit}, @var{ySD}, @var{yInt}] = predict (@var{obj},
+    ## @var{Xfit}}
+    ## also returns the standard deviations, @var{ySD}, and prediction
+    ## intervals,
     ## @var{yInt}, of the response variable @var{yFit}, evaluated at each
     ## observation in the predictor data @var{Xfit}.
     ##
-    ## @code{@var{yFit} = predict (@dots{}, @var{Name}, @var{Value})} returns the
+    ## @code{@var{yFit} = predict (@dots{}, @var{Name}, @var{Value})} returns
+    ## the
     ## aforementioned results with additional properties specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
@@ -424,18 +429,22 @@ classdef RegressionGAM
     ## @headitem @var{Name} @tab @tab @var{Value}
     ##
     ## @item @qcode{"alpha"} @tab @tab significance level of the prediction
-    ## intervals @var{yInt}, specified as scalar in range @qcode{[0,1]}. The default
-    ## value is 0.05, which corresponds to 95% prediction intervals.
+    ## intervals @var{yInt}, specified as scalar in range @qcode{[0,1]}. The
+    ## default value is 0.05, which corresponds to 95% prediction intervals.
     ##
     ## @item @qcode{"includeinteractions"} @tab @tab a boolean flag to include
     ## interactions to predict new values based on @var{Xfit}.  By default,
-    ## @qcode{"includeinteractions"} is @qcode{true} when the GAM model in @var{obj}
-    ## contains a @qcode{obj.Formula} or @qcode{obj.Interactions} fields. Otherwise,
-    ## is set to @qcode{false}.  If set to @qcode{true} when no interactions are
-    ## present in the trained model, it will result to an error.  If set to
-    ## @qcode{false} when using a model that includes interactions, the predictions
-    ## will be made on the basic model without any interaction terms.  This way you
-    ## can make predictions from the same GAM model without having to retrain it.
+    ## @qcode{"includeinteractions"} is @qcode{true} when the GAM model in
+    ## @var{obj}
+    ## contains a @qcode{obj.Formula} or @qcode{obj.Interactions} fields.
+    ## Otherwise, is set to @qcode{false}. If set to @qcode{true} when no
+    ## interactions are present in the trained model, it will result to an
+    ## error. If set to
+    ## @qcode{false} when using a model that includes interactions, the
+    ## predictions
+    ## will be made on the basic model without any interaction terms. This way
+    ## you can make predictions from the same GAM model without having to
+    ## retrain it.
     ## @end multitable
     ##
     ## @seealso{fitrgam, RegressionGAM}

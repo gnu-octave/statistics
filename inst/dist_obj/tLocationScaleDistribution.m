@@ -28,10 +28,12 @@ classdef tLocationScaleDistribution
   ##
   ## The location-scale Student's T distribution is a continuous probability
   ## distribution that generalizes the standard Student's T distribution by
-  ## including location and scale parameters.  It is defined by location parameter
+  ## including location and scale parameters. It is defined by location
+  ## parameter
   ## @var{mu}, scale parameter @var{sigma}, and degrees of freedom @var{nu}.
   ##
-  ## There are several ways to create a @code{tLocationScaleDistribution} object.
+  ## There are several ways to create a @code{tLocationScaleDistribution}
+  ## object.
   ##
   ## @itemize
   ## @item Fit a distribution to data using the @code{fitdist} function.
@@ -49,8 +51,8 @@ classdef tLocationScaleDistribution
   ## functions to create probability distribution objects, instead of the class
   ## constructor or the aforementioned static method.
   ##
-  ## Further information about the location-scale Student's T distribution can be
-  ## found at
+  ## Further information about the location-scale Student's T distribution can
+  ## be found at
   ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
   ##
   ## @seealso{fitdist, makedist, tlscdf, tlsinv, tlspdf, tlsrnd, tlsfit,
@@ -75,9 +77,9 @@ classdef tLocationScaleDistribution
     ##
     ## Scale parameter
     ##
-    ## A positive scalar value characterizing the scale of the
-    ## location-scale Student's T distribution.  You can access the @qcode{sigma}
-    ## property using dot name assignment.
+    ## A positive scalar value characterizing the scale of the location-scale
+    ## Student's T distribution. You can access the @qcode{sigma} property using
+    ## dot name assignment.
     ##
     ## @end deftp
     sigma

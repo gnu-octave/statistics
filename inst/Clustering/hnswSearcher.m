@@ -426,7 +426,8 @@ classdef hnswSearcher
     ## @item @var{D} contains the corresponding distances.
     ## @end itemize
     ##
-    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name}, @var{value})}
+    ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
+    ## @var{value})}
     ## allows additional options via name-value pairs:
     ##
     ## @multitable @columnfractions 0.18 0.02 0.8

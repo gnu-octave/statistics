@@ -168,8 +168,8 @@ classdef PoissonDistribution
     ##
     ## A @math{1x2} numeric vector specifying the truncation interval for the
     ## probability distribution. The first element contains the lower boundary,
-    ## the second element contains the upper boundary. This property is read-only.
-    ## You can only truncate a probability distribution with the
+    ## the second element contains the upper boundary. This property is
+    ## read-only. You can only truncate a probability distribution with the
     ## @qcode{truncate} method.
     ##
     ## @end deftp
@@ -522,7 +522,8 @@ classdef PoissonDistribution
     ## default, it is @qcode{true} for discrete distributions and @qcode{false}
     ## for continuous distributions.
     ##
-    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for the plot.  If
+    ## @item @qcode{"Parent"} @tab @tab An axes graphics object for the plot. 
+    ## If
     ## not specified, the @code{plot} function plots into the current axes or
     ## creates a new axes object if one does not exist.
     ## @end multitable

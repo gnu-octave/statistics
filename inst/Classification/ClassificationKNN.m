@@ -212,7 +212,9 @@ classdef ClassificationKNN
     ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"sign"} @tab @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
     ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
     ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
@@ -356,7 +358,8 @@ classdef ClassificationKNN
     ## distance metric as shown below:
     ##
     ## @itemize
-    ## @item @qcode{"mahalanobis"} accepts a positive definite covariance matrix.
+    ## @item @qcode{"mahalanobis"} accepts a positive definite covariance
+    ## matrix.
     ## @item @qcode{"minkowski"} accepts a positive scalar as the Minkowski
     ## distance exponent.
     ## @item @qcode{"seuclidean"} accepts a vector of positive scale values of

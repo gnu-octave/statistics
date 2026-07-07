@@ -86,7 +86,8 @@
 ## @item @tab @qcode{"var"}    @tab Variance of each group.
 ## @item @tab @qcode{"min"}    @tab Minimum value in each group.
 ## @item @tab @qcode{"max"}    @tab Maximum value in each group.
-## @item @tab @qcode{"range"}  @tab Difference between max and min in each group.
+## @item @tab @qcode{"range"}  @tab Difference between max and min in each
+## group.
 ## @item @tab @qcode{"numel"}  @tab Number of elements (count) in each group.
 ## @item @tab @qcode{"meanci"} @tab Confidence interval for the mean.
 ## @item @tab @qcode{"predci"} @tab Prediction interval for a new observation.

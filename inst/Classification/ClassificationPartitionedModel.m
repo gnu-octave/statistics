@@ -259,13 +259,14 @@ classdef ClassificationPartitionedModel
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationPartitionedModel} {@var{this} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
     ##
-    ## Create a @code{ClassificationPartitionedModel} class object for cross-validation
-    ## of classification models.
+    ## Create a @code{ClassificationPartitionedModel} class object for
+    ## cross-validation of classification models.
     ##
     ## @code{@var{this} = ClassificationPartitionedModel (@var{Mdl},
     ## @var{Partition})} returns a ClassificationPartitionedModel object, with
     ## @var{Mdl} as the trained classification model object and
-    ## @var{Partition} as the partitioning object obtained using @code{cvpartition}
+    ## @var{Partition} as the partitioning object obtained using
+    ## @code{cvpartition}
     ## function.
     ##
     ## @seealso{cvpartition}

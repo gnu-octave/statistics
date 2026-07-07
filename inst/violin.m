@@ -29,12 +29,11 @@
 ## variables.  It can also be a cell with m elements, for the case in which the
 ## variables are not uniformly sampled.
 ##
-## The following @var{property} can be set using @var{property}/@var{value} pairs
-## (default values in parenthesis).
-## The value of the property can be a scalar indicating that it applies
-## to all the variables in the data.
-## It can also be a cell/array, indicating the property for each variable.
-## In this case it should have m columns (as many as variables).
+## The following @var{property} can be set using @var{property}/@var{value}
+## pairs (default values in parenthesis). The value of the property can be a
+## scalar indicating that it applies to all the variables in the data. It can
+## also be a cell/array, indicating the property for each variable. In this case
+## it should have m columns (as many as variables).
 ##
 ## @table @asis
 ##
@@ -56,8 +55,8 @@
 ## distribution.
 ##
 ## @item Bandwidth
-## (NA) If this property is given a value other than NA, it sets the bandwidth of
-## the kernel function. No optimization is performed and the property
+## (NA) If this property is given a value other than NA, it sets the bandwidth
+## of the kernel function. No optimization is performed and the property
 ## @asis{SmoothFactor} is ignored.
 ##
 ## @item Width

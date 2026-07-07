@@ -53,7 +53,8 @@
 ## @qcode{"Cov"}.
 ## @item For @qcode{"kdtree"}, see @code{KDTreeSearcher} documentation for
 ## parameters like @qcode{"Distance"}, @qcode{"P"}, and @qcode{"BucketSize"}.
-## @item For @qcode{"hnsw"}, see @code{hnswSearcher} documentation for parameters
+## @item For @qcode{"hnsw"}, see @code{hnswSearcher} documentation for
+## parameters
 ## like @qcode{"Distance"}, @qcode{"P"}, @qcode{"Scale"}, @qcode{"Cov"},
 ## @qcode{"MaxNumLinksPerNode"}, and @qcode{"TrainSetSize"}.
 ## @end itemize
@@ -83,10 +84,12 @@
 ## obj = createns (X, "NSMethod", "kdtree", "Distance", "euclidean");
 ##
 ## ## Create an hnswSearcher with Minkowski distance and custom parameters
-## obj = createns (X, "NSMethod", "hnsw", "Distance", "minkowski", "P", 3, "MaxNumLinksPerNode", 2);
+## obj = createns (X, "NSMethod", "hnsw", "Distance", "minkowski", "P", 3, ...
+##                 "MaxNumLinksPerNode", 2);
 ## @end example
 ##
-## @seealso{ExhaustiveSearcher, KDTreeSearcher, hnswSearcher, knnsearch, rangesearch}
+## @seealso{ExhaustiveSearcher, KDTreeSearcher, hnswSearcher, knnsearch,
+## rangesearch}
 ## @end deftypefn
 
 function obj = createns (X, varargin)

@@ -22,8 +22,8 @@
 ##
 ## Inputs: A @var{p} x @var{p} matrix @var{W} where to find the PDF and the
 ## @var{p} x @var{p} positive definite scale matrix @var{Tau} and scalar degrees
-## of freedom parameter @var{df} characterizing the inverse Wishart distribution.
-## (For the density to be finite, need @var{df} > (@var{p} - 1).)
+## of freedom parameter @var{df} characterizing the inverse Wishart
+## distribution. (For the density to be finite, need @var{df} > (@var{p} - 1).)
 ## If the flag @var{log_y} is set, return the log probability density -- this
 ## helps avoid underflow when the numerical value of the density is very small.
 ##

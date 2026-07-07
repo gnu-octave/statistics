@@ -53,7 +53,8 @@
 ## chi-square distribution with @qcode{@var{nbins} - 3} degrees of freedom, to
 ## take into account that two parameters were estimated.
 ##
-## @code{[@var{h}, @var{p}] = chi2gof (@var{x})} also returns the p-value @var{p},
+## @code{[@var{h}, @var{p}] = chi2gof (@var{x})} also returns the p-value
+## @var{p},
 ## which is the probability of observing the given result, or one more extreme,
 ## by chance if the null hypothesis is true.  If there are not enough degrees of
 ## freedom to carry out the test, @var{p} is NaN.
@@ -99,11 +100,11 @@
 ## @end multitable
 ##
 ## You should specify either @qcode{"cdf"} or @qcode{"expected"} parameters, but
-## not both.  If your @qcode{"cdf"} input contains extra parameters, these are
-## accounted for automatically and there is no need to specify @qcode{"nparams"}.
-## If your @qcode{"expected"} input depends on estimated parameters, you should
-## use the @qcode{"nparams"} parameter to ensure that the degrees of freedom for
-## the test is correct.
+## not both. If your @qcode{"cdf"} input contains extra parameters, these are
+## accounted for automatically and there is no need to specify
+## @qcode{"nparams"}. If your @qcode{"expected"} input depends on estimated
+## parameters, you should use the @qcode{"nparams"} parameter to ensure that the
+## degrees of freedom for the test is correct.
 ##
 ## @end deftypefn
 

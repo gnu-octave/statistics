@@ -263,11 +263,12 @@ classdef cvpartition
     ## scalar smaller than the number of observations @var{n}.
     ##
     ## @code{@var{C} = cvpartition (@var{n}, @qcode{'KFold'}, @var{k},
-    ## @qcode{'GroupingVariables'}, @var{grpvars})} creates a @qcode{cvpartition}
-    ## object @var{C} that defines a random partition for k-fold cross-validation
-    ## with each fold containing the same combination of group labels as defined
-    ## by @var{grpvars}.  The grouping variables specified in @var{grpvars} can
-    ## be one of the following:
+    ## @qcode{'GroupingVariables'}, @var{grpvars})} creates a
+    ## @qcode{cvpartition}
+    ## object @var{C} that defines a random partition for k-fold
+    ## cross-validation with each fold containing the same combination of group
+    ## labels as defined by @var{grpvars}. The grouping variables specified in
+    ## @var{grpvars} can be one of the following:
     ##
     ## @itemize
     ## @item A numeric vector, logical vector, categorical vector, character

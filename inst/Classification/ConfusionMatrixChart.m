@@ -144,8 +144,8 @@ classdef ConfusionMatrixChart < handle
     ##
     ## Column summary display
     ##
-    ## A character vector specifying whether and how to display column summaries.
-    ## Supported values are:
+    ## A character vector specifying whether and how to display column
+    ## summaries. Supported values are:
     ##
     ## @itemize
     ## @item @qcode{"off"} - Do not display column summary (default)
@@ -316,7 +316,8 @@ classdef ConfusionMatrixChart < handle
     ## labels. The number of labels must match the size of the confusion matrix.
     ## @end itemize
     ##
-    ## @code{@var{cmc} = ConfusionMatrixChart (@dots{}, @var{name}, @var{value})}
+    ## @code{@var{cmc} = ConfusionMatrixChart (@dots{}, @var{name},
+    ## @var{value})}
     ## returns a ConfusionMatrixChart object with additional parameters
     ## specified by @qcode{@var{name}, @var{value}} paired arguments:
     ##

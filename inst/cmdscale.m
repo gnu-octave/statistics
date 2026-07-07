@@ -38,7 +38,9 @@
 ## that specifies the maximum dimensionality of the desired embedding @var{Y}.
 ## If specified, @var{Y} will have at most @var{p} columns, and the returned
 ## eigenvalues @var{e} will be a vector of exactly length @var{p}. Specifying
-## @var{p} can be useful for reducing dimensions for visualization (e.g., @code{@var{p} = 2}).
+## @var{p} can be useful for reducing dimensions for visualization (e.g.,
+## @code{@var{p} =
+## 2}).
 ##
 ## @var{D} can be a full or sparse matrix or a vector of length
 ## @code{@var{n}*(@var{n}-1)/2} containing the upper triangular elements (like

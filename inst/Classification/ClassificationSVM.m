@@ -169,7 +169,9 @@ classdef ClassificationSVM
     ## @item @qcode{"logit"} @tab @tab @math{1 ./ (1 + exp (-x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"sign"} @tab @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
     ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
     ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
@@ -296,10 +298,11 @@ classdef ClassificationSVM
     ##
     ## Support vector class labels
     ##
-    ## The support vector class labels specified as an @math{sx1} numeric vector,
-    ## where @math{s} is the number of support vectors equal to
+    ## The support vector class labels specified as an @math{sx1} numeric
+    ## vector, where @math{s} is the number of support vectors equal to
     ## @qcode{sum (obj.IsSupportVector)}.  A value of +1 in
-    ## @code{SupportVectorLabels} indicates that the corresponding support vector
+    ## @code{SupportVectorLabels} indicates that the corresponding support
+    ## vector
     ## belongs to the positive class @qcode{(ClassNames@{2@})}.  A value of -1
     ## indicates that the corresponding support vector belongs to the negative
     ## class @qcode{(ClassNames@{1@})}.  This property is read-only.
@@ -314,7 +317,8 @@ classdef ClassificationSVM
     ##
     ## The support vectors of the trained SVM classifier specified an @math{sxp}
     ## numeric matrix, where @math{s} is the number of support vectors equal to
-    ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of predictor
+    ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of
+    ## predictor
     ## variables in the predictor data.  This property is read-only.
     ##
     ## @end deftp
@@ -524,7 +528,7 @@ classdef ClassificationSVM
     ## box constraint parameter.  Default is 1.
     ##
     ## @item @qcode{'Nu'} @tab @tab A positive scalar in the range (0,1]
-    ## specifying the nu parameter for nu-SVM and one-class SVM.  Default is 0.5.
+    ## specifying the nu parameter for nu-SVM and one-class SVM. Default is 0.5.
     ##
     ## @item @qcode{'CacheSize'} @tab @tab A positive scalar specifying the
     ## cache size in MB.  Default is 1000.

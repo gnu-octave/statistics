@@ -39,14 +39,17 @@
 ## Data is a single vector @var{Y} with groups specified by a corresponding
 ## matrix or cell array of group labels @var{GROUP}, where each column of
 ## @var{GROUP} has the same number of rows as @var{Y}. For example, if
-## @code{@var{Y} = [23; 27; 31; 29; 30; 32]; @var{GROUP} = [1, 2; 1, 3; 1, 2; 2, 3; 2, 3; 3, 2];}
+## @code{@var{Y} = [23; 27; 31; 29; 30; 32]; @var{GROUP} = [1, 2; 1, 3; 1, 2; 2,
+## 3; 2, 3; 3,
+## 2];}
 ## then observation 23 was measured under conditions 1,2; observation 27 was
-## measured under conditions 1,3; and so on. If the @var{GROUP} provided is empty,
-## then the linear model is fit with just the intercept (no predictors).
+## measured under conditions 1,3; and so on. If the @var{GROUP} provided is
+## empty, then the linear model is fit with just the intercept (no predictors).
 ##
 ## @code{anovan} can take a number of optional parameters as name-value pairs.
 ##
-## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous", @var{continuous})}
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "continuous",
+## @var{continuous})}
 ##
 ## @itemize
 ## @item
@@ -151,7 +154,8 @@
 ## planned contrasts (see below).
 ## @end itemize
 ##
-## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts", @var{contrasts})}
+## @code{[@dots{}] = anovan (@var{Y}, @var{GROUP}, "contrasts",
+## @var{contrasts})}
 ##
 ## @itemize
 ## @item
@@ -233,7 +237,8 @@
 ## confidence interval bounds, t-statistics, and p-values relating to the
 ## contrasts. The number appended to each term name in @var{stats}.coeffnames
 ## corresponds to the column number in the relevant contrast matrix for that
-## factor. The @var{stats} structure can be used as input for @code{multcompare}.
+## factor. The @var{stats} structure can be used as input for
+## @code{multcompare}.
 ##
 ## @code{[@var{p}, @var{atab}, @var{stats}, @var{terms}] = anovan (@dots{})}
 ## returns the model term definitions.

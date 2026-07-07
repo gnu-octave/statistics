@@ -42,9 +42,9 @@
 ## @item @var{N} @tab @tab int scalar @tab @tab Population size that was sampled
 ## by @var{X}.  If @qcode{N < sum (@var{X})}, infinite number assumed.
 ## @item @var{b} @tab @tab real vector @tab @tab confidence interval. If vector,
-## it should be the size of @var{X} containing confidence interval for each cells.
-## If scalar, each cell will have the same value of b unless it is zero or -1.
-## If value is 0, @var{b} = 0.02 is assumed which is standard choice at
+## it should be the size of @var{X} containing confidence interval for each
+## cells. If scalar, each cell will have the same value of b unless it is zero
+## or -1. If value is 0, @var{b} = 0.02 is assumed which is standard choice at
 ## elections otherwise it is calculated in a way that one sample in a cell
 ## alteration defines the confidence interval.
 ## @item @var{method} @tab @tab string @tab @tab An optional argument

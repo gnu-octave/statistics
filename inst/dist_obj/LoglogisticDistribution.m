@@ -74,7 +74,7 @@ classdef LoglogisticDistribution
     ## Scale of logarithmic values
     ##
     ## A positive scalar value characterizing the scale of the logarithmic
-    ## values of the log-logistic distribution.  You can access the @qcode{sigma}
+    ## values of the log-logistic distribution. You can access the @qcode{sigma}
     ## property using dot name assignment.
     ##
     ## @end deftp

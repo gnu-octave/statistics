@@ -29,7 +29,8 @@
 ## same size as the other inputs.
 ##
 ## Further information about the noncentral chi-squared distribution can be
-## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
+## found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
 ## @seealso{ncx2cdf, ncx2inv, ncx2pdf, ncx2rnd}
 ## @end deftypefn

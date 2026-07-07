@@ -35,7 +35,8 @@
 ## fits the model
 ##
 ## @example
-## logit (P_i (@var{x})) = @var{x} * @var{slope} + @var{intercept}_i,   i = 1 @dots{} k-1
+## logit (P_i (@var{x})) = @var{x} * @var{slope} + @var{intercept}_i,
+##                         i = 1 @dots{} k-1
 ## @end example
 ##
 ## The number of ordinal categories, k, is taken to be the number
@@ -50,8 +51,9 @@
 ##
 ## @example
 ## @group
-## [@var{intercept}, @var{slope}, @var{dev}, @var{dl}, @var{d2l}, @var{P}, @var{stats}]
-##    = logistic_regression (@var{y}, @var{x}, @var{print}, @var{intercept}, @var{slope})
+## [@var{intercept}, @var{slope}, @var{dev}, @var{dl}, @var{d2l}, @var{P}, ...
+##  @var{stats}] = logistic_regression (@var{y}, @var{x}, @var{print}, ...
+##                                      @var{intercept}, @var{slope})
 ## @end group
 ## @end example
 ##

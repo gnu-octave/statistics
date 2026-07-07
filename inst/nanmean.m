@@ -42,7 +42,8 @@
 ## @var{vecdim} represents a dimension of the input array @var{x} and the output
 ## @var{s} has length 1 in the specified operating dimensions.  The lengths of
 ## the other dimensions are the same for @var{x} and @var{y}.  For example, if
-## @var{x} is a 2-by-3-by-4 array, then @code{nanmean (@var{x}, [1 2])} returns a
+## @var{x} is a 2-by-3-by-4 array, then @code{nanmean (@var{x}, [1 2])} returns
+## a
 ## 1-by-1-by-4 array.  Each element of the output array is the mean of the
 ## elements on the corresponding page of @var{x}.  If @var{vecdim} indexes all
 ## dimensions of @var{x}, then it is equivalent to

@@ -24,8 +24,9 @@
 ## Inverse of the hypergeometric cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the hypergeometric distribution with parameters @var{m}, @var{k}, and @var{n}.
-## The size of @var{x} is the common size of @var{p}, @var{m}, @var{k}, and
+## the hypergeometric distribution with parameters @var{m}, @var{k}, and
+## @var{n}. The size of @var{x} is the common size of @var{p}, @var{m}, @var{k},
+## and
 ## @var{n}.  A scalar input functions as a constant matrix of the same size as
 ## the other inputs.
 ##

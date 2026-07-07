@@ -18,7 +18,8 @@
 ## -*- texinfo -*-
 ## @deftypefn {statistics} {@var{x} =} tlsinv (@var{p}, @var{mu}, @var{sigma}, @var{nu})
 ##
-## Inverse of the location-scale Student's T cumulative distribution function (iCDF).
+## Inverse of the location-scale Student's T cumulative distribution function
+## (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
 ## the location-scale Student's T distribution with location parameter @var{mu},
@@ -28,7 +29,8 @@
 ## inputs.
 ##
 ## Further information about the location-scale Student's T distribution can be
-## found at @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
+## found at
+## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
 ## @seealso{tlscdf, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn

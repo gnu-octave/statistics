@@ -28,7 +28,8 @@
 ## the other inputs.
 ##
 ## Further information about the location-scale Student's T distribution can be
-## found at @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
+## found at
+## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
 ## @seealso{tlscdf, tlsinv, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn

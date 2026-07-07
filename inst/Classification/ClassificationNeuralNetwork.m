@@ -169,7 +169,9 @@ classdef ClassificationNeuralNetwork
     ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"sign"} @tab @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
     ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
     ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
@@ -184,9 +186,10 @@ classdef ClassificationNeuralNetwork
     ##
     ## Flag to standardize predictors
     ##
-    ## A boolean flag indicating whether the predictor data has been standardized
-    ## prior to training.  When @qcode{true}, the predictors are centered and
-    ## scaled to have zero mean and unit variance.  This property is read-only.
+    ## A boolean flag indicating whether the predictor data has been
+    ## standardized prior to training. When @qcode{true}, the predictors are
+    ## centered and scaled to have zero mean and unit variance. This property is
+    ## read-only.
     ##
     ## @end deftp
     Standardize           = [];
@@ -221,11 +224,12 @@ classdef ClassificationNeuralNetwork
     ## Sizes of fully connected layers
     ##
     ## A positive integer vector specifying the sizes of the fully connected
-    ## layers in the neural network model.  The i-th element of @qcode{LayerSizes}
-    ## is the number of outputs in the i-th fully connected layer of the neural
-    ## network model.  @qcode{LayerSizes} does not include the size of the final
-    ## fully connected layer.  This layer always has K outputs, where K is the
-    ## number of classes in Y.  This property is read-only.
+    ## layers in the neural network model. The i-th element of
+    ## @qcode{LayerSizes} is the number of outputs in the i-th fully connected
+    ## layer of the neural network model. @qcode{LayerSizes} does not include
+    ## the size of the final fully connected layer. This layer always has K
+    ## outputs, where K is the number of classes in Y. This property is
+    ## read-only.
     ##
     ## @end deftp
     LayerSizes            = [];
@@ -1067,9 +1071,10 @@ classdef ClassificationNeuralNetwork
     ## Save a ClassificationNeuralNetwork object.
     ##
     ## @code{savemodel (@var{obj}, @var{filename})} saves each property of a
-    ## ClassificationNeuralNetwork object into an Octave binary file, the name of
-    ## which is specified in @var{filename}, along with an extra variable, which
-    ## defines the type classification object these variables constitute.  Use
+    ## ClassificationNeuralNetwork object into an Octave binary file, the name
+    ## of which is specified in @var{filename}, along with an extra variable,
+    ## which defines the type classification object these variables constitute.
+    ## Use
     ## @code{loadmodel} in order to load a classification object into Octave's
     ## workspace.
     ##

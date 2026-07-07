@@ -119,7 +119,9 @@ classdef CompactClassificationSVM
     ## @item @qcode{"logit"} @tab @tab @math{log (x ./ (1 - x))}
     ## @item @qcode{"none"} @tab @tab @math{x} (no transformation)
     ## @item @qcode{"identity"} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{"sign"} @tab @tab @math{-1 for x < 0, 0 for x = 0, 1 for x > 0}
+    ## @item @qcode{"sign"} @tab @tab
+    ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
+    ## 0}
     ## @item @qcode{"symmetric"} @tab @tab @math{2 * x - 1}
     ## @item @qcode{"symmetricismax"} @tab @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
@@ -409,7 +411,7 @@ classdef CompactClassificationSVM
     ##
     ## @code{@var{m} = margin (@var{obj}, @var{X}, @var{Y})} returns
     ## the classification margins for @var{obj} with data @var{X} and
-    ## classification @var{Y}.  @var{m} is a numeric vector of length size (X,1).
+    ## classification @var{Y}. @var{m} is a numeric vector of length size (X,1).
     ##
     ## @itemize
     ## @item

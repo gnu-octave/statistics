@@ -65,8 +65,10 @@
 ## variance of C is 1
 ## @item @tab "canon" @tab canonical variables, equal to XC*eigenvec, where XC
 ## is X with columns centered by subtracting their means
-## @item @tab "mdist" @tab Mahalanobis distance from each point to its group mean
-## @item @tab "gmdist" @tab Mahalanobis distances between each pair of group means
+## @item @tab "mdist" @tab Mahalanobis distance from each point to its group
+## mean
+## @item @tab "gmdist" @tab Mahalanobis distances between each pair of group
+## means
 ## @item @tab "gnames" @tab Group names
 ## @end multitable
 ##

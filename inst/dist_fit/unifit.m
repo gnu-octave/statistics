@@ -22,7 +22,8 @@
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} unifit (@var{x}, @var{alpha})
 ## @deftypefnx {statistics} {[@var{paramhat}, @var{paramci}] =} unifit (@var{x}, @var{alpha}, @var{freq})
 ##
-## Estimate parameter and confidence intervals for the continuous uniform distribution.
+## Estimate parameter and confidence intervals for the continuous uniform
+## distribution.
 ##
 ## @code{@var{paramhat} = unifit (@var{x})} returns the maximum likelihood
 ## estimate (MLE) of the parameters @var{a} and @var{b} of the continuous

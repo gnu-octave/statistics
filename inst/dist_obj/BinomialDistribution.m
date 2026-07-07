@@ -430,7 +430,8 @@ classdef BinomialDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative loglikelihood
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood
     ## of the probability distribution object, @var{pd}.
     ##
     ## @end deftypefn
@@ -455,7 +456,8 @@ classdef BinomialDistribution
     ## boundaries of the 95% confidence interval for each parameter of the
     ## probability distribution object, @var{pd}.
     ##
-    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
+    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes
+    ## the
     ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
@@ -680,7 +682,8 @@ classdef BinomialDistribution
     ##
     ## @code{@var{t} = truncate (@var{pd}, @var{lower}, @var{upper})} returns a
     ## probability distribution @var{t}, which is the probability distribution
-    ## @var{pd} truncated to the specified interval with lower limit, @var{lower},
+    ## @var{pd} truncated to the specified interval with lower limit,
+    ## @var{lower},
     ## and upper limit, @var{upper}. If @var{pd} is fitted to data with
     ## @code{fitdist}, the returned probability distribution @var{t} is not
     ## fitted, does not contain any data or estimated values, and it is as it

@@ -27,7 +27,8 @@
 ## (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic
 ## plots and/or planned contrasts, use @qcode{anovan} instead.
 ##
-## @qcode{anova2} requires two input arguments with an optional third and fourth:
+## @qcode{anova2} requires two input arguments with an optional third and
+## fourth:
 ##
 ## @itemize
 ## @item

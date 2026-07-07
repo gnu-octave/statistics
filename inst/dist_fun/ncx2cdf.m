@@ -32,7 +32,8 @@
 ## parameters @var{df} and @var{lambda}, at the values in @var{x}.
 ##
 ## Further information about the noncentral chi-squared distribution can be
-## found at @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
+## found at
+## @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
 ## @seealso{ncx2inv, ncx2pdf, ncx2rnd, ncx2stat, chi2cdf}
 ## @end deftypefn

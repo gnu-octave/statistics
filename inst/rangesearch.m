@@ -24,7 +24,8 @@
 ## Find all neighbors within specified distance from input data.
 ##
 ## @code{@var{idx} = rangesearch (@var{X}, @var{Y}, @var{r})} returns all the
-## points in @var{X} that are within distance @var{r} from the points in @var{Y}.
+## points in @var{X} that are within distance @var{r} from the points in
+## @var{Y}.
 ## @var{X} must be an @math{NxP} numeric matrix of input data, where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @var{Y} is an @math{MxP} numeric matrix with query points, which must have

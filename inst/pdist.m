@@ -76,7 +76,8 @@
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##
-## @code{@var{D} = pdist (@var{X}, @var{Y}, @var{Distance}, @var{DistParameter})}
+## @code{@var{D} = pdist (@var{X}, @var{Y}, @var{Distance},
+## @var{DistParameter})}
 ## returns the distance using the metric specified by @var{Distance} and
 ## @var{DistParameter}.  The latter one can only be specified when the selected
 ## @var{Distance} is @qcode{"seuclidean"}, @qcode{"minkowski"}, and

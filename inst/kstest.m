@@ -43,7 +43,8 @@
 ##
 ## @multitable @columnfractions 0.15 0.05 0.8
 ## @headitem Name @tab @tab Value
-## @item @qcode{"alpha"} @tab @tab A numeric scalar between 0 and 1 specifying th
+## @item @qcode{"alpha"} @tab @tab A numeric scalar between 0 and 1 specifying
+## th
 ## the significance level.  Default is 0.05 for 5% significance.
 ##
 ## @item @qcode{"CDF"} @tab @tab The hypothesized CDF under the null hypothesis.

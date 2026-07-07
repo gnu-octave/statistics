@@ -25,10 +25,10 @@
 ## Inverse of the normal cumulative distribution function (iCDF).
 ##
 ## For each element of @var{p}, compute the quantile (the inverse of the CDF) of
-## the normal distribution with mean @var{mu} and standard deviation @var{sigma}.
-## The size of @var{p} is the common size of @var{p}, @var{mu} and @var{sigma}.
-## A scalar input functions as a constant matrix of the same size as the other
-## inputs.
+## the normal distribution with mean @var{mu} and standard deviation
+## @var{sigma}. The size of @var{p} is the common size of @var{p}, @var{mu} and
+## @var{sigma}. A scalar input functions as a constant matrix of the same size
+## as the other inputs.
 ##
 ## Default values are @var{mu} = 0, @var{sigma} = 1.
 ##

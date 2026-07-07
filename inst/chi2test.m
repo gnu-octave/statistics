@@ -48,7 +48,8 @@
 ## @item @tab @var{pval} @tab the p-value of the relevant test.
 ## @item @tab @var{chisq} @tab the chi^2 statistic of the relevant test.
 ## @item @tab @var{dF} @tab the degrees of freedom of the relevant test.
-## @item @tab @var{E} @tab the EXPECTED values of the original contingency table.
+## @item @tab @var{E} @tab the EXPECTED values of the original contingency
+## table.
 ## @end multitable
 ##
 ## Unlike MATLAB, in GNU Octave @code{chi2test} also supports 3-way tables,
