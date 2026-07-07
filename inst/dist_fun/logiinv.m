@@ -45,7 +45,7 @@ function x = logiinv (p, mu, sigma)
   endif
 
   ## Check for common size of P, MU, and SIGMA
-  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(sigma))
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar (sigma))
     [retval, p, mu, sigma] = common_size (p, mu, sigma);
     if (retval > 0)
       error ("logiinv: P, MU, and SIGMA must be of common size or scalars.");

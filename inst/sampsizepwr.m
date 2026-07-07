@@ -238,7 +238,7 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
   endif
 
   ## Check that only one of either p1, power, or n are missing
-  if (isempty(p1) + isempty(power) + isempty(n) != 1)
+  if (isempty (p1) + isempty (power) + isempty (n) != 1)
     error ("sampsizepwr: only one of either p1, power, or n must be missing.");
   endif
 
@@ -318,11 +318,11 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
     ## Compute power given effect size and sample size
     switch (TestType)
       case {'z', 't'}
-        out(:) = PowerFunction (params(1), p1, params(2), alpha, tail, n);
+        out(:) = PowerFunction(params(1), p1, params(2), alpha, tail, n);
       case 't2'
-        out(:) = PowerFunction (params(1), p1, params(2), alpha, tail, n, ratio);
+        out(:) = PowerFunction(params(1), p1, params(2), alpha, tail, n, ratio);
       case {'var', 'p', 'r'}
-        out(:) = PowerFunction (params(1), p1, alpha, tail, n);
+        out(:) = PowerFunction(params(1), p1, alpha, tail, n);
     endswitch
 
   else
@@ -339,7 +339,7 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
           ## Count upward until we get the value we need
           elem = 1:numel (alpha);
           while (! isempty (elem))  #MK: THE BUG WAS _T ON THE NEXT LINE!
-            actualpower = PowerFunction (params(1), p1(elem), params(2), ...
+            actualpower = PowerFunction(params(1), p1(elem), params(2), ...
                                            alpha(elem), tail, out(elem));
             elem = elem(actualpower < power(elem));
             out(elem) = out(elem) + 1;
@@ -461,11 +461,11 @@ function mu1 = findP1t (mu0, sig, desiredpower, N, alpha, tail)
   endif
   ## Get quantiles of the normal or t distribution
   if (strcmp (tail, 'left'))
-    z1 = norminv(alpha);
-    z2 = norminv(desiredpower);
+    z1 = norminv (alpha);
+    z2 = norminv (desiredpower);
   else               # upper or two-tailed test
-    z1 = norminv(1-a2);
-    z2 = norminv(1-desiredpower);
+    z1 = norminv (1-a2);
+    z2 = norminv (1-desiredpower);
   endif
   mu1 = mu0 + sig .* (z1-z2) ./ sqrt (N);
   ## Refine using fzero
@@ -559,14 +559,14 @@ function p1 = findP1v (p0, desiredpower, N, alpha, tail)
 
   ## Calculate critical values and p1 for one-sided test
   if (! strcmp (tail, 'left'))
-    critU = Finv (1 - alpha, N, p0);
-    p1 = 1 ./ Finv (desiredbeta, N, 1 ./ critU);
+    critU = Finv(1 - alpha, N, p0);
+    p1 = 1 ./ Finv(desiredbeta, N, 1 ./ critU);
   endif
   if (! strcmp (tail, 'right'))
-    critL = Finv (alpha, N, p0);
+    critL = Finv(alpha, N, p0);
   endif
   if (strcmp (tail, 'left'))
-    p1 = 1 ./ Finv (desiredpower, N, 1 ./ critL);
+    p1 = 1 ./ Finv(desiredpower, N, 1 ./ critL);
   endif
 
   if (strcmp (tail, 'both'))
@@ -577,7 +577,7 @@ function p1 = findP1v (p0, desiredpower, N, alpha, tail)
     betalo = zeros (size (desiredbeta));
     while (true)
       ## Compute probability of being in the lower tail under H1
-      betalo(elem) = F (critL(elem), N(elem), p1(elem));
+      betalo(elem) = F(critL(elem), N(elem), p1(elem));
       ## See if the upper and lower probabilities are close enough
       obsbeta = betahi(elem) - betalo(elem);
       elem = elem(abs (obsbeta - desiredbeta(elem)) > 1e-6 * desiredbeta(elem));
@@ -586,7 +586,7 @@ function p1 = findP1v (p0, desiredpower, N, alpha, tail)
       endif
       ## Find a new mu1 by adjusting beta to take lower tail into account
       betahi(elem) = desiredbeta(elem) + betalo(elem);
-      p1(elem) = 1 ./ Finv (betahi(elem), N(elem), 1 ./ critU(elem));
+      p1(elem) = 1 ./ Finv(betahi(elem), N(elem), 1 ./ critU(elem));
     endwhile
   endif
 endfunction
@@ -620,7 +620,7 @@ function p1 = findP1p (p0, desiredpower, N, alpha, tail)
     p1(t) = 1 - p0 / 2;
   endif
   ## Refine using fzero
-  for j=1:numel(p1)
+  for j=1:numel (p1)
     if (! isnan (p1(j)));
       if (p1(j) > p0)
         F0 = @(p1arg) PowerFunction_P (p0, max (p0, min (1, p1arg)), ...
@@ -678,7 +678,7 @@ function [critL, critU] = getcritP (p0, N, alpha, tail)
   endif
   ## Calculate critical values
   critU = N;
-  critL = zeros(size(N));
+  critL = zeros (size (N));
   if (! strcmp (tail, 'right'))
     critL = binoinv (Alo, N, p0);
     Alo = binocdf (critL, N, p0);
@@ -687,29 +687,29 @@ function [critL, critU] = getcritP (p0, N, alpha, tail)
     Alo(! t) = Alo(! t) - binopdf (critL(! t), N(! t), p0);
   endif
   if (! strcmp (tail, 'left'))
-    Aup = max(0, alpha - Alo);
-    critU = binoinv(1 - Aup, N, p0);
+    Aup = max (0, alpha - Alo);
+    critU = binoinv (1 - Aup, N, p0);
   endif
 endfunction
 
 ## Sample size calculation via binary search
 function N = searchbinaryN (F, lohi, p0, p1, desiredpower, alpha, tail)
   ## Find uper and lower bounds
-  nlo = repmat(lohi(1),size(alpha));
-  nhi = repmat(lohi(2),size(alpha));
+  nlo = repmat (lohi(1),size (alpha));
+  nhi = repmat (lohi(2),size (alpha));
   obspower = F(p0,p1,alpha,tail,nhi);
   ## Iterate on n until we achieve the desired power
   elem = 1:numel (alpha);
   while (! isempty (elem))
     elem = elem(obspower(elem) < desiredpower(elem));
     nhi(elem) = nhi(elem) * 2;
-    obspower(elem) = F (p0, p1(elem), alpha(elem), tail, nhi(elem));
+    obspower(elem) = F(p0, p1(elem), alpha(elem), tail, nhi(elem));
   endwhile
   ## Binary search between these bounds for required sample size
-  elem = find(nhi > nlo+1);
+  elem = find (nhi > nlo+1);
   while (! isempty (elem))
     n = floor ((nhi(elem) + nlo(elem)) / 2);
-    obspower = F (p0, p1(elem), alpha(elem), tail, n);
+    obspower = F(p0, p1(elem), alpha(elem), tail, n);
     toohigh = (obspower > desiredpower(elem));
     nhi(elem(toohigh)) = n(toohigh);
     nlo(elem(! toohigh)) = n(! toohigh);
@@ -720,9 +720,9 @@ endfunction
 
 ## Adjust sample size to take discreteness into account
 function N = adjdiscreteN (N, PowerFunction, p0, p1, alpha, tail, power)
-  for j=1:numel(N)
+  for j=1:numel (N)
     allN = 1:N(j);
-    obspower = PowerFunction (p0, p1(j), alpha(j), tail, allN);
+    obspower = PowerFunction(p0, p1(j), alpha(j), tail, allN);
     N(j) = allN(find (obspower >= power(j), 1, 'first'));
   endfor
 endfunction
@@ -880,7 +880,7 @@ endfunction
 %! nn = 1:250;
 %! pwr = sampsizepwr ('p', 0.2, 0.26, [], nn);
 %! Nexact = min (nn(pwr >= 0.6));
-%! plot(nn,pwr,'b-', [Napprox Nexact],pwr([Napprox Nexact]),'ro');
+%! plot (nn,pwr,'b-', [Napprox Nexact],pwr([Napprox Nexact]),'ro');
 %! grid on
 
 %!demo
@@ -888,9 +888,9 @@ endfunction
 %! ## volume of 100 mL and 102 mL with a power of 0.80.  Generate a power curve
 %! ## to visualize how the sample size affects the power of the test.
 %!
-%! nout = sampsizepwr('t',[100 5],102,0.80);
+%! nout = sampsizepwr ('t',[100 5],102,0.80);
 %! nn = 1:100;
-%! pwrout = sampsizepwr('t',[100 5],102,[],nn);
+%! pwrout = sampsizepwr ('t',[100 5],102,[],nn);
 %!
 %! figure;
 %! plot (nn, pwrout, 'b-', nout, 0.8, 'ro')

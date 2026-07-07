@@ -91,8 +91,8 @@ function y = randsample (v, k, replacement=false, w=[])
          if (! any (Idup))
            break
          else
-           Idup (idx) = Idup;     # find duplicates in original vector
-           w (y) = 0;             # don't permit resampling
+           Idup(idx) = Idup;     # find duplicates in original vector
+           w(y) = 0;             # don't permit resampling
            ## remove duplicates, then sample again
            y = [y(! Idup), (weighted_replacement (sum (Idup), w))];
          endif
@@ -123,98 +123,98 @@ endfunction
 %!test
 %! n = 20;
 %! k = 5;
-%! x = randsample(n, k);
-%! assert (size(x), [k 1]);
-%! x = randsample(n, k, true);
-%! assert (size(x), [k 1]);
-%! x = randsample(n, k, false);
-%! assert (size(x), [k 1]);
-%! x = randsample(n, k, true, ones(n, 1));
-%! assert (size(x), [k 1]);
-%! x = randsample(1:n, k);
-%! assert (size(x), [1 k]);
-%! x = randsample(1:n, k, true);
-%! assert (size(x), [1 k]);
-%! x = randsample(1:n, k, false);
-%! assert (size(x), [1 k]);
-%! x = randsample(1:n, k, true, ones(n, 1));
-%! assert (size(x), [1 k]);
-%! x = randsample((1:n)', k);
-%! assert (size(x), [k 1]);
-%! x = randsample((1:n)', k, true);
-%! assert (size(x), [k 1]);
-%! x = randsample((1:n)', k, false);
-%! assert (size(x), [k 1]);
-%! x = randsample((1:n)', k, true, ones(n, 1));
-%! assert (size(x), [k 1]);
+%! x = randsample (n, k);
+%! assert (size (x), [k 1]);
+%! x = randsample (n, k, true);
+%! assert (size (x), [k 1]);
+%! x = randsample (n, k, false);
+%! assert (size (x), [k 1]);
+%! x = randsample (n, k, true, ones (n, 1));
+%! assert (size (x), [k 1]);
+%! x = randsample (1:n, k);
+%! assert (size (x), [1 k]);
+%! x = randsample (1:n, k, true);
+%! assert (size (x), [1 k]);
+%! x = randsample (1:n, k, false);
+%! assert (size (x), [1 k]);
+%! x = randsample (1:n, k, true, ones (n, 1));
+%! assert (size (x), [1 k]);
+%! x = randsample ((1:n)', k);
+%! assert (size (x), [k 1]);
+%! x = randsample ((1:n)', k, true);
+%! assert (size (x), [k 1]);
+%! x = randsample ((1:n)', k, false);
+%! assert (size (x), [k 1]);
+%! x = randsample ((1:n)', k, true, ones (n, 1));
+%! assert (size (x), [k 1]);
 %! n = 10;
 %! k = 100;
-%! x = randsample(n, k, true, 1:n);
-%! assert (size(x), [k 1]);
-%! x = randsample((1:n)', k, true);
-%! assert (size(x), [k 1]);
-%! x = randsample(k, k, false, 1:k);
-%! assert (size(x), [k 1]);
+%! x = randsample (n, k, true, 1:n);
+%! assert (size (x), [k 1]);
+%! x = randsample ((1:n)', k, true);
+%! assert (size (x), [k 1]);
+%! x = randsample (k, k, false, 1:k);
+%! assert (size (x), [k 1]);
 
 %!test
 %! n = 20;
 %! k = 5;
 %! p = 1:n;
-%! x = randsample(p, k);
-%! assert (isnumeric(x));
-%! assert (size(x), [1 k]);
-%! x = randsample(p, k, true);
-%! assert (isnumeric(x));
-%! assert (size(x), [1 k]);
-%! x = randsample(p, k, false);
-%! assert (isnumeric(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k);
+%! assert (isnumeric (x));
+%! assert (size (x), [1 k]);
+%! x = randsample (p, k, true);
+%! assert (isnumeric (x));
+%! assert (size (x), [1 k]);
+%! x = randsample (p, k, false);
+%! assert (isnumeric (x));
+%! assert (size (x), [1 k]);
 %! k = 30;
-%! x = randsample(p, k, true);
-%! assert (isnumeric(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true);
+%! assert (isnumeric (x));
+%! assert (size (x), [1 k]);
 
 %!test
-%! p = categorical({'a', 'b', 'c', 'd', 'a'});
+%! p = categorical ({'a', 'b', 'c', 'd', 'a'});
 %! k = 3;
-%! x = randsample(p, k, true);
-%! assert (iscategorical(x));
-%! assert (size(x), [1 k]);
-%! x = randsample(p, k, false);
-%! assert (iscategorical(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true);
+%! assert (iscategorical (x));
+%! assert (size (x), [1 k]);
+%! x = randsample (p, k, false);
+%! assert (iscategorical (x));
+%! assert (size (x), [1 k]);
 %! k = 30;
-%! x = randsample(p, k, true, ones(length(p),1));
-%! assert (iscategorical(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true, ones (length (p),1));
+%! assert (iscategorical (x));
+%! assert (size (x), [1 k]);
 
 %!test
 %! p = {'a', 'b', 'c', 'd', 'a'};
 %! k = 2;
-%! x = randsample(p, k, true);
-%! assert (iscell(x));
-%! assert (size(x), [1 k]);
-%! x = randsample(p, k, false);
-%! assert (iscell(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true);
+%! assert (iscell (x));
+%! assert (size (x), [1 k]);
+%! x = randsample (p, k, false);
+%! assert (iscell (x));
+%! assert (size (x), [1 k]);
 %! k = 30;
-%! x = randsample(p, k, true, ones(length(p),1));
-%! assert (iscell(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true, ones (length (p),1));
+%! assert (iscell (x));
+%! assert (size (x), [1 k]);
 
 %!test
-%! p = string({'a', 'b', 'c', 'd', 'a'});
+%! p = string ({'a', 'b', 'c', 'd', 'a'});
 %! k = 2;
-%! x = randsample(p, k, true);
-%! assert (isstring(x));
-%! assert (size(x), [1 k]);
-%! x = randsample(p, k, false);
-%! assert (isstring(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true);
+%! assert (isstring (x));
+%! assert (size (x), [1 k]);
+%! x = randsample (p, k, false);
+%! assert (isstring (x));
+%! assert (size (x), [1 k]);
 %! k = 30;
-%! x = randsample(p, k, true, ones(length(p),1));
-%! assert (isstring(x));
-%! assert (size(x), [1 k]);
+%! x = randsample (p, k, true, ones (length (p),1));
+%! assert (isstring (x));
+%! assert (size (x), [1 k]);
 
 %!test
 %! assert (randsample ('A', 1), 'A');
@@ -234,7 +234,7 @@ endfunction
 %! randsample (10, 100)
 
 %!error <randsample: the size w .* must match the first argument .*> ...
-%! randsample (10, 5, false, ones(5,1))
+%! randsample (10, 5, false, ones (5,1))
 
 %!error <the weight vector w must consist of non-negative elements> ...
 %! randsample (5, 2, true, [0, 0, 0, 0, 0])

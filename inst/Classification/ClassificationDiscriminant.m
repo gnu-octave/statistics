@@ -38,7 +38,7 @@ classdef ClassificationDiscriminant
   ## @seealso{fitcdiscr}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {ClassificationDiscriminant} {property} X
     ##
@@ -344,11 +344,11 @@ classdef ClassificationDiscriminant
     XCentered       = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -453,7 +453,7 @@ classdef ClassificationDiscriminant
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationDiscriminant (@var{X}, @var{Y})
@@ -671,7 +671,7 @@ classdef ClassificationDiscriminant
             error (strcat ("ClassificationDiscriminant: invalid", ...
                            " parameter name in optional pair arguments."));
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Generate default predictors and response variable names (if necessary)
@@ -704,8 +704,8 @@ classdef ClassificationDiscriminant
 
       ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed, :);
-      X         = X (RowsUsed, :);
+      Y         = Y(RowsUsed, :);
+      X         = X(RowsUsed, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
       [this.ClassNames, gnY, gY] = unique (Y);
@@ -806,7 +806,7 @@ classdef ClassificationDiscriminant
         ## Calculate coefficients
         switch (this.DiscrimType)
           case 'linear'
-            this.Coeffs = struct();
+            this.Coeffs = struct ();
             for i = 1:num_classes
               for j = 1:num_classes
                 this.Coeffs(i, j).DiscrimType = '';
@@ -1037,7 +1037,7 @@ classdef ClassificationDiscriminant
                 S_test = zeros (n, K);
                 W_test = ones (n, 1);
                 Cost_test = ones (K) - eye (K);
-                test_output = Value (C_test, S_test, W_test, Cost_test);
+                test_output = Value(C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
                   error (strcat ("ClassificationDiscriminant.loss:", ...
                                  " custom loss function must return", ...
@@ -1072,7 +1072,7 @@ classdef ClassificationDiscriminant
             error (strcat ("ClassificationDiscriminant.loss: invalid", ...
                            " parameter name in optional pair arguments."));
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Check for missing values in X
@@ -1139,7 +1139,7 @@ classdef ClassificationDiscriminant
 
       ## Compute the loss using custom loss function
       if (isa (LossFun, 'function_handle'))
-        L = LossFun (C, scores, Weights, this.Cost);
+        L = LossFun(C, scores, Weights, this.Cost);
         return;
       endif
 
@@ -1410,7 +1410,7 @@ classdef ClassificationDiscriminant
             error (strcat ("ClassificationDiscriminant.crossval: invalid",...
                            " parameter name in optional paired arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Determine the cross-validation method to use
@@ -1495,7 +1495,7 @@ classdef ClassificationDiscriminant
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationDiscriminant object
@@ -1517,7 +1517,7 @@ classdef ClassificationDiscriminant
 
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
 
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
@@ -1675,7 +1675,7 @@ endclassdef
 %! MODEL = ClassificationDiscriminant (X, Y);
 %!error<ClassificationDiscriminant: too few input arguments.> ClassificationDiscriminant ()
 %!error<ClassificationDiscriminant: too few input arguments.> ...
-%! ClassificationDiscriminant (ones(4, 1))
+%! ClassificationDiscriminant (ones (4, 1))
 %!error<ClassificationDiscriminant: Name-Value arguments must be in pairs.> ...
 %! ClassificationDiscriminant (X, Y, 'prior')
 %!error<ClassificationDiscriminant: number of rows in X and Y must be equal.> ...

@@ -54,7 +54,7 @@ classdef BinomialDistribution
   ## binolike, binostat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} N
     ##
@@ -80,7 +80,7 @@ classdef BinomialDistribution
     p
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} DistributionName
     ##
@@ -127,14 +127,14 @@ classdef BinomialDistribution
     ParameterDescription = {'Number of trials', 'Probability of success'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'bino';
     ParameterRange = [realmin, realmin; Inf, 1];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} ParameterValues
     ##
@@ -224,11 +224,11 @@ classdef BinomialDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = BinomialDistribution (N, p)
       if (nargin == 0)
@@ -244,7 +244,7 @@ classdef BinomialDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'binomial distribution');
     endfunction
 
@@ -278,7 +278,7 @@ classdef BinomialDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {BinomialDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -417,7 +417,7 @@ classdef BinomialDistribution
         Fa_b = binocdf ([lx, ux], this.N, this.p);
         m = binoinv (sum (Fa_b) / 2, this.N, this.p);
       else
-        if (! __traditional__() && this.p == 0.5 && rem (this.N, 2) == 1)
+        if (! __traditional__ () && this.p == 0.5 && rem (this.N, 2) == 1)
           m = this.mean ();
         else
           m = binoinv (0.5, this.N, this.p);
@@ -751,7 +751,7 @@ classdef BinomialDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, ntrials, varargin)
       ## Check input arguments
@@ -841,29 +841,29 @@ endfunction
 ## Test input validation
 ## 'BinomialDistribution' constructor
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution(Inf, 0.5)
+%! BinomialDistribution (Inf, 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution(i, 0.5)
+%! BinomialDistribution (i, 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution('a', 0.5)
+%! BinomialDistribution ('a', 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution([1, 2], 0.5)
+%! BinomialDistribution ([1, 2], 0.5)
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
-%! BinomialDistribution(NaN, 0.5)
+%! BinomialDistribution (NaN, 0.5)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, 1.01)
+%! BinomialDistribution (1, 1.01)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, -0.01)
+%! BinomialDistribution (1, -0.01)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, Inf)
+%! BinomialDistribution (1, Inf)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, i)
+%! BinomialDistribution (1, i)
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, 'a')
+%! BinomialDistribution (1, 'a')
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, [1, 2])
+%! BinomialDistribution (1, [1, 2])
 %!error <BinomialDistribution: p must be a real scalar bounded in the range> ...
-%! BinomialDistribution(1, NaN)
+%! BinomialDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -976,8 +976,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = BinomialDistribution(1, 0.5);
-%! pd(2) = BinomialDistribution(1, 0.6);
+%! pd = BinomialDistribution (1, 0.5);
+%! pd(2) = BinomialDistribution (1, 0.6);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

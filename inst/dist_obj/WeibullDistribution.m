@@ -56,7 +56,7 @@ classdef WeibullDistribution
   ## wbllike, wblstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} lambda
     ##
@@ -82,7 +82,7 @@ classdef WeibullDistribution
     k
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} DistributionName
     ##
@@ -129,14 +129,14 @@ classdef WeibullDistribution
     ParameterDescription = {'Scale', 'Shape'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'wbl';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} ParameterValues
     ##
@@ -228,11 +228,11 @@ classdef WeibullDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = WeibullDistribution (lambda, k)
       if (nargin == 0)
@@ -248,7 +248,7 @@ classdef WeibullDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Weibull distribution');
     endfunction
 
@@ -282,7 +282,7 @@ classdef WeibullDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {WeibullDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -723,7 +723,7 @@ classdef WeibullDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -828,33 +828,33 @@ endfunction
 ## Test input validation
 ## 'WeibullDistribution' constructor
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(0, 1)
+%! WeibullDistribution (0, 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(-1, 1)
+%! WeibullDistribution (-1, 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(Inf, 1)
+%! WeibullDistribution (Inf, 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(i, 1)
+%! WeibullDistribution (i, 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution('a', 1)
+%! WeibullDistribution ('a', 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution([1, 2], 1)
+%! WeibullDistribution ([1, 2], 1)
 %!error <WeibullDistribution: LAMBDA must be a positive real scalar.> ...
-%! WeibullDistribution(NaN, 1)
+%! WeibullDistribution (NaN, 1)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, 0)
+%! WeibullDistribution (1, 0)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, -1)
+%! WeibullDistribution (1, -1)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, Inf)
+%! WeibullDistribution (1, Inf)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, i)
+%! WeibullDistribution (1, i)
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, 'a')
+%! WeibullDistribution (1, 'a')
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, [1, 2])
+%! WeibullDistribution (1, [1, 2])
 %!error <WeibullDistribution: K must be a positive real scalar.> ...
-%! WeibullDistribution(1, NaN)
+%! WeibullDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -960,8 +960,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = WeibullDistribution(1, 1);
-%! pd(2) = WeibullDistribution(1, 3);
+%! pd = WeibullDistribution (1, 1);
+%! pd(2) = WeibullDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

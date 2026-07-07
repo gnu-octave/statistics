@@ -196,7 +196,7 @@ function [p, stats] = vartestn (x, group, varargin)
   switch (lower (testtype))
     case 'bartlett'
       ## Calculate degrees of freedom
-      Bdf = max(0, sum (group_DF > 0) - 1);
+      Bdf = max (0, sum (group_DF > 0) - 1);
       ## Get valid groups
       msgroups = group_DF > 0;
       ## For valid groups
@@ -212,7 +212,7 @@ function [p, stats] = vartestn (x, group, varargin)
       p = 1 - chi2cdf (F, Bdf);
       testname = 'Bartlett''s statistic            ';
       if (nargout > 1)
-        stats = struct('chisqstat', F, 'df', Bdf);
+        stats = struct ('chisqstat', F, 'df', Bdf);
       endif
     case {'leveneabsolute', 'levenequadratic'}
       ## Remove single-sample groups
@@ -240,7 +240,7 @@ function [p, stats] = vartestn (x, group, varargin)
         Bdf = [0, (length (x_center) - n_groups)];
       endif
       if (nargout > 1)
-        stats = struct('fstat', F, 'df', Bdf);
+        stats = struct ('fstat', F, 'df', Bdf);
       endif
     case 'brownforsythe'
       ## Remove single-sample groups
@@ -251,7 +251,7 @@ function [p, stats] = vartestn (x, group, varargin)
       ## Center each group with median
       xcbf = x(msgroups) - group_md(group_id(msgroups));
       ## Get number of valid groups (group size > 1)
-      n_groups = length(group_size) - length(ssgroups);
+      n_groups = length (group_size) - length (ssgroups);
       ## Perform one-way anova and extract results from the anova table
       if (n_groups > 1)
         [p, atab] = anova1 (abs (xcbf), group_id(msgroups), 'off');
@@ -265,7 +265,7 @@ function [p, stats] = vartestn (x, group, varargin)
       endif
       testname = 'Brown-Forsythe statistic        ';
       if (nargout > 1)
-        stats = struct('fstat', F, 'df', Bdf);
+        stats = struct ('fstat', F, 'df', Bdf);
       endif
     case 'obrien'
       ## Remove single-sample groups
@@ -283,7 +283,7 @@ function [p, stats] = vartestn (x, group, varargin)
             ((group_size(group_id(msgroups)) - 1) .* ...
              (group_size(group_id(msgroups)) - 2));
       ## Get number of valid groups (group size > 1)
-      n_groups = length(group_size) - length(ssgroups);
+      n_groups = length (group_size) - length (ssgroups);
       ## Perform one-way anova and extract results from the anova table
       if (n_groups > 1)
         [p, atab] = anova1 (xcw, group_id(msgroups), 'off');
@@ -297,7 +297,7 @@ function [p, stats] = vartestn (x, group, varargin)
       endif
       testname = 'OBrien statistic                ';
       if (nargout > 1)
-        stats = struct('fstat', F, 'df', Bdf);
+        stats = struct ('fstat', F, 'df', Bdf);
       endif
   endswitch
   ## Print Group Summary Table (unless opted out)

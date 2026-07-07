@@ -45,7 +45,7 @@ function x = laplaceinv (p, mu, beta)
   endif
 
   ## Check for common size of P, MU, and BETA
-  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(beta))
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar (beta))
     [retval, p, mu, beta] = common_size (p, mu, beta);
     if (retval > 0)
       error (strcat ("laplaceinv: P, MU, and BETA must be of", ...

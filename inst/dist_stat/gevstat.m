@@ -76,13 +76,13 @@ function [m, v] = gevstat (k, sigma, mu)
   m(k >= 1) = Inf;
   m(k == 0) = mu(k == 0) + eg*sigma(k == 0);
   m(k < 1 & k != 0) = mu(k < 1 & k != 0) + sigma(k < 1 & k != 0) .* ...
-                        (gamma(1-k(k < 1 & k != 0)) - 1) ./ k(k < 1 & k != 0);
+                        (gamma (1-k(k < 1 & k != 0)) - 1) ./ k(k < 1 & k != 0);
 
   ## Find the variance
   v(k >= 0.5) = Inf;
   v(k == 0) = (pi^2 / 6) * sigma(k == 0) .^ 2;
-  v(k < 0.5 & k != 0) = (gamma(1-2*k(k < 0.5 & k != 0)) - ...
-                         gamma(1-k(k < 0.5 & k != 0)).^2) .* ...
+  v(k < 0.5 & k != 0) = (gamma (1-2*k(k < 0.5 & k != 0)) - ...
+                         gamma (1-k(k < 0.5 & k != 0)).^2) .* ...
                         (sigma(k < 0.5 & k != 0) ./ k(k < 0.5 & k != 0)) .^ 2;
 
 endfunction

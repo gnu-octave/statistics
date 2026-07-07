@@ -116,7 +116,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
     print_usage;
   endif
   ## Ensure the sample data is a real vector.
-  if (! isvector (x) || ! isreal(x))
+  if (! isvector (x) || ! isreal (x))
     error ("adtest: X must be a vector of real numbers.");
   endif
 
@@ -265,7 +265,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
           ADStat = NaN;
         else
           params = evfit (x);
-          z = evcdf (x, params (1), params (2));
+          z = evcdf (x, params(1), params(2));
           ADStat = ComputeADStat (z, n);
         endif
     endswitch
@@ -316,7 +316,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
       else
         ## Find p-value by inverse interpolation
         i = find (ADStat > CVs, 1, 'first');
-        logPVal = fzero (@(x)ppval(pp,x) - ADStat, log(alphas([i-1,i])));
+        logPVal = fzero (@(x)ppval (pp,x) - ADStat, log (alphas([i-1,i])));
         pVal = exp (logPVal);
       endif
 
@@ -364,7 +364,7 @@ function [H, pVal, ADStat, CV] = adtest (x, varargin)
           critVals = findAsymptoticDistributionCriticalValues;
           i = find (alphas > alpha, 1, 'first');
           startVal = critVals(i-1);
-          CV = fzero(@(ad)1-ADInf(ad)-alpha, startVal);
+          CV = fzero (@(ad)1-ADInf (ad)-alpha, startVal);
         endif
       else
         if (n == 1)
@@ -464,12 +464,12 @@ function ad = ADInf (z)
   endif
   n = 1:500;
   K = 1/z*[1, ((4*n + 1).*cumprod((1/2 - n)./n))];
-  ADTerms = arrayfun(@(j)ADf(z,j),0:500);
+  ADTerms = arrayfun (@(j)ADf (z,j),0:500);
   ad = ADTerms*K';
 endfunction
 
 ## Series expansion for f(z,j) called by ADInf
-function f = ADf(z,j)
+function f = ADf (z,j)
   ## Compute t=tj=(4j+1)^2*pi^2/(8z)
   t = (4 * j + 1) ^ 2 * 1.233700550136170 / z;
   ## First 2 terms in recursive series
@@ -522,7 +522,7 @@ function CVs = computeCriticalValues_exp (n)
 endfunction
 
 ## An improved version of the Petitt method for the composite extreme value case
-function CVs = computeCriticalValues_ev(n)
+function CVs = computeCriticalValues_ev (n)
   CVs = [1.6473,  1.5095,  1.4301,  1.3742,  1.1974,  1.0667,  0.8961, ...
          0.7683,  0.6416,  0.5680,  0.5156,  0.4744,  0.4405,  0.4115, ...
          0.3858,  0.3626,  0.3415,  0.3217,  0.3029,  0.2848,  0.2672, ...
@@ -646,8 +646,8 @@ function [crit, p] = adtestMC (ADStat, n, alpha, distribution, MCTol)
   ## Monte Carlo loop
   while true
     mcRepsOld = mcRepsTot;
-    mcReps = ceil(mcRepsMin - mcRepsOld);
-    ADstatMC = zeros(mcReps,1);
+    mcReps = ceil (mcRepsMin - mcRepsOld);
+    ADstatMC = zeros (mcReps,1);
     ## Switch to selected distribution
     switch distribution
       case 'norm'
@@ -684,7 +684,7 @@ function [crit, p] = adtestMC (ADStat, n, alpha, distribution, MCTol)
                                  log (1 - nullCDF(end:-1:1))) / n - n;
         endfor
       case 'unif'
-        for rep = 1:length(ADstatMC)
+        for rep = 1:length (ADstatMC)
           z = sort (rand (n, 1));
           w = 2 * (1:n) - 1 ;
           ADstatMC(rep) = - w * (log (z) + ...
@@ -756,10 +756,10 @@ endfunction
 %! adtest (ones (20,1), 'Alpha', 0.000001);
 %!warning<adtest: alpha not within the lookup table.> ...
 %! randn ('seed', 34);
-%! adtest (normrnd(0,1,100,1), 'Alpha', 0.99999);
+%! adtest (normrnd (0,1,100,1), 'Alpha', 0.99999);
 %!warning<adtest: alpha not within the lookup table.> ...
 %! randn ('seed', 34);
-%! adtest (normrnd(0,1,100,1), 'Alpha', 0.00001);
+%! adtest (normrnd (0,1,100,1), 'Alpha', 0.00001);
 
 ## Test results
 %!test

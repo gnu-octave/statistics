@@ -88,7 +88,7 @@ function p = burrcdf (x, lambda, c, k, uflag)
               & (k > 0) & (k < Inf);
 
   ## Compute Burr CDF
-  if (isscalar (lambda) && isscalar(c) && isscalar(k))
+  if (isscalar (lambda) && isscalar (c) && isscalar (k))
     if (uflag)
       p(j) = (1 + (x(j) / lambda) .^ c) .^ (-k);
     else
@@ -128,7 +128,7 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 0, 1/2, 2/3, 1];
-%!assert (burrcdf (x, ones(1,5), ones (1,5), ones (1,5)), y, eps)
+%!assert (burrcdf (x, ones (1,5), ones (1,5), ones (1,5)), y, eps)
 %!assert (burrcdf (x, 1, 1, 1), y, eps)
 %!assert (burrcdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)], eps)
 %!assert (burrcdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)], eps)
@@ -136,10 +136,10 @@ endfunction
 %!assert (burrcdf ([x, NaN], 1, 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (burrcdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]), eps('single'))
-%!assert (burrcdf ([x, NaN], single (1), 1, 1), single ([y, NaN]), eps('single'))
-%!assert (burrcdf ([x, NaN], 1, single (1), 1), single ([y, NaN]), eps('single'))
-%!assert (burrcdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]), eps('single'))
+%!assert (burrcdf (single ([x, NaN]), 1, 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (burrcdf ([x, NaN], single (1), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (burrcdf ([x, NaN], 1, single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert (burrcdf ([x, NaN], 1, 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<burrcdf: function called with too few input arguments.> burrcdf ()
@@ -151,13 +151,13 @@ endfunction
 %!error<burrcdf: invalid argument for upper tail.> burrcdf (1, 2, 3, 4, 'tail')
 %!error<burrcdf: invalid argument for upper tail.> burrcdf (1, 2, 3, 4, 5)
 %!error<burrcdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrcdf (ones (3), ones (2), ones(2), ones(2))
+%! burrcdf (ones (3), ones (2), ones (2), ones (2))
 %!error<burrcdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrcdf (ones (2), ones (3), ones(2), ones(2))
+%! burrcdf (ones (2), ones (3), ones (2), ones (2))
 %!error<burrcdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrcdf (ones (2), ones (2), ones(3), ones(2))
+%! burrcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<burrcdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrcdf (ones (2), ones (2), ones(2), ones(3))
+%! burrcdf (ones (2), ones (2), ones (2), ones (3))
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (i, 2, 3, 4)
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (1, i, 3, 4)
 %!error<burrcdf: X, LAMBDA, C, and K must not be complex.> burrcdf (1, 2, i, 4)

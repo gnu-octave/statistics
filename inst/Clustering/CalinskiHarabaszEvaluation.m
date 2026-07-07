@@ -38,15 +38,15 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
   ## GapEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (Access = protected)
+  properties(Access = protected)
     Centroids = {}; # a list of the centroids for every solution
   endproperties
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## constructor
     function this = CalinskiHarabaszEvaluation (x, clust, KList)
-      this@ClusterCriterion(x, clust, KList);
+      this@ClusterCriterion (x, clust, KList);
 
       this.CriterionName = 'CalinskiHarabasz';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
@@ -64,7 +64,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     ## @seealso{CalinskiHarabaszEvaluation, evalclusters}
     ## @end deftypefn
     function this = addK (this, K)
-      addK@ClusterCriterion(this, K);
+      addK@ClusterCriterion (this, K);
 
       ## if we have new data, we need a new evaluation
       if (this.OptimalK == 0)
@@ -126,7 +126,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
 
   endmethods
 
-  methods (Access = protected)
+  methods(Access = protected)
     ## evaluate
     ## do the evaluation
     function this = evaluate (this, K)
@@ -229,7 +229,7 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
     endfunction
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
     ## computeCentroids
     ## compute the centroids if they are not available by other means
     function C = computeCentroids (this, X, index)

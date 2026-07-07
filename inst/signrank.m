@@ -170,7 +170,7 @@ function [p, h, stats] = signrank (x, my, varargin)
     error ("signrank: 'tail' value must be either 'both', right' or 'left'.");
   endif
   if (! ischar (method))
-    error("signrank: 'method' argument must be a character vector.");
+    error ("signrank: 'method' argument must be a character vector.");
   elseif (sum (strcmpi (method, {'exact', 'approximate'})) != 1)
     error ("signrank: 'method' value must be either 'exact' or 'approximate'.");
   endif

@@ -136,7 +136,7 @@ function r = hygernd (m, k, n, varargin)
     p = (p ./ p(end_locs)) - rand (num_n, 1);
     p(p>=0) = NaN;  # NaN values ignored by max
     [p_match, p_match_idx] = max (p, [], 2);
-    p_match_idx(isnan(p_match)) = 0; # rand < min(p) gives NaN, reset to 0
+    p_match_idx(isnan (p_match)) = 0; # rand < min(p) gives NaN, reset to 0
     r(ok) = v(p_match_idx + 1);
   endif
 

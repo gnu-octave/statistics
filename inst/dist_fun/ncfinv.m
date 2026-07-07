@@ -76,7 +76,7 @@ function x = ncfinv (p, df1, df2, lambda)
   ## Find remaining valid cases within the range of 0 < p < 1
   k = find (p > 0 & p < 1 & valid);
   ## Return if nothing left
-  if isempty(k)
+  if isempty (k)
     return;
   endif
 
@@ -91,11 +91,11 @@ function x = ncfinv (p, df1, df2, lambda)
   count = 0;
 
   ## Start at the mean (if it exists)
-  mu0 = df2.*(df1+lambda) ./ (df1.*max(1,df2-2));
+  mu0 = df2.*(df1+lambda) ./ (df1.*max (1,df2-2));
   next = mu0;
   prev = 0;
   F = ncfcdf (mu0, df1, df2, lambda);
-  while(count < count_limit)
+  while (count < count_limit)
     count += 1;
     next = (F - p) ./ ncfpdf (mu0, df1, df2, lambda);
 
@@ -132,7 +132,7 @@ function x = ncfinv (p, df1, df2, lambda)
     F = F1(mask);
     mu0 = mu1(mask);
     prev = next(mask);
-    if (! all(mask))
+    if (! all (mask))
       df1 = df1(mask);
       df2 = df2(mask);
       lambda = lambda(mask);

@@ -119,7 +119,7 @@ function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x,
   z  = (y * ones (1, yrange)) == ((y * 0 + 1) * (ymin : (ymax - 1)));
   z1 = (y * ones (1, yrange)) == ((y * 0 + 1) * ((ymin + 1) : ymax));
   z  = z(:, any (z));
-  z1 = z1(:, any(z1));
+  z1 = z1(:, any (z1));
   [mz, nz] = size (z);
 
   ## starting values
@@ -212,12 +212,12 @@ function [intercept, slope, dev, dl, d2l, P, stats] = logistic_regression (y, x,
     printf ("Parameter Estimates:\n");
     printf ("    Intercept      S.E.\n");
     for i = 1 : nz
-      printf ("    %8.4f    %8.4f\n", tb (i), se (i));
+      printf ("    %8.4f    %8.4f\n", tb(i), se(i));
     endfor
     if (nx > 0)
       printf ("      Slope        S.E.\n");
       for i = (nz + 1) : (nz + nx)
-        printf ("    %8.4f    %8.4f\n", tb (i), se (i));
+        printf ("    %8.4f    %8.4f\n", tb(i), se(i));
       endfor
     endif
   endif

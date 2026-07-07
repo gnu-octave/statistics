@@ -76,7 +76,7 @@ function p = hygecdf (x, m, k, n, uflag)
 
   ## Check for "upper" flag
   if (nargin > 4 && strcmpi (uflag, 'upper'))
-    x = n - floor(x) - 1;
+    x = n - floor (x) - 1;
     k = m - k;
   elseif (nargin > 4 && ! strcmpi (uflag, 'upper'))
     error ("hygecdf: invalid argument for upper tail.");
@@ -121,19 +121,19 @@ function p = localPDF (x, m, k, n)
   ## Compute hygecdf(x,m,k,n)/hygepdf(x,m,k,n) with a series
   ## whose terms can be computed recursively, backwards.
   xmax = max (x(:));
-  ybig = repmat((0:xmax)', 1, length (x));
-  xbig = repmat(x(:)', xmax + 1, 1);
-  mbig = repmat(m(:)', xmax + 1, 1);
-  kbig = repmat(k(:)', xmax + 1, 1);
-  nbig = repmat(n(:)', xmax + 1, 1);
+  ybig = repmat ((0:xmax)', 1, length (x));
+  xbig = repmat (x(:)', xmax + 1, 1);
+  mbig = repmat (m(:)', xmax + 1, 1);
+  kbig = repmat (k(:)', xmax + 1, 1);
+  nbig = repmat (n(:)', xmax + 1, 1);
 
   terms = ((ybig+1) .* (mbig-kbig-nbig+ybig+1)) ./ ((nbig-ybig) .* (kbig-ybig));
   terms(ybig >= xbig) = 1;
   terms = flip (cumprod (flip (terms)));
 
   terms(ybig > xbig) = 0;
-  ratio = sum(terms,1);
-  ratio = reshape(ratio,size(x));
+  ratio = sum (terms,1);
+  ratio = reshape (ratio,size (x));
   p = ratio.*HPDF;
   ## Correct round-off errors
   p(p > 1) = 1;

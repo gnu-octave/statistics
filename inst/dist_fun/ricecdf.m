@@ -109,13 +109,13 @@ function Q = marcumQ1 (a, b)
   Q(a != Inf & b == Inf) = 0;
   Q(a == Inf & b != Inf) = 1;
   z = isnan (Q) & a == 0 & b != Inf;
-  if (any(z))
+  if (any (z))
     Q(z) = exp ((-b(z) .^ 2) ./ 2);
   endif
 
   ## Compute the remaining cases
   z = isnan (Q) & ! isnan (a) & ! isnan (b);
-  if (any(z(:)))
+  if (any (z(:)))
     aa = (a(z) .^ 2) ./ 2;
     bb = (b(z) .^ 2) ./ 2;
     eA = exp (-aa);
@@ -123,14 +123,14 @@ function Q = marcumQ1 (a, b)
     h = eA;
     d = eB .* h;
     s = d;
-    j = (d > s.*eps(class(d)));
+    j = (d > s.*eps (class (d)));
     k = 1;
     while (any (j))
       eA = aa .* eA ./ k;
       h = h + eA;
       eB = bb .* eB ./ (k + 1);
       d = eB .* h;
-      s(j) = s (j) + d(j);
+      s(j) = s(j) + d(j);
       j = (d > s .* eps (class (d)));
       k = k + 1;
     endwhile

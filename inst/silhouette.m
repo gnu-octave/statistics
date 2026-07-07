@@ -127,7 +127,7 @@ function [si, h] = silhouette (X, clust, metric = 'squaredeuclidean', varargin)
   endif
 
   ## main
-  si = zeros(n, 1);
+  si = zeros (n, 1);
   clusterIDs = unique (clust); # eg [1; 2; 3; 4]
   m = length (clusterIDs);
 
@@ -237,7 +237,7 @@ function [si, h] = silhouette (X, clust, metric = 'squaredeuclidean', varargin)
       Bars = [Bars; (sort (vBar, 'descend')); vPadding];
     endfor
 
-    figure();
+    figure ();
     h = barh (Bars, 'hist', 'facecolor', [0 0.4471 0.7412]);
 
     xlabel ('Silhouette Value');

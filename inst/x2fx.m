@@ -127,23 +127,23 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
       termend = [];
       return
     endif
-    I = eye(n);
+    I = eye (n);
     ## Construct interactions part
     if (interactions && n > 1)
       [r, c] = find (tril (ones (n) ,-1));
-      nt = length(r);
-      intpart = zeros(nt,n);
+      nt = length (r);
+      intpart = zeros (nt,n);
       intpart(sub2ind (size (intpart),(1:nt)', r)) = 1;
       intpart(sub2ind (size (intpart),(1:nt)', c)) = 1;
     else
-        intpart = zeros(0,n);
+        intpart = zeros (0,n);
     endif
     ## Construct quadratic part
     if (quadratic)
       quadpart = 2 * I;
       quadpart(categ,:) = [];
     else
-      quadpart = zeros(0,n);
+      quadpart = zeros (0,n);
     endif
     model = [zeros(1,n); I];
     model = [model; intpart; quadpart];
@@ -151,10 +151,10 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
 
   ## Process each categorical variable
   catmember = ismember (1:n, categ);
-  var_DF = ones(1,n);
+  var_DF = ones (1,n);
   if (isempty (catlevels))
     ## Get values of each categorical variable and replace them with integers
-    for idx=1:length(categ)
+    for idx=1:length (categ)
       categ_idx = categ(idx);
       [Y, I, J] = unique (x(:,categ_idx));
       var_DF(categ_idx) = length (Y) - 1;
@@ -216,7 +216,7 @@ function [D, model, termstart, termend] = x2fx (x, model, categ, catlevels)
         if (length (C) > 1)
           C = C(keep);
         endif
-        Z(sub2ind(size(Z),allrows(keep),colnum(keep))) = C;
+        Z(sub2ind (size (Z),allrows(keep),colnum(keep))) = C;
         C = Z;
       endif
     endif
@@ -226,14 +226,14 @@ endfunction
 
 %!test
 %! X = [1, 10; 2, 20; 3, 10; 4, 20; 5, 15; 6, 15];
-%! D = x2fx(X,'quadratic');
+%! D = x2fx (X,'quadratic');
 %! assert (D(1,:), [1, 1, 10, 10, 1, 100]);
 %! assert (D(2,:), [1, 2, 20, 40, 4, 400]);
 
 %!test
 %! X = [1, 10; 2, 20; 3, 10; 4, 20; 5, 15; 6, 15];
 %! model = [0, 0; 1, 0; 0, 1; 1, 1; 2, 0];
-%! D = x2fx(X,model);
+%! D = x2fx (X,model);
 %! assert (D(1,:), [1, 1, 10, 10, 1]);
 %! assert (D(2,:), [1, 2, 20, 40, 4]);
 %! assert (D(4,:), [1, 4, 20, 80, 16]);

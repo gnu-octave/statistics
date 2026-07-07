@@ -69,7 +69,7 @@ function y = gevpdf (x, k, sigma, mu)
   z = 1 + k .* (x - mu) ./ sigma;
 
   ## Calculate generalized extreme value PDF
-  y = exp(-(z .^ (-1 ./ k))) .* (z .^ (-1 - 1 ./ k)) ./ sigma;
+  y = exp (-(z .^ (-1 ./ k))) .* (z .^ (-1 - 1 ./ k)) ./ sigma;
 
   y(z <= 0) = 0;
 
@@ -136,13 +136,13 @@ endfunction
 %!error<gevpdf: function called with too few input arguments.> gevpdf (1, 2)
 %!error<gevpdf: function called with too few input arguments.> gevpdf (1, 2, 3)
 %!error<gevpdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevpdf (ones (3), ones (2), ones(2), ones(2))
+%! gevpdf (ones (3), ones (2), ones (2), ones (2))
 %!error<gevpdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevpdf (ones (2), ones (3), ones(2), ones(2))
+%! gevpdf (ones (2), ones (3), ones (2), ones (2))
 %!error<gevpdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevpdf (ones (2), ones (2), ones(3), ones(2))
+%! gevpdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gevpdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevpdf (ones (2), ones (2), ones(2), ones(3))
+%! gevpdf (ones (2), ones (2), ones (2), ones (3))
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (i, 2, 3, 4)
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (1, i, 3, 4)
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (1, 2, i, 4)

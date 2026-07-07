@@ -266,7 +266,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
           if ! x_y
             z = -z;
           endif
-          p = 2 * normcdf (-abs(z));
+          p = 2 * normcdf (-abs (z));
         case 'right'
           if x_y
             z = (wc - 0.5) / sqrt (wvar);
@@ -306,7 +306,7 @@ endfunction
 %! mileage = [33.3, 34.5, 37.4; 33.4, 34.8, 36.8; ...
 %!            32.9, 33.8, 37.6; 32.6, 33.4, 36.6; ...
 %!            32.5, 33.7, 37.0; 33.0, 33.9, 36.7];
-%! [p,h,stats] = ranksum(mileage(:,1),mileage(:,2));
+%! [p,h,stats] = ranksum (mileage(:,1),mileage(:,2));
 %! assert (p, 0.004329004329004329, 1e-14);
 %! assert (h, true);
 %! assert (stats.ranksum, 21.5);
@@ -315,12 +315,12 @@ endfunction
 %!          49 47 50 60 59 60 62 61 71]';
 %! year2 = [54 53 64 66 57 53 54 54 62 66 59 59 67 76 75 86 82 67 74 80 75 ...
 %!          54 50 53 62 62 62 72 60 67]';
-%! [p,h,stats] = ranksum(year1, year2, 'alpha', 0.01, 'tail', 'left');
+%! [p,h,stats] = ranksum (year1, year2, 'alpha', 0.01, 'tail', 'left');
 %! assert (p, 0.1270832752950605, 1e-14);
 %! assert (h, false);
 %! assert (stats.ranksum, 837.5);
 %! assert (stats.zval, -1.140287483634606, 1e-14);
-%! [p,h,stats] = ranksum(year1, year2, 'alpha', 0.01, 'tail', 'left', ...
+%! [p,h,stats] = ranksum (year1, year2, 'alpha', 0.01, 'tail', 'left', ...
 %!                       'method', 'exact');
 %! assert (p, 0.127343916432862, 1e-14);
 %! assert (h, false);

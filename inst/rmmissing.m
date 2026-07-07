@@ -85,7 +85,7 @@ function [R, TF] = rmmissing (A, varargin)
   if (nargin < 1)
     print_usage ();
   endif
-  if (ndims(A) > 2)
+  if (ndims (A) > 2)
     error ("rmmissing: A must be a matrix; no more than 2 dimensions allowed.");
   endif
   if (isempty (A))
@@ -178,20 +178,20 @@ endfunction
 %! x([2,4]) = NaN;
 %! [~, idx] = rmmissing (x);
 %! assert (idx, logical ([0, 1, 0, 1, 0, 0]));
-%! assert (class(idx), 'logical');
+%! assert (class (idx), 'logical');
 %! x = reshape (x, [2, 3]);
 %! [~, idx] = rmmissing (x);
 %! assert (idx, logical ([0; 1]));
-%! assert (class(idx), 'logical');
+%! assert (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 2);
 %! assert (idx, logical ([1, 1, 0]));
-%! assert (class(idx), 'logical');
+%! assert (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 1, 'MinNumMissing', 2);
 %! assert (idx, logical ([0; 1]));
-%! assert (class(idx), 'logical');
+%! assert (class (idx), 'logical');
 %! [~, idx] = rmmissing (x, 2, 'MinNumMissing', 2);
 %! assert (idx, logical ([0, 0, 0]));
-%! assert (class(idx), 'logical');
+%! assert (class (idx), 'logical');
 
 ## Test data type handling
 %!assert (rmmissing (single ([1, 2, NaN; 3, 4, 5])), single ([3, 4, 5]))
@@ -215,9 +215,9 @@ endfunction
 ## Test input validation
 %!error rmmissing ()
 %!error <rmmissing: A must be a matrix; no more than 2 dimensions allowed.> ...
-%!       rmmissing (ones(2, 2, 2))
+%!       rmmissing (ones (2, 2, 2))
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
-%!       rmmissing (ones(2, 2), 'MinNumMissing', 0)
+%!       rmmissing (ones (2, 2), 'MinNumMissing', 0)
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...
 %!       rmmissing ([1, 2; 3, 4], 2, 'MinNumMissing', -2)
 %!error <rmmissing: 'MinNumMissing' must be a positive integer value.> ...

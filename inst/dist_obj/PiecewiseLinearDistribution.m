@@ -52,7 +52,7 @@ classdef PiecewiseLinearDistribution
   ## @seealso{makedist, plcdf, plinv, plpdf, plrnd, plstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} x
     ##
@@ -75,7 +75,7 @@ classdef PiecewiseLinearDistribution
     Fx
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} DistributionName
     ##
@@ -120,14 +120,14 @@ classdef PiecewiseLinearDistribution
     ParameterDescription = {'x', 'cdf = F(x)'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'pl';
     ParameterRange = [-Inf, Inf; -Inf, Inf; 0, 1; 0, 1];
     ParameterLogCI = [false, false, false, false];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} ParameterValues
     ##
@@ -165,7 +165,7 @@ classdef PiecewiseLinearDistribution
     IsTruncated
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = PiecewiseLinearDistribution (x, Fx)
       if (nargin == 0)
@@ -181,7 +181,7 @@ classdef PiecewiseLinearDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Piecewise Linear distribution');
     endfunction
 
@@ -209,7 +209,7 @@ classdef PiecewiseLinearDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {PiecewiseLinearDistribution} {@var{p} =} cdf (@var{pd}, @var{x})

@@ -108,7 +108,7 @@ function [nlogL, acov] = burrlike (params, x, censor, freq)
   likeL = zeros (size (x));
   likeL(notc) = (c - 1) .* log_xl(notc) - (k + 1) .* l1_xlc(notc);
   likeL(cens) = -k .* l1_xlc(cens);
-  nlogL = sum (freq (notc)) * log (lambda / k / c) - sum (freq .* likeL);
+  nlogL = sum (freq(notc)) * log (lambda / k / c) - sum (freq .* likeL);
 
   ## Compute asymptotic covariance
   if (nargout > 1)
@@ -147,7 +147,7 @@ function [nlogL, acov] = burrlike (params, x, censor, freq)
     d2V1(is_inf) = 0;
     d2V2(notc) = d2V1(notc) .* k + d2V1(notc);
     d2V2(cens) = d2V1(cens) .* k;
-    nH(2,2) = -(sum (freq (notc))) ./ c .^ 2 - sum (freq .* d2V2);
+    nH(2,2) = -(sum (freq(notc))) ./ c .^ 2 - sum (freq .* d2V2);
 
     d2V1(is_fin) = xlc(is_fin) ./ xlc1(is_fin);
     d2V1(is_inf) = 1;
@@ -156,7 +156,7 @@ function [nlogL, acov] = burrlike (params, x, censor, freq)
     nH(2,3) = -sum (freq .* d2V1 .* log_xl);
     nH(3,2) = nH(2,3);
 
-    nH(3,3) = -(sum (freq (notc))) ./ k .^ 2;
+    nH(3,3) = -(sum (freq(notc))) ./ k .^ 2;
     nH = -nH;
     ## Check negative Hessian is positive definite
     [R, p] = chol (nH);

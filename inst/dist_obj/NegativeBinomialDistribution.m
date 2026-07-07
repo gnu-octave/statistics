@@ -60,7 +60,7 @@ classdef NegativeBinomialDistribution
   ## nbinlike, nbinstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {NegativeBinomialDistribution} {property} R
     ##
@@ -86,7 +86,7 @@ classdef NegativeBinomialDistribution
     P
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {NegativeBinomialDistribution} {property} DistributionName
     ##
@@ -133,14 +133,14 @@ classdef NegativeBinomialDistribution
     ParameterDescription = {'Number of successes', 'Probability of success'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'nbin';
     ParameterRange = [realmin, realmin; Inf, 1];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {NegativeBinomialDistribution} {property} ParameterValues
     ##
@@ -232,11 +232,11 @@ classdef NegativeBinomialDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = NegativeBinomialDistribution (R, P)
       if (nargin == 0)
@@ -252,7 +252,7 @@ classdef NegativeBinomialDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'negative binomial distribution');
     endfunction
 
@@ -286,7 +286,7 @@ classdef NegativeBinomialDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {NegativeBinomialDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -761,7 +761,7 @@ classdef NegativeBinomialDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -869,31 +869,31 @@ endfunction
 ## Test input validation
 ## 'NegativeBinomialDistribution' constructor
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(Inf, 1)
+%! NegativeBinomialDistribution (Inf, 1)
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(i, 1)
+%! NegativeBinomialDistribution (i, 1)
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution('a', 1)
+%! NegativeBinomialDistribution ('a', 1)
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution([1, 2], 1)
+%! NegativeBinomialDistribution ([1, 2], 1)
 %!error <NegativeBinomialDistribution: R must be a positive scalar.> ...
-%! NegativeBinomialDistribution(NaN, 1)
+%! NegativeBinomialDistribution (NaN, 1)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, 0)
+%! NegativeBinomialDistribution (1, 0)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, -1)
+%! NegativeBinomialDistribution (1, -1)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, Inf)
+%! NegativeBinomialDistribution (1, Inf)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, i)
+%! NegativeBinomialDistribution (1, i)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, 'a')
+%! NegativeBinomialDistribution (1, 'a')
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, [1, 2])
+%! NegativeBinomialDistribution (1, [1, 2])
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, NaN)
+%! NegativeBinomialDistribution (1, NaN)
 %!error <NegativeBinomialDistribution: P must be a real scalar bounded in the range> ...
-%! NegativeBinomialDistribution(1, 1.2)
+%! NegativeBinomialDistribution (1, 1.2)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -1003,8 +1003,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = NegativeBinomialDistribution(1, 0.5);
-%! pd(2) = NegativeBinomialDistribution(1, 0.6);
+%! pd = NegativeBinomialDistribution (1, 0.5);
+%! pd(2) = NegativeBinomialDistribution (1, 0.6);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

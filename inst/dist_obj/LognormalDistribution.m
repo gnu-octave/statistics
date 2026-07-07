@@ -56,7 +56,7 @@ classdef LognormalDistribution
   ## lognlike, lognstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {LognormalDistribution} {property} mu
     ##
@@ -82,7 +82,7 @@ classdef LognormalDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {LognormalDistribution} {property} DistributionName
     ##
@@ -130,14 +130,14 @@ classdef LognormalDistribution
                             'Standard deviation of logarithmic values'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'logn';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {LognormalDistribution} {property} ParameterValues
     ##
@@ -229,11 +229,11 @@ classdef LognormalDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = LognormalDistribution (mu, sigma)
       if (nargin == 0)
@@ -249,7 +249,7 @@ classdef LognormalDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Lognormal distribution');
     endfunction
 
@@ -283,7 +283,7 @@ classdef LognormalDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {LognormalDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -714,7 +714,7 @@ classdef LognormalDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -819,29 +819,29 @@ endfunction
 ## Test input validation
 ## 'LognormalDistribution' constructor
 %!error <LognormalDistribution: MU must be a real scalar.> ...
-%! LognormalDistribution(Inf, 1)
+%! LognormalDistribution (Inf, 1)
 %!error <LognormalDistribution: MU must be a real scalar.> ...
-%! LognormalDistribution(i, 1)
+%! LognormalDistribution (i, 1)
 %!error <LognormalDistribution: MU must be a real scalar.> ...
-%! LognormalDistribution('a', 1)
+%! LognormalDistribution ('a', 1)
 %!error <LognormalDistribution: MU must be a real scalar.> ...
-%! LognormalDistribution([1, 2], 1)
+%! LognormalDistribution ([1, 2], 1)
 %!error <LognormalDistribution: MU must be a real scalar.> ...
-%! LognormalDistribution(NaN, 1)
+%! LognormalDistribution (NaN, 1)
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, 0)
+%! LognormalDistribution (1, 0)
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, -1)
+%! LognormalDistribution (1, -1)
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, Inf)
+%! LognormalDistribution (1, Inf)
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, i)
+%! LognormalDistribution (1, i)
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, 'a')
+%! LognormalDistribution (1, 'a')
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, [1, 2])
+%! LognormalDistribution (1, [1, 2])
 %!error <LognormalDistribution: SIGMA must be a positive real scalar.> ...
-%! LognormalDistribution(1, NaN)
+%! LognormalDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -948,8 +948,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = LognormalDistribution(1, 1);
-%! pd(2) = LognormalDistribution(1, 3);
+%! pd = LognormalDistribution (1, 1);
+%! pd(2) = LognormalDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

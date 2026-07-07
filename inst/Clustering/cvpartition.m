@@ -29,7 +29,7 @@ classdef cvpartition
   ## @seealso{crossval}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = private)
+  properties(GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {cvpartition} {property} NumObservations
     ##
@@ -133,7 +133,7 @@ classdef cvpartition
 
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     missidx = [];
     indices = [];
     cvptype = '';
@@ -142,7 +142,7 @@ classdef cvpartition
     grpvars = [];
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -230,7 +230,7 @@ classdef cvpartition
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {cvpartition} {@var{C} =} cvpartition (@var{n}, @qcode{'KFold'})
@@ -602,7 +602,7 @@ classdef cvpartition
               [GroupIdx, ~, GroupSz] = multiway (GroupSize, k, 'completeKK');
               for i = 1:k
                 idxGV = find (GroupIdx == i);
-                vecGV = arrayfun(@(x) x == inds, idxGV, 'UniformOutput', false);
+                vecGV = arrayfun (@(x) x == inds, idxGV, 'UniformOutput', false);
                 index = vecGV{1};
                 if (numel (vecGV) > 1)
                   for j = 2:numel (vecGV)

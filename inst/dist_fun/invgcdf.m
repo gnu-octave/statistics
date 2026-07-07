@@ -155,11 +155,11 @@ endfunction
 %!error<invgcdf: invalid argument for upper tail.> invgcdf (1, 2, 3, 'tail')
 %!error<invgcdf: invalid argument for upper tail.> invgcdf (1, 2, 3, 5)
 %!error<invgcdf: X, MU, and LAMBDA must be of common size or scalars.> ...
-%! invgcdf (ones (3), ones (2), ones(2))
+%! invgcdf (ones (3), ones (2), ones (2))
 %!error<invgcdf: X, MU, and LAMBDA must be of common size or scalars.> ...
-%! invgcdf (ones (2), ones (3), ones(2))
+%! invgcdf (ones (2), ones (3), ones (2))
 %!error<invgcdf: X, MU, and LAMBDA must be of common size or scalars.> ...
-%! invgcdf (ones (2), ones (2), ones(3))
+%! invgcdf (ones (2), ones (2), ones (3))
 %!error<invgcdf: X, MU, and LAMBDA must not be complex.> invgcdf (i, 2, 3)
 %!error<invgcdf: X, MU, and LAMBDA must not be complex.> invgcdf (1, i, 3)
 %!error<invgcdf: X, MU, and LAMBDA must not be complex.> invgcdf (1, 2, i)

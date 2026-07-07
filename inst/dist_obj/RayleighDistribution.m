@@ -55,7 +55,7 @@ classdef RayleighDistribution
   ## rayllike, raylstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} sigma
     ##
@@ -69,7 +69,7 @@ classdef RayleighDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} DistributionName
     ##
@@ -116,14 +116,14 @@ classdef RayleighDistribution
     ParameterDescription = {'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'rayl';
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} ParameterValues
     ##
@@ -215,11 +215,11 @@ classdef RayleighDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = RayleighDistribution (sigma)
       if (nargin == 0)
@@ -234,7 +234,7 @@ classdef RayleighDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Rayleigh distribution');
     endfunction
 
@@ -256,7 +256,7 @@ classdef RayleighDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {RayleighDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -688,7 +688,7 @@ classdef RayleighDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -781,19 +781,19 @@ endfunction
 ## Test input validation
 ## 'RayleighDistribution' constructor
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution(0)
+%! RayleighDistribution (0)
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution(-1)
+%! RayleighDistribution (-1)
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution(Inf)
+%! RayleighDistribution (Inf)
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution(i)
+%! RayleighDistribution (i)
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution('a')
+%! RayleighDistribution ('a')
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution([1, 2])
+%! RayleighDistribution ([1, 2])
 %!error <RayleighDistribution: SIGMA must be a positive real scalar.> ...
-%! RayleighDistribution(NaN)
+%! RayleighDistribution (NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -899,8 +899,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = RayleighDistribution(1);
-%! pd(2) = RayleighDistribution(3);
+%! pd = RayleighDistribution (1);
+%! pd(2) = RayleighDistribution (3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

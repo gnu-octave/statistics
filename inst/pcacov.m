@@ -81,7 +81,7 @@ function [coeff, latent, explained] = pcacov (K)
   ## the largest element in each column has a positive sign
   [row, col] = size (U);
   [~, m_ind] = max (abs (U), [], 1);
-  csign = sign (U (m_ind + (0:row:(col - 1) * row)));
+  csign = sign (U(m_ind + (0:row:(col - 1) * row)));
   coeff = bsxfun (@times, U, csign);
 
   ## Compute extra output arguments
@@ -116,7 +116,7 @@ endfunction
 %!test
 %! load hald
 %! Kxx = cov (ingredients);
-%! [coeff,latent,explained] = pcacov(Kxx);
+%! [coeff,latent,explained] = pcacov (Kxx);
 %! c_out = [-0.0678, -0.6460,  0.5673, 0.5062; ...
 %!          -0.6785, -0.0200, -0.5440, 0.4933; ...
 %!           0.0290,  0.7553,  0.4036, 0.5156; ...

@@ -42,7 +42,7 @@ function [p_net, p_val] = exact2xkCT (ct, weights, rsstat)
   ## Calculate p-values
   TP = nodes{4,1};
   p_val = p_val / TP;
-  p_net = p_val(2) + min(p_val(1), p_val(3));
+  p_net = p_val(2) + min (p_val(1), p_val(3));
 endfunction
 
 ## Calculate structures describing nodes and arcs
@@ -50,19 +50,19 @@ function [nodes, arcs] = build_nodes (ct, weights)
   column = size (ct, 2);      ## number of columns in contingency table
   rowsum = sum (ct, 2);       ## sum of rows
   colsum = sum (ct, 1);       ## sum of columns
-  oldnodes = zeros(1,2);      ## nodes added during last pass
+  oldnodes = zeros (1,2);      ## nodes added during last pass
   oldlo = 0;                  ## min possible sum so far
   oldhi = 0;                  ## max possible sum so far
   oldnn = 1;                  ## node numbers (row numbers) from last pass
   ctsum = rowsum(1);          ## sum of entries in first row
   nodecount = 1;              ## current node count
   ## Initialize cell structures for nodes and arcs
-  nodes = cell(4, column+1);  ## to hold nodes
+  nodes = cell (4, column+1);  ## to hold nodes
   nodes{1,1} = zeros (1,2);   ## n-by-2 array, n = # of nodes, row = [j,mj]
   nodes{2,column+1} = 0;      ## n-vector of longest path to end from here
   nodes{3,column+1} = 0;      ## n-vector of shortest path to end from here
   nodes{4,column+1} = 1;      ## n-vector of total probability to end from here
-  arcs = cell(3, column);     ## to hold arcs
+  arcs = cell (3, column);     ## to hold arcs
   ##      row 1:  n-by-2 array, n = # of connections, row = pair connected
   ##      row 2:  n-vector of arc lengths
   ##      row 3:  n-vector of arc probabilities
@@ -112,19 +112,19 @@ function nodes = backward_induce (nodes, arcs)
     endTP = startTP;
     ## get new start nodes and information about them
     a = arcs{1,j};
-    startmax = max(a(:,1));
-    startSP = zeros(startmax,1);
+    startmax = max (a(:,1));
+    startSP = zeros (startmax,1);
     startLP = startSP;
     startTP = startSP;
     arclen = arcs{2,j};
     arcprob = arcs{3,j};
     for nodenum = 1:startmax
       % for each start node, compute SP, LP, TP
-      k1 = find(a(:,1) == nodenum);
+      k1 = find (a(:,1) == nodenum);
       k2 = a(k1,2);
-      startLP(nodenum) = max(arclen(k1) + endLP(k2));
-      startSP(nodenum) = min(arclen(k1) + endSP(k2));
-      startTP(nodenum) = sum(arcprob(k1) .* endTP(k2));
+      startLP(nodenum) = max (arclen(k1) + endLP(k2));
+      startSP(nodenum) = min (arclen(k1) + endSP(k2));
+      startTP(nodenum) = sum (arcprob(k1) .* endTP(k2));
     endfor
     ## store information about nodes at this level
     nodes{2,j} = startLP;
@@ -136,8 +136,8 @@ endfunction
 ## Get p-values by forward scanning the network
 function p_val = forward_scan (nodes, arcs, rsstat)
   NROWS = 50;
-  p_val = zeros(3,1);    ## [Prob<T, Prob=T, Prob>T]
-  stack = zeros(NROWS, 4);
+  p_val = zeros (3,1);    ## [Prob<T, Prob=T, Prob>T]
+  stack = zeros (NROWS, 4);
   stack(:,1) = Inf;
   stack(1,1) = 1;        ## level of current node
   stack(1,2) = 1;        ## number at this level of current node
@@ -147,7 +147,7 @@ function p_val = forward_scan (nodes, arcs, rsstat)
   i1 = 0; i2 = 0; i3 = 0;
   while (1)
     ## Get next lowest level node to process
-    minlevel = min(stack((stack(1:N)>0)));
+    minlevel = min (stack((stack(1:N)>0)));
     if (isinf (minlevel))
       break;
     endif
@@ -185,7 +185,7 @@ function p_val = forward_scan (nodes, arcs, rsstat)
       ## Match node J with another already stored node
       else
         ## Find a stored node that matches this one
-        r = find(stack(:,1) == L+1);
+        r = find (stack(:,1) == L+1);
         if (any (r))
           r = r(stack(r,2) == tonode);
           if (any (r))
@@ -199,7 +199,7 @@ function p_val = forward_scan (nodes, arcs, rsstat)
           i1 = i1 + 1;
         ## Otherwise add a new node
         else
-          z = find(isinf(stack(:,1)));
+          z = find (isinf (stack(:,1)));
           if (isempty (z))
              i2 = i2 +1;
              block = zeros (NROWS, 4);

@@ -38,7 +38,7 @@ classdef CompactClassificationNeuralNetwork
   ## @seealso{ClassificationNeuralNetwork, fitcnet}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationNeuralNetwork} {property} NumPredictors
     ##
@@ -292,7 +292,7 @@ classdef CompactClassificationNeuralNetwork
     Solver                = [];
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## constructor
     function this = CompactClassificationNeuralNetwork (Mdl = [])
@@ -435,7 +435,7 @@ classdef CompactClassificationNeuralNetwork
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationNeuralNetwork} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -511,7 +511,7 @@ classdef CompactClassificationNeuralNetwork
                            " 'ScoreTransform' must be a", ...
                            " 'function_handle' object."));
           endif
-          scores = f (scores);
+          scores = f(scores);
         endif
       endif
 
@@ -566,7 +566,7 @@ classdef CompactClassificationNeuralNetwork
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationNeuralNetwork object

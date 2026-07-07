@@ -80,7 +80,7 @@ function [T, p] = cholcov (sigma, flag)
         [~, EIGMAX] = max (abs (V), [], 1);
         neg_idx = (V(EIGMAX + (0:row:(col-1)*row)) < 0);
         V(:,neg_idx) = -V(:,neg_idx);
-        LAMBDA = diag(LAMBDA);
+        LAMBDA = diag (LAMBDA);
         Tol = eps (max (LAMBDA)) * length (LAMBDA);
         t = (abs (LAMBDA) > Tol);
         LAMBDA = LAMBDA(t);
@@ -100,7 +100,7 @@ function [T, p] = cholcov (sigma, flag)
     p = NaN (is_type);
   endif
   if (is_sparse)
-    T = sparse(T);
+    T = sparse (T);
   endif
 endfunction
 

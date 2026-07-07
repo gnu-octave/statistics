@@ -159,7 +159,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## Center data to improve accuracy and keep uncentered data for plotting
   xorig = x;
-  mu = mean(x);
+  mu = mean (x);
   x = x - mu;
   xr = x;
 
@@ -259,17 +259,17 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   if (nargout == 0 || plotdata)
     switch (lower (vartype))
       case 'equal'
-        printf("\n                      ANOVA Table\n\n");
-        printf("Source        SS      df        MS       F      Prob>F\n");
-        printf("------------------------------------------------------\n");
-        printf("Groups  %10.4f %5.0f %10.4f %8.2f %9.4f\n", SSM, dfm, MSM, F, p);
-        printf("Error   %10.4f %5.0f %10.4f\n", SSE, dfe, MSE);
-        printf("Total   %10.4f %5.0f\n\n", SST, dfm + dfe);
+        printf ("\n                      ANOVA Table\n\n");
+        printf ("Source        SS      df        MS       F      Prob>F\n");
+        printf ("------------------------------------------------------\n");
+        printf ("Groups  %10.4f %5.0f %10.4f %8.2f %9.4f\n", SSM, dfm, MSM, F, p);
+        printf ("Error   %10.4f %5.0f %10.4f\n", SSE, dfe, MSE);
+        printf ("Total   %10.4f %5.0f\n\n", SST, dfm + dfe);
       case 'unequal'
-        printf("\n           Welch's ANOVA Table\n\n");
-        printf("Source        F     df     dfe     Prob>F\n");
-        printf("-----------------------------------------\n");
-        printf("Groups  %8.2f %5.0f %7.2f %10.4f\n\n", F, dfm, dfe, p);
+        printf ("\n           Welch's ANOVA Table\n\n");
+        printf ("Source        F     df     dfe     Prob>F\n");
+        printf ("-----------------------------------------\n");
+        printf ("Groups  %8.2f %5.0f %7.2f %10.4f\n\n", F, dfm, dfe, p);
     endswitch
   endif
   ## Plot data using BOXPLOT (unless opted out)
@@ -300,7 +300,7 @@ endfunction
 %! x = meshgrid (1:6);
 %! randn ('seed', 15);    # for reproducibility
 %! x = x + normrnd (0, 1, 6, 6);
-%! [p, atab] = anova1(x);
+%! [p, atab] = anova1 (x);
 
 %!demo
 %! x = ones (50, 4) .* [-2, 0, 1, 5];

@@ -142,12 +142,12 @@ function h = violin (ax, varargin)
             ['options should be scalars or cell/array with as many values as' ...
              ' number of variables in the data (wrong size of %s).'], txt{n});
     else
-      rethrow (lasterror())
+      rethrow (lasterror ())
     endif
   end_try_catch
 
   ## Build violins
-  [px py mx] = cellfun (@(y,n,s,r)build_polygon(y, n, s, r), ...
+  [px py mx] = cellfun (@(y,n,s,r)build_polygon (y, n, s, r), ...
                           x, nb, sf, r0, 'unif', 0);
 
   Nc    = 1:numel (px);
@@ -157,27 +157,27 @@ function h = violin (ax, varargin)
   old_hold = ishold ();
 
   ## Draw plain violins
-  tmp      = cellfun (@(x,y,n,u, w)patch(ax, (w * x + n)(:), y(:) ,u'), ...
+  tmp      = cellfun (@(x,y,n,u, w)patch (ax, (w * x + n)(:), y(:) ,u'), ...
                         px, py, Ncc, c, width);
   h.violin = tmp;
 
   hold on
   ## Overlay mean value
-  tmp    = cellfun (@(z,y)plot(ax, z, y,'.k', 'markersize', 6), Ncc, mx);
+  tmp    = cellfun (@(z,y)plot (ax, z, y,'.k', 'markersize', 6), Ncc, mx);
   h.mean = tmp;
 
   ## Overlay median
   Mx       = cellfun (@median, x, 'unif', 0);
-  tmp      = cellfun (@(z,y)plot(ax, z, y, 'ok'), Ncc, Mx);
+  tmp      = cellfun (@(z,y)plot (ax, z, y, 'ok'), Ncc, Mx);
   h.median = tmp;
 
   ## Overlay 1st and 3rd quartiles
-  LUBU = cellfun (@(x,y)abs(quantile(x,[0.25 0.75])-y), x, Mx, 'unif', 0);
-  tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
+  LUBU = cellfun (@(x,y)abs (quantile (x,[0.25 0.75])-y), x, Mx, 'unif', 0);
+  tmp  = cellfun (@(x,y,z)errorbar (ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
   ## Flatten errorbar output handles
   tmp2       = allchild (tmp);
   if (! iscell (tmp2))
-    tmp2 = mat2cell (tmp2, ones(length (tmp2), 1), 1);
+    tmp2 = mat2cell (tmp2, ones (length (tmp2), 1), 1);
   endif
   tmp        = mat2cell (tmp, ones (length (tmp), 1), 1);
   tmp        = cellfun (@vertcat, tmp, tmp2, 'unif', 0);
@@ -207,7 +207,7 @@ function y = stdnormal_pdf (x)
   y = (2 * pi)^(- 1/2) * exp (- x .^ 2 / 2);
 endfunction
 
-function k = kde(x,r)
+function k = kde (x,r)
   k  = mean (stdnormal_pdf (x / r)) / r;
   k /= max (k);
 endfunction
@@ -224,7 +224,7 @@ function [px py mx] = build_polygon (x, nb, sf, r)
   Y  = X - bin;
   if isna (r)
     r0 = 1.06 * N^(1/5);
-    r  = sqp (r0, @(r)sumsq (kde(Y,r) - count), [], [], 1e-3, 1e2);
+    r  = sqp (r0, @(r)sumsq (kde (Y,r) - count), [], [], 1e-3, 1e2);
   else
     sf = 1;
   endif
@@ -243,8 +243,8 @@ endfunction
 
 function tf = swap_axes (h)
     tmp  = mat2cell (h(:), ones (length (h),1), 1);
-    tmpy = cellfun(@(x)get(x, 'ydata'), tmp, 'unif', 0);
-    tmpx = cellfun(@(x)get(x, 'xdata'), tmp, 'unif', 0);
+    tmpy = cellfun (@(x)get (x, 'ydata'), tmp, 'unif', 0);
+    tmpx = cellfun (@(x)get (x, 'xdata'), tmp, 'unif', 0);
     cellfun (@(h,x,y)set (h, 'xdata', y, 'ydata', x), tmp, tmpx, tmpy);
     tf = true;
 endfunction
@@ -254,12 +254,12 @@ function varargout = to_cell (varargin)
     m = varargin{end};
     varargin(end) = [];
 
-    for i = 1:numel(varargin)
+    for i = 1:numel (varargin)
       x  = varargin{i};
       if (isscalar (x)) x = repmat (x, m, 1); endif
 
       if (iscell (x))
-        if (numel(x) != m) # no dimension equals m
+        if (numel (x) != m) # no dimension equals m
           error ("to_cell:element_idx", "%d\n",i);
         endif
         varargout{i} = x;
@@ -305,7 +305,7 @@ endfunction
 %! violin (data, 'Nbins', 10);
 %! axis tight
 %!
-%! subplot(1,2,2)
+%! subplot (1,2,2)
 %! title ('Grade 3 heights - horizontal');
 %! set (gca, 'ytick', 1:2, 'yticklabel', {'girls'; 'boys'});
 %! violin (data, 'horizontal', 'Nbins', 10);
@@ -320,18 +320,18 @@ endfunction
 %!demo
 %! clf
 %! data = exprnd (0.1, 500,4);
-%! violin (data, 'color', jet(4));
+%! violin (data, 'color', jet (4));
 %! axis ([0 5 0 max(data(:))])
 
 %!demo
 %! clf
-%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! data = repmat (exprnd (0.1, 500,1), 1, 4);
 %! violin (data, 'width', linspace (0.1,0.5,4));
 %! axis ([0 5 0 max(data(:))])
 
 %!demo
 %! clf
-%! data = repmat(exprnd (0.1, 500,1), 1, 4);
+%! data = repmat (exprnd (0.1, 500,1), 1, 4);
 %! violin (data, 'nbins', [5,10,50,100], 'smoothfactor', [4 4 8 10]);
 %! axis ([0 5 0 max(data(:))])
 
@@ -340,7 +340,7 @@ endfunction
 %! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   data = exprnd (0.1, 500,4);
-%!   violin (data, 'color', jet(4));
+%!   violin (data, 'color', jet (4));
 %!   axis ([0 5 0 max(data(:))])
 %! unwind_protect_cleanup
 %!   close (hf);
@@ -366,7 +366,7 @@ endfunction
 %!   set (gca, 'xtick', 1:2, 'xticklabel', {'girls'; 'boys'});
 %!   violin (data, 'Nbins', 10);
 %!   axis tight
-%!   subplot(1,2,2)
+%!   subplot (1,2,2)
 %!   title ('Grade 3 heights - horizontal');
 %!   set (gca, 'ytick', 1:2, 'yticklabel', {'girls'; 'boys'});
 %!   violin (data, 'horizontal', 'Nbins', 10);
@@ -377,7 +377,7 @@ endfunction
 %!test
 %! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   data = repmat(exprnd (0.1, 500,1), 1, 4);
+%!   data = repmat (exprnd (0.1, 500,1), 1, 4);
 %!   violin (data, 'nbins', [5,10,50,100], 'smoothfactor', [4 4 8 10]);
 %!   axis ([0 5 0 max(data(:))])
 %! unwind_protect_cleanup
@@ -386,7 +386,7 @@ endfunction
 %!test
 %! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   data = repmat(exprnd (0.1, 500,1), 1, 4);
+%!   data = repmat (exprnd (0.1, 500,1), 1, 4);
 %!   violin (data, 'width', linspace (0.1,0.5,4));
 %!   axis ([0 5 0 max(data(:))])
 %! unwind_protect_cleanup

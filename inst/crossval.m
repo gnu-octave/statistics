@@ -116,9 +116,9 @@ function results = crossval (f, varargin)
     ## Check for valid prediction function handle on user data
     try
       if (is_cellarray)
-        yFit = Predfun (X{:}, y, X{:});
+        yFit = Predfun(X{:}, y, X{:});
       else
-        yFit = Predfun (X, y, X);
+        yFit = Predfun(X, y, X);
       endif
     catch
       error ("crossval: bad prediction function handle for error evaluation.");
@@ -146,9 +146,9 @@ function results = crossval (f, varargin)
     ## Check for valid function handle on user data
     try
       if (is_cellarray)
-        value = f (X{:}, X{:});
+        value = f(X{:}, X{:});
       else
-        value = f (X, X);
+        value = f(X, X);
       endif
     catch
       error ("crossval: bad function handle to cross-validate.");
@@ -225,9 +225,9 @@ function results = crossval (f, varargin)
         if (is_cellarray)
           Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
           Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
-          y_fit = Predfun (Xtrain{:}, y(idx_train), Xtest{:});
+          y_fit = Predfun(Xtrain{:}, y(idx_train), Xtest{:});
         else
-          y_fit = Predfun (X(idx_train, :), y(idx_train), X(idx_test, :));
+          y_fit = Predfun(X(idx_train, :), y(idx_train), X(idx_test, :));
         endif
         if (strcmp (f, 'mse'))
           err = sum ((y_fit - y(idx_test)).^2) / numel (y_fit);
@@ -253,9 +253,9 @@ function results = crossval (f, varargin)
           if (is_cellarray)
             Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
             Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
-            result = f (Xtrain{:}, Xtest{:});
+            result = f(Xtrain{:}, Xtest{:});
           else
-            result = f (X(idx_train, :), X(idx_test, :));
+            result = f(X(idx_train, :), X(idx_test, :));
           endif
           results(rep, idx) = result;
         endfor
@@ -273,9 +273,9 @@ function results = crossval (f, varargin)
           if (is_cellarray)
             Xtrain = cellfun (@(x) x(idx_train, :), X, 'UniformOutput', false);
             Xtest = cellfun (@(x) x(idx_test, :), X, 'UniformOutput', false);
-            result = f (Xtrain{:}, Xtest{:});
+            result = f(Xtrain{:}, Xtest{:});
           else
-            result = f (X(idx_train, :), X(idx_test, :));
+            result = f(X(idx_train, :), X(idx_test, :));
           endif
           tmpresults = [tmpresults; result];
         endfor
@@ -305,9 +305,9 @@ endfunction
 %!   cvdist(k) = sum (distances);
 %! endfor
 %!
-%! plot(cvdist)
-%! xlabel('Number of Clusters')
-%! ylabel('CV Sum of Squared Distances')
+%! plot (cvdist)
+%! xlabel ('Number of Clusters')
+%! ylabel ('CV Sum of Squared Distances')
 %! xlim ([1,8]);
 
 ## Test output
@@ -319,12 +319,12 @@ endfunction
 %!
 %! load carsmall
 %! data = [Acceleration Horsepower Weight MPG];
-%! data(any(isnan(data),2),:) = [];
+%! data(any (isnan (data),2),:) = [];
 %!
 %! y = data(:,4);
 %! X = [ones(length(y),1) data(:,1:3)];
 %! rand ('seed', 3);
-%! cvMSE = crossval('mse',X,y,'Predfun',@regf);
+%! cvMSE = crossval ('mse',X,y,'Predfun',@regf);
 %! assert (cvMSE, 18.720, 1e-3);
 
 ## Test input validation

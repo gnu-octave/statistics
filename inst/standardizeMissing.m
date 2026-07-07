@@ -145,7 +145,7 @@ endfunction
 ## numeric tests
 %!assert (standardizeMissing (1, 1), NaN)
 %!assert (standardizeMissing (1, 0), 1)
-%!assert (standardizeMissing (eye(2), 1), [NaN 0;0 NaN])
+%!assert (standardizeMissing (eye (2), 1), [NaN 0;0 NaN])
 %!assert (standardizeMissing ([1:3;4:6], [2 3 4 5]), [1, NaN, NaN; NaN, NaN, 6])
 %!assert (standardizeMissing (cat (3,1,2,3,4), 3), cat (3,1,2,NaN,4))
 

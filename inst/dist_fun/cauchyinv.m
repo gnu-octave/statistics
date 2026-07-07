@@ -124,11 +124,11 @@ endfunction
 %! cauchyinv (1, 2)
 %!error<cauchyinv: function called with too many inputs> cauchyinv (1, 2, 3, 4)
 %!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchyinv (ones (3), ones (2), ones(2))
+%! cauchyinv (ones (3), ones (2), ones (2))
 %!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchyinv (ones (2), ones (3), ones(2))
+%! cauchyinv (ones (2), ones (3), ones (2))
 %!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchyinv (ones (2), ones (2), ones(3))
+%! cauchyinv (ones (2), ones (2), ones (3))
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (i, 4, 3)
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, i, 3)
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, 4, i)

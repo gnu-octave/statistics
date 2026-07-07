@@ -129,17 +129,17 @@ function r = vmrnd (mu, k, varargin)
     endif
     notdone = true (N, 1);
     while (any (notdone))
-      u (:, notdone) = (rand (3, N))(:,notdone);
+      u(:, notdone) = (rand (3, N))(:,notdone);
 
-      z (notdone) = (cos (pi .* u (1, :)))(notdone);
-      f (notdone) = ((1 + r_tmp(notdone) .* z(notdone)) ./ (r_tmp(notdone) + z(notdone)));
-      c (notdone) = (k_tmp(notdone) .* (r_tmp(notdone) - f(notdone)));
+      z(notdone) = (cos (pi .* u(1, :)))(notdone);
+      f(notdone) = ((1 + r_tmp(notdone) .* z(notdone)) ./ (r_tmp(notdone) + z(notdone)));
+      c(notdone) = (k_tmp(notdone) .* (r_tmp(notdone) - f(notdone)));
 
-      notdone = (u (2, :) >= c .* (2 - c)) & (log (c) - log (u (2, :)) + 1 - c < 0);
+      notdone = (u(2, :) >= c .* (2 - c)) & (log (c) - log (u(2, :)) + 1 - c < 0);
       #N = sum (notdone);
     endwhile
 
-    r = mu_rs + sign (u (3, :) - 0.5) .* acos (f);
+    r = mu_rs + sign (u(3, :) - 0.5) .* acos (f);
     r = reshape (r, sz);
   endif
 

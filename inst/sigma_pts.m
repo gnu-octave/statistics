@@ -53,7 +53,7 @@ function pts = sigma_pts (n, m = [], K = [], l = 0)
   if (n != length (m))
     error ("Dimension and size of mean vector don't match.")
   endif
-  if any(n != size (K))
+  if any (n != size (K))
     error ("Dimension and size of covariance matrix don't match.")
   endif
 
@@ -81,7 +81,7 @@ endfunction
 %! xe      = v(1,1) * cos (t) + v(2,1) * sin (t);
 %! ye      = v(1,2) * cos (t) + v(2,2) * sin (t);
 %!
-%! figure(1); clf; hold on
+%! figure (1); clf; hold on
 %! # Plot ellipse and axes
 %! line ([0 0; v(:,1).'],[0 0; v(:,2).'])
 %! plot (xe,ye,'-r');
@@ -101,23 +101,23 @@ endfunction
 
 %!test
 %! p = sigma_pts (5);
-%! assert (mean (p), zeros(1,5), sqrt(eps));
-%! assert (cov (p), eye(5), sqrt(eps));
+%! assert (mean (p), zeros (1,5), sqrt (eps));
+%! assert (cov (p), eye (5), sqrt (eps));
 
 %!test
-%! m = randn(1, 5);
+%! m = randn (1, 5);
 %! p = sigma_pts (5, m);
-%! assert (mean (p), m, sqrt(eps));
-%! assert (cov (p), eye(5), sqrt(eps));
+%! assert (mean (p), m, sqrt (eps));
+%! assert (cov (p), eye (5), sqrt (eps));
 
 %!test
 %! x = linspace (0,1,5);
 %! K = exp (- (x.' - x).^2/ 0.5);
 %! p = sigma_pts (5, [], K);
-%! assert (mean (p), zeros(1,5), sqrt(eps));
-%! assert (cov (p), K, sqrt(eps));
+%! assert (mean (p), zeros (1,5), sqrt (eps));
+%! assert (cov (p), K, sqrt (eps));
 
-%!error sigma_pts(2,1);
-%!error sigma_pts(2,[],1);
-%!error sigma_pts(2,1,1);
-%!error sigma_pts(2,[0.5 0.5],[-1 0; 0 0]);
+%!error sigma_pts (2,1);
+%!error sigma_pts (2,[],1);
+%!error sigma_pts (2,1,1);
+%!error sigma_pts (2,[0.5 0.5],[-1 0; 0 0]);

@@ -140,8 +140,8 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   endswitch
   ks2stat = max (deltaCDF);
   ## Compute the asymptotic P-value approximation
-  n_x1 = length(x1);
-  n_x2 = length(x2);
+  n_x1 = length (x1);
+  n_x2 = length (x2);
   n =  n_x1 * n_x2 /(n_x1 + n_x2);
   lambda = max ((sqrt (n) + 0.12 + 0.11 / sqrt (n)) * ks2stat, 0);
   if strcmpi (tail, 'unequal')    # 2-sided test
@@ -149,7 +149,7 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
     pValue = 2 * sum ((-1) .^ (v-1) .* exp (-2 * lambda * lambda * v .^ 2));
     pValue = min (max (pValue, 0), 1);
   else                            # 1-sided test
-    pValue  =  exp(-2 * lambda * lambda);
+    pValue  =  exp (-2 * lambda * lambda);
   endif
   ## Return hypothesis test
   H = (alpha >= pValue);
@@ -157,7 +157,7 @@ endfunction
 
 ## Test input
 %!error kstest2 ([1,2,3,4,5,5])
-%!error kstest2 (ones(2,4), [1,2,3,4,5,5])
+%!error kstest2 (ones (2,4), [1,2,3,4,5,5])
 %!error kstest2 ([2,3,5,7,3+3i], [1,2,3,4,5,5])
 %!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'tail')
 %!error kstest2 ([2,3,4,5,6],[3;5;7;8;7;6;5],'tail', 'whatever')

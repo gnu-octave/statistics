@@ -298,7 +298,7 @@ function [p, err] = mvncdf (varargin)
       ## For bvncdf
       x_up(equalLimits) = -Inf;
       x_lo(equalLimits) = -Inf;
-      p = zeros(n_x, 1, is_type);
+      p = zeros (n_x, 1, is_type);
       for i = 0:d_x
         k = nchoosek (1:d_x, i);
         for j = 1:size (k, 1)
@@ -341,7 +341,7 @@ endfunction
 function p = tvncdf (x, rho, tol)
 
   ## Get size of data
-  n = size(x,1);
+  n = size (x,1);
 
   ## Check if data is single or double class
   is_type = 'double';
@@ -350,7 +350,7 @@ function p = tvncdf (x, rho, tol)
   endif
 
   ## Find a permutation that makes rho_32 == max(rho)
-  [dum,imax] = max(abs(rho)); %#ok<ASGLU>
+  [dum,imax] = max (abs (rho)); %#ok<ASGLU>
   if imax == 1 % swap 1 and 3
     rho_21 = rho(3); rho_31 = rho(2); rho_32 = rho(1);
     x = x(:,[3 2 1]);
@@ -364,32 +364,32 @@ function p = tvncdf (x, rho, tol)
   phi = 0.5 * erfc (- x(:,1) / sqrt (2));
   p1 = phi .* bvncdf (x(:,2:3), [], rho_32);
 
-  if abs(rho_21) > 0
+  if abs (rho_21) > 0
     loLimit = 0;
-    hiLimit = asin(rho_21);
+    hiLimit = asin (rho_21);
     rho_j1 = rho_21;
     rho_k1 = rho_31;
     p2 = zeros (size (p1), is_type);
     for i = 1:n
       b1 = x(i,1); bj = x(i,2); bk = x(i,3);
-      if isfinite(b1) && isfinite(bj) && ! isnan(bk)
-        p2(i) = quadgk(@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
+      if isfinite (b1) && isfinite (bj) && ! isnan (bk)
+        p2(i) = quadgk (@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
       endif
     endfor
   else
     p2 = zeros (size (p1), is_type);
   endif
 
-  if abs(rho_31) > 0
+  if abs (rho_31) > 0
     loLimit = 0;
-    hiLimit = asin(rho_31);
+    hiLimit = asin (rho_31);
     rho_j1 = rho_31;
     rho_k1 = rho_21;
     p3 = zeros (size (p1), is_type);
     for i = 1:n
       b1 = x(i,1); bj = x(i,3); bk = x(i,2);
-      if isfinite(b1) && isfinite(bj) && ! isnan(bk)
-        p3(i) = quadgk(@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
+      if isfinite (b1) && isfinite (bj) && ! isnan (bk)
+        p3(i) = quadgk (@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
       endif
     endfor
   else
@@ -398,7 +398,7 @@ function p = tvncdf (x, rho, tol)
 
   p = cast (p1 + (p2 + p3) ./ (2 .* pi), is_type);
 
-  function integrand = tvnIntegrand(theta)
+  function integrand = tvnIntegrand (theta)
     # Integrand is exp( -(b1.^2 + bj.^2 - 2*b1*bj*sin(theta))/(2*cos(theta).^2))
     sintheta = sin (theta);
     cossqtheta = cos (theta) .^ 2;

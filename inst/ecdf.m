@@ -207,7 +207,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
     x = [min(y); x];
     F = [Fzero; Fun_x];
   else
-    warning("ecdf: No Death in data");
+    warning ("ecdf: No Death in data");
     F = Fun_x;
   endif
   ## Calculate lower and upper confidence bounds if requested
@@ -253,9 +253,9 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   ## Plot stairs if no output is requested
   if (nargout == 0)
     if (isempty (ax))
-      ax = newplot();
+      ax = newplot ();
     endif
-    h = stairs(ax, x , [F, Flo, Fup]);
+    h = stairs (ax, x , [F, Flo, Fup]);
     xlabel (ax, 'x');
     ylabel (ax, fdisp);
     title ('ecdf');

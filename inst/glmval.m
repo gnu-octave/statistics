@@ -147,7 +147,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
       otherwise
         error ("glmval: unknown parameter name.");
     endswitch
-    varargin (1:2) = [];
+    varargin(1:2) = [];
   endwhile
 
   ## Adjust X based on constant
@@ -157,7 +157,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
 
   ## Predict yhat
   eta = X * b + offset;
-  yhat = N .* ilink (eta);
+  yhat = N .* ilink(eta);
 
   ## Compute lower and upper bounds
   if (nargout > 1)

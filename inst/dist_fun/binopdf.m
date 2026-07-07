@@ -152,7 +152,7 @@ function y = loader_expansion (x, n, ps, nx, q)
       0.00287344936235246638755235148906672207372,
       0.00277767492975269360359490376220667282839
       ];
-    stored_dn = numel(d_n);
+    stored_dn = numel (d_n);
 
     ## Indices for precalculated vs to-be-calculated values
     n_precalc = (n > 0) & (n < stored_dn);
@@ -174,7 +174,7 @@ function y = loader_expansion (x, n, ps, nx, q)
     y = exp ((delta_n - delta_x - delta_nx - ...
                        deviance (x, n .* ps) - ...
                         deviance (nx, n .* q)) - ...
-                         0.5 * (log(2*pi) + log (x) + log (1-x./n)));
+                         0.5 * (log (2*pi) + log (x) + log (1-x./n)));
 endfunction
 
 function y = delta_fn (n)
@@ -268,15 +268,15 @@ endfunction
 %!assert (binopdf ([], 1, 1), [])
 %!assert (binopdf (1, [], 1), [])
 %!assert (binopdf (1, 1, []), [])
-%!assert (binopdf (ones (1, 0), 2, .5), ones(1, 0))
-%!assert (binopdf (ones (0, 1), 2, .5), ones(0, 1))
-%!assert (binopdf (ones (0, 1, 2), 2, .5), ones(0, 1, 2))
-%!assert (binopdf (1, ones (0, 1, 2), .5), ones(0, 1, 2))
-%!assert (binopdf (1, 2, ones (0, 1, 2)), ones(0, 1, 2))
-%!assert (binopdf (ones (1, 0, 2), 2, .5), ones(1, 0, 2))
-%!assert (binopdf (ones (1, 2, 0), 2, .5), ones(1, 2, 0))
-%!assert (binopdf (ones (0, 1, 2), NaN, .5), ones(0, 1, 2))
-%!assert (binopdf (ones (0, 1, 2), 2, NaN), ones(0, 1, 2))
+%!assert (binopdf (ones (1, 0), 2, .5), ones (1, 0))
+%!assert (binopdf (ones (0, 1), 2, .5), ones (0, 1))
+%!assert (binopdf (ones (0, 1, 2), 2, .5), ones (0, 1, 2))
+%!assert (binopdf (1, ones (0, 1, 2), .5), ones (0, 1, 2))
+%!assert (binopdf (1, 2, ones (0, 1, 2)), ones (0, 1, 2))
+%!assert (binopdf (ones (1, 0, 2), 2, .5), ones (1, 0, 2))
+%!assert (binopdf (ones (1, 2, 0), 2, .5), ones (1, 2, 0))
+%!assert (binopdf (ones (0, 1, 2), NaN, .5), ones (0, 1, 2))
+%!assert (binopdf (ones (0, 1, 2), 2, NaN), ones (0, 1, 2))
 
 ## Test class of input preserved
 %!assert (binopdf (single ([x, NaN]), 2, 0.5), single ([y, NaN]))

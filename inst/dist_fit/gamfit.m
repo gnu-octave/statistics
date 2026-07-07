@@ -267,7 +267,7 @@ function [paramhat, paramci] = gamfit (x, alpha, censor, freq, options)
     ## Ensure that MLEs is possible and get initial estimates
     xuncbar = sum (freq_notc .* xunc) / nunc;
     s2unc = sum (freq_notc .* (xunc - xuncbar) .^ 2) / nunc;
-    if s2unc <= 100.*eps(xuncbar.^2)
+    if s2unc <= 100.*eps (xuncbar.^2)
 
       ## When all uncensored observations are equal and greater than all
       ## the censored observations, the likelihood surface becomes infinite

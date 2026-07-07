@@ -167,11 +167,11 @@ endfunction
 %!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 'tail')
 %!error<bisacdf: invalid argument for upper tail.> bisacdf (1, 2, 3, 4)
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisacdf (ones (3), ones (2), ones(2))
+%! bisacdf (ones (3), ones (2), ones (2))
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisacdf (ones (2), ones (3), ones(2))
+%! bisacdf (ones (2), ones (3), ones (2))
 %!error<bisacdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisacdf (ones (2), ones (2), ones(3))
+%! bisacdf (ones (2), ones (2), ones (3))
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (i, 4, 3)
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, i, 3)
 %!error<bisacdf: X, BETA, and GAMMA must not be complex.> bisacdf (1, 4, i)

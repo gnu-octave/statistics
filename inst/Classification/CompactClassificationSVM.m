@@ -37,7 +37,7 @@ classdef CompactClassificationSVM
   ## @seealso{ClassificationSVM}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationSVM} {property} NumPredictors
     ##
@@ -273,7 +273,7 @@ classdef CompactClassificationSVM
     SupportVectors      = [];
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## constructor
     function this = CompactClassificationSVM (Mdl = [])
@@ -312,7 +312,7 @@ classdef CompactClassificationSVM
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationSVM} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -398,7 +398,7 @@ classdef CompactClassificationSVM
             error (strcat ("CompactClassificationSVM.predict: 'Score", ...
                            "Transform' must be a 'function_handle' object."));
           endif
-          scores = f (scores);
+          scores = f(scores);
         endif
       endif
 
@@ -578,7 +578,7 @@ classdef CompactClassificationSVM
           case 'weights'
             Weights = varargin{2};
             ## Validate if weights is a numeric vector
-            if(! (isnumeric (Weights) && isvector (Weights)))
+            if (! (isnumeric (Weights) && isvector (Weights)))
               error (strcat ("CompactClassificationSVM.loss: 'Weights'", ...
                              " must be a numeric vector."));
             endif
@@ -594,7 +594,7 @@ classdef CompactClassificationSVM
             error (strcat ("CompactClassificationSVM.loss: invalid", ...
                            " parameter name in optional pair arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Compute the classification score
@@ -676,7 +676,7 @@ classdef CompactClassificationSVM
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationSVM object

@@ -91,7 +91,7 @@ function p = unidcdf (x, N, uflag)
 
   ## Compute uniform discrete CDF
   k = find (xf >= 1 & xf <= N);
-  if any(k)
+  if any (k)
     p(k) = xf(k) ./ N(k);
   endif
 
@@ -101,7 +101,7 @@ function p = unidcdf (x, N, uflag)
     p(is_nan) = NaN;
   endif
 
-  p(N < 1 | round(N) != N) = NaN;
+  p(N < 1 | round (N) != N) = NaN;
 
   if (uflag)  # Compute upper tail
     p = 1 - unidcdf (x, N);

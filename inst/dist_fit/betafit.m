@@ -85,7 +85,7 @@ function [paramhat, paramci] = betafit (x, alpha, varargin)
   endif
 
   ## Check X being a constant vector
-  if (min (x) == max(x))
+  if (min (x) == max (x))
     error ("betafit: X must contain distinct values.");
   endif
 
@@ -174,7 +174,7 @@ function [paramhat, paramci] = betafit (x, alpha, varargin)
   else
     num0 = sum (x < x_lo);
     num1 = sum (x > x_hi);
-    x_ct = x (x > x_lo & x < x_hi);
+    x_ct = x(x > x_lo & x < x_hi);
     numx = length (x_ct);
     sumlogx = sum (log (x_ct));
     sumlog1px = sum (log1p (-x_ct));

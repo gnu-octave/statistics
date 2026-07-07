@@ -173,7 +173,7 @@ function errmsg = testLinkFunction (flink, linkname);
   errmsg = '';
   testInput = [1; 2; 3; 4; 5];
   try
-    testOutput = flink (testInput);
+    testOutput = flink(testInput);
     if (! isequal (size (testInput), size (testOutput)))
       errmsg = sprintf (['custom ''%s'' function must return an output', ...
                          ' of the same size as input.'], linkname);

@@ -106,8 +106,8 @@ function [loadings, specvar, fscores] = factoran (X, nfac)
   ## Force sign convention: largest absolute value in each column positive
   [~, m_ind] = max (abs (loadings), [], 1);
   for j = 1 : nfac
-    if (loadings (m_ind(j), j) < 0)
-      loadings (:, j) = - loadings (:, j);
+    if (loadings(m_ind(j), j) < 0)
+      loadings(:, j) = - loadings(:, j);
     endif
   endfor
 

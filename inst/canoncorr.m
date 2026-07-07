@@ -57,7 +57,7 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   B .*= f;
 
   if (nargout > 2)
-    r = max(0, min(diag(S), 1))';
+    r = max (0, min (diag (S), 1))';
   endif
   if (nargout > 3)
     U = X * A;
@@ -67,11 +67,11 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   endif
 
   if (nargout > 5)
-    Wilks = fliplr(cumprod(fliplr((1 - r .^ 2))));
-    chisq = - (k - 1 - (m + n + 1)/2) * log(Wilks);
+    Wilks = fliplr (cumprod (fliplr ((1 - r .^ 2))));
+    chisq = - (k - 1 - (m + n + 1)/2) * log (Wilks);
     df1 = (m - (1:d) + 1) .* (n - (1:d) + 1);
     pChisq = 1 - chi2cdf (chisq, df1);
-    s = sqrt((df1.^2 - 4) ./ ((m - (1:d) + 1).^2 + (n - (1:d) + 1).^2 - 5));
+    s = sqrt ((df1.^2 - 4) ./ ((m - (1:d) + 1).^2 + (n - (1:d) + 1).^2 - 5));
     df2 = (k - 1 - (m + n + 1)/2) * s - df1/2 + 1;
     ls = Wilks .^ (1 ./ s);
     F = (1 ./ ls  -  1) .* (df2 ./ df1);
@@ -95,9 +95,9 @@ endfunction
 %!assert (diag (Cuv)', r, 10 * eps);
 %!assert (diag (diag (Cuv)), Cuv, 2 * eps);
 %!assert (r, [0.99590, 0.26754], 1E-5);
-%!assert (U, center(X) * A, 10 * eps);
-%!assert (V, center(Y) * B, 10 * eps);
-%!assert (cov(U), eye (size (U, 2)), 10 * eps);
-%!assert (cov(V), eye (size (V, 2)), 10 * eps);
+%!assert (U, center (X) * A, 10 * eps);
+%!assert (V, center (Y) * B, 10 * eps);
+%!assert (cov (U), eye (size (U, 2)), 10 * eps);
+%!assert (cov (V), eye (size (V, 2)), 10 * eps);
 %! rand ('state', 1); [A, B, r] = canoncorr (rand (5, 10), rand (5, 20));
-%!assert (r, ones(1, 5), 10*eps);
+%!assert (r, ones (1, 5), 10*eps);

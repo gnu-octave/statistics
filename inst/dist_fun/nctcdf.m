@@ -80,7 +80,7 @@ function p = nctcdf (x, df, mu, uflag)
   p(is_nan) = NaN;
 
   ## Find special cases for mu==0 and x<0; and x = Inf.
-  case_Dinf = (df <= 0 | isinf(mu)) & ! is_nan;
+  case_Dinf = (df <= 0 | isinf (mu)) & ! is_nan;
   case_Dzero = mu == 0 & ! case_Dinf & ! is_nan;
   case_Xzero = x < 0 & ! case_Dzero & ! case_Dinf & ! is_nan;
   case_Xinf = x == Inf & ! case_Dzero & ! case_Dinf & ! is_nan;
@@ -172,7 +172,7 @@ function p = nctcdf (x, df, mu, uflag)
 
     ## Start looping over term jj and higher, this should be near the
     ## peak of the E part of the term (see below)
-    jj = 2 * floor(d_square/2);
+    jj = 2 * floor (d_square/2);
 
     ## Compute an infinite sum using Johnson & Kotz eq 9, or new
     ## edition eq 31.16, each term having this form:
@@ -194,7 +194,7 @@ function p = nctcdf (x, df, mu, uflag)
     B1 = zeros (size (P));
     B2 = zeros (size (P));
     if (uflag)
-      if any(TD)
+      if any (TD)
         B1(TD) = betainc (P(TD), (jj(TD) + 1) / 2, df(TD) / 2, 'upper');
         B2(TD) = betainc (P(TD), (jj(TD) + 2) / 2, df(TD) / 2, 'upper');
       endif
@@ -215,19 +215,19 @@ function p = nctcdf (x, df, mu, uflag)
       endif
     endif
     R1 = exp (gammaln ((jj + 1) / 2 + df / 2) - gammaln ((jj + 3) / 2) - ...
-             gammaln (df / 2) + ((jj + 1) / 2) .* log (P) + (df / 2) .* log(Q));
+             gammaln (df / 2) + ((jj + 1) / 2) .* log (P) + (df / 2) .* log (Q));
     R2 = exp (gammaln ((jj + 2) / 2 + df / 2) - gammaln ((jj + 4) / 2) - ...
-             gammaln (df / 2) + ((jj + 2) / 2) .* log (P) + (df / 2) .* log(Q));
+             gammaln (df / 2) + ((jj + 2) / 2) .* log (P) + (df / 2) .* log (Q));
 
     ## Keep terms
     E10 = E1; E20 = E2; B10 = B1; B20 = B2; R10 = R1; R20 = R2; j0 = jj;
     TD = true (size (d_square));
-    while(true)
+    while (true)
       ## Probability that TD lies between 0 and x
       twoterms = E1(TD) .* B1(TD) + E2(TD) .* B2(TD);
       subtotal(TD) = subtotal(TD) + twoterms;
       ## Convergence test.
-      TD(TD) = (abs(twoterms) > (abs (subtotal(TD)) + c_eps) * c_eps);
+      TD(TD) = (abs (twoterms) > (abs (subtotal(TD)) + c_eps) * c_eps);
       if (! any (TD))
         break;
       endif

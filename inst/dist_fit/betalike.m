@@ -109,7 +109,7 @@ function [nlogL, avar] = betalike (params, x, freq)
   else
     num0 = sum (x < x_lo);
     num1 = sum (x > x_hi);
-    x_ct = x (x > x_lo & x < x_hi);
+    x_ct = x(x > x_lo & x < x_hi);
     numx = length (x_ct);
   endif
 

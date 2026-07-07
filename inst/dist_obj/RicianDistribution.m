@@ -54,7 +54,7 @@ classdef RicianDistribution
   ## ricelike, ricestat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} s
     ##
@@ -80,7 +80,7 @@ classdef RicianDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} DistributionName
     ##
@@ -127,14 +127,14 @@ classdef RicianDistribution
     ParameterDescription = {'Noncentrality', 'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'rice';
     ParameterRange = [0, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} ParameterValues
     ##
@@ -226,11 +226,11 @@ classdef RicianDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = RicianDistribution (s, sigma)
       if (nargin == 0)
@@ -246,7 +246,7 @@ classdef RicianDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Rician distribution');
     endfunction
 
@@ -280,7 +280,7 @@ classdef RicianDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {RicianDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -721,7 +721,7 @@ classdef RicianDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -827,33 +827,33 @@ endfunction
 ## Test input validation
 ## 'RicianDistribution' constructor
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution(-eps, 1)
+%! RicianDistribution (-eps, 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution(-1, 1)
+%! RicianDistribution (-1, 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution(Inf, 1)
+%! RicianDistribution (Inf, 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution(i, 1)
+%! RicianDistribution (i, 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution('a', 1)
+%! RicianDistribution ('a', 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution([1, 2], 1)
+%! RicianDistribution ([1, 2], 1)
 %!error <RicianDistribution: S must be a non-negative real scalar.> ...
-%! RicianDistribution(NaN, 1)
+%! RicianDistribution (NaN, 1)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, 0)
+%! RicianDistribution (1, 0)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, -1)
+%! RicianDistribution (1, -1)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, Inf)
+%! RicianDistribution (1, Inf)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, i)
+%! RicianDistribution (1, i)
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, 'a')
+%! RicianDistribution (1, 'a')
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, [1, 2])
+%! RicianDistribution (1, [1, 2])
 %!error <RicianDistribution: SIGMA must be a positive real scalar.> ...
-%! RicianDistribution(1, NaN)
+%! RicianDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -959,8 +959,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = RicianDistribution(1, 1);
-%! pd(2) = RicianDistribution(1, 3);
+%! pd = RicianDistribution (1, 1);
+%! pd(2) = RicianDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

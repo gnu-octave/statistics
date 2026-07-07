@@ -38,7 +38,7 @@ classdef ClassificationSVM
   ## @seealso{fitcsvm}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {ClassificationSVM} {property} X
     ##
@@ -325,11 +325,11 @@ classdef ClassificationSVM
     SupportVectors      = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -451,7 +451,7 @@ classdef ClassificationSVM
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationSVM (@var{X}, @var{Y})
@@ -733,7 +733,7 @@ classdef ClassificationSVM
                            " in optional pair arguments."));
 
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Get number of variables in training data
@@ -756,8 +756,8 @@ classdef ClassificationSVM
 
       ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed);
-      X         = X (RowsUsed, :);
+      Y         = Y(RowsUsed);
+      X         = X(RowsUsed, :);
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
@@ -1236,7 +1236,7 @@ classdef ClassificationSVM
           case 'weights'
             Weights = varargin{2};
             ## Validate if weights is a numeric vector
-            if(! (isnumeric (Weights) && isvector (Weights)))
+            if (! (isnumeric (Weights) && isvector (Weights)))
               error (strcat ("ClassificationSVM.loss: 'Weights'", ...
                              " must be a numeric vector."));
             endif
@@ -1251,7 +1251,7 @@ classdef ClassificationSVM
             error (strcat ("ClassificationSVM.loss: invalid parameter", ...
                            " name in optional pair arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Compute the classification score
@@ -1342,7 +1342,7 @@ classdef ClassificationSVM
     ## @end deftypefn
     function L = resubLoss (this, varargin)
 
-      if (mod(nargin, 2) != 1)
+      if (mod (nargin, 2) != 1)
         error (strcat ("ClassificationSVM.resubLoss: Name-Value", ...
                        " arguments must be in pairs."));
       endif
@@ -1398,7 +1398,7 @@ classdef ClassificationSVM
       margin = this.Y .* dec_values_L;
 
         ## Compute the loss based on the specified loss function
-        switch tolower(LossFun)
+        switch tolower (LossFun)
           case 'classiferror'
             L = mean ((margin <= 0) .* Weights);
 
@@ -1525,7 +1525,7 @@ classdef ClassificationSVM
             error (strcat ("ClassificationSVM.crossval: invalid",...
                            " parameter name in optional paired arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Determine the cross-validation method to use
@@ -1609,7 +1609,7 @@ classdef ClassificationSVM
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationSVM object
@@ -1636,72 +1636,72 @@ endclassdef
 %! ## Create a Support Vector Machine classifier and determine margin for test
 %! ## data.
 %! load fisheriris
-%! rng(1);  ## For reproducibility
+%! rng (1);  ## For reproducibility
 %!
 %! ## Select indices of the non-setosa species
-%! inds = ! strcmp(species, 'setosa');
+%! inds = ! strcmp (species, 'setosa');
 %!
 %!  ## Select features and labels for non-setosa species
 %! X = meas(inds, 3:4);
-%! Y = grp2idx(species(inds));
+%! Y = grp2idx (species(inds));
 %!
 %! ##  Convert labels to +1 and -1
-%! unique_classes = unique(Y);
+%! unique_classes = unique (Y);
 %! Y(Y == unique_classes(1)) = -1;
 %! Y(Y == unique_classes(2)) = 1;
 %!
 %! ## Partition data for training and testing
-%! cv = cvpartition(Y, 'HoldOut', 0.15);
+%! cv = cvpartition (Y, 'HoldOut', 0.15);
 %! X_train = X(training(cv), :);
 %! Y_train = Y(training(cv));
-%! X_test = X(test(cv), :);
-%! Y_test = Y(test(cv));
+%! X_test = X(test (cv), :);
+%! Y_test = Y(test (cv));
 %!
 %! ## Train the SVM model
-%! CVSVMModel = fitcsvm(X_train, Y_train);
+%! CVSVMModel = fitcsvm (X_train, Y_train);
 %!
 %! ## Calculate margins
-%! m = margin(CVSVMModel, X_test, Y_test);
-%! disp(m);
+%! m = margin (CVSVMModel, X_test, Y_test);
+%! disp (m);
 
 %!demo
 %! ## Create a Support Vector Machine classifier and determine loss for test
 %! ## data.
 %! load fisheriris
-%! rng(1);  ## For reproducibility
+%! rng (1);  ## For reproducibility
 %!
 %!  ## Select indices of the non-setosa species
-%! inds = ! strcmp(species, 'setosa');
+%! inds = ! strcmp (species, 'setosa');
 %!
 %!  ## Select features and labels for non-setosa species
 %! X = meas(inds, 3:4);
-%! Y = grp2idx(species(inds));
+%! Y = grp2idx (species(inds));
 %!
 %! ##  Convert labels to +1 and -1
-%! unique_classes = unique(Y);
+%! unique_classes = unique (Y);
 %! Y(Y == unique_classes(1)) = -1;
 %! Y(Y == unique_classes(2)) = 1;
 %!
 %! ## Randomly partition the data into training and testing sets
-%! cv = cvpartition(Y, 'HoldOut', 0.3); # 30% data for testing, 60% for training
+%! cv = cvpartition (Y, 'HoldOut', 0.3); # 30% data for testing, 60% for training
 %!
 %! X_train = X(training(cv), :);
 %! Y_train = Y(training(cv));
 %!
-%! X_test = X(test(cv), :);
-%! Y_test = Y(test(cv));
+%! X_test = X(test (cv), :);
+%! Y_test = Y(test (cv));
 %!
 %! ## Train the SVM model
-%! SVMModel = fitcsvm(X_train, Y_train);
+%! SVMModel = fitcsvm (X_train, Y_train);
 %!
 %! ## Calculate loss
 %!
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','binodeviance')
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','classiferror')
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','exponential')
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','hinge')
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','logit')
-%! L = loss(SVMModel,X_test,Y_test,'LossFun','quadratic')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','binodeviance')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','classiferror')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','exponential')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','hinge')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','logit')
+%! L = loss (SVMModel,X_test,Y_test,'LossFun','quadratic')
 
 ## Test output of constructor
 %!test
@@ -1745,95 +1745,95 @@ endclassdef
 ## Test input validation for constructor
 %!error<ClassificationSVM: too few input arguments.> ClassificationSVM ()
 %!error<ClassificationSVM: too few input arguments.> ...
-%! ClassificationSVM (ones(10,2))
+%! ClassificationSVM (ones (10,2))
 %!error<ClassificationSVM: number of rows in X and Y must be equal.> ...
-%! ClassificationSVM (ones(10,2), ones (5,1))
+%! ClassificationSVM (ones (10,2), ones (5,1))
 %!error<ClassificationSVM: 'Standardize' must be either true or false.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'Standardize', 'a')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'Standardize', 'a')
 %!error<ClassificationSVM: 'PredictorNames' must be supplied as a cellstring array.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'PredictorNames', ['x1';'x2'])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'PredictorNames', ['x1';'x2'])
 %!error<ClassificationSVM: 'PredictorNames' must have the same number of columns as X.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'PredictorNames', {'x1','x2','x3'})
+%! ClassificationSVM (ones (10,2), ones (10,1), 'PredictorNames', {'x1','x2','x3'})
 %!error<ClassificationSVM: 'ResponseName' must be a character vector.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'ResponseName', {'Y'})
+%! ClassificationSVM (ones (10,2), ones (10,1), 'ResponseName', {'Y'})
 %!error<ClassificationSVM: 'ResponseName' must be a character vector.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'ResponseName', 21)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'ResponseName', 21)
 %!error<ClassificationSVM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'ClassNames', @(x)x)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
 %!error<ClassificationSVM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'ClassNames', {1})
+%! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'ClassNames', [1, 2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'ClassNames', [1, 2])
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationSVM (ones(5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
+%! ClassificationSVM (ones (5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationSVM (ones(5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
+%! ClassificationSVM (ones (5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
 %!error<ClassificationSVM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationSVM (ones(10,2), logical (ones (10,1)), 'ClassNames', [true, false])
+%! ClassificationSVM (ones (10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationSVM: 'SVMtype' must be 'c_svc', 'nu_svc', or 'one_class_svm'.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'svmtype', 123)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'svmtype', 123)
 %!error<ClassificationSVM: 'SVMtype' must be 'c_svc', 'nu_svc', or 'one_class_svm'.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'svmtype', 'some_type')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'svmtype', 'some_type')
 %!error<ClassificationSVM: 'OutlierFraction' must be a positive scalar in the range 0 =< OutlierFraction < 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'OutlierFraction', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'OutlierFraction', -1)
 %!error<ClassificationSVM: 'KernelFunction' must be a character vector.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'KernelFunction', 123)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelFunction', 123)
 %!error<ClassificationSVM: unsupported Kernel function.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'KernelFunction', 'fcn')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelFunction', 'fcn')
 %!error<ClassificationSVM: 'PolynomialOrder' must be a positive integer.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'PolynomialOrder', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'PolynomialOrder', -1)
 %!error<ClassificationSVM: 'PolynomialOrder' must be a positive integer.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'PolynomialOrder', 0.5)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'PolynomialOrder', 0.5)
 %!error<ClassificationSVM: 'PolynomialOrder' must be a positive integer.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'PolynomialOrder', [1,2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'PolynomialOrder', [1,2])
 %!error<ClassificationSVM: 'KernelScale' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'KernelScale', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelScale', -1)
 %!error<ClassificationSVM: 'KernelScale' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'KernelScale', 0)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelScale', 0)
 %!error<ClassificationSVM: 'KernelScale' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'KernelScale', [1, 2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelScale', [1, 2])
 %!error<ClassificationSVM: 'KernelScale' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'KernelScale', 'invalid')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelScale', 'invalid')
 %!error<ClassificationSVM: 'KernelOffset' must be a non-negative scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'KernelOffset', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelOffset', -1)
 %!error<ClassificationSVM: 'KernelOffset' must be a non-negative scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'KernelOffset', [1,2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'KernelOffset', [1,2])
 %!error<ClassificationSVM: 'BoxConstraint' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'BoxConstraint', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'BoxConstraint', -1)
 %!error<ClassificationSVM: 'BoxConstraint' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'BoxConstraint', 0)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'BoxConstraint', 0)
 %!error<ClassificationSVM: 'BoxConstraint' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'BoxConstraint', [1, 2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'BoxConstraint', [1, 2])
 %!error<ClassificationSVM: 'BoxConstraint' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones (10,1), 'BoxConstraint', 'invalid')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'BoxConstraint', 'invalid')
 %!error<ClassificationSVM: 'Nu' must be a positive scalar in the range 0 < Nu <= 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'nu', -0.5)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'nu', -0.5)
 %!error<ClassificationSVM: 'Nu' must be a positive scalar in the range 0 < Nu <= 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'nu', 0)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'nu', 0)
 %!error<ClassificationSVM: 'Nu' must be a positive scalar in the range 0 < Nu <= 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'nu', 1.5)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'nu', 1.5)
 %!error<ClassificationSVM: 'CacheSize' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'CacheSize', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'CacheSize', -1)
 %!error<ClassificationSVM: 'CacheSize' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'CacheSize', [1,2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'CacheSize', [1,2])
 %!error<ClassificationSVM: 'Tolerance' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'Tolerance', -0.1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'Tolerance', -0.1)
 %!error<ClassificationSVM: 'Tolerance' must be a positive scalar.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'Tolerance', [0.1,0.2])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'Tolerance', [0.1,0.2])
 %!error<ClassificationSVM: 'Shrinking' must be either 0 or 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'shrinking', 2)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'shrinking', 2)
 %!error<ClassificationSVM: 'Shrinking' must be either 0 or 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'shrinking', -1)
+%! ClassificationSVM (ones (10,2), ones (10,1), 'shrinking', -1)
 %!error<ClassificationSVM: 'Shrinking' must be either 0 or 1.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'shrinking', [1 0])
+%! ClassificationSVM (ones (10,2), ones (10,1), 'shrinking', [1 0])
 %!error<ClassificationSVM: invalid parameter name in optional pair arguments.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'invalid_name', 'c_svc')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'invalid_name', 'c_svc')
 %!error<ClassificationSVM: cannot train a binary problem with only one class available.> ...
-%! ClassificationSVM (ones(10,2), ones(10,1), 'SVMtype', 'c_svc')
+%! ClassificationSVM (ones (10,2), ones (10,1), 'SVMtype', 'c_svc')
 %!error<ClassificationSVM: can only be used for one-class or two-class learning.> ...
-%! ClassificationSVM (ones(10,2), [1;1;1;1;2;2;2;2;3;3])
+%! ClassificationSVM (ones (10,2), [1;1;1;1;2;2;2;2;3;3])
 %!error<ClassificationSVM: invalid values in X.> ...
-%! ClassificationSVM ([ones(9,2);2,Inf], ones(10,1))
+%! ClassificationSVM ([ones(9,2);2,Inf], ones (10,1))
 
 ## Test output for predict method
 %!shared x, y, x_train, x_test, y_train, y_test, objST
@@ -1929,7 +1929,7 @@ endclassdef
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2))
 %!error<ClassificationSVM.loss: Name-Value arguments must be in pairs.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), zeros (2), ...
-%! ones(2,1), 'LossFun')
+%! ones (2,1), 'LossFun')
 %!error<ClassificationSVM.loss: X is empty.> ...
 %! loss (ClassificationSVM (ones (40,2), randi ([1, 2], 40, 1)), [], zeros (2))
 %!error<ClassificationSVM.loss: X must have the same number of predictors as the trained model.> ...
@@ -2016,35 +2016,35 @@ endclassdef
 
 ## Test input validation for crossval method
 %!error<ClassificationSVM.crossval: Name-Value arguments must be in pairs.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold')
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold')
 %!error<ClassificationSVM.crossval: specify only one of the optional Name-Value paired arguments.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), ...
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), ...
 %! 'KFold', 5, 'leaveout', 'on')
 %!error<ClassificationSVM.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold', 'a')
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold', 'a')
 %!error<ClassificationSVM.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold', 1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold', 1)
 %!error<ClassificationSVM.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold', -1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold', -1)
 %!error<ClassificationSVM.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold', 11.5)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold', 11.5)
 %!error<ClassificationSVM.crossval: 'KFold' must be an integer value greater than 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'KFold', [1,2])
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'KFold', [1,2])
 %!error<ClassificationSVM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Holdout', 'a')
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Holdout', 'a')
 %!error<ClassificationSVM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Holdout', 11.5)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Holdout', 11.5)
 %!error<ClassificationSVM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Holdout', -1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Holdout', -1)
 %!error<ClassificationSVM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Holdout', 0)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Holdout', 0)
 %!error<ClassificationSVM.crossval: 'Holdout' must be a numeric value between 0 and 1.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Holdout', 1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Holdout', 1)
 %!error<ClassificationSVM.crossval: 'Leaveout' must be either 'on' or 'off'.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'Leaveout', 1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'Leaveout', 1)
 %!error<ClassificationSVM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'CVPartition', 1)
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'CVPartition', 1)
 %!error<ClassificationSVM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'CVPartition', 'a')
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'CVPartition', 'a')
 %!error<ClassificationSVM.crossval: invalid parameter name in optional paired arguments> ...
-%! crossval (ClassificationSVM (ones (40,2),randi([1, 2], 40, 1)), 'some', 'some')
+%! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'some', 'some')

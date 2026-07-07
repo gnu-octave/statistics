@@ -40,37 +40,37 @@ function y = wishpdf (W, Sigma, df, log_y=false)
     print_usage ();
   endif
 
-  p = size(Sigma, 1);
+  p = size (Sigma, 1);
 
   if (df <= (p - 1))
     error ("wishpdf: DF too small, no finite densities exist.");
   endif
 
   ## calculate the logarithm of G_d(df/2), the multivariate gamma function
-  g = (p * (p-1) / 4) * log(pi);
+  g = (p * (p-1) / 4) * log (pi);
   for i = 1:p
-    g = g + log(gamma((df + (1 - i))/2));
+    g = g + log (gamma ((df + (1 - i))/2));
   endfor
 
-  C = chol(Sigma);
+  C = chol (Sigma);
 
   ## use formulas for determinant of positive definite matrix for better
   ## efficiency and numerical accuracy
-  logdet_W = 2*sum(log(diag(chol(W))));
-  logdet_Sigma = 2*sum(log(diag(C)));
+  logdet_W = 2*sum (log (diag (chol (W))));
+  logdet_Sigma = 2*sum (log (diag (C)));
 
-  y = -(df*p)/2 * log(2) - (df/2)*logdet_Sigma - g + ...
-      ((df - p - 1)/2)*logdet_W - trace(chol2inv(C)*W)/2;
+  y = -(df*p)/2 * log (2) - (df/2)*logdet_Sigma - g + ...
+      ((df - p - 1)/2)*logdet_W - trace (chol2inv (C)*W)/2;
 
   if ! log_y
-    y = exp(y);
+    y = exp (y);
   endif
 endfunction
 
 ##test results cross-checked against dwish function in R MCMCpack library
-%!assert(wishpdf(4, 3, 3.1), 0.07702496, 1E-7);
-%!assert(wishpdf([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
-%!assert(wishpdf([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
+%!assert (wishpdf (4, 3, 3.1), 0.07702496, 1E-7);
+%!assert (wishpdf ([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 0.004529741, 1E-7);
+%!assert (wishpdf ([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
 
 %% Test input validation
 %!error wishpdf ()

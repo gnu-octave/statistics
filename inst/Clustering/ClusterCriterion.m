@@ -31,7 +31,7 @@ classdef ClusterCriterion < handle
   ## GapEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ClusterCriterion} {property} ClusteringFunction
     ##
@@ -134,14 +134,14 @@ classdef ClusterCriterion < handle
     X = [];
   endproperties
 
-  properties (Access = protected)
+  properties(Access = protected)
     N = 0; # number of observations
     P = 0; # number of variables
     ClusteringSolutions = []; #
     OptimalIndex = 0; # index of the optimal K
   endproperties
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn {ClusterCriterion} {@var{obj} =} ClusterCriterion (@var{x}, @var{clust}, @var{KList})
@@ -282,7 +282,7 @@ classdef ClusterCriterion < handle
 
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
     ## check if a list of cluster sizes is correct
     function retList = parseKList (this, KList)
       if (isnumeric (KList) && isvector (KList) && all (find (KList > 0)) && ...

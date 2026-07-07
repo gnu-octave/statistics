@@ -184,12 +184,12 @@ function y = mvnpdf (x, mu, sigma)
         endif
         for i = 1:row
           ## Check for valid covariance matrices
-          [R, err] = cholcov (sigma (:,:,i), 0);
+          [R, err] = cholcov (sigma(:,:,i), 0);
           if (err != 0)
             error ("mvnpdf:invalid multiple covariance matrix.");
           endif
           xRinv(i,:) = xc(i,:) / R;
-          lnSDS(i) = sum(log(diag(R)));
+          lnSDS(i) = sum (log (diag (R)));
         endfor
       endif
     endif

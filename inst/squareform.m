@@ -135,8 +135,8 @@ endfunction
 %!test
 %! for c = {@single, @double, @uint8, @uint16, @uint32, @uint64, @logical}
 %!   f = c{1};
-%!   assert (squareform (f (v)), f (m))
-%!   assert (squareform (f (m)), f (v))
+%!   assert (squareform (f(v)), f(m))
+%!   assert (squareform (f(m)), f(v))
 %! endfor
 
 ## test logical inputs.

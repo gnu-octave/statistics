@@ -170,7 +170,7 @@ function [p, h, stats] = signtest (x, my, varargin)
     error ("signtest: 'tail' value must be either 'both', right' or 'left'.");
   endif
   if (! ischar (method))
-    error("signtest: 'method' argument must be a character vector.");
+    error ("signtest: 'method' argument must be a character vector.");
   elseif (sum (strcmpi (method, {'exact', 'approximate'})) != 1)
     error ("signtest: 'method' value must be either 'exact' or 'approximate'.");
   endif

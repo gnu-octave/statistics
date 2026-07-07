@@ -59,7 +59,7 @@ classdef BirnbaumSaundersDistribution
   ## bisalike, bisastat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} beta
     ##
@@ -85,7 +85,7 @@ classdef BirnbaumSaundersDistribution
     gamma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} DistributionName
     ##
@@ -132,14 +132,14 @@ classdef BirnbaumSaundersDistribution
     ParameterDescription = {'Scale', 'Shape'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'bisa';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} ParameterValues
     ##
@@ -231,11 +231,11 @@ classdef BirnbaumSaundersDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = BirnbaumSaundersDistribution (beta, gamma)
       if (nargin == 0)
@@ -251,7 +251,7 @@ classdef BirnbaumSaundersDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Birnbaum-Saunders distribution');
     endfunction
 
@@ -285,7 +285,7 @@ classdef BirnbaumSaundersDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {BirnbaumSaundersDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -728,7 +728,7 @@ classdef BirnbaumSaundersDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -835,31 +835,31 @@ endfunction
 ## Test input validation
 ## 'BirnbaumSaundersDistribution' constructor
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(0, 1)
+%! BirnbaumSaundersDistribution (0, 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(Inf, 1)
+%! BirnbaumSaundersDistribution (Inf, 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(i, 1)
+%! BirnbaumSaundersDistribution (i, 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution('beta', 1)
+%! BirnbaumSaundersDistribution ('beta', 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution([1, 2], 1)
+%! BirnbaumSaundersDistribution ([1, 2], 1)
 %!error <BirnbaumSaundersDistribution: BETA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(NaN, 1)
+%! BirnbaumSaundersDistribution (NaN, 1)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, 0)
+%! BirnbaumSaundersDistribution (1, 0)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, -1)
+%! BirnbaumSaundersDistribution (1, -1)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, Inf)
+%! BirnbaumSaundersDistribution (1, Inf)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, i)
+%! BirnbaumSaundersDistribution (1, i)
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, 'beta')
+%! BirnbaumSaundersDistribution (1, 'beta')
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, [1, 2])
+%! BirnbaumSaundersDistribution (1, [1, 2])
 %!error <BirnbaumSaundersDistribution: GAMMA must be a positive real scalar.> ...
-%! BirnbaumSaundersDistribution(1, NaN)
+%! BirnbaumSaundersDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -970,8 +970,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = BirnbaumSaundersDistribution(1, 1);
-%! pd(2) = BirnbaumSaundersDistribution(1, 3);
+%! pd = BirnbaumSaundersDistribution (1, 1);
+%! pd(2) = BirnbaumSaundersDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

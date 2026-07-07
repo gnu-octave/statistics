@@ -79,19 +79,19 @@ endfunction
 
 %!demo
 %! z = qrandn (-5, 5e6);
-%! [c x] = hist (z,linspace(-1.5,1.5,200),1);
-%! figure(1)
-%! plot(x,c,'r.'); axis tight; axis([-1.5,1.5]);
+%! [c x] = hist (z,linspace (-1.5,1.5,200),1);
+%! figure (1)
+%! plot (x,c,'r.'); axis tight; axis ([-1.5,1.5]);
 %!
 %! z = qrandn (-0.14286, 5e6);
-%! [c x] = hist (z,linspace(-2,2,200),1);
-%! figure(2)
-%! plot(x,c,'r.'); axis tight; axis([-2,2]);
+%! [c x] = hist (z,linspace (-2,2,200),1);
+%! figure (2)
+%! plot (x,c,'r.'); axis tight; axis ([-2,2]);
 %!
 %! z = qrandn (2.75, 5e6);
-%! [c x] = hist (z,linspace(-1e3,1e3,1e3),1);
-%! figure(3)
-%! semilogy(x,c,'r.'); axis tight; axis([-100,100]);
+%! [c x] = hist (z,linspace (-1e3,1e3,1e3),1);
+%! figure (3)
+%! semilogy (x,c,'r.'); axis tight; axis ([-100,100]);
 %!
 %! # ---------
 %! # Figures from the reference paper.

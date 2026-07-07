@@ -59,7 +59,7 @@ classdef tLocationScaleDistribution
   ## tlslike, tlsstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} mu
     ##
@@ -97,7 +97,7 @@ classdef tLocationScaleDistribution
     nu
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} DistributionName
     ##
@@ -144,14 +144,14 @@ classdef tLocationScaleDistribution
     ParameterDescription = {'Location', 'Scale', 'Degrees of Freedom'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'tls';
     ParameterRange = [-Inf, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [false, true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} ParameterValues
     ##
@@ -243,11 +243,11 @@ classdef tLocationScaleDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = tLocationScaleDistribution (mu, sigma, nu)
       if (nargin == 0)
@@ -264,7 +264,7 @@ classdef tLocationScaleDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 't Location-Scale distribution');
     endfunction
 
@@ -310,7 +310,7 @@ classdef tLocationScaleDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {tLocationScaleDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -752,7 +752,7 @@ classdef tLocationScaleDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -863,43 +863,43 @@ endfunction
 ## Test input validation
 ## 'tLocationScaleDistribution' constructor
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution(i, 1, 1)
+%! tLocationScaleDistribution (i, 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution(Inf, 1, 1)
+%! tLocationScaleDistribution (Inf, 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution([1, 2], 1, 1)
+%! tLocationScaleDistribution ([1, 2], 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution('a', 1, 1)
+%! tLocationScaleDistribution ('a', 1, 1)
 %!error <tLocationScaleDistribution: MU must be a real scalar.> ...
-%! tLocationScaleDistribution(NaN, 1, 1)
+%! tLocationScaleDistribution (NaN, 1, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 0, 1)
+%! tLocationScaleDistribution (0, 0, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, -1, 1)
+%! tLocationScaleDistribution (0, -1, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, Inf, 1)
+%! tLocationScaleDistribution (0, Inf, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, i, 1)
+%! tLocationScaleDistribution (0, i, 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 'a', 1)
+%! tLocationScaleDistribution (0, 'a', 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, [1, 2], 1)
+%! tLocationScaleDistribution (0, [1, 2], 1)
 %!error <tLocationScaleDistribution: SIGMA must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, NaN, 1)
+%! tLocationScaleDistribution (0, NaN, 1)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, 0)
+%! tLocationScaleDistribution (0, 1, 0)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, -1)
+%! tLocationScaleDistribution (0, 1, -1)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, Inf)
+%! tLocationScaleDistribution (0, 1, Inf)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, i)
+%! tLocationScaleDistribution (0, 1, i)
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, 'a')
+%! tLocationScaleDistribution (0, 1, 'a')
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, [1, 2])
+%! tLocationScaleDistribution (0, 1, [1, 2])
 %!error <tLocationScaleDistribution: NU must be a positive real scalar.> ...
-%! tLocationScaleDistribution(0, 1, NaN)
+%! tLocationScaleDistribution (0, 1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...

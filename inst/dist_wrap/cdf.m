@@ -164,7 +164,7 @@ function p = cdf (name, x, varargin)
   cdf_args = allDF(3:3:end);
 
   ## Search for CDF function
-  idx = cellfun (@(x)any(strcmpi (name, x)), cdfnames);
+  idx = cellfun (@(x)any (strcmpi (name, x)), cdfnames);
 
   if (any (idx))
 
@@ -174,7 +174,7 @@ function p = cdf (name, x, varargin)
         error ("cdf: invalid argument for upper tail.");
       else
         ## Check that all remaining distribution parameters are numeric
-        if (! all (cellfun (@(x)isnumeric(x), (varargin([1:nargs-1])))))
+        if (! all (cellfun (@(x)isnumeric (x), (varargin([1:nargs-1])))))
           error ("cdf: distribution parameters must be numeric.");
         endif
         ## Call appropriate CDF with "upper" flag
@@ -183,7 +183,7 @@ function p = cdf (name, x, varargin)
 
     elseif (nargs == cdf_args{idx})
       ## Check that all distribution parameters are numeric
-      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+      if (! all (cellfun (@(x)isnumeric (x), (varargin))))
         error ("cdf: distribution parameters must be numeric.");
       endif
       ## Call appropriate CDF without "upper" flag

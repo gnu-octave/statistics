@@ -129,7 +129,7 @@ function r = binornd (n, ps, varargin)
       L = sum (k(:));
       ind = repelems ((1 : L), [(1 : L); n(k)(:)'])';
       p_ext = ps(k)(ind)(:);
-      r(k) = accumarray (ind, rand (sum(n(k)(:)), 1) < p_ext);
+      r(k) = accumarray (ind, rand (sum (n(k)(:)), 1) < p_ext);
     endif
   endif
 

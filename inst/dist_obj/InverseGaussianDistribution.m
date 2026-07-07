@@ -57,7 +57,7 @@ classdef InverseGaussianDistribution
   ## invglike, invgstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} mu
     ##
@@ -83,7 +83,7 @@ classdef InverseGaussianDistribution
     lambda
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} DistributionName
     ##
@@ -130,14 +130,14 @@ classdef InverseGaussianDistribution
     ParameterDescription = {'Mean', 'Shape'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'invg';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} ParameterValues
     ##
@@ -229,11 +229,11 @@ classdef InverseGaussianDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = InverseGaussianDistribution (mu, lambda)
       if (nargin == 0)
@@ -249,7 +249,7 @@ classdef InverseGaussianDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Inverse Gaussian distribution');
     endfunction
 
@@ -283,7 +283,7 @@ classdef InverseGaussianDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {InverseGaussianDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -726,7 +726,7 @@ classdef InverseGaussianDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -819,31 +819,31 @@ endfunction
 ## Test input validation
 ## 'InverseGaussianDistribution' constructor
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution(0, 1)
+%! InverseGaussianDistribution (0, 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution(Inf, 1)
+%! InverseGaussianDistribution (Inf, 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution(i, 1)
+%! InverseGaussianDistribution (i, 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution('a', 1)
+%! InverseGaussianDistribution ('a', 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution([1, 2], 1)
+%! InverseGaussianDistribution ([1, 2], 1)
 %!error <InverseGaussianDistribution: MU must be a positive real scalar.> ...
-%! InverseGaussianDistribution(NaN, 1)
+%! InverseGaussianDistribution (NaN, 1)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, 0)
+%! InverseGaussianDistribution (1, 0)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, -1)
+%! InverseGaussianDistribution (1, -1)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, Inf)
+%! InverseGaussianDistribution (1, Inf)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, i)
+%! InverseGaussianDistribution (1, i)
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, 'a')
+%! InverseGaussianDistribution (1, 'a')
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, [1, 2])
+%! InverseGaussianDistribution (1, [1, 2])
 %!error <InverseGaussianDistribution: LAMBDA must be a positive real scalar.> ...
-%! InverseGaussianDistribution(1, NaN)
+%! InverseGaussianDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -952,8 +952,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = InverseGaussianDistribution(1, 1);
-%! pd(2) = InverseGaussianDistribution(1, 3);
+%! pd = InverseGaussianDistribution (1, 1);
+%! pd(2) = InverseGaussianDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

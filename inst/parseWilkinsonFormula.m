@@ -363,7 +363,7 @@ function tokens = run_lexer (formula_str)
     i = i + 1 + skip;
   endwhile
 
-  tokens = tokens (1:tok_idx);
+  tokens = tokens(1:tok_idx);
   tokens(end+1) = create_token ('EOF', 'EOF', i);
 
 endfunction
@@ -844,10 +844,10 @@ function schema = run_schema_builder (expanded)
   M = [term_orders, terms_mat];
 
   [~, unique_idx] = unique (M, 'rows');
-  terms_mat = terms_mat (unique_idx, :);
+  terms_mat = terms_mat(unique_idx, :);
 
   [~, sort_idx] = sortrows ([terms_mat * var_degree', -terms_mat]);
-  schema.Terms = terms_mat (sort_idx, :);
+  schema.Terms = terms_mat(sort_idx, :);
 
 endfunction
 
@@ -1394,12 +1394,12 @@ endfunction
 %!test
 %! ## Test : Precedence
 %! t = parseWilkinsonFormula ('A + B * C . D', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'A', 'B', 'C:D', 'B:C:D'}));
 %!test
 %! ## Test : Parentheses Override
 %! t = parseWilkinsonFormula ('(A + B) . C', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'A:C', 'B:C'}));
 %!test
 %! ## Test : Crossing Operator (*)
@@ -1410,12 +1410,12 @@ endfunction
 %!test
 %! ## Test : Nesting Operator (/)
 %! t = parseWilkinsonFormula ('Field / Plot', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'Field', 'Field:Plot'}));
 %!test
 %! ## Test : Multi-level Nesting
 %! t = parseWilkinsonFormula ('Block / Plot / Subplot', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'Block', 'Block:Plot', 'Block:Plot:Subplot'}));
 %!test
 %! ## Test : Interaction Operator (.)
@@ -1425,13 +1425,13 @@ endfunction
 %!test
 %! ## Test : Power operator on cube.
 %! t = parseWilkinsonFormula ('(A + B + C)^3', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! expected = sort ({'A', 'B', 'C', 'A:B', 'A:C', 'B:C', 'A:B:C'});
 %! assert (sort (terms), expected);
 %!test
 %! ## Test : Power Operator.
 %! t = parseWilkinsonFormula ('(A + B + C)^2', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (! ismember ('A:B:C', terms));
 %! assert (ismember ('A:B', terms));
 %!test
@@ -1443,23 +1443,23 @@ endfunction
 %!test
 %! ## Test : Deletion - Exact (-)
 %! t = parseWilkinsonFormula ('A * B - A', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'B', 'A:B'}));
 %!test
 %! ## Test : Deletion - Clean (-*)
 %! t = parseWilkinsonFormula ('A * B -* A', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), {'B'});
 %!test
 %! ## Test : Deletion - Marginal (-/)
 %! t = parseWilkinsonFormula ('A * B -/ A', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (sort (terms), sort ({'A', 'B'}));
 %!test
 %! ## Test : Deletion - Complex Sequence
 %! t = parseWilkinsonFormula ('A*B*C - A:B:C', 'expand');
 %! assert (length (t), 6);
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! assert (! ismember ('A:B:C', terms));
 %! assert (ismember ('A:B', terms));
 %!test
@@ -1532,7 +1532,7 @@ endfunction
 %!test
 %! ## Test : Nesting with Groups
 %! t = parseWilkinsonFormula ('A / (B + C)', 'expand');
-%! terms = cellfun (@(x) strjoin(sort(x), ':'), t, 'UniformOutput', false);
+%! terms = cellfun (@(x) strjoin (sort (x), ':'), t, 'UniformOutput', false);
 %! expected = sort ({'A', 'A:B', 'A:C'});
 %! assert (sort (terms), expected);
 %! ## Test : Variable Name Collision
@@ -1546,7 +1546,7 @@ endfunction
 %! ## Test : One-argument call
 %! result = parseWilkinsonFormula ('A * B');
 %! expected = sort ({'A', 'B', 'A:B'});
-%! actual = cellfun (@(x) strjoin(sort(x), ':'), result, 'UniformOutput', false);
+%! actual = cellfun (@(x) strjoin (sort (x), ':'), result, 'UniformOutput', false);
 %! assert (sort (actual), expected);
 %!test
 %! ## Test : Compatibility with Table Data
@@ -1613,74 +1613,74 @@ endfunction
 %!test
 %! ## Test : basic.
 %! eq = parseWilkinsonFormula ('y ~ x1 + x2 - 9', 'equation');
-%! expected = string('y = c1 + c2*x1 + c3*x2');
+%! expected = string ('y = c1 + c2*x1 + c3*x2');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : explicit intercept.
 %! eq = parseWilkinsonFormula ('y ~ x1 + x2', 'equation');
-%! expected = string('y = c1 + c2*x1 + c3*x2');
+%! expected = string ('y = c1 + c2*x1 + c3*x2');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : interaction.
 %! eq = parseWilkinsonFormula ('y ~ x1:x2:x3:x4', 'equation');
-%! expected = string('y = c1 + c2*x1*x2*x3*x4');
+%! expected = string ('y = c1 + c2*x1*x2*x3*x4');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : crossing/factorial.
 %! eq = parseWilkinsonFormula ('y ~ A * B', 'equation');
-%! expected = string('y = c1 + c2*A + c3*B + c4*A*B');
+%! expected = string ('y = c1 + c2*A + c3*B + c4*A*B');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : polynomials.
 %! eq = parseWilkinsonFormula ('y ~ x^4 - x^2', 'equation');
-%! expected = string('y = c1 + c2*x^3 + c3*x^4');
+%! expected = string ('y = c1 + c2*x^3 + c3*x^4');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : repeated measures
 %! eq = parseWilkinsonFormula ('y1-y3 ~ x', 'equation');
-%! expected = string(['y1 = c1 + c2*x'; ...
+%! expected = string (['y1 = c1 + c2*x'; ...
 %!                    'y2 = c3 + c4*x'; ...
 %!                    'y3 = c5 + c6*x']);
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : nesting syntax.
 %! eq = parseWilkinsonFormula ('y ~ x2(x1)', 'equation');
-%! expected = string('y = c1 + c2*x2(x1)');
+%! expected = string ('y = c1 + c2*x2(x1)');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : nesting with interaction.
 %! eq = parseWilkinsonFormula ('y ~ x3:x2(x1)', 'equation');
-%! expected = string('y = c1 + c2*x2(x1)*x3');
+%! expected = string ('y = c1 + c2*x2(x1)*x3');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : multiple nesting.
 %! eq = parseWilkinsonFormula ('y ~ Var(A, B)', 'equation');
-%! expected = string('y = c1 + c2*Var(A,B)');
+%! expected = string ('y = c1 + c2*Var(A,B)');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : nested factors
 %! eq = parseWilkinsonFormula ('y ~ x2(x1) + x3(x4)', 'equation');
-%! expected = string('y = c1 + c2*x2(x1) + c3*x3(x4)');
+%! expected = string ('y = c1 + c2*x2(x1) + c3*x3(x4)');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : polynomial and nesting.
 %! eq = parseWilkinsonFormula ('y ~ x^2 + Effect(Group)', 'equation');
-%! expected = string('y = c1 + c2*x + c3*x^2 + c4*Effect(Group)');
+%! expected = string ('y = c1 + c2*x + c3*x^2 + c4*Effect(Group)');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : symbolic resolution of LHS list
 %! eq = parseWilkinsonFormula ('A, B ~ x', 'equation');
-%! expected = string(['A = c1 + c2*x'; 'B = c3 + c4*x']);
+%! expected = string (['A = c1 + c2*x'; 'B = c3 + c4*x']);
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : intercept only.
 %! eq = parseWilkinsonFormula ('y ~ 1', 'equation');
-%! expected = string('y = c1');
+%! expected = string ('y = c1');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : empty model.
 %! eq = parseWilkinsonFormula ('y ~ A - A', 'equation');
-%! expected = string('y = c1');
+%! expected = string ('y = c1');
 %! assert (isequal (eq, expected));
 %!test
 %! ## Test : term row sorting.
@@ -1725,12 +1725,12 @@ endfunction
 %!error <Unexpected token> parseWilkinsonFormula ('A + * B', 'parse')
 %!error <Unexpected token> parseWilkinsonFormula ('y ~ x ~ z', 'parse')
 %!error <'model_matrix' mode requires a Data Table> parseWilkinsonFormula ('~ A', 'model_matrix')
-%!error <Unknown variable> d=table([1], 'VariableNames', {'x'}); parseWilkinsonFormula ('~ Z', 'model_matrix', d)
-%!error <Response variable 'Z' not found in Data> d=table([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('Z ~ x', 'model_matrix', d)
-%!error <Unknown variable 'A' in range> d=table([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('A - y ~ x', 'model_matrix', d)
-%!error <Unknown variable 'B' in range> d=table([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('y - B ~ x', 'model_matrix', d)
-%!error <Invalid syntax in response term> d=table([1], 'VariableNames', {'y'}); parseWilkinsonFormula ('y - y - y ~ x', 'model_matrix', d)
-%!error <Response variable 'S' must be numeric> S={'a';'b'}; x=[1;2]; d=table(S, x); parseWilkinsonFormula ('S ~ x', 'model_matrix', d)
+%!error <Unknown variable> d=table ([1], 'VariableNames', {'x'}); parseWilkinsonFormula ('~ Z', 'model_matrix', d)
+%!error <Response variable 'Z' not found in Data> d=table ([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('Z ~ x', 'model_matrix', d)
+%!error <Unknown variable 'A' in range> d=table ([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('A - y ~ x', 'model_matrix', d)
+%!error <Unknown variable 'B' in range> d=table ([1], [1], 'VariableNames', {'x', 'y'}); parseWilkinsonFormula ('y - B ~ x', 'model_matrix', d)
+%!error <Invalid syntax in response term> d=table ([1], 'VariableNames', {'y'}); parseWilkinsonFormula ('y - y - y ~ x', 'model_matrix', d)
+%!error <Response variable 'S' must be numeric> S={'a';'b'}; x=[1;2]; d=table (S, x); parseWilkinsonFormula ('S ~ x', 'model_matrix', d)
 %!error <parseWilkinsonFormula: Input data must be a 'table' class.> parseWilkinsonFormula ('y ~ x', 'model_matrix', [1,2,3])
 %!error <Invalid symbolic range> parseWilkinsonFormula ('y1-yA ~ x', 'equation')
 %!error <Invalid symbolic range> parseWilkinsonFormula ('yA-y1 ~ x', 'equation')

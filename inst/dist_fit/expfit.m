@@ -138,9 +138,9 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
 
     ## Check that size of censor and freq match x
     if (! (isequal (size (censor), sz_s)))
-      error("expfit: X and CENSOR vectors mismatch.");
+      error ("expfit: X and CENSOR vectors mismatch.");
     elseif (! isequal (size (freq), sz_s))
-      error("expfit: X and FREQ vectors mismatch.");
+      error ("expfit: X and FREQ vectors mismatch.");
     endif
 
     ## Trivial case where censor and freq have no effect
@@ -169,7 +169,7 @@ function [muhat, muci] = expfit (x, alpha = 0.05, censor = [], freq = [])
     ## Censoring, but no sample counts adjustment
     elseif (all (freq(:) == 1))
 
-      censor = logical(censor); # convert any numeric censor'x to 0s and 1s
+      censor = logical (censor); # convert any numeric censor'x to 0s and 1s
       X = sum (x, 1);
       r = sz_s(1) - sum (censor, 1);
       muhat = X ./ r;
@@ -265,13 +265,13 @@ endfunction
 %!assert (expfit (1:3, 0.1, [1 1 1]), NaN)
 %!assert (expfit (1:3, 0.1, [], [0 0 0]), NaN)
 %!assert (expfit (reshape (1:9, [3 3])), [2 5 8])
-%!assert (expfit (reshape (1:9, [3 3]), [], eye(3)), [3 7.5 12])
-%!assert (expfit (reshape (1:9, [3 3]), [], 2*eye(3)), [3 7.5 12])
+%!assert (expfit (reshape (1:9, [3 3]), [], eye (3)), [3 7.5 12])
+%!assert (expfit (reshape (1:9, [3 3]), [], 2*eye (3)), [3 7.5 12])
 %!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), ...
 %! [1.75 4.75 7.75])
 %!assert (expfit (reshape (1:9, [3 3]), [], [], [2 2 2; 1 1 1; 1 1 1]), ...
 %! [1.75 4.75 7.75])
-%!assert (expfit (reshape (1:9, [3 3]), [], eye(3), [2 2 2; 1 1 1; 1 1 1]), ...
+%!assert (expfit (reshape (1:9, [3 3]), [], eye (3), [2 2 2; 1 1 1; 1 1 1]), ...
 %! [3.5 19/3 31/3])
 
 ## Tests for confidence intervals
@@ -281,8 +281,8 @@ endfunction
 %!assert ([~,muci] = expfit (1:3, 0.1, [], [0 0 0]), [NaN; NaN])
 %!assert ([~,muci] = expfit (1:3, -1), [NaN; NaN])
 %!assert ([~,muci] = expfit (1:3, 5), [NaN; NaN])
-#!assert ([~,muci] = expfit ([1:3;1:3], -1), NaN(2, 3)]
-#!assert ([~,muci] = expfit ([1:3;1:3], 5), NaN(2, 3)]
+#!assert ([~,muci] = expfit ([1:3;1:3], -1), NaN (2, 3)]
+#!assert ([~,muci] = expfit ([1:3;1:3], 5), NaN (2, 3)]
 %!assert ([~,muci] = expfit (1:3), [0.830485728373393; 9.698190330474096], ...
 %!             1000*eps)
 %!assert ([~,muci] = expfit (1:3, 0.1), ...

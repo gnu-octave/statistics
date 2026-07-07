@@ -131,11 +131,11 @@ endfunction
 %!demo
 %! ## Sample 3 populations from 3 different Weibull distributions
 %! rande ('seed', 1);    # for reproducibility
-%! r1 = wblrnd(2, 4, 2000, 1);
+%! r1 = wblrnd (2, 4, 2000, 1);
 %! rande ('seed', 2);    # for reproducibility
-%! r2 = wblrnd(5, 2, 2000, 1);
+%! r2 = wblrnd (5, 2, 2000, 1);
 %! rande ('seed', 5);    # for reproducibility
-%! r3 = wblrnd(1, 5, 2000, 1);
+%! r3 = wblrnd (1, 5, 2000, 1);
 %! r = [r1, r2, r3];
 %!
 %! ## Plot them normalized and fix their colors

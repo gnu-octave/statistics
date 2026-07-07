@@ -68,7 +68,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
         error ("crosstab: x1, x2 ... xn must be vectors.");
       endif
       vector = vector(:);
-      unique_vals = unique (vector (! isnan (vector)));
+      unique_vals = unique (vector(! isnan (vector)));
       labels_data{i} = cellstr (num2str (unique_vals));
     else
       error ("crosstab: unsupported type for data vector.");

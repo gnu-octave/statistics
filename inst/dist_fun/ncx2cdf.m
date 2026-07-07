@@ -115,10 +115,10 @@ function p = ncx2cdf (x, df, lambda, uflag)
   x = x(td) / 2;
 
   ## Compute Chernoff bounds
-  e0 = log(c_min);
-  e1 = log(c_eps/4);
+  e0 = log (c_min);
+  e1 = log (c_eps/4);
   t = 1 - (df + sqrt (df .^ 2 + 4 * lambda .* x)) ./ (2 * x);
-  q = lambda .* t ./ (1 - t) - df .* log(1 - t) - t .* x;
+  q = lambda .* t ./ (1 - t) - df .* log (1 - t) - t .* x;
   peq0 = x < lambda + df & q < e0;
   peq1 = x > lambda + df & q < e1;
   if (uflag)
@@ -138,7 +138,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
   K = zeros (size (x));
   k1above1 = find (K1 > 1);
   K2 = floor (lambda(k1above1) .* gammaincratio (x(k1above1), K1(k1above1)));
-  fixK2 = isnan(K2) | isinf(K2);
+  fixK2 = isnan (K2) | isinf (K2);
   K2(fixK2) = K1(k1above1(fixK2));
   K(k1above1) = K2;
 
@@ -164,7 +164,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
   fullterm = full;
   keep = K > 0 & fullterm > 0;
   k = K;
-  while any(keep)
+  while any (keep)
     poisterm(keep) = poisterm(keep) .* k(keep) ./ lambda(keep);
     k(keep) = k(keep) - 1;
     if (uflag)
@@ -175,7 +175,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
                        gammainc (x(keep), df(keep) + k(keep));
     endif
     sumK(keep) = sumK(keep) + fullterm(keep);
-    keep = keep & k > 0 & fullterm > eps(sumK);
+    keep = keep & k > 0 & fullterm > eps (sumK);
   endwhile
 
   ## Upward. poisspdf(k+1,lambda)/poisspdf(k,lambda) = lambda/(k+1)
@@ -183,7 +183,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
   fullterm = full;
   keep = fullterm > 0;
   k = K;
-  while any(keep)
+  while any (keep)
     k(keep) = k(keep)+1;
     poisterm(keep) = poisterm(keep) .* lambda(keep) ./ k(keep);
     if (uflag)
@@ -194,7 +194,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
                        gammainc (x(keep), df(keep) + k(keep));
     endif
     sumK(keep) = sumK(keep) + fullterm(keep);
-    keep = keep & fullterm > eps(sumK);
+    keep = keep & fullterm > eps (sumK);
   endwhile
 
   ## Get probabilities

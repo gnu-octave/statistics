@@ -103,7 +103,7 @@ function [paramhat, paramci] = lognfit (x, alpha, censor, freq, options)
   ## Check frequency vector
   if (nargin < 4 || isempty (freq))
     freq = [];
-  elseif (! isequal (size(x), size(freq)))
+  elseif (! isequal (size (x), size (freq)))
     error ("lognfit: X and FREQ vectors mismatch.");
   endif
 
@@ -202,7 +202,7 @@ endfunction
 %!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), [0.05,  0.1])
 %!error<lognfit: wrong value for ALPHA.> lognfit (ones (20,1), 0.02+i)
 %!error<lognfit: X and CENSOR vectors mismatch.> ...
-%! lognfit (ones (20,1), [], zeros(15,1))
+%! lognfit (ones (20,1), [], zeros (15,1))
 %!error<lognfit: X and FREQ vectors mismatch.> ...
-%! lognfit (ones (20,1), [], zeros(20,1), ones(25,1))
-%!error<lognfit: > lognfit (ones (20,1), [], zeros(20,1), ones(20,1), 'options')
+%! lognfit (ones (20,1), [], zeros (20,1), ones (25,1))
+%!error<lognfit: > lognfit (ones (20,1), [], zeros (20,1), ones (20,1), 'options')

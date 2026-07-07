@@ -290,7 +290,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       otherwise
         error ("glmfit: unknown parameter name.");
     endswitch
-    varargin (1:2) = [];
+    varargin(1:2) = [];
   endwhile
 
   ## Adjust X based on constant
@@ -331,10 +331,10 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       otherwise
         mu = y;
     endswitch
-    eta = flink (mu);
+    eta = flink(mu);
   else               # from coefficient estimates
     eta = offset + X * B0(:);
-    mu = ilink (eta);
+    mu = ilink(eta);
   endif
 
   ## Initialize coefficient vector and iterations
@@ -347,11 +347,11 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     Bold = Bnew;
 
     ## Compute iteratively reweighted least squares weights
-    d_eta = dlink (mu);
+    d_eta = dlink(mu);
     if (strcmpi (distribution, 'binomial'))
-      IRLS = abs (d_eta) .* varFun (mu, N);
+      IRLS = abs (d_eta) .* varFun(mu, N);
     else
-      IRLS = abs (d_eta) .* varFun (mu);
+      IRLS = abs (d_eta) .* varFun(mu);
     endif
     squaredWeight = sqrt (weight) ./ IRLS;
 
@@ -364,7 +364,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
 
     ## Compute predicted mean using current linear predictor
     eta = offset + X * Bnew;
-    mu = ilink (eta);
+    mu = ilink(eta);
 
     ## Force predicted mean within distribution support limits
     if (strcmpi (distribution, 'normal'))
@@ -397,10 +397,10 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
   ## Compute deviance
   if (nargout > 1)
     if (strcmpi (distribution, 'binomial'))
-      devn = devFun (mu, y, N);
+      devn = devFun(mu, y, N);
       dev = sum (weight .* devn);
     else
-      devn = devFun (mu, y);
+      devn = devFun(mu, y);
       dev = sum (weight .* devn);
     endif
   endif
@@ -482,10 +482,10 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     stats.resida = NaN (size (xymissing));  # Vector of Anscombe residuals
     if (isequal (distribution, 'binomial'))
       stats.resid(! xymissing) = (y - mu) .* N;
-      stats.residp(! xymissing) = (y - mu) ./ (varFun (mu, N) + (y == mu));
+      stats.residp(! xymissing) = (y - mu) ./ (varFun(mu, N) + (y == mu));
     else
       stats.resid(! xymissing)  = y - mu;
-      stats.residp(! xymissing) = (y - mu) ./ (varFun (mu) + (y == mu));
+      stats.residp(! xymissing) = (y - mu) ./ (varFun(mu) + (y == mu));
     endif
     stats.residd(! xymissing) = sign (y - mu) .* sqrt (max (0, devn));
     switch (tolower (distribution))
@@ -593,87 +593,87 @@ endfunction
 %!error <glmfit: 'EstDisp' should be either 'on' or 'off'.> ...
 %! glmfit (rand (5, 2), rand (5, 1), 'normal', 'estdisp', true)
 %!error <glmfit: structure with custom link functions must be a scalar.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', {1, 2}))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', {1, 2}))
 %!error <glmfit: structure with custom link functions requires the fields 'Link', 'Derivative', and 'Inverse'.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', 'norminv'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', 'norminv'))
 %!error <glmfit: bad 'Link' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', 'some', 'Derivative', @(x)x, 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', 'some', 'Derivative', @(x)x, 'Inverse', 'normcdf'))
 %!error <glmfit: bad 'Link' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', 1, 'Derivative', @(x)x, 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', 1, 'Derivative', @(x)x, 'Inverse', 'normcdf'))
 %!error <glmfit: custom 'Link' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x) [x, x], 'Derivative', @(x)x, 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x) [x, x], 'Derivative', @(x)x, 'Inverse', 'normcdf'))
 %!error <glmfit: invalid custom 'Link' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', 'what', 'Derivative', @(x)x, 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', 'what', 'Derivative', @(x)x, 'Inverse', 'normcdf'))
 %!error <glmfit: bad 'Derivative' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'some', 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'some', 'Inverse', 'normcdf'))
 %!error <glmfit: bad 'Derivative' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 1, 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 1, 'Inverse', 'normcdf'))
 %!error <glmfit: custom 'Derivative' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', @(x) [x, x], 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', @(x) [x, x], 'Inverse', 'normcdf'))
 %!error <glmfit: invalid custom 'Derivative' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'what', 'Inverse', 'normcdf'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'what', 'Inverse', 'normcdf'))
 %!error <glmfit: bad 'Inverse' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 'some'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 'some'))
 %!error <glmfit: bad 'Inverse' function in custom link function structure.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 1))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 1))
 %!error <glmfit: custom 'Inverse' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', @(x) [x, x]))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', @(x) [x, x]))
 %!error <glmfit: invalid custom 'Inverse' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 'what'))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', struct ('Link', @(x)x, 'Derivative', 'normcdf', 'Inverse', 'what'))
 %!error <glmfit: cell array with custom link functions must have three elements.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {'log'})
 %!error <glmfit: cell array with custom link functions must have three elements.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log', 'hijy'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {'log', 'hijy'})
 %!error <glmfit: cell array with custom link functions must have three elements.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {1, 2, 3, 4})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {1, 2, 3, 4})
 %!error <glmfit: bad 'Link' function in custom link function cell array.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {'log', 'dfv', 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {'log', 'dfv', 'dfgvd'})
 %!error <glmfit: custom 'Link' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) [x, x], 'dfv', 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) [x, x], 'dfv', 'dfgvd'})
 %!error <glmfit: invalid custom 'Link' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) what (x), 'dfv', 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) what (x), 'dfv', 'dfgvd'})
 %!error <glmfit: bad 'Derivative' function in custom link function cell array.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, 'dfv', 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, 'dfv', 'dfgvd'})
 %!error <glmfit: custom 'Derivative' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, @(x) [x, x], 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, @(x) [x, x], 'dfgvd'})
 %!error <glmfit: invalid custom 'Derivative' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, @(x) what (x), 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, @(x) what (x), 'dfgvd'})
 %!error <glmfit: bad 'Inverse' function in custom link function cell array.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, @(x) x, 'dfgvd'})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, @(x) x, 'dfgvd'})
 %!error <glmfit: custom 'Inverse' function must return an output of the same size as input.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, @(x) x, @(x) [x, x]})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, @(x) x, @(x) [x, x]})
 %!error <glmfit: invalid custom 'Inverse' function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', {@(x) x, @(x) x, @(x) what (x)})
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', {@(x) x, @(x) x, @(x) what (x)})
 %!error <glmfit: numeric input for custom link function must be a finite real scalar value.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', NaN)
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', NaN)
 %!error <glmfit: numeric input for custom link function must be a finite real scalar value.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', [1, 2])
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', [1, 2])
 %!error <glmfit: numeric input for custom link function must be a finite real scalar value.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', [1i])
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', [1i])
 %!error <glmfit: canonical link function name must be a character vector.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', ['log'; 'log1'])
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', ['log'; 'log1'])
 %!error <glmfit: canonical link function 'somelinkfunction' is not supported.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', 'somelinkfunction')
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', 'somelinkfunction')
 %!error <glmfit: invalid value for custom link function.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'link', true)
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'link', true)
 %!error <glmfit: 'Options' must be a structure containing the fields 'MaxIter', and 'TolX'.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', true)
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', true)
 %!error <glmfit: 'Options' must be a structure containing the fields 'MaxIter', and 'TolX'.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 100))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100))
 %!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 4.5, 'TolX', 1e-6))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 4.5, 'TolX', 1e-6))
 %!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 0, 'TolX', 1e-6))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 0, 'TolX', 1e-6))
 %!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', -100, 'TolX', 1e-6))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', -100, 'TolX', 1e-6))
 %!error <glmfit: 'MaxIter' in 'Options' structure must be a positive integer.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', [50 ,50], 'TolX', 1e-6))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', [50 ,50], 'TolX', 1e-6))
 %!error <glmfit: 'TolX' in 'Options' structure must be a positive scalar.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', 0))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', 0))
 %!error <glmfit: 'TolX' in 'Options' structure must be a positive scalar.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', -1e-6))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', -1e-6))
 %!error <glmfit: 'TolX' in 'Options' structure must be a positive scalar.> ...
-%! glmfit (rand(5,2), rand(5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', [1e-6, 1e-6]))
+%! glmfit (rand (5,2), rand (5,1), 'poisson', 'options', struct ('MaxIter', 100, 'TolX', [1e-6, 1e-6]))
 %!error <glmfit: 'Offset' must be a numeric vector of the same size as Y.> ...
 %! glmfit (rand (5, 2), rand (5, 1), 'normal', 'offset', [1; 2; 3; 4])
 %!error <glmfit: 'Offset' must be a numeric vector of the same size as Y.> ...

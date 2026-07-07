@@ -54,7 +54,7 @@ classdef ExponentialDistribution
   ## explike, expstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} mu
     ##
@@ -68,7 +68,7 @@ classdef ExponentialDistribution
     mu
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} DistributionName
     ##
@@ -115,14 +115,14 @@ classdef ExponentialDistribution
     ParameterDescription = {'Mean'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'exp';
     ParameterRange = [realmin; Inf];
     ParameterLogCI = true;
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} ParameterValues
     ##
@@ -212,11 +212,11 @@ classdef ExponentialDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = ExponentialDistribution (mu)
       if (nargin == 0)
@@ -231,7 +231,7 @@ classdef ExponentialDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'exponential distribution');
     endfunction
 
@@ -253,7 +253,7 @@ classdef ExponentialDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {ExponentialDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -697,7 +697,7 @@ classdef ExponentialDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -777,19 +777,19 @@ endfunction
 ## Test input validation
 ## 'ExponentialDistribution' constructor
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution(0)
+%! ExponentialDistribution (0)
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution(-1)
+%! ExponentialDistribution (-1)
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution(Inf)
+%! ExponentialDistribution (Inf)
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution(i)
+%! ExponentialDistribution (i)
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution('a')
+%! ExponentialDistribution ('a')
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution([1, 2])
+%! ExponentialDistribution ([1, 2])
 %!error <ExponentialDistribution: MU must be a positive real scalar.> ...
-%! ExponentialDistribution(NaN)
+%! ExponentialDistribution (NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -896,8 +896,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = ExponentialDistribution(1);
-%! pd(2) = ExponentialDistribution(3);
+%! pd = ExponentialDistribution (1);
+%! pd(2) = ExponentialDistribution (3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

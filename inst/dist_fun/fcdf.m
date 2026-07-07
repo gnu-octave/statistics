@@ -78,7 +78,7 @@ function p = fcdf (x, df1, df2, uflag)
   endif
 
   ## Check X for NaNs while DFs <= 0 and make P = NaNs
-  make_nan = (df1 <= 0 | df2 <= 0 | isnan(x) | isnan(df1) | isnan(df2));
+  make_nan = (df1 <= 0 | df2 <= 0 | isnan (x) | isnan (df1) | isnan (df2));
   p(make_nan) = NaN;
   ## Check remaining valid X for Inf values and make P = 1
   is_inf = (x == Inf) & ! make_nan;
@@ -88,7 +88,7 @@ function p = fcdf (x, df1, df2, uflag)
   endif
 
   ## Compute P when X > 0.
-  k = find(x > 0 & ! make_nan & isfinite(df1) & isfinite(df2));
+  k = find (x > 0 & ! make_nan & isfinite (df1) & isfinite (df2));
   if (any (k))
     k1 = (df2(k) <= x(k) .* df1(k));
     if (any (k1))
@@ -104,7 +104,7 @@ function p = fcdf (x, df1, df2, uflag)
     endif
   endif
 
-  if any(! isfinite(df1(:)) | ! isfinite(df2(:)))
+  if any (! isfinite (df1(:)) | ! isfinite (df2(:)))
     k = find (x > 0 & ! make_nan & isfinite (df1) & ! isfinite (df2) & df2 > 0);
     if (any (k))
       p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, 'lower');

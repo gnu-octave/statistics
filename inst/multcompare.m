@@ -221,10 +221,10 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
 
     ## Evaluate ALPHA input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
-      error("multcompare:alpha must be a numeric scalar value.");
+      error ("multcompare:alpha must be a numeric scalar value.");
     endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
-      error("multcompare: alpha must be a value between 0 and 1.");
+      error ("multcompare: alpha must be a value between 0 and 1.");
     endif
 
     ## Evaluate CTYPE input argument
@@ -263,7 +263,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       if (! isempty (varargin))
         if (! any (strcmpi (varargin{1}, {'ctype','criticalvaluetype'})) ...
             || (nargin > 3) )
-          error (strcat("multcompare: invalid input arguments", ...
+          error (strcat ("multcompare: invalid input arguments", ...
                         " if only used to adjust p-values."));
         endif
       endif
@@ -312,7 +312,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             gcov = diag (gvar);
             Ng = numel (gmeans);
             M = zeros (Ng, 4);
-            M(:,1:2)  = cat (2, gmeans, sqrt(gvar));
+            M(:,1:2)  = cat (2, gmeans, sqrt (gvar));
 
             ## Get the error degrees of freedom from anova1 output
             if (isempty (DFE))
@@ -426,7 +426,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         N = numel (STATS.contrasts);
         for j = 1:N
           if (isnumeric (STATS.contrasts{j}))
-            if (any (abs (sum (STATS.contrasts{j})) > eps('single')))
+            if (any (abs (sum (STATS.contrasts{j})) > eps ('single')))
               error (msg);
             endif
           endif
@@ -439,9 +439,9 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         if (isempty (DFE))
           DFE = STATS.dfe;
         endif
-        i = 1 + cumsum(df);
+        i = 1 + cumsum (df);
         k = find (sum (STATS.terms(:,DIM), 2) == sum (STATS.terms, 2));
-        Nb = 1 + sum(df(k));
+        Nb = 1 + sum (df(k));
         Nt = numel (k);
         L = zeros (n, sum (df) + 1);
         for j = 1:Nt
@@ -459,16 +459,16 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         gcov = U * STATS.vcov * U';
         gvar = diag (gcov);                 # Sampling variance
         M = zeros (Ng, 4);
-        M(:,1:2) = cat (2, gmeans, sqrt(gvar));
+        M(:,1:2) = cat (2, gmeans, sqrt (gvar));
 
         ## Create cell array of group names corresponding to each row of m
         GNAMES = cell (Ng, 1);
         for i = 1:Ng
           str = '';
           for j = 1:Nd
-            str = sprintf("%s%s=%s, ", str, ...
-                      num2str(STATS.varnames{DIM(j)}), ...
-                      num2str(STATS.grpnames{DIM(j)}{STATS.grps(idx(i),DIM(j))}));
+            str = sprintf ("%s%s=%s, ", str, ...
+                      num2str (STATS.varnames{DIM(j)}), ...
+                      num2str (STATS.grpnames{DIM(j)}{STATS.grps(idx(i),DIM(j))}));
           endfor
           GNAMES{i} = str(1:end-2);
           str = '';
@@ -606,12 +606,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
     ## central coverage such that the intervals start to overlap where the
     ## difference reaches a two-tailed p-value of ALPHA. When ALPHA is 0.05,
     ## central coverage is approximately 83.4%
-    if (! isscalar(DFE))
+    if (! isscalar (DFE))
       # Upper bound critval (corresponding to lower bound DFE)
       critval = max (critval);
     endif
-    M(:,3) = M(:,1) - M(:,2) .* critval / sqrt(2);
-    M(:,4) = M(:,1) + M(:,2) .* critval / sqrt(2);
+    M(:,3) = M(:,1) - M(:,2) .* critval / sqrt (2);
+    M(:,4) = M(:,1) + M(:,2) .* critval / sqrt (2);
 
     ## If requested, plot graph of the difference means for each comparison
     ## with central coverage of confidence intervals at 100*(1-alpha)%
@@ -627,12 +627,12 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
             ## Plot marker for the difference in means
             plot (C(j,4), j,'or','MarkerFaceColor', 'r');
             ## Plot line for each confidence interval
-            plot ([C(j,3), C(j,5)], j * ones(2,1), 'r-');
+            plot ([C(j,3), C(j,5)], j * ones (2,1), 'r-');
           else
             ## Plot marker for the difference in means
             plot (C(j,4), j,'ob','MarkerFaceColor', 'b');
             ## Plot line for each confidence interval
-            plot ([C(j,3), C(j,5)], j * ones(2,1), 'b-');
+            plot ([C(j,3), C(j,5)], j * ones (2,1), 'b-');
           endif
         endfor
         hold off
@@ -677,7 +677,7 @@ function [pairs, L, R] = pairwise (Ng)
   ## Create pairs matrix for pairwise comparisons
   gid = [1:Ng]';  # Create numeric group ID
   A = ones (Ng, 1) * gid';
-  B = tril (gid * ones(1, Ng),-1);
+  B = tril (gid * ones (1, Ng),-1);
   pairs = [A(:), B(:)];
   ridx = (pairs(:, 2) == 0);
   pairs(ridx, :) = [];
@@ -778,14 +778,14 @@ function [padj, critval, dfe] = mvt (p, t, Ng, dfe, R, ALPHA)
 
   ## Lower bound for error degrees of freedom to ensure type 1 error rate isn't
   ## exceeded for any test
-  if (! isscalar(dfe))
+  if (! isscalar (dfe))
     dfe = max (1, round (min (dfe)));
     fprintf ("Note: df set to %u (lower bound)\n", dfe);
   endif
 
   ## Check if we can use parallel processing to accelerate computations
   pat = '^parallel';
-  software = pkg('list');
+  software = pkg ('list');
   names = cellfun (@(S) S.name, software, 'UniformOutput', false);
   status = cellfun (@(S) S.loaded, software, 'UniformOutput', false);
   index = find (! cellfun (@isempty, regexpi (names, pat)));
@@ -1018,7 +1018,7 @@ endfunction
 %!      10, 25, 66, 43, 47, 56,  6, 39, ...
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
 %!
-%! [P,ATAB,STATS] = anovan(y, g, 'display', 'off');
+%! [P,ATAB,STATS] = anovan (y, g, 'display', 'off');
 %! fitted = STATS.X * STATS.coeffs(:,1); # fitted values
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
@@ -1033,7 +1033,7 @@ endfunction
 %! p = [.005708; .023544; .024193; .044895; ...
 %!       .048805; .221227; .395867; .693051; .775755];
 %!
-%! padj = multcompare(p,'ctype','fdr')
+%! padj = multcompare (p,'ctype','fdr')
 
 %!test
 %!
@@ -1250,7 +1250,7 @@ endfunction
 %! assert (C(1,6), 0.000489269486879958, 1e-09);
 %! assert (C(2,6), 1, 1e-09);
 %! assert (C(3,6), 0.00301702982087047, 1e-09);
-%! C = multcompare(STATS, 'ctype', 'scheffe', 'display', 'off');
+%! C = multcompare (STATS, 'ctype', 'scheffe', 'display', 'off');
 %! assert (C(1,6), 0.000819054880289573, 1e-09);
 %! assert (C(2,6), 0.890628039849261, 1e-09);
 %! assert (C(3,6), 0.00447816059021654, 1e-09);
@@ -1262,15 +1262,15 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! [P, ATAB, STATS] = friedman (popcorn, 3, 'off');
-%! C = multcompare(STATS, 'ctype', 'lsd', 'display', 'off');
+%! C = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 0.227424558028569, 1e-09);
 %! assert (C(2,6), 0.0327204848315735, 1e-09);
 %! assert (C(3,6), 0.353160353315988, 1e-09);
-%! C = multcompare(STATS, 'ctype', 'bonferroni', 'display', 'off');
+%! C = multcompare (STATS, 'ctype', 'bonferroni', 'display', 'off');
 %! assert (C(1,6), 0.682273674085708, 1e-09);
 %! assert (C(2,6), 0.0981614544947206, 1e-09);
 %! assert (C(3,6), 1, 1e-09);
-%! C = multcompare(STATS, 'ctype', 'scheffe', 'display', 'off');
+%! C = multcompare (STATS, 'ctype', 'scheffe', 'display', 'off');
 %! assert (C(1,6), 0.482657360384373, 1e-09);
 %! assert (C(2,6), 0.102266573027672, 1e-09);
 %! assert (C(3,6), 0.649836502233148, 1e-09);
@@ -1286,7 +1286,7 @@ endfunction
 %!        25.694 ]';
 %! X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
 %! [P, ATAB, STATS] = anovan (y, {X}, 'contrasts', 'simple', 'display', 'off');
-%! [C, M] = multcompare(STATS, 'ctype', 'lsd', 'display', 'off');
+%! [C, M] = multcompare (STATS, 'ctype', 'lsd', 'display', 'off');
 %! assert (C(1,6), 2.85812420217898e-05, 1e-09);
 %! assert (C(2,6), 5.22936741204085e-07, 1e-09);
 %! assert (C(3,6), 2.12794763209146e-08, 1e-09);
@@ -1324,7 +1324,7 @@ endfunction
 %! assert (padj(7), 1.000000, 1e-06);
 %! assert (padj(8), 1.000000, 1e-06);
 %! assert (padj(9), 1.000000, 1e-06);
-%! padj = multcompare(p,'ctype','holm');
+%! padj = multcompare (p,'ctype','holm');
 %! assert (padj(1), 0.051372, 1e-06);
 %! assert (padj(2), 0.188352, 1e-06);
 %! assert (padj(3), 0.188352, 1e-06);
@@ -1334,7 +1334,7 @@ endfunction
 %! assert (padj(7), 1.000000, 1e-06);
 %! assert (padj(8), 1.000000, 1e-06);
 %! assert (padj(9), 1.000000, 1e-06);
-%! padj = multcompare(p,'ctype','hochberg');
+%! padj = multcompare (p,'ctype','hochberg');
 %! assert (padj(1), 0.051372, 1e-06);
 %! assert (padj(2), 0.169351, 1e-06);
 %! assert (padj(3), 0.169351, 1e-06);
@@ -1344,7 +1344,7 @@ endfunction
 %! assert (padj(7), 0.775755, 1e-06);
 %! assert (padj(8), 0.775755, 1e-06);
 %! assert (padj(9), 0.775755, 1e-06);
-%! padj = multcompare(p,'ctype','fdr');
+%! padj = multcompare (p,'ctype','fdr');
 %! assert (padj(1), 0.0513720, 1e-07);
 %! assert (padj(2), 0.0725790, 1e-07);
 %! assert (padj(3), 0.0725790, 1e-07);

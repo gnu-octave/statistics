@@ -40,7 +40,7 @@ classdef ClassificationKNN
   ## @seealso{fitcknn}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {ClassificationKNN} {property} X
     ##
@@ -430,11 +430,11 @@ classdef ClassificationKNN
     BucketSize      = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -539,7 +539,7 @@ classdef ClassificationKNN
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationKNN (@var{X}, @var{Y})
@@ -818,7 +818,7 @@ classdef ClassificationKNN
               ## Check the input output sizes of the user function
               D2 = [];
               try
-                D2 = Distance (X(1,:), Y);
+                D2 = Distance(X(1,:), Y);
               catch ME
                 error (strcat ("ClassificationKNN: invalid function", ...
                                " handle for distance metric."));
@@ -837,7 +837,7 @@ classdef ClassificationKNN
             DMs = {'equal', 'inverse', 'squareinverse'};
             if (is_function_handle (DistanceWeight))
               m = eye (5);
-              if (! isequal (size (m), size (DistanceWeight (m))))
+              if (! isequal (size (m), size (DistanceWeight(m))))
                 error (strcat ("ClassificationKNN: function handle for", ...
                                " distance weight must return the same", ...
                                " size as its input."));
@@ -926,7 +926,7 @@ classdef ClassificationKNN
                            " name in optional pair arguments."));
 
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Generate default predictors and response variable names (if necessary)
@@ -959,8 +959,8 @@ classdef ClassificationKNN
 
       ## Remove missing values from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed, :);
-      X         = X (RowsUsed, :);
+      Y         = Y(RowsUsed, :);
+      X         = X(RowsUsed, :);
 
       ## Renew groups in Y, get classes ordered, keep the same type
       [this.ClassNames, gnY, gY] = unique (Y);
@@ -1366,7 +1366,7 @@ classdef ClassificationKNN
                 S_test = zeros (n, K);
                 W_test = ones (n, 1);
                 Cost_test = ones (K) - eye (K);
-                test_output = Value (C_test, S_test, W_test, Cost_test);
+                test_output = Value(C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
                   error (strcat ("ClassificationKNN.loss: custom loss", ...
                                  " function must return a scalar value."));
@@ -1398,7 +1398,7 @@ classdef ClassificationKNN
           otherwise
             error ("ClassificationKNN.loss: invalid name-value arguments.");
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Check for missing values in X
@@ -1469,7 +1469,7 @@ classdef ClassificationKNN
 
       ## Compute the loss using custom loss function
       if (isa (LossFun, 'function_handle'))
-        L = LossFun (C, scores, Weights, this.Cost);
+        L = LossFun(C, scores, Weights, this.Cost);
         return;
       endif
 
@@ -1832,7 +1832,7 @@ classdef ClassificationKNN
       if (isempty (QueryPoints))
         if (numel (Vars) == 1)
           if (isnumeric (Data(:, Vars)))
-            QueryPoints = linspace(min (Data(:, Vars)), ...
+            QueryPoints = linspace (min (Data(:, Vars)), ...
                                 max (Data(:, Vars)), 100)';
           else
             QueryPoints = unique (Data(:, Vars));
@@ -1841,7 +1841,7 @@ classdef ClassificationKNN
           QueryPoints = cell (1, numel (Vars));
           for j = 1:numel (Vars)
             if (isnumeric (Data(:, Vars(j))))
-              QueryPoints{j} = linspace(min (Data(:, Vars(j))), ...
+              QueryPoints{j} = linspace (min (Data(:, Vars(j))), ...
                                 max (Data(:, Vars(j))), 100)';
             else
               QueryPoints{j} = unique (Data(:, Vars(j)));
@@ -2026,7 +2026,7 @@ classdef ClassificationKNN
             error (strcat ("ClassificationKNN.crossval: invalid",...
                            " parameter name in optional paired arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Determine the cross-validation method to use
@@ -2100,7 +2100,7 @@ classdef ClassificationKNN
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationKNN object
@@ -2121,7 +2121,7 @@ classdef ClassificationKNN
 
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
 
     function this = setCost (this, Cost, gnY = [])
       if (isempty (gnY))
@@ -2205,7 +2205,7 @@ endfunction
 %!
 %! ## Fit the k-NN model using the 'mahalanobis' distance
 %! ## and the custom covariance matrix
-%! obj = fitcknn(x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', ...
+%! obj = fitcknn (x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', ...
 %! 'Cov', covMatrix);
 %!
 %! ## Create a partition model using cvpartition
@@ -2470,7 +2470,7 @@ endfunction
 ## Test input validation for constructor
 %!error<ClassificationKNN: too few input arguments.> ClassificationKNN ()
 %!error<ClassificationKNN: too few input arguments.> ...
-%! ClassificationKNN (ones(4, 1))
+%! ClassificationKNN (ones (4, 1))
 %!error<ClassificationKNN: number of rows in X and Y must be equal.> ...
 %! ClassificationKNN (ones (4,2), ones (1,4))
 %!error<ClassificationKNN: 'Standardize' must be either true or false.> ...
@@ -2488,17 +2488,17 @@ endfunction
 %!error<ClassificationKNN: 'ResponseName' must be a character vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'ResponseName', 1)
 %!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', @(x)x)
+%! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
 %!error<ClassificationKNN: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', {1})
+%! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(10,2), ones (10,1), 'ClassNames', [1, 2])
+%! ClassificationKNN (ones (10,2), ones (10,1), 'ClassNames', [1, 2])
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
+%! ClassificationKNN (ones (5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
+%! ClassificationKNN (ones (5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
 %!error<ClassificationKNN: not all 'ClassNames' are present in Y.> ...
-%! ClassificationKNN (ones(10,2), logical (ones (10,1)), 'ClassNames', [true, false])
+%! ClassificationKNN (ones (10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationKNN: 'BreakTies' must be a character vector.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'BreakTies', 1)
 %!error<ClassificationKNN: 'BreakTies' must be a character vector.> ...
@@ -2523,10 +2523,10 @@ endfunction
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', 'somemetric')
 %!error<ClassificationKNN: invalid function handle for distance metric.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', ...
-%!                    @(v,m)sqrt(repmat(v,rows(m),1)-m,2))
+%!                    @(v,m)sqrt (repmat (v,rows (m),1)-m,2))
 %!error<ClassificationKNN: custom distance function produces wrong output size.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', ...
-%!                    @(v,m)sqrt(sum(sumsq(repmat(v,rows(m),1)-m,2))))
+%!                    @(v,m)sqrt (sum (sumsq (repmat (v,rows (m),1)-m,2))))
 %!error<ClassificationKNN: invalid distance metric.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', [1 2 3])
 %!error<ClassificationKNN: invalid distance metric.> ...
@@ -2534,7 +2534,7 @@ endfunction
 %!error<ClassificationKNN: invalid distance metric.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'Distance', logical (5))
 %!error<ClassificationKNN: function handle for distance weight must return the> ...
-%! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', @(x)sum(x))
+%! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', @(x)sum (x))
 %!error<ClassificationKNN: invalid distance weight.> ...
 %! ClassificationKNN (ones (5,2), ones (5,1), 'DistanceWeight', 'text')
 %!error<ClassificationKNN: invalid distance weight.> ...

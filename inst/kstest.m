@@ -208,7 +208,7 @@ function [H, pValue, ksstat, cV] = kstest (x, varargin)
     ## Check that numerical CDF is incrementally sorted
     ydiff = diff (yCDF);
     if (any (ydiff < 0))
-      error("kstest: non-incrementing numerical CDF.");
+      error ("kstest: non-incrementing numerical CDF.");
     endif
     ## Remove duplicates. Check for consistency
     rd = find (diff (xCDF) == 0);
@@ -418,7 +418,7 @@ endfunction
 %! assert (p, 7.58603305206105e-107, 1e-14);
 %!test
 %! load examgrades
-%! [h, p] = kstest (grades(:,1), 'CDF', @(x) normcdf(x, 75, 10));
+%! [h, p] = kstest (grades(:,1), 'CDF', @(x) normcdf (x, 75, 10));
 %! assert (h, false);
 %! assert (p, 0.5612, 1e-4);
 %!test

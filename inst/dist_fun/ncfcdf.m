@@ -172,7 +172,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
   bcdf = bcdf0;
   olddy = zeros (size (lambda));
   j = j0 + 1;
-  ok = true(size(j));
+  ok = true (size (j));
   ## Set up for loop to avoid endless loop
   for jj = 1:5000
     ppdf = ppdf .* lambda ./ j;
@@ -186,7 +186,7 @@ function p = ncfcdf (x, df1, df2, lambda, uflag)
     ## ok = indices not converged
     y(ok) = y(ok) + delty(ok);
     ## Convergence test:  change must be small and not increasing
-    ok = ok & (delty>y*c_eps | abs(delty)>olddy);
+    ok = ok & (delty>y*c_eps | abs (delty)>olddy);
     ## Break if all indices converged
     if (! any (ok))
       break;

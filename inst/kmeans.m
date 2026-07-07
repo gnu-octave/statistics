@@ -358,7 +358,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
         centers(1,:) = data(randi (n_rows),:);
         d            = inf (n_rows, 1);    # Distance to nearest centroid so far
         for i = 2:k
-          d            = min (d, dist (data, centers(i - 1, :)));
+          d            = min (d, dist(data, centers(i - 1, :)));
           centers(i,:) = data(find (cumsum (d) > rand * sum (d), 1), :);
         endfor
       case 'cluster'
@@ -415,7 +415,7 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
 
         ## update the centroids
         if (any (membership))      ## if we didn't "drop" the cluster
-          centers(i, :) = centroid (data(membership, :));
+          centers(i, :) = centroid(data(membership, :));
         endif
       endfor
 
@@ -473,7 +473,7 @@ endfunction
 ## Update distances, classes and sums
 function [D, classes, sumd] = update_dist (data, centers, D, k, dist)
     for i = 1:k
-      D (:, i) = dist (data, centers(i, :));
+      D(:, i) = dist(data, centers(i, :));
     endfor
     [~, classes] = min (D, [], 2);
     ## calculate the sum of within-class distances
@@ -497,10 +497,10 @@ endfunction
 %!
 %! ## Plot the result
 %! figure;
-%! plot (data (idx==1, 1), data (idx==1, 2), 'ro');
+%! plot (data(idx==1, 1), data(idx==1, 2), 'ro');
 %! hold on;
-%! plot (data (idx==2, 1), data (idx==2, 2), 'bs');
-%! plot (centers (:, 1), centers (:, 2), 'kv', 'markersize', 10);
+%! plot (data(idx==2, 1), data(idx==2, 2), 'bs');
+%! plot (centers(:, 1), centers(:, 2), 'kv', 'markersize', 10);
 %! title ('A simple two-clusters example');
 %! hold off;
 
@@ -554,7 +554,7 @@ endfunction
 %! figure;
 %! plot (X(idx==1,1), X(idx==1,2), 'r.', 'MarkerSize', 12);
 %! hold on
-%! plot(X(idx==2,1), X(idx==2,2), 'b.', 'MarkerSize', 12);
+%! plot (X(idx==2,1), X(idx==2,2), 'b.', 'MarkerSize', 12);
 %! plot (C(:,1), C(:,2), 'kx', 'MarkerSize', 15, 'LineWidth', 3);
 %! legend ('Cluster 1', 'Cluster 2', 'Centroids', 'Location', 'NorthWest');
 %! title ('Cluster Assignments and Centroids');
@@ -658,11 +658,11 @@ endfunction
 %!test
 %! kmeans (rand (4,3), 2, 'distance', 'hamming', 'emptyAction', 'singleton');
 %!test
-%! kmeans ([1 0; 1.1 0], 2, 'start', eye(2), 'emptyaction', 'singleton');
+%! kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'singleton');
 
 ## Test input validation
 %!error kmeans (rand (3,2), 4);
-%!error kmeans ([1 0; 1.1 0], 2, 'start', eye(2), 'emptyaction', 'panic');
+%!error kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'panic');
 %!error kmeans (rand (4,3), 2, 'start', rand (2,3, 5), 'replicates', 1);
 %!error kmeans (rand (4,3), 2, 'start', rand (2,2));
 %!error kmeans (rand (4,3), 2, 'distance', 'manhattan');
@@ -677,4 +677,4 @@ endfunction
 %!error kmeans (rand (4,3), 2, 'maxiter', []);
 %!error kmeans (rand (4,3), 2, 'maxiter', [1 2]);
 %!error kmeans (rand (4,3), 2, 'maxiter', 'one');
-%!error <empty cluster created> kmeans ([1 0; 1.1 0], 2, 'start', eye(2), 'emptyaction', 'error');
+%!error <empty cluster created> kmeans ([1 0; 1.1 0], 2, 'start', eye (2), 'emptyaction', 'error');

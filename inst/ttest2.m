@@ -75,8 +75,8 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
 
   ## Evaluate optional input arguments
   i = 1;
-  while ( i <= length(varargin) )
-    switch lower(varargin{i})
+  while ( i <= length (varargin) )
+    switch lower (varargin{i})
       case 'alpha'
         i = i + 1;
         alpha = varargin{i};
@@ -136,7 +136,7 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
 
   ## Based on the "tail" argument determine the P-value, the critical values,
   ## and the confidence interval.
-  switch lower(tail)
+  switch lower (tail)
     case 'both'
       p = 2 * (1 - tcdf (abs (stats.tstat), stats.df));
       tcrit = - tinv (alpha / 2, stats.df);

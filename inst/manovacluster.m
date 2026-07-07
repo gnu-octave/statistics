@@ -64,16 +64,16 @@ function h = manovacluster (stats, method)
   ## Fix tick labels on x-axis
   oldlab = get (gca, 'XTickLabel');
   maxlen = max (cellfun ('length', group_names));
-  newlab = repmat(' ', size (oldlab, 1), maxlen);
+  newlab = repmat (' ', size (oldlab, 1), maxlen);
   ng = size (group_names, 1);
   for j = 1:size (oldlab, 1)
     k = str2num (oldlab(j,:));
     if (! isempty (k) & k > 0 & k <= ng)
       x = group_names{k,:};
-      newlab(j,1:length(x)) = x;
+      newlab(j,1:length (x)) = x;
     endif
   endfor
-  set(gca, 'XtickLabel', newlab);
+  set (gca, 'XtickLabel', newlab);
   ## Return plot handles if requested
   if nargout > 0
     h = hh;

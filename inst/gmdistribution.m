@@ -71,7 +71,7 @@ classdef gmdistribution
       RegularizationValue       ## const added to diag of cov to make +ve def
    endproperties
 
-   properties (Access = private)
+   properties(Access = private)
       DiagonalCovariance        ## bool summary of "CovarianceType"
    endproperties
 
@@ -91,7 +91,7 @@ classdef gmdistribution
           if any (p < 0)
             error ("gmdistribution: component weights must be non-negative");
           endif
-          s = sum(p);
+          s = sum (p);
           if (s == 0)
             error ("gmdistribution: component weights must not be all zero");
           elseif (s != 1)
@@ -209,7 +209,7 @@ classdef gmdistribution
       ########################################
       ## Display Gaussian mixture distribution object
       function c = display (obj)
-        disp(obj);
+        disp (obj);
       endfunction
 
       ########################################
@@ -232,7 +232,7 @@ classdef gmdistribution
       function c = posterior (obj,X)
         X = checkX (obj, X, 'posterior');
         p_x_l = componentProb (obj, X);
-        c = bsxfun(@rdivide, p_x_l, sum (p_x_l, 2));
+        c = bsxfun (@rdivide, p_x_l, sum (p_x_l, 2));
       endfunction
 
       ########################################
@@ -253,7 +253,7 @@ classdef gmdistribution
         endif
         for i = 1:obj.NumComponents
           idx = (classes == i);
-          k = sum(idx);
+          k = sum (idx);
           if (k > 0)
             if (! obj.SharedCovariance)
               if (obj.DiagonalCovariance)
@@ -272,15 +272,15 @@ classdef gmdistribution
     endmethods
 
     ########################################
-    methods (Static)
+    methods(Static)
       ## Gaussian mixture parameter estimates
-      function c = fit  (X, k, varargin)
+      function c = fit (X, k, varargin)
         c = fitgmdist (X, k, varargin{:});
       endfunction
     endmethods
 
     ########################################
-    methods (Access = private)
+    methods(Access = private)
       ## Probability density of (row of) X *and* component l
       ## Second argument is an array of the Mahalanobis distances
       function [p_x_l, M] = componentProb (obj, X)
@@ -288,7 +288,7 @@ classdef gmdistribution
         dets  = zeros (1, obj.NumComponents);   % sqrt(determinant)
         if (obj.SharedCovariance)
           if (obj.DiagonalCovariance)
-            r = diag (sqrt(obj.Sigma));
+            r = diag (sqrt (obj.Sigma));
           else
             r = chol (obj.Sigma);
           endif
@@ -327,21 +327,21 @@ classdef gmdistribution
 endclassdef
 
 %!test
-%! mu = eye(2);
-%! Sigma = eye(2);
+%! mu = eye (2);
+%! Sigma = eye (2);
 %! GM = gmdistribution (mu, Sigma);
 %! density = GM.pdf ([0 0; 1 1]);
 %! assert (density(1) - density(2), 0, 1e-6);
 %!
-%! [idx, nlogl, P, logpdf,M] = cluster (GM, eye(2));
+%! [idx, nlogl, P, logpdf,M] = cluster (GM, eye (2));
 %! assert (idx, [1; 2]);
-%! [idx2,nlogl2,P2,logpdf2] = GM.cluster (eye(2));
+%! [idx2,nlogl2,P2,logpdf2] = GM.cluster (eye (2));
 %! assert (nlogl - nlogl2, 0, 1e-6);
-%! [idx3,nlogl3,P3] = cluster (GM, eye(2));
+%! [idx3,nlogl3,P3] = cluster (GM, eye (2));
 %! assert (P - P3, zeros (2), 1e-6);
-%! [idx4,nlogl4] = cluster (GM, eye(2));
+%! [idx4,nlogl4] = cluster (GM, eye (2));
 %! assert (size (nlogl4), [1 1]);
-%! idx5 = cluster (GM, eye(2));
+%! idx5 = cluster (GM, eye (2));
 %! assert (idx - idx5, zeros (2,1));
 %!
 %! D = GM.mahal ([1;0]);
@@ -351,8 +351,8 @@ endclassdef
 %! assert (P - P2(2,:), zeros (1,2), 1e-6);
 %!
 %! R = GM.random(20);
-%! assert (size(R), [20, 2]);
+%! assert (size (R), [20, 2]);
 %!
 %! R = GM.random();
-%! assert (size(R), [1, 2]);
+%! assert (size (R), [1, 2]);
 

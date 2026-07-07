@@ -251,7 +251,7 @@ function Mdl = fitcsvm (X, Y, varargin)
       otherwise
         args = [args, {varargin{1}, varargin{2}}];
       endswitch
-    varargin (1:2) = [];
+    varargin(1:2) = [];
   endwhile
 
   ## Check for multiple cross-validation paired arguments

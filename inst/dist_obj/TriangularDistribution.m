@@ -54,7 +54,7 @@ classdef TriangularDistribution
   ## @seealso{makedist, tricdf, triinv, tripdf, trirnd, tristat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} A
     ##
@@ -92,7 +92,7 @@ classdef TriangularDistribution
     C
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} DistributionName
     ##
@@ -139,12 +139,12 @@ classdef TriangularDistribution
     ParameterDescription = {'Lower limit', 'Peak location', 'Upper limit'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'tri';
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} ParameterValues
     ##
@@ -184,7 +184,7 @@ classdef TriangularDistribution
     IsTruncated
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = TriangularDistribution (A, B, C)
       if (nargin == 0)
@@ -198,7 +198,7 @@ classdef TriangularDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Triangular distribution');
     endfunction
 
@@ -235,7 +235,7 @@ classdef TriangularDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {TriangularDistribution} {@var{p} =} cdf (@var{pd}, @var{x})

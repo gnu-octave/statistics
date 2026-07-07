@@ -156,12 +156,12 @@ function [r, T] = mvnrnd (mu, sigma, N, T)
         T = zeros (sd, is_class);
       endif
       if (is_diag)
-        sigma = reshape(sigma,sd(2),sd(3))';
+        sigma = reshape (sigma,sd(2),sd(3))';
         ## Check sigma for invalid values
         if (any (sigma(:) <= 0))
           error ("mvnpdf: SIGMA diagonals contain negative or zero values.");
         endif
-        R = sqrt(sigma);
+        R = sqrt (sigma);
         r = bsxfun (@times, randn (rm, cm, is_class), R) + mu;
         if (nargout > 1)
           for i = 1:rm

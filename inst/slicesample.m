@@ -162,7 +162,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
   maxit = 100;
   neval = 0;
 
-  fgreaterthan = @(x, fxc) logpdf (x) >= fxc;
+  fgreaterthan = @(x, fxc) logpdf(x) >= fxc;
 
   ti = burnin + nsamples * thin;
 
@@ -173,7 +173,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
   xc = smpl(1, :);
   for i = 1:ti
     neval++;
-    sliceheight = logpdf (xc) - rndexp(i);
+    sliceheight = logpdf(xc) - rndexp(i);
     c = width .* crand(i, :);
     lb = xc - c;
     ub = xc + width - c;
@@ -181,7 +181,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
     if (dim == 1)
       for k=1:maxit
         neval++;
-        if (! fgreaterthan (lb, sliceheight))
+        if (! fgreaterthan(lb, sliceheight))
           break
         endif
         lb -= width;
@@ -191,7 +191,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
       endif
       for k = 1:maxit
         neval++;
-        if (! fgreaterthan (ub, sliceheight))
+        if (! fgreaterthan(ub, sliceheight))
           break
         endif
         ub += width;
@@ -203,7 +203,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
     xp = (ub - lb) .* prand(i, :) + lb;
     for k=1:maxit
       neval++;
-      isgt = fgreaterthan (xp,sliceheight);
+      isgt = fgreaterthan(xp,sliceheight);
       if (all (isgt))
         break
       endif
@@ -241,7 +241,7 @@ endfunction
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d)*abs (eigs (Sigma, 1, 'sa')) * 1.1;
-%! pdf = @(x)(2*pi)^(-d/2)*det(Sigma)^-.5*exp(-.5*sum((x.'-mu).*(Sigma\(x.'-mu)),1));
+%! pdf = @(x)(2*pi)^(-d/2)*det (Sigma)^-.5*exp (-.5*sum ((x.'-mu).*(Sigma\(x.'-mu)),1));
 %!
 %! ## Inputs
 %! start = ones (1,2);
@@ -253,19 +253,19 @@ endfunction
 %! figure;
 %! hold on;
 %! plot (smpl(:,1), smpl(:,2), 'x');
-%! [x, y] = meshgrid (linspace (-6,4), linspace(-3,7));
-%! z = reshape (pdf ([x(:), y(:)]), size(x));
+%! [x, y] = meshgrid (linspace (-6,4), linspace (-3,7));
+%! z = reshape (pdf ([x(:), y(:)]), size (x));
 %! mesh (x, y, z, 'facecolor', 'None');
 %!
 %! ## Using sample points to find the volume of half a sphere with radius of .5
 %! f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)<.25)).';
-%! int = mean (f (smpl) ./ pdf (smpl));
-%! errest = std (f (smpl) ./ pdf (smpl)) / nsamples^.5;
+%! int = mean (f(smpl) ./ pdf (smpl));
+%! errest = std (f(smpl) ./ pdf (smpl)) / nsamples^.5;
 %! trueerr = abs (2/3*pi*.25^(3/2)-int);
 %! fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
 %! fprintf ("Monte Carlo integral error estimate %f\n", errest);
 %! fprintf ("The actual error %f\n", trueerr);
-%! mesh (x,y,reshape (f([x(:), y(:)]), size(x)), 'facecolor', 'None');
+%! mesh (x,y,reshape (f([x(:), y(:)]), size (x)), 'facecolor', 'None');
 
 %!demo
 %! ## Integrate truncated normal distribution to find normalization constant
@@ -278,12 +278,12 @@ endfunction
 %! area (x, f(x));
 %! xlabel ('x');
 %! ylabel ('f(x)');
-%! int = mean (f (smpl) ./ pdf (smpl));
-%! errest = std (f (smpl) ./ pdf (smpl)) / nsamples ^ 0.5;
+%! int = mean (f(smpl) ./ pdf (smpl));
+%! errest = std (f(smpl) ./ pdf (smpl)) / nsamples ^ 0.5;
 %! trueerr = abs (erf (2 ^ 0.5) * 2 ^ 0.5 * pi ^ 0.5 - int);
-%! fprintf("Monte Carlo integral estimate int f(x) dx = %f\n", int);
-%! fprintf("Monte Carlo integral error estimate %f\n", errest);
-%! fprintf("The actual error %f\n", trueerr);
+%! fprintf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
+%! fprintf ("Monte Carlo integral error estimate %f\n", errest);
+%! fprintf ("The actual error %f\n", trueerr);
 
 ## Test output
 %!test

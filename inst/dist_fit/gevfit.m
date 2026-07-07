@@ -229,9 +229,9 @@ function out = nll (parms, x)
   mu = parms(3);
   n = numel (x);
   z = (x - mu) ./ sigma;
-  if abs(k_0) > eps
+  if abs (k_0) > eps
       u = 1 + k_0.*z;
-      if min(u) > 0
+      if min (u) > 0
           lnu = log1p (k_0 .* z);
           out = n * log_sigma + sum (exp ((-1 / k_0) * lnu)) + ...
                                 (1 + 1 / k_0) * sum (lnu);

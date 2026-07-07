@@ -116,7 +116,7 @@ function r = gevrnd (k, sigma, mu, varargin)
   endif
 
   ## Generate random sample from Burr type XII distribution
-  r = gevinv (rand(sz), k, sigma, mu);
+  r = gevinv (rand (sz), k, sigma, mu);
 
   r = cast (r, cls);
 

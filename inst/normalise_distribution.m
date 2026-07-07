@@ -169,10 +169,10 @@ function normalised = normalise_distribution (data, distribution, dimension)
       ## Find the original indices in the unsorted sample.
       ## This somewhat quirky way of doing it is still faster than
       ## using a for-loop.
-      [ ignore, ignore, target_indices ] = unique ( data (:, k ) );
+      [ ignore, ignore, target_indices ] = unique ( data(:, k ) );
 
       ## Put normalised values in the places where they belong.
-      normalised ( :, k ) = normal (target_indices);
+      normalised( :, k ) = normal(target_indices);
     endfor
   else
     ## With known distributions, everything boils down to a few lines of code
@@ -182,7 +182,7 @@ function normalised = normalise_distribution (data, distribution, dimension)
       normalised = norminv (distribution{1,1}(data));
     elseif (length (vec (distribution)) == c)
       for k = 1 : c
-        normalised (:, k) = norminv (distribution{k}(data)(:, k));
+        normalised(:, k) = norminv (distribution{k}(data)(:, k));
       endfor
     else
       error (strcat ("normalise_distribution: number of distributions", ...
@@ -244,12 +244,12 @@ endfunction
 
 %!test
 %! A = [rand(1000,1), randn(1000, 1), exprnd(1, 1000, 1)]';
-%! N = normalise_distribution  (A, {@(x)(unifcdf (x, 0, 1)); @normcdf; @(x)(expcdf (x, 1))}, 2);
+%! N = normalise_distribution (A, {@(x)(unifcdf (x, 0, 1)); @normcdf; @(x)(expcdf (x, 1))}, 2);
 %! assert (mean (N, 2), [0, 0, 0]', 0.2);
 %! assert (std (N, [], 2), [1, 1, 1]', 0.1);
 
 %!xtest
-%! A = exprnd (1, 1000, 9); A (300:500, 4:6) = 17;
+%! A = exprnd (1, 1000, 9); A(300:500, 4:6) = 17;
 %! N = normalise_distribution (A);
 %! assert (mean (N), [0 0 0 0.38 0.38 0.38 0 0 0], 0.1);
 %! assert (var (N), [1 1 1 2.59 2.59 2.59 1 1 1], 0.1);

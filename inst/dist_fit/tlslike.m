@@ -160,9 +160,9 @@ function nlogL = tlsnll (x, params, censor, freq)
       S_censored = betainc (nu ./ w(censored), 0.5 .* nu, 0.5) ./ 2;
       S_censored(z(censored) < 0) = 1 - S_censored(z(censored) < 0);
     else            # Use a normal approximation
-      S_censored = log(0.5 * erfc(z(censored) ./ sqrt(2)));
+      S_censored = log (0.5 * erfc (z(censored) ./ sqrt (2)));
     endif
-    L(censored) = log(S_censored);
+    L(censored) = log (S_censored);
   endif
   nlogL = - sum (freq .* L);
 

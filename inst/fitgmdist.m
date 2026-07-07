@@ -175,7 +175,7 @@ function obj = fitgmdist (data, k, varargin)
   endswitch
 
   try
-    p = ones(1, k) / k;        # Default is uniform component proportions
+    p = ones (1, k) / k;        # Default is uniform component proportions
   catch ME
     if (! isscalar (k) || ! isnumeric (k))
       error ("fitgmdist: The second argument must be a numeric scalar.");
@@ -274,7 +274,7 @@ function obj = fitgmdist (data, k, varargin)
       endif
       non_zero = (weights(:,1) > 0);
       weights = weights(non_zero,:);
-      data    = data   (non_zero,:);
+      data    = data(non_zero,:);
 
       nRows = rows (data);
       raw_samples = sum (weights(:,1));
@@ -394,10 +394,10 @@ function obj = fitgmdist (data, k, varargin)
             sig = Sigma(:,:,i);
           endif
           if (diagonalCovar)
-            sig = diag(sig);
+            sig = diag (sig);
           endif
           try
-            p_x_l (:, i) = mvnpdf (data, mu(i, :), sig);
+            p_x_l(:, i) = mvnpdf (data, mu(i, :), sig);
           catch ME
             if (strfind (ME.message, 'positive definite'))
               error (strcat ("fitgmdist: Covariance is not positive", ...
@@ -427,8 +427,8 @@ function obj = fitgmdist (data, k, varargin)
         endif
         for i = 1:k
           ## Sigma
-          deviation = bsxfun(@minus, data, mu(i,:));
-          lhs = bsxfun(@times, p_l_x(:,i), deviation);
+          deviation = bsxfun (@minus, data, mu(i,:));
+          lhs = bsxfun (@times, p_l_x(:,i), deviation);
 
           ## Calculate covariance
           ## Iterate either over elements of the covariance matrix,
@@ -447,7 +447,7 @@ function obj = fitgmdist (data, k, varargin)
           endif
 
           if (diagonalCovar)
-            sig = diag(sig)';
+            sig = diag (sig)';
           endif
 
           if (sharedCovar)
@@ -467,9 +467,9 @@ function obj = fitgmdist (data, k, varargin)
         else
           new_log_likeli = sum (weights(:,1) .* log (sum (p_x_l, 2)));
         endif
-        incr  = (new_log_likeli - log_likeli)/max(1,abs(new_log_likeli));
+        incr  = (new_log_likeli - log_likeli)/max (1,abs (new_log_likeli));
         if (Display == 2)
-          fprintf("iter %d  log-likelihood %g\n", iter-1, new_log_likeli);
+          fprintf ("iter %d  log-likelihood %g\n", iter-1, new_log_likeli);
         endif
         log_likeli = new_log_likeli;
       endwhile
@@ -536,8 +536,8 @@ endfunction
 %!
 %! ## Plot the result
 %! figure
-%! [heights, bins] = hist3([C1; C2]);
-%! [xx, yy] = meshgrid(bins{1}, bins{2});
+%! [heights, bins] = hist3 ([C1; C2]);
+%! [xx, yy] = meshgrid (bins{1}, bins{2});
 %! bbins = [xx(:), yy(:)];
 %! contour (reshape (GMModel.pdf (bbins), size (heights)));
 

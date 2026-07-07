@@ -97,7 +97,7 @@ function x = nctinv (p, df, mu)
     count = count + 1;
     h_k = (F - p_k) ./ nctpdf (x_k, df_k, mu_k);
     ## Prevent Infs - NaNs
-    infnan = isinf(h_k) | isnan(h_k);
+    infnan = isinf (h_k) | isnan (h_k);
     if (any (infnan(:)))
       h_k(infnan) = x_k(infnan) / 10;
     endif

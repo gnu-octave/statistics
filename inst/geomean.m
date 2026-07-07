@@ -166,7 +166,7 @@ function m = geomean (x, varargin)
       ## FIXME: this special case handling could be removed once sum
       ##        compatibly handles all sizes of empty inputs
       sz_out = szx;
-      sz_out (vecdim(vecdim <= ndx)) = 1;
+      sz_out(vecdim(vecdim <= ndx)) = 1;
       m = NaN (sz_out);
     else
 

@@ -529,7 +529,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
           endif
         endfor
         ## Join multiple group labels with a newline for hierarchical stacking
-        labels{i} = strjoin (lbl_parts, char(10));
+        labels{i} = strjoin (lbl_parts, char (10));
       endfor
     endif
 
@@ -787,10 +787,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
 
   ## Print labels according to orientation and return handle
   if (orientation)
-    set (gca(), 'xtick', groups, 'xticklabel', labels);
+    set (gca (), 'xtick', groups, 'xticklabel', labels);
     hs.labels = get (gcf, 'currentaxes');
   else
-    set (gca(), 'ytick', groups, 'yticklabel', labels);
+    set (gca (), 'ytick', groups, 'yticklabel', labels);
     hs.labels = get (gcf, 'currentaxes');
   endif
 
@@ -891,7 +891,7 @@ endfunction
 %! randn ('seed', 11); # for reproducibility
 %! data = randn (30, 1);
 %! ## Using modern string arrays
-%! str_groups = string(repmat(['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
+%! str_groups = string (repmat (['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
 %! boxplot (data, str_groups, 'colors', 'rgb');
 %! title ('Example using modern string arrays for grouping');
 

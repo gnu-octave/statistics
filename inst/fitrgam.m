@@ -178,7 +178,7 @@ endfunction
 
 ## Test input validation
 %!error<fitrgam: too few arguments.> fitrgam ()
-%!error<fitrgam: too few arguments.> fitrgam (ones(10,2))
+%!error<fitrgam: too few arguments.> fitrgam (ones (10,2))
 %!error<fitrgam: Name-Value arguments must be in pairs.>
 %! fitrgam (ones (4,2), ones (4, 1), 'K')
 %!error<fitrgam: number of rows in X and Y must be equal.>

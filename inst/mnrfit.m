@@ -117,7 +117,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
       otherwise
         warning (sprintf ("mnrfit: parameter %s will be ignored", name));
     endswitch
-    varargin (1:2) = [];
+    varargin(1:2) = [];
   endwhile
 
   ## Evaluate display input argument
@@ -137,8 +137,8 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     [YN, ~, UY] = grp2idx (Y);  # this will also catch "" as missing values
     ## Remove missing values from X and Y
     RowsUsed  = ! logical (sum (isnan ([X, YN]), 2));
-    Y         = Y (RowsUsed);
-    X         = X (RowsUsed, :);
+    Y         = Y(RowsUsed);
+    X         = X(RowsUsed, :);
     ## Renew groups in Y
     [YN, ~, UY] = grp2idx (Y);  # in case a category is removed due to NaNs in X
     n = numel (UY);
@@ -150,8 +150,8 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     [YN, ~, UY] = grp2idx (Y);  # this will also catch "" as missing values
     ## Remove missing values from X and Y
     RowsUsed  = ! logical (sum (isnan ([X, YN]), 2));
-    Y         = Y (RowsUsed);
-    X         = X (RowsUsed, :);
+    Y         = Y(RowsUsed);
+    X         = X(RowsUsed, :);
     ## Renew groups in Y
     [YN, ~, UY] = grp2idx (Y);  # in case a category is removed due to NaNs in X
     n = numel (UY);
@@ -169,8 +169,8 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   ## Categorize Y in all other cases
   if (! iscellstr (Y))
     RowsUsed  = ! logical (sum (isnan ([X, Y]), 2));
-    Y         = Y (RowsUsed);
-    X         = X (RowsUsed, :);
+    Y         = Y(RowsUsed);
+    X         = X(RowsUsed, :);
     [UY, ~, YN] = unique (Y);  ## find unique categories in the response
     n = numel (UY);            ## number of unique response categories
   endif

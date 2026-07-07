@@ -155,13 +155,13 @@ function x = icdf (name, p, varargin)
   icdf_args = allDF(3:3:end);
 
   ## Search for iCDF function
-  idx = cellfun (@(x)any(strcmpi (name, x)), icdfnames);
+  idx = cellfun (@(x)any (strcmpi (name, x)), icdfnames);
 
   if (any (idx))
 
     if (nargs == icdf_args{idx})
       ## Check that all distribution parameters are numeric
-      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+      if (! all (cellfun (@(x)isnumeric (x), (varargin))))
         error ("icdf: distribution parameters must be numeric.");
       endif
       ## Call appropriate iCDF

@@ -80,9 +80,9 @@ function x = hygeinv (p, m, k, n)
     endif
   else
     p_0 = (p == 0);
-    x (ok & p_0) = 0; # set any p=0 to 0 if not already set to output NaN
+    x(ok & p_0) = 0; # set any p=0 to 0 if not already set to output NaN
     p_0 = (p == 1);
-    x (ok & p_0) = n(ok & p_0);
+    x(ok & p_0) = n(ok & p_0);
     ok &= (p>0 & p<1); # remove 0's and p's outside (0,1), leave unfilled as NaN
 
     if (any (ok(:)))
@@ -101,7 +101,7 @@ function x = hygeinv (p, m, k, n)
       p_tmp = (p_tmp ./ p_tmp(end_locs))(:, end:-1:1) - p(ok)(:);
       p_tmp(p_tmp>=0) = NaN;
       [p_match, p_match_idx] = max (p_tmp, [], 2);
-      p_match_idx(isnan(p_match)) = v(end) + 2;
+      p_match_idx(isnan (p_match)) = v(end) + 2;
 
       x(ok) = v(v(end) - p_match_idx + 3);
     endif

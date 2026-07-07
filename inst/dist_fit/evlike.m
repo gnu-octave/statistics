@@ -111,9 +111,9 @@ function [nlogL, acov] = evlike (params, x, censor, freq)
   ## Invert to get the observed information matrix.
   if (nargout == 2)
     unc = (1 - censor);
-    nH11 = sum(freq .* expz);
-    nH12 = sum(freq .* ((z + 1) .* expz - unc));
-    nH22 = sum(freq .* (z .* (z+2) .* expz - ((2 .* z + 1) .* unc)));
+    nH11 = sum (freq .* expz);
+    nH12 = sum (freq .* ((z + 1) .* expz - unc));
+    nH22 = sum (freq .* (z .* (z+2) .* expz - ((2 .* z + 1) .* unc)));
     acov =  (sigma .^ 2) * ...
             [nH22 -nH12; -nH12 nH11] / (nH11 * nH22 - nH12 * nH12);
   endif

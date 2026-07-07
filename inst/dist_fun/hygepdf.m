@@ -179,7 +179,7 @@ endfunction
 
 ## Test vector expansion
 %!test
-%! z = zeros(3,5);
+%! z = zeros (3,5);
 %! z([4,5,6,8,9,12]) = [1, 0.5, 1/6, 0.5, 2/3, 1/6];
 %! assert (hygepdf (x, 4, [0, 1, 2], 2, 'vectorexpand'), z, 3 * eps);
 %! assert (hygepdf (x, 4, [0, 1, 2]', 2, 'vectorexpand'), z, 3 * eps);

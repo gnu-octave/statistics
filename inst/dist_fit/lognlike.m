@@ -95,7 +95,7 @@ function [nlogL, avar] = lognlike (params, x, censor, freq)
   x(x < 0) = NaN;
 
   ## Calculate on log data
-  logx = log(x);
+  logx = log (x);
   if (nargout <= 1)
     nlogL = normlike (params, logx, censor, freq);
   else

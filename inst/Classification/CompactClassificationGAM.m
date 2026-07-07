@@ -34,7 +34,7 @@ classdef CompactClassificationGAM
   ## @seealso{ClassificationGAM, fitcgam}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationGAM} {property} NumPredictors
     ##
@@ -281,11 +281,11 @@ classdef CompactClassificationGAM
     IntMatrix       = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Class object constructor
     function this = CompactClassificationGAM (Mdl = [])
@@ -431,7 +431,7 @@ classdef CompactClassificationGAM
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationGAM} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -483,7 +483,7 @@ classdef CompactClassificationGAM
 
       ## Clean XC data
       notnansf  = ! logical (sum (isnan (XC), 2));
-      XC        = XC (notnansf, :);
+      XC        = XC(notnansf, :);
 
       ## Default values for Name-Value Pairs
       incInt = ! isempty (this.IntMatrix);
@@ -510,7 +510,7 @@ classdef CompactClassificationGAM
             error (strcat ("CompactClassificationGAM.predict: invalid", ...
                            " NAME in optional pairs of arguments."));
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Choose whether interactions must be included
@@ -618,7 +618,7 @@ classdef CompactClassificationGAM
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a CompactClassificationGAM object
@@ -640,7 +640,7 @@ classdef CompactClassificationGAM
 
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
 
     ## Set cost
     function this = setCost (this, Cost, gnY = [])
@@ -670,7 +670,7 @@ function scores = predict_val (params, XC, intercept)
 
   ## Add the remaining terms
   for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), XC (:,j));
+    ypred = ypred + ppval (params(j), XC(:,j));
   endfor
 
   ## Apply the sigmoid function to get probabilities

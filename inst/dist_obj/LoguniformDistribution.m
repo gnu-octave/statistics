@@ -48,7 +48,7 @@ classdef LoguniformDistribution
   ## @seealso{makedist}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} Lower
     ##
@@ -74,7 +74,7 @@ classdef LoguniformDistribution
     Upper
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} DistributionName
     ##
@@ -121,14 +121,14 @@ classdef LoguniformDistribution
     ParameterDescription = {'Lower limit', 'Upper limit'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'logu';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [false, false];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} ParameterValues
     ##
@@ -168,7 +168,7 @@ classdef LoguniformDistribution
     IsTruncated
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = LoguniformDistribution (Lower, Upper)
       if (nargin == 0)
@@ -182,7 +182,7 @@ classdef LoguniformDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Log-uniform distribution');
     endfunction
 
@@ -210,7 +210,7 @@ classdef LoguniformDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {LoguniformDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -643,8 +643,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = LoguniformDistribution(1, 4);
-%! pd(2) = LoguniformDistribution(2, 5);
+%! pd = LoguniformDistribution (1, 4);
+%! pd(2) = LoguniformDistribution (2, 5);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -76,7 +76,7 @@ function y = ncfpdf (x, df1, df2, lambda)
 
   ## Handle central distribution where lambda == 0
   k4 = lambda == 0 & ! k1 & x > 0;
-  if any(k4(:))
+  if any (k4(:))
     y(k4) = fpdf (x(k4), df1(k4), df2(k4));
   endif
 
@@ -163,10 +163,10 @@ function y = ncfpdf (x, df1, df2, lambda)
     term = ones (size (x));
     k = K;
     ok = df2int & k < df2;
-    while any(ok(:))
+    while any (ok(:))
       term(ok) = term(ok) .* xs(ok) .* ...
                  (df2(ok) - k(ok)) ./ (k(ok) + df1(ok)) ./ (k(ok) + 1);
-      ok = ok & term >= eps(rsum);
+      ok = ok & term >= eps (rsum);
       rsum(ok) = rsum(ok) + term(ok);
       k(ok) = k(ok) + 1;
     endwhile
@@ -241,7 +241,7 @@ function y = ncfpdf (x, df1, df2, lambda)
                  df1(K_df2) .* z1(K_df2);
   idx = ! Kzero & df2int & ! K_df2;
   y(td(idx)) = exp (y(td(idx))) .* (1 + rsum(idx)) .* df1(idx) .* z1(idx) .* ...
-               sqrt((df1(idx) + df2(idx) - 1) ./ (df2(idx) - K(idx)) ./ ...
+               sqrt ((df1(idx) + df2(idx) - 1) ./ (df2(idx) - K(idx)) ./ ...
                     (df1(idx) + K(idx) - 1) / pi2);
   idx = ! df2int & ! Kzero;
   y(td(idx)) = exp (y(td(idx))) .* (1 + rsum(idx)) .* df1(idx) .* z1(idx) .* ...
@@ -286,7 +286,7 @@ function lambda = StirlingError (n)
         lambda(k) = sfe(n2+1);
     else
         lnsr2pi = 0.9189385332046728;
-        lambda(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
+        lambda(k) = gammaln (n1+1)-(n1+0.5).*log (n1)+n1-lnsr2pi;
     endif
   endif
   k = find (n > 15 & n <= 35);
@@ -298,11 +298,11 @@ function lambda = StirlingError (n)
   if (any (k))
     lambda(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
-  k = find(n > 80 & n <= 500);
+  k = find (n > 80 & n <= 500);
   if (any (k))
     lambda(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
-  k = find(n > 500);
+  k = find (n > 500);
   if (any (k))
     lambda(k) = (S0 - S1 ./ nn(k)) ./ n(k);
   endif
@@ -316,7 +316,7 @@ function BP = BinoPoisson (x, np)
     BP = zeros (size (x));
   endif
   k = abs (x - np) < 0.1 * (x + np);
-  if any(k(:))
+  if any (k(:))
     s = (x(k) - np(k)) .* (x(k) - np(k)) ./ (x(k) + np(k));
     v = (x(k) - np(k)) ./ (x(k) + np(k));
     ej = 2 .* x(k) .* v;
@@ -324,7 +324,7 @@ function BP = BinoPoisson (x, np)
     s1 = zeros (size (s), is_class);
     ok = true (size (s));
     j = 0;
-    while any(ok(:))
+    while any (ok(:))
       ej(ok) = ej(ok) .* v(ok) .* v(ok);
       j = j + 1;
       s1(ok) = s(ok) + ej(ok) ./ (2 * j + 1);

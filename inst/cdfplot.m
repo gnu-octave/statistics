@@ -57,7 +57,7 @@ function [hCDF, stats] = cdfplot (x)
   if (strcmpi (eid, 'VectorRequired'))
     error ("cdfplot: vector required as input.");
   elseif (strcmpi (eid, 'NotEnoughData'))
-    error("cdfplot: not enough data.");
+    error ("cdfplot: not enough data.");
   endif
   ## Create vectors for plotting
   k = length (xx);
@@ -85,7 +85,7 @@ function [hCDF, stats] = cdfplot (x)
 endfunction
 
 %!demo
-%! x = randn(100,1);
+%! x = randn (100,1);
 %! cdfplot (x);
 
 ## Test results
@@ -104,7 +104,7 @@ endfunction
 %!test
 %! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   x = randn(100,1);
+%!   x = randn (100,1);
 %!   cdfplot (x);
 %! unwind_protect_cleanup
 %!   close (hf);

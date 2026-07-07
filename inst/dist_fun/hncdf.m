@@ -88,9 +88,9 @@ function p = hncdf (x, mu, sigma, uflag)
   z(z < 0) = 0;
 
   if (uflag)
-    p = erfc(z./sqrt(2));
+    p = erfc (z./sqrt (2));
   else
-    p = erf(z./sqrt(2));
+    p = erf (z./sqrt (2));
   endif
 
 endfunction
@@ -154,11 +154,11 @@ endfunction
 %!error<hncdf: invalid argument for upper tail.> hncdf (1, 2, 3, 'tail')
 %!error<hncdf: invalid argument for upper tail.> hncdf (1, 2, 3, 5)
 %!error<hncdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! hncdf (ones (3), ones (2), ones(2))
+%! hncdf (ones (3), ones (2), ones (2))
 %!error<hncdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! hncdf (ones (2), ones (3), ones(2))
+%! hncdf (ones (2), ones (3), ones (2))
 %!error<hncdf: X, MU, and SIGMA must be of common size or scalars.> ...
-%! hncdf (ones (2), ones (2), ones(3))
+%! hncdf (ones (2), ones (2), ones (3))
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (i, 2, 3)
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (1, i, 3)
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (1, 2, i)

@@ -146,7 +146,7 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
 
   for k = 1:2:length (varargin)
     if (ischar (varargin{k}))
-      switch lower(varargin{k})
+      switch lower (varargin{k})
         case 'pdf'
           if (isa (varargin{k+1}, 'function_handle'))
             pdf = varargin{k+1};
@@ -224,7 +224,7 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
     error ("mhsample: pdf or logpdf must be input.");
   endif
   if (! isempty (proppdf) && isempty (logproppdf))
-    logproppdf = @(x, y) rloge (proppdf (x, y));
+    logproppdf = @(x, y) rloge (proppdf(x, y));
   elseif (isempty (proppdf) && isempty (logproppdf) && ! sym)
     error ("mhsample: proppdf or logproppdf must be input unless 'symmetrical' is true.");
   endif
@@ -254,11 +254,11 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
   rnd = log (rand (nchain, nsamples*m+K));
   for k = 1:nsamples*m+K
     canacc = rem (k-K, m) == 0;
-    px = proprnd (cx);
+    px = proprnd(cx);
     if (sym)
-      A = logpdf (px) - logpdf(cx);
+      A = logpdf(px) - logpdf(cx);
     else
-      A = (logpdf (px) + logproppdf (cx, px)) - (logpdf (cx) + logproppdf (px, cx));
+      A = (logpdf(px) + logproppdf(cx, px)) - (logpdf(cx) + logproppdf(px, cx));
     endif
     ac = rnd(:, k) < min (A, 0);
     cx(ac, :) = px(ac, :);
@@ -291,7 +291,7 @@ endfunction
 %! Sigma = rand (d);
 %! Sigma = (Sigma + Sigma');
 %! Sigma += eye (d) * abs (eigs (Sigma, 1, 'sa')) * 1.1;
-%! pdf = @(x)(2*pi)^(-d/2)*det(Sigma)^-.5*exp(-.5*sum((x.'-mu).*(Sigma\(x.'-mu)),1));
+%! pdf = @(x)(2*pi)^(-d/2)*det (Sigma)^-.5*exp (-.5*sum ((x.'-mu).*(Sigma\(x.'-mu)),1));
 %! ## Inputs
 %! start = ones (1, 2);
 %! nsamples = 500;
@@ -305,18 +305,18 @@ endfunction
 %! figure;
 %! hold on;
 %! plot (smpl(:, 1), smpl(:, 2), 'x');
-%! [x, y] = meshgrid (linspace (-6, 4), linspace(-3, 7));
-%! z = reshape (pdf ([x(:), y(:)]), size(x));
+%! [x, y] = meshgrid (linspace (-6, 4), linspace (-3, 7));
+%! z = reshape (pdf ([x(:), y(:)]), size (x));
 %! mesh (x, y, z, 'facecolor', 'None');
 %! ## Using sample points to find the volume of half a sphere with radius of .5
 %! f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)<.25)).';
-%! int = mean (f (smpl) ./ pdf (smpl));
-%! errest = std (f (smpl) ./ pdf (smpl)) / nsamples ^ .5;
+%! int = mean (f(smpl) ./ pdf (smpl));
+%! errest = std (f(smpl) ./ pdf (smpl)) / nsamples ^ .5;
 %! trueerr = abs (2 / 3 * pi * .25 ^ (3 / 2) - int);
 %! printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
 %! printf ("Monte Carlo integral error estimate %f\n", errest);
 %! printf ("The actual error %f\n", trueerr);
-%! mesh (x, y, reshape (f([x(:), y(:)]), size(x)), 'facecolor', 'None');
+%! mesh (x, y, reshape (f([x(:), y(:)]), size (x)), 'facecolor', 'None');
 
 %!demo
 %! ## Integrate truncated normal distribution to find normalization constant
@@ -326,13 +326,13 @@ endfunction
 %! proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
 %! [smpl, accept] = mhsample (1, nsamples, 'pdf', pdf, 'proprnd', proprnd, ...
 %!                            'symmetric', true, 'thin', 4);
-%! f = @(x) exp(-.5 * x .^ 2) .* (x >= -2 & x <= 2);
+%! f = @(x) exp (-.5 * x .^ 2) .* (x >= -2 & x <= 2);
 %! x = linspace (-3, 3, 1000);
-%! area(x, f(x));
+%! area (x, f(x));
 %! xlabel ('x');
 %! ylabel ('f(x)');
-%! int = mean (f (smpl) ./ pdf (smpl));
-%! errest = std (f (smpl) ./ pdf (smpl)) / nsamples^ .5;
+%! int = mean (f(smpl) ./ pdf (smpl));
+%! errest = std (f(smpl) ./ pdf (smpl)) / nsamples^ .5;
 %! trueerr = abs (erf (2 ^ .5) * 2 ^ .5 * pi ^ .5 - int);
 %! printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
 %! printf ("Monte Carlo integral error estimate %f\n", errest);
@@ -357,5 +357,5 @@ endfunction
 %!error mhsample (1);
 %!error mhsample (1, 1);
 %!error mhsample (1, 1, 'pdf', @(x)x);
-%!error mhsample (1, 1, 'pdf', @(x)x, 'proprnd', @(x)x+rand(size(x)));
+%!error mhsample (1, 1, 'pdf', @(x)x, 'proprnd', @(x)x+rand (size (x)));
 

@@ -77,17 +77,17 @@ function p = unifcdf (x, a, b, uflag)
   endif
 
   ## Calculate continuous uniform CDF for valid parameter and data range
-  k = find(x > a & x < b & a < b);
+  k = find (x > a & x < b & a < b);
   if (uflag)
     p(x <= a & a < b) = 1;
     p(x >= b & a < b) = 0;
-    if any(k)
+    if any (k)
       p(k) = (b(k)- x(k)) ./ (b(k) - a(k));
     endif
   else
     p(x <= a & a < b) = 0;
     p(x >= b & a < b) = 1;
-    if any(k)
+    if any (k)
       p(k) = (x(k) - a(k)) ./ (b(k) - a(k));
     endif
   endif

@@ -142,7 +142,7 @@ classdef LinearModel
   ## @seealso{fitlm}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
 
     ## Coefficient estimate properties
 
@@ -633,7 +633,7 @@ classdef LinearModel
 
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
 
     ## Full design matrix, n by p_design, used for predictions
     DesignMatrix = [];
@@ -670,7 +670,7 @@ classdef LinearModel
 
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -753,7 +753,7 @@ classdef LinearModel
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {LinearModel} {@var{mdl} =} LinearModel (@var{X}, @var{y})
@@ -1213,10 +1213,10 @@ classdef LinearModel
         'VariableNames', {'Raw', 'Pearson', 'Studentized', 'Standardized'});
 
       Lev_full = zeros (n_total, 1);
-      CD_full  = NaN   (n_total, 1);
-      Dff_full = NaN   (n_total, 1);
-      S2i_full = NaN   (n_total, 1);
-      CR_full  = NaN   (n_total, 1);
+      CD_full  = NaN (n_total, 1);
+      Dff_full = NaN (n_total, 1);
+      S2i_full = NaN (n_total, 1);
+      CR_full  = NaN (n_total, 1);
       Lev_full(subset_mask) = D.Leverage;
       CD_full(subset_mask)  = D.CooksDistance;
       Dff_full(subset_mask) = D.Dffits;
@@ -1293,8 +1293,8 @@ classdef LinearModel
       endif
 
       nv_total   = numel (var_names_all);
-      vi_class   = cell  (nv_total, 1);
-      vi_range   = cell  (nv_total, 1);
+      vi_class   = cell (nv_total, 1);
+      vi_range   = cell (nv_total, 1);
       vi_inmodel = false (nv_total, 1);
       vi_iscat   = false (nv_total, 1);
 
@@ -2591,14 +2591,14 @@ classdef LinearModel
           bw_raw = 3.5 * s / (n_act ^ (1/3));
           mag    = 10 ^ floor (log10 (bw_raw));
           frac   = bw_raw / mag;
-          if     (frac <= 1); nice = 1;
+          if (frac <= 1); nice = 1;
           elseif (frac <= 2); nice = 2;
           elseif (frac <= 5); nice = 5;
           else;                nice = 10;
           endif
           bw = nice * mag;
           lo = floor (min (r_act) / bw) * bw;
-          hi = ceil  (max (r_act) / bw) * bw;
+          hi = ceil (max (r_act) / bw) * bw;
         endif
         n_bins  = max (1, round ((hi - lo) / bw));
         centers = lo + bw/2 : bw : lo + bw * (n_bins - 0.5);
@@ -2612,7 +2612,7 @@ classdef LinearModel
                          nv_remaining{:}, 'Parent', ax);
           xlabel (ax, 'Residuals');
           ylabel (ax, 'Probability density');
-          title  (ax, 'Histogram of residuals');
+          title (ax, 'Histogram of residuals');
 
         case 'fitted'
           fit   = mdl.Fitted;
@@ -2625,7 +2625,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Fitted values');
           ylabel (ax, 'Residuals');
-          title  (ax, 'Plot of residuals vs. fitted values');
+          title (ax, 'Plot of residuals vs. fitted values');
 
         case 'caseorder'
           n_tot = numel (r);
@@ -2637,7 +2637,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Residuals');
-          title  (ax, 'Case order plot of residuals');
+          title (ax, 'Case order plot of residuals');
 
         case 'lagged'
           r_x    = r(1:end-1);
@@ -2654,13 +2654,13 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Residual(t-1)');
           ylabel (ax, 'Residual(t)');
-          title  (ax, 'Plot of residuals vs. lagged residuals');
+          title (ax, 'Plot of residuals vs. lagged residuals');
 
         case 'probability'
           r_act = r(! isnan (r));
           r_s   = sort (r_act);
           h     = normplot (ax, r_s);
-          title  (ax, 'Normal probability plot of residuals');
+          title (ax, 'Normal probability plot of residuals');
           xlabel (ax, 'Residuals');
           ylabel (ax, 'Probability');
 
@@ -2683,7 +2683,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Fitted values');
           ylabel (ax, 'Observed response values');
-          title  (ax, 'Plot of observed vs. fitted values');
+          title (ax, 'Plot of observed vs. fitted values');
 
         case 'symmetry'
           r_act = r(! isnan (r));
@@ -2701,7 +2701,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Lower tail');
           ylabel (ax, 'Upper tail');
-          title  (ax, 'Symmetry plot of residuals around their median');
+          title (ax, 'Symmetry plot of residuals around their median');
 
       endswitch
 
@@ -2868,7 +2868,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Leverage');
-          title  (ax, 'Case order plot of leverage');
+          title (ax, 'Case order plot of leverage');
 
         case 'cookd'
           cd_ = diag_t.CooksDistance;
@@ -2880,7 +2880,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Cook''s distance');
-          title  (ax, 'Case order plot of Cook''s distance');
+          title (ax, 'Case order plot of Cook''s distance');
 
         case 'covratio'
           cv = diag_t.CovRatio;
@@ -2895,7 +2895,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Covariance ratio');
-          title  (ax, 'Case order plot of covariance ratio');
+          title (ax, 'Case order plot of covariance ratio');
 
         case 'dfbetas'
           db  = diag_t.Dfbetas;
@@ -2911,7 +2911,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Scaled change in coefficients');
-          title  (ax, 'Case order plot of scaled change in coefficients');
+          title (ax, 'Case order plot of scaled change in coefficients');
 
         case 'dffits'
           df  = diag_t.Dffits;
@@ -2925,7 +2925,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Scaled change in fit');
-          title  (ax, 'Case order plot of scaled change in fit');
+          title (ax, 'Case order plot of scaled change in fit');
 
         case 's2_i'
           s2 = diag_t.S2_i;
@@ -2936,7 +2936,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Row number');
           ylabel (ax, 'Leave-one-out variance');
-          title  (ax, 'Case order plot of leave-one-out variance');
+          title (ax, 'Case order plot of leave-one-out variance');
 
         case 'contour'
           lev    = diag_t.Leverage;
@@ -2957,7 +2957,7 @@ classdef LinearModel
           hold (ax, 'off');
           xlabel (ax, 'Leverage');
           ylabel (ax, 'Residual');
-          title  (ax, 'Cook''s distance factorization');
+          title (ax, 'Cook''s distance factorization');
 
       endswitch
 
@@ -3056,7 +3056,7 @@ classdef LinearModel
           endif
           codes = zeros (n_act, 1);
           for L = 1:numel (levels_j)
-            codes (strcmp (col_str, char (levels_j{L}))) = L;
+            codes(strcmp (col_str, char (levels_j{L}))) = L;
           endfor
           X_act(:,j) = codes;
         else
@@ -3126,7 +3126,7 @@ classdef LinearModel
       ylim  (ax, [0.5, p + 0.5]);
       xlabel (ax, 'Main Effect');
       ylabel (ax, '');
-      title  (ax, 'Main Effects Plot');
+      title (ax, 'Main Effects Plot');
 
       if (nargout == 0)
         clear h;
@@ -3270,7 +3270,7 @@ classdef LinearModel
           endif
           codes = zeros (n_act, 1);
           for L = 1:numel (levels_k)
-            codes (strcmp (col_str, char (levels_k{L}))) = L;
+            codes(strcmp (col_str, char (levels_k{L}))) = L;
           endfor
           X_act(:,k) = codes;
         else
@@ -3343,7 +3343,7 @@ classdef LinearModel
 
       xlabel (ax, pname);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
-      title  (ax, 'Adjusted Response Plot');
+      title (ax, 'Adjusted Response Plot');
       
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
@@ -3522,7 +3522,7 @@ classdef LinearModel
           endif
           codes = zeros (n_act, 1);
           for L = 1:numel (levels_k)
-            codes (strcmp (col_str, char (levels_k{L}))) = L;
+            codes(strcmp (col_str, char (levels_k{L}))) = L;
           endfor
           X_act(:,k) = codes;
         else
@@ -3604,7 +3604,7 @@ classdef LinearModel
 
       xlabel (ax, ['Adjusted ', label]);
       ylabel (ax, ['Adjusted ', mdl.ResponseName]);
-      title  (ax, ['Added Variable Plot for ', label]);
+      title (ax, ['Added Variable Plot for ', label]);
       
       hleg = legend (ax, 'show');
       set (hleg, 'Location', lm_legend_corner (xdata, ydata));
@@ -3617,7 +3617,7 @@ classdef LinearModel
 
   endmethods
 
-  methods (Access = private, Static)
+  methods(Access = private, Static)
 
     ## weighted least-squares via pivoted QR; returns fit struct
     function fit = lm_fit (X, y, w, compute_H)
@@ -4253,7 +4253,7 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
     rs = sort (abs (radj));
     s  = median (rs(max (1, p):end)) / 0.6745;
 
-    wts   = wgtfun (radj / (max (s, tiny_s) * tune));
+    wts   = wgtfun(radj / (max (s, tiny_s) * tune));
     beta0 = beta;
 
     ww   = sqrt (w .* wts);
@@ -4271,13 +4271,13 @@ function fit = lm_robust_fit (X, y, w, wgtfun, tune)
   else
     st  = max (mad_s, tiny_s) * tune;
     u   = radj / st;
-    phi = u .* wgtfun (u);
+    phi = u .* wgtfun(u);
 
     delta = 0.0001;
     u1   = u - delta;
-    phi0 = u1 .* wgtfun (u1);
+    phi0 = u1 .* wgtfun(u1);
     u1   = u + delta;
-    phi1 = u1 .* wgtfun (u1);
+    phi1 = u1 .* wgtfun(u1);
     dphi = (phi1 - phi0) / (2 * delta);
 
     m1 = mean (dphi);
@@ -7247,7 +7247,7 @@ endfunction
 %!error <Y argument is required> fitlm (X, 'Weights', [1;1;1])
 %!error <Predictor and response variables must have the same length> fitlm (X, [1; 2])
 %!error <Predictor and response variables must have the same length> fitlm (X, [1 2])
-%!error <indexing is not supported> mdl (1)
+%!error <indexing is not supported> mdl(1)
 %!error <indexing is not supported> mdl {1}
 %!error <unknown option> predict (mdl, [0.5 0.25], 'BadOption', 1)
 %!error <Alpha must be a scalar> predict (mdl, [0.5 0.25], 'Alpha', -0.1)

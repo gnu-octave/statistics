@@ -104,22 +104,22 @@ function yy = monotone_smooth (x, y, h)
     h = s / (n ^ 0.2);
   endif
 
-  x_min = min(x);
-  x_max = max(x);
+  x_min = min (x);
+  x_max = max (x);
 
-  y_min = min(y);
-  y_max = max(y);
+  y_min = min (y);
+  y_max = max (y);
 
   ## Transform range of X to [0, 1]
   xl = (x - x_min) / (x_max - x_min);
 
-  yy = ones(size(y));
+  yy = ones (size (y));
 
   ## Epanechnikov smoothing kernel (with finite support)
   ## K_epanech_kernel = @(z) (3/4) * ((1 - z).^2) .* (abs(z) < 1);
 
-  K_epanech_int = @(z) mean(((abs(z) < 1)/2) - (3/4) * (z .* (abs(z) < 1) ...
-                            - (1/3) * (z.^3) .* (abs(z) < 1)) + (z < -1));
+  K_epanech_int = @(z) mean (((abs (z) < 1)/2) - (3/4) * (z .* (abs (z) < 1) ...
+                            - (1/3) * (z.^3) .* (abs (z) < 1)) + (z < -1));
 
   ## Integral of kernels up to t
   monotone_inverse = @(t) K_epanech_int((y - t) / h);
@@ -145,7 +145,7 @@ function yy = monotone_smooth (x, y, h)
         ## if (abs(wt-wn) < 1E-4) || (tn < (y_min-0.1)) || (tn > (y_max+0.1))
         ## criterion for break in the R code -- replaced by the following line
         ## to hopefully be less dependent on the scale of y
-        if ((abs(wt_scaled-wn_scaled) < 1E-4) ||
+        if ((abs (wt_scaled-wn_scaled) < 1E-4) ||
             (wt_scaled < -0.1) || (wt_scaled > 1.1))
           iter_max_reached = 0;
           break
@@ -178,13 +178,13 @@ endfunction
 %!error<monotone_smooth: X must be a numeric vector.> ...
 %! monotone_smooth ({1,2,3}, 1)
 %!error<monotone_smooth: X must be a numeric vector.> ...
-%! monotone_smooth (ones(20,3), 1)
+%! monotone_smooth (ones (20,3), 1)
 %!error<monotone_smooth: Y must be a numeric vector.> ...
 %! monotone_smooth (1, 'char')
 %!error<monotone_smooth: Y must be a numeric vector.> ...
 %! monotone_smooth (1, {1,2,3})
 %!error<monotone_smooth: Y must be a numeric vector.> ...
-%! monotone_smooth (1, ones(20,3))
-%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), [1, 2])
-%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), {2})
-%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones(10,1), 'char')
+%! monotone_smooth (1, ones (20,3))
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones (10,1), [1, 2])
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones (10,1), {2})
+%!error<monotone_smooth: H>  monotone_smooth (ones (10,1), ones (10,1), 'char')

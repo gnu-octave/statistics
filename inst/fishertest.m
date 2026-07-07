@@ -154,7 +154,7 @@ function [h, p, stats] = fishertest (x, varargin)
               p = sum (p1(p1 < p2 + 10 * eps (p2)));
             case 'right'
               xr = x11(x11 >= x(1,1));
-              p = sum(hygepdf(xr,sz,r1,c1));
+              p = sum (hygepdf (xr,sz,r1,c1));
           endswitch
       endif
     catch
@@ -188,7 +188,7 @@ endfunction
 %! ## A Fisher's exact test example
 %!
 %! x = [3, 1; 1, 3]
-%! [h, p, stats] = fishertest(x)
+%! [h, p, stats] = fishertest (x)
 
 ## Test output against MATLAB R2018
 %!assert (fishertest ([3, 4; 5, 7]), false);

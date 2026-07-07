@@ -64,10 +64,10 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
                    " it must be the string  'econ'."));
   endif
 
-  [nobs nvars] = size(X);
+  [nobs nvars] = size (X);
 
   # Center the columns to mean zero
-  Xcentered = bsxfun (@minus,X,mean(X));
+  Xcentered = bsxfun (@minus,X,mean (X));
 
   # Check if there are more variables then observations
   if nvars <= nobs
@@ -91,7 +91,7 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
     SCORE = Xcentered * COEFF;
 
     # Get the rank of the SCORE matrix
-    r = rank(SCORE);
+    r = rank (SCORE);
 
     # Only use the first r columns, pad rest with zeros if economy != 'econ'
     SCORE = SCORE(:,1:r) ;
@@ -107,7 +107,7 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
   if nargout > 2
 
     # This is the same as the eigenvalues of the covariance matrix of X
-    latent  = (diag(S) .^ 2 / (size (Xcentered, 1) - 1))(1:r);
+    latent  = (diag (S) .^ 2 / (size (Xcentered, 1) - 1))(1:r);
 
     if ! (nargin == 2 && strcmpi (varargin{:} , 'econ'))
       latent= [latent; zeros(nvars-r,1)];
@@ -138,46 +138,46 @@ endfunction
 %!    8 2 2];
 %! R = corrcoef (x);
 %! [V, lambda] = eig (R);
-%! [~, i] = sort(diag(lambda), 'descend'); #arrange largest PC first
-%! S = V(:, i) * diag(sqrt(diag(lambda)(i)));
+%! [~, i] = sort (diag (lambda), 'descend'); #arrange largest PC first
+%! S = V(:, i) * diag (sqrt (diag (lambda)(i)));
 %! ## contribution of first 2 PCs to each original variable
-%!assert(diag(S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
-%! B = V(:, i) * diag( 1./ sqrt(diag(lambda)(i)));
-%! F = zscore(x)*B;
-%! [COEFF,SCORE,latent,tsquare] = princomp(zscore(x, 1));
-%!assert(tsquare,sumsq(F, 2),1E4*eps);
+%!assert (diag (S(:, 1:2)*S(:, 1:2)'), [0.8662; 0.8420; 0.9876], 1E-4);
+%! B = V(:, i) * diag ( 1./ sqrt (diag (lambda)(i)));
+%! F = zscore (x)*B;
+%! [COEFF,SCORE,latent,tsquare] = princomp (zscore (x, 1));
+%!assert (tsquare,sumsq (F, 2),1E4*eps);
 
 %!test
 %! x=[1,2,3;2,1,3]';
-%! [COEFF,SCORE,latent,tsquare] = princomp(x);
+%! [COEFF,SCORE,latent,tsquare] = princomp (x);
 %! m=[sqrt(2),sqrt(2);sqrt(2),-sqrt(2);-2*sqrt(2),0]/2;
-%! m(:,1) = m(:,1)*sign(COEFF(1,1));
-%! m(:,2) = m(:,2)*sign(COEFF(1,2));
+%! m(:,1) = m(:,1)*sign (COEFF(1,1));
+%! m(:,2) = m(:,2)*sign (COEFF(1,2));
 
-%!assert(COEFF,m(1:2,:),10*eps);
-%!assert(SCORE,-m,10*eps);
-%!assert(latent,[1.5;.5],10*eps);
-%!assert(tsquare,[4;4;4]/3,10*eps);
+%!assert (COEFF,m(1:2,:),10*eps);
+%!assert (SCORE,-m,10*eps);
+%!assert (latent,[1.5;.5],10*eps);
+%!assert (tsquare,[4;4;4]/3,10*eps);
 
 %!test
 %! x=x';
-%! [COEFF,SCORE,latent,tsquare] = princomp(x);
+%! [COEFF,SCORE,latent,tsquare] = princomp (x);
 %! m=[sqrt(2),sqrt(2),0;-sqrt(2),sqrt(2),0;0,0,2]/2;
-%! m(:,1) = m(:,1)*sign(COEFF(1,1));
-%! m(:,2) = m(:,2)*sign(COEFF(1,2));
-%! m(:,3) = m(:,3)*sign(COEFF(3,3));
+%! m(:,1) = m(:,1)*sign (COEFF(1,1));
+%! m(:,2) = m(:,2)*sign (COEFF(1,2));
+%! m(:,3) = m(:,3)*sign (COEFF(3,3));
 
-%!assert(COEFF,m,10*eps);
-%!assert(SCORE(:,1),-m(1:2,1),10*eps);
-%!assert(SCORE(:,2:3),zeros(2),10*eps);
-%!assert(latent,[1;0;0],10*eps);
-%!assert(tsquare,[0.5;0.5],10*eps)
+%!assert (COEFF,m,10*eps);
+%!assert (SCORE(:,1),-m(1:2,1),10*eps);
+%!assert (SCORE(:,2:3),zeros (2),10*eps);
+%!assert (latent,[1;0;0],10*eps);
+%!assert (tsquare,[0.5;0.5],10*eps)
 
 %!test
-%! [COEFF,SCORE,latent,tsquare] = princomp(x, 'econ');
+%! [COEFF,SCORE,latent,tsquare] = princomp (x, 'econ');
 
-%!assert(COEFF,m(:, 1),10*eps);
-%!assert(SCORE,-m(1:2,1),10*eps);
-%!assert(latent,[1],10*eps);
-%!assert(tsquare,[0.5;0.5],10*eps)
+%!assert (COEFF,m(:, 1),10*eps);
+%!assert (SCORE,-m(1:2,1),10*eps);
+%!assert (latent,[1],10*eps);
+%!assert (tsquare,[0.5;0.5],10*eps)
 

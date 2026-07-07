@@ -114,7 +114,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   if (nargin < 1)
     error ("chi2gof: At least one input argument is required.");
   endif
-  if (! isvector(x) || ! isreal(x))
+  if (! isvector (x) || ! isreal (x))
     error ("chi2gof: X must be a vector of real numbers.");
   endif
   ## Add initial parameters
@@ -171,7 +171,7 @@ function [h, p, stats] = chi2gof (x, varargin)
    endif
   endif
   if (! isscalar (emin) || emin < 0 || emin != round (emin) || ! isreal (emin))
-    error("chi2gof: 'emin' must be a positive integer.");
+    error ("chi2gof: 'emin' must be a positive integer.");
   endif
   if (! isempty (nparams))
     if (! isscalar (nparams) || nparams < 0 || nparams != round (nparams) ...
@@ -289,7 +289,7 @@ function [h, p, stats] = chi2gof (x, varargin)
       cdffunc = cdf_spec{1};
       cdfargs = cdf_spec(2:end);
       if (isempty (nparams))
-        nparams = numel(cdfargs);
+        nparams = numel (cdfargs);
       endif
     endif
     if (! is_function_handle (cdffunc))
@@ -302,12 +302,12 @@ function [h, p, stats] = chi2gof (x, varargin)
     interioredges = binedges(2:end-1);
     ## Compute the cumulative probabilities
     Fcdf = feval (cdffunc, interioredges, cdfargs{:});
-    if (! isvector(Fcdf) || numel (Fcdf) != (nbins - 1))
-      msg = sprintf("chi2gof: Wrong number of outputs from: %s\n", cdfname);
+    if (! isvector (Fcdf) || numel (Fcdf) != (nbins - 1))
+      msg = sprintf ("chi2gof: Wrong number of outputs from: %s\n", cdfname);
       error (msg);
     endif
     % Compute the expected values
-    Expected = sum(Observed) * diff([0;Fcdf(:);1]);
+    Expected = sum (Observed) * diff ([0;Fcdf(:);1]);
   endif
   ## Avoid too small expected values
   if (any (Expected < emin))
@@ -315,7 +315,7 @@ function [h, p, stats] = chi2gof (x, varargin)
     nbins = length (Expected);
   endif
   ## Compute test statistic
-  cstat = sum(((Observed - Expected) .^ 2) ./ Expected);
+  cstat = sum (((Observed - Expected) .^ 2) ./ Expected);
   ## Calculate degrees of freedom
   if (isempty (nparams))
     nparams = 0;
@@ -342,7 +342,7 @@ endfunction
 function [Expected, Observed, binedges] = poolbins (Expected, ...
                                                     Observed, binedges, emin)
   i = 1;
-  j = length(Expected);
+  j = length (Expected);
   while (i < j - 1 && (Expected(i) < emin || Expected(i + 1) < emin || ...
                        Expected(j) < emin || Expected(j - 1) < emin))
     if (Expected(i) < Expected(j))
@@ -394,7 +394,7 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   if (isempty (x))
     binnum = x;
   elseif (! isequal (binspec, 'edges'))
-    binedges = binedges + eps(binedges);
+    binedges = binedges + eps (binedges);
     [ignore, binnum] = histc (x, [-Inf binedges(2:end-1) Inf]);
   else
     [ignore, binnum] = histc (x, binedges);
@@ -413,7 +413,7 @@ endfunction
 %!demo
 %! x = normrnd (50, 5, 100, 1);
 %! [h, p, stats] = chi2gof (x)
-%! [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean(x), std(x)))
+%! [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean (x), std (x)))
 %! [h, p, stats] = chi2gof (x, 'cdf', {@normcdf, mean(x), std(x)})
 %!demo
 %! x = rand (100,1 );
@@ -424,9 +424,9 @@ endfunction
 %!demo
 %! bins = 0:5;
 %! obsCounts = [6 16 10 12 4 2];
-%! n = sum(obsCounts);
-%! lambdaHat = sum(bins.*obsCounts) / n;
-%! expCounts = n * poisspdf(bins,lambdaHat);
+%! n = sum (obsCounts);
+%! lambdaHat = sum (bins.*obsCounts) / n;
+%! expCounts = n * poisspdf (bins,lambdaHat);
 %! [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
 %!                          'expected', expCounts, 'nparams',1)
 

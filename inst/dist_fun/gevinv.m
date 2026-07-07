@@ -77,9 +77,9 @@ function x = gevinv (p, k, sigma, mu)
 
   ## Use the Taylor series expansion of the exponential to
   ## avoid roundoff error or dividing by zero when k is small
-  ii = (abs(kllP) < 1E-4);
+  ii = (abs (kllP) < 1E-4);
   x(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
-  x(! ii) = mu(! ii) + (sigma(! ii) ./ k(! ii)) .* (exp(-kllP(! ii)) - 1);
+  x(! ii) = mu(! ii) + (sigma(! ii) ./ k(! ii)) .* (exp (-kllP(! ii)) - 1);
   x(is_neginf) = -Inf;
   x(is_posinf) = Inf;
   x(is_nan) = NaN;
@@ -113,7 +113,7 @@ endfunction
 %! sigma = 1;
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
-%! c = gevcdf(x, k, sigma, mu);
+%! c = gevcdf (x, k, sigma, mu);
 %! assert (c, p, 0.001);
 %!test
 %! p = 0.1:0.1:0.9;
@@ -121,7 +121,7 @@ endfunction
 %! sigma = 1;
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
-%! c = gevcdf(x, k, sigma, mu);
+%! c = gevcdf (x, k, sigma, mu);
 %! assert (c, p, 0.001);
 %!test
 %! p = 0.1:0.1:0.9;
@@ -129,7 +129,7 @@ endfunction
 %! sigma = 1;
 %! mu = 0;
 %! x = gevinv (p, k, sigma, mu);
-%! c = gevcdf(x, k, sigma, mu);
+%! c = gevcdf (x, k, sigma, mu);
 %! assert (c, p, 0.001);
 
 ## Test input validation
@@ -138,13 +138,13 @@ endfunction
 %!error<gevinv: function called with too few input arguments.> gevinv (1, 2)
 %!error<gevinv: function called with too few input arguments.> gevinv (1, 2, 3)
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevinv (ones (3), ones (2), ones(2), ones(2))
+%! gevinv (ones (3), ones (2), ones (2), ones (2))
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevinv (ones (2), ones (3), ones(2), ones(2))
+%! gevinv (ones (2), ones (3), ones (2), ones (2))
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevinv (ones (2), ones (2), ones(3), ones(2))
+%! gevinv (ones (2), ones (2), ones (3), ones (2))
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevinv (ones (2), ones (2), ones(2), ones(3))
+%! gevinv (ones (2), ones (2), ones (2), ones (3))
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (i, 2, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, i, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, 2, i, 4)

@@ -648,7 +648,7 @@ endfunction
 %! ## Use a moving detection method to detect local outliers in a sine wave
 %!
 %! x = -2*pi:0.1:2*pi;
-%! A = sin(x);
+%! A = sin (x);
 %! A(47) = 0;
 %! time = datenum (2023,1,1,0,0,0) + (1/24)*[0:length(x)-1] - 730485;
 %! TF = isoutlier (A, 'movmedian', 5*(1/24), 'SamplePoints', time);
@@ -680,9 +680,9 @@ endfunction
 ## Output validation tests (checked against MATLAB)
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
-%! assert (isoutlier (A, 'mean'), logical([zeros(1,8) 1 zeros(1,6)]))
+%! assert (isoutlier (A, 'mean'), logical ([zeros(1,8) 1 zeros(1,6)]))
 %! assert (isoutlier (A, 'median'), ...
-%! logical([zeros(1,3) 1 zeros(1,4) 1 zeros(1,6)]))
+%! logical ([zeros(1,3) 1 zeros(1,4) 1 zeros(1,6)]))
 
 %!test
 %! A = [57 59 60 100 59 58 57 58 300 61 62 60 62 58 57];
@@ -699,7 +699,7 @@ endfunction
 %! assert (C, 59)
 
 %!test
-%! A = magic(5) + diag(200*ones(1,5));
+%! A = magic (5) + diag (200*ones (1,5));
 %! T = logical (eye (5));
 %! assert (isoutlier (A, 2), T)
 
@@ -868,7 +868,7 @@ endfunction
 %! isoutlier (A, 'percentiles', 'char');
 %!
 %!error<isoutlier: sample points must be a vector.> ...
-%! isoutlier (A, 'movmean', 5, 'SamplePoints', ones(3,15));
+%! isoutlier (A, 'movmean', 5, 'SamplePoints', ones (3,15));
 %!error<isoutlier: sample points must be a vector.> ...
 %! isoutlier (A, 'movmean', 5, 'SamplePoints', 15);
 %!error<isoutlier: sample points must be unique.> ...

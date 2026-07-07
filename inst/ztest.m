@@ -76,10 +76,10 @@ function [h, pval, ci, zvalue] = ztest (x, m, sigma, varargin)
   if (nargin < 3)
     error ("ztest: too few input arguments.");
   endif
-  if (! isscalar (m) || ! isnumeric(m) || ! isreal(m))
+  if (! isscalar (m) || ! isnumeric (m) || ! isreal (m))
     error ("ztest: invalid value for mean.");
   endif
-  if (! isscalar (sigma) || ! isnumeric(sigma) || ! isreal(sigma) || sigma < 0)
+  if (! isscalar (sigma) || ! isnumeric (sigma) || ! isreal (sigma) || sigma < 0)
     error ("ztest: invalid value for standard deviation.");
   endif
   ## Add defaults

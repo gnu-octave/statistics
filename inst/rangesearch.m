@@ -246,7 +246,7 @@ function [idx, dist] = rangesearch (X, Y, r, varargin)
   ## Check for NSMethod
   if (strcmpi (NSMethod, 'kdtree'))
     ## Build kdtree and search the query point
-    kdtree = __build_kdtree__ (1:size(X,1), 0, X, BS);
+    kdtree = __build_kdtree__ (1:size (X,1), 0, X, BS);
     ## Return all neighbors as cell
     dist = cell (rows (Y), 1);
     idx = cell (rows (Y), 1);
@@ -316,13 +316,13 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
   if (strcmpi (dist, 'minkowski'))
     if (! (isscalar (distparam) && isnumeric (distparam)
                                 && distparam > 0 && isfinite (distparam)))
-      error (strcat("rangesearch.__search_kdtree__:", ...
+      error (strcat ("rangesearch.__search_kdtree__:", ...
                     " distparam must be a positive finite", ...
                     " scalar for minkowski."));
     endif
   else
     if (! isempty (distparam))
-      error (strcat("rangesearch.__search_kdtree__:", ...
+      error (strcat ("rangesearch.__search_kdtree__:", ...
                     " distparam must be empty for non-minkowski metrics."));
     endif
   endif
@@ -409,7 +409,7 @@ endfunction
 %! ## its nearest neighbors within the radius d.  Display these points in
 %! ## one color and the remaining points in a different color.
 %! x = X(1,:);
-%! nearestPoints = X (Idx{1},:);
+%! nearestPoints = X(Idx{1},:);
 %! nonNearestIdx = true (size (X, 1), 1);
 %! nonNearestIdx(Idx{1}) = false;
 %!
@@ -423,7 +423,7 @@ endfunction
 %! ## its nearest neighbors within the radius d.  Display these points in
 %! ## one color and the remaining points in a different color.
 %! x = X(end,:);
-%! nearestPoints = X (Idx{end},:);
+%! nearestPoints = X(Idx{end},:);
 %! nonNearestIdx = true (size (X, 1), 1);
 %! nonNearestIdx(Idx{end}) = false;
 %!
@@ -467,12 +467,12 @@ endfunction
 %! assert (idx, {[1, 2, 4]; [1, 4]});
 %! assert (D, {[1.7321, 3.4641, 3.3166]; [2, 3.4641]}, 1e-4);
 %!test
-%! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist);
 %! assert (idx, {[1, 4, 2]; [1, 4]});
 %! assert (D, {[1.7321, 3.3166, 3.4641]; [2, 3.4641]}, 1e-4);
 %!test
-%! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (x, y, 4, 'Distance', eucldist, ...
 %!                         'NSMethod', 'exhaustive');
 %! assert (idx, {[1, 4, 2]; [1, 4]});
@@ -496,7 +496,7 @@ endfunction
 %! assert (idx, {[1]; [1, 2]});
 %! assert (D, {[1.4142]; [1.4142, 1.4142]}, 1e-4);
 %!test
-%! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = rangesearch (X, Y, 4, 'Distance', eucldist);
 %! assert (idx, {[1, 2]; [1, 2, 3]});
 %! assert (D, {[1.4142, 3.1623]; [1.4142, 1.4142, 3.1623]}, 1e-4);
@@ -547,11 +547,11 @@ endfunction
 %!error<rangesearch: invalid value of Minkowski Exponent.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'P', -2)
 %!error<rangesearch: invalid value in Scale or the size of Scale.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones(4,5), 'distance', 'euclidean')
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'scale', ones (4,5), 'distance', 'euclidean')
 %!error<rangesearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'cov', ['some' 'some'])
 %!error<rangesearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! rangesearch (ones (4, 5), ones (1, 5), 1, 'cov', ones(4,5), 'distance', 'euclidean')
+%! rangesearch (ones (4, 5), ones (1, 5), 1, 'cov', ones (4,5), 'distance', 'euclidean')
 %!error<rangesearch: invalid value of bucketsize.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'bucketsize', -1)
 %!error<rangesearch: invalid value of bucketsize.> ...
@@ -571,4 +571,4 @@ endfunction
 %!error<rangesearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! rangesearch (ones (4, 5), ones (1, 5), 1, 'NSmethod', 'kdtree', 'distance', 'jaccard')
 %!error<rangesearch: 'kdtree' cannot be used with custom distance functions.> ...
-%! rangesearch (ones (4,2), ones (1,2), 1, 'Distance', @(x,y) sqrt(sum((x-y).^2)), 'NSMethod', 'kdtree')
+%! rangesearch (ones (4,2), ones (1,2), 1, 'Distance', @(x,y) sqrt (sum ((x-y).^2)), 'NSMethod', 'kdtree')

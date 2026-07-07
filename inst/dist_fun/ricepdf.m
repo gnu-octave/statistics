@@ -74,7 +74,7 @@ function y = ricepdf (x, s, sigma)
   y(k) = x_s2 .* term .* besseli (0, x_s2 .* n_k, 1);
 
   ## Fix arithmetic overflow due to exponent
-  y(epxt > (log(realmax(class(y))))) = 0;
+  y(epxt > (log (realmax (class (y))))) = 0;
 
   ## Fix x < 0 -> 0
   y(x < 0) = 0;

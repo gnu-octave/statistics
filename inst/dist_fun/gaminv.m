@@ -92,7 +92,7 @@ function x = gaminv (p, a, b)
 
     ## Call GAMMAINCINV to find a root of GAMMAINC
     q = gammaincinv (p, a);
-    tol = sqrt (eps (ones (1, 1, class(q))));
+    tol = sqrt (eps (ones (1, 1, class (q))));
     check_cdf = ((abs (gammainc (q, a) - p) ./ p) > tol);
     ## Check for any cdf being far off from tolerance
     if (any (check_cdf(:)))

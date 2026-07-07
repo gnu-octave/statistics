@@ -288,21 +288,21 @@ endfunction
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [NaN; NaN; NaN]);
 %! assert (gn, cell (0,1));
-%! assert (gl, single (zeros(0,1)));
+%! assert (gl, single (zeros (0,1)));
 
 %!test
 %! s = {''; ''; ''; ''};
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [NaN; NaN; NaN; NaN]);
-%! assert (gn, cell(0,1));
-%! assert (gl, cell(0,1));
+%! assert (gn, cell (0,1));
+%! assert (gl, cell (0,1));
 
 %!test
 %! s = {'', '', '', ''};
 %! [g, gn, gl] = grp2idx (s);
 %! assert (g, [NaN; NaN; NaN; NaN]);
-%! assert (gn, cell(0,1));
-%! assert (gl, cell(0,1));
+%! assert (gn, cell (0,1));
+%! assert (gl, cell (0,1));
 
 %!test
 %! s = {'a'; ''; 'b'; ''; 'c'};
@@ -406,7 +406,7 @@ endfunction
 
 %!test
 %! in = [duration(1, 30, 0); duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)];
-%! [g, gn, gl] = grp2idx(in);
+%! [g, gn, gl] = grp2idx (in);
 %! assert (g, [2; 1; 2; 3]);
 %! assert (gn, {'00:45:30'; '01:30:00'; '02:15:15'});
 %! assert (isequal (gl, [duration(0, 45, 30); duration(1, 30, 0); duration(2, 15, 15)]));
@@ -416,10 +416,10 @@ endfunction
 ## in the output group labels for duration array inputs.
 %!test
 %! in = [hours(1); NaN; minutes(30); hours(1); NaN; seconds(90)];
-%! [g, gn, gl] = grp2idx(in);
+%! [g, gn, gl] = grp2idx (in);
 %! assert (g, [3; NaN; 2; 3; NaN; 1]);
 %! assert (gn, {'0.025 hr'; '0.5 hr'; '1 hr'});
-%! assert (isequal(gl, [seconds(90); minutes(30);  hours(1)]));
+%! assert (isequal (gl, [seconds(90); minutes(30);  hours(1)]));
 
 ## test for string arrays
 %!test

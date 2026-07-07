@@ -147,13 +147,13 @@ endfunction
 
 ## Test class of input preserved
 %!assert (tricdf (single ([x, NaN]), 1, 1.5, 2), ...
-%! single ([y, NaN]), eps('single'))
+%! single ([y, NaN]), eps ('single'))
 %!assert (tricdf ([x, NaN], single (1), 1.5, 2), ...
-%! single ([y, NaN]), eps('single'))
+%! single ([y, NaN]), eps ('single'))
 %!assert (tricdf ([x, NaN], 1, single (1.5), 2), ...
-%! single ([y, NaN]), eps('single'))
+%! single ([y, NaN]), eps ('single'))
 %!assert (tricdf ([x, NaN], 1, 1.5, single (2)), ...
-%! single ([y, NaN]), eps('single'))
+%! single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tricdf: function called with too few input arguments.> tricdf ()
@@ -165,13 +165,13 @@ endfunction
 %!error<tricdf: invalid argument for upper tail.> tricdf (1, 2, 3, 4, 'tail')
 %!error<tricdf: invalid argument for upper tail.> tricdf (1, 2, 3, 4, 5)
 %!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
-%! tricdf (ones (3), ones (2), ones(2), ones(2))
+%! tricdf (ones (3), ones (2), ones (2), ones (2))
 %!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
-%! tricdf (ones (2), ones (3), ones(2), ones(2))
+%! tricdf (ones (2), ones (3), ones (2), ones (2))
 %!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
-%! tricdf (ones (2), ones (2), ones(3), ones(2))
+%! tricdf (ones (2), ones (2), ones (3), ones (2))
 %!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
-%! tricdf (ones (2), ones (2), ones(2), ones(3))
+%! tricdf (ones (2), ones (2), ones (2), ones (3))
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (i, 2, 3, 4)
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, i, 3, 4)
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, 2, i, 4)

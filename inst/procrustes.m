@@ -165,7 +165,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
     T = V * U';
     ## Handle reflection only if 'true' or 'false' was given
     if (! strcmpi (reflection, 'best'))
-      is_reflection = (det(T) < 0);
+      is_reflection = (det (T) < 0);
       ## Force a reflection if data and reflection option disagree
       if (reflection != is_reflection)
         V(:,end) = -V(:,end);

@@ -207,19 +207,19 @@ function single_hat = getpoly (a, b)
   single_hat = zeros (14, 2);
   pos = 0;
   single_hat(++pos, :) = [0 0];
-  t = 270; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t -= 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
-  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
-  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t -= 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
-  t -= 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
-  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t) * 2;
-  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u(t);
-  t -= 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
-  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u(t);
+  t = 270; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t -= 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
+  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
+  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t -= 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
+  t -= 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
+  t += 90; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t) * 2;
+  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + a * u (t);
+  t -= 90; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
+  t += 60; single_hat(pos+1, :) = single_hat(pos++, :) + b * u (t);
   ## t(14, :) == t(1, :) to within numerical roundoff
 endfunction
 

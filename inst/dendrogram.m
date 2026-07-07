@@ -170,7 +170,7 @@ function [H, T, perm] = dendrogram (tree, varargin)
     level_0 = 0;
   endif
 
-  vLeafPosition = zeros((n + m), 1);
+  vLeafPosition = zeros ((n + m), 1);
   T = (1:n)';
   nodecnt = 1;
 
@@ -204,7 +204,7 @@ function [H, T, perm] = dendrogram (tree, varargin)
   endif
 
   ## leaf reordering
-  if (! isempty(vReorder))
+  if (! isempty (vReorder))
     if (P < n)
       checkT = newT(vReorder(:));
       for i = 1 : P
@@ -297,7 +297,7 @@ function [H, T, perm] = dendrogram (tree, varargin)
   endif
 
   ## check crossings
-  if (checkCrossing && ! isempty(vReorder))
+  if (checkCrossing && ! isempty (vReorder))
     for j = 1:rows (x)
       if (x(j, 3) == x(j, 4)) # an horizontal line
         for i = 1:rows (x)
@@ -366,7 +366,7 @@ endfunction
 %! subplot (2, 1, 2);
 %! title ('collapsed tree');
 %! [~, t] = dendrogram (y, 20);
-%! find(t == 5)
+%! find (t == 5)
 
 %!demo
 %! ## optimal leaf order

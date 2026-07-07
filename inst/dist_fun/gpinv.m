@@ -83,7 +83,7 @@ function x = gpinv (p, k, sigma, theta)
                 & (sigma > 0) & (sigma < Inf) & (-Inf < k) & (k < Inf);
   if (isscalar (theta) && isscalar (sigma) && isscalar (k))
     if (k == 0)
-      x(kx) = -log(1 - p(kx));
+      x(kx) = -log (1 - p(kx));
       x(kx) = sigma * x(kx) + theta;
     elseif (k > 0)
       x(kx) = (1 - p(kx)).^(-k) - 1;
@@ -188,13 +188,13 @@ endfunction
 %!error<gpinv: function called with too few input arguments.> gpinv (1, 2)
 %!error<gpinv: function called with too few input arguments.> gpinv (1, 2, 3)
 %!error<gpinv: P, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpinv (ones (3), ones (2), ones(2), ones(2))
+%! gpinv (ones (3), ones (2), ones (2), ones (2))
 %!error<gpinv: P, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpinv (ones (2), ones (3), ones(2), ones(2))
+%! gpinv (ones (2), ones (3), ones (2), ones (2))
 %!error<gpinv: P, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpinv (ones (2), ones (2), ones(3), ones(2))
+%! gpinv (ones (2), ones (2), ones (3), ones (2))
 %!error<gpinv: P, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpinv (ones (2), ones (2), ones(2), ones(3))
+%! gpinv (ones (2), ones (2), ones (2), ones (3))
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (i, 2, 3, 4)
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (1, i, 3, 4)
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (1, 2, i, 4)

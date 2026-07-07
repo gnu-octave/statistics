@@ -119,7 +119,7 @@ function [nlogL, k_terms] = gevnll (x, k, sigma, mu)
   a = (x - mu) ./ sigma;
 
   if (all (k == 0))
-    nlogL = exp(-a) + a + log(sigma);
+    nlogL = exp (-a) + a + log (sigma);
   else
     aa = k .* a;
     ## Use a series expansion to find the log likelihood more accurately
@@ -152,20 +152,20 @@ endfunction
 function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
 
   kk_terms = [];
-  G = ones(3, 1);
+  G = ones (3, 1);
   ## Use the expressions for first derivatives that are the limits as k --> 0
   if (k == 0)
     a = (x - mu) ./ sigma;
-    f = exp(-a) - 1;
+    f = exp (-a) - 1;
     ## k
     g = a .* (1 + a .* f / 2);
-    G(1) = sum(g(:));
+    G(1) = sum (g(:));
     ## sigma
     g = (a .* f + 1) ./ sigma;
-    G(2) = sum(g(:));
+    G(2) = sum (g(:));
     ## mu
     g = f ./ sigma;
-    G(3) = sum(g(:));
+    G(3) = sum (g(:));
     return
   endif
 
@@ -177,7 +177,7 @@ function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
     return
   endif
   ## k
-  c = log(b);
+  c = log (b);
   d = 1 ./ k + 1;
   ## Use a series expansion to find the gradient more accurately when k is small
   if (nargin > 4 && ! isempty (k_terms))
@@ -199,16 +199,16 @@ function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
   else
     g = (c ./ k - a ./ b) ./ (k .* b .^ (1/k)) - c ./ (k .^ 2) + a .* d ./ b;
   endif
-  G(1) = sum(g(:));
+  G(1) = sum (g(:));
 
   ## sigma
   ## Use a series expansion to find the gradient more accurately when k is small
-  if nargin > 4 && ! isempty(k_terms)
+  if nargin > 4 && ! isempty (k_terms)
     g = (1 - a .* (a .* k .* kk_terms - k_terms) .* (f - k - 1)) ./ sigma;
   else
     g = (a .* b .^ (-d) - (k + 1) .* a ./ b + 1) ./ sigma;
   endif
-  G(2) = sum(g(:));
+  G(2) = sum (g(:));
 
   ## mu
   ## Use a series expansion to find the gradient more accurately when k is small
@@ -217,41 +217,41 @@ function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
   else
     g = (b .^ (-d) - (k + 1) ./ b) ./ sigma;
   endif
-  G(3) = sum(g(:));
+  G(3) = sum (g(:));
 
 endfunction
 
 ## Internal function to calculate the Fisher information matrix for gevlike
 function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
 
-  ACOV = ones(3);
+  ACOV = ones (3);
   ## Use the expressions for second derivatives that are the limits as k --> 0
   if (k == 0)
     ## k, k
     a = (x - mu) ./ sigma;
-    f = exp(-a);
+    f = exp (-a);
     der = (a .^ 2) .* (a .* (a/4 - 2/3) .* f + 2/3 * a - 1);
-    ACOV(1, 1) = sum(der(:));
+    ACOV(1, 1) = sum (der(:));
 
     ## sigma, sigma
     der = (sigma .^ -2) .* (a .* ((a - 2) .* f + 2) - 1);
-    ACOV(2, 2) = sum(der(:));
+    ACOV(2, 2) = sum (der(:));
 
     ## mu, mu
     der = (sigma .^ -2) .* f;
-    ACOV(3, 3) = sum(der(:));
+    ACOV(3, 3) = sum (der(:));
 
     ## k, sigma
     der = (-a ./ sigma) .* (a .* (1 - a/2) .* f - a + 1);
-    ACOV(1, 2) = ACOV(2, 1) = sum(der(:));
+    ACOV(1, 2) = ACOV(2, 1) = sum (der(:));
 
     ## k, mu
     der = (-1 ./ sigma) .* (a .* (1 - a/2) .* f - a + 1);
-    ACOV(1, 3) = ACOV(3, 1) = sum(der(:));
+    ACOV(1, 3) = ACOV(3, 1) = sum (der(:));
 
     ## sigma, mu
     der = (1 + (a - 1) .* f) ./ (sigma .^ 2);
-    ACOV(2, 3) = ACOV(3, 2) = sum(der(:));
+    ACOV(2, 3) = ACOV(3, 2) = sum (der(:));
 
     return
   endif
@@ -261,7 +261,7 @@ function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
   ## k, k
   a = (x - mu) ./ sigma;
   b = k .* a + 1;
-  c = log(b);
+  c = log (b);
   d = 1 ./ k + 1;
   ## Use a series expansion to find the derivatives more accurately
   ## when k is small

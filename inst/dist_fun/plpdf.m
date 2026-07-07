@@ -76,7 +76,7 @@ function y = plpdf (data, x, Fx)
   [~, bin] = histc (data, [-Inf, x, Inf]);
 
   ## Compute piecewise densities
-  dense = diff(Fx) ./ diff(x);
+  dense = diff (Fx) ./ diff (x);
   bin_d = [0, dense, 0];
 
   ## Fix densities
@@ -85,7 +85,7 @@ function y = plpdf (data, x, Fx)
   y(bin>0) = bin_d(bin(bin>0));
 
   ## Force invalid data to NaN
-  y(isnan(data)) = NaN;
+  y(isnan (data)) = NaN;
 
 endfunction
 

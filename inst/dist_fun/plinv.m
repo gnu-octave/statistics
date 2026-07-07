@@ -69,11 +69,11 @@ function data = plinv (p, x, Fx)
 
   ## Remove consecutive bins with almost zero probability
   pw_diff = diff (Fx);
-  if any(pw_diff==0)
-    zero_p = 2 * eps(Fx);
+  if any (pw_diff==0)
+    zero_p = 2 * eps (Fx);
     same_p = pw_diff <= zero_p(1:end-1);
     remove = same_p(1:end-1) & same_p(2:end);
-    while (any(remove))
+    while (any (remove))
       idx = find (remove);
       same_p(idx) = [];
       Fx(idx+1) = [];
@@ -82,7 +82,7 @@ function data = plinv (p, x, Fx)
       remove = same_p(1:end-1) & same_p(2:end);
     endwhile
     idx = find (pw_diff==0);
-    Fx(idx+1) = Fx(idx) + eps(Fx(idx));
+    Fx(idx+1) = Fx(idx) + eps (Fx(idx));
   endif
   p(p < 0 | 1 < p) = NaN;
   data = interp1 (Fx, x, p, 'linear');

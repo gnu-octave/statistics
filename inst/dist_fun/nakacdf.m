@@ -136,9 +136,9 @@ endfunction
 %!assert (nakacdf ([x, NaN], 1, 1), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps('single'))
-%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps('single'))
-%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps('single'))
+%!assert (nakacdf (single ([x, NaN]), 1, 1), single ([y, NaN]), eps ('single'))
+%!assert (nakacdf ([x, NaN], single (1), 1), single ([y, NaN]), eps ('single'))
+%!assert (nakacdf ([x, NaN], 1, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<nakacdf: function called with too few input arguments.> nakacdf ()

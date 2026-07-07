@@ -251,11 +251,11 @@ classdef ClassificationPartitionedModel
     Trained                      = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Access = public)
+  methods(Access = public)
     ## -*- texinfo -*-
     ## @deftypefn  {ClassificationPartitionedModel} {@var{this} =} ClassificationPartitionedModel (@var{Mdl}, @var{Partition})
     ##
@@ -342,7 +342,7 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct();
+          params = struct ();
           paramList = {'DiscrimType', 'FillCoeffs', 'Gamma'};
           for i = 1:numel (paramList)
             paramName = paramList{i};
@@ -376,7 +376,7 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct();
+          params = struct ();
           paramList = {'Formula', 'Interactions', 'Knots', 'Order', 'DoF', ...
                        'LearningRate', 'NumIterations'};
           for i = 1:numel (paramList)
@@ -432,7 +432,7 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct();
+          params = struct ();
           paramList = {'NumNeighbors', 'Distance', 'DistParameter', ...
                        'NSMethod', 'DistanceWeight', 'Standardize'};
           for i = 1:numel (paramList)
@@ -468,7 +468,7 @@ classdef ClassificationPartitionedModel
           endfor
 
           ## Store ModelParameters to ClassificationPartitionedModel object
-          params = struct();
+          params = struct ();
           paramList = {'LayerSizes', 'Activations', 'OutputLayerActivation', ...
                        'LearningRate', 'IterationLimit', 'Solver'};
           for i = 1:numel (paramList)
@@ -823,7 +823,7 @@ endclassdef
 %! a = fitcdiscr (meas, species, 'gamma', 0.5, 'fillcoeffs', 'off');
 %! cvModel = crossval (a, 'Kfold', 4);
 %! [label, score, cost] = kfoldPredict (cvModel);
-%! assert (class(cvModel), "ClassificationPartitionedModel");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert ({cvModel.X, cvModel.Y}, {meas, species});
 %! assert (cvModel.NumObservations, 150);
 %!# assert (label, {"b"; "b"; "a"; "a"});
@@ -832,14 +832,14 @@ endclassdef
 %!# assert (cost, [5.4620e-01, 4.5380e-01; 7.5596e-01, 2.4404e-01; ...
 %!#         6.0844e-03, 9.9392e-01; 1.8000e-03, 9.9820e-01], 1e-4);
 %!test
-%! x = ones(4, 11);
+%! x = ones (4, 11);
 %! y = {'a'; 'a'; 'b'; 'b'};
 %! k = 3;
 %! a = fitcknn (x, y, 'NumNeighbors', k);
 %! partition = cvpartition (numel (y), 'LeaveOut');
 %! cvModel = ClassificationPartitionedModel (a, partition);
 %! [label, score, cost] = kfoldPredict (cvModel);
-%! assert (class(cvModel), "ClassificationPartitionedModel");
+%! assert (class (cvModel), "ClassificationPartitionedModel");
 %! assert ({cvModel.X, cvModel.Y}, {x, y});
 %! assert (cvModel.NumObservations, 4);
 %! assert (cvModel.ModelParameters.NumNeighbors, k);

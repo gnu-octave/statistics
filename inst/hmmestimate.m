@@ -300,7 +300,7 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
   for i = 1:len
     # Count the number of transitions for each state pair
     transprobest(cstate, states(i)) ++;
-    cstate = states (i);
+    cstate = states(i);
     # Count the number of outputs for each state output pair
     outprobest(cstate, sequence(i)) ++;
   endfor

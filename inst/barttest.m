@@ -47,7 +47,7 @@ function [ndim, pval, chisq] = barttest (x, alpha);
     error ("barttest: invalid number of input arguments.");
   endif
   ## Check for NaN values in X
-  if (any (isnan( x(:))))
+  if (any (isnan ( x(:))))
     error ("barttest: NaN values in input are not allowed.");
   endif
   ## Add default value for alpha if not supplied
@@ -71,7 +71,7 @@ function [ndim, pval, chisq] = barttest (x, alpha);
   pk = col - k;
   loglatent = flipud (cumsum (log (latent)));
   ## Compute the chi-square statistic
-  logsum = log (flipud ((latent(1) + cumsum (latent(2:col))) ./ flipud(pk)));
+  logsum = log (flipud ((latent(1) + cumsum (latent(2:col))) ./ flipud (pk)));
   chisq = (pk .* logsum - loglatent(1:col - 1)) * row;
   ## Calculate the degrees of freedom
   df = (pk - 1) .* (pk + 2) / 2;

@@ -142,11 +142,11 @@ endfunction
 %!error<bisapdf: function called with too few input arguments.> bisapdf (1, 2)
 %!error<bisapdf: function called with too many inputs> bisapdf (1, 2, 3, 4)
 %!error<bisapdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisapdf (ones (3), ones (2), ones(2))
+%! bisapdf (ones (3), ones (2), ones (2))
 %!error<bisapdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisapdf (ones (2), ones (3), ones(2))
+%! bisapdf (ones (2), ones (3), ones (2))
 %!error<bisapdf: X, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisapdf (ones (2), ones (2), ones(3))
+%! bisapdf (ones (2), ones (2), ones (3))
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (i, 4, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, i, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, 4, i)

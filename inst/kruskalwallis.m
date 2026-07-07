@@ -98,7 +98,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
 
   ## Convert group to cell array from character array, make it a column
   if (! isempty (group) && ischar (group))
-    group = cellstr(group);
+    group = cellstr (group);
   endif
   if (size (group, 1) == 1)
     group = group';
@@ -115,7 +115,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
     elseif (size (group, 1) == m)     ## group names exist and match columns
       group = group(gi,:);
     else
-      error("X columns and GROUP length do not match.");
+      error ("X columns and GROUP length do not match.");
     endif
   endif
 
@@ -189,13 +189,13 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   endif
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("              Kruskal-Wallis ANOVA Table\n");
-    printf("Source        SS      df      MS      Chi-sq  Prob>Chi-sq\n");
-    printf("---------------------------------------------------------\n");
-    printf("Columns %10.2f %5.0f %10.2f %8.2f  %11.5e\n", ...
+    printf ("              Kruskal-Wallis ANOVA Table\n");
+    printf ("Source        SS      df      MS      Chi-sq  Prob>Chi-sq\n");
+    printf ("---------------------------------------------------------\n");
+    printf ("Columns %10.2f %5.0f %10.2f %8.2f  %11.5e\n", ...
            SSM, dfm, MSM, ChiSq, p);
-    printf("Error   %10.2f %5.0f %10.2f\n", SSE, dfe, MSE);
-    printf("Total   %10.2f %5.0f\n", SST, dfm + dfe);
+    printf ("Error   %10.2f %5.0f %10.2f\n", SSE, dfe, MSE);
+    printf ("Total   %10.2f %5.0f\n", SST, dfm + dfe);
   endif
   ## Plot data using BOXPLOT (unless opted out)
   if (plotdata)
@@ -248,7 +248,7 @@ endfunction
 %!demo
 %! x = meshgrid (1:6);
 %! x = x + normrnd (0, 1, 6, 6);
-%! [p, atab] = kruskalwallis(x);
+%! [p, atab] = kruskalwallis (x);
 
 %!demo
 %! x = ones (30, 4) .* [-2, 0, 1, 5];

@@ -118,11 +118,11 @@ endfunction
 %! cauchypdf (1, 2)
 %!error<cauchypdf: function called with too many inputs> cauchypdf (1, 2, 3, 4)
 %!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchypdf (ones (3), ones (2), ones(2))
+%! cauchypdf (ones (3), ones (2), ones (2))
 %!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchypdf (ones (2), ones (3), ones(2))
+%! cauchypdf (ones (2), ones (3), ones (2))
 %!error<cauchypdf: X, X0, and GAMMA must be of common size or scalars.> ...
-%! cauchypdf (ones (2), ones (2), ones(3))
+%! cauchypdf (ones (2), ones (2), ones (3))
 %!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (i, 4, 3)
 %!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (1, i, 3)
 %!error<cauchypdf: X, X0, and GAMMA must not be complex.> cauchypdf (1, 4, i)

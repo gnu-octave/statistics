@@ -222,18 +222,18 @@ endfunction
 %!                          [y3u(1:3), NaN, y3u(5:6)], eps)
 
 ## Test class of input preserved
-%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps('single'))
-%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps('single'))
-%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps('single'))
-%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps('single'))
+%!assert (gpcdf (single ([x, NaN]), 0, 1, 0), single ([y1, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], 0, 1, single (0)), single ([y1, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], 0, single (1), 0), single ([y1, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], single (0), 1, 0), single ([y1, NaN]), eps ('single'))
+%!assert (gpcdf (single ([x, NaN]), 1, 1, 0), single ([y2, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], 1, 1, single (0)), single ([y2, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], 1, single (1), 0), single ([y2, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], single (1), 1, 0), single ([y2, NaN]), eps ('single'))
+%!assert (gpcdf (single ([x, NaN]), -1, 1, 0), single ([y3, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], -1, 1, single (0)), single ([y3, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], -1, single (1), 0), single ([y3, NaN]), eps ('single'))
+%!assert (gpcdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<gpcdf: function called with too few input arguments.> gpcdf ()
@@ -243,13 +243,13 @@ endfunction
 %!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 'tail')
 %!error<gpcdf: invalid argument for upper tail.> gpcdf (1, 2, 3, 4, 5)
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (3), ones (2), ones(2), ones(2))
+%! gpcdf (ones (3), ones (2), ones (2), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (3), ones(2), ones(2))
+%! gpcdf (ones (2), ones (3), ones (2), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (2), ones(3), ones(2))
+%! gpcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (2), ones(2), ones(3))
+%! gpcdf (ones (2), ones (2), ones (2), ones (3))
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (i, 2, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, i, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, 2, i, 4)

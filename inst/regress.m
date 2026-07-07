@@ -139,7 +139,7 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
   if (nargout > 3)
 
     dof1 = n - p - 1;
-    h = sum(X.*pinv_X', 2); #added -- Nir (same as diag(X*pinv_X), without doing the matrix multiply)
+    h = sum (X.*pinv_X', 2); #added -- Nir (same as diag(X*pinv_X), without doing the matrix multiply)
 
     # From Matlab's documentation on Multiple Linear Regression,
     #   sigmaihat2 = norm (r) ^ 2 / dof1 - r .^ 2 / (dof1 * (1 - h));
@@ -205,7 +205,7 @@ endfunction
 %! y = Z(:,1); X = [ones(rows(Z),1), Z(:,2:end)];
 %! alpha = 0.05;
 %! [b, bint, r, rint, stats] = regress (y, X, alpha);
-%! assert(b,V(:,1),4e-6);
-%! assert(stats(1),Rsq,1e-12);
-%! assert(stats(2),F,3e-8);
-%! assert(((bint(:,1)-bint(:,2))/2)/tinv(alpha/2,9),V(:,2),-1.e-5);
+%! assert (b,V(:,1),4e-6);
+%! assert (stats(1),Rsq,1e-12);
+%! assert (stats(2),F,3e-8);
+%! assert (((bint(:,1)-bint(:,2))/2)/tinv (alpha/2,9),V(:,2),-1.e-5);

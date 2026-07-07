@@ -126,7 +126,7 @@ function h = gscatter (varargin)
       g_len = numel (g_names);
       if (iscellstr (g_names))
         for i = 1 : g_len
-            g(find (strcmp(gv, g_names{i}))) = i;
+            g(find (strcmp (gv, g_names{i}))) = i;
         endfor
       else
         for i = 1 : g_len
@@ -154,9 +154,9 @@ function h = gscatter (varargin)
   do_legend = 1; # legend shown by default
   ## MATLAB compatibility: by default MATLAB uses the variable name as
   ## label for either axis
-  mygetname = @(x) inputname(1); # to retrieve the name of a variable
-  x_nam = mygetname (varargin{1}); # this should retrieve the name of the var,
-  y_nam = mygetname (varargin{2}); # but it does not work
+  mygetname = @(x) inputname (1); # to retrieve the name of a variable
+  x_nam = mygetname(varargin{1}); # this should retrieve the name of the var,
+  y_nam = mygetname(varargin{2}); # but it does not work
 
   ## parameters are all in fixed positions
   for i = 4 : nargin

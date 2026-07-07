@@ -122,10 +122,10 @@ endfunction
 %!assert (triinv ([p, NaN], 1, 1.5, 2), [y, NaN], eps)
 
 ## Test class of input preserved
-%!assert (triinv (single ([p, NaN]), 1, 1.5, 2), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], single (1), 1.5, 2), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], 1, single (1.5), 2), single ([y, NaN]), eps('single'))
-%!assert (triinv ([p, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps('single'))
+%!assert (triinv (single ([p, NaN]), 1, 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert (triinv ([p, NaN], single (1), 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert (triinv ([p, NaN], 1, single (1.5), 2), single ([y, NaN]), eps ('single'))
+%!assert (triinv ([p, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<triinv: function called with too few input arguments.> triinv ()
@@ -135,13 +135,13 @@ endfunction
 %!error<triinv: function called with too many inputs> ...
 %! triinv (1, 2, 3, 4, 5)
 %!error<triinv: P, A, B, and C must be of common size or scalars.> ...
-%! triinv (ones (3), ones (2), ones(2), ones(2))
+%! triinv (ones (3), ones (2), ones (2), ones (2))
 %!error<triinv: P, A, B, and C must be of common size or scalars.> ...
-%! triinv (ones (2), ones (3), ones(2), ones(2))
+%! triinv (ones (2), ones (3), ones (2), ones (2))
 %!error<triinv: P, A, B, and C must be of common size or scalars.> ...
-%! triinv (ones (2), ones (2), ones(3), ones(2))
+%! triinv (ones (2), ones (2), ones (3), ones (2))
 %!error<triinv: P, A, B, and C must be of common size or scalars.> ...
-%! triinv (ones (2), ones (2), ones(2), ones(3))
+%! triinv (ones (2), ones (2), ones (2), ones (3))
 %!error<triinv: P, A, B, and C must not be complex.> triinv (i, 2, 3, 4)
 %!error<triinv: P, A, B, and C must not be complex.> triinv (1, i, 3, 4)
 %!error<triinv: P, A, B, and C must not be complex.> triinv (1, 2, i, 4)

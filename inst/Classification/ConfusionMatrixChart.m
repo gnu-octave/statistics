@@ -40,7 +40,7 @@ classdef ConfusionMatrixChart < handle
   ## @seealso{confusionchart}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {ConfusionMatrixChart} {property} XLabel
     ##
@@ -238,7 +238,7 @@ classdef ConfusionMatrixChart < handle
     Units = '';
   endproperties
 
-  properties (GetAccess = public, SetAccess = private)
+  properties(GetAccess = public, SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {ConfusionMatrixChart} {property} ClassLabels
     ##
@@ -274,7 +274,7 @@ classdef ConfusionMatrixChart < handle
     Parent = 0;
   endproperties
 
-  properties (Access = protected, Hidden)
+  properties(Access = protected, Hidden)
     ## Axes handle
     hax = 0.0;
 
@@ -291,7 +291,7 @@ classdef ConfusionMatrixChart < handle
     RowSummaryAbsoluteValues = [];
   endproperties
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{cmc} =} ConfusionMatrixChart (@var{hax}, @var{cm}, @var{cl})
@@ -816,7 +816,7 @@ classdef ConfusionMatrixChart < handle
     endfunction
   endmethods
 
-  methods (Access = private)
+  methods(Access = private)
     ## convertNamedColor
     ## convert a named colour to a colour triplet
     function ret = convertNamedColor (this, color)

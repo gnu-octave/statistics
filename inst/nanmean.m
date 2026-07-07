@@ -145,23 +145,23 @@ endfunction
 ## Test output
 %!assert (nanmean ([]), NaN)
 %!assert (nanmean (NaN), NaN)
-%!assert (nanmean (NaN(3)), [NaN, NaN, NaN])
+%!assert (nanmean (NaN (3)), [NaN, NaN, NaN])
 %!assert (nanmean ([3 2 NaN 7]), 4)
 %!assert (nanmean ([2 4 NaN Inf]), Inf)
 %!assert (nanmean ([1 NaN 3; NaN 4 6; 7 8 NaN]), [4 6 4.5])
 %!assert (nanmean ([1 NaN 3; NaN 5 6; 7 8 NaN], 2), [2; 5.5; 7.5])
 %!assert (nanmean (uint8 ([2 4 1 7])), 3.5)
 %!test
-%! x = magic(3);
+%! x = magic (3);
 %! x([1 6:9]) = NaN;
 %! assert (nanmean (x), [3.5, 3, NaN])
 %! assert (nanmean (x, 2), [1; 4; 4])
 %!test
-%! x = reshape(1:24, [2, 4, 3]);
+%! x = reshape (1:24, [2, 4, 3]);
 %! x([5:6, 20]) = NaN;
 %! assert (nanmean (x, 'all'), 269/21)
 %!test
-%! x = reshape(1:24,[2, 4, 3]);
+%! x = reshape (1:24,[2, 4, 3]);
 %! x([5:6, 20]) = NaN;
 %! assert (squeeze (nanmean (x, [1, 2])), [25/6; 100/8; 144/7])
 %! assert (nanmean (x, [2, 3]), [139/11; 13])

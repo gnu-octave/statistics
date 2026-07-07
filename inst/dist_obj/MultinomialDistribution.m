@@ -50,7 +50,7 @@ classdef MultinomialDistribution
   ## @seealso{makedist, mnpdf, mnrnd}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} Probabilities
     ##
@@ -63,7 +63,7 @@ classdef MultinomialDistribution
     Probabilities
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} DistributionName
     ##
@@ -110,12 +110,12 @@ classdef MultinomialDistribution
     ParameterDescription = {'Outcome probabilities'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'mn';
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} ParameterValues
     ##
@@ -155,7 +155,7 @@ classdef MultinomialDistribution
     IsTruncated
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = MultinomialDistribution (Probabilities)
       if (nargin == 0)
@@ -167,7 +167,7 @@ classdef MultinomialDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'multinomial distribution');
     endfunction
 
@@ -186,7 +186,7 @@ classdef MultinomialDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {MultinomialDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -265,10 +265,10 @@ classdef MultinomialDistribution
       endif
       probs = this.Probabilities;
       ## Do the computations
-      sz = size(p);
+      sz = size (p);
       p = p(:);
       x = zeros (numel (p), 1);
-      pc = cumsum(this.Probabilities);
+      pc = cumsum (this.Probabilities);
       pc = [0 pc(1:(end-1))];
       is_one = p == 0;
       is_nan = isnan (p) | p > 1 | p < 0;
@@ -634,19 +634,19 @@ endfunction
 ## Test input validation
 ## 'MultinomialDistribution' constructor
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution(0)
+%! MultinomialDistribution (0)
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution(-1)
+%! MultinomialDistribution (-1)
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution(Inf)
+%! MultinomialDistribution (Inf)
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution(i)
+%! MultinomialDistribution (i)
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution('a')
+%! MultinomialDistribution ('a')
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution([1, 2])
+%! MultinomialDistribution ([1, 2])
 %!error <MultinomialDistribution: PROBABILITIES must be a vector of positive real scalars that sum up to 1.> ...
-%! MultinomialDistribution(NaN)
+%! MultinomialDistribution (NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -690,8 +690,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = MultinomialDistribution([0.1, 0.2, 0.3, 0.4]);
-%! pd(2) = MultinomialDistribution([0.1, 0.2, 0.3, 0.4]);
+%! pd = MultinomialDistribution ([0.1, 0.2, 0.3, 0.4]);
+%! pd(2) = MultinomialDistribution ([0.1, 0.2, 0.3, 0.4]);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

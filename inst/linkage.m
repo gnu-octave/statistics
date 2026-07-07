@@ -165,11 +165,11 @@ function dgram = linkage (d, method = 'single', distarg, savememory)
     d_rc = d([r, c], :);                # cache row slice
     switch mcase
       case {1, 2, 4}                    # 1 arg
-        newd = dist (d_rc);
+        newd = dist(d_rc);
       case {3, 5, 7}                    # 4 args
-        newd = dist (d_rc, r, c, weight);
+        newd = dist(d_rc, r, c, weight);
       case 6                            # 2 args
-        newd = dist (d_rc, r);
+        newd = dist(d_rc, r);
       otherwise
     endswitch
     newd(r) = Inf;                      # Take care of the diagonal element
@@ -246,7 +246,7 @@ endfunction
 %!assert (cond (linkage (pdist (x), 'average')),        27.045012, t);
 %!assert (cond (linkage (pdist (x), 'weighted')),       27.412889, t);
 
-%! lastwarn(); # Clear last warning before the test
+%! lastwarn (); # Clear last warning before the test
 %!warning <cluster distances> linkage (pdist (x), 'centroid');
 
 %!test

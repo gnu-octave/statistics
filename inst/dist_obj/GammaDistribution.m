@@ -55,7 +55,7 @@ classdef GammaDistribution
   ## gamlike, gamstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} a
     ##
@@ -81,7 +81,7 @@ classdef GammaDistribution
     b
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} DistributionName
     ##
@@ -128,14 +128,14 @@ classdef GammaDistribution
     ParameterDescription = {'Shape', 'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'gam';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} ParameterValues
     ##
@@ -227,11 +227,11 @@ classdef GammaDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = GammaDistribution (a, b)
       if (nargin == 0)
@@ -247,7 +247,7 @@ classdef GammaDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'gamma distribution');
     endfunction
 
@@ -281,7 +281,7 @@ classdef GammaDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {GammaDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -723,7 +723,7 @@ classdef GammaDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -815,31 +815,31 @@ endfunction
 ## Test input validation
 ## 'GammaDistribution' constructor
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution(0, 1)
+%! GammaDistribution (0, 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution(Inf, 1)
+%! GammaDistribution (Inf, 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution(i, 1)
+%! GammaDistribution (i, 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution('a', 1)
+%! GammaDistribution ('a', 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution([1, 2], 1)
+%! GammaDistribution ([1, 2], 1)
 %!error <GammaDistribution: A must be a positive real scalar.> ...
-%! GammaDistribution(NaN, 1)
+%! GammaDistribution (NaN, 1)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, 0)
+%! GammaDistribution (1, 0)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, -1)
+%! GammaDistribution (1, -1)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, Inf)
+%! GammaDistribution (1, Inf)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, i)
+%! GammaDistribution (1, i)
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, 'a')
+%! GammaDistribution (1, 'a')
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, [1, 2])
+%! GammaDistribution (1, [1, 2])
 %!error <GammaDistribution: B must be a positive real scalar.> ...
-%! GammaDistribution(1, NaN)
+%! GammaDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -945,8 +945,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = GammaDistribution(1, 1);
-%! pd(2) = GammaDistribution(1, 3);
+%! pd = GammaDistribution (1, 1);
+%! pd(2) = GammaDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -134,9 +134,9 @@ endfunction
 %!assert (gpstat (x, ones (1,6), zeros (1,6)), y, eps)
 
 ## Test class of input preserved
-%!assert (gpstat (single (x), 1, 0), single (y), eps('single'))
-%!assert (gpstat (x, single (1), 0), single (y), eps('single'))
-%!assert (gpstat (x, 1, single (0)), single (y), eps('single'))
-%!assert (gpstat (single ([x, NaN]), 1, 0), single ([y, NaN]), eps('single'))
-%!assert (gpstat ([x, NaN], single (1), 0), single ([y, NaN]), eps('single'))
-%!assert (gpstat ([x, NaN], 1, single (0)), single ([y, NaN]), eps('single'))
+%!assert (gpstat (single (x), 1, 0), single (y), eps ('single'))
+%!assert (gpstat (x, single (1), 0), single (y), eps ('single'))
+%!assert (gpstat (x, 1, single (0)), single (y), eps ('single'))
+%!assert (gpstat (single ([x, NaN]), 1, 0), single ([y, NaN]), eps ('single'))
+%!assert (gpstat ([x, NaN], single (1), 0), single ([y, NaN]), eps ('single'))
+%!assert (gpstat ([x, NaN], 1, single (0)), single ([y, NaN]), eps ('single'))

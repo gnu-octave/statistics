@@ -188,7 +188,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
 
   ## Check number of output arguments
   if (nargout < 2 || nargout > 8)
-    print_usage();
+    print_usage ();
   endif
 
   ## Mean centering Data matrix
@@ -228,7 +228,7 @@ function [xload, yload, xscore, yscore, coef, pctVar, mse, stats] = ...
       ## Check crossval method and recalculate max number of components
       if isa (cvarg, 'cvpartition')
         type = 'Partition';
-        NCOMPmax = min(min(cvarg.TrainSize)-1,npred);
+        NCOMPmax = min (min (cvarg.TrainSize)-1,npred);
         ts = sum (cvarg.TestSize);
       else
         type = 'Kfold';
@@ -337,8 +337,8 @@ function sse = sseCV (XTR, YTR, XTE, YTE, NCOMP)
   X0TR = bsxfun (@minus, XTR, XTRmeans);
   Y0TR = bsxfun (@minus, YTR, YTRmeans);
   ## Center test data
-  X0TE = bsxfun(@minus, XTE, XTRmeans);
-  Y0TE = bsxfun(@minus, YTE, YTRmeans);
+  X0TE = bsxfun (@minus, XTE, XTRmeans);
+  Y0TE = bsxfun (@minus, YTE, YTRmeans);
   ## Fit the full model
   [xload, yload, ~, ~, W] = simpls (X0TR, Y0TR, NCOMP);
   XTEscore = X0TE * W;
@@ -398,7 +398,7 @@ endfunction
 %!                                                 plsregress (NIR, octane, 10);
 %!
 %! ## Calculate the normalized PLS weights
-%! W0 = stats.W ./ sqrt(sum(stats.W.^2,1));
+%! W0 = stats.W ./ sqrt (sum (stats.W.^2,1));
 %!
 %! ## Calculate the VIP scores for 10 components
 %! nobs = size (xload, 1);
@@ -411,7 +411,7 @@ endfunction
 %! ## Plot the VIP scores
 %! scatter (1:length (VIPscore), VIPscore, 'xb');
 %! hold on
-%! scatter (VIPidx, VIPscore (VIPidx), 'xr');
+%! scatter (VIPidx, VIPscore(VIPidx), 'xr');
 %! plot ([1, length(VIPscore)], [1, 1], '--k');
 %! hold off
 %! axis ('tight');

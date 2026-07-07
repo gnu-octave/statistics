@@ -266,7 +266,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           v = v(:);
         endif
 
-        if ((! ischar(v)) && isempty (v))
+        if ((! ischar (v)) && isempty (v))
           error ("fillmissing: a numeric fill value cannot be empty.");
         endif
 
@@ -380,7 +380,7 @@ function [A, idx_out] = fillmissing (A, varargin)
               endgap_val = propval;
 
             else
-              error (strcat("fillmissing: EndValues must be numeric", ...
+              error (strcat ("fillmissing: EndValues must be numeric", ...
                             " or a valid method name."));
             endif
 
@@ -457,7 +457,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   ## endvalues treated separately from interior missing_locs.
   if (isempty (endgap_method) || strcmp (endgap_method, 'extrap'))
     endgap_method = method;
-    if (strcmp(endgap_method, 'constant'))
+    if (strcmp (endgap_method, 'constant'))
       endgap_val = v;
     endif
   endif
@@ -502,7 +502,7 @@ function [A, idx_out] = fillmissing (A, varargin)
   ## Simplify processing by temporarily permuting A so operation always on dim1.
   ## Revert permutation at the end.
   dim_idx_perm = [1 : ndims_A];
-  dim_idx_flip(1 : max(dim, ndims_A)) = {':'};
+  dim_idx_flip(1 : max (dim, ndims_A)) = {':'};
   dim_idx_flip(1) = [sz_A_dim:-1:1];
 
   if (dim != 1)
@@ -722,7 +722,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           fill_vals = NaN (sum (missing_locs(:, cols_to_use)(:)), 1);
 
           cols_enough_points =  (sum ( ...
-                       ! isnan(A) & (! missing_locs), 1) > 1) & cols_to_use;
+                       ! isnan (A) & (! missing_locs), 1) > 1) & cols_to_use;
 
           interp_cols = (cols_enough_points & cols_to_use);
 
@@ -758,7 +758,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
                 ## Create temporary flattened array for processing,
                 A_sum = A(:,:);
-                A_sum (allmissing) = 0;
+                A_sum(allmissing) = 0;
 
                 if (standard_samplepoints && ...
                         all (round (window_size) == window_size))
@@ -802,7 +802,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                   ## automatic broadcasting to get window summations & counts
 
                   samplepoints_shift = ...
-                             samplepoints(:, ones(1, sz_A_dim)) - samplepoints';
+                             samplepoints(:, ones (1, sz_A_dim)) - samplepoints';
 
                   if (isscalar (window_size))
                     ## [nb, na)
@@ -861,7 +861,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                 cols_to_use = any (missing_locs(:,:), 1);
 
                 samplepoints_shift = ...
-                             samplepoints(:, ones(1, sz_A_dim)) - samplepoints';
+                             samplepoints(:, ones (1, sz_A_dim)) - samplepoints';
                 if (isscalar (window_size))
                   window_size = window_size * [-0.5, 0.5];
 
@@ -959,7 +959,7 @@ function [A, idx_out] = fillmissing (A, varargin)
         gap_locations = arrayfun ('colon', gap_start_locs, ...
                       gap_start_locs + gapsizes - 1, 'UniformOutput', false);
 
-        gap_locations = cellfun('transpose', ...
+        gap_locations = cellfun ('transpose', ...
                                     gap_locations, 'UniformOutput', false);
 
         ## Sorting index to bridge front-mid-back and linear index ordering.
@@ -1015,7 +1015,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                        min (x(end) + window_size(2), samplepoints(end)))), ...
                          gap_sample_values, 'UniformOutput', false);
           window_points_r_c(:,2) = cellfun ( ...
-               @(x,y) (fix ((x(1)-1)/sz_A_dim)+1)(ones (size(y))), ...
+               @(x,y) (fix ((x(1)-1)/sz_A_dim)+1)(ones (size (y))), ...
                  gap_locations, window_points_r_c(:,1), 'UniformOutput',false);
 
 
@@ -1073,7 +1073,7 @@ function [A, idx_out] = fillmissing (A, varargin)
               ## includes function handle. Expect behavior should match other
               ## methods, where any processed missing value should be marked
               ## as filled no matter the fill value.
-              if ((isnumeric(A) && ! isinteger(A)) ||
+              if ((isnumeric (A) && ! isinteger (A)) ||
                       ischar (A) || iscellstr (A))
                 idx_out(missing_locs) = ! ismissing (fill_vals);
 
@@ -1126,7 +1126,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           switch (endgap_method)
             case 'previous'
               ## Remove any gaps at front of array, includes all-missing cols.
-              endgap_locs (logical (cumprod (endgap_locs,1))) = false;
+              endgap_locs(logical (cumprod (endgap_locs,1))) = false;
 
               if (any (endgap_locs(:)))
 
@@ -1304,7 +1304,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                 fill_vals = NaN (sum (endgap_locs(:, cols_to_use)(:)), 1);
 
                 cols_enough_points = (sum ( ...
-                             ! isnan(A) & (! endgap_locs), 1) > 1) & cols_to_use;
+                             ! isnan (A) & (! endgap_locs), 1) > 1) & cols_to_use;
 
                 interp_cols = (cols_enough_points & cols_to_use);
 
@@ -1465,7 +1465,7 @@ function med = columnwise_median (x)
     endif
 
     if (any (m_idx_odd(:)))
-      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find(m_idx_odd)(:));
+      x_idx_odd = sub2ind (szx, k(m_idx_odd)(:), find (m_idx_odd)(:));
       med(m_idx_odd) = x(x_idx_odd);
     endif
 
@@ -1783,7 +1783,7 @@ endfunction
 %! y([6, 18, 20, 21]) = [6, 18, 20, 21];
 %! assert (fillmissing (x, 'linear', 2, 'endvalues', 0), y);
 %! y = x;
-%! y(isnan(y)) = 0;
+%! y(isnan (y)) = 0;
 %! assert (fillmissing (x, 'linear', 3, 'endvalues', 0), y);
 %! assert (fillmissing (x, 'linear', 99, 'endvalues', 0), y);
 
@@ -1972,7 +1972,7 @@ endfunction
 %!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
-%!    A = repelem (x(1), numel(z));
+%!    A = repelem (x(1), numel (z));
 %!  else
 %!    A = interp1 (y, x, z, 'linear', 'extrap');
 %!  endif
@@ -2005,7 +2005,7 @@ endfunction
 %!  if (isempty (y))
 %!    A = z;
 %!  elseif (numel (y) == 1)
-%!    A = repelem (x(1), numel(z));
+%!    A = repelem (x(1), numel (z));
 %!  else
 %!    A = interp1 (y, x, z, 'linear', 'extrap');
 %!  endif
@@ -2239,9 +2239,9 @@ endfunction
 %!assert (fillmissing (logical ([1, 0, 1, 0, 1]), 'previous',  'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
 %!assert (fillmissing (logical ([1, 0, 1, 0, 1]), 'next',  'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 1]))
 %!assert (fillmissing (logical ([1, 0, 1, 0, 1]), 'nearest', 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
-%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), 3), logical ([1, 0, 1, 0, 1]))
-%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
-%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false(size(z)), [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), 3), logical ([1, 0, 1, 0, 1]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([0, 0, 0, 0, 0]))
+%!assert (fillmissing (logical ([1, 0, 1, 0, 1]),  @(x,y,z) false (size (z)), [2, 0], 'missinglocations', logical ([1, 0, 1, 0, 1])), logical ([1, 0, 0, 0, 0]))
 %!test
 %! x = logical ([1, 0, 1, 0, 1]);
 %! [~, idx] = fillmissing (x, 'constant', true);
@@ -2256,11 +2256,11 @@ endfunction
 %! assert (idx, logical ([1, 0, 1, 0, 0]));
 %! [~, idx] = fillmissing (x, 'nearest', 'missinglocations', logical ([1, 0, 1, 0, 1]));
 %! assert (idx, logical ([1, 0, 1, 0, 1]));
-%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), 3);
+%! [~, idx] = fillmissing (x, @(x,y,z) false (size (z)), 3);
 %! assert (idx, logical ([0, 0, 0, 0, 0]))
-%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, @(x,y,z) false (size (z)), 3, 'missinglocations', logical ([1, 0, 1, 0, 1]));
 %! assert (idx, logical ([1, 0, 1, 0, 1]))
-%! [~, idx] = fillmissing (x, @(x,y,z) false(size(z)), [2 0], 'missinglocations', logical ([1, 0, 1, 0, 1]));
+%! [~, idx] = fillmissing (x, @(x,y,z) false (size (z)), [2 0], 'missinglocations', logical ([1, 0, 1, 0, 1]));
 %! assert (idx, logical ([0, 0, 1, 0, 1]))
 
 %!assert (fillmissing (int32 ([1, 2, 3, 4, 5]), 'constant', 0), int32 ([1, 2, 3, 4, 5]))
@@ -2335,7 +2335,7 @@ endfunction
 %!error <invalid EndValues method 'foo'> fillmissing (1, 'constant', 1, 1, 'endvalues', 'foo')
 %!error <EndValues must be a scalar or a 1 element array> fillmissing ([1, 2, 3], 'constant', 1, 2, 'endvalues', [1, 2, 3])
 %!error <EndValues must be a scalar or a 3 element array> fillmissing ([1, 2, 3], 'constant', 1, 1, 'endvalues', [1, 2])
-%!error <EndValues must be a scalar or a 12 element array> fillmissing (randi(5,4,3,2), 'constant', 1, 3, 'endvalues', [1, 2])
+%!error <EndValues must be a scalar or a 12 element array> fillmissing (randi (5,4,3,2), 'constant', 1, 3, 'endvalues', [1, 2])
 %!error <EndValues must be numeric or a> fillmissing (1, 'constant', 1, 1, 'endvalues', {1})
 %!error <invalid parameter name 'foo'> fillmissing (1, 'constant', 1, 2, 'foo', 4)
 %!error <MissingLocations option is not compatible with> fillmissing (struct, 'constant', 1, 'missinglocations', false)

@@ -77,7 +77,7 @@ function x = nakainv (p, mu, omega)
                         & (0 < omega) & (omega < Inf);
 
   ## Compute Nakagami iCDF
-  if (isscalar (mu) && isscalar(omega))
+  if (isscalar (mu) && isscalar (omega))
     m_gamma = mu;
     w_gamma = omega / mu;
     x(k) = gaminv (p(k), m_gamma, w_gamma);
@@ -132,11 +132,11 @@ endfunction
 %!error<nakainv: function called with too few input arguments.> nakainv (1)
 %!error<nakainv: function called with too few input arguments.> nakainv (1, 2)
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
-%! nakainv (ones (3), ones (2), ones(2))
+%! nakainv (ones (3), ones (2), ones (2))
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
-%! nakainv (ones (2), ones (3), ones(2))
+%! nakainv (ones (2), ones (3), ones (2))
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
-%! nakainv (ones (2), ones (2), ones(3))
+%! nakainv (ones (2), ones (2), ones (3))
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (i, 4, 3)
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, i, 3)
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, 4, i)

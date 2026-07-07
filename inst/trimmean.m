@@ -342,7 +342,7 @@ endfunction
 %!assert (trimmean ([1, 2, 3, 4, 5], 40), 3)
 
 ## Test special cases
-%!assert (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape(1:40, [5, 4, 2]))
+%!assert (trimmean (reshape (1:40, [5, 4, 2]), 10, 4), reshape (1:40, [5, 4, 2]))
 %!assert (trimmean ([], 10), NaN)
 %!assert (trimmean ([1;2;3;4;5], 10, 2), [1;2;3;4;5])
 

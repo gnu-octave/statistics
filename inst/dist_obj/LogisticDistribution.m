@@ -57,7 +57,7 @@ classdef LogisticDistribution
   ## logilike, logistat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {LogisticDistribution} {property} mu
     ##
@@ -83,7 +83,7 @@ classdef LogisticDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {LogisticDistribution} {property} DistributionName
     ##
@@ -130,14 +130,14 @@ classdef LogisticDistribution
     ParameterDescription = {'Location', 'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'logi';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {LogisticDistribution} {property} ParameterValues
     ##
@@ -229,11 +229,11 @@ classdef LogisticDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = LogisticDistribution (mu, sigma)
       if (nargin == 0)
@@ -249,7 +249,7 @@ classdef LogisticDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'logistic distribution');
     endfunction
 
@@ -283,7 +283,7 @@ classdef LogisticDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {LogisticDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -716,7 +716,7 @@ classdef LogisticDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -808,29 +808,29 @@ endfunction
 ## Test input validation
 ## 'LogisticDistribution' constructor
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution(Inf, 1)
+%! LogisticDistribution (Inf, 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution(i, 1)
+%! LogisticDistribution (i, 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution('a', 1)
+%! LogisticDistribution ('a', 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution([1, 2], 1)
+%! LogisticDistribution ([1, 2], 1)
 %!error <LogisticDistribution: MU must be a finite real scalar.> ...
-%! LogisticDistribution(NaN, 1)
+%! LogisticDistribution (NaN, 1)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, 0)
+%! LogisticDistribution (1, 0)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, -1)
+%! LogisticDistribution (1, -1)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, Inf)
+%! LogisticDistribution (1, Inf)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, i)
+%! LogisticDistribution (1, i)
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, 'a')
+%! LogisticDistribution (1, 'a')
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, [1, 2])
+%! LogisticDistribution (1, [1, 2])
 %!error <LogisticDistribution: SIGMA must be a positive real scalar.> ...
-%! LogisticDistribution(1, NaN)
+%! LogisticDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -936,8 +936,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = LogisticDistribution(1, 1);
-%! pd(2) = LogisticDistribution(1, 3);
+%! pd = LogisticDistribution (1, 1);
+%! pd(2) = LogisticDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

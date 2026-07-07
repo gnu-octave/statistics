@@ -229,7 +229,7 @@ function [D, I] = pdist2 (X, Y, varargin)
     ## Check the input output sizes of the user function
     D2 = [];
     try
-      D2 = Distance (X(1,:), Y);
+      D2 = Distance(X(1,:), Y);
     catch ME
       error ("pdist2: invalid function handle for distance metric.");
     end_try_catch
@@ -537,7 +537,7 @@ endfunction
 %! y = [0, 0, 0; 1, 2, 3; 0, 2, 4; 4, 7, 1];
 %! xx = [1 2 3; 4 5 6; 7 8 9; 3 2 1];
 %!test
-%! d = sqrt([3, 5, 11, 45; 12, 2, 8, 30; 27, 5, 11, 21]);
+%! d = sqrt ([3, 5, 11, 45; 12, 2, 8, 30; 27, 5, 11, 21]);
 %! assert (pdist2 (x, y), d);
 %!test
 %! d = [5.1962, 2.2361, 3.3166, 6.7082; ...
@@ -614,7 +614,7 @@ endfunction
 %! xx = [1, 2, 3, 4; 2, 3, 4, 5; 3, 4, 5, 6];
 %! yy = [1, 2, 2, 3; 2, 3, 3, 4];
 %! [D, I] = pdist2 (x, y, 'euclidean', 'Smallest', 4);
-%! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [d, i] = pdist2 (x, y, eucldist, 'Smallest', 4);
 %! assert ({D, I}, {d, i});
 %!warning<pdist2: matrix is close to singular> ...
@@ -637,15 +637,15 @@ endfunction
 %!error<pdist2: you can only specify either 'Smallest' or 'Largest'.> ...
 %! pdist2 (ones (3), ones (3), 'minkowski', 3, 'Largest', 4, 'smallest', 5)
 %!error<pdist2: 'Smallest' or 'Largest' must be specified to compute second output.> ...
-%! [d, i] = pdist2(ones (3), ones (3), 'minkowski', 3)
+%! [d, i] = pdist2 (ones (3), ones (3), 'minkowski', 3)
 %!error<pdist2: DistParameter for standardized euclidean must be a vector of> ...
 %! pdist2 (ones (3), ones (3), 'seuclidean', 3)
 %!error<pdist2: DistParameter for standardized euclidean must be a nonnegative> ...
 %! pdist2 (ones (3), ones (3), 'seuclidean', [1, -1, 3])
 %!error<pdist2: DistParameter for mahalanobis distance must be a covariance> ...
-%! pdist2 (ones (3), eye (3), 'mahalanobis', eye(2))
+%! pdist2 (ones (3), eye (3), 'mahalanobis', eye (2))
 %!error<pdist2: covariance matrix for mahalanobis distance must be symmetric> ...
-%! pdist2 (ones (3), eye (3), 'mahalanobis', ones(3))
+%! pdist2 (ones (3), eye (3), 'mahalanobis', ones (3))
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
 %! pdist2 (ones (3), eye (3), 'minkowski', 0)
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
@@ -653,6 +653,6 @@ endfunction
 %!error<pdist2: DistParameter for minkowski distance must be a positive scalar.> ...
 %! pdist2 (ones (3), eye (3), 'minkowski', [1, 2])
 %!error<pdist2: invalid function handle for distance metric.> ...
-%! pdist2 (ones (3), ones (3), @(v,m) sqrt(repmat(v,rows(m),1)-m,2))
+%! pdist2 (ones (3), ones (3), @(v,m) sqrt (repmat (v,rows (m),1)-m,2))
 %!error<pdist2: custom distance function produces wrong output size.> ...
-%! pdist2 (ones (3), ones (3), @(v,m) sqrt(sum(sumsq(repmat(v,rows(m),1)-m,2))))
+%! pdist2 (ones (3), ones (3), @(v,m) sqrt (sum (sumsq (repmat (v,rows (m),1)-m,2))))

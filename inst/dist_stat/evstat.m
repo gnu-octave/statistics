@@ -71,7 +71,7 @@ function [m, v] = evstat (mu, sigma)
   sigma(sigma <= 0) = NaN;
 
   ## Calculate mean and variance
-  m = mu + psi(1) .* sigma;
+  m = mu + psi (1) .* sigma;
   v = (pi .* sigma) .^ 2 ./ 6;
 
 endfunction

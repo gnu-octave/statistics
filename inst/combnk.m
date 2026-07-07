@@ -37,7 +37,7 @@ function retval = combnk (data, k)
   if (k == 0 || k > n)
     retval = resize (data, 0, k);
   elseif (k == n)
-    retval = data (:).';
+    retval = data(:).';
   else
     retval = __combnk__ (data, k);
   endif
@@ -52,7 +52,7 @@ endfunction
 function retval = __combnk__ (data, k)
   ## Recursion stopping criteria
   if (k == 1)
-    retval = data (:);
+    retval = data(:);
   else
     ## Process data
     n = numel (data);
@@ -62,8 +62,8 @@ function retval = __combnk__ (data, k)
       retval = [];
     endif
     for j = 1:n
-      C = __combnk__ (data ((j+1):end), k-1);
-      C = cat (2, repmat (data (j), rows (C), 1), C);
+      C = __combnk__ (data((j+1):end), k-1);
+      C = cat (2, repmat (data(j), rows (C), 1), C);
       if (! isempty (C))
         if (isempty (retval))
           retval = C;

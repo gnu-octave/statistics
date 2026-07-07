@@ -260,7 +260,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
   ## Check for NSMethod
   if (strcmpi (NSMethod, 'kdtree'))
     ## Build kdtree and search the query point
-    kdtree = __build_kdtree__ (1:size(X,1), 0, X, BS);
+    kdtree = __build_kdtree__ (1:size (X,1), 0, X, BS);
 
     ## Check for ties and sortindices
     if (! InclTies)
@@ -313,7 +313,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
         for i = 1:rows (Y)
           D = pdist2 (X, Y(i,:), Distance, DistParameter);
           [dt, id] = sort (D);
-          kth_dist = dt (K);
+          kth_dist = dt(K);
           tied_idx = (dt <= kth_dist);
           dist {i} = dt(tied_idx, :)';
           idx {i} = id(tied_idx, :)';
@@ -365,13 +365,13 @@ function [indices, distances] = __search_kdtree__ (node, query, k, X, dist, ...
   if (strcmpi (dist, 'minkowski'))
     if (! (isscalar (distparam) && isnumeric (distparam) ...
                                 && distparam > 0 && isfinite (distparam)))
-      error (strcat("knnsearch.__search_kdtree__:", ...
+      error (strcat ("knnsearch.__search_kdtree__:", ...
                     " distparam must be a positive finite", ...
                     " scalar for minkowski."));
     endif
   else
     if (! isempty (distparam))
-      error (strcat("knnsearch.__search_kdtree__:", ...
+      error (strcat ("knnsearch.__search_kdtree__:", ...
                     " distparam must be empty for non-minkowski metrics."));
     endif
   endif
@@ -453,8 +453,8 @@ endfunction
 %! ## plotting the results
 %! gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], '.', 20);
 %! title ('Fisher''s Iris Data - Nearest Neighbors with different types of distance metrics');
-%! xlabel('Petal length (cm)');
-%! ylabel('Petal width (cm)');
+%! xlabel ('Petal length (cm)');
+%! ylabel ('Petal width (cm)');
 %!
 %! line (point(1), point(2), 'marker', 'X', 'color', 'k', ...
 %!       'linewidth', 2, 'displayname', 'query point')
@@ -512,7 +512,7 @@ endfunction
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
 %!test
-%! eucldist = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucldist = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! [idx, D] = knnsearch (X, Y, 'Distance', eucldist);
 %! assert (idx, [1; 1]);
 %! assert (D, ones (2, 1) * sqrt (2));
@@ -617,21 +617,21 @@ endfunction
 %!test
 %! load fisheriris
 %! a = meas;
-%! b = min(meas);
+%! b = min (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
 %! assert (idx, [42, 9, 14, 39, 13]);
 %! assert (D, [0.5099, 0.9950, 1.0050, 1.0536, 1.1874], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
-%! b = mean(meas);
+%! b = mean (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
 %! assert (idx, [65, 83, 89, 72, 100]);
 %! assert (D, [0.3451, 0.3869, 0.4354, 0.4481, 0.4625], 1e-4);
 %!test
 %! load fisheriris
 %! a = meas;
-%! b = max(meas);
+%! b = max (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'NSMethod', 'kdtree');
 %! assert (idx, [118, 132, 110, 106, 136]);
 %! assert (D, [0.7280, 0.9274, 1.3304, 1.5166, 1.6371], 1e-4);
@@ -639,7 +639,7 @@ endfunction
 %!test
 %! load fisheriris
 %! a = meas;
-%! b = max(meas);
+%! b = max (meas);
 %! [idx, D] = knnsearch (a, b, 'K', 5, 'includeties', true);
 %! assert (iscell (idx), true);
 %! assert (iscell (D), true);
@@ -659,11 +659,11 @@ endfunction
 %!error<knnsearch: invalid value of Minkowski Exponent.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'P', -2)
 %!error<knnsearch: invalid value in Scale or the size of Scale.> ...
-%! knnsearch (ones (4, 5), ones (1, 5), 'scale', ones(4,5), 'distance', 'euclidean')
+%! knnsearch (ones (4, 5), ones (1, 5), 'scale', ones (4,5), 'distance', 'euclidean')
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'cov', ['some' 'some'])
 %!error<knnsearch: invalid value in Cov, Cov can only be given for mahalanobis distance.> ...
-%! knnsearch (ones (4, 5), ones (1, 5), 'cov', ones(4,5), 'distance', 'euclidean')
+%! knnsearch (ones (4, 5), ones (1, 5), 'cov', ones (4,5), 'distance', 'euclidean')
 %!error<knnsearch: invalid value of bucketsize.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'bucketsize', -1)
 %!error<knnsearch: invalid value of bucketsize.> ...

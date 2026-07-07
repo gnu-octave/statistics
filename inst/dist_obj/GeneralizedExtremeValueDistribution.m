@@ -59,7 +59,7 @@ classdef GeneralizedExtremeValueDistribution
   ## gevlike, gevstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} k
     ##
@@ -97,7 +97,7 @@ classdef GeneralizedExtremeValueDistribution
     mu
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} DistributionName
     ##
@@ -144,14 +144,14 @@ classdef GeneralizedExtremeValueDistribution
     ParameterDescription = {'Shape', 'Scale', 'Location'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'gev';
     ParameterRange = [-Inf, realmin, -Inf; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} ParameterValues
     ##
@@ -243,11 +243,11 @@ classdef GeneralizedExtremeValueDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = GeneralizedExtremeValueDistribution (k, sigma, mu)
       if (nargin == 0)
@@ -264,7 +264,7 @@ classdef GeneralizedExtremeValueDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Generalized Extreme Value distribution');
     endfunction
 
@@ -310,7 +310,7 @@ classdef GeneralizedExtremeValueDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {GeneralizedExtremeValueDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -754,7 +754,7 @@ classdef GeneralizedExtremeValueDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -847,39 +847,39 @@ endfunction
 ## Test input validation
 ## 'GeneralizedExtremeValueDistribution' constructor
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(Inf, 1, 1)
+%! GeneralizedExtremeValueDistribution (Inf, 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(i, 1, 1)
+%! GeneralizedExtremeValueDistribution (i, 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution('a', 1, 1)
+%! GeneralizedExtremeValueDistribution ('a', 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution([1, 2], 1, 1)
+%! GeneralizedExtremeValueDistribution ([1, 2], 1, 1)
 %!error <GeneralizedExtremeValueDistribution: K must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(NaN, 1, 1)
+%! GeneralizedExtremeValueDistribution (NaN, 1, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 0, 1)
+%! GeneralizedExtremeValueDistribution (1, 0, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, -1, 1)
+%! GeneralizedExtremeValueDistribution (1, -1, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, Inf, 1)
+%! GeneralizedExtremeValueDistribution (1, Inf, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, i, 1)
+%! GeneralizedExtremeValueDistribution (1, i, 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 'a', 1)
+%! GeneralizedExtremeValueDistribution (1, 'a', 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, [1, 2], 1)
+%! GeneralizedExtremeValueDistribution (1, [1, 2], 1)
 %!error <GeneralizedExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, NaN, 1)
+%! GeneralizedExtremeValueDistribution (1, NaN, 1)
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, Inf)
+%! GeneralizedExtremeValueDistribution (1, 1, Inf)
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, i)
+%! GeneralizedExtremeValueDistribution (1, 1, i)
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, 'a')
+%! GeneralizedExtremeValueDistribution (1, 1, 'a')
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, [1, 2])
+%! GeneralizedExtremeValueDistribution (1, 1, [1, 2])
 %!error <GeneralizedExtremeValueDistribution: MU must be a real scalar.> ...
-%! GeneralizedExtremeValueDistribution(1, 1, NaN)
+%! GeneralizedExtremeValueDistribution (1, 1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -991,8 +991,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = GeneralizedExtremeValueDistribution(1, 1, 1);
-%! pd(2) = GeneralizedExtremeValueDistribution(1, 3, 1);
+%! pd = GeneralizedExtremeValueDistribution (1, 1, 1);
+%! pd(2) = GeneralizedExtremeValueDistribution (1, 3, 1);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

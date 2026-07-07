@@ -353,7 +353,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     if (! isempty (VARNAMES))
       if (iscell (VARNAMES))
         if (all (cellfun (@ischar, VARNAMES)))
-          nvarnames = numel(VARNAMES);
+          nvarnames = numel (VARNAMES);
         else
           error (strcat ("anovan: all variable names must", ...
                          " be character or character arrays."));
@@ -371,7 +371,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
     else
       nvarnames = N;
-      VARNAMES = arrayfun(@(x) ['X',num2str(x)], 1:N, 'UniformOutput', 0);
+      VARNAMES = arrayfun (@(x) ['X',num2str(x)], 1:N, 'UniformOutput', 0);
     endif
     if (nvarnames != N)
       error (strcat ("anovan: number of variable names is not equal", ...
@@ -379,7 +379,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
 
     ## Evaluate random argument (if applicable)
-    if (! isempty(RANDOM))
+    if (! isempty (RANDOM))
       if (isnumeric (RANDOM))
         if (any (RANDOM != abs (fix (RANDOM))))
           error (strcat ("anovan: the value provided for the RANDOM", ...
@@ -409,7 +409,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       CONTRASTS = cell (1, N);
       planned = false;
     else
-      if (ischar(CONTRASTS))
+      if (ischar (CONTRASTS))
         contr_str = CONTRASTS;
         CONTRASTS = cell (1, N);
         CONTRASTS(:) = {contr_str};
@@ -419,9 +419,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       endif
       for i = 1:N
         if (! isempty (CONTRASTS{i}))
-          msg = strcat("columns in CONTRASTS must sum to", ...
+          msg = strcat ("columns in CONTRASTS must sum to", ...
                        " 0 for SSTYPE 3. Switching to SSTYPE 2 instead.");
-          if (isnumeric(CONTRASTS{i}))
+          if (isnumeric (CONTRASTS{i}))
             ## Check whether all the columns sum to 0
             if (any (abs (sum (CONTRASTS{i})) > eps ('single')))
               warning (strcat ("Note that the CONTRASTS for predictor", ...
@@ -454,10 +454,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
     ## Evaluate alpha input argument
     if (! isa (ALPHA,'numeric') || numel (ALPHA) != 1)
-      error("anovan: alpha must be a numeric scalar value.");
+      error ("anovan: alpha must be a numeric scalar value.");
     endif
     if ((ALPHA <= 0) || (ALPHA >= 1))
-      error("anovan: alpha must be a value between 0 and 1.");
+      error ("anovan: alpha must be a value between 0 and 1.");
     endif
 
     ## Remove NaN or non-finite observations
@@ -465,7 +465,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       excl = any ([isnan(Y), isinf(Y)], 2);
     else
       XC = GROUP(:,CONTINUOUS);
-      if iscell(XC)
+      if iscell (XC)
         XC = cell2mat (XC);
       endif
       excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2);
@@ -478,15 +478,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     n = numel (Y);     # recalculate total number of observations
 
     ## Evaluate weights input argument
-    if (! isempty(WEIGHTS))
-      if (! isnumeric(WEIGHTS))
+    if (! isempty (WEIGHTS))
+      if (! isnumeric (WEIGHTS))
         error ("anovan: WEIGHTS must be a numeric datatype.");
       endif
       if (any (size (WEIGHTS) != [n,1]))
         error (strcat ("anovan: WEIGHTS must be a vector", ...
                        " with the same dimensions as Y."));
       endif
-      if (any(! (WEIGHTS > 0)) || any (isinf (WEIGHTS)))
+      if (any (! (WEIGHTS > 0)) || any (isinf (WEIGHTS)))
         error ("anovan: WEIGHTS must be a vector of positive finite values.");
       endif
       # Create diagonal matrix of normalized weights
@@ -543,7 +543,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           Nx = zeros (1, N-1);
           Nx = 0;
           for k = 1:N
-            Nx = Nx + nchoosek(N,k);
+            Nx = Nx + nchoosek (N,k);
           endfor
           for j = 1:MODELTYPE
             v(1:j) = 1;
@@ -571,7 +571,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     ## Drop terms that include interactions with factors specified as random effects.
     drop = any (bsxfun (@and, TERMS(:,RANDOM), (Ng > 1)), 2);
-    TERMS (drop, :) = [];
+    TERMS(drop, :) = [];
     Ng(drop) = [];
     ## Evaluate terms
     Nm = sum (Ng == 1);
@@ -680,7 +680,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     coeff_stats(:,6) = p;                                # p-values
     ## Assign NaN to p-value to avoid printing statistics relating to
     ## coefficients for 'random' effects
-    hi = 1 + cumsum(df);
+    hi = 1 + cumsum (df);
     for ignore = RANDOM
       p(hi(ignore)-df(ignore)+1:hi(ignore)) = NaN;
     endfor
@@ -741,15 +741,15 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       case {'on', true}
 
         ## Print model formula
-        fprintf("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
+        fprintf ("\nMODEL FORMULA (based on Wilkinson's notation):\n\n%s\n", formula);
 
         ## If applicable, print parameter estimates (a.k.a contrasts) for fixed effects
-        if (planned && ! isempty(GROUP))
+        if (planned && ! isempty (GROUP))
           ## Parameter estimates correspond to the contrasts we set. To avoid
           ## p-hacking, don't print contrasts if we don't specify them to start with
-          fprintf("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
-          fprintf("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
-          fprintf("--------------------------------------------------------------------------------\n");
+          fprintf ("\nMODEL PARAMETERS (contrasts for the fixed effects)\n\n");
+          fprintf ("Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob>|t|\n");
+          fprintf ("--------------------------------------------------------------------------------\n");
           for j = 1:size (coeff_stats, 1)
             if (p(j) < 0.001)
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f    <.001 \n", ...
@@ -757,7 +757,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             elseif (p(j) < 0.9995)
               fprintf ("%-20s  %10.3g %9.3g %9.3g %9.3g %8.2f     .%03u \n", ...
                        STATS.coeffnames{j}, STATS.coeffs(j,1:end-1), round (p(j) * 1e+03));
-            elseif (isnan(p(j)))
+            elseif (isnan (p(j)))
               ## Don't display coefficients for 'random' effects since they were
               ## treated as fixed effects
             else
@@ -769,30 +769,30 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
 
         ## Print ANOVA table
         [nrows, ncols] = size (T);
-        fprintf("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
-        fprintf("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
-        fprintf("--------------------------------------------------------------------------------\n");
+        fprintf ("\nANOVA TABLE (Type %s sums-of-squares):\n\n", sstype_char);
+        fprintf ("Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob>F\n");
+        fprintf ("--------------------------------------------------------------------------------\n");
         for i = 1:Nt
           str = T{i+1,1};
-          l = numel(str);  # Needed to truncate source term name at 18 characters
+          l = numel (str);  # Needed to truncate source term name at 18 characters
           ## Format and print the statistics for each model term
           ## Format F statistics and p-values in APA style
           if (P(i) < 0.001)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f   <.001 \n", ...
-                      str(1:min(18,l)), T{i+1,2:end-1});
+                      str(1:min (18,l)), T{i+1,2:end-1});
           elseif (P(i) < 0.9995)
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    .%03u \n", ...
-                      str(1:min(18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
-          elseif (isnan(P(i)))
-            fprintf ("%-20s  %10.5g  %6d \n", str(1:min(18,l)), T{i+1,2:3});
+                      str(1:min (18,l)), T{i+1,2:end-1}, round (P(i) * 1e+03));
+          elseif (isnan (P(i)))
+            fprintf ("%-20s  %10.5g  %6d \n", str(1:min (18,l)), T{i+1,2:3});
           else
             fprintf ("%-20s  %10.5g  %6d  %10.5g  %4.3f  %11.2f    1.000 \n", ...
-                      str(1:min(18,l)), T{i+1,2:end-1});
+                      str(1:min (18,l)), T{i+1,2:end-1});
           endif
         endfor
-        fprintf("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
-        fprintf("Total                 %10.5g  %6d \n", T{end,2:3});
-        fprintf("\n");
+        fprintf ("Error                 %10.5g  %6d  %10.5g\n", T{end-1,2:4});
+        fprintf ("Total                 %10.5g  %6d \n", T{end,2:3});
+        fprintf ("\n");
 
         ## Make figure of diagnostic plots
         figure ('Name', 'Diagnostic Plots: Model Residuals');
@@ -1028,9 +1028,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           df(Nm+i) = prod (df(I-1));
           termcols(1+Nm+i) = prod (df(I-1) + 1);
           tmp = ones (n,1);
-          for j = 1:numel(I);
+          for j = 1:numel (I);
             tmp = num2cell (tmp, 1);
-            for k = 1:numel(tmp)
+            for k = 1:numel (tmp)
               tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
             endfor
             tmp = cell2mat (tmp);
@@ -1056,7 +1056,7 @@ function C = contr_simple (N)
   ## These contrasts are centered (i.e. sum to 0)
   ## Ideal for unordered factors, with comparison to a reference level
   ## The first factor level is the reference level
-  C =  cat (1, zeros (1,N-1), eye(N-1)) - 1/N;
+  C =  cat (1, zeros (1,N-1), eye (N-1)) - 1/N;
 
 endfunction
 
@@ -1070,7 +1070,7 @@ function C = contr_poly (N)
   C(:,1) = [];
   s = ones (1, N-1);
   s(1:2:N-1) *= -1;
-  f = (sign(C(1,:)) != s);
+  f = (sign (C(1,:)) != s);
   C(:,f) *= -1;
 
 endfunction
@@ -1106,7 +1106,7 @@ function C = contr_treatment (N)
   ## Not compatible with SSTYPE 3 since contrasts are not centered
   ## Ideal for unordered factors, with comparison to a reference level
   ## The first factor level is the reference level
-  C =  cat (1, zeros (1,N-1), eye(N-1));
+  C =  cat (1, zeros (1,N-1), eye (N-1));
 
 endfunction
 
@@ -1418,13 +1418,13 @@ endfunction
 %!      10, 25, 66, 43, 47, 56,  6, 39, ...
 %!      11, 39, 26, 35, 25, 14, 24, 17]';
 %!
-%! [P,ATAB,STATS] = anovan(y, g, 'display', 'off');
+%! [P,ATAB,STATS] = anovan (y, g, 'display', 'off');
 %! fitted = STATS.X * STATS.coeffs(:,1); # fitted values
 %! b = polyfit (fitted, abs (STATS.resid), 1);
 %! v = polyval (b, fitted);  # Variance as a function of the fitted values
-%! figure('Name', 'Regression of the absolute residuals on the fitted values');
-%! plot (fitted, abs (STATS.resid),'ob');hold on; plot(fitted,v,'-r'); hold off;
-%! xlabel('Fitted values'); ylabel('Absolute residuals');
+%! figure ('Name', 'Regression of the absolute residuals on the fitted values');
+%! plot (fitted, abs (STATS.resid),'ob');hold on; plot (fitted,v,'-r'); hold off;
+%! xlabel ('Fitted values'); ylabel ('Absolute residuals');
 %!
 %! [P,ATAB,STATS] = anovan (y, g, 'weights', v.^-1);
 
@@ -1438,9 +1438,9 @@ endfunction
 %!
 %! [P, T, STATS] = anovan (score,gender,'display','off');
 %! assert (P(1), 0.2612876773271042, 1e-09);              # compared to p calculated by MATLAB anovan
-%! assert (sqrt(T{2,6}), abs(1.198608733288208), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (sqrt (T{2,6}), abs (1.198608733288208), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
 %! assert (P(1), 0.2612876773271047, 1e-09);              # compared to p calculated by MATLAB ttest2
-%! assert (sqrt(T{2,6}), abs(-1.198608733288208), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
+%! assert (sqrt (T{2,6}), abs (-1.198608733288208), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
 
 ## Test 2 for anovan example 2
 ## Test compares anovan to results from MATLAB's anovan and ttest functions
@@ -1452,9 +1452,9 @@ endfunction
 %!
 %! [P, ATAB, STATS] = anovan (score(:),{treatment(:),subject(:)},'display','off','sstype',2);
 %! assert (P(1), 0.016004356735364, 1e-09);              # compared to p calculated by MATLAB anovan
-%! assert (sqrt(ATAB{2,6}), abs(4.00941576558195), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
+%! assert (sqrt (ATAB{2,6}), abs (4.00941576558195), 1e-09);  # compared to abs(t) calculated from sqrt(F) by MATLAB anovan
 %! assert (P(1), 0.016004356735364, 1e-09);              # compared to p calculated by MATLAB ttest2
-%! assert (sqrt(ATAB{2,6}), abs(-4.00941576558195), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
+%! assert (sqrt (ATAB{2,6}), abs (-4.00941576558195), 1e-09); # compared to abs(t) calculated by MATLAB ttest2
 
 ## Test 3 for anovan example 3
 ## Test compares anovan to results from MATLAB's anovan and anova1 functions

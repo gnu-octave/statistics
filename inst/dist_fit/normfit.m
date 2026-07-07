@@ -164,11 +164,11 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   endif
 
   ## Get number of censored and uncensored elements
-  n_censored = sum(freq.*censor); % a scalar in all cases
+  n_censored = sum (freq.*censor); % a scalar in all cases
   n_uncensored = n - n_censored; % a scalar in all cases
 
   ## Compute total sum in X
-  totalsum = sum(freq.*x);
+  totalsum = sum (freq.*x);
 
   ## Check cases that cannot make a fit.
   ## 1. Handle Infs and NaNs
@@ -193,7 +193,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
   if (n_censored == 0)
     muhat = totalsum ./ n;
     if (n > 1)
-      if numel(muhat) == 1  # X is a vector
+      if numel (muhat) == 1  # X is a vector
         xc = x - muhat;
       else                  # X is a matrix
         xc = x - repmat (muhat, [n, 1]);
@@ -245,7 +245,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
     endif
     pmid = (p(1:(end-1)) + p(2:end)) / 2;
     linefit = polyfit (-sqrt (2) * erfcinv (2 * pmid), q(2:end), 1);
-    paramhat = linefit ([2 1]);
+    paramhat = linefit([2 1]);
   else  # only one uncensored element in X
     paramhat = [x_uncensored(1) 1];
   endif
@@ -354,13 +354,13 @@ function ci = norm_ci (paramhat, cv, alpha, x, censor, freq)
   ## Just in case
   if (any (censor) && (n == 0 || n_uncensored == 0 || ! isfinite (paramhat(1))))
     ## X is a vector
-    muci = NaN(2,1);
-    sigmaci = NaN(2,1);
+    muci = NaN (2,1);
+    sigmaci = NaN (2,1);
     ci = cast (cat (3, muci, sigmaci), 'like', x);
     return
   endif
   ## Get confidence intervals for each parameter
-  if ((isempty (censor) || ! any (censor(:))) && ! isequal (cv,zeros(2,2)))
+  if ((isempty (censor) || ! any (censor(:))) && ! isequal (cv,zeros (2,2)))
     ## Use exact formulas
     tcrit = tinv ([alpha/2, 1-alpha/2], n-1);
     muci = [muhat+tcrit(1)*sigmahat/sqrt(n); muhat+tcrit(2)*sigmahat/sqrt(n)];
@@ -456,9 +456,9 @@ endfunction
 %!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), [0.05 0.1])
 %!error<normfit: wrong value for ALPHA.> normfit (ones (20,1), 0.02+i)
 %!error<normfit: X and CENSOR vectors mismatch.> ...
-%! normfit (ones (20,1), [], zeros(15,1))
+%! normfit (ones (20,1), [], zeros (15,1))
 %!error<normfit: X and FREQ vectors mismatch.> ...
-%! normfit (ones (20,1), [], zeros(20,1), ones(25,1))
+%! normfit (ones (20,1), [], zeros (20,1), ones (25,1))
 %!error<normfit: FREQ must not contain negative values.> ...
-%! normfit (ones (5,1), [], zeros(5,1), [1, 2, 1, 2, -1]')
-%!error<normfit: > normfit (ones (20,1), [], zeros(20,1), ones(20,1), 'options')
+%! normfit (ones (5,1), [], zeros (5,1), [1, 2, 1, 2, -1]')
+%!error<normfit: > normfit (ones (20,1), [], zeros (20,1), ones (20,1), 'options')

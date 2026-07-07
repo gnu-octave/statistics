@@ -41,7 +41,7 @@ classdef CompactClassificationDiscriminant
   ## @seealso{fitcdiscr, ClassificationDiscriminant}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {CompactClassificationDiscriminant} {property} NumPredictors
     ##
@@ -273,11 +273,11 @@ classdef CompactClassificationDiscriminant
     LogDetSigma     = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Constructor
     function this = CompactClassificationDiscriminant (Mdl = [])
@@ -406,7 +406,7 @@ classdef CompactClassificationDiscriminant
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {CompactClassificationDiscriminant} {@var{label} =} predict (@var{obj}, @var{XC})
@@ -609,7 +609,7 @@ classdef CompactClassificationDiscriminant
                 S_test = zeros (n, K);
                 W_test = ones (n, 1);
                 Cost_test = ones (K) - eye (K);
-                test_output = Value (C_test, S_test, W_test, Cost_test);
+                test_output = Value(C_test, S_test, W_test, Cost_test);
                 if (! isscalar (test_output))
                   error (strcat ("CompactClassificationDiscriminant.loss:", ...
                                  " custom loss function must return", ...
@@ -647,7 +647,7 @@ classdef CompactClassificationDiscriminant
                            " invalid parameter name in optional pair", ...
                            " arguments."));
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Check for missing values in X
@@ -716,7 +716,7 @@ classdef CompactClassificationDiscriminant
 
       ## Compute the loss using custom loss function
       if (isa (LossFun, 'function_handle'))
-        L = LossFun (C, scores, Weights, this.Cost);
+        L = LossFun(C, scores, Weights, this.Cost);
         return;
       endif
 
@@ -926,7 +926,7 @@ classdef CompactClassificationDiscriminant
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a CompactClassificationDiscriminant object

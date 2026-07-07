@@ -38,11 +38,11 @@ classdef KDTreeSearcher
   ## rangesearch}
   ## @end deftp
 
-  properties (SetAccess = private, Hidden)
+  properties(SetAccess = private, Hidden)
     KDTree    # KD-tree structure
   endproperties
 
-  properties (SetAccess = private)
+  properties(SetAccess = private)
     ## -*- texinfo -*-
     ## @deftp {KDTreeSearcher} {property} X
     ##
@@ -297,7 +297,7 @@ classdef KDTreeSearcher
             error (strcat ("KDTreeSearcher: invalid parameter", ...
                            " name: '%s'."), varargin{1});
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Validate Distance
@@ -330,7 +330,7 @@ classdef KDTreeSearcher
       obj.BucketSize = BucketSize;
 
       ## Build KDTree
-      obj.KDTree = build_kdtree (1:size(X,1), 0, X, BucketSize);
+      obj.KDTree = build_kdtree (1:size (X,1), 0, X, BucketSize);
     endfunction
 
     ## -*- texinfo -*-
@@ -428,7 +428,7 @@ classdef KDTreeSearcher
             error (strcat ("KDTreeSearcher.knnsearch: invalid", ...
                            " parameter name: '%s'."), varargin{1});
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       if (IncludeTies)
@@ -541,7 +541,7 @@ classdef KDTreeSearcher
             error (strcat ("KDTreeSearcher.rangesearch:", ...
                            " invalid parameter name: '%s'."), varargin{1});
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       idx = cell (rows (Y), 1);
@@ -594,12 +594,12 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
   if (strcmpi (dist, 'minkowski'))
     if (! (isscalar (distparam) && isnumeric (distparam) ...
                                 && distparam > 0 && isfinite (distparam)))
-      error (strcat("search_kdtree: distparam must be a positive finite", ...
+      error (strcat ("search_kdtree: distparam must be a positive finite", ...
                     " scalar for minkowski."));
     endif
   else
     if (! isempty (distparam))
-      error (strcat("search_kdtree: distparam must be empty for", ...
+      error (strcat ("search_kdtree: distparam must be empty for", ...
                     " non-minkowski metrics."));
     endif
   endif
@@ -631,7 +631,7 @@ function [indices, distances] = search_kdtree (node, query, k, X, dist, ...
 
     if (isfield (node, 'indices'))
       leaf_indices = node.indices;
-      dists = compute_dists (X(leaf_indices,:));
+      dists = compute_dists(X(leaf_indices,:));
       if (is_range)
         mask = dists <= r;
         indices = [indices; leaf_indices(mask)'];
@@ -737,8 +737,8 @@ endfunction
 %! disp (D);
 
 %!demo
-%! rng(42);
-%! disp('Demonstrating KDTreeSearcher');
+%! rng (42);
+%! disp ('Demonstrating KDTreeSearcher');
 %!
 %! n = 100;
 %! mu1 = [0.3, 0.3];
@@ -748,7 +748,7 @@ endfunction
 %! X2 = mu2 + sigma * randn (n / 2, 2);
 %! X = [X1; X2];
 %!
-%! obj = KDTreeSearcher(X);
+%! obj = KDTreeSearcher (X);
 %!
 %! Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
 %!
@@ -1088,35 +1088,35 @@ endfunction
 %!test
 %! ## Changing Distance and verifying search
 %! X = [0,0; 1,0];
-%! obj = KDTreeSearcher(X, 'Distance', 'euclidean');
+%! obj = KDTreeSearcher (X, 'Distance', 'euclidean');
 %! Y = [0,1];
-%! [idx, D] = knnsearch(obj, Y, 'K', 1);
-%! assert(D, 1, 1e-10);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! assert (D, 1, 1e-10);
 %! obj.Distance = 'chebychev';
-%! [idx, D] = knnsearch(obj, Y, 'K', 1);
-%! assert(D, 1, 1e-10);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! assert (D, 1, 1e-10);
 
 %!test
 %! ## Changing DistParameter for minkowski
 %! X = [0,0; 1,0];
-%! obj = KDTreeSearcher(X, 'Distance', 'minkowski', 'P', 1);
+%! obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 1);
 %! Y = [0,1];
-%! [idx, D] = knnsearch(obj, Y, 'K', 1);
-%! assert(D, 1, 1e-10);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! assert (D, 1, 1e-10);
 %! obj.DistParameter = 3;
-%! [idx, D] = knnsearch(obj, Y, 'K', 1);
-%! assert(D, 1, 1e-10);
+%! [idx, D] = knnsearch (obj, Y, 'K', 1);
+%! assert (D, 1, 1e-10);
 
 %!test
 %! ## Different BucketSize values
-%! X = rand(20,2);
-%! obj1 = KDTreeSearcher(X, 'BucketSize', 5);
-%! obj2 = KDTreeSearcher(X, 'BucketSize', 15);
-%! Y = rand(1,2);
-%! [idx1, D1] = knnsearch(obj1, Y, 'K', 3);
-%! [idx2, D2] = knnsearch(obj2, Y, 'K', 3);
-%! assert(idx1, idx2);
-%! assert(D1, D2, 1e-10);
+%! X = rand (20,2);
+%! obj1 = KDTreeSearcher (X, 'BucketSize', 5);
+%! obj2 = KDTreeSearcher (X, 'BucketSize', 15);
+%! Y = rand (1,2);
+%! [idx1, D1] = knnsearch (obj1, Y, 'K', 3);
+%! [idx2, D2] = knnsearch (obj2, Y, 'K', 3);
+%! assert (idx1, idx2);
+%! assert (D1, D2, 1e-10);
 
 %!test
 %! ## Basic constructor with default Euclidean
@@ -1155,7 +1155,7 @@ endfunction
 %! Y = [2, 3];
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert (idx, 1);
-%! assert (D, sqrt(2), 1e-10);
+%! assert (D, sqrt (2), 1e-10);
 
 %!test
 %! ## knnsearch with Cityblock distance
@@ -1253,90 +1253,90 @@ endfunction
 %!error<KDTreeSearcher: too few input arguments.> ...
 %! KDTreeSearcher ()
 %!error<KDTreeSearcher: Name-Value arguments must be in pairs.> ...
-%! KDTreeSearcher (ones(3,2), 'Distance')
+%! KDTreeSearcher (ones (3,2), 'Distance')
 %!error<KDTreeSearcher: X must be a finite numeric matrix.> ...
 %! KDTreeSearcher ('abc')
 %!error<KDTreeSearcher: X must be a finite numeric matrix.> ...
 %! KDTreeSearcher ([1; Inf; 3])
 %!error<KDTreeSearcher: invalid parameter name: 'foo'.> ...
-%! KDTreeSearcher (ones(3,2), 'foo', 'bar')
+%! KDTreeSearcher (ones (3,2), 'foo', 'bar')
 %!error<KDTreeSearcher: unsupported distance metric 'invalid'.> ...
-%! KDTreeSearcher (ones(3,2), 'Distance', 'invalid')
+%! KDTreeSearcher (ones (3,2), 'Distance', 'invalid')
 %!error<KDTreeSearcher: Distance must be a string.> ...
-%! KDTreeSearcher (ones(3,2), 'Distance', 1)
+%! KDTreeSearcher (ones (3,2), 'Distance', 1)
 %!error<KDTreeSearcher: P must be a positive finite scalar.> ...
-%! KDTreeSearcher (ones(3,2), 'Distance', 'minkowski', 'P', -1)
+%! KDTreeSearcher (ones (3,2), 'Distance', 'minkowski', 'P', -1)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
-%! KDTreeSearcher (ones(3,2), 'BucketSize', 0)
+%! KDTreeSearcher (ones (3,2), 'BucketSize', 0)
 %!error<KDTreeSearcher: BucketSize must be a positive integer.> ...
-%! KDTreeSearcher(ones(3,2), 'BucketSize', -1)
+%! KDTreeSearcher (ones (3,2), 'BucketSize', -1)
 
 %!error<KDTreeSearcher.knnsearch: too few input arguments.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)))
+%! knnsearch (KDTreeSearcher (ones (3,2)))
 %!error<KDTreeSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 'K', 1, 'IncludeTies')
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,2), 'K', 1, 'IncludeTies')
 %!error<KDTreeSearcher.knnsearch: Y must be a finite numeric matrix.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), 'abc', 'K', 1)
+%! knnsearch (KDTreeSearcher (ones (3,2)), 'abc', 'K', 1)
 %!error<KDTreeSearcher.knnsearch: Y must have the same number of columns as the training data in OBJ.X.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,3), 'K', 1)
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,3), 'K', 1)
 %!error<KDTreeSearcher.knnsearch: 'K' must be a positive integer.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 'K', 0)
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,2), 'K', 0)
 %!error<KDTreeSearcher.knnsearch: 'K' must be a positive integer.> ...
-%! obj = KDTreeSearcher(ones(3,2)); knnsearch(obj, ones(1,2), 'K', Inf)
+%! obj = KDTreeSearcher (ones (3,2)); knnsearch (obj, ones (1,2), 'K', Inf)
 %!error<KDTreeSearcher.knnsearch: invalid parameter name: 'foo'.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 'K', 1, 'foo', 'bar')
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,2), 'K', 1, 'foo', 'bar')
 %!error<KDTreeSearcher.knnsearch: IncludeTies must be a logical scalar.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 'K', 1, 'IncludeTies', 1)
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,2), 'K', 1, 'IncludeTies', 1)
 %!error<KDTreeSearcher.knnsearch: SortIndices must be a logical scalar.> ...
-%! knnsearch (KDTreeSearcher (ones(3,2)), ones(3,2), 'K', 1, 'SortIndices', 1)
+%! knnsearch (KDTreeSearcher (ones (3,2)), ones (3,2), 'K', 1, 'SortIndices', 1)
 
 %!error<KDTreeSearcher.rangesearch: too few input arguments.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)))
+%! rangesearch (KDTreeSearcher (ones (3,2)))
 %!error<KDTreeSearcher.rangesearch: Name-Value arguments must be in pairs.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, 'SortIndices')
+%! rangesearch (KDTreeSearcher (ones (3,2)), ones (3,2), 1, 'SortIndices')
 %!error<KDTreeSearcher.rangesearch: Y must be a finite numeric matrix.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), 'abc', 1)
+%! rangesearch (KDTreeSearcher (ones (3,2)), 'abc', 1)
 %!error<KDTreeSearcher.rangesearch: number of columns in X and Y must match.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,3), 1)
+%! rangesearch (KDTreeSearcher (ones (3,2)), ones (3,3), 1)
 %!error<KDTreeSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), -1)
+%! rangesearch (KDTreeSearcher (ones (3,2)), ones (3,2), -1)
 %!error<KDTreeSearcher.rangesearch: R must be a nonnegative finite scalar.> ...
-%! obj = KDTreeSearcher(ones(3,2)); rangesearch(obj, ones(1,2), Inf)
+%! obj = KDTreeSearcher (ones (3,2)); rangesearch (obj, ones (1,2), Inf)
 %!error<KDTreeSearcher.rangesearch: invalid parameter name: 'foo'.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, 'foo', 'bar')
+%! rangesearch (KDTreeSearcher (ones (3,2)), ones (3,2), 1, 'foo', 'bar')
 %!error<KDTreeSearcher.rangesearch: SortIndices must be a logical scalar.> ...
-%! rangesearch (KDTreeSearcher (ones(3,2)), ones(3,2), 1, 'SortIndices', 1)
+%! rangesearch (KDTreeSearcher (ones (3,2)), ones (3,2), 1, 'SortIndices', 1)
 
 %!error<KDTreeSearcher.subsref: \(\) indexing not supported.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj(1)
+%! obj = KDTreeSearcher (ones (3,2)); obj(1)
 %!error<KDTreeSearcher.subsref: {} indexing not supported.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj{1}
+%! obj = KDTreeSearcher (ones (3,2)); obj{1}
 %!error<KDTreeSearcher.subsref: unrecognized property: 'invalid'.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.invalid
+%! obj = KDTreeSearcher (ones (3,2)); obj.invalid
 
 %!error<KDTreeSearcher.subsasgn: \(\) indexing not supported.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj(1) = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj(1) = 1
 %!error<KDTreeSearcher.subsasgn: {} indexing not supported.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj{1} = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj{1} = 1
 %!error<KDTreeSearcher.subsasgn: chained subscripts not allowed.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.X.Y = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.X.Y = 1
 %!error<KDTreeSearcher.subsasgn: 'X' is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.X = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.X = 1
 %!error<KDTreeSearcher.subsasgn: 'KDTree' is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.KDTree = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.KDTree = 1
 %!error<KDTreeSearcher.subsasgn: unsupported distance metric 'invalid'.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.Distance = 'invalid'
+%! obj = KDTreeSearcher (ones (3,2)); obj.Distance = 'invalid'
 %!error<KDTreeSearcher.subsasgn: 'Distance' must be a string.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.Distance = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.Distance = 1
 %!error<KDTreeSearcher.subsasgn: 'DistParameter' must be a positive finite scalar for Minkowski distance.> ...
-%! obj = KDTreeSearcher (ones(3,2), 'Distance', 'minkowski'); obj.DistParameter = -1
+%! obj = KDTreeSearcher (ones (3,2), 'Distance', 'minkowski'); obj.DistParameter = -1
 %!error<KDTreeSearcher.subsasgn: 'DistParameter' must be empty for this distance metric.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.DistParameter = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.DistParameter = 1
 %!error<KDTreeSearcher.subsasgn: 'BucketSize' is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.BucketSize = 0
+%! obj = KDTreeSearcher (ones (3,2)); obj.BucketSize = 0
 %!error<KDTreeSearcher.subsasgn: 'BucketSize' is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher(ones(3,2)); obj.BucketSize = -1
+%! obj = KDTreeSearcher (ones (3,2)); obj.BucketSize = -1
 %!error<KDTreeSearcher.subsasgn: 'BucketSize' is read-only and cannot be modified.> ...
-%! obj = KDTreeSearcher(ones(3,2)); obj.BucketSize = 1.5
+%! obj = KDTreeSearcher (ones (3,2)); obj.BucketSize = 1.5
 %!error<KDTreeSearcher.subsasgn: unrecognized property: 'invalid'.> ...
-%! obj = KDTreeSearcher (ones(3,2)); obj.invalid = 1
+%! obj = KDTreeSearcher (ones (3,2)); obj.invalid = 1

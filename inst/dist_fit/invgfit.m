@@ -161,7 +161,7 @@ function [paramhat, paramci] = invgfit (x, alpha, censor, freq, options)
     ## Get normal quantiles
     probs = [alpha/2; 1-alpha/2];
     ## Compute CI
-    paramci = norminv([probs, probs], [paramhat; paramhat], [stderr; stderr]);
+    paramci = norminv ([probs, probs], [paramhat; paramhat], [stderr; stderr]);
  endif
 
 endfunction

@@ -82,10 +82,10 @@ endfunction
 
 
 
-%!assert(size (iwishrnd (1,2,1)), [1, 1]);
-%!assert(size (iwishrnd ([],2,1)), [1, 1]);
-%!assert(size (iwishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
-%!assert(size (iwishrnd (eye(2), 2, [], 3)), [2, 2, 3]);
+%!assert (size (iwishrnd (1,2,1)), [1, 1]);
+%!assert (size (iwishrnd ([],2,1)), [1, 1]);
+%!assert (size (iwishrnd ([3 1; 1 3], 2.00001, [], 1)), [2, 2]);
+%!assert (size (iwishrnd (eye (2), 2, [], 3)), [2, 2, 3]);
 
 %% Test input validation
 %!error iwishrnd ()

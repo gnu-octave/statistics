@@ -49,7 +49,7 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
 
   ## check the input parameters
   if ((nargin < 2) || (nargin > 4))
-    print_usage();
+    print_usage ();
   endif
 
   y_true = group;
@@ -133,7 +133,7 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
       col_index = find (unique_tokens == y_pred(i));
 
       ## Check valid indices
-      if (! isempty(row_index) && ! isempty(col_index))
+      if (! isempty (row_index) && ! isempty (col_index))
         C(row_index, col_index)++;
       endif
     endfor
@@ -165,7 +165,7 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
       row_index = find (strcmp (y_true{i}, unique_tokens));
       col_index = find (strcmp (y_pred{i}, unique_tokens));
 
-      if (! isempty(row_index) && ! isempty(col_index))
+      if (! isempty (row_index) && ! isempty (col_index))
         C(row_index, col_index)++;
       endif
     endfor
@@ -187,7 +187,7 @@ function [C, order] = confusionmat (group, grouphat, opt = 'Order', grouporder)
     C_size = length ( unique_tokens );
     C = zeros ( C_size );
 
-    for i = 1:length( y_true)
+    for i = 1:length ( y_true)
       row_index = find (unique_tokens == y_true(i));
       col_index = find (unique_tokens == y_pred(i));
       C(row_index, col_index)++;
@@ -369,10 +369,10 @@ endfunction
 %!test
 %! g = string ({'A'; 'B'; 'B'});
 %! g(2) = missing;
-%! gh = string(['A'; 'B'; 'B']);
+%! gh = string (['A'; 'B'; 'B']);
 %! [C, order] = confusionmat (g, gh);
 %! assert (C, [1 0; 0 1]);
-%! assert (isequal (order, string(['A'; 'B'])));
+%! assert (isequal (order, string (['A'; 'B'])));
 
 ## Test 14: Categorical Arrays
 %!test
@@ -415,7 +415,7 @@ endfunction
 %! g  = [1, 2, 3];
 %! gh = [1; 2; 3];
 %! [C, order] = confusionmat (g, gh);
-%! assert (C, eye(3));
+%! assert (C, eye (3));
 %! assert (order, [1; 2; 3]);
 
 ## Test 19: Custom Order
@@ -439,7 +439,7 @@ endfunction
 %! g  = [1; 2; 3];
 %! gh = [1; 2; 3];
 %! [C, order] = confusionmat (g, gh, 'Order', [1; 2]);
-%! assert (C, eye(2));
+%! assert (C, eye (2));
 %! assert (order, [1; 2]);
 
 ## Test 22: Custom Order (Superset / Adding empty rows)
@@ -478,5 +478,5 @@ endfunction
 %!error <confusionmat: group and grouporder must be of the same data type.>
 %! confusionmat ({'A'}, {'A'}, 'Order', [1])
 %!error <confusionmat: group must be a vector or character array.>
-%! confusionmat (eye(2), eye(2))
+%! confusionmat (eye (2), eye (2))
 %!error <confusionmat: invalid data type.> confusionmat ({1; 2}, {1; 2})

@@ -473,7 +473,7 @@ endfunction
 
 #return the weighted standard deviation
 function retval = mystd (x, w)
-  (dim = find (size(x) != 1, 1)) || (dim = 1);
+  (dim = find (size (x) != 1, 1)) || (dim = 1);
   den = sum (w);
   mu = sum (w .* x, dim) ./ sum (w);
   retval = sum (w .* ((x - mu) .^ 2), dim) / den;
@@ -564,7 +564,7 @@ endfunction
 
 %!test
 %! x = [1,2,3;2,1,3]';
-%! [COEFF, SCORE, latent, tsquare] = pca(x, 'Economy', true, 'weights', ...
+%! [COEFF, SCORE, latent, tsquare] = pca (x, 'Economy', true, 'weights', ...
 %!                                       [2 1 2], 'variableweights', ...
 %!                                       'variance');
 %! COEFF_exp = [0.7906,  0.7906; 0.6614, -0.6614];
@@ -614,7 +614,7 @@ endfunction
 
 %!assert (COEFF, m, 10*eps);
 %!assert (SCORE(:,1), -m(1:2,1), 10*eps);
-%!assert (SCORE(:,2:3), zeros(2), 10*eps);
+%!assert (SCORE(:,2:3), zeros (2), 10*eps);
 %!assert (latent, [1;0;0], 10*eps);
 %!assert (tsquare, [0.5;0.5], 10*eps)
 

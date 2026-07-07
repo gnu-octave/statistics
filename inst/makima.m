@@ -229,8 +229,8 @@ function yi = makima (x, y, xq, varargin)
   if (nq > 0)
     idx = lookup (x, xqv);
 
-    idx (idx >= n) = n - 1;
-    idx (idx == 0) = 1;
+    idx(idx >= n) = n - 1;
+    idx(idx == 0) = 1;
 
     x_left = x(idx);
     hseg = dx(idx);
@@ -307,7 +307,7 @@ endfunction
 %! y = [1 3 2; 2 4 6]; 
 %! xi = 2;
 %! yi = makima (x, y, xi);
-%! assert (size(yi), [2, 1]);
+%! assert (size (yi), [2, 1]);
 %! assert (all (isfinite (yi)));
 %! assert (yi(1), 2.304086538461538, 1e-12);
 %! assert (yi(2), 3.000000000000000, 1e-12);

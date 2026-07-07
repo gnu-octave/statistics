@@ -80,7 +80,7 @@ function [m, v] = ricestat (s, sigma)
 
 endfunction
 
-function L = Laguerre_half(x)
+function L = Laguerre_half (x)
   L = exp (x ./ 2) .* ((1 - x) .* besseli (0, -x./2) - x .* besseli (1, -x./2));
 endfunction
 

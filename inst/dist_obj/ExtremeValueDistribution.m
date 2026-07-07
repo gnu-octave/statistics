@@ -56,7 +56,7 @@ classdef ExtremeValueDistribution
   ## evlike, evstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} mu
     ##
@@ -82,7 +82,7 @@ classdef ExtremeValueDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} DistributionName
     ##
@@ -129,14 +129,14 @@ classdef ExtremeValueDistribution
     ParameterDescription = {'Location', 'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'ev';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} ParameterValues
     ##
@@ -228,11 +228,11 @@ classdef ExtremeValueDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = ExtremeValueDistribution (mu, sigma)
       if (nargin == 0)
@@ -248,7 +248,7 @@ classdef ExtremeValueDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'extreme value distribution');
     endfunction
 
@@ -282,7 +282,7 @@ classdef ExtremeValueDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {ExtremeValueDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -725,7 +725,7 @@ classdef ExtremeValueDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -817,29 +817,29 @@ endfunction
 ## Test input validation
 ## 'ExtremeValueDistribution' constructor
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution(Inf, 1)
+%! ExtremeValueDistribution (Inf, 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution(i, 1)
+%! ExtremeValueDistribution (i, 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution('a', 1)
+%! ExtremeValueDistribution ('a', 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution([1, 2], 1)
+%! ExtremeValueDistribution ([1, 2], 1)
 %!error <ExtremeValueDistribution: MU must be a real scalar.> ...
-%! ExtremeValueDistribution(NaN, 1)
+%! ExtremeValueDistribution (NaN, 1)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, 0)
+%! ExtremeValueDistribution (1, 0)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, -1)
+%! ExtremeValueDistribution (1, -1)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, Inf)
+%! ExtremeValueDistribution (1, Inf)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, i)
+%! ExtremeValueDistribution (1, i)
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, 'a')
+%! ExtremeValueDistribution (1, 'a')
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, [1, 2])
+%! ExtremeValueDistribution (1, [1, 2])
 %!error <ExtremeValueDistribution: SIGMA must be a positive real scalar.> ...
-%! ExtremeValueDistribution(1, NaN)
+%! ExtremeValueDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -949,8 +949,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = ExtremeValueDistribution(1, 1);
-%! pd(2) = ExtremeValueDistribution(1, 3);
+%! pd = ExtremeValueDistribution (1, 1);
+%! pd(2) = ExtremeValueDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -113,6 +113,6 @@ endfunction
 ## Test output
 %!test
 %! load fisheriris;
-%! Z = linkage(meas, 'average', 'chebychev');
+%! Z = linkage (meas, 'average', 'chebychev');
 %! assert (cond (inconsistent (Z)), 39.9, 1e-3);
 

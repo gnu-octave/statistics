@@ -82,8 +82,8 @@
 function [d, p, stats] = manova1 (x, group, alpha)
 
   ## Check input arguments
-  narginchk(2,3)
-  nargoutchk(1,3)
+  narginchk (2,3)
+  nargoutchk (1,3)
 
   ## Validate alpha value if parsed or add default
   if (nargin > 2)
@@ -107,7 +107,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
 
   ## Check for equal size in samples between groups and data
   if (size (group, 1) != size (x, 1))
-    error("manova1: Samples in X and groups mismatch.");
+    error ("manova1: Samples in X and groups mismatch.");
   endif
 
   ## Remove samples (rows) in X and GROUP if there are missing values in X
@@ -129,9 +129,9 @@ function [d, p, stats] = manova1 (x, group, alpha)
   endif
 
   ## Get number of samples and variables
-  [nsample, nvar] = size(x);
-  realgroups = ismember(1:ngroups, group_idx);
-  nrgroups = sum(realgroups);
+  [nsample, nvar] = size (x);
+  realgroups = ismember (1:ngroups, group_idx);
+  nrgroups = sum (realgroups);
 
   ## Calculate Total Sum of Squares and Products matrix
   xm = mean (x);
@@ -155,7 +155,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   ## with chol to insure v' * WSSP * v = I is met
   [R, p] = chol (WSSP);
   if (p > 0)
-     error("manova1: Cannot factorize WSSP.");
+     error ("manova1: Cannot factorize WSSP.");
   endif
   S = R' \ BSSP / R;
   ## Remove asymmetry caused by roundoff
@@ -165,7 +165,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
   ## Sort in descending order
   [e,ei] = sort (diag (ed));
   ## Check for valid eigenvalues
-  if (min(e) <= -1)
+  if (min (e) <= -1)
      error ("manova1: wrong value in eigenvector: singular sum of squares.");
   endif
 
@@ -179,10 +179,10 @@ function [d, p, stats] = manova1 (x, group, alpha)
 
   ## Get dimension where we can reject the null hypothesis
   d = dims(pp>alpha);
-  if (length(d) > 0)
+  if (length (d) > 0)
      d = d(1);
   else
-     d = max(dims) + 1;
+     d = max (dims) + 1;
   endif
 
   ## Create extra outputs as necessary
@@ -200,21 +200,21 @@ function [d, p, stats] = manova1 (x, group, alpha)
     stats.chisq = chistat;
     stats.chisqdf = chisqdf;
     ## Reorder to increasing
-    stats.eigenval = flipud(e);
+    stats.eigenval = flipud (e);
 
     ## Flip so that it is in order of increasing eigenvalues
     v = v(:, flipud (ei));
     ## Re-scale eigenvectors so the within-group variance is 1
-    vs = diag((v' * WSSP * v))' ./ (nsample - nrgroups);
+    vs = diag ((v' * WSSP * v))' ./ (nsample - nrgroups);
     vs(vs<=0) = 1;
-    v = v ./ repmat(sqrt(vs), size(v,1), 1);
+    v = v ./ repmat (sqrt (vs), size (v,1), 1);
 
     ## Flip sign so that the average element is positive
-    j = (sum(v) < 0);
+    j = (sum (v) < 0);
     v(:,j) = -v(:,j);
     stats.eigenvec = v;
     canon = x*v;
-    if (any(is_nan))
+    if (any (is_nan))
       tmp(! is_nan,:) = canon;
       tmp(is_nan,:) = NaN;
       stats.canon = tmp;
@@ -240,18 +240,18 @@ endfunction
 
 %!demo
 %! load carbig
-%! [d,p] = manova1([MPG, Acceleration, Weight, Displacement], Origin)
+%! [d,p] = manova1 ([MPG, Acceleration, Weight, Displacement], Origin)
 
 %!test
 %! load carbig
-%! [d,p] = manova1([MPG, Acceleration, Weight, Displacement], Origin);
+%! [d,p] = manova1 ([MPG, Acceleration, Weight, Displacement], Origin);
 %! assert (d, 3);
 %! assert (p, [0, 3.140583347827075e-07, 0.007510999577743149, ...
 %!             0.1934100745898493]', [1e-12, 1e-12, 1e-12, 1e-12]');
 
 %!test
 %! load carbig
-%! [d,p] = manova1([MPG, Acceleration, Weight], Origin);
+%! [d,p] = manova1 ([MPG, Acceleration, Weight], Origin);
 %! assert (d, 2);
 %! assert (p, [0, 0.00516082975137544, 0.1206528056514453]', ...
 %!            [1e-12, 1e-12, 1e-12]');

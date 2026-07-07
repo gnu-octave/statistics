@@ -156,13 +156,13 @@ function y = pdf (name, x, varargin)
   pdf_args = allDF(3:3:end);
 
   ## Search for PDF function
-  idx = cellfun (@(x)any(strcmpi (name, x)), pdfnames);
+  idx = cellfun (@(x)any (strcmpi (name, x)), pdfnames);
 
   if (any (idx))
 
     if (nargs == pdf_args{idx})
       ## Check that all distribution parameters are numeric
-      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+      if (! all (cellfun (@(x)isnumeric (x), (varargin))))
         error ("pdf: distribution parameters must be numeric.");
       endif
       ## Call appropriate iCDF

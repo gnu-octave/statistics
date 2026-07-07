@@ -102,7 +102,7 @@ function p = gevcdf (x, k, sigma, mu, uflag)
   z = (x - mu) ./ sigma;
 
   ## Process k == 0
-  k_0 = (abs(k) < eps);
+  k_0 = (abs (k) < eps);
   if (uflag)
     p(k_0) = -expm1 (-exp (-z(k_0)));
   else
@@ -186,13 +186,13 @@ endfunction
 %!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, 'tail')
 %!error<gevcdf: invalid argument for upper tail.> gevcdf (1, 2, 3, 4, 5)
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (3), ones (2), ones(2), ones(2))
+%! gevcdf (ones (3), ones (2), ones (2), ones (2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (2), ones (3), ones(2), ones(2))
+%! gevcdf (ones (2), ones (3), ones (2), ones (2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (2), ones (2), ones(3), ones(2))
+%! gevcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
-%! gevcdf (ones (2), ones (2), ones(2), ones(3))
+%! gevcdf (ones (2), ones (2), ones (2), ones (3))
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (i, 2, 3, 4)
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, i, 3, 4)
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, 2, i, 4)

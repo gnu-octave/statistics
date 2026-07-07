@@ -82,11 +82,11 @@ function [h, pval, zvalue] = ztest2 (x1, n1, x2, n2, varargin)
     endif
   endif
 
-  if (iscomplex (x1) || iscomplex (n1) || iscomplex (x2) || iscomplex(n2))
+  if (iscomplex (x1) || iscomplex (n1) || iscomplex (x2) || iscomplex (n2))
     error ("ztest2: X1, N1, X2, and N2 must not be complex.");
   endif
   
-  if (any(x1(:) > n1(:)) || any(x2(:) > n2(:)))
+  if (any (x1(:) > n1(:)) || any (x2(:) > n2(:)))
     error ("ztest2: X1 must be <= N1 and X2 must be <= N2.");
   endif
 

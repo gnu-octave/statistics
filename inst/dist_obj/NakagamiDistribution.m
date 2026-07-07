@@ -55,7 +55,7 @@ classdef NakagamiDistribution
   ## nakalike, nakastat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} mu
     ##
@@ -81,7 +81,7 @@ classdef NakagamiDistribution
     omega
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} DistributionName
     ##
@@ -128,14 +128,14 @@ classdef NakagamiDistribution
     ParameterDescription = {'Shape', 'Spread'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'naka';
     ParameterRange = [0.5, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public , SetAccess = protected)
+  properties(GetAccess = public , SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} ParameterValues
     ##
@@ -227,11 +227,11 @@ classdef NakagamiDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = NakagamiDistribution (mu, omega)
       if (nargin == 0)
@@ -247,7 +247,7 @@ classdef NakagamiDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Nakagami distribution');
     endfunction
 
@@ -281,7 +281,7 @@ classdef NakagamiDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {NakagamiDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -727,7 +727,7 @@ classdef NakagamiDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -832,29 +832,29 @@ endfunction
 ## Test input validation
 ## 'NakagamiDistribution' constructor
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution(Inf, 1)
+%! NakagamiDistribution (Inf, 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution(i, 1)
+%! NakagamiDistribution (i, 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution('a', 1)
+%! NakagamiDistribution ('a', 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution([1, 2], 1)
+%! NakagamiDistribution ([1, 2], 1)
 %!error <NakagamiDistribution: MU must be a real scalar of at least 0.5.> ...
-%! NakagamiDistribution(NaN, 1)
+%! NakagamiDistribution (NaN, 1)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, 0)
+%! NakagamiDistribution (1, 0)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, -1)
+%! NakagamiDistribution (1, -1)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, Inf)
+%! NakagamiDistribution (1, Inf)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, i)
+%! NakagamiDistribution (1, i)
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, 'a')
+%! NakagamiDistribution (1, 'a')
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, [1, 2])
+%! NakagamiDistribution (1, [1, 2])
 %!error <NakagamiDistribution: OMEGA must be a positive real scalar.> ...
-%! NakagamiDistribution(1, NaN)
+%! NakagamiDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -960,8 +960,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = NakagamiDistribution(1, 0.5);
-%! pd(2) = NakagamiDistribution(1, 0.6);
+%! pd = NakagamiDistribution (1, 0.5);
+%! pd(2) = NakagamiDistribution (1, 0.6);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

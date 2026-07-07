@@ -147,13 +147,13 @@ function r = random (name, varargin)
   rnd_args = allDF(3:3:end);
 
   ## Search for RND function
-  idx = cellfun (@(x)any(strcmpi (name, x)), rndnames);
+  idx = cellfun (@(x)any (strcmpi (name, x)), rndnames);
 
   if (any (idx))
 
     if (nargs == rnd_args{idx})
       ## Check that all distribution parameters are numeric
-      if (! all (cellfun (@(x)isnumeric(x), (varargin))))
+      if (! all (cellfun (@(x)isnumeric (x), (varargin))))
         error ("random: distribution parameters must be numeric.");
       endif
       ## Call appropriate RND
@@ -161,7 +161,7 @@ function r = random (name, varargin)
 
     elseif (nargs > rnd_args{idx})
       ## Check that all distribution parameters are numeric
-      if (! all (cellfun (@(x)isnumeric(x), (varargin(1:rnd_args{idx})))))
+      if (! all (cellfun (@(x)isnumeric (x), (varargin(1:rnd_args{idx})))))
         error ("random: distribution parameters must be numeric.");
       endif
       ## Call appropriate RND. SIZE arguments are checked by the RND function.

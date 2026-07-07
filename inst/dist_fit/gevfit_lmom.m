@@ -73,25 +73,25 @@ function [paramhat, paramci] = gevfit_lmom (data)
 
   # find the L-moments
   data = sort (data(:))';
-  n = numel(data);
-  L1 = mean(data);
-  L2 = sum(data .* (2*(1:n) - n - 1)) / (2*nchoosek(n, 2)); # or mean(triu(data' - data, 1, 'pack')) / 2;
-  b = bincoeff((1:n) - 1, 2);
-  L3 = sum(data .* (b - 2 * ((1:n) - 1) .* (n - (1:n)) + fliplr(b))) / (3*nchoosek(n, 3));
+  n = numel (data);
+  L1 = mean (data);
+  L2 = sum (data .* (2*(1:n) - n - 1)) / (2*nchoosek (n, 2)); # or mean(triu(data' - data, 1, 'pack')) / 2;
+  b = bincoeff ((1:n) - 1, 2);
+  L3 = sum (data .* (b - 2 * ((1:n) - 1) .* (n - (1:n)) + fliplr (b))) / (3*nchoosek (n, 3));
 
   #match the moments to the GEV distribution
   #first find k based on L3/L2
-  f = @(k) (L3/L2 + 3)/2 - limdiv((1 - 3^(k)), (1 - 2^(k)));
-  k = fzero(f, 0);
+  f = @(k) (L3/L2 + 3)/2 - limdiv ((1 - 3^(k)), (1 - 2^(k)));
+  k = fzero (f, 0);
 
   #next find sigma and mu given k
-  if abs(k) < 1E-8
-    sigma = L2 / log(2);
+  if abs (k) < 1E-8
+    sigma = L2 / log (2);
     eg = 0.57721566490153286; %Euler-Mascheroni constant
     mu = L1 - sigma * eg;
   else
-    sigma = -k*L2 / (gamma(1 - k) * (1 - 2^(k)));
-    mu = L1 - sigma * ((gamma(1 - k) - 1) / k);
+    sigma = -k*L2 / (gamma (1 - k) * (1 - 2^(k)));
+    mu = L1 - sigma * ((gamma (1 - k) - 1) / k);
   endif
 
   paramhat = [k; sigma; mu];
@@ -102,10 +102,10 @@ function [paramhat, paramci] = gevfit_lmom (data)
 endfunction
 
 #internal function to accurately evaluate (1 - 3^k)/(1 - 2^k) in the limit as k --> 0
-function c = limdiv(a, b)
+function c = limdiv (a, b)
   # c = ifelse (abs(b) < 1E-8, log(3)/log(2), a ./ b);
-  if abs(b) < 1E-8
-    c = log(3)/log(2);
+  if abs (b) < 1E-8
+    c = log (3)/log (2);
   else
     c = a / b;
   endif

@@ -99,12 +99,12 @@ function y = mvtpdf (x, rho, df)
   end_try_catch
 
   df = df(:);
-  sqrt_det_sigma = prod(diag(U)); #square root of determinant of rho
+  sqrt_det_sigma = prod (diag (U)); #square root of determinant of rho
 
   ## Scale factor for PDF
-  c = (gamma((df+d)/2) ./ gamma(df/2)) ./ (sqrt_det_sigma * (df*pi).^(d/2));
+  c = (gamma ((df+d)/2) ./ gamma (df/2)) ./ (sqrt_det_sigma * (df*pi).^(d/2));
   #note: sumsq(U' \ x') is equivalent to the quadratic form x*inv(rho)*x'
-  y = c ./ ((1 + sumsq(U' \ x') ./ df') .^ ((df' + d)/2))';
+  y = c ./ ((1 + sumsq (U' \ x') ./ df') .^ ((df' + d)/2))';
 
 
 endfunction
@@ -123,7 +123,7 @@ endfunction
 
 ## Test results verified with R mvtnorm package dmvt function
 ## dmvt(x = c(0,0), rho = diag(2), log = FALSE)
-%!assert (mvtpdf ([0 0], eye(2), 1), 0.1591549, 1E-7)
+%!assert (mvtpdf ([0 0], eye (2), 1), 0.1591549, 1E-7)
 ## dmvt(x = c(1,0), rho = matrix(c(1, 0.5, 0.5, 1), nrow=2, ncol=2), df = 2, log = FALSE)
 %!assert (mvtpdf ([1 0], [1 0.5; 0.5 1], 2), 0.06615947, 1E-7)
 ## dmvt(x = c(1,0.4,0), rho = matrix(c(1, 0.5, 0.3, 0.5, 1, 0.6, 0.3, 0.6, ...

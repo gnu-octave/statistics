@@ -79,7 +79,7 @@ function y = ncx2pdf (x, df, lambda)
   y(k3) = gampdf (x(k3), df(k3), 2);
 
   ## Handle normal cases
-  td = find(x>0 & x<Inf & lambda>0 & df>=0);
+  td = find (x>0 & x<Inf & lambda>0 & df>=0);
   ## Return if finished all normal cases
   if (isempty (td))
     return;
@@ -97,7 +97,7 @@ function y = ncx2pdf (x, df, lambda)
   large_DF = ! small_DF;
   ul = zeros (size (x));
   ul(small_DF) = -0.5 * (lambda(small_DF) + x(small_DF)) + ...
-                  0.5 * x_sqrt(small_DF) .* d_sqrt (small_DF) ./ ...
+                  0.5 * x_sqrt(small_DF) .* d_sqrt(small_DF) ./ ...
                   (df(small_DF) + 1) + df(small_DF) .* ...
                   (log (x(small_DF)) - log (2)) - log (2) - ...
                   gammaln (df(small_DF) + 1);
@@ -143,7 +143,7 @@ function y = ncx2pdf (x, df, lambda)
                 df(useB) .* log (x_sqrt(useB) ./ d_sqrt(useB))) .* Bess(useB);
   td(useB) = [];
   ## Return if finished all normal cases
-  if isempty(td)
+  if isempty (td)
     return;
   endif
   x(useB) = [];
@@ -158,9 +158,9 @@ function y = ncx2pdf (x, df, lambda)
   lnsr2pi = 0.9189385332046727; % log(sqrt(2*pi))
   dx = lambda .* x / 4;
   K = max (0, floor (0.5 * (sqrt (df .^ 2 + 4 * dx) - df)));
-  lntK = zeros(size(K));
+  lntK = zeros (size (K));
   K0 = K == 0;
-  lntK(K0) = -lnsr2pi -0.5 * (lambda(K0) + log(df(K0))) - ...
+  lntK(K0) = -lnsr2pi -0.5 * (lambda(K0) + log (df(K0))) - ...
               StirlingError (df(K0)) - BinoPoisson (df(K0), x(K0) / 2);
   K0 = ! K0;
   lntK(K0) = -2 * lnsr2pi - 0.5 * (log (K(K0)) + log (df(K0) + K(K0))) - ...
@@ -226,7 +226,7 @@ function lambda = StirlingError (n)
         lambda(k) = sfe(n2+1);
     else
         lnsr2pi = 0.9189385332046728;
-        lambda(k) = gammaln(n1+1)-(n1+0.5).*log(n1)+n1-lnsr2pi;
+        lambda(k) = gammaln (n1+1)-(n1+0.5).*log (n1)+n1-lnsr2pi;
     endif
   endif
   k = find (n > 15 & n <= 35);
@@ -238,11 +238,11 @@ function lambda = StirlingError (n)
   if (any (k))
     lambda(k) = (S0 - (S1 - (S2 - S3 ./ nn(k)) ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
-  k = find(n > 80 & n <= 500);
+  k = find (n > 80 & n <= 500);
   if (any (k))
     lambda(k) = (S0 - (S1 - S2 ./ nn(k)) ./ nn(k)) ./ n(k);
   endif
-  k = find(n > 500);
+  k = find (n > 500);
   if (any (k))
     lambda(k) = (S0 - S1 ./ nn(k)) ./ n(k);
   endif
@@ -256,7 +256,7 @@ function BP = BinoPoisson (x, np)
     BP = zeros (size (x));
   endif
   k = abs (x - np) < 0.1 * (x + np);
-  if any(k(:))
+  if any (k(:))
     s = (x(k) - np(k)) .* (x(k) - np(k)) ./ (x(k) + np(k));
     v = (x(k) - np(k)) ./ (x(k) + np(k));
     ej = 2 .* x(k) .* v;
@@ -264,7 +264,7 @@ function BP = BinoPoisson (x, np)
     s1 = zeros (size (s), is_class);
     ok = true (size (s));
     j = 0;
-    while any(ok(:))
+    while any (ok(:))
       ej(ok) = ej(ok) .* v(ok) .* v(ok);
       j = j + 1;
       s1(ok) = s(ok) + ej(ok) ./ (2 * j + 1);

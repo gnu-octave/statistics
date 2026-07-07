@@ -120,18 +120,18 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
   B = B(ord);
   Rho = Rho(ord, ord);
   ## Check for highly correlated covariance matrix
-  if any(any(abs(tril(Rho,-1)) > .999))
-    warning("mvtcdfqmc: highly correlated covariance matrix Rho.");
+  if any (any (abs (tril (Rho,-1)) > .999))
+    warning ("mvtcdfqmc: highly correlated covariance matrix Rho.");
   endif
   ## Scale the integration limits and the Cholesky factor of Rho
-  C = chol(Rho);
-  c = diag(C);
+  C = chol (Rho);
+  c = diag (C);
   A = A(:) ./ c;
   B = B(:) ./ c;
-  C = C ./ repmat(c',m,1);
+  C = C ./ repmat (c',m,1);
   ## Set repetitions fof Monte Carlo
   MCreps = 25;
-  MCdims = m - isinf(df);
+  MCdims = m - isinf (df);
   ## Set initial output
   p = zeros (is_type);
   sigsq = Inf (is_type);
@@ -150,7 +150,7 @@ function [p, err, FunEvals] = mvtcdfqmc (A, B, Rho, df, varargin)
     ## Compute randomized quasi-Monte Carlo estimate with P points
     [THat,sigsqTHat] = estimate_mvtqmc (MCreps, P(i), NRgen, C, df, ...
                                         A, B, is_type);
-    FunEvals = FunEvals + 2 * MCreps *P (i);
+    FunEvals = FunEvals + 2 * MCreps *P(i);
     ## Recursively update the estimate and the error estimate
     p = p + (THat - p) ./ (1 + sigsqTHat ./ sigsq);
     sigsq = sigsqTHat ./ (1 + sigsqTHat ./ sigsq);
@@ -191,14 +191,14 @@ function [THat, sigsqTHat] = estimate_mvtqmc (MCreps, P, NRgen, C, df, A, ...
   endfor
 
   ## Return the MC mean and se^2
-  sigsqTHat = var(THat) ./ MCreps;
-  THat = mean(THat);
+  sigsqTHat = var (THat) ./ MCreps;
+  THat = mean (THat);
 endfunction
 
 ## Integrand for computation of MVT probabilities
 function TBar = F_qrsvn (A, B, C, df, w)
   N = size (w, 1);  # number of quasirandom points
-  m = length(A);    # number of dimensions
+  m = length (A);    # number of dimensions
   if isinf (df)
     rho = 1;
   else

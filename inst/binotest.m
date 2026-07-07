@@ -129,7 +129,7 @@ endfunction
 %!demo
 %! % flip a coin 1000 times, showing 475 heads
 %! % Hypothesis: coin is fair, i.e. p=1/2
-%! [h,p_val,ci] = binotest(475,1000,0.5)
+%! [h,p_val,ci] = binotest (475,1000,0.5)
 %! % Result: h = 0 : null hypothesis not rejected, coin could be fair
 %! %         P value 0.12, i.e. hypothesis not rejected for alpha up to 12%
 %! %         0.444 <= p <= 0.506 with 95% confidence
@@ -137,7 +137,7 @@ endfunction
 %!demo
 %! % flip a coin 100 times, showing 65 heads
 %! % Hypothesis: coin shows less than 50% heads, i.e. p<=1/2
-%! [h,p_val,ci] = binotest(65,100,0.5,'tail','left','alpha',0.01)
+%! [h,p_val,ci] = binotest (65,100,0.5,'tail','left','alpha',0.01)
 %! % Result: h = 1 : null hypothesis is rejected, i.e. coin shows more heads than tails
 %! %         P value 0.0018, i.e. hypothesis not rejected for alpha up to 0.18%
 %! %         0 <= p <= 0.76 with 99% confidence

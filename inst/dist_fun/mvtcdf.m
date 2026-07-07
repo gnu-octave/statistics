@@ -185,7 +185,7 @@ function [p, err] = mvtcdf (varargin)
   endif
 
   ## Check rho
-  sz = size(rho);
+  sz = size (rho);
   if (sz(1) != sz(2))
     error ("mvtcdf: correlation matrix RHO is not square.");
   elseif (! isequal (sz, [d_x, d_x]))
@@ -371,8 +371,8 @@ function p = tvtcdf (x, rho, df, TolFun)
 
   ## Functions to compute the integrands
   function integrand = tvtIntegr1 (theta)
-    st = sin(theta);
-    c2t = cos(theta) .^ 2;
+    st = sin (theta);
+    c2t = cos (theta) .^ 2;
     w = sqrt (1 ./ (1 + ((x2 * st - x3) .^ 2 ./ c2t + x2 .^ 2) / v));
     integrand = w .^ v .* TCDF (x1 .* w, v);
   endfunction
@@ -397,7 +397,7 @@ endfunction
 
 ## CDF for Student's T
 function p = TCDF (x, df)
-  p = betainc(df ./ (df + x .^ 2), df / 2, 0.5) / 2;
+  p = betainc (df ./ (df + x .^ 2), df / 2, 0.5) / 2;
   reflect = (x > 0);
   p(reflect) = 1 - p(reflect);
 endfunction
@@ -420,19 +420,19 @@ endfunction
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
 %! a = [-1, 0];
-%! assert (mvtcdf(a, x, rho, df), 0.294196905339283, 1e-14);
+%! assert (mvtcdf (a, x, rho, df), 0.294196905339283, 1e-14);
 %!test
 %! x = [1, 2;2, 4;1, 5];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
 %! p =[0.790285178602166; 0.938703291727784; 0.81222737321336];
-%! assert (mvtcdf(x, rho, df), p, 1e-14);
+%! assert (mvtcdf (x, rho, df), p, 1e-14);
 %!test
 %! x = [1, 2, 2, 4, 1, 5];
 %! rho = eye (6);
 %! rho(rho == 0) = 0.5;
 %! df = 4;
-%! assert (mvtcdf(x, rho, df), 0.6874, 1e-4);
+%! assert (mvtcdf (x, rho, df), 0.6874, 1e-4);
 
 %!error mvtcdf (1)
 %!error mvtcdf (1, 2)

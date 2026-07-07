@@ -144,7 +144,7 @@ function CL = cl_multinom (X, N, b = 0.05, method = 'bromaghin')
       error ("cl_multinom: unknown calculation type '%s'.", method);
   endswitch
 
-  CL = 1 - max( alpha );
+  CL = 1 - max ( alpha );
 
 endfunction
 

@@ -164,7 +164,7 @@ function D = pdist (X, varargin)
   if (is_function_handle (Distance))
     D2 = [];
     try
-      D2 = Distance (X(1,:), X([2:end],:));
+      D2 = Distance(X(1,:), X([2:end],:));
     catch ME
       error ("pdist: invalid function handle for distance metric.");
     end_try_catch
@@ -494,7 +494,7 @@ endfunction
 %!shared xy, t, eucl, x
 %! xy = [0 1; 0 2; 7 6; 5 6];
 %! t = 1e-3;
-%! eucl = @(v,m) sqrt(sumsq(repmat(v,rows(m),1)-m,2));
+%! eucl = @(v,m) sqrt (sumsq (repmat (v,rows (m),1)-m,2));
 %! x = [1 2 3; 4 5 6; 7 8 9; 3 2 1];
 %!assert (pdist (xy),                 [1.000 8.602 7.071 8.062 6.403 2.000], t);
 %!assert (pdist (xy, eucl),           [1.000 8.602 7.071 8.062 6.403 2.000], t);

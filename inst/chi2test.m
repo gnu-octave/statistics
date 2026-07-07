@@ -236,7 +236,7 @@ function [pval, chisq, df, E] = chi2test (x, varargin)
       E = permute (E, [c_dim, dm]);
     elseif (strcmpi (varargin{1}, 'homogeneous'))
       ## Calculate degrees of freedom
-      df = prod(sz - 1);
+      df = prod (sz - 1);
       ## Compute observed marginal totals for any two dimensions
       omt12 = sum (sum (x, 3), 3);
       omt13 = sum (sum (x, 2), 2);

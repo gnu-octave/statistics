@@ -87,9 +87,9 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   endif
 
   if (isempty (censor))
-      censor = zeros(mm,1);
+      censor = zeros (mm,1);
   else
-    [mmc, nnc] = size(censor);
+    [mmc, nnc] = size (censor);
     if ((mmc == mm && nnc == 1) || (mmc == 1 && nnc == mm))
       censor = censor(:);
     else
@@ -135,7 +135,7 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   endfor
   ## Compute median rank
   a = wbdat(:, 3) ./ (N - wbdat(:, 3) + 1);
-  f = finv(0.5, 2 * (N - wbdat(:, 3) + 1), 2 * wbdat(:, 3));
+  f = finv (0.5, 2 * (N - wbdat(:, 3) + 1), 2 * wbdat(:, 3));
 
   wbdat(:, 2) = a ./ (f+a);
 
@@ -177,13 +177,13 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   x = [0;0];
   y = [0;0];
 
-  label = char('0.10', '1.00', '10.00', '99.00');
+  label = char ('0.10', '1.00', '10.00', '99.00');
   prob = [0.001 0.01 0.1 0.99];
   tick  = log (log (1 ./ (1 - prob)));
   xbf = [xmin; xmax];
   ybf = polyval (poly, log (xbf));
 
-  newplot();
+  newplot ();
   x(1, 1) = xmin;
   x(2, 1) = xmax;
   if (fancygrid == 1)

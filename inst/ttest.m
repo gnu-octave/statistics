@@ -131,7 +131,7 @@ function [h, p, ci, stats] = ttest (x, my, varargin)
   stats.tstat = [];
   stats.df = n - 1;
   stats.sd = std (x, 0, dim, 'omitnan');
-  x_bar_std = stats.sd ./ sqrt(n);
+  x_bar_std = stats.sd ./ sqrt (n);
   tval = (x_bar) ./ x_bar_std;
   stats.tstat = tval;
 

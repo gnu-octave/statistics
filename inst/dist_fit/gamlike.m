@@ -133,15 +133,15 @@ function [nlogL, acov] = gamlike (params, x, censor, freq)
       d2lnS = d2y ./ y - dlnS.*dlnS;
 
       #[dlnS,d2lnS] = dlngamsf(z_censored,a);
-      logzcen = log(z_censored);
-      tmp = exp(a .* logzcen - z_censored - gammaln(a) - log(b)) ./ Scen;
+      logzcen = log (z_censored);
+      tmp = exp (a .* logzcen - z_censored - gammaln (a) - log (b)) ./ Scen;
       dL11(logical (censor)) = d2lnS;
-      dL12(logical (censor)) = tmp .* (logzcen - dlnS - psi(0,a));
+      dL12(logical (censor)) = tmp .* (logzcen - dlnS - psi (0,a));
       dL22(logical (censor)) = tmp .* ((z_censored-1-a)./b - tmp);
     endif
-    nH11 = -sum(freq .* dL11);
-    nH12 = -sum(freq .* dL12);
-    nH22 = -sum(freq .* dL22);
+    nH11 = -sum (freq .* dL11);
+    nH12 = -sum (freq .* dL12);
+    nH22 = -sum (freq .* dL22);
     nH = [nH11 nH12; nH12 nH22];
     if (any (isnan (nH(:))))
       acov = nan (2, 'like', nH);
@@ -170,7 +170,7 @@ function [y, dy, d2y] = dgammainc (x, a)
   endif
 
   ## For x < a+1
-  is_lo = find(x < a + 1 & x != 0);
+  is_lo = find (x < a + 1 & x != 0);
   if (! isempty (is_lo))
     x_lo = x(is_lo);
     k_lo = a(is_lo);
@@ -208,7 +208,7 @@ function [y, dy, d2y] = dgammainc (x, a)
   endif
 
   ## For x >= a+1
-  is_hi = find(x >= a+1);
+  is_hi = find (x >= a+1);
   if (! isempty (is_hi))
     x_hi = x(is_hi);
     k_hi = a(is_hi);
@@ -288,15 +288,15 @@ endfunction
 
 ## Test output
 %!test
-%! [nlogL, acov] = gamlike([2, 3], [2, 3, 4, 5, 6, 7, 8, 9]);
+%! [nlogL, acov] = gamlike ([2, 3], [2, 3, 4, 5, 6, 7, 8, 9]);
 %! assert (nlogL, 19.4426, 1e-4);
 %! assert (acov, [2.7819, -5.0073; -5.0073, 9.6882], 1e-4);
 %!test
-%! [nlogL, acov] = gamlike([2, 3], [5:45]);
+%! [nlogL, acov] = gamlike ([2, 3], [5:45]);
 %! assert (nlogL, 305.8070, 1e-4);
 %! assert (acov, [0.0423, -0.0087; -0.0087, 0.0167], 1e-4);
 %!test
-%! [nlogL, acov] = gamlike([2, 13], [5:45]);
+%! [nlogL, acov] = gamlike ([2, 13], [5:45]);
 %! assert (nlogL, 163.2261, 1e-4);
 %! assert (acov, [0.2362, -1.6631; -1.6631, 13.9440], 1e-4);
 

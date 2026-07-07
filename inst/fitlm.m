@@ -255,7 +255,7 @@ function mdl = fitlm (varargin)
       error (strcat ("fitlm: Predictor variables must be numeric vectors,", ...
                      " numeric matrices, or categorical vectors."));
     endif
-    if (isempty (rest) || is_nv (rest{1}))
+    if (isempty (rest) || is_nv(rest{1}))
       error ("fitlm: Y argument is required unless X is a dataset or table.");
     endif
     y_arg = rest{1};
@@ -294,7 +294,7 @@ function mdl = fitlm (varargin)
     if (! isempty (rest))
 
       ## Even length starting with Name-Value key means all are Name-Value pairs
-      if (mod (numel (rest), 2) == 0 && is_nv (rest{1}))
+      if (mod (numel (rest), 2) == 0 && is_nv(rest{1}))
         nv_args = rest;
 
       else
@@ -370,7 +370,7 @@ function mdl = fitlm (varargin)
     n = size (arg1, 1);
 
     ## Ensure the response variable y is provided.
-    if (isempty (rest) || is_nv (rest{1}))
+    if (isempty (rest) || is_nv(rest{1}))
       error ("fitlm: Y argument is required unless X is a dataset or table.");
     endif
 

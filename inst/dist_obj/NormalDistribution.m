@@ -57,7 +57,7 @@ classdef NormalDistribution
   ## normlike, normstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} mu
     ##
@@ -82,7 +82,7 @@ classdef NormalDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} DistributionName
     ##
@@ -129,14 +129,14 @@ classdef NormalDistribution
     ParameterDescription = {'Mean', 'Standard Deviation'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = true;
     DistributionCode = 'norm';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} ParameterValues
     ##
@@ -228,11 +228,11 @@ classdef NormalDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = NormalDistribution (mu, sigma)
       if (nargin == 0)
@@ -248,7 +248,7 @@ classdef NormalDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'normal distribution');
     endfunction
 
@@ -282,7 +282,7 @@ classdef NormalDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {NormalDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -713,7 +713,7 @@ classdef NormalDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -821,29 +821,29 @@ endfunction
 ## Test input validation
 ## 'NormalDistribution' constructor
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution(Inf, 1)
+%! NormalDistribution (Inf, 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution(i, 1)
+%! NormalDistribution (i, 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution('a', 1)
+%! NormalDistribution ('a', 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution([1, 2], 1)
+%! NormalDistribution ([1, 2], 1)
 %!error <NormalDistribution: MU must be a real scalar.> ...
-%! NormalDistribution(NaN, 1)
+%! NormalDistribution (NaN, 1)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, 0)
+%! NormalDistribution (1, 0)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, -1)
+%! NormalDistribution (1, -1)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, Inf)
+%! NormalDistribution (1, Inf)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, i)
+%! NormalDistribution (1, i)
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, 'a')
+%! NormalDistribution (1, 'a')
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, [1, 2])
+%! NormalDistribution (1, [1, 2])
 %!error <NormalDistribution: SIGMA must be a positive real scalar.> ...
-%! NormalDistribution(1, NaN)
+%! NormalDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -949,8 +949,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = NormalDistribution(1, 1);
-%! pd(2) = NormalDistribution(1, 3);
+%! pd = NormalDistribution (1, 1);
+%! pd(2) = NormalDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

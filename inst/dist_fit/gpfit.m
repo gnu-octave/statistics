@@ -142,13 +142,13 @@ function [paramhat, paramci] = gpfit (x, theta, alpha, freq, options)
 
   ## Remove NaN from data and make a warning
   if (any (isnan (x)))
-    x(isnan(x)) = [];
+    x(isnan (x)) = [];
     warning ("gpfit: X contains NaN values, which are ignored.");
   endif
 
   ## Remove Inf from data and make a warning
   if (any (isinf (x)))
-    x(isnan(x)) = [];
+    x(isnan (x)) = [];
     warning ("gpfit: X contains Inf values, which are ignored.");
   endif
 

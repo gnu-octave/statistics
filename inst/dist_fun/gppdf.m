@@ -106,7 +106,7 @@ function y = gppdf (x, k, sigma, theta)
 
     j = ky & (k == 0) & (z >= 0);
     if (any (j))
-      y(j) = exp( -z(j));
+      y(j) = exp ( -z(j));
     endif
 
     j = ky & (k > 0) & (z >= 0);
@@ -202,13 +202,13 @@ endfunction
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2)
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2, 3)
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (3), ones (2), ones(2), ones(2))
+%! gpcdf (ones (3), ones (2), ones (2), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (3), ones(2), ones(2))
+%! gpcdf (ones (2), ones (3), ones (2), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (2), ones(3), ones(2))
+%! gpcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
-%! gpcdf (ones (2), ones (2), ones(2), ones(3))
+%! gpcdf (ones (2), ones (2), ones (2), ones (3))
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (i, 2, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, i, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, 2, i, 4)

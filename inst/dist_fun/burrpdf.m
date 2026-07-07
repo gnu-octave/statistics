@@ -72,7 +72,7 @@ function y = burrpdf (x, lambda, c, k)
                & (0 < k) & (k < Inf);
 
   ## Compute Burr PDF
-  if (isscalar (lambda) && isscalar (c) && isscalar(k))
+  if (isscalar (lambda) && isscalar (c) && isscalar (k))
     y(j) = (c * k / lambda) .* (x(j) / lambda) .^ (c - 1) ./ ...
            (1 + (x(j) / lambda) .^ c) .^ (k + 1);
   else
@@ -107,7 +107,7 @@ endfunction
 %!shared x, y
 %! x = [-1, 0, 1, 2, Inf];
 %! y = [0, 1, 1/4, 1/9, 0];
-%!assert (burrpdf (x, ones(1,5), ones (1,5), ones (1,5)), y)
+%!assert (burrpdf (x, ones (1,5), ones (1,5), ones (1,5)), y)
 %!assert (burrpdf (x, 1, 1, 1), y)
 %!assert (burrpdf (x, [1, 1, NaN, 1, 1], 1, 1), [y(1:2), NaN, y(4:5)])
 %!assert (burrpdf (x, 1, [1, 1, NaN, 1, 1], 1), [y(1:2), NaN, y(4:5)])
@@ -128,13 +128,13 @@ endfunction
 %!error<burrpdf: function called with too many inputs> ...
 %! burrpdf (1, 2, 3, 4, 5)
 %!error<burrpdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrpdf (ones (3), ones (2), ones(2), ones(2))
+%! burrpdf (ones (3), ones (2), ones (2), ones (2))
 %!error<burrpdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrpdf (ones (2), ones (3), ones(2), ones(2))
+%! burrpdf (ones (2), ones (3), ones (2), ones (2))
 %!error<burrpdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrpdf (ones (2), ones (2), ones(3), ones(2))
+%! burrpdf (ones (2), ones (2), ones (3), ones (2))
 %!error<burrpdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
-%! burrpdf (ones (2), ones (2), ones(2), ones(3))
+%! burrpdf (ones (2), ones (2), ones (2), ones (3))
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (i, 2, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, i, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, 2, i, 4)

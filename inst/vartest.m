@@ -84,7 +84,7 @@ function [h, pval, ci, stats] = vartest (x, v, varargin)
   if (nargin < 2)
     error ("vartest: too few input arguments.");
   endif
-  if (! isscalar (v) || ! isnumeric(v) || ! isreal(v) || v < 0)
+  if (! isscalar (v) || ! isnumeric (v) || ! isreal (v) || v < 0)
     error ("vartest: invalid value for variance.");
   endif
   ## Add defaults

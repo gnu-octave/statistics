@@ -147,8 +147,8 @@ endfunction
 ## Test class of input preserved
 %!assert (betainv ([p, NaN], 1, 2), [NaN 0 0.5 1 NaN NaN], eps)
 %!assert (betainv (single ([p, NaN]), 1, 2), single ([NaN 0 0.5 1 NaN NaN]))
-%!assert (betainv ([p, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps('single'))
-%!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps('single'))
+%!assert (betainv ([p, NaN], single (1), 2), single ([NaN 0 0.5 1 NaN NaN]), eps ('single'))
+%!assert (betainv ([p, NaN], 1, single (2)), single ([NaN 0 0.5 1 NaN NaN]), eps ('single'))
 
 ## Test input validation
 %!error<betainv: function called with too few input arguments.> betainv ()

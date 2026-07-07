@@ -55,8 +55,8 @@ function y = iwishpdf (W, Tau, df, log_y=false)
 
   ## Use formulas for determinant of positive definite matrix for better
   ## efficiency and numerical accuracy
-  logdet_W = 2*sum(log(diag(C)));
-  logdet_Tau = 2*sum(log(diag(chol(Tau))));
+  logdet_W = 2*sum (log (diag (C)));
+  logdet_Tau = 2*sum (log (diag (chol (Tau))));
 
   y = -(df * p) / 2 * log (2) + (df / 2) * logdet_Tau - g ...
       -((df + p + 1) / 2) * logdet_W - trace (Tau * chol2inv (C)) / 2;
@@ -67,9 +67,9 @@ function y = iwishpdf (W, Tau, df, log_y=false)
 endfunction
 
 ## Test results cross-checked against diwish function in R MCMCpack library
-%!assert(iwishpdf(4, 3, 3.1), 0.04226595, 1E-7);
-%!assert(iwishpdf([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 1.60166e-05, 1E-10);
-%!assert(iwishpdf([6 2 5; 2 10 -5; 5 -5 25], ...
+%!assert (iwishpdf (4, 3, 3.1), 0.04226595, 1E-7);
+%!assert (iwishpdf ([2 -0.3;-0.3 4], [1 0.3;0.3 1], 4), 1.60166e-05, 1E-10);
+%!assert (iwishpdf ([6 2 5; 2 10 -5; 5 -5 25], ...
 %! [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.946831e-12, 1E-17);
 
 ## Test input validation

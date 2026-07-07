@@ -59,7 +59,7 @@ classdef GeneralizedParetoDistribution
   ## gplike, gpstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} k
     ##
@@ -97,7 +97,7 @@ classdef GeneralizedParetoDistribution
     theta
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} DistributionName
     ##
@@ -144,14 +144,14 @@ classdef GeneralizedParetoDistribution
     ParameterDescription = {'Shape', 'Scale', 'Location'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'gp';
     ParameterRange = [-Inf, realmin, -Inf; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} ParameterValues
     ##
@@ -243,11 +243,11 @@ classdef GeneralizedParetoDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = GeneralizedParetoDistribution (k, sigma, theta)
       if (nargin == 0)
@@ -264,7 +264,7 @@ classdef GeneralizedParetoDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Generalized Pareto distribution');
     endfunction
 
@@ -310,7 +310,7 @@ classdef GeneralizedParetoDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {GeneralizedParetoDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -754,7 +754,7 @@ classdef GeneralizedParetoDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, theta, varargin)
       ## Check input arguments
@@ -845,39 +845,39 @@ endfunction
 ## Test input validation
 ## 'GeneralizedParetoDistribution' constructor
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution(Inf, 1, 1)
+%! GeneralizedParetoDistribution (Inf, 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution(i, 1, 1)
+%! GeneralizedParetoDistribution (i, 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution('a', 1, 1)
+%! GeneralizedParetoDistribution ('a', 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution([1, 2], 1, 1)
+%! GeneralizedParetoDistribution ([1, 2], 1, 1)
 %!error <GeneralizedParetoDistribution: K must be a real scalar.> ...
-%! GeneralizedParetoDistribution(NaN, 1, 1)
+%! GeneralizedParetoDistribution (NaN, 1, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, 0, 1)
+%! GeneralizedParetoDistribution (1, 0, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, -1, 1)
+%! GeneralizedParetoDistribution (1, -1, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, Inf, 1)
+%! GeneralizedParetoDistribution (1, Inf, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, i, 1)
+%! GeneralizedParetoDistribution (1, i, 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, 'a', 1)
+%! GeneralizedParetoDistribution (1, 'a', 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, [1, 2], 1)
+%! GeneralizedParetoDistribution (1, [1, 2], 1)
 %!error <GeneralizedParetoDistribution: SIGMA must be a positive real scalar.> ...
-%! GeneralizedParetoDistribution(1, NaN, 1)
+%! GeneralizedParetoDistribution (1, NaN, 1)
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, Inf)
+%! GeneralizedParetoDistribution (1, 1, Inf)
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, i)
+%! GeneralizedParetoDistribution (1, 1, i)
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, 'a')
+%! GeneralizedParetoDistribution (1, 1, 'a')
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, [1, 2])
+%! GeneralizedParetoDistribution (1, 1, [1, 2])
 %!error <GeneralizedParetoDistribution: THETA must be a real scalar.> ...
-%! GeneralizedParetoDistribution(1, 1, NaN)
+%! GeneralizedParetoDistribution (1, 1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -989,8 +989,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = GeneralizedParetoDistribution(1, 1, 1);
-%! pd(2) = GeneralizedParetoDistribution(1, 3, 1);
+%! pd = GeneralizedParetoDistribution (1, 1, 1);
+%! pd(2) = GeneralizedParetoDistribution (1, 3, 1);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

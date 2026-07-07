@@ -86,7 +86,7 @@ function [h, pval, stats] = hotelling_t2test (x, my, varargin)
   endif
 
   ## When X and MY are of equal size, then assume paired-sample
-  if (isequal (size (x), size(my)))
+  if (isequal (size (x), size (my)))
     x = x - my;
     if (isvector (x))
       my = 0;
@@ -155,23 +155,23 @@ endfunction
 %!error<hotelling_t2test: X must be a vector or a 2D matrix.> ...
 %! hotelling_t2test (1);
 %!error<hotelling_t2test: X must be a vector or a 2D matrix.> ...
-%! hotelling_t2test (ones(2,2,2));
+%! hotelling_t2test (ones (2,2,2));
 %!error<hotelling_t2test: invalid value for alpha.> ...
-%! hotelling_t2test (ones(20,2), [0, 0], 'alpha', 1);
+%! hotelling_t2test (ones (20,2), [0, 0], 'alpha', 1);
 %!error<hotelling_t2test: invalid value for alpha.> ...
-%! hotelling_t2test (ones(20,2), [0, 0], 'alpha', -0.2);
+%! hotelling_t2test (ones (20,2), [0, 0], 'alpha', -0.2);
 %!error<hotelling_t2test: invalid value for alpha.> ...
-%! hotelling_t2test (ones(20,2), [0, 0], 'alpha', 'a');
+%! hotelling_t2test (ones (20,2), [0, 0], 'alpha', 'a');
 %!error<hotelling_t2test: invalid value for alpha.> ...
-%! hotelling_t2test (ones(20,2), [0, 0], 'alpha', [0.01, 0.05]);
+%! hotelling_t2test (ones (20,2), [0, 0], 'alpha', [0.01, 0.05]);
 %!error<hotelling_t2test: invalid Name argument.> ...
-%! hotelling_t2test (ones(20,2), [0, 0], 'name', 0.01);
+%! hotelling_t2test (ones (20,2), [0, 0], 'name', 0.01);
 %!error<hotelling_t2test: if X is a vector, M must be a scalar.> ...
-%! hotelling_t2test (ones(20,1), [0, 0]);
+%! hotelling_t2test (ones (20,1), [0, 0]);
 %!error<hotelling_t2test: X must have more rows than columns.> ...
-%! hotelling_t2test (ones(4,5), [0, 0, 0, 0, 0]);
+%! hotelling_t2test (ones (4,5), [0, 0, 0, 0, 0]);
 %!error<hotelling_t2test: if X is a matrix, M must be a vector of length> ...
-%! hotelling_t2test (ones(20,5), [0, 0, 0, 0]);
+%! hotelling_t2test (ones (20,5), [0, 0, 0, 0]);
 
 ## Test results
 %!test

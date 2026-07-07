@@ -84,4 +84,4 @@ endfunction
 %!error yCDF = cdfcalc (x);
 %!error [yCDF, xCDF] = cdfcalc ();
 %!error [yCDF, xCDF] = cdfcalc (x, x);
-%!warning [yCDF, xCDF] = cdfcalc (ones(10,2));
+%!warning [yCDF, xCDF] = cdfcalc (ones (10,2));

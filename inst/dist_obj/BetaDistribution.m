@@ -56,7 +56,7 @@ classdef BetaDistribution
   ## betalike, betastat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} a
     ##
@@ -82,7 +82,7 @@ classdef BetaDistribution
     b
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} DistributionName
     ##
@@ -129,14 +129,14 @@ classdef BetaDistribution
     ParameterDescription = {'First shape parameter', 'Second shape parameter'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'beta';
     ParameterRange = [realmin, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} ParameterValues
     ##
@@ -226,11 +226,11 @@ classdef BetaDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = BetaDistribution (a, b)
       if (nargin == 0)
@@ -246,7 +246,7 @@ classdef BetaDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'beta distribution');
     endfunction
 
@@ -280,7 +280,7 @@ classdef BetaDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {BetaDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -723,7 +723,7 @@ classdef BetaDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -823,31 +823,31 @@ endfunction
 ## Test input validation
 ## 'BetaDistribution' constructor
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution(0, 1)
+%! BetaDistribution (0, 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution(Inf, 1)
+%! BetaDistribution (Inf, 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution(i, 1)
+%! BetaDistribution (i, 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution('a', 1)
+%! BetaDistribution ('a', 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution([1, 2], 1)
+%! BetaDistribution ([1, 2], 1)
 %!error <BetaDistribution: A must be a positive real scalar.> ...
-%! BetaDistribution(NaN, 1)
+%! BetaDistribution (NaN, 1)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, 0)
+%! BetaDistribution (1, 0)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, -1)
+%! BetaDistribution (1, -1)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, Inf)
+%! BetaDistribution (1, Inf)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, i)
+%! BetaDistribution (1, i)
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, 'a')
+%! BetaDistribution (1, 'a')
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, [1, 2])
+%! BetaDistribution (1, [1, 2])
 %!error <BetaDistribution: B must be a positive real scalar.> ...
-%! BetaDistribution(1, NaN)
+%! BetaDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -954,8 +954,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = BetaDistribution(1, 1);
-%! pd(2) = BetaDistribution(1, 3);
+%! pd = BetaDistribution (1, 1);
+%! pd(2) = BetaDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -78,7 +78,7 @@ function p = nbincdf (x, r, ps, uflag)
   endif
 
   ## Check for R and PS being scalars
-  scalarNPS = (isscalar(r) & isscalar(ps));
+  scalarNPS = (isscalar (r) & isscalar (ps));
 
   ## Check for common size of X, R, and PS
   if (! isscalar (x) || ! isscalar (r) || ! isscalar (ps))
@@ -151,7 +151,7 @@ function p = nbincdf (x, r, ps, uflag)
         p0 = nbinpdf (compare, n_big, ps_big);
         indicator = find (compare > index);
         p0(indicator) = zeros (size (indicator));
-        p(k) = sum(p0,1);
+        p(k) = sum (p0,1);
       endif
     endif
   endif

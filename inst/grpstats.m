@@ -338,7 +338,7 @@ function [varargout] = grpstats (x, group = [], whichstats = [], varargin)
           new_vname = strcat (fname, '_', vname);
           try
             for idx = 1:ngroups
-              new_vdata(idx,:) = fcn_op (vdata(grp_idx == idx, :));
+              new_vdata(idx,:) = fcn_op(vdata(grp_idx == idx, :));
             endfor
           catch
             # no-op
@@ -684,7 +684,7 @@ endfunction
 %! [m, p, g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
 %!                       {'mean', 'meanci', 'gname'}, 0.05)
 %! [c, r] = size (m);
-%! errorbar ((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
+%! errorbar ((1:c)'.*ones (c,r),m,p(:,[(1:r)])-m);
 %! set (gca, 'xtick', 1:c, 'xticklabel', g);
 %! title ('95% prediction intervals for mean weight by year');
 

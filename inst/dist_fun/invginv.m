@@ -43,7 +43,7 @@ function x = invginv (p, mu, lambda)
   endif
 
   ## Check for common size of P, MU, and LAMBDA
-  if (! isscalar (p) || ! isscalar (mu) || ! isscalar(lambda))
+  if (! isscalar (p) || ! isscalar (mu) || ! isscalar (lambda))
     [retval, p, mu, lambda] = common_size (p, mu, lambda);
     vec = true;
     if (retval > 0)
@@ -137,7 +137,7 @@ function x = invginv (p, mu, lambda)
   endfor
 
   ## Issue a warning for exceeding iterations or not converging to tolerance
-  notconv = (abs(dF./F) > tol.^(2/3));
+  notconv = (abs (dF./F) > tol.^(2/3));
   if (it > mit || any (notconv(:)))
     warning (strcat ("invginv: Newton's Method did not converge", ...
                      " or exceeded maximum iterations."));

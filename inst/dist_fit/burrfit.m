@@ -183,12 +183,12 @@ function [paramhat, paramci] = burrfit (x, alpha, censor, freq, options)
     ## Compute starting LAMBDA and C, either directly or by minimization
     if (xl_median >= xl_upperq / xl_median)
       l0 = xl_median;
-      c0 = log(3)/log(xl_upperq/xl_median);
+      c0 = log (3)/log (xl_upperq/xl_median);
     else
       l0 = 1;
       opts = optimset ('fzero');
       opts = optimset (opts, 'Display', 'off');
-      cmax  = log(realmax)/(2*log(xl_upperq/xl_median));
+      cmax  = log (realmax)/(2*log (xl_upperq/xl_median));
       c0 = fzero (@(c)(xl_upperq/xl_median).^c-xl_median.^c-2, [0, cmax], opts);
     endif
     ## Calculate starting K from other starting parameters and scaled data

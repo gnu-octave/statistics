@@ -66,7 +66,7 @@ function h = normplot (varargin)
   endif
   ## If ax is empty, create a new axes
   if (isempty (ax))
-    ax = newplot();
+    ax = newplot ();
   endif
   ## Get number of column vectors in x
   col = size (x, 2);
@@ -76,14 +76,14 @@ function h = normplot (varargin)
   for i = 1:col
     xc = x(:,i);
     ## Remove NaNs, get min, max, and range
-    xc(isnan(xc)) = [];
+    xc(isnan (xc)) = [];
     if (isempty (xc))
       break;
     endif
     ## Transform data
     row_xc = rows (xc);
     yc = norminv (([1:row_xc]' - 0.5) / row_xc);
-    xc = sort(xc);
+    xc = sort (xc);
     ## Find quartiles
     q1x = prctile (xc, 25);
     q3x = prctile (xc, 75);
@@ -153,21 +153,21 @@ function h = normplot (varargin)
 endfunction
 
 %!demo
-%! h = normplot([1:20]);
+%! h = normplot ([1:20]);
 %!demo
-%! h = normplot([1:20;5:2:44]');
+%! h = normplot ([1:20;5:2:44]');
 %!demo
-%! ax = newplot();
-%! h = normplot(ax, [1:20]);
+%! ax = newplot ();
+%! h = normplot (ax, [1:20]);
 %! ax = gca;
-%! h = normplot(ax, [-10:10]);
+%! h = normplot (ax, [-10:10]);
 %! set (ax, 'xlim', [-11, 21]);
 
 ## Test input validation
 %!error normplot ();
 %!error normplot (23);
 %!error normplot (23, [1:20]);
-%!error normplot (ones(3,4,5));
+%!error normplot (ones (3,4,5));
 
 ## Test plotting
 %!test
@@ -176,7 +176,7 @@ endfunction
 %!   ax = newplot (hf);
 %!   h = normplot (ax, [1:20]);
 %!   ax = gca;
-%!   h = normplot(ax, [-10:10]);
+%!   h = normplot (ax, [-10:10]);
 %!   set (ax, 'xlim', [-11, 21]);
 %! unwind_protect_cleanup
 %!   close (hf);
@@ -184,7 +184,7 @@ endfunction
 %!test
 %! hf = figure ('visible', 'off');
 %! unwind_protect
-%!   h = normplot([1:20;5:2:44]');
+%!   h = normplot ([1:20;5:2:44]');
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect

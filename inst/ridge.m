@@ -162,11 +162,11 @@ endfunction
 %! X = [Acceleration Weight Displacement Horsepower];
 %! y = MPG;
 %!
-%! n = length(y);
+%! n = length (y);
 %!
-%! rand('seed',1); % For reproducibility
+%! rand ('seed',1); % For reproducibility
 %!
-%! c = cvpartition(n,'HoldOut',0.3);
+%! c = cvpartition (n,'HoldOut',0.3);
 %! idxTrain = training(c,1);
 %! idxTest = ! idxTrain;
 %!
@@ -174,16 +174,16 @@ endfunction
 %! idxTest = ! idxTrain;
 %!
 %! k = 5;
-%! b = ridge(y(idxTrain),X(idxTrain,:),k,0);
+%! b = ridge (y(idxTrain),X(idxTrain,:),k,0);
 %!
 %! % Predict MPG values for the test data using the model.
 %! yhat = b(1) + X(idxTest,:)*b(2:end);
-%! scatter(y(idxTest),yhat)
+%! scatter (y(idxTest),yhat)
 %!
 %! hold on
-%! plot(y(idxTest),y(idxTest),'r')
-%! xlabel('Actual MPG')
-%! ylabel('Predicted MPG')
+%! plot (y(idxTest),y(idxTest),'r')
+%! xlabel ('Actual MPG')
+%! ylabel ('Predicted MPG')
 %! hold off
 %!
 

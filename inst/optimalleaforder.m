@@ -283,8 +283,8 @@ function leafOrder = optimalleaforder ( varargin )
     p_1 = find (leafOrder == extremes(1));
     p_2 = find (leafOrder == extremes(2));
 
-    leafOrder (p_1 + (length (l)) - 1) = x(k);
-    leafOrder (p_1 + (length (l))) = y(h);
+    leafOrder(p_1 + (length (l)) - 1) = x(k);
+    leafOrder(p_1 + (length (l))) = y(h);
   endfor
 
   ## function: optimalleaforder_getLeafList
@@ -311,7 +311,7 @@ endfunction
 %! randn ('seed', 5)  # for reproducibility
 %! X = randn (10, 2);
 %! D = pdist (X);
-%! tree = linkage(D, 'average');
+%! tree = linkage (D, 'average');
 %! optimalleaforder (tree, D, 'Transformation', 'linear')
 
 ## Test input validation

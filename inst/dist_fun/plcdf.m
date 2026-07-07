@@ -87,7 +87,7 @@ function p = plcdf (data, x, Fx, uflag)
 
   ## Force right side outside support to 1 and invalid data to NaN
   p(data > x(end)) = 1;
-  p(isnan(data)) = NaN;
+  p(isnan (data)) = NaN;
 
   ## Return upper tail (if requested)
   if (uflag)

@@ -52,7 +52,7 @@ classdef UniformDistribution
   ## unifstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} Lower
     ##
@@ -78,7 +78,7 @@ classdef UniformDistribution
     Upper
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} DistributionName
     ##
@@ -125,12 +125,12 @@ classdef UniformDistribution
     ParameterDescription = {'Lower limit', 'Upper limit'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'unif';
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} ParameterValues
     ##
@@ -170,7 +170,7 @@ classdef UniformDistribution
     IsTruncated
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = UniformDistribution (Lower, Upper)
       if (nargin == 0)
@@ -183,7 +183,7 @@ classdef UniformDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Uniform distribution (continuous)');
     endfunction
 
@@ -211,7 +211,7 @@ classdef UniformDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {UniformDistribution} {@var{p} =} cdf (@var{pd}, @var{x})

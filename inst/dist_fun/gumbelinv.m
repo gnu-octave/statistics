@@ -129,7 +129,7 @@ function [x, xlo, xup] = gumbelinv (p, mu, beta, pcov, alpha)
   ## Compute confidence bounds if requested.
   if (nargout >= 2)
     xvar = pcov(1,1) + 2 * pcov(1,2) * q + pcov(2,2) * q .^ 2;
-    if (any (xvar < 0)) || any(isnan(xvar))
+    if (any (xvar < 0)) || any (isnan (xvar))
       error ("gumbelinv: bad covariance matrix.");
     endif
     z = -norminv (alpha / 2);
@@ -177,7 +177,7 @@ endfunction
 ## Test whether gumbelcdf is successfully inverted
 %! p = [0.05, 0.5, 0.95];
 %! x = gumbelinv(p);
-%!assert (gumbelcdf(x), p, 1e-4)
+%!assert (gumbelcdf (x), p, 1e-4)
 
 ## Test input validation
 %!error<gumbelinv: invalid number of input arguments.> gumbelinv ()

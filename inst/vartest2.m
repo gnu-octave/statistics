@@ -87,7 +87,7 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
   if (nargin < 2)
     error ("vartest2: too few input arguments.");
   endif
-  if (isscalar (x) || isscalar(y))
+  if (isscalar (x) || isscalar (y))
     error ("vartest2: X and Y must be vectors or matrices or N-D arrays.");
   endif
   ## If X and Y are vectors make them the same orientation
@@ -143,8 +143,8 @@ function [h, pval, ci, stats] = vartest2 (x, y, varargin)
     error ("vartest2: input size mismatch.");
   endif
   ## Compute statistics for each sample
-  [df1, x_var] = getstats(x,dim);
-  [df2, y_var] = getstats(y,dim);
+  [df1, x_var] = getstats (x,dim);
+  [df2, y_var] = getstats (y,dim);
   ## Compute F statistic
   F = NaN (size (x_var));
   t1 = (y_var > 0);

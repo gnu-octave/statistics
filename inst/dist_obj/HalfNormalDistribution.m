@@ -54,7 +54,7 @@ classdef HalfNormalDistribution
   ## hnlike, hnstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} mu
     ##
@@ -80,7 +80,7 @@ classdef HalfNormalDistribution
     sigma
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} DistributionName
     ##
@@ -127,14 +127,14 @@ classdef HalfNormalDistribution
     ParameterDescription = {'Location', 'Scale'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'hn';
     ParameterRange = [-Inf, realmin; Inf, Inf];
     ParameterLogCI = [true, true];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} ParameterValues
     ##
@@ -226,11 +226,11 @@ classdef HalfNormalDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = HalfNormalDistribution (mu, sigma)
       if (nargin == 0)
@@ -246,7 +246,7 @@ classdef HalfNormalDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Half-normal distribution');
     endfunction
 
@@ -280,7 +280,7 @@ classdef HalfNormalDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {HalfNormalDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -721,7 +721,7 @@ classdef HalfNormalDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, mu, varargin)
       ## Check input arguments
@@ -799,29 +799,29 @@ endfunction
 ## Test input validation
 ## 'HalfNormalDistribution' constructor
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution(Inf, 1)
+%! HalfNormalDistribution (Inf, 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution(i, 1)
+%! HalfNormalDistribution (i, 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution('a', 1)
+%! HalfNormalDistribution ('a', 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution([1, 2], 1)
+%! HalfNormalDistribution ([1, 2], 1)
 %!error <HalfNormalDistribution: MU must be a real scalar.> ...
-%! HalfNormalDistribution(NaN, 1)
+%! HalfNormalDistribution (NaN, 1)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, 0)
+%! HalfNormalDistribution (1, 0)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, -1)
+%! HalfNormalDistribution (1, -1)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, Inf)
+%! HalfNormalDistribution (1, Inf)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, i)
+%! HalfNormalDistribution (1, i)
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, 'a')
+%! HalfNormalDistribution (1, 'a')
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, [1, 2])
+%! HalfNormalDistribution (1, [1, 2])
 %!error <HalfNormalDistribution: SIGMA must be a positive real scalar.> ...
-%! HalfNormalDistribution(1, NaN)
+%! HalfNormalDistribution (1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -934,8 +934,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = HalfNormalDistribution(1, 1);
-%! pd(2) = HalfNormalDistribution(1, 3);
+%! pd = HalfNormalDistribution (1, 1);
+%! pd(2) = HalfNormalDistribution (1, 3);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

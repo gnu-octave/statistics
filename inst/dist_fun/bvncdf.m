@@ -117,7 +117,7 @@ function p = calculate_bvncdf (dh,dk,r)
   bvn = dim1 * 0;
   phi_dh =  0.5 * erfc (dh / sqrt (2));
   phi_dk =  0.5 * erfc (dk / sqrt (2));
-  if (abs(r) < 0.925)
+  if (abs (r) < 0.925)
     hs = (dh .* dh + dk .* dk) / 2;
     asr = asin (r);
     sn1 = sin (asr * (1 - x) / 2);
@@ -133,7 +133,7 @@ function p = calculate_bvncdf (dh,dk,r)
       dk = -dk;
       hk = -hk;
     endif
-    if abs(r) < 1
+    if abs (r) < 1
       as = (1 - r) * (1 + r);
       a = sqrt (as);
       bs = (dh - dk) .^ 2;
@@ -168,7 +168,7 @@ function p = calculate_bvncdf (dh,dk,r)
     endif
     if (r > 0)
       tmp = max (dh, dk);
-      bvn =  bvn + 0.5 * erfc (tmp / sqrt(2));
+      bvn =  bvn + 0.5 * erfc (tmp / sqrt (2));
     elseif (r < 0)
       phi_dh =  0.5 * erfc (dh / sqrt (2));
       phi_dk =  0.5 * erfc (dk / sqrt (2));

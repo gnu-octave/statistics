@@ -119,10 +119,10 @@ endfunction
 %!assert (tripdf ([x, NaN], 1, 1.5, 2), [y, NaN], deps)
 
 ## Test class of input preserved
-%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps('single'))
-%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps('single'))
-%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps('single'))
-%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps('single'))
+%!assert (tripdf (single ([x, NaN]), 1, 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert (tripdf ([x, NaN], single (1), 1.5, 2), single ([y, NaN]), eps ('single'))
+%!assert (tripdf ([x, NaN], 1, 1.5, single (2)), single ([y, NaN]), eps ('single'))
+%!assert (tripdf ([x, NaN], 1, single (1.5), 2), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
 %!error<tripdf: function called with too few input arguments.> tripdf ()
@@ -132,13 +132,13 @@ endfunction
 %!error<tripdf: function called with too many inputs> ...
 %! tripdf (1, 2, 3, 4, 5)
 %!error<tripdf: X, A, B, and C must be of common size or scalars.> ...
-%! tripdf (ones (3), ones (2), ones(2), ones(2))
+%! tripdf (ones (3), ones (2), ones (2), ones (2))
 %!error<tripdf: X, A, B, and C must be of common size or scalars.> ...
-%! tripdf (ones (2), ones (3), ones(2), ones(2))
+%! tripdf (ones (2), ones (3), ones (2), ones (2))
 %!error<tripdf: X, A, B, and C must be of common size or scalars.> ...
-%! tripdf (ones (2), ones (2), ones(3), ones(2))
+%! tripdf (ones (2), ones (2), ones (3), ones (2))
 %!error<tripdf: X, A, B, and C must be of common size or scalars.> ...
-%! tripdf (ones (2), ones (2), ones(2), ones(3))
+%! tripdf (ones (2), ones (2), ones (2), ones (3))
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (i, 2, 3, 4)
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (1, i, 3, 4)
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (1, 2, i, 4)

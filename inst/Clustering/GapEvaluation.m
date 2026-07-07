@@ -36,7 +36,7 @@ classdef GapEvaluation < ClusterCriterion
   ## DaviesBouldinEvaluation, SilhouetteEvaluation}
   ## @end deftp
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property} B
     ##
@@ -137,7 +137,7 @@ classdef GapEvaluation < ClusterCriterion
     StdLogW = [];
   endproperties
 
-  properties (Access = protected)
+  properties(Access = protected)
     ## -*- texinfo -*-
     ## @deftp {GapEvaluation} {property} DistanceVector
     ##
@@ -163,7 +163,7 @@ classdef GapEvaluation < ClusterCriterion
     mExpectedLogW = [];
   endproperties
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## constructor
     ## -*- texinfo -*-
@@ -197,7 +197,7 @@ classdef GapEvaluation < ClusterCriterion
     function this = GapEvaluation (x, clust, KList, b = 100, ...
                     distanceMetric = 'sqeuclidean', ...
                     referenceDistribution = 'pca', searchMethod = 'globalmaxse')
-      this@ClusterCriterion(x, clust, KList);
+      this@ClusterCriterion (x, clust, KList);
 
       ## parsing the distance criterion
       if (ischar (distanceMetric))
@@ -276,7 +276,7 @@ classdef GapEvaluation < ClusterCriterion
     ##
     ## @end deftypefn
     function this = addK (this, K)
-      addK@ClusterCriterion(this, K);
+      addK@ClusterCriterion (this, K);
 
       ## if we have new data, we need a new evaluation
       if (this.OptimalK == 0)
@@ -335,7 +335,7 @@ classdef GapEvaluation < ClusterCriterion
 
   endmethods
 
-  methods (Access = protected)
+  methods(Access = protected)
     ## evaluate
     ## do the evaluation
     function this = evaluate (this, K)

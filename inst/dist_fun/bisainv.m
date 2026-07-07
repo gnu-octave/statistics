@@ -126,7 +126,7 @@ endfunction
 
 ## Test output
 %!shared p, y, f
-%! f = @(p,b,c) (b * (c * norminv (p) + sqrt (4 + (c * norminv(p))^2))^2) / 4;
+%! f = @(p,b,c) (b * (c * norminv (p) + sqrt (4 + (c * norminv (p))^2))^2) / 4;
 %! p = [-1, 0, 1/4, 1/2, 1, 2];
 %! y = [NaN, 0, f(1/4, 1, 1), 1, Inf, NaN];
 %!assert (bisainv (p, ones (1,6), ones (1,6)), y)
@@ -148,11 +148,11 @@ endfunction
 %!error<bisainv: function called with too few input arguments.> bisainv (1, 2)
 %!error<bisainv: function called with too many inputs> bisainv (1, 2, 3, 4)
 %!error<bisainv: P, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisainv (ones (3), ones (2), ones(2))
+%! bisainv (ones (3), ones (2), ones (2))
 %!error<bisainv: P, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisainv (ones (2), ones (3), ones(2))
+%! bisainv (ones (2), ones (3), ones (2))
 %!error<bisainv: P, BETA, and GAMMA must be of common size or scalars.> ...
-%! bisainv (ones (2), ones (2), ones(3))
+%! bisainv (ones (2), ones (2), ones (3))
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (i, 4, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, i, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, 4, i)

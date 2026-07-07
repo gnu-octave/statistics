@@ -56,7 +56,7 @@ classdef BurrDistribution
   ## burrlike, burrstat}
   ## @end deftp
 
-  properties (Dependent = true)
+  properties(Dependent = true)
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} alpha
     ##
@@ -94,7 +94,7 @@ classdef BurrDistribution
     k
   endproperties
 
-  properties (GetAccess = public, Constant = true)
+  properties(GetAccess = public, Constant = true)
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} DistributionName
     ##
@@ -141,14 +141,14 @@ classdef BurrDistribution
     ParameterDescription = {'Scale', '1st shape', '2nd shape'};
   endproperties
 
-  properties (GetAccess = public, Constant = true, Hidden)
+  properties(GetAccess = public, Constant = true, Hidden)
     CensoringAllowed = false;
     DistributionCode = 'burr';
     ParameterRange = [realmin, realmin, realmin; Inf, Inf, Inf];
     ParameterLogCI = [false, true, false];
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected)
+  properties(GetAccess = public, SetAccess = protected)
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} ParameterValues
     ##
@@ -238,11 +238,11 @@ classdef BurrDistribution
     InputData
   endproperties
 
-  properties (GetAccess = public, SetAccess = protected, Hidden)
+  properties(GetAccess = public, SetAccess = protected, Hidden)
     ParameterCI
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     function this = BurrDistribution (alpha, c, k)
       if (nargin == 0)
@@ -259,7 +259,7 @@ classdef BurrDistribution
     endfunction
 
     function display (this)
-      fprintf ("%s =\n", inputname(1));
+      fprintf ("%s =\n", inputname (1));
       __disp__ (this, 'Burr distribution');
     endfunction
 
@@ -305,7 +305,7 @@ classdef BurrDistribution
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {BurrDistribution} {@var{p} =} cdf (@var{pd}, @var{x})
@@ -748,7 +748,7 @@ classdef BurrDistribution
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function pd = fit (x, varargin)
       ## Check input arguments
@@ -860,47 +860,47 @@ endfunction
 ## Test input validation
 ## 'BurrDistribution' constructor
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution(0, 1, 1)
+%! BurrDistribution (0, 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution(-1, 1, 1)
+%! BurrDistribution (-1, 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution(Inf, 1, 1)
+%! BurrDistribution (Inf, 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution(i, 1, 1)
+%! BurrDistribution (i, 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution('a', 1, 1)
+%! BurrDistribution ('a', 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution([1, 2], 1, 1)
+%! BurrDistribution ([1, 2], 1, 1)
 %!error <BurrDistribution: ALPHA must be a positive real scalar.> ...
-%! BurrDistribution(NaN, 1, 1)
+%! BurrDistribution (NaN, 1, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, 0, 1)
+%! BurrDistribution (1, 0, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, -1, 1)
+%! BurrDistribution (1, -1, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, Inf, 1)
+%! BurrDistribution (1, Inf, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, i, 1)
+%! BurrDistribution (1, i, 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, 'a', 1)
+%! BurrDistribution (1, 'a', 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, [1, 2], 1)
+%! BurrDistribution (1, [1, 2], 1)
 %!error <BurrDistribution: C must be a positive real scalar.> ...
-%! BurrDistribution(1, NaN, 1)
+%! BurrDistribution (1, NaN, 1)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, 0)
+%! BurrDistribution (1, 1, 0)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, -1)
+%! BurrDistribution (1, 1, -1)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, Inf)
+%! BurrDistribution (1, 1, Inf)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, i)
+%! BurrDistribution (1, 1, i)
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, 'a')
+%! BurrDistribution (1, 1, 'a')
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, [1, 2])
+%! BurrDistribution (1, 1, [1, 2])
 %!error <BurrDistribution: K must be a positive real scalar.> ...
-%! BurrDistribution(1, 1, NaN)
+%! BurrDistribution (1, 1, NaN)
 
 ## 'cdf' method
 %!error <cdf: invalid argument for upper tail.> ...
@@ -1007,8 +1007,8 @@ endfunction
 
 ## Catch errors when using array of probability objects with available methods
 %!shared pd
-%! pd = BurrDistribution(1, 1, 1);
-%! pd(2) = BurrDistribution(1, 3, 1);
+%! pd = BurrDistribution (1, 1, 1);
+%! pd(2) = BurrDistribution (1, 3, 1);
 %!error <cdf: requires a scalar probability distribution.> cdf (pd, 1)
 %!error <icdf: requires a scalar probability distribution.> icdf (pd, 0.5)
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)

@@ -105,7 +105,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
     error ("anova2: invalid number of input arguments.");
   endif
   ## Check for NaN values in X
-  if (any (isnan( x(:))))
+  if (any (isnan ( x(:))))
     error ("anova2: NaN values in input are not allowed.  Use anovan instead.");
   endif
   ## Add defaults
@@ -247,7 +247,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   p_MSR = 1 - fcdf (F_MSR, df_SSR, df_SSE);
   MSC = SSC / df_SSC;           ## Mean Square for Column Factor
   F_MSC = MSC / MS_DENOM;       ## F statistic for Column Factor
-  if (isempty(epsilonhat))
+  if (isempty (epsilonhat))
     p_MSC = 1 - fcdf (F_MSC, df_SSC, df_DENOM);
   else
     ## Apply correction for sphericity to the p-value of the column factor
@@ -310,19 +310,19 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Print results table on screen if no output argument was requested
   if (nargout == 0 || plotdata)
-    printf("\n                      ANOVA Table\n\n");
-    printf("Source             SS      df        MS       F      Prob>F\n");
-    printf("-----------------------------------------------------------\n");
-    printf("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
+    printf ("\n                      ANOVA Table\n\n");
+    printf ("Source             SS      df        MS       F      Prob>F\n");
+    printf ("-----------------------------------------------------------\n");
+    printf ("Columns      %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
             SSC, df_SSC, MSC, F_MSC, p_MSC);
-    printf("Rows         %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
+    printf ("Rows         %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
             SSR, df_SSR, MSR, F_MSR, p_MSR);
     if (reps > 1)
-      printf("Interaction  %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
+      printf ("Interaction  %10.4f %5.0f %10.4f %8.2f %9.4f\n", ...
               SSI, df_SSI, MSI, F_MSI, p_MSI);
     endif
-    printf("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
-    printf("Total        %10.4f %5.0f\n\n", SST, df_tot);
+    printf ("Error        %10.4f %5.0f %10.4f\n", SSE, df_SSE, MSE);
+    printf ("Total        %10.4f %5.0f\n\n", SST, df_tot);
     if (! isempty (epsilonhat))
       printf (strcat ("Note: Greenhouse-Geisser's correction was applied to the\n", ...
                       "degrees of freedom for the Column factor: F(%.2f,%.2f)\n\n"), ...
@@ -343,7 +343,7 @@ endfunction
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %!
-%! [p, atab, stats] = anova2(popcorn, 3, 'on');
+%! [p, atab, stats] = anova2 (popcorn, 3, 'on');
 
 %!demo
 %!

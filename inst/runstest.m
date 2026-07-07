@@ -95,7 +95,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
         warning ("runstest: %d elements equal to V were omitted.", sum (rm));
       endif
       x(rm) = [];
-      N = numel(x);
+      N = numel (x);
       UD = false;
     elseif (strcmpi (v, 'ud'))
       x = diff (x);
@@ -104,7 +104,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
         warning ("runstest: %d repeated elements were omitted.", sum (rm));
       endif
       x(rm) = [];
-      N = numel(x) + 1;
+      N = numel (x) + 1;
       UD = true;
     else
       error ("runstest: V must be either a scalar number or 'ud' char string.");
@@ -119,7 +119,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
                sum (rm));
     endif
     x(rm) = [];
-    N = numel(x);
+    N = numel (x);
     UD = false;
   endif
 
@@ -264,7 +264,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
 
   ## Compute tail probability
   if (strcmpi (tail, 'both'))
-    pval = min([1, 2*(p_ex + min ([p_lo, p_hi]))]);
+    pval = min ([1, 2*(p_ex + min ([p_lo, p_hi]))]);
   elseif (strcmpi (tail, 'left'))
     pval = p_ex + p_lo;
   else
@@ -284,7 +284,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
 endfunction
 
 ## Compute the log of the binomial coefficient
-function logBC = logBinoCoeff(N,n)
+function logBC = logBinoCoeff (N,n)
   logBC = gammaln (N + 1) - gammaln (n + 1) - gammaln (N - n + 1);
 endfunction
 

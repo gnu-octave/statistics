@@ -197,7 +197,7 @@ function [y, dy, d2y] = dgammainc (x, k)
   endif
 
   ## For x < k+1
-  is_lo = find(x < k + 1 & x != 0);
+  is_lo = find (x < k + 1 & x != 0);
   if (! isempty (is_lo))
     x_lo = x(is_lo);
     k_lo = k(is_lo);
@@ -235,7 +235,7 @@ function [y, dy, d2y] = dgammainc (x, k)
   endif
 
   ## For x >= k+1
-  is_hi = find(x >= k+1);
+  is_hi = find (x >= k+1);
   if (! isempty (is_hi))
     x_hi = x(is_hi);
     k_hi = k(is_hi);

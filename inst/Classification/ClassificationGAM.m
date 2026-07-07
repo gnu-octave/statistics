@@ -40,7 +40,7 @@ classdef ClassificationGAM
   ## @seealso{fitcgam}
   ## @end deftp
 
-  properties (Access = public)
+  properties(Access = public)
     ## -*- texinfo -*-
     ## @deftp {ClassificationGAM} {property} X
     ##
@@ -336,11 +336,11 @@ classdef ClassificationGAM
     IntMatrix = [];
   endproperties
 
-  properties (Access = private, Hidden)
+  properties(Access = private, Hidden)
     STname = 'none';
   endproperties
 
-  methods (Hidden)
+  methods(Hidden)
 
     ## Custom display
     function display (this)
@@ -452,7 +452,7 @@ classdef ClassificationGAM
 
   endmethods
 
-  methods (Access = public)
+  methods(Access = public)
 
     ## -*- texinfo -*-
     ## @deftypefn  {statistics} {@var{obj} =} ClassificationGAM (@var{X}, @var{Y})
@@ -752,7 +752,7 @@ classdef ClassificationGAM
                            " name in optional pair arguments."));
 
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Generate default predictors and response variable names (if necessary)
@@ -783,8 +783,8 @@ classdef ClassificationGAM
 
       ## Remove nans from X and Y
       RowsUsed  = ! logical (sum (isnan ([X, gY]), 2));
-      Y         = Y (RowsUsed);
-      X         = X (RowsUsed, :);
+      Y         = Y(RowsUsed);
+      X         = X(RowsUsed, :);
 
       ## Renew groups in Y
       [gY, gnY, glY] = grp2idx (Y);
@@ -946,7 +946,7 @@ classdef ClassificationGAM
 
       ## Clean XC data
       notnansf  = ! logical (sum (isnan (XC), 2));
-      XC        = XC (notnansf, :);
+      XC        = XC(notnansf, :);
 
       ## Default values for Name-Value Pairs
       incInt = ! isempty (this.IntMatrix);
@@ -973,7 +973,7 @@ classdef ClassificationGAM
             error (strcat ("ClassificationGAM.predict: invalid NAME in", ...
                            " optional pairs of arguments."));
         endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Choose whether interactions must be included
@@ -1135,7 +1135,7 @@ classdef ClassificationGAM
             error (strcat ("ClassificationGAM.crossval: invalid",...
                            " parameter name in optional paired arguments."));
           endswitch
-        varargin (1:2) = [];
+        varargin(1:2) = [];
       endwhile
 
       ## Determine the cross-validation method to use
@@ -1218,7 +1218,7 @@ classdef ClassificationGAM
 
   endmethods
 
-  methods (Static, Hidden)
+  methods(Static, Hidden)
 
     function mdl = load_model (filename, data)
       ## Create a ClassificationGAM object
@@ -1240,7 +1240,7 @@ classdef ClassificationGAM
   endmethods
 
   ## Helper functions
-  methods (Access = private)
+  methods(Access = private)
 
     ## Determine interactions from Interactions optional parameter
     function intMat = parseInteractions (this)
@@ -1262,14 +1262,14 @@ classdef ClassificationGAM
                          " combinations of predictors in X."));
         endif
         ## Get all combinations except all zeros
-        allMat = flip (fullfact(p)([2:end],:), 2);
+        allMat = flip (fullfact (p)([2:end],:), 2);
         ## Only keep interaction terms
         iterms = find (sum (allMat, 2) != 1);
         intMat = allMat(iterms);
       elseif (strcmpi (this.Interactions, 'all'))
         p = this.NumPredictors;
         ## Calculate all p*(p-1)/2 interaction terms
-        allMat = flip (fullfact(p)([2:end],:), 2);
+        allMat = flip (fullfact (p)([2:end],:), 2);
         ## Only keep interaction terms
         iterms = find (sum (allMat, 2) != 1);
         intMat = allMat(iterms);
@@ -1399,7 +1399,7 @@ function scores = predict_val (params, XC, intercept)
 
   ## Add the remaining terms
   for j = 1:ndims_X
-    ypred = ypred + ppval (params(j), XC (:,j));
+    ypred = ypred + ppval (params(j), XC(:,j));
   endfor
 
   ## Apply the sigmoid function to get probabilities
@@ -1503,18 +1503,18 @@ endfunction
 
 ## Test input validation for Prior
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
-%! ClassificationGAM (ones(4,2), ones(4,1), 'Prior', [1])
+%! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1])
 %!error<ClassificationGAM: 'Prior' must be a 2-element vector.> ...
-%! ClassificationGAM (ones(4,2), ones(4,1), 'Prior', [1, 2, 3])
+%! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', [1, 2, 3])
 %!error<ClassificationGAM: 'Prior' must be a numeric vector or a string.> ...
-%! ClassificationGAM (ones(4,2), ones(4,1), 'Prior', {1, 2})
+%! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', {1, 2})
 %!error<ClassificationGAM: 'Prior' must be> ...
-%! ClassificationGAM (ones(4,2), ones(4,1), 'Prior', 'invalid')
+%! ClassificationGAM (ones (4,2), ones (4,1), 'Prior', 'invalid')
 
 ## Test input validation for constructor
 %!error<ClassificationGAM: too few input arguments.> ClassificationGAM ()
 %!error<ClassificationGAM: too few input arguments.> ...
-%! ClassificationGAM (ones(4, 1))
+%! ClassificationGAM (ones (4, 1))
 %!error<ClassificationGAM: number of rows in X and Y must be equal.> ...
 %! ClassificationGAM (ones (4,2), ones (1,4))
 %!error<ClassificationGAM: 'PredictorNames' must be supplied as a cellstring array.> ...
@@ -1528,17 +1528,17 @@ endfunction
 %!error<ClassificationGAM: 'ResponseName' must be a character vector.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), 'ResponseName', 1)
 %!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), 'ClassNames', @(x)x)
+%! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', @(x)x)
 %!error<ClassificationGAM: 'ClassNames' must be a cell array of character vectors, a logical vector, a numeric vector, or a character array.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), 'ClassNames', {1})
+%! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', {1})
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationGAM (ones(10,2), ones (10,1), 'ClassNames', [1, 2])
+%! ClassificationGAM (ones (10,2), ones (10,1), 'ClassNames', [1, 2])
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationGAM (ones(5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
+%! ClassificationGAM (ones (5,2), ['a';'b';'a';'a';'b'], 'ClassNames', ['a';'c'])
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationGAM (ones(5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
+%! ClassificationGAM (ones (5,2), {'a';'b';'a';'a';'b'}, 'ClassNames', {'a','c'})
 %!error<ClassificationGAM: not all 'ClassNames' are present in Y.> ...
-%! ClassificationGAM (ones(10,2), logical (ones (10,1)), 'ClassNames', [true, false])
+%! ClassificationGAM (ones (10,2), logical (ones (10,1)), 'ClassNames', [true, false])
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...
 %! ClassificationGAM (ones (5,2), ones (5,1), 'Cost', [1, 2])
 %!error<ClassificationGAM: 'Cost' must be a numeric square matrix.> ...

@@ -63,7 +63,7 @@ function [m, v] = plstat (x, Fx)
   x_m = (x(1:end-1) + x(2:end)) / 2;
   dFx = diff (Fx);
   m = dot (dFx, x_m);
-  x_v = diff(x) .^ 2 / 12;
+  x_v = diff (x) .^ 2 / 12;
   v = dot (dFx, x_v + (x_m - m) .^ 2);
 
 endfunction

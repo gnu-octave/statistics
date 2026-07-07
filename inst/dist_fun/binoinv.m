@@ -119,7 +119,7 @@ endfunction
 ## Calculates CDF by summing PDF, which is faster than calls to binocdf.
 function [m, k] = vector_binoinv (p, n, ps)
 
-  k = 1:length(p);
+  k = 1:length (p);
   m = zeros (size (p));
   prev_limit = 0;
   limit = 10;
@@ -164,7 +164,7 @@ function m = bin_search_binoinv (p, n, ps)
   k = find (lower != limit/2);       # elements for which above loop finished
   for i = 1:ceil (log2 (max (lower)))
     mid = (upper + lower)/2;
-    cdf = binocdf (floor(mid(:)), n, ps);
+    cdf = binocdf (floor (mid(:)), n, ps);
     r = (p <= cdf);
     upper(r)  = mid(r);
     lower(! r) = mid(! r);

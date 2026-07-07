@@ -36,7 +36,7 @@ function [f, st] = parseScoreTransform (ScoreTransform, classname)
   ## Handle ScoreTransform here
   if (is_function_handle (ScoreTransform))
     m = eye (5);
-    if (! isequal (size (m), size (ScoreTransform (m))))
+    if (! isequal (size (m), size (ScoreTransform(m))))
       error (strcat ("%s: function handle for 'ScoreTransform' must", ...
                      " return the same size as its input."), classname);
     endif

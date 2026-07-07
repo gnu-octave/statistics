@@ -145,11 +145,11 @@ endfunction
 function p = tcdf_integer_df (x, df)
 
   if (df == 1)
-    p = 0.5 + atan(x)/pi;
+    p = 0.5 + atan (x)/pi;
   elseif (df == 2)
-    p = 0.5 + x ./ (2 * sqrt(2 + x .^ 2));
+    p = 0.5 + x ./ (2 * sqrt (2 + x .^ 2));
   else
-    xs = x ./ sqrt(df);
+    xs = x ./ sqrt (df);
     xxf = 1 ./ (1 + xs .^ 2);
     u = s = 1;
     if mod (df, 2)  ## odd DF
@@ -158,14 +158,14 @@ function p = tcdf_integer_df (x, df)
         u .*= (1 - 1/(2*i - 1)) .* xxf;
         s += u;
       endfor
-      p = 0.5 + (xs .* xxf .* s + atan(xs)) / pi;
+      p = 0.5 + (xs .* xxf .* s + atan (xs)) / pi;
     else            ## even DF
       m = df / 2;
       for i = 1:(m - 1)
         u .*= (1 - 1/(2*i)) .* xxf;
         s += u;
       endfor
-      p = 0.5 + (xs .* sqrt(xxf) .* s) / 2;
+      p = 0.5 + (xs .* sqrt (xxf) .* s) / 2;
     endif
   endif
 endfunction

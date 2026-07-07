@@ -73,7 +73,7 @@ function p = bvtcdf (x, rho, df, TolFun)
 
   elseif (rho == 1)
     p = tcdf (min (x, [], 2), df);
-    p(any (isnan( x), 2)) = NaN;
+    p(any (isnan ( x), 2)) = NaN;
 
   else
     p = tcdf (x(:,1), df) - tcdf (-x(:,2), df);
@@ -201,10 +201,10 @@ endfunction
 %! x = [1, 2];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
-%! assert (bvtcdf(x, rho(2), df), mvtcdf(x, rho, df), 1e-14);
+%! assert (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
 %!test
 %! x = [3, 2;2, 4;1, 5];
 %! rho = [1, 0.5; 0.5, 1];
 %! df = 4;
-%! assert (bvtcdf(x, rho(2), df), mvtcdf(x, rho, df), 1e-14);
+%! assert (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
 

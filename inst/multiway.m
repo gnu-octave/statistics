@@ -196,11 +196,11 @@ function [groupindex, partition, groupsizes] = completeKK (numbers, num_parts)
     for jj = 1:num_parts
       j = perm (jj);
       new_sums = current_sums;
-      new_sums (j) += sorted_numbers (k);
+      new_sums(j) += sorted_numbers(k);
 
       new_max = max (new_sums);
       if (k < n)
-        next_rem_max = sorted_numbers (k + 1);
+        next_rem_max = sorted_numbers(k + 1);
         sub_min = min (new_sums);
         sub_lb_max = max (new_max, sub_min + next_rem_max);
       else
@@ -212,7 +212,7 @@ function [groupindex, partition, groupsizes] = completeKK (numbers, num_parts)
       endif
 
       new_assign = current_assign;
-      new_assign (k) = j;
+      new_assign(k) = j;
       rec (k + 1, new_sums, new_assign);
     endfor
   endfunction

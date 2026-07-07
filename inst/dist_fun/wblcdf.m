@@ -139,9 +139,9 @@ function [varargout] = wblcdf (x, varargin)
   ## Compute z
   z = (x ./ lambda) .^ k;
   if (uflag)
-    p = exp(-z);
+    p = exp (-z);
   else
-    p = -expm1(-z);
+    p = -expm1 (-z);
   endif
 
   ## Compute confidence bounds (if requested)
@@ -153,7 +153,7 @@ function [varargout] = wblcdf (x, varargin)
     log_zvar = (pcov(1,1) .* d_lambda .^ 2 + ...
                2 * pcov(1,2) .* d_lambda .* d_k .* log_z + ...
                pcov(2,2) .* (d_k .* log_z) .^ 2) .* (k .^ 2);
-    if (any(log_zvar < 0))
+    if (any (log_zvar < 0))
       error ("wblcdf: bad covariance matrix.");
     endif
     normz = -norminv (alpha / 2);

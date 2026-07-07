@@ -70,12 +70,12 @@ function y = nakapdf (x, mu, omega)
 
   k = (0 < x) & (x < Inf) & (0.5 <= mu) & (mu < Inf) ...
                           & (0 < omega) & (omega < Inf);
-  if (isscalar (mu) && isscalar(omega))
+  if (isscalar (mu) && isscalar (omega))
     y(k) = exp (log (2) + mu * log (mu) - log (gamma (mu)) - ...
                 mu * log (omega) + (2 * mu-1) * ...
                 log (x(k)) - (mu / omega) * x(k) .^ 2);
   else
-    y(k) = exp (log(2) + mu(k) .* log (mu(k)) - log (gamma (mu(k))) - ...
+    y(k) = exp (log (2) + mu(k) .* log (mu(k)) - log (gamma (mu(k))) - ...
                 mu(k) .* log (omega(k)) + (2 * mu(k) - 1) ...
                 .* log (x(k)) - (mu(k) ./ omega(k)) .* x(k) .^ 2);
   endif
@@ -124,11 +124,11 @@ endfunction
 %!error<nakapdf: function called with too few input arguments.> nakapdf (1)
 %!error<nakapdf: function called with too few input arguments.> nakapdf (1, 2)
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...
-%! nakapdf (ones (3), ones (2), ones(2))
+%! nakapdf (ones (3), ones (2), ones (2))
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...
-%! nakapdf (ones (2), ones (3), ones(2))
+%! nakapdf (ones (2), ones (3), ones (2))
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...
-%! nakapdf (ones (2), ones (2), ones(3))
+%! nakapdf (ones (2), ones (2), ones (3))
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (i, 4, 3)
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (1, i, 3)
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (1, 4, i)

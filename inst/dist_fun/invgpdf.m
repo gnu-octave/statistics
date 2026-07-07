@@ -43,7 +43,7 @@ function y = invgpdf (x, mu, lambda)
   endif
 
   ## Check for common size of X, MU, and LAMBDA
-  if (! isscalar (x) || ! isscalar (mu) || ! isscalar(lambda))
+  if (! isscalar (x) || ! isscalar (mu) || ! isscalar (lambda))
     [retval, x, mu, lambda] = common_size (x, mu, lambda);
     if (retval > 0)
       error ("invgpdf: X, MU, and LAMBDA must be of common size or scalars.");

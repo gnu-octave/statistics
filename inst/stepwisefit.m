@@ -231,7 +231,7 @@ endif
   endif
 
   if (isempty (Keep))
-    Keep = false(1, p);
+    Keep = false (1, p);
   endif
 
   ## Default PRemove if unset
