@@ -5750,7 +5750,7 @@ endfunction
 %! assert (m.Formula.HasIntercept, true);
 %! assert (m.Formula.LinearPredictor, '1 + x1 + x2');
 %! assert (height (m.Diagnostics), 13);
-%! assert (sum (m.Diagnostics.Leverage), 3);
+%! assert (sum (m.Diagnostics.Leverage), 3, 1e-10);
 %! assert (m.Residuals.Raw, yh - m.Fitted, 1e-10);
 
 %!test
