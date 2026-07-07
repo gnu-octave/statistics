@@ -898,7 +898,6 @@ classdef LinearModel
     ## @qcode{"RobustOpts"} is anything other than @qcode{"off"}, the returned
     ## model is a robust fit rather than an ordinary least squares fit.
     ##
-    ## @seealso{fitlm, addTerms, removeTerms}
     ## @end deftypefn
     function this = LinearModel (varargin)
       ##   LinearModel (X, y, modelspec, NV...)
@@ -1441,7 +1440,6 @@ classdef LinearModel
     ## pointwise ones.  Default is @code{false}.
     ## @end multitable
     ##
-    ## @seealso{fitlm, feval, random, coefCI, LinearModel}
     ## @end deftypefn
     function [ypred, yci] = predict (mdl, Xnew, varargin)
 
@@ -1568,7 +1566,6 @@ classdef LinearModel
     ## @code{feval}.  @code{predict} also provides confidence intervals on the
     ## mean response.
     ##
-    ## @seealso{fitlm, predict, feval, LinearModel}
     ## @end deftypefn
     function ysim = random (mdl, Xnew, varargin)
       if (nargin < 2)
@@ -1615,7 +1612,6 @@ classdef LinearModel
     ## routines that accept a function handle, such as @code{fminsearch} or
     ## @code{integral}.
     ##
-    ## @seealso{fitlm, predict, random, LinearModel}
     ## @end deftypefn
     function ypred = feval (mdl, varargin)
       p_raw   = mdl.NumPredictors;
@@ -1717,7 +1713,6 @@ classdef LinearModel
     ## In rank-deficient models, aliased coefficients have @math{\mathrm{SE} = 0}
     ## and their row in @var{ci} is @code{[0, 0]}.
     ##
-    ## @seealso{fitlm, coefTest, predict, LinearModel}
     ## @end deftypefn
     function ci = coefCI (mdl, alpha)
       if (nargin > 2)
@@ -1793,7 +1788,6 @@ classdef LinearModel
     ## @var{H} is rank-deficient but contains no @code{NaN}, both @var{p} and
     ## @var{F} are returned as @code{NaN} without an error.
     ##
-    ## @seealso{fitlm, coefCI, predict, LinearModel}
     ## @end deftypefn
     function [p, F, r] = coefTest (mdl, varargin)
       if (nargout > 3)
@@ -1906,7 +1900,6 @@ classdef LinearModel
     ## The second output @var{DW} is the value of the Durbin-Watson statistic
     ## itself; it does not depend on @var{method} or @var{tail}.
     ##
-    ## @seealso{fitlm, coefTest, LinearModel}
     ## @end deftypefn
     function [p, DW] = dwtest (mdl, varargin)
       if (nargout > 2)
@@ -2012,7 +2005,6 @@ classdef LinearModel
     ## adds the full group of indicator variables for that predictor in one
     ## step rather than adding individual indicator columns.
     ##
-    ## @seealso{fitlm, removeTerms, LinearModel}
     ## @end deftypefn
     function NewMdl = addTerms (mdl, terms)
       if (nargin < 2)
@@ -2196,7 +2188,6 @@ classdef LinearModel
     ## predictor, @code{removeTerms} removes the full group of indicator
     ## variables for that predictor in one step.
     ##
-    ## @seealso{fitlm, addTerms, LinearModel}
     ## @end deftypefn
     function NewMdl = removeTerms (mdl, terms)
       if (nargin < 2)
@@ -2532,7 +2523,6 @@ classdef LinearModel
     ## specified as a scalar in @math{[0, 1]}.
     ## @end multitable
     ##
-    ## @seealso{fitlm, plotDiagnostics, plotAdded, LinearModel}
     ## @end deftypefn
     function h = plotResiduals (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
@@ -2837,7 +2827,6 @@ classdef LinearModel
     ## Width of the marker edge in points.  Default: @code{0.5}.
     ## @end multitable
     ##
-    ## @seealso{fitlm, plotResiduals, plotAdded, LinearModel}
     ## @end deftypefn
     function h = plotDiagnostics (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
@@ -3021,7 +3010,6 @@ classdef LinearModel
     ## @qcode{"varname: min to max"}, showing the predictor name and the
     ## minimum and maximum observed values used to compute the effect.
     ##
-    ## @seealso{fitlm, plotAdjustedResponse, plotInteraction, plotSlice, LinearModel}
     ## @end deftypefn
     function h = plotEffects (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
@@ -3219,7 +3207,6 @@ classdef LinearModel
     ## response data points and @code{h(2)} corresponds to the adjusted
     ## response function.  Name-Value arguments only affect @code{h(1)}.
     ##
-    ## @seealso{fitlm, plotEffects, plotResiduals, LinearModel}
     ## @end deftypefn
     function h = plotAdjustedResponse (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
@@ -3447,7 +3434,6 @@ classdef LinearModel
     ## of the fitted line, respectively.  Name-Value arguments only affect
     ## @code{h(1)}.
     ##
-    ## @seealso{fitlm, plotAdjustedResponse, plotEffects, plotInteraction, plotSlice, LinearModel}
     ## @end deftypefn
     function h = plotAdded (this, varargin)
       [ax, mdl, args] = lm_plot_axes (this, varargin);
