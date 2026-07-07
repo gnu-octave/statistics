@@ -401,7 +401,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         ## Create character array of group names corresponding to each row of m
         GNAMES = cellstr (num2str ([1:Ng]'));
 
-      case {"anovan","fitlm"}
+      case "anovan"
 
         ## Our calculations treat all effects as fixed
         if (ismember (STATS.random, DIM))
