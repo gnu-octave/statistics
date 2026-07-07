@@ -721,8 +721,8 @@ endclassdef
 %!     neighbors = X(idx(i,:), :);
 %!     for j = 1:K
 %!         plot([query(1), neighbors(j,1)], [query(2), neighbors(j,2)], 'k-');
-%!     end
-%! end
+%!     endfor
+%! endfor
 %! hold off;
 %! title('K Nearest Neighbors with ExhaustiveSearcher');
 %! xlabel('X1');
@@ -752,8 +752,8 @@ endclassdef
 %!     if ~isempty(idx{i})
 %!         in_radius = X(idx{i}, :);
 %!         scatter(in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
-%!     end
-%! end
+%!     endif
+%! endfor
 %! hold off;
 %! title('Points within Radius with ExhaustiveSearcher');
 %! xlabel('X1');

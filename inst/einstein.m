@@ -62,7 +62,7 @@ function [varargout] = einstein (a, b, varargin)
   if (! (isscalar (a) && isscalar (b) && isnumeric (a) && isnumeric (b)...
       && isreal (a) && isreal (b)))
     error ("einstein: A and B must real scalars.");
-  end
+  endif
   if (a <= 0 || a >= 1 || b <= 0 || b >= 1)
     error ("einstein: A and B must be within the open interval (0,1).");
   endif

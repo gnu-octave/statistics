@@ -181,7 +181,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
      d = d(1);
   else
      d = max(dims) + 1;
-  end
+  endif
 
   ## Create extra outputs as necessary
   if (nargout > 1)

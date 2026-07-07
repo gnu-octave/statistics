@@ -157,7 +157,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
     ## Fix dimension space (if necessary)
     if (Yd < Xd)
         Y_0 = [Y_0 zeros(Xp, Xd-Yd)];
-    end
+    endif
 
     ## Find optimal rotation matrix of Y
     A = X_0' * Y_0;
@@ -197,7 +197,7 @@ function [d, Z, transform] = procrustes (X, Y, varargin)
       endif
       c = Xmu - b * Ymu * T;
       transform = struct ("T", T, "b", b, "c", repmat (c, Xp, 1));
-    end
+    endif
 
   ## Special cases
   elseif constX   # Identical points in X

@@ -777,7 +777,7 @@ function [s_o, hs_o] = boxplot (data, varargin)
   else
     hs.outliers2 = [];
     hs.out_tags2 = [];
-  end
+  endif
 
   ## Redraw the median lines to avoid colour overlapping in case of 'filled'
   ## BoxStyle

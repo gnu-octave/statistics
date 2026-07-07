@@ -91,7 +91,7 @@ function x = gpinv (p, k, sigma, theta)
     elseif (k < 0)
       x(kx) = (1 - p(kx)).^(-k) - 1;
       x(kx) = (sigma / k) * x(kx)  + theta;
-    end
+    endif
   else
     j = kx & (k == 0);
     if (any (j))

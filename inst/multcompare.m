@@ -747,7 +747,7 @@ function [padj, critval, dfe] = scheffe (p, t, Ng, dfe, R, ALPHA)
     tmp = chi2inv (1 - ALPHA, Ng - 1) / (Ng - 1);
   else
     tmp = finv (1 - ALPHA, Ng - 1, dfe);
-  end
+  endif
   critval = sqrt ((Ng - 1) * tmp);
 
 endfunction

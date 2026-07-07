@@ -254,7 +254,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   if (nargout == 0)
     if (isempty (ax))
       ax = newplot();
-    end
+    endif
     h = stairs(ax, x , [F, Flo, Fup]);
     xlabel (ax, "x");
     ylabel (ax, fdisp);

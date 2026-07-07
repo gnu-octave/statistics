@@ -52,7 +52,7 @@ function p = chi2cdf (x, df, uflag)
   if (nargin > 2)
     if (! strcmpi (uflag, "upper"))
       error ("chi2cdf: invalid argument for upper tail.");
-    end
+    endif
   else
     uflag = [];
   endif

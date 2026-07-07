@@ -494,7 +494,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     else
       stats.resid(! xymissing)  = y - mu;
       stats.residp(! xymissing) = (y - mu) ./ (varFun (mu) + (y == mu));
-    end
+    endif
     stats.residd(! xymissing) = sign (y - mu) .* sqrt (max (0, devn));
     switch (tolower (distribution))
       case "normal"

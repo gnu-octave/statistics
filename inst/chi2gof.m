@@ -312,7 +312,7 @@ function [h, p, stats] = chi2gof (x, varargin)
   if (any (Expected < emin))
     [Expected, Observed, binedges] = poolbins (Expected, Observed, binedges, emin);
     nbins = length (Expected);
-  end
+  endif
   ## Compute test statistic
   cstat = sum(((Observed - Expected) .^ 2) ./ Expected);
   ## Calculate degrees of freedom
@@ -398,12 +398,12 @@ function [Observed, binedges] = calculatebins (x, frequency, binspec, specval)
   else
     [ignore, binnum] = histc (x, binedges);
     binnum(binnum == nbins + 1) = nbins;
-  end
+  endif
   ## Remove empty bins
   if (any (binnum == 0))
     frequency(binnum == 0) = [];
     binnum(binnum == 0) = [];
-  end
+  endif
   ## Compute Observed vector
   binnum = binnum(:);
   Observed = accumarray ([ones(size(binnum)), binnum], frequency, [1, nbins]);

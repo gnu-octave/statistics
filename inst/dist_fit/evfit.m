@@ -186,7 +186,7 @@ function [paramhat, paramci] = evfit (x, alpha, censor, freq, options)
       paramci = [-Inf, 0; Inf, Inf];
     else
       paramci = [paramhat; paramhat];
-    end
+    endif
     return
   else
     ## Data can fit, so preprocess them to make likelihood eqn more stable.

@@ -359,7 +359,7 @@ function p = tvncdf (x, rho, tol)
     x = x(:,[2 1 3]);
   else % imax == 3
     rho_21 = rho(1); rho_31 = rho(2); rho_32 = rho(3);
-  end
+  endif
 
   phi = 0.5 * erfc (- x(:,1) / sqrt (2));
   p1 = phi .* bvncdf (x(:,2:3), [], rho_32);

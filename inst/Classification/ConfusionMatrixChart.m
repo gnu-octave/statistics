@@ -697,13 +697,13 @@ classdef ConfusionMatrixChart < handle
           if (current_node > cm_size)
             node = current_node - cm_size;
             nodes_to_visit = [tree(node,[2 1]) nodes_to_visit];
-          end
+          endif
 
           if (current_node <= cm_size)
             nodecount++;
             Idx(nodecount) = current_node;
-          end
-        end
+          endif
+        endwhile
         ##
         scl = cl(Idx);
       else

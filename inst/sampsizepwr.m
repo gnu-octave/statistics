@@ -274,7 +274,7 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
   endif
   if (err > 0)
     error ("sampsizepwr: input arguments size mismatch.");
-  end
+  endif
 
   ## Check for valid options when computing N
   if (isempty (n))
@@ -419,7 +419,7 @@ endfunction
 function mu1 = findP1z (mu0, sig, desiredpower, N, alpha, tail)
   if (strcmp (tail, 'both'))
     alpha = alpha ./ 2;
-  end
+  endif
   sig = sig ./ sqrt (N);
   ## Get quantiles of the normal or t distribution
   if (strcmp (tail, 'left'))
@@ -614,11 +614,11 @@ function p1 = findP1p (p0, desiredpower, N, alpha, tail)
   t = p1 <= 0;
   if (any (t(:)))
     p1(t) = p0 / 2;
-  end
+  endif
   t = p1 >= 1;
   if (any (t(:)))
     p1(t) = 1 - p0 / 2;
-  end
+  endif
   ## Refine using fzero
   for j=1:numel(p1)
     if (! isnan (p1(j)));

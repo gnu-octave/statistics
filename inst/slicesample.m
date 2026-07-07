@@ -185,7 +185,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
           break
         endif
         lb -= width;
-      end
+      endfor
       if (k == maxit)
         warning ("slicesample: Step out exceeded maximum iterations");
       endif
@@ -195,11 +195,11 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
           break
         endif
         ub += width;
-      end
+      endfor
       if (k == maxit)
         warning ("slicesample: Step out exceeded maximum iterations");
       endif
-    end
+    endif
     xp = (ub - lb) .* prand(i, :) + lb;
     for k=1:maxit
       neval++;
@@ -212,7 +212,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
       lb(lc) = xp(lc);
       ub(uc) = xp(uc);
       xp = (ub - lb) .* rand (1, dim) + lb;
-    end
+    endfor
     if (k == maxit)
       warning ("slicesample: Step in exceeded maximum iterations");
     endif
@@ -221,9 +221,9 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
       indx = (i - burnin) / thin;
       if rem (indx, 1) == 0
         smpl(indx, :) = xc;
-      end
-    end
-  end
+      endif
+    endif
+  endfor
   neval = neval / (nsamples * thin + burnin);
 endfunction
 

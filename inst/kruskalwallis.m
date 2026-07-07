@@ -165,7 +165,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   ChiSq = (12 * SSM) / (lx * (lx + 1));
   if (tieadj > 0)
     ChiSq = ChiSq / (1 - 2 * tieadj / (lx ^ 3 - lx));
-  end
+  endif
   p = 1 - chi2cdf (ChiSq, dfm);
 
   ## Create results table (if requested)
@@ -181,7 +181,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
         stats.gnames = group_names;
     else
         stats.gnames = strjust (num2str ((1:length (xm))'), 'left');
-    end
+    endif
     stats.n = xs;
     stats.source = 'kruskalwallis';
     stats.meanranks = xm;

@@ -134,7 +134,7 @@ function [nlogL, avar] = nbinlike (params, x, freq)
         avar = [NaN, NaN; NaN, NaN];
     else
         avar = inv (nH);
-    end
+    endif
   endif
 
 endfunction

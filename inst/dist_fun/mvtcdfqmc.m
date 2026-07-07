@@ -203,7 +203,7 @@ function TBar = F_qrsvn (A, B, C, df, w)
     rho = 1;
   else
     rho = chi_inv (w(:,m), df) ./ sqrt (df);
-  end
+  endif
   rA = norm_cdf (rho .* A(1));       # A is already scaled by diag(C)
   rB = norm_cdf (rho .* B(1)) - rA;  # B is already scaled by diag(C)
   T = rB;
@@ -215,7 +215,7 @@ function TBar = F_qrsvn (A, B, C, df, w)
     rA = norm_cdf (rho .* A(i) - Ysum);       # A is already scaled by diag(C)
     rB = norm_cdf (rho .* B(i) - Ysum) - rA;  # B is already scaled by diag(C)
     T = T .* rB;
-  end
+  endfor
   TBar = sum (T, 1) ./ length (T);
 endfunction
 

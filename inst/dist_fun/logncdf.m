@@ -148,7 +148,7 @@ function [varargout] = logncdf (x, varargin)
     zvar = (pcov(1,1) + 2 * pcov(1,2) * z + pcov(2,2) * z .^ 2) ./ (sigma .^ 2);
     if (any (zvar(:) < 0))
       error ("logncdf: bad covariance matrix.");
-    end
+    endif
     normz = -norminv (alpha / 2);
     halfwidth = normz * sqrt (zvar);
     zlo = z - halfwidth;

@@ -907,7 +907,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             gid(:,j) = cell2mat ([GROUP(:,j)]);
           else
             gid(:,j) = GROUP(:,j);
-          end
+          endif
 
         else
 
@@ -943,7 +943,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             X(1+j) = cell2mat (GROUP(:,j));
           else
             X(1+j) = GROUP(:,j);
-          end
+          endif
           if (strcmpi (CONTRASTS{j}, 'treatment'))
             ## Don't center continuous variables if contrasts are 'treatment'
             center_continuous(j) = false;

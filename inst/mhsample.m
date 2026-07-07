@@ -233,7 +233,7 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
   endif
   if (length (sizestart) == 2)
     sizestart = [sizestart 0];
-  end
+  endif
   smpl = zeros (nsamples, sizestart(2), nchain);
 
   if (all (sizestart([1 3]) == [1 nchain]))
@@ -265,7 +265,7 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
     accept(ac)++;
     if (canacc)
       smpl(i, :, :) = permute (cx, [3, 2, 1]);
-    end
+    endif
     if (k > K && canacc)
       i++;
     endif

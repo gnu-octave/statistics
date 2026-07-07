@@ -131,7 +131,7 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
       n_sd = 2;
     otherwise
       error ("ttest2: Invalid value for vartype argument.");
-  end
+  endswitch
   stats.tstat = x_bar ./ x_bar_std;
 
   ## Based on the "tail" argument determine the P-value, the critical values,

@@ -55,7 +55,7 @@ function h = manovacluster (stats, method)
     endif
   else
     method = "single";
-  end
+  endif
   ## Get stats fields and create dendrogram
   dist = stats.gmdist;
   group_names = stats.gnames;

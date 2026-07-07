@@ -77,7 +77,7 @@ function p = raylcdf (x, sigma, uflag)
   k0 = sigma > 0 & x <= 0;
   if (uflag && any (k0(:)))
     p(k0) = 1;
-  end
+  endif
 
   ## Calculate Rayleigh CDF for valid parameter and data range
   k = sigma > 0 & x > 0;

@@ -184,7 +184,7 @@ function y = ncx2pdf (x, df, lambda)
     sumK(keep) = sumK(keep) + term(keep);
     keep = keep & term > eps (sumK);
     k = k + 1;
-  end
+  endwhile
   y(td) = 0.5 * exp (lntK + log (sumK));
 
 endfunction

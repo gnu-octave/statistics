@@ -206,7 +206,7 @@ function m = trimmean (x, p, varargin)
         n = 0;
     else
         n = size (x, 1);
-    end
+    endif
     m = trim (x, n, p, flag, sizem);
     m = reshape (m, sizem);
   ## With missing data, each column is computed separately

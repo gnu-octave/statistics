@@ -225,7 +225,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   else                              ## Perfect fit case.
     F = Inf;
     p = 0;
-  end
+  endif
 
   ## Create results table (if requested)
   if (nargout > 1)
@@ -246,7 +246,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
         stats.gnames = group_names;
     else
         stats.gnames = strjust (num2str ((1:length (xm))'), 'left');
-    end
+    endif
     stats.n = xs;
     stats.source = 'anova1';
     stats.vartype = vartype;

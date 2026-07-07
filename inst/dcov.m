@@ -86,7 +86,7 @@ function [dCor, dCov, dVarX, dVarY] = dcov (x, y)
     dCor = dCov / V;
   else
     dCor = 0;
-  end
+  endif
 
 endfunction
 

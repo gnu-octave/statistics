@@ -216,7 +216,7 @@ function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
     g = - (a .* k .* kk_terms - k_terms) .* (f - k - 1) ./ sigma;
   else
     g = (b .^ (-d) - (k + 1) ./ b) ./ sigma;
-  end
+  endif
   G(3) = sum(g(:));
 
 endfunction
@@ -299,7 +299,7 @@ function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
   else
     der = (sigma .^ -2) .* (-2 * a .* b .^ (-d) + d .* k .* a .^ 2 .* ...
           (b .^ (-d-1)) + 2 .* d .* k .* a ./ b - d .* (k .* a ./ b) .^ 2 - 1);
-  end
+  endif
   der(z <= 0) = 0; # no probability mass in this region
   ACOV(2, 2) = sum (der(:));
 
@@ -344,7 +344,7 @@ function ACOV = gevfim (x, k, sigma, mu, k_terms, kk_terms)
   else
     der = (-(b .^ (-d)) + a .* k .* d .* (b .^ (-d-1)) + ...
           (d .* k ./ b) - a .* (k./b).^2 .* d) ./ (sigma .^ 2);
-  end
+  endif
   der(z <= 0) = 0; # no probability mass in this region
   ACOV(2, 3) = ACOV(3, 2) = sum (der(:));
 

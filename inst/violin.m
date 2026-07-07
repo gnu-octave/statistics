@@ -145,7 +145,7 @@ function h = violin (ax, varargin)
     else
       rethrow (lasterror())
     endif
-  end
+  end_try_catch
 
   ## Build violins
   [px py mx] = cellfun (@(y,n,s,r)build_polygon(y, n, s, r), ...

@@ -142,7 +142,7 @@ function [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, freq, opt
         censor(is_zero) = [];
       endif
       freq(is_zero) = [];
-    end
+    endif
   else
     error ("normfit: X and FREQ vectors mismatch.");
   endif

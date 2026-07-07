@@ -201,7 +201,7 @@ function obj = fitgmdist (data, k, varargin)
         Sigma = start.Sigma;
         if (isfield (start, 'ComponentProportion'))
           p = start.ComponentProportion(:)';
-        end
+        endif
         if (any (size (data, 2) != [size(mu, 2), size(Sigma, 1)]) || ...
             any (k != [size(mu,1), size(p,2)]))
           error ("fitgmdist: Start parameter has mismatched dimensions.");

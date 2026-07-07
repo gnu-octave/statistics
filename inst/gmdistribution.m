@@ -320,7 +320,7 @@ classdef gmdistribution
           else
             error ("gmdistribution.%s: X has %d columns instead of %d\n", ...
                    name, columns (X), obj.NumVariables);
-          end
+          endif
         endif
       endfunction
     endmethods

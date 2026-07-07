@@ -230,7 +230,7 @@ function p = nctcdf (x, df, mu, uflag)
       TD(TD) = (abs(twoterms) > (abs (subtotal(TD)) + c_eps) * c_eps);
       if (! any (TD))
         break;
-      end
+      endif
       ## Update for next iteration
       jj = jj+2;
       E1(TD) = E1(TD) .* d_square(TD) ./ (jj(TD));
@@ -262,7 +262,7 @@ function p = nctcdf (x, df, mu, uflag)
       else
         B1(TD) = B1(TD) + R1(TD);
         B2(TD) = B2(TD) + R2(TD);
-      end
+      endif
       twoterms = E1(TD) .* B1(TD) + E2(TD) .* B2(TD);
       subtotal(TD) = subtotal(TD) + twoterms;
       jj = jj - 2;

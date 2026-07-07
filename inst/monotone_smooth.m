@@ -102,7 +102,7 @@ function yy = monotone_smooth (x, y, h)
   if (nargin != 3)
     s = std (x);
     h = s / (n ^ 0.2);
-  end
+  endif
 
   x_min = min(x);
   x_max = max(x);

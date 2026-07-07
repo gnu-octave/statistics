@@ -302,7 +302,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
       stats.pval = p_MSI;     ## Interaction p-value if stats.inter is true
     else
       stats.pval = p_MSC;     ## Column Factor p-value if stats.inter is false
-    end
+    endif
     stats.df = df_DENOM;      ## Degrees of freedom used to calculate stats.pval
     stats.model = model;
   endif

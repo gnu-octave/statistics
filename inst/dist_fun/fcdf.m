@@ -95,7 +95,7 @@ function p = fcdf (x, df1, df2, uflag)
       kk = k(k1);
       xx = df2(kk) ./ (df2(kk) + x(kk) .* df1(kk));
       p(kk) = betainc (xx, df2(kk)/2, df1(kk)/2, "upper");
-    end
+    endif
     if (any (! k1))
       kk = k(! k1);
       num = df1(kk) .* x(kk);
@@ -108,11 +108,11 @@ function p = fcdf (x, df1, df2, uflag)
     k = find (x > 0 & ! make_nan & isfinite (df1) & ! isfinite (df2) & df2 > 0);
     if (any (k))
       p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, "lower");
-    end
+    endif
     k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & isfinite (df2));
     if (any (k))
       p(k) = gammainc (df2(k) ./ x(k) ./ 2, df2(k) ./ 2, "upper");
-    end
+    endif
     k = find (x > 0 & ! make_nan & ! isfinite (df1) & df1 > 0 & ...
                                    ! isfinite (df2) & df2 > 0);
     if (any (k))
@@ -120,7 +120,7 @@ function p = fcdf (x, df1, df2, uflag)
         p(k) = 0;
       else
         p(k) = (x(k)>=1);
-      end
+      endif
     endif
   endif
 

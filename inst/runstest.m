@@ -186,7 +186,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
           R_bar = 1 + 2 * n_up * n_dn / N;
           R_std = sqrt (2 * n_up * n_dn * (2 * n_up * n_dn - N) / ...
                        (N ^ 2 * (N - 1)));
-      end
+      endif
       ## Handle tail
       if (strcmpi (tail, "both"))
           tc = -0.5 * sign (R_num - R_bar);
@@ -243,7 +243,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
         p_ex = 1;
       else
         p_ex = p(R_num);
-      end
+      endif
       p_lo = sum (p([1:R_num-1]));
       p_hi = sum (p([R_num+1:end]));
 
@@ -252,7 +252,7 @@ function [h, pval, stats] = runstest (x, v, varargin)
       p_ex = 0;
       p_lo = normcdf (z);
       p_hi = normcdf (-z);
-    end
+    endif
   ## Assume a constant vector in data
   else
     R_num = NaN;

@@ -77,7 +77,7 @@ function p = ricecdf (x, s, sigma, uflag)
   k0 = s >= 0 & sigma > 0 & x < 0;
   if (uflag && any (k0(:)))
     p(k0) = 1;
-  end
+  endif
 
   ## Calculate Rayleigh CDF for valid parameter and data range
   k = s >= 0 & sigma > 0 & x >= 0;
@@ -111,7 +111,7 @@ function Q = marcumQ1 (a, b)
   z = isnan (Q) & a == 0 & b != Inf;
   if (any(z))
     Q(z) = exp ((-b(z) .^ 2) ./ 2);
-  end
+  endif
 
   ## Compute the remaining cases
   z = isnan (Q) & ! isnan (a) & ! isnan (b);

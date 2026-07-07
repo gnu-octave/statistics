@@ -191,7 +191,7 @@ function p = ncx2cdf (x, df, lambda, uflag)
     else
       fullterm(keep) = poisterm(keep) .* ...
                        gammainc (x(keep), df(keep) + k(keep));
-    end
+    endif
     sumK(keep) = sumK(keep) + fullterm(keep);
     keep = keep & fullterm > eps(sumK);
   endwhile

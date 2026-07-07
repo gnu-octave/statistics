@@ -67,7 +67,7 @@ function h = normplot (varargin)
   ## If ax is empty, create a new axes
   if (isempty (ax))
     ax = newplot();
-  end
+  endif
   ## Get number of column vectors in x
   col = size (x, 2);
   ## Process each column and plot data and fit lines
@@ -144,7 +144,7 @@ function h = normplot (varargin)
   else
     minxaxis = nanmin (x(:)) - 1;
     maxxaxis = nanmax (x(:)) + 1;
-  end
+  endif
   minyaxis = norminv (0.25 ./ row_xc, 0, 1);
   maxyaxis = norminv ((row_xc - 0.25) ./ row_xc, 0, 1);
   set (ax, "ylim", [minyaxis, maxyaxis], "xlim", [minxaxis, maxxaxis]);

@@ -189,7 +189,7 @@ function [p, stats] = vartestn (x, group, varargin)
      pooledVAR = sum (group_DF .* groupVAR) / sum_DF;
   else
      pooledVAR = NaN;
-  end
+  endif
   ## Get number of groups
   k = length (group_DF);
   ## Test for equal variance according to specified testtype
@@ -262,7 +262,7 @@ function [p, stats] = vartestn (x, group, varargin)
         p = NaN;
         F = NaN;
         Bdf = [0, (length (xcbf) - n_groups)];
-      end
+      endif
       testname = "Brown-Forsythe statistic        ";
       if (nargout > 1)
         stats = struct("fstat", F, "df", Bdf);
@@ -294,7 +294,7 @@ function [p, stats] = vartestn (x, group, varargin)
         p = NaN;
         F = NaN;
         Bdf = [0, length(xcw)-n_groups];
-      end
+      endif
       testname = "OBrien statistic                ";
       if (nargout > 1)
         stats = struct("fstat", F, "df", Bdf);

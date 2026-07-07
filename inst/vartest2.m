@@ -197,7 +197,7 @@ function [df, data_var] = getstats (data, dim)
      rep = ones (1, ndims (data));
      rep(dim) = size (data, dim);
      c_data = data - repmat (m_data, rep);
-  end
+  endif
   c_data(is_nan) = 0;
   data_var = sum (abs (c_data) .^ 2,dim);
   t = (df > 0);
@@ -206,7 +206,7 @@ function [df, data_var] = getstats (data, dim)
   ## Make df a scalar if possible
   if (numel (df) > 1 && all (df(:) == df(1)))
      df = df(1);
-  end
+  endif
 endfunction
 
 ## Test input validation

@@ -155,7 +155,7 @@ function tbl = tabulate (x)
           counts = [];
       else
           counts = accumarray (idx, 1);
-      end
+      endif
     endif
 
     if (isempty (counts))

@@ -117,7 +117,7 @@ function [p, h, stats] = ranksum(x, y, varargin)
     if isnan (alpha) || alpha <= 0 || alpha >= 1
       error ("Alpha does not have a valid value");
     endif
-  end
+  endif
   ## Check for Name:Value pairs
   arg_pairs = length (varargin);
   if ! (int16 (arg_pairs / 2) == arg_pairs / 2)
