@@ -94,7 +94,7 @@ function p = unifcdf (x, a, b, uflag)
 
   ## Continue argument check
   p(a >= b) = NaN;
-  p(isnan(x) | isnan(a) | isnan(b)) = NaN;
+  p(isnan (x) | isnan (a) | isnan (b)) = NaN;
 
 endfunction
 
