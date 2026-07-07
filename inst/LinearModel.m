@@ -1401,15 +1401,16 @@ classdef LinearModel
     ##
     ## @code{@var{ypred} = predict (@var{mdl}, @var{Xnew})} returns the fitted
     ## response values at the new predictor locations in @var{Xnew}.  @var{Xnew}
-    ## can be a numeric matrix with one column per predictor in the same order as
-    ## the training data, or a table whose column names match
+    ## can be a numeric matrix with one column per predictor in the same order
+    ## as the training data, or a table whose column names match
     ## @code{@var{mdl}.PredictorNames}.  Rows containing @code{NaN} are returned
     ## as @code{NaN} without error.
     ##
     ## @code{@var{ypred} = predict (@var{mdl})} omits @var{Xnew} and returns
-    ## fitted values for the original training observations in their original row
-    ## order.  Rows that were excluded or contained missing values are returned as
-    ## @code{NaN}.  The result is identical to @code{@var{mdl}.Fitted}.
+    ## fitted values for the original training observations in their original
+    ## row order.  Rows that were excluded or contained missing values are
+    ## returned as @code{NaN}.  The result is identical to
+    ## @code{@var{mdl}.Fitted}.
     ##
     ## @code{[@var{ypred}, @var{yci}] = predict (@dots{})} also returns
     ## @var{yci}, an @math{n}-by-2 matrix of confidence bounds where column 1 is
@@ -1434,10 +1435,10 @@ classdef LinearModel
     ## @code{@var{mdl}.MSE} to the variance before computing the half-width.
     ##
     ## @item @qcode{"Simultaneous"} @tab @tab Logical flag controlling whether
-    ## the bounds are simultaneous or pointwise.  When @code{true}, Scheff@'{e}'s
-    ## method is used so the entire predicted curve lies within the band with
-    ## @math{100(1-\alpha)\%} confidence; these bands are always wider than
-    ## pointwise ones.  Default is @code{false}.
+    ## the bounds are simultaneous or pointwise.  When @code{true},
+    ## Scheff@'{e}'s method is used so the entire predicted curve lies within
+    ## the band with @math{100(1-\alpha)\%} confidence; these bands are always
+    ## wider than pointwise ones.  Default is @code{false}.
     ## @end multitable
     ##
     ## @end deftypefn
@@ -1542,7 +1543,8 @@ classdef LinearModel
     ## -*- texinfo -*-
     ## @deftypefn {LinearModel} {@var{ysim} =} random (@var{mdl}, @var{Xnew})
     ##
-    ## Simulate responses with random noise from a fitted linear regression model.
+    ## Simulate responses with random noise from a fitted linear regression
+    ## model.
     ##
     ## @code{@var{ysim} = random (@var{mdl}, @var{Xnew})} computes the fitted
     ## response at each row of @var{Xnew} and then adds independent Gaussian
@@ -1551,14 +1553,15 @@ classdef LinearModel
     ## (mean squared error of the fit).  The result is a column vector of the
     ## same length as the number of rows in @var{Xnew}.
     ##
-    ## @var{Xnew} is required and must be non-empty.  It can be a numeric matrix
-    ## with one column per predictor in the same order as the training data, or a
-    ## table whose column names match @code{@var{mdl}.PredictorNames}.  Unlike
-    ## @code{predict}, there is no no-argument form; the predictor locations must
-    ## always be supplied explicitly.
+    ## @var{Xnew} is required and must be non-empty.  It can be a numeric
+    ## matrix with one column per predictor in the same order as the training
+    ## data, or a table whose column names match
+    ## @code{@var{mdl}.PredictorNames}.  Unlike @code{predict}, there is no
+    ## no-argument form; the predictor locations must always be supplied
+    ## explicitly.
     ##
-    ## Because the added noise is drawn freshly on every call, two calls with the
-    ## same @var{Xnew} will generally produce different output.  To get
+    ## Because the added noise is drawn freshly on every call, two calls with
+    ## the same @var{Xnew} will generally produce different output.  To get
     ## reproducible results, set the random seed with @code{rand ('state', s)}
     ## before calling @code{random}.
     ##
@@ -1710,8 +1713,8 @@ classdef LinearModel
     ## its standard error from @code{@var{mdl}.Coefficients.SE}, and the
     ## critical value is the @math{1-\alpha/2} quantile of the
     ## @math{t}-distribution with @code{@var{mdl}.DFE} degrees of freedom.
-    ## In rank-deficient models, aliased coefficients have @math{\mathrm{SE} = 0}
-    ## and their row in @var{ci} is @code{[0, 0]}.
+    ## In rank-deficient models, aliased coefficients have
+    ## @math{\mathrm{SE} = 0} and their row in @var{ci} is @code{[0, 0]}.
     ##
     ## @end deftypefn
     function ci = coefCI (mdl, alpha)
@@ -1766,9 +1769,9 @@ classdef LinearModel
     ## of length @math{k = } @code{@var{mdl}.NumCoefficients}.  @var{H} must be
     ## a full-rank numeric matrix with @math{k} columns; each row specifies one
     ## linear constraint.  To test a single coefficient, use a row vector with a
-    ## @code{1} in that coefficient's position and zeros elsewhere; the resulting
-    ## F-statistic equals the square of the corresponding t-statistic in
-    ## @code{@var{mdl}.Coefficients}.  To test a categorical predictor that
+    ## @code{1} in that coefficient's position and zeros elsewhere; the
+    ## resulting F-statistic equals the square of the corresponding t-statistic
+    ## in @code{@var{mdl}.Coefficients}.  To test a categorical predictor that
     ## expands to multiple indicator columns, include one row per indicator in
     ## @var{H}.
     ##
@@ -2432,9 +2435,9 @@ classdef LinearModel
     ##
     ## @item @qcode{"caseorder"}
     ## Residuals on the y-axis against observation row number on the x-axis,
-    ## covering all rows from 1 to @code{n_total}.  A dotted horizontal reference
-    ## line marks @math{y = 0}.  Returns two line handles: @code{h(1)} is the
-    ## data and @code{h(2)} is the reference line.
+    ## covering all rows from 1 to @code{n_total}.  A dotted horizontal
+    ## reference line marks @math{y = 0}.  Returns two line handles:
+    ## @code{h(1)} is the data and @code{h(2)} is the reference line.
     ##
     ## @item @qcode{"lagged"}
     ## Each residual @math{r(t)} on the y-axis against the preceding residual
@@ -2451,16 +2454,18 @@ classdef LinearModel
     ##
     ## @item @qcode{"observed"}
     ## Observed response values on the y-axis against fitted values on the
-    ## x-axis.  A dotted @math{y = x} reference line is drawn through the origin.
-    ## Vertical segments connect each observed point down to the reference line.
+    ## x-axis.  A dotted @math{y = x} reference line is drawn through the
+    ## origin.  Vertical segments connect each observed point down to the
+    ## reference line.
     ## Returns three handles: @code{h(1)} is the scatter, @code{h(2)} is the
     ## @math{y = x} reference, and @code{h(3)} is the vertical segment line
     ## (stored as a single @code{NaN}-separated line object).
     ##
     ## @item @qcode{"symmetry"}
     ## Upper-tail distances from the median plotted against lower-tail distances
-    ## from the median.  Each point @code{(x, y)} satisfies @math{x = \mathrm{med}
-    ## - r_{(i)}} and @math{y = r_{(n+1-i)} - \mathrm{med}}, using the
+    ## from the median.  Each point @code{(x, y)} satisfies
+    ## @math{x = \mathrm{med} - r_{(i)}} and
+    ## @math{y = r_{(n+1-i)} - \mathrm{med}}, using the
     ## @math{\lfloor n/2 \rfloor} most extreme observations on each side.  A
     ## perfectly symmetric distribution falls on the dotted @math{y = x}
     ## reference line.  Returns two handles: @code{h(1)} is the scatter and
@@ -2478,8 +2483,9 @@ classdef LinearModel
     ##
     ## The following Name-Value arguments are accepted.  Arguments marked
     ## @emph{histogram only} are passed directly to the @code{patch} object and
-    ## have no effect on other plot types.  Arguments marked @emph{non-histogram}
-    ## are applied to the scatter marker and have no effect on the histogram.
+    ## have no effect on other plot types.  Arguments marked
+    ## @emph{non-histogram} are applied to the scatter marker and have no
+    ## effect on the histogram.
     ##
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
@@ -2979,7 +2985,8 @@ classdef LinearModel
     ## @deftypefnx {LinearModel} {} plotEffects (@var{ax}, @var{mdl})
     ## @deftypefnx {LinearModel} {@var{h} =} plotEffects (@dots{})
     ##
-    ## Plot the main effects of each predictor in a fitted linear regression model.
+    ## Plot the main effects of each predictor in a fitted linear regression
+    ## model.
     ##
     ## @code{plotEffects (@var{mdl})} creates a horizontal dot-and-line plot
     ## with one row per predictor.  Each dot shows the estimated main effect on
@@ -3173,9 +3180,9 @@ classdef LinearModel
     ## Excluded or missing observations appear as @code{NaN} in the adjusted
     ## data and produce gaps in the plotted data points.
     ##
-    ## @code{plotAdjustedResponse (@var{mdl}, @var{var}, @var{Name}, @var{Value})}
-    ## specifies additional Name-Value arguments applied to the adjusted data
-    ## points (@code{h(1)}).  The following are accepted:
+    ## @code{plotAdjustedResponse (@var{mdl}, @var{var}, @var{Name},
+    ## @var{Value})} specifies additional Name-Value arguments applied to the
+    ## adjusted data points (@code{h(1)}).  The following are accepted:
     ##
     ## @multitable @columnfractions 0.28 0.02 0.70
     ## @headitem Name @tab @tab Description and default
