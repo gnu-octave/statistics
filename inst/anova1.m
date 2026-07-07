@@ -152,7 +152,7 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   x = x(:);
 
   ## identify NaN values in x or missing/empty categories in the group and remove them.
-  valid_data = !isnan (x) & !isnan (group_id);
+  valid_data = ! isnan (x) & ! isnan (group_id);
   x = x(valid_data);
   group_id = group_id(valid_data);
   named = 1;

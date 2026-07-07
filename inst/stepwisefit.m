@@ -204,8 +204,8 @@ endif
 
   ## Handle missing values
   wasnan = any (isnan ([X y]), 2);
-  Xc = X(!wasnan, :);
-  yc = y(!wasnan);
+  Xc = X(! wasnan, :);
+  yc = y(! wasnan);
 
   n = rows (Xc);
   p = columns (Xc);
@@ -270,7 +270,7 @@ endif
     iter = iter + 1;
 
     ## ADD phase: evaluate candidates by conditional p-value
-    candidates = find (~cur);
+    candidates = find (! cur);
     if (! isempty (candidates))
       best_p = Inf;
       best_j = -1;
@@ -433,7 +433,7 @@ endif
   stats.SE    = se;
   stats.TSTAT = b ./ se;
   stats.PVAL  = pval;
-  stats.TSTAT (!isfinite (stats.TSTAT)) = NaN;
+  stats.TSTAT (! isfinite (stats.TSTAT)) = NaN;
 
   excluded = setdiff (1:p, X_use);
 xr = zeros (n, numel (excluded));

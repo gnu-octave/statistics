@@ -60,7 +60,7 @@ function x = betainv (p, a, b)
     x = zeros (size (p));
   endif
 
-  k = (p < 0) | (p > 1) | !(a > 0) | !(b > 0) | isnan (p);
+  k = (p < 0) | (p > 1) | ! (a > 0) | ! (b > 0) | isnan (p);
   x(k) = NaN;
 
   k = (p == 1) & (a > 0) & (b > 0);

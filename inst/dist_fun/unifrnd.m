@@ -112,7 +112,7 @@ function r = unifrnd (a, b, varargin)
   else
     r = a + (b - a) .* rand (sz, cls);
 
-    k = !(-Inf < a) | !(a <= b) | !(b < Inf);
+    k = ! (-Inf < a) | ! (a <= b) | ! (b < Inf);
     r(k) = NaN;
   endif
 

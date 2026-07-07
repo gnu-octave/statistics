@@ -79,7 +79,7 @@ function p = binocdf (x, n, ps, uflag)
   endif
 
   k = (x >= n) & (n >= 0) & (n == fix (n) & (ps >= 0) & (ps <= 1));
-  p(k) = !uflag;
+  p(k) = ! uflag;
 
   k = (x < 0) & (n >= 0) & (n == fix (n) & (ps >= 0) & (ps <= 1));
   p(k) = uflag;

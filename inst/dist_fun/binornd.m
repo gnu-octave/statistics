@@ -121,7 +121,7 @@ function r = binornd (n, ps, varargin)
   else
     r = zeros (sz, cls);
 
-    k = !(n >= 0) | !(n < Inf) | !(n == fix (n)) | !(ps >= 0) | !(ps <= 1);
+    k = ! (n >= 0) | ! (n < Inf) | ! (n == fix (n)) | ! (ps >= 0) | ! (ps <= 1);
     r(k) = NaN;
 
     k = (n > 0) & (n < Inf) & (n == fix (n)) & (ps >= 0) & (ps <= 1);

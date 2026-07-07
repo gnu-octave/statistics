@@ -104,7 +104,7 @@ function [Fout, x, Flo, Fup] = ecdf (y, varargin)
   ## Check for remaining varargins and parse extra parameters
   if (length (varargin) > 0 && mod (numel (varargin), 2) == 0)
     [~, prop] = parseparams (varargin);
-    while (!isempty (prop))
+    while (! isempty (prop))
       switch (lower (prop{1}))
         case "censoring"
           cens = prop{2};

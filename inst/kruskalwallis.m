@@ -94,7 +94,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
   if (nargin < 3)
     displayopt = 'on';
   endif
-  plotdata = ~(strcmp (displayopt, 'off'));
+  plotdata = ! (strcmp (displayopt, 'off'));
 
   ## Convert group to cell array from character array, make it a column
   if (! isempty (group) && ischar (group))
@@ -121,7 +121,7 @@ function [p, tbl, stats] = kruskalwallis (x, group, displayopt)
 
   ## Identify NaN values (if any) and remove them from X along with
   ## their corresponding values from group vector
-  nonan = ~isnan (x);
+  nonan = ! isnan (x);
   x = x(nonan);
   group = group(nonan, :);
 

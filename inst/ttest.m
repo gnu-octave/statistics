@@ -126,7 +126,7 @@ function [h, p, ci, stats] = ttest (x, my, varargin)
   endif
 
   ## Calculate the test statistic value (tval)
-  n = sum (!isnan (x), dim);
+  n = sum (! isnan (x), dim);
   x_bar = mean (x, dim, "omitnan");
   stats.tstat = [];
   stats.df = n - 1;

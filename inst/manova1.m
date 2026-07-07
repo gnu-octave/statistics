@@ -213,7 +213,7 @@ function [d, p, stats] = manova1 (x, group, alpha)
     stats.eigenvec = v;
     canon = x*v;
     if (any(is_nan))
-      tmp(~is_nan,:) = canon;
+      tmp(! is_nan,:) = canon;
       tmp(is_nan,:) = NaN;
       stats.canon = tmp;
     else

@@ -62,7 +62,7 @@ function y = wishpdf (W, Sigma, df, log_y=false)
   y = -(df*p)/2 * log(2) - (df/2)*logdet_Sigma - g + ...
       ((df - p - 1)/2)*logdet_W - trace(chol2inv(C)*W)/2;
 
-  if ~log_y
+  if ! log_y
     y = exp(y);
   endif
 endfunction

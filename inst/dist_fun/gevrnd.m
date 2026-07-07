@@ -104,7 +104,7 @@ function r = gevrnd (k, sigma, mu, varargin)
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
-  if (!isscalar (k) && ! isequal (size (k), size (ones (sz))))
+  if (! isscalar (k) && ! isequal (size (k), size (ones (sz))))
     error ("gevrnd: K, SIGMA, and MU must be scalars or of size SZ.");
   endif
 

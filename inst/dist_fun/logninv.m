@@ -73,7 +73,7 @@ function x = logninv (p, mu = 0, sigma = 1)
   endif
 
   ## Compute lognormal iCDF
-  k = !(p >= 0) | !(p <= 1) | !(sigma > 0) | !(sigma < Inf);
+  k = ! (p >= 0) | ! (p <= 1) | ! (sigma > 0) | ! (sigma < Inf);
   x(k) = NaN;
 
   k = (p == 1) & (sigma > 0) & (sigma < Inf);

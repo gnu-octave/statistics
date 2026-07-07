@@ -96,7 +96,7 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
       # Only use the first r columns, pad rest with zeros if economy != 'econ'
       SCORE = SCORE(:,1:r) ;
 
-      if !(nargin == 2 && strcmpi ( varargin{:} , "econ"))
+      if ! (nargin == 2 && strcmpi ( varargin{:} , "econ"))
 	    SCORE = [SCORE, zeros(nobs , nvars-r)];
       else
 	    COEFF   = COEFF(: , 1:r);
@@ -109,7 +109,7 @@ function [COEFF, SCORE, latent, tsquare] = princomp (X, varargin)
       # This is the same as the eigenvalues of the covariance matrix of X
       latent  = (diag(S).^2 / (size(Xcentered,1)-1))(1:r);
 
-      if !(nargin == 2 && strcmpi ( varargin{:} , "econ"))
+      if ! (nargin == 2 && strcmpi ( varargin{:} , "econ"))
 	  latent= [latent;zeros(nvars-r,1)];
       endif
     endif

@@ -99,7 +99,7 @@ function r = mvtrnd (rho, df, n)
     error ("mvtrnd: SIGMA must be a positive definite matrix.");
   endif
 
-  if (!isvector (df) || any (df <= 0))
+  if (! isvector (df) || any (df <= 0))
     error ("mvtrnd: DF must be a positive scalar or vector.");
   endif
   df = df(:);

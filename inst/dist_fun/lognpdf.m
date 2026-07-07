@@ -73,7 +73,7 @@ function y = lognpdf (x, mu = 0, sigma = 1)
   endif
 
   ## Compute lognormal PDF
-  k = isnan (x) | !(sigma > 0) | !(sigma < Inf);
+  k = isnan (x) | ! (sigma > 0) | ! (sigma < Inf);
   y(k) = NaN;
 
   k = (x > 0) & (x < Inf) & (sigma > 0) & (sigma < Inf);

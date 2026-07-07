@@ -101,7 +101,7 @@ function r = gprnd (k, sigma, theta, varargin)
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
-  if (!isscalar (k) && ! isequal (size (k), size (ones (sz))))
+  if (! isscalar (k) && ! isequal (size (k), size (ones (sz))))
     error ("gprnd: K, SIGMA, and THETA must be scalars or of size SZ.");
   endif
 

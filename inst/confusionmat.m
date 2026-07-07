@@ -133,7 +133,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
       col_index = find (unique_tokens == y_pred(i));
 
       ## Check valid indices
-      if (!isempty(row_index) && !isempty(col_index))
+      if (! isempty(row_index) && ! isempty(col_index))
         C(row_index, col_index)++;
       endif
     endfor
@@ -165,7 +165,7 @@ function [C, order] = confusionmat (group, grouphat, opt = "Order", grouporder)
       row_index = find (strcmp (y_true{i}, unique_tokens));
       col_index = find (strcmp (y_pred{i}, unique_tokens));
 
-      if (!isempty(row_index) && !isempty(col_index))
+      if (! isempty(row_index) && ! isempty(col_index))
         C(row_index, col_index)++;
       endif
     endfor

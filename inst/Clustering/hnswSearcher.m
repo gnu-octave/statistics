@@ -672,7 +672,7 @@ function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
     endif
 
     ## Filter to unvisited neighbors only
-    unvisited_mask = ~visited(neighbors);
+    unvisited_mask = ! visited(neighbors);
     new_neighbors = neighbors(unvisited_mask);
 
     if (isempty (new_neighbors))

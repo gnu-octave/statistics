@@ -104,7 +104,7 @@ function p = fcdf (x, df1, df2, uflag)
     endif
   endif
 
-  if any(~isfinite(df1(:)) | ~isfinite(df2(:)))
+  if any(! isfinite(df1(:)) | ! isfinite(df2(:)))
     k = find (x > 0 & ! make_nan & isfinite (df1) & ! isfinite (df2) & df2 > 0);
     if (any (k))
       p(k) = gammainc (df1(k) .* x(k) ./ 2, df1(k) ./ 2, "lower");

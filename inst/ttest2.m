@@ -104,8 +104,8 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
   endif
 
   ## Calculate mean, variance and size of each sample
-  m = sum (!isnan (x), dim);
-  n = sum (!isnan (y), dim);
+  m = sum (! isnan (x), dim);
+  n = sum (! isnan (y), dim);
   x_bar = mean (x, dim, "omitnan") - mean (y, dim, "omitnan");
   s1_var = var (x, 0, dim, "omitnan");
   s2_var = var (y, 0, dim, "omitnan");

@@ -84,7 +84,7 @@ function [H, pValue, ks2stat] = kstest2 (x1, x2, varargin)
   ## Parse extra parameters
   if nargin > 2 && mod (numel (varargin), 2) == 0
     [~, prop] = parseparams (varargin);
-    while (!isempty (prop))
+    while (! isempty (prop))
       switch (lower (prop{1}))
         case "alpha"
           alpha = prop{2};

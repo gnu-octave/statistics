@@ -166,9 +166,9 @@ function y = loader_expansion (x, n, ps, nx, q)
     delta_nx(nx_precalc) = d_n(nx(nx_precalc));
 
     ## Calculate any other d(n) values
-    delta_n(!n_precalc) = delta_fn (n(!n_precalc));
-    delta_x(!x_precalc) = delta_fn (x(!x_precalc));
-    delta_nx(!nx_precalc) = delta_fn (nx(!nx_precalc));
+    delta_n(! n_precalc) = delta_fn (n(! n_precalc));
+    delta_x(! x_precalc) = delta_fn (x(! x_precalc));
+    delta_nx(! nx_precalc) = delta_fn (nx(! nx_precalc));
 
     ## Calculate exp(log(pdf));
     y = exp ((delta_n - delta_x - delta_nx - ...

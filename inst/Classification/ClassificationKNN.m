@@ -3103,7 +3103,7 @@ endfunction
 %! assert (CVMdl.ModelParameters.NumNeighbors == 5)
 %! assert (strcmp (CVMdl.ModelParameters.Distance, "mahalanobis"))
 %! assert (class (CVMdl.Trained{1}), "ClassificationKNN")
-%! assert (!CVMdl.ModelParameters.Standardize)
+%! assert (! CVMdl.ModelParameters.Standardize)
 %!test
 %! status = warning;
 %! warning ('off');

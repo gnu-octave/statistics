@@ -81,7 +81,7 @@ function y = normpdf (x, mu, sigma)
       y = NaN (size (x), class (y));
     endif
   else
-    k = isinf (mu) | !(sigma > 0) | !(sigma < Inf);
+    k = isinf (mu) | ! (sigma > 0) | ! (sigma < Inf);
     y(k) = NaN;
 
     k = ! isinf (mu) & (sigma > 0) & (sigma < Inf);

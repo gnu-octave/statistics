@@ -65,7 +65,7 @@ function [h, p, ci] = binotest(pos,n,p0,varargin)
     i = i + 1;
   end
 
-  if ~isa(tail,'char')
+  if ! isa(tail,'char')
     error('tail argument to vartest must be a string\n',[]);
   end
 

@@ -372,7 +372,7 @@ function p = tvncdf (x, rho, tol)
     p2 = zeros (size (p1), is_type);
     for i = 1:n
       b1 = x(i,1); bj = x(i,2); bk = x(i,3);
-      if isfinite(b1) && isfinite(bj) && ~isnan(bk)
+      if isfinite(b1) && isfinite(bj) && ! isnan(bk)
         p2(i) = quadgk(@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
       endif
     endfor
@@ -388,7 +388,7 @@ function p = tvncdf (x, rho, tol)
     p3 = zeros (size (p1), is_type);
     for i = 1:n
       b1 = x(i,1); bj = x(i,3); bk = x(i,2);
-      if isfinite(b1) && isfinite(bj) && ~isnan(bk)
+      if isfinite(b1) && isfinite(bj) && ! isnan(bk)
         p3(i) = quadgk(@tvnIntegrand,loLimit,hiLimit,'AbsTol',tol/3,'RelTol',0);
       endif
     endfor

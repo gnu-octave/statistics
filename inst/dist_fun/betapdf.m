@@ -61,7 +61,7 @@ function y = betapdf (x, a, b)
     y = zeros (size (x));
   endif
 
-  k = !(a > 0) | !(b > 0) | isnan (x);
+  k = ! (a > 0) | ! (b > 0) | isnan (x);
   y(k) = NaN;
 
   k = (x > 0) & (x < 1) & (a > 0) & (b > 0) & ((a != 1) | (b != 1));

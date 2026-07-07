@@ -203,7 +203,7 @@ function [G, kk_terms] = gevgrad (x, k, sigma, mu, k_terms)
 
   ## sigma
   ## Use a series expansion to find the gradient more accurately when k is small
-  if nargin > 4 && ~isempty(k_terms)
+  if nargin > 4 && ! isempty(k_terms)
     g = (1 - a .* (a .* k .* kk_terms - k_terms) .* (f - k - 1)) ./ sigma;
   else
     g = (a .* b .^ (-d) - (k + 1) .* a ./ b + 1) ./ sigma;

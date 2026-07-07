@@ -1017,7 +1017,7 @@ classdef ClassificationNeuralNetwork
 
           case 'cvpartition'
             CVPartition = varargin{2};
-            if (!(isa (CVPartition, 'cvpartition')))
+            if (! (isa (CVPartition, 'cvpartition')))
               error (strcat ("ClassificationNeuralNetwork.crossval:", ...
                              " 'CVPartition' must be a 'cvpartition' object."));
             endif

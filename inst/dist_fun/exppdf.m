@@ -74,7 +74,7 @@ function y = exppdf (x, mu)
     y = zeros (size (x));
   endif
 
-  k = isnan (x) | !(mu > 0);
+  k = isnan (x) | ! (mu > 0);
   y(k) = NaN;
 
   k = (x >= 0) & (x < Inf) & (mu > 0);

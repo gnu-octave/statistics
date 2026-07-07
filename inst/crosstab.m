@@ -68,7 +68,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
         error ("crosstab: x1, x2 ... xn must be vectors.");
       endif
       vector = vector(:);
-      unique_vals = unique (vector (!isnan (vector)));
+      unique_vals = unique (vector (! isnan (vector)));
       labels_data{i} = cellstr (num2str (unique_vals));
     else
       error ("crosstab: unsupported type for data vector.");
@@ -78,8 +78,8 @@ function [t, chisq, p, labels] = crosstab (varargin)
       error ("crosstab: x1, x2 ... xn must be vectors of the same length.");
     endif
     X = [X, vector];
-    reshape_format(i) = length (unique (vector(!isnan (vector))));
-    coordinates(i) = unique (vector(!isnan (vector)));
+    reshape_format(i) = length (unique (vector(! isnan (vector))));
+    coordinates(i) = unique (vector(! isnan (vector)));
   endfor
 
   if (nargout > 3)
@@ -103,7 +103,7 @@ function [t, chisq, p, labels] = crosstab (varargin)
   ## in coordinates for each dimension and increment the position value in t
   ## multidimensional matrix (always if there is no NaN element in the combination).
   for idx = 1:size (X, 1)
-    if (!any (isnan (X(idx,:))))
+    if (! any (isnan (X(idx,:))))
       location = zeros (1,size (X, 2));
       for jdx = 1:size (X,2)
         location(jdx) = find (cell2mat (coordinates(jdx)) == X(idx, jdx));

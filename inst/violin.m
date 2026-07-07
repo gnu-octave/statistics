@@ -89,7 +89,7 @@ function h = violin (ax, varargin)
 
   old_hold = ishold ();
   # First argument is not an axis
-  if (~ishandle (ax) || ~isscalar (ax))
+  if (! ishandle (ax) || ! isscalar (ax))
     x  = ax;
     ax = gca ();
   else
@@ -126,7 +126,7 @@ function h = violin (ax, varargin)
   ######################
 
   ## Make everything a cell for code simplicity
-  if (~iscell (x))
+  if (! iscell (x))
     [N Nc] = size (x);
     x      = mat2cell (x, N, ones (1, Nc));
   else
@@ -177,7 +177,7 @@ function h = violin (ax, varargin)
   tmp  = cellfun (@(x,y,z)errorbar(ax, x, y, z(1),z(2)), Ncc, Mx, LUBU)(:);
   ## Flatten errorbar output handles
   tmp2       = allchild (tmp);
-  if (~iscell (tmp2))
+  if (! iscell (tmp2))
     tmp2 = mat2cell (tmp2, ones(length (tmp2), 1), 1);
   endif
   tmp        = mat2cell (tmp, ones (length (tmp), 1), 1);

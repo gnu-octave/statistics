@@ -481,7 +481,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         error (strcat ("anovan: WEIGHTS must be a vector", ...
                        " with the same dimensions as Y."));
       endif
-      if (any(!(WEIGHTS > 0)) || any (isinf (WEIGHTS)))
+      if (any(! (WEIGHTS > 0)) || any (isinf (WEIGHTS)))
         error ("anovan: WEIGHTS must be a vector of positive finite values.");
       endif
       # Create diagonal matrix of normalized weights
@@ -604,7 +604,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         ss = zeros (Nt,1);
         for j = 1:Nt
           i = find (TERMS(j,:));
-          k = cat (1, 1, 1 + find (any (!TERMS(:,i),2)));
+          k = cat (1, 1, 1 + find (any (! TERMS(:,i),2)));
           XS = cell2mat (X(k));
           [jnk, R1] = lmfit (XS, Y, W);
           k = cat (1, j+1, k);

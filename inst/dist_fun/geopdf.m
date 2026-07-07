@@ -64,7 +64,7 @@ function y = geopdf (x, ps)
   endif
 
   ## Return NaN for out of range parameters
-  k = isnan (x) | (x == Inf) | !(ps >= 0) | !(ps <= 1);
+  k = isnan (x) | (x == Inf) | ! (ps >= 0) | ! (ps <= 1);
   y(k) = NaN;
 
   ## Get valid instances

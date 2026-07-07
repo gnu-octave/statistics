@@ -124,7 +124,7 @@ function r = trirnd (a, b, c, varargin)
       r = rand (sz, cls);
       idx = r < left_area;
       r(idx) = a + (r(idx) * w * left_width).^0.5;
-      r(~idx) = c - ((1-r(~idx)) * w * right_width).^0.5;
+      r(! idx) = c - ((1-r(! idx)) * w * right_width).^0.5;
     else
       r = NaN (sz, cls);
     endif
@@ -137,7 +137,7 @@ function r = trirnd (a, b, c, varargin)
     r = rand (sz, cls);
     k = r < left_area;
     r(k) = a(k) + (r(k) .* w(k) .* left_width(k)).^0.5;
-    r(~k) = c(~k) - ((1-r(~k)) .* w(~k) .* right_width(~k)).^0.5;
+    r(! k) = c(! k) - ((1-r(! k)) .* w(! k) .* right_width(! k)).^0.5;
 
     k = ! (-Inf < a) | ! (a < c) | ! (a <= b) | ! (b <= c) | ! (c < Inf);
     r(k) = NaN;

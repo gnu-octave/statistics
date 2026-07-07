@@ -168,7 +168,7 @@ endfunction
 %! figure
 %! scatter(XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
 %! hold on
-%! scatter(XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
+%! scatter(XGrid(! gidx,1), XGrid(! gidx,2), "markerfacecolor", "red");
 %! plot(X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
 %! xlabel("Feature 1");
 %! ylabel("Feature 2");

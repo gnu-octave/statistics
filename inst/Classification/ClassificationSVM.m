@@ -1512,7 +1512,7 @@ classdef ClassificationSVM
 
           case 'cvpartition'
             CVPartition = varargin{2};
-            if (!(isa (CVPartition, 'cvpartition')))
+            if (! (isa (CVPartition, 'cvpartition')))
               error (strcat ("ClassificationSVM.crossval: 'CVPartition'",...
                              " must be a 'cvpartition' object."));
             endif
@@ -1635,7 +1635,7 @@ endclassdef
 %! rng(1);  ## For reproducibility
 %!
 %! ## Select indices of the non-setosa species
-%! inds = !strcmp(species, 'setosa');
+%! inds = ! strcmp(species, 'setosa');
 %!
 %!  ## Select features and labels for non-setosa species
 %! X = meas(inds, 3:4);
@@ -1667,7 +1667,7 @@ endclassdef
 %! rng(1);  ## For reproducibility
 %!
 %!  ## Select indices of the non-setosa species
-%! inds = !strcmp(species, 'setosa');
+%! inds = ! strcmp(species, 'setosa');
 %!
 %!  ## Select features and labels for non-setosa species
 %! X = meas(inds, 3:4);

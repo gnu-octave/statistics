@@ -249,7 +249,7 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
       if (! isscalar (DFE))
         error ("multcompare: df must be a scalar value.");
       endif
-      if (!(DFE > 0) || isinf (DFE))
+      if (! (DFE > 0) || isinf (DFE))
         error ("multcompare: df must be a positive finite value.");
       endif
     endif
@@ -260,8 +260,8 @@ function [C, M, H, GNAMES] = multcompare (STATS, varargin)
         error (strcat ("multcompare: invalid number of output", ...
                        " arguments if only used to adjust p-values."))
       endif
-      if (!isempty (varargin))
-        if (!any (strcmpi (varargin{1}, {"ctype","criticalvaluetype"})) ...
+      if (! isempty (varargin))
+        if (! any (strcmpi (varargin{1}, {"ctype","criticalvaluetype"})) ...
             || (nargin > 3) )
           error (strcat("multcompare: invalid input arguments", ...
                         " if only used to adjust p-values."));

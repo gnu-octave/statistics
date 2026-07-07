@@ -79,7 +79,7 @@ function x = gevinv (p, k, sigma, mu)
   ## avoid roundoff error or dividing by zero when k is small
   ii = (abs(kllP) < 1E-4);
   x(ii) = mu(ii) - sigma(ii) .* llP(ii) .* (1 - kllP(ii) .* (1 - kllP(ii)));
-  x(~ii) = mu(~ii) + (sigma(~ii) ./ k(~ii)) .* (exp(-kllP(~ii)) - 1);
+  x(! ii) = mu(! ii) + (sigma(! ii) ./ k(! ii)) .* (exp(-kllP(! ii)) - 1);
   x(is_neginf) = -Inf;
   x(is_posinf) = Inf;
   x(is_nan) = NaN;

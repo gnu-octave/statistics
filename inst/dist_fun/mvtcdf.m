@@ -316,7 +316,7 @@ function p = tvtcdf (x, rho, df, TolFun)
       x1 = x(i,1);
       x2 = x(i,2);
       x3 = x(i,3);
-      if (isfinite (x2) && isfinite (x3) && ~! isnan (x1))
+      if (isfinite (x2) && isfinite (x3) && isnan (x1))
         v = df(i);
         p2(i) = quadgk (@tvtIntegr1, lo, hi, "AbsTol", TolFun / 4, "RelTol", 0);
       endif

@@ -722,7 +722,7 @@ function [A, idx_out] = fillmissing (A, varargin)
           fill_vals = NaN (sum (missing_locs(:, cols_to_use)(:)), 1);
 
           cols_enough_points =  (sum ( ...
-                       !isnan(A) & (! missing_locs), 1) > 1) & cols_to_use;
+                       ! isnan(A) & (! missing_locs), 1) > 1) & cols_to_use;
 
           interp_cols = (cols_enough_points & cols_to_use);
 
@@ -1074,7 +1074,7 @@ function [A, idx_out] = fillmissing (A, varargin)
               ## includes function handle. Expect behavior should match other
               ## methods, where any processed missing value should be marked
               ## as filled no matter the fill value.
-              if ((isnumeric(A) && !isinteger(A)) ||
+              if ((isnumeric(A) && ! isinteger(A)) ||
                       ischar (A) || iscellstr (A))
                 idx_out(missing_locs) = ! ismissing (fill_vals);
 
@@ -1305,7 +1305,7 @@ function [A, idx_out] = fillmissing (A, varargin)
                 fill_vals = NaN (sum (endgap_locs(:, cols_to_use)(:)), 1);
 
                 cols_enough_points = (sum ( ...
-                             !isnan(A) & (! endgap_locs), 1) > 1) & cols_to_use;
+                             ! isnan(A) & (! endgap_locs), 1) > 1) & cols_to_use;
 
                 interp_cols = (cols_enough_points & cols_to_use);
 

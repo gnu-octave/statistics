@@ -170,7 +170,7 @@ endfunction
 %! for k = 1:numel (cats)
 %!   mask = strcmp (g_str, cats{k});
 %!   assert (all (D(mask, k) == 1), true);
-%!   assert (all (D(!mask, k) == 0), true);
+%!   assert (all (D(! mask, k) == 0), true);
 %! endfor
 %!test
 %! g = categorical ({'a'; ''; 'b'}, {'a', 'b', 'c'});

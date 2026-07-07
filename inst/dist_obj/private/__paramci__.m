@@ -105,5 +105,5 @@ function ci = __paramci__ (pd, varargin)
   endif
 
   ## Return ci only for requested parameters
-  ci(:, !param) = [];
+  ci(:, ! param) = [];
 endfunction
