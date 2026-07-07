@@ -177,8 +177,7 @@ function [varargout] = bar3 (varargin)
       if (size (tmp, 2) == 3 && all (tmp(:) >= 0) && all (tmp(:) <= 1))
         color = tmp;
       else
-        error (["bar3: numeric COLOR must be a 1x3 vector of an Nx3 matrix", ...
-                " where each value is between 0 and 1 inclusive."]);
+        error (strcat ("bar3: numeric COLOR must be a 1x3 vector of an Nx3 matrix", " where each value is between 0 and 1 inclusive."));
       endif
       color = tmp;
       varargin(1) = [];
@@ -228,8 +227,7 @@ function [varargout] = bar3 (varargin)
           if (size (c, 2) == 3 && all (c(:) >= 0) && all (c(:) <= 1))
             color = c;
           else
-            error (["bar3: numeric COLOR must be a 1x3 vector of an Nx3", ...
-                    " matrix where each value is between 0 and 1 inclusive."]);
+            error (strcat ("bar3: numeric COLOR must be a 1x3 vector of an Nx3", " matrix where each value is between 0 and 1 inclusive."));
           endif
         else
           error ("bar3: invalid value for optional argument 'color'.");

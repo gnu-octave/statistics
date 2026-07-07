@@ -138,10 +138,10 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
             error ("slicesample: thin must be greater than or equal to 1.");
           endif
         otherwise
-          warning (["slicesample: Ignoring unknown option " varargin{k}]);
+          warning ("slicesample: Ignoring unknown option %s", varargin{k});
       endswitch
     else
-      error (["slicesample: " varargin{k} " is not a valid property."]);
+      error ("slicesample: %s is not a valid property.", varargin{k});
     endif
   endfor
 

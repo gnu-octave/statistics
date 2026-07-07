@@ -101,8 +101,7 @@ function [y, idcs] = datasample (data, k, varargin)
           if ((! isnumeric (varargin{pair_index + 1})) ||
               (! isvector (varargin{pair_index + 1})) ||
               (any (varargin{pair_index + 1} < 0)))
-            error (["datasample: the sampling weights must be defined as a " ...
-              "vector of positive values"]);
+            error (strcat ("datasample: the sampling weights must be defined as a", " vector of positive values"));
           endif
           weights = varargin{pair_index + 1};
         otherwise
@@ -132,8 +131,7 @@ function [y, idcs] = datasample (data, k, varargin)
   else
     ## first check if the weights vector is right
     if (imax != length (weights))
-      error (["datasample: the size of the vector of sampling weights must"...
-        " be equal to the size of the sampled data"]);
+      error (strcat ("datasample: the size of the vector of sampling weights must", " be equal to the size of the sampled data"));
     endif
 
     if (replace)

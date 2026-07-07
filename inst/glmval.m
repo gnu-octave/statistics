@@ -126,8 +126,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
       case "offset"
         offset = varargin {2};
         if (! (isnumeric (offset) && isequal (numel (offset), size (X, 1))))
-          error (["glmval: 'Offset' must be a numeric vector", ...
-                  " of the same length as the rows in X."]);
+          error (strcat ("glmval: 'Offset' must be a numeric vector", " of the same length as the rows in X."));
         endif
         offset = offset(:);
 
@@ -141,8 +140,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
         N = varargin {2};
         if (! isnumeric (N) ||
             ! (isscalar (N) || isvector (N) && isequal (numel (N), size (X, 1))))
-          error (["glmval: 'size' must be a scalar or a vector with", ...
-                  " one value for each row of X."]);
+          error (strcat ("glmval: 'size' must be a scalar or a vector with", " one value for each row of X."));
         endif
         N = N(:);
 
@@ -164,8 +162,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
   ## Compute lower and upper bounds
   if (nargout > 1)
     if (isempty (stats))
-      error (["glmval: cannot compute confidence", ...
-              " intervals without STATS structure."]);
+      error (strcat ("glmval: cannot compute confidence", " intervals without STATS structure."));
     endif
     if (isnan (stats.s))
       y_lo = NaN (size (yhat));

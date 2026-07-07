@@ -211,10 +211,10 @@ function [smpl, accept] = mhsample (start, nsamples, varargin)
           endif
 
         otherwise
-          warning (["mhsample: Ignoring unknown option " varargin{k}]);
+          warning ("mhsample: Ignoring unknown option %s", varargin{k});
       endswitch
     else
-      error (["mhsample: " varargin{k} " is not a valid property."]);
+      error ("mhsample: %s is not a valid property.", varargin{k});
     endif
   endfor
 

@@ -569,8 +569,7 @@ function checkparams (Probabilities)
   if (! (isvector (Probabilities) && isnumeric (Probabilities) &&
          isreal (Probabilities) && isfinite (Probabilities) &&
          abs (sum (Probabilities) - 1) < eps * 100))
-    error (["MultinomialDistribution: PROBABILITIES must be a vector", ...
-            " of positive real scalars that sum up to 1."])
+    error (strcat ("MultinomialDistribution: PROBABILITIES must be a vector", " of positive real scalars that sum up to 1."))
   endif
 endfunction
 

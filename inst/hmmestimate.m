@@ -209,7 +209,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endfor
     if (! all (sequenceint))
       index = max ((sequenceint == 0) .* (1:len));
-      error (["hmmestimate: sequence(" int2str (index) ") not in symbols"]);
+      error (strcat ("hmmestimate: sequence(", int2str (index), ...
+                     ") not in symbols"));
     endif
     sequence = sequenceint;
   else
@@ -218,7 +219,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endif
     if (! all (ismember (sequence, 1:max (sequence))))
       index = max ((ismember (sequence, 1:max (sequence)) == 0) .* (1:len));
-      error (["hmmestimate: sequence(" int2str (index) ") not feasible"]);
+      error (strcat ("hmmestimate: sequence(", int2str (index), ...
+                     ") not feasible"));
     endif
   endif
 
@@ -239,7 +241,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endfor
     if (! all (statesint))
       index = max ((statesint == 0) .* (1:len));
-      error (["hmmestimate: states(" int2str (index) ") not in statenames"]);
+      error (strcat ("hmmestimate: states(", int2str (index), ...
+                     ") not in statenames"));
     endif
     states = statesint;
   else
@@ -248,7 +251,8 @@ function [transprobest, outprobest] = hmmestimate (sequence, states, varargin)
     endif
     if (! all (ismember (states, 1:max (states))))
       index = max ((ismember (states, 1:max (states)) == 0) .* (1:len));
-      error (["hmmestimate: states(" int2str (index) ") not feasible"]);
+      error (strcat ("hmmestimate: states(", int2str (index), ...
+                     ") not feasible"));
     endif
   endif
 

@@ -726,11 +726,9 @@ classdef LinearModel
       s = s(1);
       switch (s.type)
         case '()'
-          error (["LinearModel: () indexing is not supported.  " ...
-                  "Use dot notation to access properties."]);
+          error (strcat ("LinearModel: () indexing is not supported.", "  Use dot notation to access properties."));
         case '{}'
-          error (["LinearModel: {} indexing is not supported.  " ...
-                  "Use dot notation to access properties."]);
+          error (strcat ("LinearModel: {} indexing is not supported.", "  Use dot notation to access properties."));
         case '.'
           if (! ischar (s.subs))
             error ("LinearModel.subsref: property name must be a character vector.");
@@ -1631,8 +1629,7 @@ classdef LinearModel
         if (istable (Xnew))
           for j = 1:p_raw
             if (! ismember (mdl.PredictorNames{j}, Xnew.Properties.VariableNames))
-              error (['feval: X does not contain one or more predictor ' ...
-                      'variables needed for this model.']);
+              error (strcat ('feval: X does not contain one or more predictor', ' variables needed for this model.'));
             endif
           endfor
         else
@@ -1675,9 +1672,7 @@ classdef LinearModel
 
       else
 
-        error (['feval: Incorrect number of input arguments. You must provide ' ...
-                'either %d separate predictor variable arguments, or one ' ...
-                'predictor matrix with %d columns.'], p_raw, p_raw);
+        error (strcat ('feval: Incorrect number of input arguments. You must provide', ' either %d separate predictor variable arguments, or one', ' predictor matrix with %d columns.'), p_raw, p_raw);
 
       endif
 
@@ -1725,16 +1720,13 @@ classdef LinearModel
         alpha = 0.05;
       endif
       if (! isscalar (alpha))
-        error (['coefCI: Invalid argument at position 2. ' ...
-                'Value must be a scalar.']);
+        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be a scalar.'));
       endif
       if (! (alpha >= 0))
-        error (['coefCI: Invalid argument at position 2. ' ...
-                'Value must be greater than or equal to 0.']);
+        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be greater than or equal to 0.'));
       endif
       if (alpha > 1)
-        error (['coefCI: Invalid argument at position 2. ' ...
-                'Value must be less than or equal to 1.']);
+        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be less than or equal to 1.'));
       endif
 
       t  = tinv (1 - alpha / 2, mdl.DFE);
@@ -1812,8 +1804,7 @@ classdef LinearModel
           error ('coefTest: H must be a %d-by-%d numeric matrix.', size (H, 1), k);
         endif
         if (any (any (isnan (H))))
-          error (['coefTest: H is not full rank and hypotheses ' ...
-                  'are not consistent.']);
+          error (strcat ('coefTest: H is not full rank and hypotheses', ' are not consistent.'));
         endif
         r = size (H, 1);
 
@@ -2113,8 +2104,7 @@ classdef LinearModel
         endfor
 
       else
-        error (['addTerms: Model update specification must be a model formula', ...
-                ' character vector or string scalar, or a terms matrix']);
+        error (strcat ('addTerms: Model update specification must be a model formula', ' character vector or string scalar, or a terms matrix'));
       endif
 
       existing = mdl.TermsMatrix;
@@ -2296,8 +2286,7 @@ classdef LinearModel
         endfor
 
       else
-        error (['removeTerms: Model update specification must be a model formula', ...
-                ' character vector or string scalar, or a terms matrix']);
+        error (strcat ('removeTerms: Model update specification must be a model formula', ' character vector or string scalar, or a terms matrix'));
       endif
 
       nc = columns (mdl.TermsMatrix);
@@ -2566,9 +2555,7 @@ classdef LinearModel
           rt_val   = lower (char (args{i+1}));
           valid_rt = {'raw', 'pearson', 'standardized', 'studentized'};
           if (! any (strcmp (rt_val, valid_rt)))
-            error (['plotResiduals: invalid ResidualType ''%s''. ', ...
-                    'Valid values are: ''Raw'', ''Pearson'', ', ...
-                    '''Standardized'', ''Studentized''.'], args{i+1});
+            error (strcat ('plotResiduals: invalid ResidualType ''%s''.', ' Valid values are: ''Raw'', ''Pearson'',', ' ''Standardized'', ''Studentized''.'), args{i+1});
           endif
           residtype = rt_val;
           i         = i + 2;
@@ -3235,8 +3222,7 @@ classdef LinearModel
         endif
       elseif (isnumeric (var) && isscalar (var))
         if (var != fix (var) || var < 1)
-          error (['plotAdjustedResponse: Variable must be specified as a ', ...
-                  'name or a positive integer.']);
+          error (strcat ('plotAdjustedResponse: Variable must be specified as a', ' name or a positive integer.'));
         endif
         if (var > numel (vnames))
           error ('plotAdjustedResponse: This model only contains %d variables.', ...
@@ -3244,8 +3230,7 @@ classdef LinearModel
         endif
         vname = vnames{var};
       else
-        error (['plotAdjustedResponse: Variable must be specified as a ', ...
-                'name or a positive integer.']);
+        error (strcat ('plotAdjustedResponse: Variable must be specified as a', ' name or a positive integer.'));
       endif
 
       if (strcmp (vname, mdl.ResponseName))

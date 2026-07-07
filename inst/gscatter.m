@@ -137,8 +137,7 @@ function h = gscatter (varargin)
       error ("gscatter: g must have the same size as x and y");
     endif
   else
-    error (["gscatter: g must be a numeric or logical or char vector, "...
-      "or a cell or cellstr array, or a char matrix"]);
+    error (strcat ("gscatter: g must be a numeric or logical or char vector,", " or a cell or cellstr array, or a char matrix"));
   endif
 
   ##

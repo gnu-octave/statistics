@@ -154,13 +154,11 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
   ## Check y dimensions based on distribution
   if (strcmpi (distribution, 'binomial'))
     if (cy > 2)
-      error (["glmfit: for a 'binomial' distribution,", ...
-              " Y must be an n-by-1 or n-by-2 matrix."]);
+      error (strcat ("glmfit: for a 'binomial' distribution,", " Y must be an n-by-1 or n-by-2 matrix."));
     ## Get y and N for binomial distribution
     elseif (cy == 2)
       if (! isnumeric (y))
-        error (["glmfit: n-by-2 matrix Y for 'binomial' distribution", ...
-                " must be numeric."]);
+        error (strcat ("glmfit: n-by-2 matrix Y for 'binomial' distribution", " must be numeric."));
       endif
       N = y(:, 2);
       y = y(:, 1) ./ N;
@@ -172,8 +170,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
     endif
   else
     if (cy != 1)
-      error (["glmfit: for distributions other than 'binomial',", ...
-              " Y must be an n-by-1 column vector."]);
+      error (strcat ("glmfit: for distributions other than 'binomial',", " Y must be an n-by-1 column vector."));
     endif
   endif
 
@@ -265,33 +262,28 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
         options = varargin {2};
         rf = {"MaxIter", "TolX"};
         if (! (isstruct (options) && all (ismember (rf, fieldnames (options)))))
-          error (["glmfit: 'Options' must be a structure containing", ...
-                  " the fields 'MaxIter', and 'TolX'."]);
+          error (strcat ("glmfit: 'Options' must be a structure containing", " the fields 'MaxIter', and 'TolX'."));
         endif
         MaxIter = options.MaxIter;
         TolX = options.TolX;
         if (! isscalar (MaxIter) || MaxIter <= 0 || fix (MaxIter) != MaxIter)
-          error (["glmfit: 'MaxIter' in 'Options' structure must", ...
-                  " be a positive integer."]);
+          error (strcat ("glmfit: 'MaxIter' in 'Options' structure must", " be a positive integer."));
         endif
         if (! isscalar (TolX) || TolX <= 0)
-          error (["glmfit: 'TolX' in 'Options' structure must", ...
-                  " be a positive scalar."]);
+          error (strcat ("glmfit: 'TolX' in 'Options' structure must", " be a positive scalar."));
         endif
 
       case "offset"
         offset = varargin {2};
         if (! (isnumeric (offset) && isequal (size (offset), size (xymissing))))
-          error (["glmfit: 'Offset' must be a numeric vector", ...
-                  " of the same size as Y."]);
+          error (strcat ("glmfit: 'Offset' must be a numeric vector", " of the same size as Y."));
         endif
         offset(xymissing) = [];
 
       case "weights"
         weight = varargin {2};
         if (! (isnumeric (weight) && isequal (size (weight), size (xymissing))))
-          error (["glmfit: 'Weights' must be a numeric vector", ...
-                  " of the same size as Y."]);
+          error (strcat ("glmfit: 'Weights' must be a numeric vector", " of the same size as Y."));
         endif
         weight(xymissing) = [];
 

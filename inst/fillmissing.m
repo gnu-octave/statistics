@@ -1047,8 +1047,7 @@ function [A, idx_out] = fillmissing (A, varargin)
 
             ## Check for output of move_fcn having different size than gaps.
             if (! all (cellfun ("numel", fill_vals_C) == gapsizes))
-              error (["fillmissing: fill function return values must be ", ...
-                              "the same size as the gaps."]);
+              error (strcat ("fillmissing: fill function return values must be", " the same size as the gaps."));
             endif
 
             [~, gap_trim_sort_idx] = sort (vertcat (gap_locations{:}));

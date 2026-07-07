@@ -183,7 +183,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     endfor
     if (! all (sequenceint))
       index = max ((sequenceint == 0) .* (1:len));
-      error (["hmmviterbi: sequence(" int2str (index) ") not in symbols"]);
+      error (strcat ("hmmviterbi: sequence(", int2str (index), ...
+                     ") not in symbols"));
     endif
     sequence = sequenceint;
   else
@@ -192,7 +193,8 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
     endif
     if (! all (ismember (sequence, 1:noutput)))
       index = max ((ismember (sequence, 1:noutput) == 0) .* (1:len));
-      error (["hmmviterbi: sequence(" int2str (index) ") out of range"]);
+      error (strcat ("hmmviterbi: sequence(", int2str (index), ...
+                     ") out of range"));
     endif
   endif
 

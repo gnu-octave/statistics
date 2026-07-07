@@ -272,13 +272,11 @@ function [classes, centers, sumd, D] = kmeans (data, k, varargin)
       if (isempty (k))
         k = rows (start);
       elseif (rows (start) != k)
-        error (["kmeans: Number of initializers (%d) " ...
-                "should match number of centroids (%d)"], rows (start), k);
+        error (strcat ("kmeans: Number of initializers (%d)", " should match number of centroids (%d)"), rows (start), k);
       endif
       if (replicates_set_explicitly)
         if (replicates != size (start, 3))
-           error (["kmeans: The third dimension of the initializer (%d) " ...
-                   "should match the number of replicates (%d)"], ...
+           error (strcat ("kmeans: The third dimension of the initializer (%d)", " should match the number of replicates (%d)"), ...
                    size (start, 3), replicates);
         endif
       else
