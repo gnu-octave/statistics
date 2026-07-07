@@ -252,8 +252,8 @@ function mdl = fitlm (varargin)
 
   if (isa (arg1, 'categorical'))
     if (! isvector (arg1))
-      error (["fitlm: Predictor variables must be numeric vectors, numeric " ...
-              "matrices, or categorical vectors."]);
+      error (strcat ("fitlm: Predictor variables must be numeric vectors,", ...
+                     " numeric matrices, or categorical vectors."));
     endif
     if (isempty (rest) || is_nv (rest{1}))
       error ("fitlm: Y argument is required unless X is a dataset or table.");
@@ -333,14 +333,14 @@ function mdl = fitlm (varargin)
           [nr2, nc2] = size (arg2);
 
           if (isempty (arg2))
-            error (["fitlm: The terms matrix must have one column for each " ...
-                    "variable in the dataset or table."]);
+            error (strcat ("fitlm: The terms matrix must have one column", ...
+                           " for each variable in the dataset or table."));
 
           elseif (nc2 == n_cols)
             ## Column count matches table, so it is a terms matrix
             if (! any (all (double (arg2) == 0, 1)))
-              error (["fitlm: Cannot determine the response variable from " ...
-                      "the terms matrix."]);
+              error (strcat ("fitlm: Cannot determine the response", ...
+                             " variable from the terms matrix."));
             endif
             modelspec = double (arg2);
             if (mod (numel (after_arg2), 2) != 0)
@@ -395,8 +395,8 @@ function mdl = fitlm (varargin)
     mdl = LinearModel (arg1, y, modelspec, nv_args{:});
 
   else
-    error (["fitlm: Predictor variables must be numeric vectors, numeric " ...
-            "matrices, or categorical vectors."]);
+    error (strcat ("fitlm: Predictor variables must be numeric vectors,", ...
+                   " numeric matrices, or categorical vectors."));
   endif
 
 endfunction
