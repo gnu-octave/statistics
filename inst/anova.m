@@ -171,6 +171,24 @@ classdef anova < handle
       [varargout{:}] = multcompare (obj.Stats, varargin{:});
     endfunction
 
+    function h = plotDiagnostics (obj, varargin)
+      obj.ensureFit_ ();
+      if (isempty (obj.Residuals) || isempty (obj.FittedValues) ...
+          || isempty (obj.DesignMatrix))
+        error (strcat ("anova.plotDiagnostics: diagnostic plots require", ...
+                       " an anovan-backed fit."));
+      endif
+
+      leverage = obj.leverage_ ();
+      if (isfield (obj.Stats, 'CooksD'))
+        cooksd = obj.Stats.CooksD;
+      else
+        cooksd = obj.cooksDistance_ (leverage);
+      endif
+      h = __anova_plot_diagnostics__ (obj.Residuals, obj.FittedValues, ...
+                                      leverage, cooksd, obj.DFE, varargin{:});
+    endfunction
+
   endmethods
 
   methods (Access = private)
@@ -400,6 +418,18 @@ classdef anova < handle
       if (! isempty (obj.Contrasts))
         nv = [nv, {'contrasts', obj.Contrasts}];
       endif
+    endfunction
+
+    function h = leverage_ (obj)
+      X = full (obj.DesignMatrix);
+      Q = qr (X, 0);
+      h = sum (Q .^ 2, 2);
+    endfunction
+
+    function D = cooksDistance_ (obj, leverage)
+      p = max (columns (obj.DesignMatrix), 1);
+      D = (obj.Residuals .^ 2 ./ max (p * obj.MSE, eps)) ...
+          .* leverage ./ max ((1 - leverage) .^ 2, eps);
     endfunction
 
   endmethods
@@ -710,3 +740,26 @@ endclassdef
 %! a = anova ((1:6)', [1;1;2;2;3;3], 'SSType', 2);
 %! C = multcompare (a, 'display', 'off');
 %! assert (! isempty (C));
+
+## --- Week 5: diagnostic plots ------------------------------------------
+
+## plotDiagnostics(): anovan-backed fit creates the four-panel figure
+%!test
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%!   g = [1;1;1;2;2;2;3;3;3];
+%!   a = anova (y, g, 'SSType', 2);
+%!   h = plotDiagnostics (a, 'Visible', 'off');
+%!   assert (ishghandle (h));
+%!   assert (numel (findall (h, 'type', 'axes')), 4);
+%! unwind_protect_cleanup
+%!   close (h);
+%!   close (hf);
+%! end_unwind_protect
+
+## plotDiagnostics(): fast-path backends report the missing diagnostics
+%!error <diagnostic plots require>
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! plotDiagnostics (anova (popcorn, [], 'reps', 3));
