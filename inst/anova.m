@@ -21,17 +21,20 @@ classdef anova < handle
   ##
   ## Object-oriented interface for analysis of variance.
   ##
-  ## The @code{anova} class provides a unified, stateful, object-oriented
-  ## wrapper around the procedural functions @code{anova1}, @code{anova2}, and
-  ## @code{anovan}.  The constructor stores the data and model specification,
-  ## selects the appropriate backend, and (in later stages) delegates the
-  ## actual computation to the chosen procedural function.
+  ## The @code{anova} class provides a unified object-oriented wrapper around
+  ## the procedural functions @code{anova1}, @code{anova2}, and @code{anovan}.
+  ## It stores the response data, grouping variables, model specification, and
+  ## fitted results in one object.  The class chooses the narrowest compatible
+  ## backend, delegates the numeric computation to the existing ANOVA
+  ## functions, and exposes common follow-up operations such as
+  ## @code{summary}, @code{multcompare}, @code{plotDiagnostics},
+  ## @code{predict}, and @code{getEffectSizes}.
   ##
-  ## This is the Week 1 skeleton: construction, validation, name-value
-  ## parsing, and backend selection only.  Fit delegation and result
-  ## population are introduced in subsequent stages.
+  ## Models are fitted lazily.  Methods that need fitted results call
+  ## @code{fit} internally when necessary, so users may construct an object and
+  ## immediately call inspection or post-hoc methods.
   ##
-  ## @seealso{anova1, anova2, anovan, multcompare}
+  ## @seealso{anova1, anova2, anovan, multcompare, fitlm, LinearModel}
   ## @end deftp
 
   properties (GetAccess = public, SetAccess = private)
@@ -52,7 +55,7 @@ classdef anova < handle
 
   properties (Access = public)
     ## Model specification (mutations will trigger lazy refit in Week 2+)
-    ModelType   = 'linear';                 ## 'linear', 'interaction', 'full', or terms matrix
+    ModelType   = 'linear';                 ## model name or terms matrix
     SSType      = 3;                        ## 1, 2, or 3
     VarNames    = {};
     Contrasts   = {};
@@ -74,6 +77,33 @@ classdef anova < handle
 
   methods (Access = public)
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{obj} =} anova (@var{Y})
+    ## @deftypefnx {anova} {@var{obj} =} anova (@var{Y}, @var{GROUP})
+    ## @deftypefnx {anova} {@var{obj} =} anova (@dots{}, @var{name}, @var{value})
+    ## @deftypefnx {anova} {@var{obj} =} anova (@var{mdl})
+    ##
+    ## Create an object-oriented analysis of variance model.
+    ##
+    ## @var{Y} is a non-empty numeric response vector or matrix.  @var{GROUP}
+    ## contains grouping variables for vector responses and may be a grouping
+    ## vector, a matrix of grouping variables, or a cell array of grouping
+    ## vectors.  If @var{GROUP} is omitted and @var{Y} is a matrix, columns of
+    ## @var{Y} are treated as groups following @code{anova1} matrix syntax.
+    ##
+    ## The constructor accepts name-value arguments matching the underlying
+    ## ANOVA backends, including @qcode{'Model'}, @qcode{'SSType'},
+    ## @qcode{'VarNames'}, @qcode{'Contrasts'}, @qcode{'Alpha'},
+    ## @qcode{'Continuous'}, @qcode{'Random'}, @qcode{'Weights'},
+    ## @qcode{'Display'}, and @qcode{'Reps'}.  Passing @qcode{'Reps'} selects
+    ## the balanced two-way @code{anova2} backend when @var{Y} is a non-vector
+    ## matrix.
+    ##
+    ## @var{mdl} may be a @code{LinearModel} object, in which case the ANOVA
+    ## object is populated from the fitted linear model's public properties.
+    ##
+    ## @seealso{fit, summary, anova1, anova2, anovan, LinearModel}
+    ## @end deftypefn
     function obj = anova (Y, GROUP, varargin)
 
       if (nargin < 1)
@@ -135,16 +165,40 @@ classdef anova < handle
         endswitch
       endfor
 
-      obj.validateSpec_ ();
       obj.nFactors_ = obj.countFactors_ ();
+      obj.validateSpec_ ();
+      obj.validateData_ ();
       obj.selectBackend_ ();
       obj.dirty_ = true;
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {anova} {} fit (@var{obj})
+    ##
+    ## Fit the ANOVA model if it has not already been fitted.
+    ##
+    ## This method is optional for most workflows because methods such as
+    ## @code{summary}, @code{multcompare}, @code{plotDiagnostics},
+    ## @code{predict}, and @code{getEffectSizes} call @code{fit} lazily when
+    ## fitted results are needed.
+    ##
+    ## @end deftypefn
     function fit (obj)
       obj.ensureFit_ ();
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {anova} {} summary (@var{obj})
+    ##
+    ## Display the fitted ANOVA table and basic fit statistics.
+    ##
+    ## The model is fitted first if needed.  The printed table uses the
+    ## backend table returned by @code{anova1}, @code{anova2}, or
+    ## @code{anovan}, followed by the mean squared error, error degrees of
+    ## freedom, and significance level.
+    ##
+    ## @seealso{disp, fit}
+    ## @end deftypefn
     function summary (obj)
       obj.ensureFit_ ();
       atab = obj.AnovaTable;
@@ -163,6 +217,16 @@ classdef anova < handle
       fprintf ("\n");
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {anova} {} disp (@var{obj})
+    ##
+    ## Display a compact description of an @code{anova} object.
+    ##
+    ## The display includes the selected backend, fit state, number of factors,
+    ## sum-of-squares type, and significance level.
+    ##
+    ## @seealso{summary}
+    ## @end deftypefn
     function disp (obj)
       fprintf ("\n  anova object\n");
       fprintf ("    backend  : %s\n", obj.backend_);
@@ -172,6 +236,18 @@ classdef anova < handle
       fprintf ("    Alpha    : %g\n\n", obj.Alpha);
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{C} =} multcompare (@var{obj})
+    ## @deftypefnx {anova} {[@var{C}, @var{M}, @var{H}, @var{GNAMES}] =} multcompare (@var{obj}, @dots{})
+    ##
+    ## Perform post-hoc multiple comparisons for a fitted ANOVA object.
+    ##
+    ## The method fits the object if needed and delegates to the package
+    ## function @code{multcompare} using the backend @code{Stats} structure.
+    ## Additional arguments are passed through unchanged.
+    ##
+    ## @seealso{multcompare}
+    ## @end deftypefn
     function varargout = multcompare (obj, varargin)
       obj.ensureFit_ ();
       if (strcmp (obj.backend_, 'linearmodel'))
@@ -184,14 +260,33 @@ classdef anova < handle
       [varargout{:}] = multcompare (obj.Stats, varargin{:});
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {} plotDiagnostics (@var{obj})
+    ## @deftypefnx {anova} {@var{h} =} plotDiagnostics (@var{obj})
+    ## @deftypefnx {anova} {@var{h} =} plotDiagnostics (@var{obj}, @var{name}, @var{value})
+    ##
+    ## Plot residual diagnostics for an ANOVA object.
+    ##
+    ## The method creates a four-panel figure containing a Normal Q-Q plot, a
+    ## Spread-Location plot, a Residual-Leverage plot, and a Cook's distance
+    ## plot.  Diagnostic plots require an @code{anovan}-backed fit or a
+    ## @code{LinearModel}-backed object because the fast @code{anova1} and
+    ## @code{anova2} backends do not expose residuals and design-matrix
+    ## diagnostics.
+    ##
+    ## Supported name-value arguments are @qcode{'FigureName'} and
+    ## @qcode{'Visible'}.
+    ##
+    ## @seealso{summary}
+    ## @end deftypefn
     function h = plotDiagnostics (obj, varargin)
       obj.ensureFit_ ();
       if (! isempty (obj.sourceModel_))
         mdl = obj.sourceModel_;
-        h = __anova_plot_diagnostics__ (mdl.Residuals.Raw, mdl.Fitted, ...
-                                        mdl.Diagnostics.Leverage, ...
-                                        mdl.Diagnostics.CooksDistance, ...
-                                        mdl.DFE, varargin{:});
+        h = obj.plotDiagnostics_ (mdl.Residuals.Raw, mdl.Fitted, ...
+                                  mdl.Diagnostics.Leverage, ...
+                                  mdl.Diagnostics.CooksDistance, ...
+                                  mdl.DFE, varargin{:});
         return;
       endif
       if (isempty (obj.Residuals) || isempty (obj.FittedValues) ...
@@ -206,10 +301,25 @@ classdef anova < handle
       else
         cooksd = obj.cooksDistance_ (leverage);
       endif
-      h = __anova_plot_diagnostics__ (obj.Residuals, obj.FittedValues, ...
-                                      leverage, cooksd, obj.DFE, varargin{:});
+      h = obj.plotDiagnostics_ (obj.Residuals, obj.FittedValues, ...
+                                leverage, cooksd, obj.DFE, varargin{:});
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{ypred} =} predict (@var{obj})
+    ## @deftypefnx {anova} {@var{ypred} =} predict (@var{obj}, @var{Xnew})
+    ##
+    ## Predict fitted responses from an ANOVA object.
+    ##
+    ## With no @var{Xnew}, return fitted values for the training data.  For an
+    ## @code{anovan}-backed object, @var{Xnew} must be a numeric design matrix
+    ## with one column per coefficient.  For a @code{LinearModel}-backed
+    ## object, prediction is delegated to @code{predict} on the stored
+    ## @code{LinearModel}, so that table input and categorical encoding remain
+    ## owned by @code{LinearModel}.
+    ##
+    ## @seealso{fitlm, LinearModel}
+    ## @end deftypefn
     function ypred = predict (obj, Xnew, varargin)
       obj.ensureFit_ ();
       if (! isempty (obj.sourceModel_))
@@ -235,6 +345,19 @@ classdef anova < handle
       ypred = Xnew * beta;
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {anova} {@var{ES} =} getEffectSizes (@var{obj})
+    ##
+    ## Return ANOVA effect-size estimates.
+    ##
+    ## The returned structure contains fields @code{Source},
+    ## @code{EtaSquared}, @code{PartialEtaSquared}, and @code{OmegaSquared}.
+    ## For @code{anovan}-backed fits, values are derived from the fitted ANOVA
+    ## table.  For @code{LinearModel}-backed fits, model-level values are
+    ## computed from @code{SSR}, @code{SSE}, @code{SST}, and @code{MSE}.
+    ##
+    ## @seealso{summary}
+    ## @end deftypefn
     function es = getEffectSizes (obj)
       obj.ensureFit_ ();
       if (strcmp (obj.backend_, 'linearmodel'))
@@ -313,8 +436,20 @@ classdef anova < handle
       if (! isempty (obj.Continuous) && ! isnumeric (obj.Continuous))
         error ("anova: Continuous must be a numeric index vector.");
       endif
+      if (! isempty (obj.Continuous) ...
+          && (! isvector (obj.Continuous) ...
+              || any (obj.Continuous != fix (obj.Continuous)) ...
+              || any (obj.Continuous < 1)))
+        error ("anova: Continuous must contain positive integer indices.");
+      endif
       if (! isempty (obj.Random) && ! isnumeric (obj.Random))
         error ("anova: Random must be a numeric index vector.");
+      endif
+      if (! isempty (obj.Random) ...
+          && (! isvector (obj.Random) ...
+              || any (obj.Random != fix (obj.Random)) ...
+              || any (obj.Random < 1)))
+        error ("anova: Random must contain positive integer indices.");
       endif
       if (! isempty (obj.Weights) && ! isnumeric (obj.Weights))
         error ("anova: Weights must be numeric.");
@@ -323,6 +458,44 @@ classdef anova < handle
           && ! (isnumeric (obj.reps_) && isscalar (obj.reps_) ...
                 && obj.reps_ > 0 && obj.reps_ == fix (obj.reps_)))
         error ("anova: Reps must be a positive integer scalar.");
+      endif
+    endfunction
+
+    function validateData_ (obj)
+      nobs = numel (obj.Y);
+      if (! isempty (obj.GROUP))
+        obj.validateGroupLength_ (obj.GROUP, nobs);
+      endif
+      if (! isempty (obj.Weights) && numel (obj.Weights) != nobs)
+        error ("anova: Weights must have one value per observation.");
+      endif
+      if (! isempty (obj.Continuous) && any (obj.Continuous > obj.nFactors_))
+        error ("anova: Continuous indices exceed the number of factors.");
+      endif
+      if (! isempty (obj.Random) && any (obj.Random > obj.nFactors_))
+        error ("anova: Random indices exceed the number of factors.");
+      endif
+      if (isnumeric (obj.ModelType) && ! isempty (obj.ModelType) ...
+          && columns (obj.ModelType) != obj.nFactors_)
+        error ("anova: terms matrix must have one column per factor.");
+      endif
+    endfunction
+
+    function validateGroupLength_ (obj, group, nobs)
+      if (iscell (group) ...
+          && all (cellfun (@(c) isvector (c) || ischar (c), group(:))) ...
+          && size (group, 1) == 1)
+        for k = 1:numel (group)
+          if (numel (group{k}) != nobs)
+            error ("anova: GROUP variables must match the number of observations.");
+          endif
+        endfor
+      elseif (isvector (group))
+        if (numel (group) != nobs)
+          error ("anova: GROUP must match the number of observations.");
+        endif
+      elseif (rows (group) != nobs)
+        error ("anova: GROUP must have one row per observation.");
       endif
     endfunction
 
@@ -529,6 +702,124 @@ classdef anova < handle
           .* leverage ./ max ((1 - leverage) .^ 2, eps);
     endfunction
 
+    function h = plotDiagnostics_ (obj, residuals, fitted, leverage, ...
+                                   cooksd, dfe, varargin)
+      if (isempty (residuals) || isempty (fitted) || isempty (leverage) ...
+          || isempty (cooksd))
+        error ("anova.plotDiagnostics: diagnostic inputs must be non-empty.");
+      endif
+
+      residuals = residuals(:);
+      fitted    = fitted(:);
+      leverage  = leverage(:);
+      cooksd    = cooksd(:);
+      n = numel (residuals);
+      if (numel (fitted) != n || numel (leverage) != n ...
+          || numel (cooksd) != n)
+        error ("anova.plotDiagnostics: diagnostic inputs must match.");
+      endif
+
+      fig_name = "Diagnostic Plots: Model Residuals";
+      visible = "on";
+      if (mod (numel (varargin), 2) != 0)
+        error ("anova.plotDiagnostics: name-value pairs must come in pairs.");
+      endif
+      for k = 1:2:numel (varargin)
+        switch (lower (varargin{k}))
+          case "figurename"
+            fig_name = varargin{k + 1};
+          case "visible"
+            visible = varargin{k + 1};
+          otherwise
+            error ("anova.plotDiagnostics: unknown option '%s'.", varargin{k});
+        endswitch
+      endfor
+
+      mse = sum (residuals .^ 2) / max (dfe, 1);
+      t = residuals ./ sqrt (mse * max (1 - leverage, eps));
+      [~, DI] = sort (cooksd, "descend");
+      nk = min (4, n);
+
+      h = figure ("Name", fig_name, "Visible", visible);
+
+      subplot (2, 2, 1);
+      x = ((1:n)' - 0.5) / n;
+      [ts, I] = sort (t);
+      q = norminv (x);
+      plot (q, ts, "ok", "markersize", 3);
+      box off;
+      grid on;
+      xlabel ("Theoretical quantiles");
+      ylabel ("Studentized residuals");
+      title ("Normal Q-Q Plot");
+      arrayfun (@(i) text (q(I == DI(i)), t(DI(i)), ...
+                           sprintf ("  %u", DI(i))), 1:nk);
+      iqr = [0.25; 0.75];
+      yl = quantile (t, iqr, 1, 6);
+      xl = norminv (iqr);
+      slope = diff (yl) / diff (xl);
+      int = yl(1) - slope * xl(1);
+      ax1_xlim = get (gca, "XLim");
+      hold on;
+      plot (ax1_xlim, slope * ax1_xlim + int, "k-");
+      hold off;
+      set (gca, "Xlim", ax1_xlim);
+
+      subplot (2, 2, 2);
+      plot (fitted, sqrt (abs (t)), "ko", "markersize", 3);
+      box off;
+      xlabel ("Fitted values");
+      ylabel ("sqrt ( | Studentized residuals | )");
+      title ("Spread-Location Plot");
+      ax2_xlim = get (gca, "XLim");
+      hold on;
+      plot (ax2_xlim, ones (1, 2) * sqrt (2), "k:");
+      plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-.");
+      plot (ax2_xlim, ones (1, 2) * sqrt (4), "k--");
+      hold off;
+      arrayfun (@(i) text (fitted(DI(i)), sqrt (abs (t(DI(i)))), ...
+                           sprintf ("  %u", DI(i))), 1:nk);
+      xlim (ax2_xlim);
+
+      subplot (2, 2, 3);
+      plot (leverage, t, "ko", "markersize", 3);
+      box off;
+      xlabel ("Leverage");
+      ylabel ("Studentized residuals");
+      title ("Residual-Leverage Plot");
+      ax3_xlim = get (gca, "XLim");
+      ax3_ylim = get (gca, "YLim");
+      hold on;
+      plot (ax3_xlim, zeros (1, 2), "k-");
+      hold off;
+      arrayfun (@(i) text (leverage(DI(i)), t(DI(i)), ...
+                           sprintf ("  %u", DI(i))), 1:nk);
+      set (gca, "ygrid", "on");
+      xlim (ax3_xlim);
+      ylim (ax3_ylim);
+
+      subplot (2, 2, 4);
+      stem (cooksd, "ko", "markersize", 3);
+      box off;
+      xlabel ("Obs. number");
+      ylabel ("Cook's distance");
+      title ("Cook's Distance Stem Plot");
+      xlim ([0, n]);
+      ax4_xlim = get (gca, "XLim");
+      ax4_ylim = get (gca, "YLim");
+      hold on;
+      plot (ax4_xlim, ones (1, 2) * 4 / max (dfe, eps), "k:");
+      plot (ax4_xlim, ones (1, 2) * 0.5, "k-.");
+      plot (ax4_xlim, ones (1, 2), "k--");
+      hold off;
+      arrayfun (@(i) text (DI(i), cooksd(DI(i)), ...
+                           sprintf ("  %u", DI(i))), 1:nk);
+      xlim (ax4_xlim);
+      ylim (ax4_ylim);
+
+      set (findall (gcf, "-property", "FontSize"), "FontSize", 7);
+    endfunction
+
     function coeffs = linearModelCoefficients_ (obj, mdl)
       est = mdl.Coefficients.Estimate;
       se = mdl.Coefficients.SE;
@@ -645,19 +936,28 @@ classdef anova < handle
 
   endmethods
 
-  ## Test-only accessors for the private backend selection state.
-  ## Kept hidden to discourage external use while still letting BISTs
-  ## verify Week 1 behaviour without piercing object privacy by hand.
-  methods (Access = public, Hidden)
-    function b = getBackend (obj)
-      b = obj.backend_;
-    endfunction
-    function n = getNumFactors (obj)
-      n = obj.nFactors_;
-    endfunction
-  endmethods
-
 endclassdef
+
+%!demo
+%! ## One-way ANOVA with a formatted summary
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, "SSType", 2);
+%! summary (a);
+
+%!demo
+%! ## Post-hoc multiple comparisons
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, "SSType", 2);
+%! C = multcompare (a, "display", "off")
+
+%!demo
+%! ## Diagnostic plots for an anovan-backed fit
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, "SSType", 2);
+%! plotDiagnostics (a);
 
 ## --- BISTs ---------------------------------------------------------------
 
@@ -685,7 +985,7 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova (y, {g1, g2});
 %! assert (class (a), "anova");
-%! assert (a.getNumFactors (), 2);
+%! assert (! isempty (strfind (evalc ("disp (a)"), "nFactors : 2")));
 
 ## Property defaults
 %!test
@@ -731,20 +1031,21 @@ endclassdef
 ## Backend selection: one-way default -> anova1
 %!test
 %! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3]);
-%! assert (a.getBackend (), 'anova1');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova1")));
 
 ## Backend selection: one-way matrix-Y form -> anova1
 %!test
 %! a = anova (magic (4));
-%! assert (a.getNumFactors (), 1);
-%! assert (a.getBackend (), 'anova1');
+%! str = evalc ("disp (a)");
+%! assert (! isempty (strfind (str, "nFactors : 1")));
+%! assert (! isempty (strfind (str, "backend  : anova1")));
 
 ## Backend selection: matrix Y + explicit 'reps' -> anova2
 %!test
 %! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (y, [], 'reps', 3);
-%! assert (a.getBackend (), 'anova2');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova2")));
 
 ## Backend selection: two-factor cell groups without reps -> anovan
 %!test
@@ -752,8 +1053,9 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova (y, {g1, g2});
-%! assert (a.getNumFactors (), 2);
-%! assert (a.getBackend (), 'anovan');
+%! str = evalc ("disp (a)");
+%! assert (! isempty (strfind (str, "nFactors : 2")));
+%! assert (! isempty (strfind (str, "backend  : anovan")));
 
 ## Backend selection: three factors -> anovan
 %!test
@@ -762,13 +1064,14 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 6, 1);
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
 %! a = anova (y, {g1, g2, g3});
-%! assert (a.getNumFactors (), 3);
-%! assert (a.getBackend (), 'anovan');
+%! str = evalc ("disp (a)");
+%! assert (! isempty (strfind (str, "nFactors : 3")));
+%! assert (! isempty (strfind (str, "backend  : anovan")));
 
 ## Backend selection: SSType != 3 with 1 factor falls through to anovan
 %!test
 %! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3], 'SSType', 2);
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 
 ## Backend selection: continuous predictors force anovan
 %!test
@@ -776,20 +1079,20 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = (1:12)';                              ## continuous
 %! a = anova (y, {g1, g2}, 'Continuous', 2);
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 
-## Backend selection: NaN in Y demotes 2-way to anovan
+## Backend selection: NaN in a vector response falls through to anovan
 %!test
-%! y = [1, 2; 3, NaN; 5, 6; 7, 8];
-%! g1 = [1;2;1;2];
-%! g2 = [1;1;2;2];
+%! y = [1; 2; 3; NaN; 5; 6; 7; 8];
+%! g1 = [1; 2; 1; 2; 1; 2; 1; 2];
+%! g2 = [1; 1; 2; 2; 1; 1; 2; 2];
 %! a = anova (y, {g1, g2});
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 
 ## Backend selection: weights force anovan
 %!test
 %! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3], 'Weights', ones (6, 1));
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 
 ## Invalid input: no args
 %!error <anova: too few input arguments.> anova ()
@@ -828,6 +1131,46 @@ endclassdef
 %!error <anova: Reps must be a positive integer scalar.> ...
 %!  anova (magic (4), [], 'reps', -2)
 
+## Invalid input: non-integer Reps value
+%!error <anova: Reps must be a positive integer scalar.> ...
+%!  anova (magic (4), [], 'reps', 1.5)
+
+## Invalid input: bad ModelType
+%!error <anova: ModelType must be> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Model', 'quadratic')
+
+## Invalid input: terms matrix width must match factor count
+%!error <anova: terms matrix must have one column per factor.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Model', [1 0])
+
+## Invalid input: GROUP length mismatch
+%!error <anova: GROUP must match the number of observations.> ...
+%!  anova ([1;2;3;4], [1;1;2])
+
+## Invalid input: cell GROUP variable length mismatch
+%!error <anova: GROUP variables must match the number of observations.> ...
+%!  anova ([1;2;3;4], {[1;1;2], [1;2;1;2]})
+
+## Invalid input: Weights length mismatch
+%!error <anova: Weights must have one value per observation.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Weights', [1;1;1])
+
+## Invalid input: Continuous indices must be positive integers
+%!error <anova: Continuous must contain positive integer indices.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 1.5)
+
+## Invalid input: Continuous index out of range
+%!error <anova: Continuous indices exceed the number of factors.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 2)
+
+## Invalid input: Random indices must be positive integers
+%!error <anova: Random must contain positive integer indices.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 0)
+
+## Invalid input: Random index out of range
+%!error <anova: Random indices exceed the number of factors.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 2)
+
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
 ## fit_(): one-way fixture (anova1 backend; falls back to anovan on
@@ -848,7 +1191,7 @@ endclassdef
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
-%! assert (a.getBackend (), 'anova2');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova2")));
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (isfield (a.Stats, 'sigmasq'));
@@ -861,7 +1204,7 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 6, 1);
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
 %! a = anova (y, {g1, g2, g3});
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (! isempty (a.Coefficients));
@@ -892,8 +1235,74 @@ endclassdef
 %! g = repmat ([1;2;3], 4, 1);
 %! a = anova (y, {g}, 'SSType', 2, 'Alpha', 0.10);
 %! a.fit ();
-%! assert (a.getBackend (), 'anovan');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 %! assert (a.Stats.alpha, 0.10, 1e-12);
+
+## --- Numeric references -------------------------------------------------
+
+## One-way ANOVA: reference values match R's aov(y ~ factor(g)).
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, 'SSType', 2);
+%! a.fit ();
+%! T = a.AnovaTable;
+%! assert (T{2, 2}, 126, 1e-12);       # group SS
+%! assert (T{3, 2}, 6, 1e-12);         # error SS
+%! assert (T{4, 2}, 132, 1e-12);       # total SS
+%! assert (T{2, 3}, 2);
+%! assert (T{3, 3}, 6);
+%! assert (T{2, 4}, 63, 1e-12);
+%! assert (T{3, 4}, 1, 1e-12);
+%! assert (T{2, 6}, 63, 1e-12);
+%! assert (T{2, 7}, 9.3914e-05, 1e-9);
+%! assert (a.MSE, 1, 1e-12);
+%! assert (a.DFE, 6);
+
+## Fitted values and residuals: reference values from one-way cell means.
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, 'SSType', 2);
+%! assert (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
+%! assert (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
+
+## Effect sizes: reference formulas eta2=SS/SST and omega2=(SS-df*MSE)/(SST+MSE).
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! es = getEffectSizes (anova (y, g, 'SSType', 2));
+%! assert (es.Source, {'X1'});
+%! assert (es.EtaSquared, 126 / 132, 1e-12);
+%! assert (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
+%! assert (es.OmegaSquared, 124 / 133, 1e-12);
+
+## Two-way balanced ANOVA: popcorn values match the anova2 documentation example.
+%!test
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! a = anova (popcorn, [], 'reps', 3);
+%! a.fit ();
+%! T = a.AnovaTable;
+%! assert (T{2, 2}, 15.75, 1e-12);
+%! assert (T{3, 2}, 4.5, 1e-12);
+%! assert (T{4, 2}, 1.75, 1e-12);
+%! assert (T{5, 2}, 22, 1e-12);
+%! assert (T{2, 5}, 63, 1e-12);
+%! assert (T{3, 5}, 36, 1e-12);
+%! assert (a.MSE, 0.125, 1e-12);
+
+## Post-hoc comparisons: reference values checked against R's TukeyHSD output.
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (y, g, 'SSType', 2);
+%! C = multcompare (a, 'display', 'off');
+%! assert (C(:, 1:2), [1 2; 1 3; 2 3]);
+%! assert (C(:, 4), [-3; -9; -6], 1e-12);
+%! assert (C(1, 6), 0.010402, 1e-6);
+%! assert (C(2, 6), 9.9474e-05, 1e-9);
+%! assert (C(3, 6), 0.00064995, 1e-8);
 
 ## --- Week 3: summary / disp ---------------------------------------------
 
@@ -975,6 +1384,18 @@ endclassdef
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! plotDiagnostics (anova (popcorn, [], 'reps', 3));
 
+## plotDiagnostics(): rejects odd name-value arguments
+%!error <name-value pairs must come in pairs>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! plotDiagnostics (anova (y, g, 'SSType', 2), 'Visible');
+
+## plotDiagnostics(): rejects unknown options
+%!error <unknown option>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! plotDiagnostics (anova (y, g, 'SSType', 2), 'BadOption', true);
+
 ## --- Week 6: predict / effect sizes / LinearModel bridge ----------------
 
 ## predict(): no Xnew returns fitted values
@@ -992,6 +1413,12 @@ endclassdef
 %! a.fit ();
 %! assert (predict (a, full (a.DesignMatrix)), a.FittedValues, 1e-9);
 
+## predict(): rejects design matrices with the wrong width
+%!error <Xnew must be a numeric design matrix>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! predict (anova (y, g, 'SSType', 2), ones (2, 2));
+
 ## getEffectSizes(): anovan-backed fits report effect-size vectors
 %!test
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
@@ -1008,7 +1435,7 @@ endclassdef
 %! y = [2; 4; 5; 4; 5];
 %! mdl = fitlm (X, y);
 %! a = anova (mdl);
-%! assert (a.getBackend (), 'linearmodel');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : linearmodel")));
 %! assert (! isempty (a.AnovaTable));
 %! assert (predict (a), mdl.Fitted, 1e-9);
 %! es = getEffectSizes (a);
