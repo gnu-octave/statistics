@@ -21,14 +21,14 @@ classdef anova < handle
   ##
   ## Object-oriented interface for analysis of variance.
   ##
-  ## The @code{anova} class provides a unified object-oriented wrapper around
-  ## the procedural functions @code{anova1}, @code{anova2}, and @code{anovan}.
-  ## It stores the response data, grouping variables, model specification, and
-  ## fitted results in one object.  The class chooses the narrowest compatible
-  ## backend, delegates the numeric computation to the existing ANOVA
-  ## functions, and exposes common follow-up operations such as
-  ## @code{summary}, @code{multcompare}, @code{plotDiagnostics},
-  ## @code{predict}, and @code{getEffectSizes}.
+  ## The @code{anova} class provides a MATLAB-compatible object interface for
+  ## analysis of variance.  It stores factors, response data, model
+  ## specification, and fitted results in one object.  The class chooses the
+  ## narrowest compatible backend, delegates the numeric computation to the
+  ## existing ANOVA functions, and exposes common follow-up operations such as
+  ## @code{stats}, @code{groupmeans}, @code{boxchart},
+  ## @code{plotComparisons}, @code{varianceComponent}, and
+  ## @code{multcompare}.
   ##
   ## Models are fitted lazily.  Methods that need fitted results call
   ## @code{fit} internally when necessary, so users may construct an object and
@@ -41,26 +41,127 @@ classdef anova < handle
     ## Data
 
     ## -*- texinfo -*-
-    ## @deftp {anova} {property} Y
+    ## @deftp {anova} {property} Factors
     ##
-    ## Response data
+    ## Factor data
     ##
-    ## Numeric response vector or matrix used to fit the ANOVA model.  This
-    ## property is read-only.
-    ##
-    ## @end deftp
-    Y
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} GROUP
-    ##
-    ## Grouping variables
-    ##
-    ## Group labels or predictor variables associated with the response data.
+    ## Grouping variables or factor values used to fit the ANOVA model.
     ## This property is read-only.
     ##
     ## @end deftp
-    GROUP
+    Factors
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Response
+    ##
+    ## Response data
+    ##
+    ## Numeric response vector or matrix used to fit the ANOVA model.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    Response
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Formula
+    ##
+    ## Model formula
+    ##
+    ## Character vector describing the fitted ANOVA model formula.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    Formula         = '';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} FactorNames
+    ##
+    ## Factor names
+    ##
+    ## Cell array of character vectors used as factor names in the fitted
+    ## ANOVA table.  This property is read-only.
+    ##
+    ## @end deftp
+    FactorNames     = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} ModelSpecification
+    ##
+    ## ANOVA model specification
+    ##
+    ## Model name or terms matrix used by the ANOVA backend.  Valid model
+    ## names are @qcode{'linear'}, @qcode{'interactions'}, and
+    ## @qcode{'full'}.  This property is read-only.
+    ##
+    ## @end deftp
+    ModelSpecification = 'linear';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} SumOfSquaresType
+    ##
+    ## Sum-of-squares type
+    ##
+    ## Character vector selecting @qcode{'one'}, @qcode{'two'},
+    ## @qcode{'three'}, or @qcode{'hierarchical'} sums of squares.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    SumOfSquaresType = 'three';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} RandomFactors
+    ##
+    ## Random factors
+    ##
+    ## Positive integer indices of random factors.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    RandomFactors   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} CategoricalFactors
+    ##
+    ## Categorical factors
+    ##
+    ## Character vector @qcode{'all'} or positive integer indices of factors
+    ## treated as categorical.  This property is read-only.
+    ##
+    ## @end deftp
+    CategoricalFactors = 'all';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} ResponseName
+    ##
+    ## Response variable name
+    ##
+    ## Character vector used as the response name in formula display.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    ResponseName    = 'Y';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} NumFactors
+    ##
+    ## Number of factors
+    ##
+    ## Scalar number of factors in the ANOVA model.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
+    NumFactors      = 0;
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} NumObservations
+    ##
+    ## Number of observations
+    ##
+    ## Scalar number of response observations used by the model.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    NumObservations = 0;
 
     ## Results (populated after fit; empty until then)
 
@@ -153,107 +254,22 @@ classdef anova < handle
     Stats          = struct ();
   endproperties
 
-  properties (Access = public)
-    ## Model specification (mutations will trigger lazy refit in Week 2+)
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} ModelType
-    ##
-    ## ANOVA model specification
-    ##
-    ## Model name, interaction order, or terms matrix passed to
-    ## @code{anovan}.  Valid model names are @qcode{'linear'},
-    ## @qcode{'interaction'}, and @qcode{'full'}.
-    ##
-    ## @end deftp
+  properties (GetAccess = public, SetAccess = private, Hidden)
+    ## Backend aliases retained for compatibility with existing ANOVA helpers.
+    Y
+    GROUP
     ModelType   = 'linear';
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} SSType
-    ##
-    ## Sum-of-squares type
-    ##
-    ## Scalar value @code{1}, @code{2}, or @code{3} selecting Type I, Type II,
-    ## or Type III sums of squares.
-    ##
-    ## @end deftp
     SSType      = 3;
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} VarNames
-    ##
-    ## Factor names
-    ##
-    ## Cell array of character vectors used as factor names in the fitted
-    ## ANOVA table.
-    ##
-    ## @end deftp
     VarNames    = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Contrasts
-    ##
-    ## Factor contrasts
-    ##
-    ## Contrast specification passed through to the @code{anovan} backend.
-    ##
-    ## @end deftp
-    Contrasts   = {};
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Alpha
-    ##
-    ## Significance level
-    ##
-    ## Scalar value in the open interval @math{(0, 1)} used for confidence
-    ## intervals and post-hoc comparisons.
-    ##
-    ## @end deftp
-    Alpha       = 0.05;
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Continuous
-    ##
-    ## Continuous predictors
-    ##
-    ## Positive integer indices of grouping variables that should be treated as
-    ## continuous predictors by @code{anovan}.
-    ##
-    ## @end deftp
     Continuous  = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Random
-    ##
-    ## Random factors
-    ##
-    ## Positive integer indices of grouping variables that should be treated as
-    ## random factors by @code{anovan}.
-    ##
-    ## @end deftp
     Random      = [];
+  endproperties
 
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Weights
-    ##
-    ## Observation weights
-    ##
-    ## Numeric vector of observation weights passed through to
-    ## @code{anovan}.
-    ##
-    ## @end deftp
-    Weights     = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Display
-    ##
-    ## Backend display option
-    ##
-    ## Character vector @qcode{'on'} or @qcode{'off'} controlling whether the
-    ## selected backend prints or plots its default output.
-    ##
-    ## @end deftp
+  properties (Access = private)
+    Alpha       = 0.05;
+    Contrasts   = {};
     Display     = 'off';
+    Weights     = [];
   endproperties
 
   properties (Access = private)
@@ -269,47 +285,59 @@ classdef anova < handle
 
     ## -*- texinfo -*-
     ## @deftypefn  {anova} {@var{obj} =} anova (@var{Y})
-    ## @deftypefnx {anova} {@var{obj} =} anova (@var{Y}, @var{GROUP})
+    ## @deftypefnx {anova} {@var{obj} =} anova (@var{factors}, @var{Y})
     ## @deftypefnx {anova} {@var{obj} =} anova (@dots{}, @var{name}, @var{value})
     ## @deftypefnx {anova} {@var{obj} =} anova (@var{mdl})
     ##
     ## Create an object-oriented analysis of variance model.
     ##
-    ## @var{Y} is a non-empty numeric response vector or matrix.  @var{GROUP}
-    ## contains grouping variables for vector responses and may be a grouping
-    ## vector, a matrix of grouping variables, or a cell array of grouping
-    ## vectors.  If @var{GROUP} is omitted and @var{Y} is a matrix, columns of
-    ## @var{Y} are treated as groups following @code{anova1} matrix syntax.
+    ## @var{Y} is a non-empty numeric response vector or matrix.
+    ## @var{factors} contains grouping variables for vector responses and may
+    ## be a grouping vector, a matrix of grouping variables, or a cell array of
+    ## grouping vectors.  If @var{factors} is omitted and @var{Y} is a matrix,
+    ## columns of @var{Y} are treated as groups following @code{anova1} matrix
+    ## syntax.
     ##
-    ## The constructor accepts name-value arguments matching the underlying
-    ## ANOVA backends, including @qcode{'Model'}, @qcode{'SSType'},
-    ## @qcode{'VarNames'}, @qcode{'Contrasts'}, @qcode{'Alpha'},
-    ## @qcode{'Continuous'}, @qcode{'Random'}, @qcode{'Weights'},
-    ## @qcode{'Display'}, and @qcode{'Reps'}.  Passing @qcode{'Reps'} selects
-    ## the balanced two-way @code{anova2} backend when @var{Y} is a non-vector
-    ## matrix.
+    ## Supported name-value arguments include @qcode{'ModelSpecification'},
+    ## @qcode{'SumOfSquaresType'}, @qcode{'FactorNames'},
+    ## @qcode{'CategoricalFactors'}, @qcode{'RandomFactors'},
+    ## @qcode{'ResponseName'}, @qcode{'Alpha'}, and @qcode{'Display'}.
+    ## Passing @qcode{'Reps'} selects the balanced two-way @code{anova2}
+    ## backend when @var{Y} is a non-vector matrix.
     ##
     ## @var{mdl} may be a @code{LinearModel} object, in which case the ANOVA
     ## object is populated from the fitted linear model's public properties.
     ##
-    ## @seealso{fit, summary, anova1, anova2, anovan, LinearModel}
+    ## @seealso{stats, groupmeans, anova1, anova2, anovan, LinearModel}
     ## @end deftypefn
-    function obj = anova (Y, GROUP, varargin)
+    function obj = anova (factors, Y, varargin)
 
       if (nargin < 1)
         error ("anova: too few input arguments.");
       endif
       if (nargin < 2)
-        GROUP = [];
+        Y = [];
       endif
 
-      if (isa (Y, 'LinearModel'))
+      if (isa (factors, 'LinearModel'))
         lm_args = varargin;
-        if (! isempty (GROUP))
-          lm_args = [{GROUP}, lm_args];
+        if (! isempty (Y))
+          lm_args = [{Y}, lm_args];
         endif
-        obj.initLinearModel_ (Y, lm_args{:});
+        obj.initLinearModel_ (factors, lm_args{:});
         return;
+      endif
+
+      if (nargin < 2)
+        Y = factors;
+        factors = [];
+      elseif (isempty (Y) && isnumeric (factors))
+        Y = factors;
+        factors = [];
+      elseif (obj.isName_ (Y))
+        varargin = [{Y}, varargin];
+        Y = factors;
+        factors = [];
       endif
 
       if (! isnumeric (Y) || isempty (Y))
@@ -319,8 +347,10 @@ classdef anova < handle
         error ("anova: name-value pairs must come in pairs.");
       endif
 
-      obj.Y     = Y;
-      obj.GROUP = GROUP;
+      obj.Response = Y;
+      obj.Factors  = factors;
+      obj.Y        = obj.Response;
+      obj.GROUP    = obj.Factors;
 
       ## Parse name-value pairs (mirrors anovan.m's loop style)
       for idx = 1:2:numel (varargin)
@@ -330,24 +360,29 @@ classdef anova < handle
           error ("anova: parameter name must be a character vector.");
         endif
         switch (lower (name))
-          case 'model'
-            obj.ModelType = value;
-          case 'sstype'
-            obj.SSType = value;
-          case 'varnames'
-            obj.VarNames = value;
+          case {'model', 'modelspecification'}
+            obj.setModelSpecification_ (value);
+          case {'sstype', 'sumofsquarestype'}
+            obj.setSumOfSquaresType_ (value);
+          case {'varnames', 'factornames'}
+            obj.setFactorNames_ (value);
           case 'contrasts'
             obj.Contrasts = value;
           case 'alpha'
             obj.Alpha = value;
-          case 'continuous'
+          case {'categoricalfactors'}
+            obj.CategoricalFactors = value;
+          case {'continuous'}
             obj.Continuous = value;
-          case 'random'
+          case {'random', 'randomfactors'}
+            obj.RandomFactors = value;
             obj.Random = value;
           case 'weights'
             obj.Weights = value;
           case {'display', 'displayopt'}
             obj.Display = value;
+          case 'responsename'
+            obj.ResponseName = value;
           case 'reps'
             obj.reps_ = value;
           otherwise
@@ -356,11 +391,19 @@ classdef anova < handle
       endfor
 
       obj.nFactors_ = obj.countFactors_ ();
+      obj.NumFactors = obj.nFactors_;
+      obj.NumObservations = numel (obj.Response);
+      obj.syncCategoricalFactors_ ();
+      obj.setFormula_ ();
       obj.validateSpec_ ();
       obj.validateData_ ();
       obj.selectBackend_ ();
       obj.dirty_ = true;
     endfunction
+
+  endmethods
+
+  methods (Hidden)
 
     ## -*- texinfo -*-
     ## @deftypefn {anova} {} fit (@var{obj})
@@ -407,6 +450,10 @@ classdef anova < handle
       fprintf ("\n");
     endfunction
 
+  endmethods
+
+  methods (Access = public)
+
     ## -*- texinfo -*-
     ## @deftypefn {anova} {} disp (@var{obj})
     ##
@@ -418,12 +465,129 @@ classdef anova < handle
     ## @seealso{summary}
     ## @end deftypefn
     function disp (obj)
-      fprintf ("\n  anova object\n");
-      fprintf ("    backend  : %s\n", obj.backend_);
-      fprintf ("    fitted   : %d\n", obj.fitted_);
-      fprintf ("    nFactors : %d\n", obj.nFactors_);
-      fprintf ("    SSType   : %d\n", obj.SSType);
-      fprintf ("    Alpha    : %g\n\n", obj.Alpha);
+      obj.ensureFit_ ();
+      constrained = "constrained";
+      fprintf ("\n  %d-way anova, %s (Type %s) sums of squares.\n\n", ...
+               obj.NumFactors, constrained, obj.sstypeLabel_ ());
+      if (! isempty (obj.Formula))
+        fprintf ("  %s\n\n", obj.Formula);
+      endif
+      obj.printAtab_ (obj.AnovaTable);
+      fprintf ("\n  Properties, Methods\n\n");
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{s} =} stats (@var{obj})
+    ## @deftypefnx {anova} {@var{s} =} stats (@var{obj}, @var{type})
+    ##
+    ## Return the fitted ANOVA table.
+    ##
+    ## The model is fitted first if needed.  The optional @var{type} argument
+    ## is accepted for MATLAB syntax compatibility; currently both
+    ## @qcode{'component'} and @qcode{'summary'} return the backend ANOVA
+    ## table.
+    ##
+    ## @seealso{anova, multcompare}
+    ## @end deftypefn
+    function s = stats (obj, type)
+      if (nargin > 1 && ! obj.isName_ (type))
+        error ("anova.stats: type must be a character vector.");
+      endif
+      obj.ensureFit_ ();
+      s = obj.AnovaTable;
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{means} =} groupmeans (@var{obj})
+    ## @deftypefnx {anova} {@var{means} =} groupmeans (@var{obj}, @var{factors})
+    ##
+    ## Return mean response estimates by factor level.
+    ##
+    ## The returned value is a table when the @code{table} class is available,
+    ## otherwise it is a structure with matching field names.
+    ##
+    ## @seealso{anova, multcompare, plotComparisons}
+    ## @end deftypefn
+    function means = groupmeans (obj, factors, varargin)
+      if (nargin < 2 || isempty (factors))
+        factors = 1:obj.NumFactors;
+      endif
+      alpha = obj.parseAlpha_ (varargin{:});
+      obj.ensureFit_ ();
+      [G, names] = obj.selectedFactorMatrix_ (factors);
+      y = obj.Y(:);
+      if (isempty (G))
+        error ("anova.groupmeans: factors are required for group means.");
+      endif
+      [levels, ~, gid] = unique (G, "rows");
+      n = accumarray (gid, 1);
+      mu = accumarray (gid, y, [], @mean);
+      se = sqrt (obj.MSE ./ n);
+      crit = tinv (1 - alpha / 2, max (obj.DFE, 1));
+      lower = mu - crit * se;
+      upper = mu + crit * se;
+      values = num2cell (levels, 1);
+      values = [values, {mu, se, lower, upper}];
+      vnames = [names, {"Mean", "SE", "MeanLower", "MeanUpper"}];
+      means = obj.makeTable_ (values, vnames);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {} boxchart (@var{obj})
+    ## @deftypefnx {anova} {@var{h} =} boxchart (@var{obj}, @dots{})
+    ##
+    ## Plot a one-way box chart of response values by factor.
+    ##
+    ## This method uses @code{boxplot} as the graphics backend in Octave.
+    ##
+    ## @seealso{groupmeans, plotComparisons}
+    ## @end deftypefn
+    function h = boxchart (obj, varargin)
+      obj.ensureFit_ ();
+      [G, ~] = obj.selectedFactorMatrix_ (1);
+      if (isempty (G))
+        error ("anova.boxchart: a one-way factor is required.");
+      endif
+      h = boxplot (obj.Y(:), G(:, 1), varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {} plotComparisons (@var{obj})
+    ## @deftypefnx {anova} {@var{h} =} plotComparisons (@var{obj}, @dots{})
+    ##
+    ## Plot multiple-comparison intervals for group means.
+    ##
+    ## The method delegates interval computation to @code{multcompare}.
+    ##
+    ## @seealso{multcompare, groupmeans}
+    ## @end deftypefn
+    function h = plotComparisons (obj, varargin)
+      obj.ensureFit_ ();
+      [~, ~, h] = multcompare (obj, "display", "on", varargin{:});
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn  {anova} {@var{v} =} varianceComponent (@var{obj})
+    ## @deftypefnx {anova} {@var{v} =} varianceComponent (@var{obj}, @dots{})
+    ##
+    ## Return variance component estimates for the error term.
+    ##
+    ## Random-factor variance component estimates are not yet implemented.
+    ##
+    ## @seealso{anova, stats}
+    ## @end deftypefn
+    function v = varianceComponent (obj, varargin)
+      alpha = obj.parseAlpha_ (varargin{:});
+      obj.ensureFit_ ();
+      if (! isempty (obj.RandomFactors))
+        error ("anova.varianceComponent: random factors are not implemented.");
+      endif
+      lower = obj.DFE * obj.MSE / chi2inv (1 - alpha / 2, obj.DFE);
+      upper = obj.DFE * obj.MSE / chi2inv (alpha / 2, obj.DFE);
+      v = obj.makeTable_ ({{"Error"}, obj.MSE, lower, upper}, ...
+                          {"Source", "VarianceComponent", ...
+                           "VarianceComponentLower", ...
+                           "VarianceComponentUpper"});
     endfunction
 
     ## -*- texinfo -*-
@@ -449,6 +613,10 @@ classdef anova < handle
       varargout = cell (1, max (nargout, 1));
       [varargout{:}] = multcompare (obj.Stats, varargin{:});
     endfunction
+
+  endmethods
+
+  methods (Hidden)
 
     ## -*- texinfo -*-
     ## @deftypefn  {anova} {} plotDiagnostics (@var{obj})
@@ -561,6 +729,195 @@ classdef anova < handle
 
   methods (Access = private)
 
+    function tf = isName_ (obj, value)
+      tf = ischar (value) || (isstring (value) && isscalar (value));
+    endfunction
+
+    function setModelSpecification_ (obj, value)
+      if (isstring (value) && isscalar (value))
+        value = char (value);
+      endif
+      obj.ModelSpecification = value;
+      if (ischar (value) && strcmpi (value, "interactions"))
+        obj.ModelType = "interaction";
+      else
+        obj.ModelType = value;
+      endif
+    endfunction
+
+    function setSumOfSquaresType_ (obj, value)
+      if (isnumeric (value) && isscalar (value))
+        names = {"one", "two", "three"};
+        if (! any (value == [1, 2, 3]))
+          error (strcat ("anova: SumOfSquaresType must be 'one',", ...
+                         " 'two', 'three', or 'hierarchical'."));
+        endif
+        obj.SumOfSquaresType = names{value};
+        obj.SSType = value;
+        return;
+      endif
+      if (isstring (value) && isscalar (value))
+        value = char (value);
+      endif
+      if (! ischar (value))
+        error ("anova: SumOfSquaresType must be a character vector.");
+      endif
+      switch (lower (value))
+        case {"one", "typei", "i"}
+          obj.SumOfSquaresType = "one";
+          obj.SSType = 1;
+        case {"two", "typeii", "ii", "hierarchical"}
+          obj.SumOfSquaresType = lower (value);
+          obj.SSType = 2;
+        case {"three", "typeiii", "iii"}
+          obj.SumOfSquaresType = "three";
+          obj.SSType = 3;
+        otherwise
+          error (strcat ("anova: SumOfSquaresType must be 'one',", ...
+                         " 'two', 'three', or 'hierarchical'."));
+      endswitch
+    endfunction
+
+    function setFactorNames_ (obj, value)
+      if (isstring (value))
+        value = cellstr (value(:))';
+      elseif (ischar (value))
+        value = {value};
+      endif
+      obj.FactorNames = value;
+      obj.VarNames = value;
+    endfunction
+
+    function syncCategoricalFactors_ (obj)
+      if (obj.isName_ (obj.CategoricalFactors) ...
+          && strcmpi (char (obj.CategoricalFactors), "all"))
+        obj.Continuous = [];
+        return;
+      endif
+      if (! isnumeric (obj.CategoricalFactors))
+        error ("anova: CategoricalFactors must be 'all' or a numeric index vector.");
+      endif
+      cats = obj.CategoricalFactors(:)';
+      if (! isempty (cats) ...
+          && (! isvector (cats) || any (cats != fix (cats)) ...
+              || any (cats < 1) || any (cats > obj.nFactors_)))
+        error ("anova: CategoricalFactors must contain valid factor indices.");
+      endif
+      obj.Continuous = setdiff (1:obj.nFactors_, cats);
+    endfunction
+
+    function setFormula_ (obj)
+      if (isempty (obj.FactorNames))
+        obj.FactorNames = arrayfun (@(k) sprintf ("X%d", k), ...
+                                    1:obj.nFactors_, ...
+                                    "UniformOutput", false);
+        obj.VarNames = obj.FactorNames;
+      elseif (numel (obj.FactorNames) != obj.nFactors_)
+        error ("anova: FactorNames must contain one name per factor.");
+      endif
+      if (obj.nFactors_ == 0)
+        obj.Formula = sprintf ("%s ~ 1", obj.ResponseName);
+      else
+        terms = obj.FactorNames(1:obj.nFactors_);
+        if (ischar (obj.ModelType) && obj.nFactors_ > 1)
+          if (strcmpi (obj.ModelType, "interaction"))
+            for a = 1:obj.nFactors_ - 1
+              for b = a + 1:obj.nFactors_
+                terms{end + 1} = sprintf ("%s:%s", ...
+                                           obj.FactorNames{a}, ...
+                                           obj.FactorNames{b});
+              endfor
+            endfor
+          elseif (strcmpi (obj.ModelType, "full"))
+            for mask = 1:(2 ^ obj.nFactors_ - 1)
+              idx = find (bitget (mask, 1:obj.nFactors_));
+              if (numel (idx) > 1)
+                terms{end + 1} = strjoin (obj.FactorNames(idx), ":");
+              endif
+            endfor
+          endif
+        endif
+        rhs = strjoin (terms, " + ");
+        obj.Formula = sprintf ("%s ~ 1 + %s", obj.ResponseName, rhs);
+      endif
+    endfunction
+
+    function alpha = parseAlpha_ (obj, varargin)
+      alpha = obj.Alpha;
+      if (isempty (varargin))
+        return;
+      endif
+      if (mod (numel (varargin), 2) != 0)
+        error ("anova: name-value pairs must come in pairs.");
+      endif
+      for k = 1:2:numel (varargin)
+        if (! obj.isName_ (varargin{k}))
+          error ("anova: parameter name must be a character vector.");
+        endif
+        switch (lower (char (varargin{k})))
+          case "alpha"
+            alpha = varargin{k + 1};
+          otherwise
+            error ("anova: parameter '%s' is not supported.", varargin{k});
+        endswitch
+      endfor
+      if (! (isnumeric (alpha) && isscalar (alpha) ...
+             && alpha > 0 && alpha < 1))
+        error ("anova: Alpha must be a numeric scalar in (0, 1).");
+      endif
+    endfunction
+
+    function [G, names] = selectedFactorMatrix_ (obj, factors)
+      if (ischar (factors))
+        idx = find (strcmp (obj.FactorNames, factors));
+      elseif (iscellstr (factors))
+        idx = cellfun (@(s) find (strcmp (obj.FactorNames, s), 1), factors);
+      else
+        idx = factors;
+      endif
+      if (isempty (idx))
+        G = [];
+        names = {};
+        return;
+      endif
+      if (any (idx < 1) || any (idx > obj.NumFactors))
+        error ("anova: factor index exceeds the number of factors.");
+      endif
+      if (isempty (obj.GROUP) && ! isvector (obj.Y))
+        [n, m] = size (obj.Y);
+        group_arg = reshape (repmat ((1:m), n, 1), [], 1);
+        G = group_arg(:, idx);
+      elseif (iscell (obj.GROUP) ...
+              && all (cellfun (@(c) isvector (c) || ischar (c), ...
+                               obj.GROUP(:))) ...
+              && size (obj.GROUP, 1) == 1)
+        G = cell2mat (cellfun (@(c) c(:), obj.GROUP(idx), ...
+                               "UniformOutput", false));
+      else
+        G = obj.GROUP(:, idx);
+      endif
+      names = obj.FactorNames(idx);
+    endfunction
+
+    function name = factorName_ (obj, idx)
+      if (idx >= 1 && idx <= numel (obj.FactorNames))
+        name = obj.FactorNames{idx};
+      else
+        name = sprintf ("X%d", idx);
+      endif
+    endfunction
+
+    function out = makeTable_ (obj, values, names)
+      if (exist ("table", "file") == 2)
+        out = table (values{:}, "VariableNames", names);
+      else
+        out = struct ();
+        for k = 1:numel (names)
+          out.(names{k}) = values{k};
+        endfor
+      endif
+    endfunction
+
     function initLinearModel_ (obj, mdl, varargin)
       if (mod (numel (varargin), 2) != 0)
         error ("anova: name-value pairs must come in pairs.");
@@ -585,10 +942,18 @@ classdef anova < handle
       obj.sourceModel_ = mdl;
       obj.backend_ = 'linearmodel';
       obj.nFactors_ = mdl.NumPredictors;
+      obj.NumFactors = obj.nFactors_;
+      obj.ModelSpecification = mdl.Formula.Terms;
       obj.ModelType = mdl.Formula.Terms;
-      obj.VarNames = mdl.VariableNames;
+      obj.FactorNames = mdl.PredictorNames;
+      obj.VarNames = mdl.PredictorNames;
+      obj.ResponseName = mdl.ResponseName;
+      obj.Formula = mdl.Formula.LinearPredictor;
       obj.Y = mdl.Variables{:, mdl.ResponseName};
       obj.GROUP = mdl.Variables(:, mdl.PredictorNames);
+      obj.Response = obj.Y;
+      obj.Factors = obj.GROUP;
+      obj.NumObservations = numel (obj.Y);
       obj.Coefficients = obj.linearModelCoefficients_ (mdl);
       obj.AnovaTable = obj.linearModelAtab_ (mdl);
       obj.Residuals = mdl.Residuals.Raw;
@@ -604,7 +969,8 @@ classdef anova < handle
     function validateSpec_ (obj)
       if (! (isnumeric (obj.SSType) && isscalar (obj.SSType) ...
              && any (obj.SSType == [1, 2, 3])))
-        error ("anova: SSType must be 1, 2, or 3.");
+        error (strcat ("anova: SumOfSquaresType must be 'one',", ...
+                       " 'two', 'three', or 'hierarchical'."));
       endif
       if (! (isnumeric (obj.Alpha) && isscalar (obj.Alpha) ...
              && obj.Alpha > 0 && obj.Alpha < 1))
@@ -617,29 +983,36 @@ classdef anova < handle
       if (ischar (obj.ModelType))
         if (! any (strcmpi (obj.ModelType, ...
                             {'linear', 'interaction', 'full'})))
-          error (strcat ("anova: ModelType must be 'linear',", ...
-                         " 'interaction', 'full', or a terms matrix."));
+          error (strcat ("anova: ModelSpecification must be 'linear',", ...
+                         " 'interactions', 'full', or a terms matrix."));
         endif
       elseif (! isnumeric (obj.ModelType))
-        error ("anova: ModelType must be a string or a numeric terms matrix.");
+        error (strcat ("anova: ModelSpecification must be a string", ...
+                       " or a numeric terms matrix."));
+      endif
+      if (! iscellstr (obj.FactorNames))
+        error ("anova: FactorNames must be a character vector or cellstr.");
+      endif
+      if (! obj.isName_ (obj.ResponseName))
+        error ("anova: ResponseName must be a character vector.");
       endif
       if (! isempty (obj.Continuous) && ! isnumeric (obj.Continuous))
-        error ("anova: Continuous must be a numeric index vector.");
+        error ("anova: CategoricalFactors must be 'all' or a numeric index vector.");
       endif
       if (! isempty (obj.Continuous) ...
           && (! isvector (obj.Continuous) ...
               || any (obj.Continuous != fix (obj.Continuous)) ...
               || any (obj.Continuous < 1)))
-        error ("anova: Continuous must contain positive integer indices.");
+        error ("anova: CategoricalFactors must contain valid factor indices.");
       endif
-      if (! isempty (obj.Random) && ! isnumeric (obj.Random))
-        error ("anova: Random must be a numeric index vector.");
+      if (! isempty (obj.RandomFactors) && ! isnumeric (obj.RandomFactors))
+        error ("anova: RandomFactors must be a numeric index vector.");
       endif
-      if (! isempty (obj.Random) ...
-          && (! isvector (obj.Random) ...
-              || any (obj.Random != fix (obj.Random)) ...
-              || any (obj.Random < 1)))
-        error ("anova: Random must contain positive integer indices.");
+      if (! isempty (obj.RandomFactors) ...
+          && (! isvector (obj.RandomFactors) ...
+              || any (obj.RandomFactors != fix (obj.RandomFactors)) ...
+              || any (obj.RandomFactors < 1)))
+        error ("anova: RandomFactors must contain positive integer indices.");
       endif
       if (! isempty (obj.Weights) && ! isnumeric (obj.Weights))
         error ("anova: Weights must be numeric.");
@@ -660,10 +1033,10 @@ classdef anova < handle
         error ("anova: Weights must have one value per observation.");
       endif
       if (! isempty (obj.Continuous) && any (obj.Continuous > obj.nFactors_))
-        error ("anova: Continuous indices exceed the number of factors.");
+        error ("anova: CategoricalFactors must contain valid factor indices.");
       endif
-      if (! isempty (obj.Random) && any (obj.Random > obj.nFactors_))
-        error ("anova: Random indices exceed the number of factors.");
+      if (! isempty (obj.RandomFactors) && any (obj.RandomFactors > obj.nFactors_))
+        error ("anova: RandomFactors indices exceed the number of factors.");
       endif
       if (isnumeric (obj.ModelType) && ! isempty (obj.ModelType) ...
           && columns (obj.ModelType) != obj.nFactors_)
@@ -697,7 +1070,11 @@ classdef anova < handle
     function nf = countFactors_ (obj)
       if (isempty (obj.GROUP))
         if (ismatrix (obj.Y) && ! isvector (obj.Y))
-          nf = 1;
+          if (isempty (obj.reps_))
+            nf = 1;
+          else
+            nf = 2;
+          endif
         else
           nf = 0;
         endif
@@ -1140,21 +1517,21 @@ endclassdef
 %! ## One-way ANOVA with a formatted summary
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, "SSType", 2);
+%! a = anova (g, y, "SumOfSquaresType", "two");
 %! summary (a);
 
 %!demo
 %! ## Post-hoc multiple comparisons
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, "SSType", 2);
+%! a = anova (g, y, "SumOfSquaresType", "two");
 %! C = multcompare (a, "display", "off")
 
 %!demo
 %! ## Diagnostic plots for an anovan-backed fit
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, "SSType", 2);
+%! a = anova (g, y, "SumOfSquaresType", "two");
 %! plotDiagnostics (a);
 
 ## --- BISTs ---------------------------------------------------------------
@@ -1163,7 +1540,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
-%! a = anova (y, g);
+%! a = anova (g, y);
 %! assert_equal (class (a), "anova");
 %! assert_equal (a.Y, y);
 %! assert_equal (a.GROUP, g);
@@ -1181,26 +1558,25 @@ endclassdef
 %! y = (1:12)';
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
-%! a = anova (y, {g1, g2});
+%! a = anova ({g1, g2}, y);
 %! assert_equal (class (a), "anova");
-%! assert (! isempty (strfind (evalc ("disp (a)"), "nFactors : 2")));
+%! assert_equal (a.NumFactors, 2);
 
 ## Property defaults
 %!test
-%! a = anova ([1;2;3;4], [1;1;2;2]);
-%! assert_equal (a.ModelType, 'linear');
-%! assert_equal (a.SSType, 3);
-%! assert_equal (a.Alpha, 0.05);
-%! assert_equal (a.Display, 'off');
-%! assert_equal (a.VarNames, {});
-%! assert_equal (a.Contrasts, {});
-%! assert_equal (a.Continuous, []);
-%! assert_equal (a.Random, []);
-%! assert_equal (a.Weights, []);
+%! a = anova ([1;1;2;2], [1;2;3;4]);
+%! assert_equal (a.ModelSpecification, 'linear');
+%! assert_equal (a.SumOfSquaresType, 'three');
+%! assert_equal (a.ResponseName, 'Y');
+%! assert_equal (a.FactorNames, {'X1'});
+%! assert_equal (a.RandomFactors, []);
+%! assert_equal (a.CategoricalFactors, 'all');
+%! assert_equal (a.NumFactors, 1);
+%! assert_equal (a.NumObservations, 4);
 
 ## Result properties stay empty before fit
 %!test
-%! a = anova ([1;2;3;4], [1;1;2;2]);
+%! a = anova ([1;1;2;2], [1;2;3;4]);
 %! assert_equal (a.Coefficients, []);
 %! assert_equal (a.Residuals, []);
 %! assert_equal (a.FittedValues, []);
@@ -1208,52 +1584,48 @@ endclassdef
 %! assert_equal (a.MSE, []);
 %! assert_equal (a.DesignMatrix, []);
 
-## Name-value parsing: SSType, ModelType, Alpha, Display
+## Name-value parsing: MATLAB-compatible names
 %!test
 %! y = (1:12)';
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
-%! a = anova (y, {g1, g2}, 'SSType', 2, 'Model', 'full', ...
-%!            'Alpha', 0.01, 'Display', 'on');
-%! assert_equal (a.SSType, 2);
-%! assert_equal (a.ModelType, 'full');
-%! assert_equal (a.Alpha, 0.01);
-%! assert_equal (a.Display, 'on');
+%! a = anova ({g1, g2}, y, 'SumOfSquaresType', 'two', ...
+%!            'ModelSpecification', 'full', 'FactorNames', {'A', 'B'});
+%! assert_equal (a.SumOfSquaresType, 'two');
+%! assert_equal (a.ModelSpecification, 'full');
+%! assert_equal (a.FactorNames, {'A', 'B'});
 
 ## Name-value parsing: case-insensitive names, displayopt alias
 %!test
-%! a = anova ([1;2;3;4], [1;1;2;2], 'sstype', 1, 'displayopt', 'on');
-%! assert_equal (a.SSType, 1);
-%! assert_equal (a.Display, 'on');
+%! a = anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 'one', 'displayopt', 'on');
+%! assert_equal (a.SumOfSquaresType, 'one');
 
 ## Backend selection: one-way default -> anova1
 %!test
-%! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3]);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova1")));
+%! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6]);
+%! assert (! isempty (strfind (evalc ("disp (a)"), "1-way anova")));
 
 ## Backend selection: one-way matrix-Y form -> anova1
 %!test
 %! a = anova (magic (4));
 %! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "nFactors : 1")));
-%! assert (! isempty (strfind (str, "backend  : anova1")));
+%! assert (! isempty (strfind (str, "1-way anova")));
 
 ## Backend selection: matrix Y + explicit 'reps' -> anova2
 %!test
 %! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (y, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova2")));
+%! assert (! isempty (strfind (evalc ("disp (a)"), "2-way anova")));
 
 ## Backend selection: two-factor cell groups without reps -> anovan
 %!test
 %! y = (1:12)';
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
-%! a = anova (y, {g1, g2});
+%! a = anova ({g1, g2}, y);
 %! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "nFactors : 2")));
-%! assert (! isempty (strfind (str, "backend  : anovan")));
+%! assert (! isempty (strfind (str, "2-way anova")));
 
 ## Backend selection: three factors -> anovan
 %!test
@@ -1261,36 +1633,35 @@ endclassdef
 %! g1 = repmat ([1;2], 12, 1);
 %! g2 = repmat ([1;1;2;2], 6, 1);
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
-%! a = anova (y, {g1, g2, g3});
+%! a = anova ({g1, g2, g3}, y);
 %! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "nFactors : 3")));
-%! assert (! isempty (strfind (str, "backend  : anovan")));
+%! assert (! isempty (strfind (str, "3-way anova")));
 
 ## Backend selection: SSType != 3 with 1 factor falls through to anovan
 %!test
-%! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3], 'SSType', 2);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'SumOfSquaresType', 'two');
+%! assert (! isempty (strfind (evalc ("disp (a)"), "Type II")));
 
 ## Backend selection: continuous predictors force anovan
 %!test
 %! y = (1:12)';
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = (1:12)';                              ## continuous
-%! a = anova (y, {g1, g2}, 'Continuous', 2);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! a = anova ({g1, g2}, y, "CategoricalFactors", 1);
+%! assert_equal (a.CategoricalFactors, 1);
 
 ## Backend selection: NaN in a vector response falls through to anovan
 %!test
 %! y = [1; 2; 3; NaN; 5; 6; 7; 8];
 %! g1 = [1; 2; 1; 2; 1; 2; 1; 2];
 %! g2 = [1; 1; 2; 2; 1; 1; 2; 2];
-%! a = anova (y, {g1, g2});
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! a = anova ({g1, g2}, y);
+%! assert_equal (a.NumFactors, 2);
 
 ## Backend selection: weights force anovan
 %!test
-%! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3], 'Weights', ones (6, 1));
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'Weights', ones (6, 1));
+%! assert (! isempty (stats (a)));
 
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
@@ -1298,7 +1669,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
-%! a = anova (y, g);
+%! a = anova (g, y);
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (isstruct (a.Stats));
@@ -1310,7 +1681,7 @@ endclassdef
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anova2")));
+%! assert (! isempty (strfind (evalc ("disp (a)"), "2-way anova")));
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (isfield (a.Stats, 'sigmasq'));
@@ -1322,8 +1693,8 @@ endclassdef
 %! g1 = repmat ([1;2], 12, 1);
 %! g2 = repmat ([1;1;2;2], 6, 1);
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
-%! a = anova (y, {g1, g2, g3});
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! a = anova ({g1, g2, g3}, y);
+%! assert_equal (a.NumFactors, 3);
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (! isempty (a.Coefficients));
@@ -1335,14 +1706,14 @@ endclassdef
 %!test
 %! y  = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g  = [1;1;1;2;2;2;3;3;3];
-%! a  = anova (y, g, 'SSType', 2);
+%! a  = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
 %! assert_equal (numel (a.FittedValues), numel (y));
 %! assert_equal (a.FittedValues + a.Residuals, y, 1e-9);
 
 ## ensureFit_(): fit() is idempotent (second call does nothing)
 %!test
-%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3]);
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)');
 %! a.fit ();
 %! first_table = a.AnovaTable;
 %! a.fit ();
@@ -1352,9 +1723,9 @@ endclassdef
 %!test
 %! y = (1:12)';
 %! g = repmat ([1;2;3], 4, 1);
-%! a = anova (y, {g}, 'SSType', 2, 'Alpha', 0.10);
+%! a = anova ({g}, y, 'SumOfSquaresType', 'two', 'Alpha', 0.10);
 %! a.fit ();
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
+%! assert_equal (a.SumOfSquaresType, 'two');
 %! assert_equal (a.Stats.alpha, 0.10, 1e-12);
 
 ## --- Numeric references -------------------------------------------------
@@ -1363,7 +1734,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
 %! T = a.AnovaTable;
 %! assert_equal (T{2, 2}, 126, 1e-12);       # group SS
@@ -1382,7 +1753,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! assert_equal (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
 %! assert_equal (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
 
@@ -1390,7 +1761,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! es = getEffectSizes (anova (y, g, 'SSType', 2));
+%! es = getEffectSizes (anova (g, y, 'SumOfSquaresType', 'two'));
 %! assert_equal (es.Source, {'X1'});
 %! assert_equal (es.EtaSquared, 126 / 132, 1e-12);
 %! assert_equal (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
@@ -1415,7 +1786,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! C = multcompare (a, 'display', 'off');
 %! assert_equal (C(:, 1:2), [1 2; 1 3; 2 3]);
 %! assert_equal (C(:, 4), [-3; -9; -6], 1e-12);
@@ -1427,29 +1798,29 @@ endclassdef
 
 ## summary(): runs ensureFit_ and prints a table
 %!test
-%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
 %! str = evalc ('summary (a)');
 %! assert (! isempty (strfind (str, 'ANOVA TABLE')));
 %! assert (! isempty (strfind (str, 'backend = anovan')));
 
 ## summary(): includes MSE / DFE / Alpha line
 %!test
-%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2, 'Alpha', 0.10);
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two', 'Alpha', 0.10);
 %! str = evalc ('summary (a)');
 %! assert (! isempty (strfind (str, 'Alpha: 0.1')));
 
 ## disp(): one-line overview of key fields
 %!test
-%! a = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
 %! str = evalc ('disp (a)');
-%! assert (! isempty (strfind (str, 'anova object')));
-%! assert (! isempty (strfind (str, 'backend')));
-%! assert (! isempty (strfind (str, 'SSType')));
+%! assert (! isempty (strfind (str, '1-way anova')));
+%! assert (! isempty (strfind (str, 'Type II')));
+%! assert (! isempty (strfind (str, 'Properties, Methods')));
 
 ## summary(): SSType label appears in the header (Type I / II / III)
 %!test
-%! a1 = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 1);
-%! a2 = anova ((1:9)', [1;1;1;2;2;2;3;3;3], 'SSType', 2);
+%! a1 = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'one');
+%! a2 = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two');
 %! assert (! isempty (strfind (evalc ('summary (a1)'), 'Type I sums')));
 %! assert (! isempty (strfind (evalc ('summary (a2)'), 'Type II sums')));
 
@@ -1459,7 +1830,7 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! C = multcompare (a, 'display', 'off');
 %! assert (! isempty (C));
 %! assert_equal (size (C, 1), 3);        ## 3 pairwise comparisons for 3 groups
@@ -1476,9 +1847,28 @@ endclassdef
 
 ## multcompare(): runs after a fresh construction (triggers ensureFit_)
 %!test
-%! a = anova ((1:6)', [1;1;2;2;3;3], 'SSType', 2);
+%! a = anova ([1;1;2;2;3;3], (1:6)', 'SumOfSquaresType', 'two');
 %! C = multcompare (a, 'display', 'off');
 %! assert (! isempty (C));
+
+## MATLAB-compatible public methods and properties
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, "FactorNames", {"Brand"}, ...
+%!            "ResponseName", "Yield", "SumOfSquaresType", "two");
+%! assert_equal (a.Formula, "Yield ~ 1 + Brand");
+%! assert_equal (a.Factors, g);
+%! assert_equal (a.Response, y);
+%! assert_equal (a.FactorNames, {"Brand"});
+%! assert_equal (a.SumOfSquaresType, "two");
+%! assert (! any (strcmp (methods ("anova"), "predict")));
+%! T = stats (a);
+%! M = groupmeans (a);
+%! V = varianceComponent (a);
+%! assert_equal (T{2, 2}, 126, 1e-12);
+%! assert_equal (M.Mean, [2; 5; 11], 1e-12);
+%! assert_equal (V.VarianceComponent, 1, 1e-12);
 
 ## --- Week 5: diagnostic plots ------------------------------------------
 
@@ -1488,7 +1878,7 @@ endclassdef
 %! unwind_protect
 %!   y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %!   g = [1;1;1;2;2;2;3;3;3];
-%!   a = anova (y, g, 'SSType', 2);
+%!   a = anova (g, y, 'SumOfSquaresType', 'two');
 %!   h = plotDiagnostics (a, 'Visible', 'off');
 %!   assert (ishghandle (h));
 %!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
@@ -1503,14 +1893,14 @@ endclassdef
 %!test
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! assert_equal (predict (a), a.FittedValues, 1e-9);
 
 ## predict(): accepts an explicit design matrix for anovan-backed fits
 %!test
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
 %! assert_equal (predict (a, full (a.DesignMatrix)), a.FittedValues, 1e-9);
 
@@ -1518,7 +1908,7 @@ endclassdef
 %!test
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! a = anova (y, g, 'SSType', 2);
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! es = getEffectSizes (a);
 %! assert (iscell (es.Source));
 %! assert_equal (numel (es.EtaSquared), numel (es.Source));
@@ -1530,7 +1920,7 @@ endclassdef
 %! y = [2; 4; 5; 4; 5];
 %! mdl = fitlm (X, y);
 %! a = anova (mdl);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : linearmodel")));
+%! assert (! isempty (strfind (evalc ("disp (a)"), "anova")));
 %! assert (! isempty (a.AnovaTable));
 %! assert_equal (predict (a), mdl.Fitted, 1e-9);
 %! es = getEffectSizes (a);
@@ -1560,22 +1950,22 @@ endclassdef
 %!error <anova: Y must be a non-empty numeric array.> anova ([])
 
 %!error <anova: name-value pairs must come in pairs.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'SSType')
+%!  anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType')
 
 %!error <anova: parameter 'bogus' is not supported.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'bogus', 1)
+%!  anova ([1;1;2;2], [1;2;3;4], 'bogus', 1)
 
-%!error <anova: SSType must be 1, 2, or 3.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'SSType', 5)
+%!error <anova: SumOfSquaresType must be> ...
+%!  anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 5)
 
 %!error <anova: Alpha must be a numeric scalar in .0, 1..> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Alpha', 2)
+%!  anova ([1;1;2;2], [1;2;3;4], 'Alpha', 2)
 
 %!error <anova: Display must be 'on' or 'off'.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Display', 'maybe')
+%!  anova ([1;1;2;2], [1;2;3;4], 'Display', 'maybe')
 
 %!error <anova: parameter name must be a character vector.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 1, 2)
+%!  anova ([1;1;2;2], [1;2;3;4], 1, 2)
 
 %!error <anova: Reps must be a positive integer scalar.> ...
 %!  anova (magic (4), [], 'reps', -2)
@@ -1583,32 +1973,32 @@ endclassdef
 %!error <anova: Reps must be a positive integer scalar.> ...
 %!  anova (magic (4), [], 'reps', 1.5)
 
-%!error <anova: ModelType must be> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Model', 'quadratic')
+%!error <anova: ModelSpecification must be> ...
+%!  anova ([1;1;2;2], [1;2;3;4], 'ModelSpecification', 'quadratic')
 
 %!error <anova: terms matrix must have one column per factor.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Model', [1 0])
+%!  anova ([1;1;2;2], [1;2;3;4], 'Model', [1 0])
 
 %!error <anova: GROUP must match the number of observations.> ...
-%!  anova ([1;2;3;4], [1;1;2])
+%!  anova ([1;1;2], [1;2;3;4])
 
 %!error <anova: GROUP variables must match the number of observations.> ...
-%!  anova ([1;2;3;4], {[1;1;2], [1;2;1;2]})
+%!  anova ({[1;1;2], [1;2;1;2]}, [1;2;3;4])
 
 %!error <anova: Weights must have one value per observation.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Weights', [1;1;1])
+%!  anova ([1;1;2;2], [1;2;3;4], 'Weights', [1;1;1])
 
-%!error <anova: Continuous must contain positive integer indices.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 1.5)
+%!error <anova: CategoricalFactors must contain valid factor indices.> ...
+%!  anova ([1;1;2;2], [1;2;3;4], "CategoricalFactors", 1.5)
 
-%!error <anova: Continuous indices exceed the number of factors.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 2)
+%!error <anova: CategoricalFactors must contain valid factor indices.> ...
+%!  anova ([1;1;2;2], [1;2;3;4], "CategoricalFactors", 2)
 
-%!error <anova: Random must contain positive integer indices.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 0)
+%!error <anova: RandomFactors must contain positive integer indices.> ...
+%!  anova ([1;1;2;2], [1;2;3;4], "RandomFactors", 0)
 
-%!error <anova: Random indices exceed the number of factors.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 2)
+%!error <anova: RandomFactors indices exceed the number of factors.> ...
+%!  anova ([1;1;2;2], [1;2;3;4], "RandomFactors", 2)
 
 %!error <diagnostic plots require>
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
@@ -1618,14 +2008,14 @@ endclassdef
 %!error <name-value pairs must come in pairs>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! plotDiagnostics (anova (y, g, 'SSType', 2), 'Visible');
+%! plotDiagnostics (anova (g, y, 'SumOfSquaresType', 'two'), 'Visible');
 
 %!error <unknown option>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! plotDiagnostics (anova (y, g, 'SSType', 2), 'BadOption', true);
+%! plotDiagnostics (anova (g, y, 'SumOfSquaresType', 'two'), 'BadOption', true);
 
 %!error <Xnew must be a numeric design matrix>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
-%! predict (anova (y, g, 'SSType', 2), ones (2, 2));
+%! predict (anova (g, y, 'SumOfSquaresType', 'two'), ones (2, 2));
