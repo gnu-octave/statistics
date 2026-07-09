@@ -277,8 +277,8 @@ classdef anova < handle
     dirty_      = true;
     nFactors_   = 0;
     backend_    = '';                       ## 'anova1' | 'anova2' | 'anovan'
-    reps_       = [];                       ## replicate count for anova2 backend
-    sourceModel_ = [];                       ## LinearModel object, when supplied
+    reps_       = [];                      ## replicate count for anova2 backend
+    sourceModel_ = [];                      ## LinearModel object, when supplied
   endproperties
 
   methods (Access = public)
@@ -308,7 +308,6 @@ classdef anova < handle
     ## @var{mdl} may be a @code{LinearModel} object, in which case the ANOVA
     ## object is populated from the fitted linear model's public properties.
     ##
-    ## @seealso{stats, groupmeans, anova1, anova2, anovan, LinearModel}
     ## @end deftypefn
     function obj = anova (factors, Y, varargin)
 
@@ -430,7 +429,6 @@ classdef anova < handle
     ## @code{anovan}, followed by the mean squared error, error degrees of
     ## freedom, and significance level.
     ##
-    ## @seealso{disp, fit}
     ## @end deftypefn
     function summary (obj)
       obj.ensureFit_ ();
@@ -462,7 +460,6 @@ classdef anova < handle
     ## The display includes the selected backend, fit state, number of factors,
     ## sum-of-squares type, and significance level.
     ##
-    ## @seealso{summary}
     ## @end deftypefn
     function disp (obj)
       obj.ensureFit_ ();
@@ -487,7 +484,6 @@ classdef anova < handle
     ## @qcode{'component'} and @qcode{'summary'} return the backend ANOVA
     ## table.
     ##
-    ## @seealso{anova, multcompare}
     ## @end deftypefn
     function s = stats (obj, type)
       if (nargin > 1 && ! obj.isName_ (type))
@@ -503,10 +499,10 @@ classdef anova < handle
     ##
     ## Return mean response estimates by factor level.
     ##
-    ## The returned value is a table when the @code{table} class is available,
-    ## otherwise it is a structure with matching field names.
+    ## The returned value is a @code{table} with one row per factor-level
+    ## combination and columns for the level, mean, standard error, and
+    ## confidence bounds.
     ##
-    ## @seealso{anova, multcompare, plotComparisons}
     ## @end deftypefn
     function means = groupmeans (obj, factors, varargin)
       if (nargin < 2 || isempty (factors))
@@ -524,12 +520,12 @@ classdef anova < handle
       mu = accumarray (gid, y, [], @mean);
       se = sqrt (obj.MSE ./ n);
       crit = tinv (1 - alpha / 2, max (obj.DFE, 1));
-      lower = mu - crit * se;
-      upper = mu + crit * se;
+      lo = mu - crit * se;
+      hi = mu + crit * se;
       values = num2cell (levels, 1);
-      values = [values, {mu, se, lower, upper}];
-      vnames = [names, {"Mean", "SE", "MeanLower", "MeanUpper"}];
-      means = obj.makeTable_ (values, vnames);
+      values = [values, {mu, se, lo, hi}];
+      vnames = [names, {'Mean', 'SE', 'MeanLower', 'MeanUpper'}];
+      means = table (values{:}, "VariableNames", vnames);
     endfunction
 
     ## -*- texinfo -*-
@@ -540,7 +536,6 @@ classdef anova < handle
     ##
     ## This method uses @code{boxplot} as the graphics backend in Octave.
     ##
-    ## @seealso{groupmeans, plotComparisons}
     ## @end deftypefn
     function h = boxchart (obj, varargin)
       obj.ensureFit_ ();
@@ -559,7 +554,6 @@ classdef anova < handle
     ##
     ## The method delegates interval computation to @code{multcompare}.
     ##
-    ## @seealso{multcompare, groupmeans}
     ## @end deftypefn
     function h = plotComparisons (obj, varargin)
       obj.ensureFit_ ();
@@ -574,7 +568,6 @@ classdef anova < handle
     ##
     ## Random-factor variance component estimates are not yet implemented.
     ##
-    ## @seealso{anova, stats}
     ## @end deftypefn
     function v = varianceComponent (obj, varargin)
       alpha = obj.parseAlpha_ (varargin{:});
@@ -582,12 +575,11 @@ classdef anova < handle
       if (! isempty (obj.RandomFactors))
         error ("anova.varianceComponent: random factors are not implemented.");
       endif
-      lower = obj.DFE * obj.MSE / chi2inv (1 - alpha / 2, obj.DFE);
-      upper = obj.DFE * obj.MSE / chi2inv (alpha / 2, obj.DFE);
-      v = obj.makeTable_ ({{"Error"}, obj.MSE, lower, upper}, ...
-                          {"Source", "VarianceComponent", ...
-                           "VarianceComponentLower", ...
-                           "VarianceComponentUpper"});
+      lo = obj.DFE * obj.MSE / chi2inv (1 - alpha / 2, obj.DFE);
+      hi = obj.DFE * obj.MSE / chi2inv (alpha / 2, obj.DFE);
+      v = table ({'Error'}, obj.MSE, lo, hi, "VariableNames", ...
+                 {'Source', 'VarianceComponent', ...
+                  'VarianceComponentLower', 'VarianceComponentUpper'});
     endfunction
 
     ## -*- texinfo -*-
@@ -600,7 +592,6 @@ classdef anova < handle
     ## function @code{multcompare} using the backend @code{Stats} structure.
     ## Additional arguments are passed through unchanged.
     ##
-    ## @seealso{multcompare}
     ## @end deftypefn
     function varargout = multcompare (obj, varargin)
       obj.ensureFit_ ();
@@ -635,7 +626,6 @@ classdef anova < handle
     ## Supported name-value arguments are @qcode{'FigureName'} and
     ## @qcode{'Visible'}.
     ##
-    ## @seealso{summary}
     ## @end deftypefn
     function h = plotDiagnostics (obj, varargin)
       obj.ensureFit_ ();
@@ -676,7 +666,6 @@ classdef anova < handle
     ## @code{LinearModel}, so that table input and categorical encoding remain
     ## owned by @code{LinearModel}.
     ##
-    ## @seealso{fitlm, LinearModel}
     ## @end deftypefn
     function ypred = predict (obj, Xnew, varargin)
       obj.ensureFit_ ();
@@ -714,7 +703,6 @@ classdef anova < handle
     ## table.  For @code{LinearModel}-backed fits, model-level values are
     ## computed from @code{SSR}, @code{SSE}, @code{SST}, and @code{MSE}.
     ##
-    ## @seealso{summary}
     ## @end deftypefn
     function es = getEffectSizes (obj)
       obj.ensureFit_ ();
@@ -763,14 +751,14 @@ classdef anova < handle
         error ("anova: SumOfSquaresType must be a character vector.");
       endif
       switch (lower (value))
-        case {"one", "typei", "i"}
-          obj.SumOfSquaresType = "one";
+        case {'one', 'typei', 'i'}
+          obj.SumOfSquaresType = 'one';
           obj.SSType = 1;
-        case {"two", "typeii", "ii", "hierarchical"}
+        case {'two', 'typeii', 'ii', 'hierarchical'}
           obj.SumOfSquaresType = lower (value);
           obj.SSType = 2;
-        case {"three", "typeiii", "iii"}
-          obj.SumOfSquaresType = "three";
+        case {'three', 'typeiii', 'iii'}
+          obj.SumOfSquaresType = 'three';
           obj.SSType = 3;
         otherwise
           error (strcat ("anova: SumOfSquaresType must be 'one',", ...
@@ -795,7 +783,8 @@ classdef anova < handle
         return;
       endif
       if (! isnumeric (obj.CategoricalFactors))
-        error ("anova: CategoricalFactors must be 'all' or a numeric index vector.");
+        error (strcat ("anova: CategoricalFactors must be 'all' or a", ...
+                       " numeric index vector."));
       endif
       cats = obj.CategoricalFactors(:)';
       if (! isempty (cats) ...
@@ -855,7 +844,7 @@ classdef anova < handle
           error ("anova: parameter name must be a character vector.");
         endif
         switch (lower (char (varargin{k})))
-          case "alpha"
+          case 'alpha'
             alpha = varargin{k + 1};
           otherwise
             error ("anova: parameter '%s' is not supported.", varargin{k});
@@ -904,17 +893,6 @@ classdef anova < handle
         name = obj.FactorNames{idx};
       else
         name = sprintf ("X%d", idx);
-      endif
-    endfunction
-
-    function out = makeTable_ (obj, values, names)
-      if (exist ("table", "file") == 2)
-        out = table (values{:}, "VariableNames", names);
-      else
-        out = struct ();
-        for k = 1:numel (names)
-          out.(names{k}) = values{k};
-        endfor
       endif
     endfunction
 
@@ -997,7 +975,8 @@ classdef anova < handle
         error ("anova: ResponseName must be a character vector.");
       endif
       if (! isempty (obj.Continuous) && ! isnumeric (obj.Continuous))
-        error ("anova: CategoricalFactors must be 'all' or a numeric index vector.");
+        error (strcat ("anova: CategoricalFactors must be 'all' or a", ...
+                       " numeric index vector."));
       endif
       if (! isempty (obj.Continuous) ...
           && (! isvector (obj.Continuous) ...
@@ -1035,7 +1014,8 @@ classdef anova < handle
       if (! isempty (obj.Continuous) && any (obj.Continuous > obj.nFactors_))
         error ("anova: CategoricalFactors must contain valid factor indices.");
       endif
-      if (! isempty (obj.RandomFactors) && any (obj.RandomFactors > obj.nFactors_))
+      if (! isempty (obj.RandomFactors) ...
+          && any (obj.RandomFactors > obj.nFactors_))
         error ("anova: RandomFactors indices exceed the number of factors.");
       endif
       if (isnumeric (obj.ModelType) && ! isempty (obj.ModelType) ...
@@ -1050,7 +1030,8 @@ classdef anova < handle
           && size (group, 1) == 1)
         for k = 1:numel (group)
           if (numel (group{k}) != nobs)
-            error ("anova: GROUP variables must match the number of observations.");
+            error (strcat ("anova: GROUP variables must match the number", ...
+                           " of observations."));
           endif
         endfor
       elseif (isvector (group))
@@ -1194,6 +1175,9 @@ classdef anova < handle
       endif
       if (! isempty (obj.DesignMatrix) && ! isempty (obj.Coefficients))
         obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients(:, 1);
+        ## anovan returns weighted residuals in stats.resid; expose raw
+        ## (observed minus fitted) residuals so FittedValues + Residuals == Y.
+        obj.Residuals = y_vec - obj.FittedValues;
       endif
     endfunction
 
@@ -1293,9 +1277,9 @@ classdef anova < handle
       endif
       for k = 1:2:numel (varargin)
         switch (lower (varargin{k}))
-          case "figurename"
+          case 'figurename'
             fig_name = varargin{k + 1};
-          case "visible"
+          case 'visible'
             visible = varargin{k + 1};
           otherwise
             error ("anova.plotDiagnostics: unknown option '%s'.", varargin{k});
@@ -1597,7 +1581,8 @@ endclassdef
 
 ## Name-value parsing: case-insensitive names, displayopt alias
 %!test
-%! a = anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 'one', 'displayopt', 'on');
+%! a = anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 'one', ...
+%!            'displayopt', 'on');
 %! assert_equal (a.SumOfSquaresType, 'one');
 
 ## Backend selection: one-way default -> anova1
@@ -1757,7 +1742,7 @@ endclassdef
 %! assert_equal (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
 %! assert_equal (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
 
-## Effect sizes: reference formulas eta2=SS/SST and omega2=(SS-df*MSE)/(SST+MSE).
+## Effect sizes: reference eta2 = SS/SST, omega2 = (SS-df*MSE)/(SST+MSE).
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
@@ -1767,7 +1752,7 @@ endclassdef
 %! assert_equal (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
 %! assert_equal (es.OmegaSquared, 124 / 133, 1e-12);
 
-## Two-way balanced ANOVA: popcorn values match the anova2 documentation example.
+## Two-way balanced ANOVA: popcorn values match the anova2 doc example.
 %!test
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
@@ -1805,7 +1790,8 @@ endclassdef
 
 ## summary(): includes MSE / DFE / Alpha line
 %!test
-%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two', 'Alpha', 0.10);
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'SumOfSquaresType', 'two', ...
+%!            'Alpha', 0.10);
 %! str = evalc ('summary (a)');
 %! assert (! isempty (strfind (str, 'Alpha: 0.1')));
 
@@ -1869,6 +1855,35 @@ endclassdef
 %! assert_equal (T{2, 2}, 126, 1e-12);
 %! assert_equal (M.Mean, [2; 5; 11], 1e-12);
 %! assert_equal (V.VarianceComponent, 1, 1e-12);
+
+## groupmeans(): confidence bounds bracket the group means
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! M = groupmeans (anova (g, y, "SumOfSquaresType", "two"));
+%! assert (all (M.MeanLower <= M.Mean));
+%! assert (all (M.Mean <= M.MeanUpper));
+
+## boxchart(): returns a non-empty graphics result
+%!test
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%!   g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%!   h = boxchart (anova (g, y));
+%!   assert (! isempty (h));
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Weighted anovan fit exposes raw residuals (FittedValues + Residuals == Y)
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! w = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, "Weights", w);
+%! a.fit ();
+%! assert_equal (a.FittedValues + a.Residuals, y, 1e-9);
 
 ## --- Week 5: diagnostic plots ------------------------------------------
 
@@ -1999,6 +2014,15 @@ endclassdef
 
 %!error <anova: RandomFactors indices exceed the number of factors.> ...
 %!  anova ([1;1;2;2], [1;2;3;4], "RandomFactors", 2)
+
+%!error <anova.stats: type must be a character vector.> ...
+%!  stats (anova ([1;1;1;2;2;2;3;3;3], (1:9)'), 5)
+
+%!error <anova.groupmeans: factors are required for group means.> ...
+%!  groupmeans (anova ([1;2;3;4;5;6]))
+
+%!error <anova.varianceComponent: random factors are not implemented.> ...
+%!  varianceComponent (anova ([1;1;1;2;2;2;3;3;3], (1:9)', "RandomFactors", 1))
 
 %!error <diagnostic plots require>
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
