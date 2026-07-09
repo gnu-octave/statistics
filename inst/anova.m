@@ -15,7 +15,7 @@
 ## You should have received a copy of the GNU General Public License along with
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
-classdef anova < handle
+classdef anova
   ## -*- texinfo -*-
   ## @deftp {statistics} anova
   ##
@@ -197,19 +197,19 @@ classdef anova < handle
     ## Backend aliases and Octave-specific extensions retained for internal
     ## use and power users; kept off the documented MATLAB property surface.
     GROUP                                   ## raw factor data (fit workhorse)
-    ModelType   = 'linear';
+    ModelType    = 'linear';
     ModelSpecification = 'linear';
-    SSType      = 3;
-    VarNames    = {};
-    Continuous  = [];
-    Random      = [];
-    NumFactors  = 0;
-    AnovaTable  = {};
+    SSType       = 3;
+    VarNames     = {};
+    Continuous   = [];
+    Random       = [];
+    NumFactors   = 0;
+    AnovaTable   = {};
     FittedValues = [];
-    DFE         = [];
-    MSE         = [];
+    DFE          = [];
+    MSE          = [];
     DesignMatrix = [];
-    Stats       = struct ();
+    Stats        = struct ();
   endproperties
 
   properties (Access = private)
