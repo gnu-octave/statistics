@@ -410,7 +410,7 @@ classdef anova < handle
     ## @end deftypefn
     function disp (obj)
       obj.ensureFit_ ();
-      constrained = "constrained";
+      constrained = 'constrained';
       fprintf ("\n  %d-way anova, %s (Type %s) sums of squares.\n\n", ...
                obj.NumFactors, constrained, obj.sstypeLabel_ ());
       if (! isempty (obj.Formula))
@@ -462,7 +462,7 @@ classdef anova < handle
       if (isempty (G))
         error ("anova.groupmeans: factors are required for group means.");
       endif
-      [levels, ~, gid] = unique (G, "rows");
+      [levels, ~, gid] = unique (G, 'rows');
       n = accumarray (gid, 1);
       mu = accumarray (gid, y, [], @mean);
       se = sqrt (obj.MSE ./ n);
@@ -472,7 +472,7 @@ classdef anova < handle
       values = num2cell (levels, 1);
       values = [values, {mu, se, lo, hi}];
       vnames = [names, {'Mean', 'SE', 'MeanLower', 'MeanUpper'}];
-      means = table (values{:}, "VariableNames", vnames);
+      means = table (values{:}, 'VariableNames', vnames);
     endfunction
 
     ## -*- texinfo -*-
@@ -504,7 +504,7 @@ classdef anova < handle
     ## @end deftypefn
     function h = plotComparisons (obj, varargin)
       obj.ensureFit_ ();
-      [~, ~, h] = multcompare (obj, "display", "on", varargin{:});
+      [~, ~, h] = multcompare (obj, 'display', 'on', varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -524,7 +524,7 @@ classdef anova < handle
       endif
       lo = obj.DFE * obj.MSE / chi2inv (1 - alpha / 2, obj.DFE);
       hi = obj.DFE * obj.MSE / chi2inv (alpha / 2, obj.DFE);
-      v = table ({'Error'}, obj.MSE, lo, hi, "VariableNames", ...
+      v = table ({'Error'}, obj.MSE, lo, hi, 'VariableNames', ...
                  {'Source', 'VarianceComponent', ...
                   'VarianceComponentLower', 'VarianceComponentUpper'});
     endfunction
@@ -673,8 +673,8 @@ classdef anova < handle
         value = char (value);
       endif
       obj.ModelSpecification = value;
-      if (ischar (value) && strcmpi (value, "interactions"))
-        obj.ModelType = "interaction";
+      if (ischar (value) && strcmpi (value, 'interactions'))
+        obj.ModelType = 'interaction';
       else
         obj.ModelType = value;
       endif
@@ -682,7 +682,7 @@ classdef anova < handle
 
     function setSumOfSquaresType_ (obj, value)
       if (isnumeric (value) && isscalar (value))
-        names = {"one", "two", "three"};
+        names = {'one', 'two', 'three'};
         if (! any (value == [1, 2, 3]))
           error (strcat ("anova: SumOfSquaresType must be 'one',", ...
                          " 'two', 'three', or 'hierarchical'."));
@@ -725,7 +725,7 @@ classdef anova < handle
 
     function syncCategoricalFactors_ (obj)
       if (obj.isName_ (obj.CategoricalFactors) ...
-          && strcmpi (char (obj.CategoricalFactors), "all"))
+          && strcmpi (char (obj.CategoricalFactors), 'all'))
         obj.Continuous = [];
         return;
       endif
@@ -746,7 +746,7 @@ classdef anova < handle
       if (isempty (obj.FactorNames))
         obj.FactorNames = arrayfun (@(k) sprintf ("X%d", k), ...
                                     1:obj.nFactors_, ...
-                                    "UniformOutput", false);
+                                    'UniformOutput', false);
         obj.VarNames = obj.FactorNames;
       elseif (numel (obj.FactorNames) != obj.nFactors_)
         error ("anova: FactorNames must contain one name per factor.");
@@ -756,7 +756,7 @@ classdef anova < handle
       else
         terms = obj.FactorNames(1:obj.nFactors_);
         if (ischar (obj.ModelType) && obj.nFactors_ > 1)
-          if (strcmpi (obj.ModelType, "interaction"))
+          if (strcmpi (obj.ModelType, 'interaction'))
             for a = 1:obj.nFactors_ - 1
               for b = a + 1:obj.nFactors_
                 terms{end + 1} = sprintf ("%s:%s", ...
@@ -764,16 +764,16 @@ classdef anova < handle
                                            obj.FactorNames{b});
               endfor
             endfor
-          elseif (strcmpi (obj.ModelType, "full"))
+          elseif (strcmpi (obj.ModelType, 'full'))
             for mask = 1:(2 ^ obj.nFactors_ - 1)
               idx = find (bitget (mask, 1:obj.nFactors_));
               if (numel (idx) > 1)
-                terms{end + 1} = strjoin (obj.FactorNames(idx), ":");
+                terms{end + 1} = strjoin (obj.FactorNames(idx), ':');
               endif
             endfor
           endif
         endif
-        rhs = strjoin (terms, " + ");
+        rhs = strjoin (terms, ' + ');
         obj.Formula = sprintf ("%s ~ 1 + %s", obj.ResponseName, rhs);
       endif
     endfunction
@@ -828,7 +828,7 @@ classdef anova < handle
                                obj.GROUP(:))) ...
               && size (obj.GROUP, 1) == 1)
         G = cell2mat (cellfun (@(c) c(:), obj.GROUP(idx), ...
-                               "UniformOutput", false));
+                               'UniformOutput', false));
       else
         G = obj.GROUP(:, idx);
       endif
@@ -869,13 +869,13 @@ classdef anova < handle
               && all (cellfun (@(c) isvector (c) || ischar (c), ...
                                obj.GROUP(:))) ...
               && size (obj.GROUP, 1) == 1)
-        cols = cellfun (@(c) c(:), obj.GROUP, "UniformOutput", false);
+        cols = cellfun (@(c) c(:), obj.GROUP, 'UniformOutput', false);
       elseif (isvector (obj.GROUP))
         cols = {obj.GROUP(:)};
       else
         cols = num2cell (obj.GROUP, 1);
       endif
-      tbl = table (cols{:}, "VariableNames", obj.FactorNames);
+      tbl = table (cols{:}, 'VariableNames', obj.FactorNames);
     endfunction
 
     ## Build the public Residuals table (Raw and Pearson) from a raw residual
@@ -884,7 +884,7 @@ classdef anova < handle
     function tbl = residualsTable_ (obj, raw)
       raw = raw(:);
       pearson = raw ./ sqrt (max (obj.MSE, eps));
-      tbl = table (raw, pearson, "VariableNames", {'Raw', 'Pearson'});
+      tbl = table (raw, pearson, 'VariableNames', {'Raw', 'Pearson'});
     endfunction
 
     ## Build the public Metrics table from the fitted ANOVA table and the
@@ -920,7 +920,7 @@ classdef anova < handle
       rsq = ssr / max (sst, eps);
       adj = 1 - (1 - rsq) * (obj.NumObservations - 1) / max (dfe, 1);
       tbl = table (mse, sqrt (max (mse, 0)), sse, ssr, sst, rsq, adj, ...
-                   "VariableNames", {'MSE', 'RMSE', 'SSE', 'SSR', 'SST', ...
+                   'VariableNames', {'MSE', 'RMSE', 'SSE', 'SSR', 'SST', ...
                                      'RSquared', 'AdjustedRSquared'});
     endfunction
 
@@ -1217,9 +1217,9 @@ classdef anova < handle
 
     function s = sstypeLabel_ (obj)
       switch (obj.SSType)
-        case 1; s = "I";
-        case 2; s = "II";
-        otherwise; s = "III";
+        case 1; s = 'I';
+        case 2; s = 'II';
+        otherwise; s = 'III';
       endswitch
     endfunction
 
@@ -1304,8 +1304,8 @@ classdef anova < handle
         error ("anova.plotDiagnostics: diagnostic inputs must match.");
       endif
 
-      fig_name = "Diagnostic Plots: Model Residuals";
-      visible = "on";
+      fig_name = 'Diagnostic Plots: Model Residuals';
+      visible = 'on';
       if (mod (numel (varargin), 2) != 0)
         error ("anova.plotDiagnostics: name-value pairs must come in pairs.");
       endif
@@ -1322,21 +1322,21 @@ classdef anova < handle
 
       mse = sum (residuals .^ 2) / max (dfe, 1);
       t = residuals ./ sqrt (mse * max (1 - leverage, eps));
-      [~, DI] = sort (cooksd, "descend");
+      [~, DI] = sort (cooksd, 'descend');
       nk = min (4, n);
 
-      h = figure ("Name", fig_name, "Visible", visible);
+      h = figure ('Name', fig_name, 'Visible', visible);
 
       subplot (2, 2, 1);
       x = ((1:n)' - 0.5) / n;
       [ts, I] = sort (t);
       q = norminv (x);
-      plot (q, ts, "ok", "markersize", 3);
+      plot (q, ts, 'ok', 'markersize', 3);
       box off;
       grid on;
-      xlabel ("Theoretical quantiles");
-      ylabel ("Studentized residuals");
-      title ("Normal Q-Q Plot");
+      xlabel ('Theoretical quantiles');
+      ylabel ('Studentized residuals');
+      title ('Normal Q-Q Plot');
       arrayfun (@(i) text (q(I == DI(i)), t(DI(i)), ...
                            sprintf ("  %u", DI(i))), 1:nk);
       iqr = [0.25; 0.75];
@@ -1344,65 +1344,65 @@ classdef anova < handle
       xl = norminv (iqr);
       slope = diff (yl) / diff (xl);
       int = yl(1) - slope * xl(1);
-      ax1_xlim = get (gca, "XLim");
+      ax1_xlim = get (gca, 'XLim');
       hold on;
-      plot (ax1_xlim, slope * ax1_xlim + int, "k-");
+      plot (ax1_xlim, slope * ax1_xlim + int, 'k-');
       hold off;
-      set (gca, "Xlim", ax1_xlim);
+      set (gca, 'Xlim', ax1_xlim);
 
       subplot (2, 2, 2);
-      plot (fitted, sqrt (abs (t)), "ko", "markersize", 3);
+      plot (fitted, sqrt (abs (t)), 'ko', 'markersize', 3);
       box off;
-      xlabel ("Fitted values");
-      ylabel ("sqrt ( | Studentized residuals | )");
-      title ("Spread-Location Plot");
-      ax2_xlim = get (gca, "XLim");
+      xlabel ('Fitted values');
+      ylabel ('sqrt ( | Studentized residuals | )');
+      title ('Spread-Location Plot');
+      ax2_xlim = get (gca, 'XLim');
       hold on;
-      plot (ax2_xlim, ones (1, 2) * sqrt (2), "k:");
-      plot (ax2_xlim, ones (1, 2) * sqrt (3), "k-.");
-      plot (ax2_xlim, ones (1, 2) * sqrt (4), "k--");
+      plot (ax2_xlim, ones (1, 2) * sqrt (2), 'k:');
+      plot (ax2_xlim, ones (1, 2) * sqrt (3), 'k-.');
+      plot (ax2_xlim, ones (1, 2) * sqrt (4), 'k--');
       hold off;
       arrayfun (@(i) text (fitted(DI(i)), sqrt (abs (t(DI(i)))), ...
                            sprintf ("  %u", DI(i))), 1:nk);
       xlim (ax2_xlim);
 
       subplot (2, 2, 3);
-      plot (leverage, t, "ko", "markersize", 3);
+      plot (leverage, t, 'ko', 'markersize', 3);
       box off;
-      xlabel ("Leverage");
-      ylabel ("Studentized residuals");
-      title ("Residual-Leverage Plot");
-      ax3_xlim = get (gca, "XLim");
-      ax3_ylim = get (gca, "YLim");
+      xlabel ('Leverage');
+      ylabel ('Studentized residuals');
+      title ('Residual-Leverage Plot');
+      ax3_xlim = get (gca, 'XLim');
+      ax3_ylim = get (gca, 'YLim');
       hold on;
-      plot (ax3_xlim, zeros (1, 2), "k-");
+      plot (ax3_xlim, zeros (1, 2), 'k-');
       hold off;
       arrayfun (@(i) text (leverage(DI(i)), t(DI(i)), ...
                            sprintf ("  %u", DI(i))), 1:nk);
-      set (gca, "ygrid", "on");
+      set (gca, 'ygrid', 'on');
       xlim (ax3_xlim);
       ylim (ax3_ylim);
 
       subplot (2, 2, 4);
-      stem (cooksd, "ko", "markersize", 3);
+      stem (cooksd, 'ko', 'markersize', 3);
       box off;
-      xlabel ("Obs. number");
-      ylabel ("Cook's distance");
-      title ("Cook's Distance Stem Plot");
+      xlabel ('Obs. number');
+      ylabel ('Cook''s distance');
+      title ('Cook''s Distance Stem Plot');
       xlim ([0, n]);
-      ax4_xlim = get (gca, "XLim");
-      ax4_ylim = get (gca, "YLim");
+      ax4_xlim = get (gca, 'XLim');
+      ax4_ylim = get (gca, 'YLim');
       hold on;
-      plot (ax4_xlim, ones (1, 2) * 4 / max (dfe, eps), "k:");
-      plot (ax4_xlim, ones (1, 2) * 0.5, "k-.");
-      plot (ax4_xlim, ones (1, 2), "k--");
+      plot (ax4_xlim, ones (1, 2) * 4 / max (dfe, eps), 'k:');
+      plot (ax4_xlim, ones (1, 2) * 0.5, 'k-.');
+      plot (ax4_xlim, ones (1, 2), 'k--');
       hold off;
       arrayfun (@(i) text (DI(i), cooksd(DI(i)), ...
                            sprintf ("  %u", DI(i))), 1:nk);
       xlim (ax4_xlim);
       ylim (ax4_ylim);
 
-      set (findall (gcf, "-property", "FontSize"), "FontSize", 7);
+      set (findall (gcf, '-property', 'FontSize'), 'FontSize', 7);
     endfunction
 
     function coeffs = linearModelCoefficients_ (obj, mdl)
@@ -1437,16 +1437,16 @@ classdef anova < handle
     endfunction
 
     function stats = linearModelStats_ (obj, mdl)
-      stats = struct ("source", "linearmodel", ...
-                      "resid", mdl.Residuals.Raw, ...
-                      "coeffs", obj.Coefficients, ...
-                      "dfe", mdl.DFE, ...
-                      "mse", mdl.MSE, ...
-                      "vcov", mdl.CoefficientCovariance, ...
-                      "CooksD", mdl.Diagnostics.CooksDistance, ...
-                      "alpha", obj.Alpha, ...
-                      "varnames", {mdl.VariableNames}, ...
-                      "coeffnames", {mdl.CoefficientNames});
+      stats = struct ('source', 'linearmodel', ...
+                      'resid', mdl.Residuals.Raw, ...
+                      'coeffs', obj.Coefficients, ...
+                      'dfe', mdl.DFE, ...
+                      'mse', mdl.MSE, ...
+                      'vcov', mdl.CoefficientCovariance, ...
+                      'CooksD', mdl.Diagnostics.CooksDistance, ...
+                      'alpha', obj.Alpha, ...
+                      'varnames', {mdl.VariableNames}, ...
+                      'coeffnames', {mdl.CoefficientNames});
     endfunction
 
     function es = linearModelEffectSizes_ (obj)
@@ -1535,21 +1535,21 @@ endclassdef
 %! ## One-way ANOVA with a formatted summary
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, "SumOfSquaresType", "two");
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! summary (a);
 
 %!demo
 %! ## Post-hoc multiple comparisons
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, "SumOfSquaresType", "two");
-%! C = multcompare (a, "display", "off")
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
+%! C = multcompare (a, 'display', 'off')
 
 %!demo
 %! ## Diagnostic plots for an anovan-backed fit
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, "SumOfSquaresType", "two");
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! plotDiagnostics (a);
 
 ## --- BISTs ---------------------------------------------------------------
@@ -1559,7 +1559,7 @@ endclassdef
 %! y = [1; 2; 3; 4; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
 %! a = anova (g, y);
-%! assert_equal (class (a), "anova");
+%! assert_equal (class (a), 'anova');
 %! assert_equal (a.Y, y);
 %! assert_equal (a.GROUP, g);
 
@@ -1567,7 +1567,7 @@ endclassdef
 %!test
 %! y = magic (4);
 %! a = anova (y);
-%! assert_equal (class (a), "anova");
+%! assert_equal (class (a), 'anova');
 %! assert_equal (a.Y, y);
 %! assert_equal (a.GROUP, []);
 
@@ -1577,7 +1577,7 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova ({g1, g2}, y);
-%! assert_equal (class (a), "anova");
+%! assert_equal (class (a), 'anova');
 %! assert_equal (a.NumFactors, 2);
 
 ## Property defaults
@@ -1622,20 +1622,20 @@ endclassdef
 ## Backend selection: one-way default -> anova1
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6]);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "1-way anova")));
+%! assert (! isempty (strfind (evalc ('disp (a)'), '1-way anova')));
 
 ## Backend selection: one-way matrix-Y form -> anova1
 %!test
 %! a = anova (magic (4));
-%! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "1-way anova")));
+%! str = evalc ('disp (a)');
+%! assert (! isempty (strfind (str, '1-way anova')));
 
 ## Backend selection: matrix Y + explicit 'reps' -> anova2
 %!test
 %! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (y, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "2-way anova")));
+%! assert (! isempty (strfind (evalc ('disp (a)'), '2-way anova')));
 
 ## Backend selection: two-factor cell groups without reps -> anovan
 %!test
@@ -1643,8 +1643,8 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova ({g1, g2}, y);
-%! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "2-way anova")));
+%! str = evalc ('disp (a)');
+%! assert (! isempty (strfind (str, '2-way anova')));
 
 ## Backend selection: three factors -> anovan
 %!test
@@ -1653,20 +1653,20 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 6, 1);
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
 %! a = anova ({g1, g2, g3}, y);
-%! str = evalc ("disp (a)");
-%! assert (! isempty (strfind (str, "3-way anova")));
+%! str = evalc ('disp (a)');
+%! assert (! isempty (strfind (str, '3-way anova')));
 
 ## Backend selection: SSType != 3 with 1 factor falls through to anovan
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'SumOfSquaresType', 'two');
-%! assert (! isempty (strfind (evalc ("disp (a)"), "Type II")));
+%! assert (! isempty (strfind (evalc ('disp (a)'), 'Type II')));
 
 ## Backend selection: continuous predictors force anovan
 %!test
 %! y = (1:12)';
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = (1:12)';                              ## continuous
-%! a = anova ({g1, g2}, y, "CategoricalFactors", 1);
+%! a = anova ({g1, g2}, y, 'CategoricalFactors', 1);
 %! assert_equal (a.CategoricalFactors, 1);
 
 ## Backend selection: NaN in a vector response falls through to anovan
@@ -1700,7 +1700,7 @@ endclassdef
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (popcorn, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "2-way anova")));
+%! assert (! isempty (strfind (evalc ('disp (a)'), '2-way anova')));
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (isfield (a.Stats, 'sigmasq'));
@@ -1875,14 +1875,14 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, "FactorNames", {"Brand"}, ...
-%!            "ResponseName", "Yield", "SumOfSquaresType", "two");
-%! assert_equal (a.Formula, "Yield ~ 1 + Brand");
+%! a = anova (g, y, 'FactorNames', {'Brand'}, ...
+%!            'ResponseName', 'Yield', 'SumOfSquaresType', 'two');
+%! assert_equal (a.Formula, 'Yield ~ 1 + Brand');
 %! assert_equal (a.Factors.Brand, g);
 %! assert_equal (a.Y, y);
-%! assert_equal (a.FactorNames, {"Brand"});
-%! assert_equal (a.SumOfSquaresType, "two");
-%! assert (! any (strcmp (methods ("anova"), "predict")));
+%! assert_equal (a.FactorNames, {'Brand'});
+%! assert_equal (a.SumOfSquaresType, 'two');
+%! assert (! any (strcmp (methods ('anova'), 'predict')));
 %! T = stats (a);
 %! M = groupmeans (a);
 %! V = varianceComponent (a);
@@ -1944,13 +1944,13 @@ endclassdef
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! M = groupmeans (anova (g, y, "SumOfSquaresType", "two"));
+%! M = groupmeans (anova (g, y, 'SumOfSquaresType', 'two'));
 %! assert (all (M.MeanLower <= M.Mean));
 %! assert (all (M.Mean <= M.MeanUpper));
 
 ## boxchart(): returns a non-empty graphics result
 %!test
-%! hf = figure ("visible", "off");
+%! hf = figure ('visible', 'off');
 %! unwind_protect
 %!   y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %!   g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
@@ -1965,7 +1965,7 @@ endclassdef
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! w = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, "Weights", w);
+%! a = anova (g, y, 'Weights', w);
 %! a.fit ();
 %! assert_equal (a.FittedValues + a.Residuals.Raw, y, 1e-9);
 
@@ -2019,7 +2019,7 @@ endclassdef
 %! y = [2; 4; 5; 4; 5];
 %! mdl = fitlm (X, y);
 %! a = anova (mdl);
-%! assert (! isempty (strfind (evalc ("disp (a)"), "anova")));
+%! assert (! isempty (strfind (evalc ('disp (a)'), 'anova')));
 %! assert (! isempty (a.AnovaTable));
 %! assert_equal (predict (a), mdl.Fitted, 1e-9);
 %! es = getEffectSizes (a);
@@ -2088,16 +2088,16 @@ endclassdef
 %!  anova ([1;1;2;2], [1;2;3;4], 'Weights', [1;1;1])
 
 %!error <anova: CategoricalFactors must contain valid factor indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], "CategoricalFactors", 1.5)
+%!  anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 1.5)
 
 %!error <anova: CategoricalFactors must contain valid factor indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], "CategoricalFactors", 2)
+%!  anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 2)
 
 %!error <anova: RandomFactors must contain positive integer indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], "RandomFactors", 0)
+%!  anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 0)
 
 %!error <anova: RandomFactors indices exceed the number of factors.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], "RandomFactors", 2)
+%!  anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 2)
 
 %!error <anova.stats: type must be a character vector.> ...
 %!  stats (anova ([1;1;1;2;2;2;3;3;3], (1:9)'), 5)
@@ -2106,7 +2106,7 @@ endclassdef
 %!  groupmeans (anova ([1;2;3;4;5;6]))
 
 %!error <anova.varianceComponent: random factors are not implemented.> ...
-%!  varianceComponent (anova ([1;1;1;2;2;2;3;3;3], (1:9)', "RandomFactors", 1))
+%!  varianceComponent (anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'RandomFactors', 1))
 
 %!error <diagnostic plots require>
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
