@@ -676,7 +676,7 @@ classdef LinearModel
     function display (this)
       in_name = inputname (1);
       if (! isempty (in_name))
-        fprintf ('%s =\n', in_name);
+        fprintf ("%s =\n", in_name);
       endif
       disp (this);
     endfunction
@@ -921,12 +921,12 @@ classdef LinearModel
 
         if (! isempty (opts.VarNames))
           if (numel (opts.VarNames) != p_raw + 1)
-            error ('LinearModel: VarNames must have %d elements.', p_raw + 1);
+            error ("LinearModel: VarNames must have %d elements.", p_raw + 1);
           endif
           pred_names_raw = opts.VarNames(1:p_raw);
           resp_name      = opts.VarNames{end};
         else
-          pred_names_raw = arrayfun (@(k) sprintf ('x%d', k), 1:p_raw, ...
+          pred_names_raw = arrayfun (@(k) sprintf ("x%d", k), 1:p_raw, ...
                                      'UniformOutput', false);
           resp_name      = 'y';
         endif
@@ -1020,7 +1020,7 @@ classdef LinearModel
       n_obs       = sum (subset_mask);
 
       if (n_obs < 1)
-        error ('LinearModel: No observations remain after removing missing/excluded rows.');
+        error ("LinearModel: No observations remain after removing missing/excluded rows.");
       endif
 
       ## weights
@@ -1451,13 +1451,13 @@ classdef LinearModel
         if (strcmpi (varargin{i}, 'Alpha'))
           alpha = varargin{i+1};
           if (! isscalar (alpha) || ! isnumeric (alpha) || alpha < 0 || alpha > 1)
-            error ('predict: Alpha must be a scalar in [0,1].');
+            error ("predict: Alpha must be a scalar in [0,1].");
           endif
           i += 2;
         elseif (strcmpi (varargin{i}, 'Prediction'))
           pred_str = lower (char (varargin{i+1}));
           if (! any (strcmp (pred_str, {'curve', 'observation'})))
-            error ('predict: Prediction must be ''curve'' or ''observation''.');
+            error ("predict: Prediction must be 'curve' or 'observation'.");
           endif
           pred_obs = strcmp (pred_str, 'observation');
           i += 2;
@@ -1465,7 +1465,7 @@ classdef LinearModel
           simultan = logical (varargin{i+1});
           i += 2;
         else
-          error ('predict: unknown option ''%s''.', varargin{i});
+          error ("predict: unknown option '%s'.", varargin{i});
         endif
       endwhile
 
@@ -1481,7 +1481,7 @@ classdef LinearModel
         X_raw = zeros (n_new, p_raw);
         for j = 1:p_raw
           if (! ismember (pred_names{j}, Xnew.Properties.VariableNames))
-            error ('predict: Xnew table is missing predictor ''%s''.', pred_names{j});
+            error ("predict: Xnew table is missing predictor '%s'.", pred_names{j});
           endif
           col = Xnew.(pred_names{j});
           if (iscell (col))
@@ -1504,7 +1504,7 @@ classdef LinearModel
       else
         X_raw = double (Xnew);
         if (columns (X_raw) != p_raw)
-          error ('predict: Xnew must have %d columns.', p_raw);
+          error ("predict: Xnew must have %d columns.", p_raw);
         endif
         n_new = rows (X_raw);
       endif
@@ -1570,13 +1570,13 @@ classdef LinearModel
     ## @end deftypefn
     function ysim = random (mdl, Xnew, varargin)
       if (nargin < 2)
-        error ('random: Not enough input arguments.');
+        error ("random: Not enough input arguments.");
       endif
       if (nargin > 2)
-        error ('random: Too many input arguments.');
+        error ("random: Too many input arguments.");
       endif
       if (isempty (Xnew))
-        error ('random: Xnew must have %d columns.', mdl.NumPredictors);
+        error ("random: Xnew must have %d columns.", mdl.NumPredictors);
       endif
       ypred = predict (mdl, Xnew);
       ysim  = ypred + sqrt (mdl.MSE) .* randn (numel (ypred), 1);
@@ -1619,7 +1619,7 @@ classdef LinearModel
       n_extra = nargin - 1;
 
       if (n_extra < 1)
-        error ('feval: Not enough input arguments.');
+        error ("feval: Not enough input arguments.");
       endif
 
       if (n_extra == 1)
@@ -1629,12 +1629,12 @@ classdef LinearModel
         if (istable (Xnew))
           for j = 1:p_raw
             if (! ismember (mdl.PredictorNames{j}, Xnew.Properties.VariableNames))
-              error (strcat ('feval: X does not contain one or more predictor', ' variables needed for this model.'));
+              error (strcat ("feval: X does not contain one or more predictor", " variables needed for this model."));
             endif
           endfor
         else
           if (columns (double (Xnew)) != p_raw)
-            error ('feval: Predictor data matrix must have %d columns.', p_raw);
+            error ("feval: Predictor data matrix must have %d columns.", p_raw);
           endif
         endif
 
@@ -1649,7 +1649,7 @@ classdef LinearModel
             if (isempty (ref_size))
               ref_size = s_i;
             elseif (! isequal (s_i, ref_size))
-              error ('feval: All input arguments must be the same size.');
+              error ("feval: All input arguments must be the same size.");
             endif
           endif
         endfor
@@ -1672,7 +1672,7 @@ classdef LinearModel
 
       else
 
-        error (strcat ('feval: Incorrect number of input arguments. You must provide', ' either %d separate predictor variable arguments, or one', ' predictor matrix with %d columns.'), p_raw, p_raw);
+        error (strcat ("feval: Incorrect number of input arguments. You must provide", " either %d separate predictor variable arguments, or one", " predictor matrix with %d columns."), p_raw, p_raw);
 
       endif
 
@@ -1714,19 +1714,19 @@ classdef LinearModel
     ## @end deftypefn
     function ci = coefCI (mdl, alpha)
       if (nargin > 2)
-        error ('coefCI: Too many input arguments.');
+        error ("coefCI: Too many input arguments.");
       endif
       if (nargin < 2)
         alpha = 0.05;
       endif
       if (! isscalar (alpha))
-        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be a scalar.'));
+        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be a scalar."));
       endif
       if (! (alpha >= 0))
-        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be greater than or equal to 0.'));
+        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be greater than or equal to 0."));
       endif
       if (alpha > 1)
-        error (strcat ('coefCI: Invalid argument at position 2.', ' Value must be less than or equal to 1.'));
+        error (strcat ("coefCI: Invalid argument at position 2.", " Value must be less than or equal to 1."));
       endif
 
       t  = tinv (1 - alpha / 2, mdl.DFE);
@@ -1786,10 +1786,10 @@ classdef LinearModel
     ## @end deftypefn
     function [p, F, r] = coefTest (mdl, varargin)
       if (nargout > 3)
-        error ('coefTest: Too many output arguments.');
+        error ("coefTest: Too many output arguments.");
       endif
       if (numel (varargin) > 2)
-        error ('coefTest: Too many input arguments.');
+        error ("coefTest: Too many input arguments.");
       endif
 
       k = mdl.NumCoefficients;
@@ -1798,24 +1798,24 @@ classdef LinearModel
 
         H = varargin{1};
         if (! isnumeric (H))
-          error ('coefTest: H must be a %d-by-%d numeric matrix.', size (H, 1), k);
+          error ("coefTest: H must be a %d-by-%d numeric matrix.", size (H, 1), k);
         endif
         if (size (H, 2) != k)
-          error ('coefTest: H must be a %d-by-%d numeric matrix.', size (H, 1), k);
+          error ("coefTest: H must be a %d-by-%d numeric matrix.", size (H, 1), k);
         endif
         if (any (any (isnan (H))))
-          error (strcat ('coefTest: H is not full rank and hypotheses', ' are not consistent.'));
+          error (strcat ("coefTest: H is not full rank and hypotheses", " are not consistent."));
         endif
         r = size (H, 1);
 
         if (numel (varargin) == 2)
           C = varargin{2};
           if (! isnumeric (C))
-            error ('coefTest: C must be a numeric vector.');
+            error ("coefTest: C must be a numeric vector.");
           endif
           C = C(:);
           if (numel (C) != r)
-            error ('coefTest: H must be a %d-by-%d numeric matrix.', numel (C), k);
+            error ("coefTest: H must be a %d-by-%d numeric matrix.", numel (C), k);
           endif
         else
           C = zeros (r, 1);
@@ -1897,10 +1897,10 @@ classdef LinearModel
     ## @end deftypefn
     function [p, DW] = dwtest (mdl, varargin)
       if (nargout > 2)
-        error ('dwtest: Too many output arguments.');
+        error ("dwtest: Too many output arguments.");
       endif
       if (numel (varargin) > 2)
-        error ('dwtest: Too many input arguments.');
+        error ("dwtest: Too many input arguments.");
       endif
 
       method = 'exact';
@@ -1913,7 +1913,7 @@ classdef LinearModel
       endif
 
       if (! ischar (method) || ! ismember (lower (method), {'exact', 'approximate'}))
-        error ('dwtest: The METHOD argument must be ''approximate'' or ''exact''.');
+        error ("dwtest: The METHOD argument must be 'approximate' or 'exact'.");
       endif
       method = lower (method);
       tail   = lower (tail);
@@ -2002,10 +2002,10 @@ classdef LinearModel
     ## @end deftypefn
     function NewMdl = addTerms (mdl, terms)
       if (nargin < 2)
-        error ('addTerms: Not enough input arguments.');
+        error ("addTerms: Not enough input arguments.");
       endif
       if (nargin > 2)
-        error ('addTerms: Too many input arguments.');
+        error ("addTerms: Too many input arguments.");
       endif
 
       nv   = mdl.NumVariables;
@@ -2015,13 +2015,13 @@ classdef LinearModel
 
         T = double (terms);
         if (isempty (T))
-          error ('addTerms: Terms matrix must have %d columns.', nv);
+          error ("addTerms: Terms matrix must have %d columns.", nv);
         endif
         if (columns (T) == nv - 1)
           T = [T, zeros(rows (T), 1)];
         endif
         if (columns (T) != nv)
-          error ('addTerms: Terms matrix must have %d columns.', nv);
+          error ("addTerms: Terms matrix must have %d columns.", nv);
         endif
 
       elseif (ischar (terms) || isstring (terms))
@@ -2071,7 +2071,7 @@ classdef LinearModel
                 endif
                 idx = find (strcmp (pred, vname));
                 if (isempty (idx))
-                  error ('addTerms: Unrecognized variable: ''%s''.', vname);
+                  error ("addTerms: Unrecognized variable: '%s'.", vname);
                 endif
                 for k = 1:exp
                   row         = zeros (1, nv);
@@ -2092,7 +2092,7 @@ classdef LinearModel
                   endif
                   idx = find (strcmp (pred, vname));
                   if (isempty (idx))
-                    error ('addTerms: Unrecognized variable: ''%s''.', vname);
+                    error ("addTerms: Unrecognized variable: '%s'.", vname);
                   endif
                   row(idx(1)) = row(idx(1)) + exp;
                 endfor
@@ -2104,7 +2104,7 @@ classdef LinearModel
         endfor
 
       else
-        error (strcat ('addTerms: Model update specification must be a model formula', ' character vector or string scalar, or a terms matrix'));
+        error (strcat ("addTerms: Model update specification must be a model formula", " character vector or string scalar, or a terms matrix"));
       endif
 
       existing = mdl.TermsMatrix;
@@ -2115,7 +2115,7 @@ classdef LinearModel
       new_rows = T(is_new, :);
 
       if (isempty (new_rows))
-        warning ('addTerms: There are no new terms among the terms you specified.');
+        warning ("addTerms: There are no new terms among the terms you specified.");
         NewMdl = mdl;
         return;
       endif
@@ -2184,10 +2184,10 @@ classdef LinearModel
     ## @end deftypefn
     function NewMdl = removeTerms (mdl, terms)
       if (nargin < 2)
-        error ('removeTerms: Not enough input arguments.');
+        error ("removeTerms: Not enough input arguments.");
       endif
       if (nargin > 2)
-        error ('removeTerms: Too many input arguments.');
+        error ("removeTerms: Too many input arguments.");
       endif
 
       nv   = mdl.NumVariables;
@@ -2197,13 +2197,13 @@ classdef LinearModel
 
         T = double (terms);
         if (isempty (T))
-          error ('removeTerms: Terms matrix must have %d columns.', nv);
+          error ("removeTerms: Terms matrix must have %d columns.", nv);
         endif
         if (columns (T) == nv - 1)
           T = [T, zeros(rows (T), 1)];
         endif
         if (columns (T) != nv)
-          error ('removeTerms: Terms matrix must have %d columns.', nv);
+          error ("removeTerms: Terms matrix must have %d columns.", nv);
         endif
 
       elseif (ischar (terms) || isstring (terms))
@@ -2253,7 +2253,7 @@ classdef LinearModel
                 endif
                 idx = find (strcmp (pred, vname));
                 if (isempty (idx))
-                  error ('removeTerms: Unrecognized variable: ''%s''.', vname);
+                  error ("removeTerms: Unrecognized variable: '%s'.", vname);
                 endif
                 for k = 1:exp
                   row         = zeros (1, nv);
@@ -2274,7 +2274,7 @@ classdef LinearModel
                   endif
                   idx = find (strcmp (pred, vname));
                   if (isempty (idx))
-                    error ('removeTerms: Unrecognized variable: ''%s''.', vname);
+                    error ("removeTerms: Unrecognized variable: '%s'.", vname);
                   endif
                   row(idx(1)) = row(idx(1)) + exp;
                 endfor
@@ -2286,7 +2286,7 @@ classdef LinearModel
         endfor
 
       else
-        error (strcat ('removeTerms: Model update specification must be a model formula', ' character vector or string scalar, or a terms matrix'));
+        error (strcat ("removeTerms: Model update specification must be a model formula", " character vector or string scalar, or a terms matrix"));
       endif
 
       nc = columns (mdl.TermsMatrix);
@@ -2353,7 +2353,7 @@ classdef LinearModel
       endfor
 
       if (! any (found))
-        warning ('removeTerms: No specified terms appear in the model.');
+        warning ("removeTerms: No specified terms appear in the model.");
         NewMdl = mdl;
         return;
       endif
@@ -2537,7 +2537,7 @@ classdef LinearModel
         args   = args(2:end);
         idx = find (strcmpi (pt_str, valid_pt));
         if (isempty (idx))
-          error ('plotResiduals: Bad residuals plot type.');
+          error ("plotResiduals: Bad residuals plot type.");
         endif
         plottype = valid_pt{idx(1)};
       else
@@ -2550,12 +2550,12 @@ classdef LinearModel
       while (i <= numel (args))
         if (ischar (args{i}) && strcmpi (args{i}, 'ResidualType'))
           if (i + 1 > numel (args))
-            error ('plotResiduals: ResidualType requires a value.');
+            error ("plotResiduals: ResidualType requires a value.");
           endif
           rt_val   = lower (char (args{i+1}));
           valid_rt = {'raw', 'pearson', 'standardized', 'studentized'};
           if (! any (strcmp (rt_val, valid_rt)))
-            error (strcat ('plotResiduals: invalid ResidualType ''%s''.', ' Valid values are: ''Raw'', ''Pearson'',', ' ''Standardized'', ''Studentized''.'), args{i+1});
+            error (strcat ("plotResiduals: invalid ResidualType '%s'.", " Valid values are: 'Raw', 'Pearson',", " 'Standardized', 'Studentized'."), args{i+1});
           endif
           residtype = rt_val;
           i         = i + 2;
@@ -2837,7 +2837,7 @@ classdef LinearModel
         args   = args(2:end);
         idx = find (strcmpi (pt_str, valid_pt));
         if (isempty (idx))
-          error ('plotDiagnostics: Bad diagnostics plot type.');
+          error ("plotDiagnostics: Bad diagnostics plot type.");
         endif
         plottype = valid_pt{idx(1)};
       else
@@ -3009,12 +3009,12 @@ classdef LinearModel
       [ax, mdl, args] = lm_plot_axes (this, varargin);
 
       if (! isempty (args))
-        error ('plotEffects: Wrong number of arguments.');
+        error ("plotEffects: Wrong number of arguments.");
       endif
 
       p = mdl.NumPredictors;
       if (! any (any (mdl.TermsMatrix(:, 1:end-1) != 0)))
-        error ('plotEffects: Model has no predictors.');
+        error ("plotEffects: Model has no predictors.");
       endif
 
       if (isempty (ax))
@@ -3206,7 +3206,7 @@ classdef LinearModel
       [ax, mdl, args] = lm_plot_axes (this, varargin);
 
       if (isempty (args))
-        error ('plotAdjustedResponse: Not enough input arguments.');
+        error ("plotAdjustedResponse: Not enough input arguments.");
       endif
 
       var  = args{1};
@@ -3218,23 +3218,23 @@ classdef LinearModel
       if (ischar (var) || isstring (var))
         vname = char (var);
         if (isempty (find (strcmp (vnames, vname))))
-          error ('plotAdjustedResponse: ''%s'' is not a variable for this fit.', vname);
+          error ("plotAdjustedResponse: '%s' is not a variable for this fit.", vname);
         endif
       elseif (isnumeric (var) && isscalar (var))
         if (var != fix (var) || var < 1)
-          error (strcat ('plotAdjustedResponse: Variable must be specified as a', ' name or a positive integer.'));
+          error (strcat ("plotAdjustedResponse: Variable must be specified as a", " name or a positive integer."));
         endif
         if (var > numel (vnames))
-          error ('plotAdjustedResponse: This model only contains %d variables.', ...
+          error ("plotAdjustedResponse: This model only contains %d variables.", ...
                  numel (vnames));
         endif
         vname = vnames{var};
       else
-        error (strcat ('plotAdjustedResponse: Variable must be specified as a', ' name or a positive integer.'));
+        error (strcat ("plotAdjustedResponse: Variable must be specified as a", " name or a positive integer."));
       endif
 
       if (strcmp (vname, mdl.ResponseName))
-        error ('plotAdjustedResponse: The variable ''%s'' is the response in this model.', ...
+        error ("plotAdjustedResponse: The variable '%s' is the response in this model.", ...
                vname);
       endif
 
@@ -3455,19 +3455,19 @@ classdef LinearModel
               ci = find (strcmp (cinfo.names, cname));
             endif
             if (isempty (ci))
-              error ('plotAdded: Bad coefficient name.');
+              error ("plotAdded: Bad coefficient name.");
             endif
             levels_ci = cinfo.levels{ci};
             J = zeros (1, numel (levels_ci) - 1);
             for L = 2:numel (levels_ci)
-              cn = sprintf ('%s_%s', cname, char (levels_ci{L}));
+              cn = sprintf ("%s_%s", cname, char (levels_ci{L}));
               J(L-1) = find (strcmp (cnames, cn));
             endfor
           endif
         else
           J = coefarg(:)';
           if (any (J != fix (J)) || any (J < 1) || any (J > ncoef))
-            error ('plotAdded: Bad coefficient number.');
+            error ("plotAdded: Bad coefficient number.");
           endif
         endif
 
@@ -3482,7 +3482,7 @@ classdef LinearModel
               levels_ci = cinfo.levels{ci};
               Jc = zeros (1, numel (levels_ci) - 1);
               for L = 2:numel (levels_ci)
-                cn = sprintf ('%s_%s', cinfo.names{ci}, char (levels_ci{L}));
+                cn = sprintf ("%s_%s", cinfo.names{ci}, char (levels_ci{L}));
                 Jc(L-1) = find (strcmp (cnames, cn));
               endfor
               if (isequal (sort (J), sort (Jc)))
@@ -3495,7 +3495,7 @@ classdef LinearModel
       endif
 
       if (isempty (J))
-        error ('plotAdded: Bad coefficient number.');
+        error ("plotAdded: Bad coefficient number.");
       endif
 
       act   = mdl.ObservationInfo.Subset;
@@ -3596,7 +3596,7 @@ classdef LinearModel
       set (h(1), 'DisplayName', 'Adjusted data');
       h(2) = line (fit_x, fit_y, 'Color', FIT_COLOR, 'LineStyle', '-', ...
                    'Marker', 'none', 'Parent', ax, ...
-                   'DisplayName', sprintf ('Fit: y = %g*x', slope));
+                   'DisplayName', sprintf ("Fit: y = %g*x", slope));
       h(3) = line (bound_x, bound_y, 'Color', FIT_COLOR, 'LineStyle', ':', ...
                    'Marker', 'none', 'Parent', ax, ...
                    'DisplayName', '95% conf. bounds');
@@ -3820,7 +3820,7 @@ classdef LinearModel
           endif
           levels_j = cat_info.levels{ci};
           for L = 2:numel (levels_j)
-            if (strcmp (name, sprintf ('%s_%s', pred_names{j}, char (levels_j{L}))))
+            if (strcmp (name, sprintf ("%s_%s", pred_names{j}, char (levels_j{L}))))
               X_enc(:, c) = double (X_raw(:, j) == L);
               found = true;
               break;
@@ -4003,14 +4003,14 @@ function [terms, has_intercept, coef_names] = lm_parse_modelspec ( ...
       terms = [terms, zeros(rows (terms), 1)];
     elseif (size (terms, 2) == p + 1)
       if (! all (terms(:, end) == 0))
-        error ('LinearModel: Last column of terms matrix must be all zeros.');
+        error ("LinearModel: Last column of terms matrix must be all zeros.");
       endif
     else
-      error ('LinearModel: Terms matrix must have %d or %d columns.', p, p+1);
+      error ("LinearModel: Terms matrix must have %d or %d columns.", p, p+1);
     endif
 
   else
-    error ('fitlm: Unknown model specification.');
+    error ("fitlm: Unknown model specification.");
   endif
 
   if (! intercept_nv)
@@ -4033,7 +4033,7 @@ function [terms, has_intercept, coef_names] = lm_parse_modelspec ( ...
           if (term_row(j) == 1)
             parts_t{end+1} = pred_names{j};
           else
-            parts_t{end+1} = sprintf ('%s^%d', pred_names{j}, term_row(j));
+            parts_t{end+1} = sprintf ("%s^%d", pred_names{j}, term_row(j));
           endif
         endif
       endfor
@@ -4165,7 +4165,7 @@ function props = lm_plot_props (nv_args)
   [color, marker, markersize, mec, mfc, lw, rem_args] = ...
     parsePairedArguments (opt_names, def_vals, nv_args);
   if (! isempty (rem_args))
-    error ('lm_plot_props: unrecognized property ''%s''.', rem_args{1});
+    error ("lm_plot_props: unrecognized property '%s'.", rem_args{1});
   endif
   props.Color           = color;
   props.Marker          = marker;
