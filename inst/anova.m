@@ -41,34 +41,36 @@ classdef anova < handle
     ## Data
 
     ## -*- texinfo -*-
+    ## @deftp {anova} {property} Y
+    ##
+    ## Response data
+    ##
+    ## Numeric response vector (or matrix, for the one-way column form) used to
+    ## fit the ANOVA model.  This property is read-only.
+    ##
+    ## @end deftp
+    Y
+
+    ## -*- texinfo -*-
     ## @deftp {anova} {property} Factors
     ##
     ## Factor data
     ##
-    ## Grouping variables or factor values used to fit the ANOVA model.
-    ## This property is read-only.
+    ## Table whose variables are the factors used to fit the ANOVA model, with
+    ## one column per factor named after @code{FactorNames} and one row per
+    ## observation.  This property is read-only.
     ##
     ## @end deftp
-    Factors
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Response
-    ##
-    ## Response data
-    ##
-    ## Numeric response vector or matrix used to fit the ANOVA model.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    Response
+    Factors         = [];
 
     ## -*- texinfo -*-
     ## @deftp {anova} {property} Formula
     ##
     ## Model formula
     ##
-    ## Character vector describing the fitted ANOVA model formula.  This
-    ## property is read-only.
+    ## Character vector describing the fitted ANOVA model formula.  (MATLAB
+    ## returns a formula object; Octave returns the equivalent character
+    ## vector.)  This property is read-only.
     ##
     ## @end deftp
     Formula         = '';
@@ -85,16 +87,16 @@ classdef anova < handle
     FactorNames     = {};
 
     ## -*- texinfo -*-
-    ## @deftp {anova} {property} ModelSpecification
+    ## @deftp {anova} {property} ExpandedFactorNames
     ##
-    ## ANOVA model specification
+    ## Coefficient names
     ##
-    ## Model name or terms matrix used by the ANOVA backend.  Valid model
-    ## names are @qcode{'linear'}, @qcode{'interactions'}, and
-    ## @qcode{'full'}.  This property is read-only.
+    ## Cell array of character vectors naming the model coefficients when the
+    ## selected backend exposes them, otherwise an empty cell array.  This
+    ## property is read-only.
     ##
     ## @end deftp
-    ModelSpecification = 'linear';
+    ExpandedFactorNames = {};
 
     ## -*- texinfo -*-
     ## @deftp {anova} {property} SumOfSquaresType
@@ -142,17 +144,6 @@ classdef anova < handle
     ResponseName    = 'Y';
 
     ## -*- texinfo -*-
-    ## @deftp {anova} {property} NumFactors
-    ##
-    ## Number of factors
-    ##
-    ## Scalar number of factors in the ANOVA model.  This property is
-    ## read-only.
-    ##
-    ## @end deftp
-    NumFactors      = 0;
-
-    ## -*- texinfo -*-
     ## @deftp {anova} {property} NumObservations
     ##
     ## Number of observations
@@ -177,92 +168,48 @@ classdef anova < handle
     Coefficients   = [];
 
     ## -*- texinfo -*-
-    ## @deftp {anova} {property} AnovaTable
-    ##
-    ## ANOVA table
-    ##
-    ## Cell array containing the fitted ANOVA table returned by the selected
-    ## backend.  This property is read-only.
-    ##
-    ## @end deftp
-    AnovaTable     = {};
-
-    ## -*- texinfo -*-
     ## @deftp {anova} {property} Residuals
     ##
     ## Model residuals
     ##
-    ## Numeric vector of observed minus fitted values when the selected backend
-    ## exposes residuals.  This property is read-only.
+    ## Table with variables @code{Raw} (observed minus fitted values) and
+    ## @code{Pearson} (raw residuals scaled by the root mean squared error)
+    ## when the selected backend exposes residuals, otherwise empty.  This
+    ## property is read-only.
     ##
     ## @end deftp
     Residuals      = [];
 
     ## -*- texinfo -*-
-    ## @deftp {anova} {property} FittedValues
+    ## @deftp {anova} {property} Metrics
     ##
-    ## Fitted response values
+    ## Model fit metrics
     ##
-    ## Numeric vector of fitted values for the training data when available.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    FittedValues   = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} DFE
-    ##
-    ## Error degrees of freedom
-    ##
-    ## Scalar degrees of freedom for the residual error term.  This property is
-    ## read-only.
+    ## Table with variables @code{MSE}, @code{RMSE}, @code{SSE}, @code{SSR},
+    ## @code{SST}, @code{RSquared}, and @code{AdjustedRSquared} summarising the
+    ## fitted model.  This property is read-only.
     ##
     ## @end deftp
-    DFE            = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} MSE
-    ##
-    ## Mean squared error
-    ##
-    ## Scalar mean squared error estimate for the fitted model.  This property
-    ## is read-only.
-    ##
-    ## @end deftp
-    MSE            = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} DesignMatrix
-    ##
-    ## Design matrix
-    ##
-    ## Numeric model matrix used by the @code{anovan} backend when available.
-    ## This property is read-only.
-    ##
-    ## @end deftp
-    DesignMatrix   = [];
-
-    ## -*- texinfo -*-
-    ## @deftp {anova} {property} Stats
-    ##
-    ## Backend statistics
-    ##
-    ## Structure returned by the selected backend and used by post-hoc methods
-    ## such as @code{multcompare}.  This property is read-only.
-    ##
-    ## @end deftp
-    Stats          = struct ();
+    Metrics        = [];
   endproperties
 
   properties (GetAccess = public, SetAccess = private, Hidden)
-    ## Backend aliases retained for compatibility with existing ANOVA helpers.
-    Y
-    GROUP
+    ## Backend aliases and Octave-specific extensions retained for internal
+    ## use and power users; kept off the documented MATLAB property surface.
+    GROUP                                   ## raw factor data (fit workhorse)
     ModelType   = 'linear';
+    ModelSpecification = 'linear';
     SSType      = 3;
     VarNames    = {};
     Continuous  = [];
     Random      = [];
+    NumFactors  = 0;
+    AnovaTable  = {};
+    FittedValues = [];
+    DFE         = [];
+    MSE         = [];
+    DesignMatrix = [];
+    Stats       = struct ();
   endproperties
 
   properties (Access = private)
@@ -273,12 +220,13 @@ classdef anova < handle
   endproperties
 
   properties (Access = private)
-    fitted_     = false;
-    dirty_      = true;
-    nFactors_   = 0;
-    backend_    = '';                       ## 'anova1' | 'anova2' | 'anovan'
-    reps_       = [];                      ## replicate count for anova2 backend
-    sourceModel_ = [];                      ## LinearModel object, when supplied
+    fitted_       = false;
+    dirty_        = true;
+    nFactors_     = 0;
+    backend_      = '';                     ## 'anova1' | 'anova2' | 'anovan'
+    reps_         = [];                     ## anova2 replicate count
+    sourceModel_  = [];                     ## LinearModel object, when supplied
+    rawResiduals_ = [];                     ## raw residual vector for internals
   endproperties
 
   methods (Access = public)
@@ -346,10 +294,8 @@ classdef anova < handle
         error ("anova: name-value pairs must come in pairs.");
       endif
 
-      obj.Response = Y;
-      obj.Factors  = factors;
-      obj.Y        = obj.Response;
-      obj.GROUP    = obj.Factors;
+      obj.Y     = Y;
+      obj.GROUP = factors;
 
       ## Parse name-value pairs (mirrors anovan.m's loop style)
       for idx = 1:2:numel (varargin)
@@ -391,11 +337,12 @@ classdef anova < handle
 
       obj.nFactors_ = obj.countFactors_ ();
       obj.NumFactors = obj.nFactors_;
-      obj.NumObservations = numel (obj.Response);
+      obj.NumObservations = numel (obj.Y);
       obj.syncCategoricalFactors_ ();
       obj.setFormula_ ();
       obj.validateSpec_ ();
       obj.validateData_ ();
+      obj.Factors = obj.buildFactorsTable_ ();
       obj.selectBackend_ ();
       obj.dirty_ = true;
     endfunction
@@ -637,7 +584,7 @@ classdef anova < handle
                                   mdl.DFE, varargin{:});
         return;
       endif
-      if (isempty (obj.Residuals) || isempty (obj.FittedValues) ...
+      if (isempty (obj.rawResiduals_) || isempty (obj.FittedValues) ...
           || isempty (obj.DesignMatrix))
         error (strcat ("anova.plotDiagnostics: diagnostic plots require", ...
                        " an anovan-backed fit."));
@@ -649,7 +596,7 @@ classdef anova < handle
       else
         cooksd = obj.cooksDistance_ (leverage);
       endif
-      h = obj.plotDiagnostics_ (obj.Residuals, obj.FittedValues, ...
+      h = obj.plotDiagnostics_ (obj.rawResiduals_, obj.FittedValues, ...
                                 leverage, cooksd, obj.DFE, varargin{:});
     endfunction
 
@@ -896,6 +843,87 @@ classdef anova < handle
       endif
     endfunction
 
+    ## Build the public Factors table (one named column per factor) from the
+    ## raw GROUP data, leaving the internal GROUP alias untouched.
+    function tbl = buildFactorsTable_ (obj)
+      if (istable (obj.GROUP))
+        tbl = obj.GROUP;
+        return;
+      endif
+      if (isempty (obj.GROUP))
+        if (isvector (obj.Y))
+          tbl = table ();                   ## intercept-only: no factors
+          return;
+        endif
+        [nr, nc] = size (obj.Y);
+        if (isempty (obj.reps_))
+          ## one-way column form: single synthetic factor = column index
+          cols = {reshape(repmat ((1:nc), nr, 1), [], 1)};
+        else
+          ## balanced two-way (anova2) form: row-block and column factors
+          rowfac = repmat (ceil ((1:nr)' / obj.reps_), nc, 1);
+          colfac = reshape (repmat ((1:nc), nr, 1), [], 1);
+          cols = {rowfac, colfac};
+        endif
+      elseif (iscell (obj.GROUP) ...
+              && all (cellfun (@(c) isvector (c) || ischar (c), ...
+                               obj.GROUP(:))) ...
+              && size (obj.GROUP, 1) == 1)
+        cols = cellfun (@(c) c(:), obj.GROUP, "UniformOutput", false);
+      elseif (isvector (obj.GROUP))
+        cols = {obj.GROUP(:)};
+      else
+        cols = num2cell (obj.GROUP, 1);
+      endif
+      tbl = table (cols{:}, "VariableNames", obj.FactorNames);
+    endfunction
+
+    ## Build the public Residuals table (Raw and Pearson) from a raw residual
+    ## vector.  Pearson residuals scale the raw residuals by the RMSE, matching
+    ## the LinearModel definition.
+    function tbl = residualsTable_ (obj, raw)
+      raw = raw(:);
+      pearson = raw ./ sqrt (max (obj.MSE, eps));
+      tbl = table (raw, pearson, "VariableNames", {'Raw', 'Pearson'});
+    endfunction
+
+    ## Build the public Metrics table from the fitted ANOVA table and the
+    ## error variance, deriving SSE/SSR/SST and the R-squared measures.
+    function tbl = metricsTable_ (obj)
+      mse = obj.MSE;
+      if (isempty (mse))
+        mse = NaN;
+      endif
+      dfe = obj.DFE;
+      if (isempty (dfe))
+        dfe = NaN;
+      endif
+      sse = NaN;
+      sst = NaN;
+      atab = obj.AnovaTable;
+      if (! isempty (atab))
+        source_col = obj.findAtabColumn_ (atab, {'Source'});
+        ss_col = obj.findAtabColumn_ (atab, {'SS', 'Sum Sq.', 'Sum Sq'});
+        for r = 2:rows (atab)
+          name = atab{r, source_col};
+          if (! ischar (name))
+            continue;
+          endif
+          if (strcmpi (name, 'Error'))
+            sse = atab{r, ss_col};
+          elseif (strcmpi (name, 'Total'))
+            sst = atab{r, ss_col};
+          endif
+        endfor
+      endif
+      ssr = sst - sse;
+      rsq = ssr / max (sst, eps);
+      adj = 1 - (1 - rsq) * (obj.NumObservations - 1) / max (dfe, 1);
+      tbl = table (mse, sqrt (max (mse, 0)), sse, ssr, sst, rsq, adj, ...
+                   "VariableNames", {'MSE', 'RMSE', 'SSE', 'SSR', 'SST', ...
+                                     'RSquared', 'AdjustedRSquared'});
+    endfunction
+
     function initLinearModel_ (obj, mdl, varargin)
       if (mod (numel (varargin), 2) != 0)
         error ("anova: name-value pairs must come in pairs.");
@@ -929,17 +957,19 @@ classdef anova < handle
       obj.Formula = mdl.Formula.LinearPredictor;
       obj.Y = mdl.Variables{:, mdl.ResponseName};
       obj.GROUP = mdl.Variables(:, mdl.PredictorNames);
-      obj.Response = obj.Y;
       obj.Factors = obj.GROUP;
+      obj.ExpandedFactorNames = mdl.CoefficientNames;
       obj.NumObservations = numel (obj.Y);
       obj.Coefficients = obj.linearModelCoefficients_ (mdl);
       obj.AnovaTable = obj.linearModelAtab_ (mdl);
-      obj.Residuals = mdl.Residuals.Raw;
       obj.FittedValues = mdl.Fitted;
       obj.DFE = mdl.DFE;
       obj.MSE = mdl.MSE;
+      obj.rawResiduals_ = mdl.Residuals.Raw;
+      obj.Residuals = obj.residualsTable_ (obj.rawResiduals_);
       obj.DesignMatrix = [];
       obj.Stats = obj.linearModelStats_ (mdl);
+      obj.Metrics = obj.metricsTable_ ();
       obj.fitted_ = true;
       obj.dirty_ = false;
     endfunction
@@ -1108,6 +1138,9 @@ classdef anova < handle
         case 'linearmodel'
           ## Already populated from the supplied LinearModel object.
       endswitch
+      if (! strcmp (obj.backend_, 'linearmodel'))
+        obj.Metrics = obj.metricsTable_ ();
+      endif
       obj.fitted_ = true;
       obj.dirty_  = false;
     endfunction
@@ -1161,8 +1194,8 @@ classdef anova < handle
       if (isfield (stats, 'coeffs'))
         obj.Coefficients = stats.coeffs;
       endif
-      if (isfield (stats, 'resid'))
-        obj.Residuals = stats.resid;
+      if (isfield (stats, 'coeffnames'))
+        obj.ExpandedFactorNames = cellstr (stats.coeffnames);
       endif
       if (isfield (stats, 'X'))
         obj.DesignMatrix = stats.X;
@@ -1177,7 +1210,8 @@ classdef anova < handle
         obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients(:, 1);
         ## anovan returns weighted residuals in stats.resid; expose raw
         ## (observed minus fitted) residuals so FittedValues + Residuals == Y.
-        obj.Residuals = y_vec - obj.FittedValues;
+        obj.rawResiduals_ = y_vec - obj.FittedValues;
+        obj.Residuals = obj.residualsTable_ (obj.rawResiduals_);
       endif
     endfunction
 
@@ -1249,7 +1283,7 @@ classdef anova < handle
 
     function D = cooksDistance_ (obj, leverage)
       p = max (columns (obj.DesignMatrix), 1);
-      D = (obj.Residuals .^ 2 ./ max (p * obj.MSE, eps)) ...
+      D = (obj.rawResiduals_ .^ 2 ./ max (p * obj.MSE, eps)) ...
           .* leverage ./ max ((1 - leverage) .^ 2, eps);
     endfunction
 
@@ -1694,7 +1728,7 @@ endclassdef
 %! a  = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
 %! assert_equal (numel (a.FittedValues), numel (y));
-%! assert_equal (a.FittedValues + a.Residuals, y, 1e-9);
+%! assert_equal (a.FittedValues + a.Residuals.Raw, y, 1e-9);
 
 ## ensureFit_(): fit() is idempotent (second call does nothing)
 %!test
@@ -1740,7 +1774,7 @@ endclassdef
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! assert_equal (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
-%! assert_equal (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
+%! assert_equal (a.Residuals.Raw, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
 
 ## Effect sizes: reference eta2 = SS/SST, omega2 = (SS-df*MSE)/(SST+MSE).
 %!test
@@ -1844,8 +1878,8 @@ endclassdef
 %! a = anova (g, y, "FactorNames", {"Brand"}, ...
 %!            "ResponseName", "Yield", "SumOfSquaresType", "two");
 %! assert_equal (a.Formula, "Yield ~ 1 + Brand");
-%! assert_equal (a.Factors, g);
-%! assert_equal (a.Response, y);
+%! assert_equal (a.Factors.Brand, g);
+%! assert_equal (a.Y, y);
 %! assert_equal (a.FactorNames, {"Brand"});
 %! assert_equal (a.SumOfSquaresType, "two");
 %! assert (! any (strcmp (methods ("anova"), "predict")));
@@ -1855,6 +1889,56 @@ endclassdef
 %! assert_equal (T{2, 2}, 126, 1e-12);
 %! assert_equal (M.Mean, [2; 5; 11], 1e-12);
 %! assert_equal (V.VarianceComponent, 1, 1e-12);
+
+## Public property surface matches MATLAB's anova object (13 read-only names)
+%!test
+%! a = anova ([1;1;1;2;2;2;3;3;3], (1:9)');
+%! assert_equal (sort (properties (a)), sort ({'Y'; 'Factors'; 'Formula'; ...
+%!   'FactorNames'; 'ExpandedFactorNames'; 'SumOfSquaresType'; ...
+%!   'RandomFactors'; 'CategoricalFactors'; 'ResponseName'; ...
+%!   'NumObservations'; 'Coefficients'; 'Residuals'; 'Metrics'}));
+
+## Factors is a table with one named column per factor
+%!test
+%! y = (1:12)';
+%! g1 = repmat ([1;2;3], 4, 1);
+%! g2 = repmat ([1;1;2;2], 3, 1);
+%! a = anova ({g1, g2}, y, 'FactorNames', {'A', 'B'});
+%! assert (istable (a.Factors));
+%! assert_equal (a.Factors.A, g1);
+%! assert_equal (a.Factors.B, g2);
+
+## Residuals is a Raw/Pearson table (Pearson = Raw ./ sqrt (MSE))
+%!test
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
+%! a.fit ();
+%! assert (istable (a.Residuals));
+%! assert_equal (a.Residuals.Properties.VariableNames, {'Raw', 'Pearson'});
+%! assert_equal (a.Residuals.Pearson, a.Residuals.Raw ./ sqrt (a.MSE), 1e-12);
+
+## Metrics table exposes the fit summary with a correct R-squared
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
+%! a.fit ();
+%! M = a.Metrics;
+%! assert_equal (M.Properties.VariableNames, {'MSE', 'RMSE', 'SSE', 'SSR', ...
+%!   'SST', 'RSquared', 'AdjustedRSquared'});
+%! assert_equal (M.SSE, 6, 1e-12);
+%! assert_equal (M.SST, 132, 1e-12);
+%! assert_equal (M.RSquared, 126 / 132, 1e-12);
+
+## ExpandedFactorNames is populated for the anovan backend
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, 'SumOfSquaresType', 'two');
+%! a.fit ();
+%! assert (iscellstr (a.ExpandedFactorNames));
+%! assert (! isempty (a.ExpandedFactorNames));
 
 ## groupmeans(): confidence bounds bracket the group means
 %!test
@@ -1883,7 +1967,7 @@ endclassdef
 %! w = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (g, y, "Weights", w);
 %! a.fit ();
-%! assert_equal (a.FittedValues + a.Residuals, y, 1e-9);
+%! assert_equal (a.FittedValues + a.Residuals.Raw, y, 1e-9);
 
 ## --- Week 5: diagnostic plots ------------------------------------------
 
