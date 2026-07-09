@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: <var>D</var> = <b>pdist</b> (<var>X</var>, <var>Distance</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>D</var> = <b>pdist</b> (<var>X</var>, <var>Distance</var>, <var>DistParameter</var>)</code></h5></dt>
 </dl>
-
 <p> Return the distance between any two rows in <var>X</var>.
 </p>
 <div class="ms-5">
@@ -822,36 +824,36 @@
  distance between pairs of observations in <var>X</var> using the metric specified
  by <var>Distance</var>, which can be any of the following options.
 </p>
- <table>
-<tr><td width="23%"><code>&quot;euclidean&quot;</code></td><td width="2%"></td><td width="65%">Euclidean distance.</td></tr>
-<tr><td width="23%"><code>&quot;fasteuclidean&quot;</code></td><td width="2%"></td><td width="65%">Euclidean distance computed with an
+<table>
+<tr><td width="23%"><code>'euclidean'</code></td><td width="2%"></td><td width="65%">Euclidean distance.</td></tr>
+<tr><td width="23%"><code>'fasteuclidean'</code></td><td width="2%"></td><td width="65%">Euclidean distance computed with an
  alternative algorithm which may be faster but might reduce accuracy.</td></tr>
-<tr><td width="23%"><code>&quot;squaredeuclidean&quot;</code></td><td width="2%"></td><td width="65%">Squared Euclidean distance.</td></tr>
-<tr><td width="23%"><code>&quot;fastsquaredeuclidean&quot;</code></td><td width="2%"></td><td width="65%">Euclidean distance computed
+<tr><td width="23%"><code>'squaredeuclidean'</code></td><td width="2%"></td><td width="65%">Squared Euclidean distance.</td></tr>
+<tr><td width="23%"><code>'fastsquaredeuclidean'</code></td><td width="2%"></td><td width="65%">Euclidean distance computed
  with an alternative algorithm which may be faster but might reduce accuracy.</td></tr>
-<tr><td width="23%"><code>&quot;seuclidean&quot;</code></td><td width="2%"></td><td width="65%">standardized Euclidean distance.  Each
+<tr><td width="23%"><code>'seuclidean'</code></td><td width="2%"></td><td width="65%">standardized Euclidean distance.  Each
  coordinate difference between the rows in <var>X</var> and the query matrix
  <var>Y</var> is scaled by dividing by the corresponding element of the standard
  deviation computed from <var>X</var>.  A different scaling vector can be specified
  with the subsequent <var>DistParameter</var> input argument.</td></tr>
-<tr><td width="23%"><code>&quot;mahalanobis&quot;</code></td><td width="2%"></td><td width="65%">Mahalanobis distance, computed using a
+<tr><td width="23%"><code>'mahalanobis'</code></td><td width="2%"></td><td width="65%">Mahalanobis distance, computed using a
  positive definite covariance matrix.  A different covariance matrix can be
  specified with the subsequent <var>DistParameter</var> input argument.</td></tr>
-<tr><td width="23%"><code>&quot;cityblock&quot;</code></td><td width="2%"></td><td width="65%">City block distance.</td></tr>
-<tr><td width="23%"><code>&quot;minkowski&quot;</code></td><td width="2%"></td><td width="65%">Minkowski distance.  The default exponent
+<tr><td width="23%"><code>'cityblock'</code></td><td width="2%"></td><td width="65%">City block distance.</td></tr>
+<tr><td width="23%"><code>'minkowski'</code></td><td width="2%"></td><td width="65%">Minkowski distance.  The default exponent
  is 2.  A different exponent can be specified with the subsequent
  <var>DistParameter</var> input argument.</td></tr>
-<tr><td width="23%"><code>&quot;chebychev&quot;</code></td><td width="2%"></td><td width="65%">Chebychev distance (maximum coordinate
+<tr><td width="23%"><code>'chebychev'</code></td><td width="2%"></td><td width="65%">Chebychev distance (maximum coordinate
  difference).</td></tr>
-<tr><td width="23%"><code>&quot;cosine&quot;</code></td><td width="2%"></td><td width="65%">One minus the cosine of the included angle
+<tr><td width="23%"><code>'cosine'</code></td><td width="2%"></td><td width="65%">One minus the cosine of the included angle
  between points (treated as vectors).</td></tr>
-<tr><td width="23%"><code>&quot;correlation&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample linear correlation
+<tr><td width="23%"><code>'correlation'</code></td><td width="2%"></td><td width="65%">One minus the sample linear correlation
  between observations (treated as sequences of values).</td></tr>
-<tr><td width="23%"><code>&quot;hamming&quot;</code></td><td width="2%"></td><td width="65%">Hamming distance, which is the percentage
+<tr><td width="23%"><code>'hamming'</code></td><td width="2%"></td><td width="65%">Hamming distance, which is the percentage
  of coordinates that differ.</td></tr>
-<tr><td width="23%"><code>&quot;jaccard&quot;</code></td><td width="2%"></td><td width="65%">One minus the Jaccard coefficient, which is
+<tr><td width="23%"><code>'jaccard'</code></td><td width="2%"></td><td width="65%">One minus the Jaccard coefficient, which is
  the percentage of nonzero coordinates that differ.</td></tr>
-<tr><td width="23%"><code>&quot;spearman&quot;</code></td><td width="2%"></td><td width="65%">One minus the sample Spearman&rsquo;s rank
+<tr><td width="23%"><code>'spearman'</code></td><td width="2%"></td><td width="65%">One minus the sample Spearman&rsquo;s rank
  correlation between observations (treated as sequences of values).</td></tr>
 <tr><td width="23%"><var>@distfun</var></td><td width="2%"></td><td width="65%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
@@ -862,11 +864,12 @@
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 
-<p> <code><var>D</var> = pdist (<var>X</var>, <var>Y</var>, <var>Distance</var>, <var>DistParameter</var>)</code>
+<p> <code><var>D</var> = pdist (<var>X</var>, <var>Y</var>, <var>Distance</var>,
+ <var>DistParameter</var>)</code>
  returns the distance using the metric specified by <var>Distance</var> and
  <var>DistParameter</var>.  The latter one can only be specified when the selected
- <var>Distance</var> is <code>&quot;seuclidean&quot;</code>, <code>&quot;minkowski&quot;</code>, and
- <code>&quot;mahalanobis&quot;</code>.
+ <var>Distance</var> is <code>'seuclidean'</code>, <code>'minkowski'</code>, and
+ <code>'mahalanobis'</code>.
 </p>
 <p> <strong>See also: </strong>
   <a href="pdist2.html">pdist2</a>, 

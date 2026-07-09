@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,28 +809,20 @@
 <dt><code><h5 class="fs">statistics: [<var>predicted_label</var>, <var>accuracy</var>, <var>decision_values</var>] = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>, &quot;libsvm_options&quot;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>predicted_label</var>, <var>accuracy</var>, <var>prob_estimates</var>] = <b>svmpredict</b> (<var>labels</var>, <var>data</var>, <var>model</var>, &quot;libsvm_options&quot;)</code></h5></dt>
 </dl>
-
-
 <p>This function predicts new labels from a testing instance matrix based on an SVM <var>model</var> created with <code>svmtrain</code>. 
 </p>
 <div class="ms-5">
 <ul>
-<li> <var>labels</var> : An m by 1 vector of prediction labels. If labels of test data are unknown, simply use any random values. (type must be double) 
-
-</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
-
-</li><li> <var>model</var> : The output of <code>svmtrain</code> function. 
-
-</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM. 
-
+<li> <var>labels</var> : An m by 1 vector of prediction labels. If labels of test data are unknown, simply use any random values. (type must be double)
+</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double)
+</li><li> <var>model</var> : The output of <code>svmtrain</code> function.
+</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM.
 </li></ul>
-
 
 <p><code>libsvm_options</code> :
 </p>
 <ul>
 <li> <code>-b</code> : probability_estimates; whether to predict probability estimates.
-
 </li></ul>
 
 <table>
@@ -835,25 +830,17 @@
 <tr><td width="10%"></td><td width="10%">1</td><td width="80%">return probability estimates.</td></tr>
 </table>
 
-
-
 <ul>
-<li> <code>-q</code> : quiet mode. (no outputs) 
-
+<li> <code>-q</code> : quiet mode. (no outputs)
 </li></ul>
-
-
 
 <p>The <code>svmpredict</code> function has three outputs.  The first one, <var>predicted_label</var>, is a vector of predicted labels.  The second output, <var>accuracy</var>, is a vector including accuracy (for classification), mean squared error, and squared correlation coefficient (for regression).  The third is a matrix containing decision values or probability estimates (if <code>-b 1</code>&rsquo; is specified).  If <math>k</math> is the number of classes in training data, for decision values, each row includes results of predicting <math>k(k-1)/2</math> binary-class SVMs.  For classification, <math>k = 1</math> is a special case.  Decision value +1 is returned for each testing instance, instead of an empty vector.  For probabilities, each row contains <math>k</math> values indicating the probability that the testing instance is in each class.  Note that the order of classes here is the same as <code>Label</code> field in the <var>model</var> structure. 
 </p>
-
-<p><math>Note on LIBSVM 3.36 Update</math>: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (<code>-s 2</code>) when combined with the probability flag (<code>-b 1</code>).  For One-Class SVM, the  <var>prob_estimates</var> output is a single column vector containing the probability of the instance being an inlier. 
+<p><em>Note on LIBSVM 3.36 Update</em>: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (<code>-s 2</code>) when combined with the probability flag (<code>-b 1</code>).  For One-Class SVM, the  <var>prob_estimates</var> output is a single column vector containing the probability of the instance being an inlier. 
 </p>
-
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/src/svmpredict.cc">svmpredict</a>
 </div>
-
 
             </div>
           </div>

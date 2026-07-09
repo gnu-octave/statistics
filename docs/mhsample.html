@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,102 +806,95 @@
 <dl>
 <dt><code><h5 class="fs">statistics: [<var>smpl</var>, <var>accept</var>] = <b>mhsample</b> (<var>start</var>, <var>nsamples</var>, <var>property</var>, <var>value</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Draws <var>nsamples</var> samples from a target stationary distribution <var>pdf</var>
  using Metropolis-Hastings algorithm.
 </p>
 <div class="ms-5">
 <p> Inputs:
 </p>
- <ul>
+<ul>
 <li>
  <var>start</var> is a <var>nchain</var> by <var>dim</var> matrix of starting points for each
  Markov chain.  Each row is the starting point of a different chain and each
  column corresponds to a different dimension.
-
- </li><li>
+</li><li>
  <var>nsamples</var> is the number of samples, the length of each Markov chain.
- </li></ul>
+</li></ul>
 
 <p> Some property-value pairs can or must be specified, they are:
 </p>
 <p> (Required) One of:
 </p>
- <ul>
+<ul>
 <li>
  &quot;pdf&quot; <var>pdf</var>: a function handle of the target stationary distribution to
  be sampled.  The function should accept different locations in each row and
  each column corresponds to a different dimension.
-
 <p> or
 </p>
- </li><li>
+
+</li><li>
  &quot;logpdf&quot; <var>logpdf</var>: a function handle of the log of the target stationary
  distribution to be sampled.  The function should accept different locations
  in each row and each column corresponds to a different dimension.
- </li></ul>
+</li></ul>
 
 <p> In case optional argument <var>symmetric</var> is set to false (the default), one
  of:
 </p>
- <ul>
+<ul>
 <li>
  &quot;proppdf&quot; <var>proppdf</var>: a function handle of the proposal distribution that
  is sampled from with <var>proprnd</var> to give the next point in the chain.  The
  function should accept two inputs, the random variable and the current
  location each input should accept different locations in each row and each
  column corresponds to a different dimension.
-
 <p> or
 </p>
- </li><li>
+
+</li><li>
  &quot;logproppdf&quot; <var>logproppdf</var>: the log of &quot;proppdf&quot;.
- </li></ul>
+</li></ul>
 
 <p> The following input property/pair values may be needed depending on the
  desired output:
 </p>
- <ul>
+<ul>
 <li>
  &quot;proprnd&quot; <var>proprnd</var>: (Required) a function handle which generates random
  numbers from <var>proppdf</var>.  The function should accept different locations
  in each row and each column corresponds to a different dimension
  corresponding with the current location.
-
- </li><li>
+</li><li>
  &quot;symmetric&quot; <var>symmetric</var>: true or false based on whether <var>proppdf</var> is
  a symmetric distribution.  If true, <var>proppdf</var> (or <var>logproppdf</var>) need
  not be specified. The default is false.
-
- </li><li>
+</li><li>
  &quot;burnin&quot; <var>burnin</var> the number of points to discard at the beginning, the
  default is 0.
-
- </li><li>
+</li><li>
  &quot;thin&quot; <var>thin</var>: omits <var>thin</var>-1 of every <var>thin</var> points in the
  generated Markov chain.  The default is 1.
-
- </li><li>
+</li><li>
  &quot;nchain&quot; <var>nchain</var>: the number of Markov chains to generate.  The default
  is 1.
- </li></ul>
+</li></ul>
 
 <p> Outputs:
 </p>
- <ul>
+<ul>
 <li>
  <var>smpl</var>: a <var>nsamples</var> x <var>dim</var> x <var>nchain</var> tensor of random
  values drawn from <var>pdf</var>, where the rows are different random values, the
  columns correspond to the dimensions of <var>pdf</var>, and the third dimension
  corresponds to different Markov chains.
-
- </li><li>
+</li><li>
  <var>accept</var> is a vector of the acceptance rate for each chain.
- </li></ul>
+</li></ul>
 
 <p> Example : Sampling from a normal distribution
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> start = 1;
+<table><tr><td>&nbsp;</td><td><pre class="example"> start = 1;
  nsamples = 1e3;
  pdf = @(x) exp (-.5 * x .^ 2) / (pi ^ .5 * 2 ^ .5);
  proppdf = @(x,y) 1 / 6;
@@ -906,7 +902,7 @@
  [smpl, accept] = mhsample (start, nsamples, &quot;pdf&quot;, pdf, &quot;proppdf&quot;, ...
  proppdf, &quot;proprnd&quot;, proprnd, &quot;thin&quot;, 4);
  histfit (smpl);
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
 rand, 
@@ -915,122 +911,96 @@ rand,
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/mhsample.m">mhsample</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Define function to sample
- d = 2;
+          </div>
+          <div class="card-body">
+                <p>Define function to sample</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> d = 2;
  mu = [-1; 2];
- rand ("seed", 5)  # for reproducibility
+ rand ('seed', 5)  # for reproducibility
  Sigma = rand (d);
  Sigma = (Sigma + Sigma');
- Sigma += eye (d) * abs (eigs (Sigma, 1, "sa")) * 1.1;
- pdf = @(x)(2*pi)^(-d/2)*det(Sigma)^-.5*exp(-.5*sum((x.'-mu).*(Sigma\(x.'-mu)),1));
- ## Inputs
- start = ones (1, 2);
+ Sigma += eye (d) * abs (eigs (Sigma, 1, 'sa')) * 1.1;
+ pdf = @(x)(2*pi)^(-d/2)*det (Sigma)^-.5*exp (-.5*sum ((x.'-mu).*(Sigma\(x.'-mu)),1));</pre>
+                <p>Inputs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> start = ones (1, 2);
  nsamples = 500;
  sym = true;
  K = 500;
  m = 10;
- rand ("seed", 8)  # for reproducibility
+ rand ('seed', 8)  # for reproducibility
  proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
- [smpl, accept] = mhsample (start, nsamples, "pdf", pdf, "proprnd", proprnd, ...
-                            "symmetric", sym, "burnin", K, "thin", m);
+ [smpl, accept] = mhsample (start, nsamples, 'pdf', pdf, 'proprnd', proprnd, ...
+                            'symmetric', sym, 'burnin', K, 'thin', m);
  figure;
  hold on;
  plot (smpl(:, 1), smpl(:, 2), 'x');
- [x, y] = meshgrid (linspace (-6, 4), linspace(-3, 7));
- z = reshape (pdf ([x(:), y(:)]), size(x));
- mesh (x, y, z, "facecolor", "None");
- ## Using sample points to find the volume of half a sphere with radius of .5
- f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)<.25)).';
- int = mean (f (smpl) ./ pdf (smpl));
- errest = std (f (smpl) ./ pdf (smpl)) / nsamples ^ .5;
+ [x, y] = meshgrid (linspace (-6, 4), linspace (-3, 7));
+ z = reshape (pdf ([x(:), y(:)]), size (x));
+ mesh (x, y, z, 'facecolor', 'None');</pre>
+                <p>Using sample points to find the volume of half a sphere with radius of .5</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f = @(x) ((.25-(x(:,1)+1).^2-(x(:,2)-2).^2).^.5.*(((x(:,1)+1).^2+(x(:,2)-2).^2)&lt;.25)).';
+ int = mean (f(smpl) ./ pdf (smpl));
+ errest = std (f(smpl) ./ pdf (smpl)) / nsamples ^ .5;
  trueerr = abs (2 / 3 * pi * .25 ^ (3 / 2) - int);
- printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
- printf ("Monte Carlo integral error estimate %f\n", errest);
- printf ("The actual error %f\n", trueerr);
- mesh (x, y, reshape (f([x(:), y(:)]), size(x)), "facecolor", "None");
+ printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 0.242643</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("Monte Carlo integral error estimate %f\n", errest);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.028039</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("The actual error %f\n", trueerr);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.019156</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mesh (x, y, reshape (f([x(:), y(:)]), size (x)), 'facecolor', 'None');</pre>
+                <div class="text-center">
+                  <img src="assets/mhsample_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-Monte Carlo integral estimate int f(x) dx = 0.242643
-Monte Carlo integral error estimate 0.028039
-The actual error 0.019156
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/mhsample_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Integrate truncated normal distribution to find normalization constant
- pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
+          </div>
+          <div class="card-body">
+                <p>Integrate truncated normal distribution to find normalization constant</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pdf = @(x) exp (-.5*x.^2)/(pi^.5*2^.5);
  nsamples = 1e3;
- rand ("seed", 5)  # for reproducibility
+ rand ('seed', 5)  # for reproducibility
  proprnd = @(x) (rand (size (x)) - .5) * 3 + x;
- [smpl, accept] = mhsample (1, nsamples, "pdf", pdf, "proprnd", proprnd, ...
-                            "symmetric", true, "thin", 4);
- f = @(x) exp(-.5 * x .^ 2) .* (x >= -2 & x <= 2);
+ [smpl, accept] = mhsample (1, nsamples, 'pdf', pdf, 'proprnd', proprnd, ...
+                            'symmetric', true, 'thin', 4);
+ f = @(x) exp (-.5 * x .^ 2) .* (x &gt;= -2 &amp; x &lt;= 2);
  x = linspace (-3, 3, 1000);
- area(x, f(x));
+ area (x, f(x));
  xlabel ('x');
  ylabel ('f(x)');
- int = mean (f (smpl) ./ pdf (smpl));
- errest = std (f (smpl) ./ pdf (smpl)) / nsamples^ .5;
+ int = mean (f(smpl) ./ pdf (smpl));
+ errest = std (f(smpl) ./ pdf (smpl)) / nsamples^ .5;
  trueerr = abs (erf (2 ^ .5) * 2 ^ .5 * pi ^ .5 - int);
- printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);
- printf ("Monte Carlo integral error estimate %f\n", errest);
- printf ("The actual error %f\n", trueerr);
+ printf ("Monte Carlo integral estimate int f(x) dx = %f\n", int);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral estimate int f(x) dx = 2.346204</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("Monte Carlo integral error estimate %f\n", errest);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Monte Carlo integral error estimate 0.019410</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> printf ("The actual error %f\n", trueerr);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">The actual error 0.046372</pre>
+                <div class="text-center">
+                  <img src="assets/mhsample_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-Monte Carlo integral estimate int f(x) dx = 2.346204
-Monte Carlo integral error estimate 0.019410
-The actual error 0.046372
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/mhsample_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

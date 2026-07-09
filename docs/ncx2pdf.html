@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>ncx2pdf</b> (<var>x</var>, <var>df</var>, <var>lambda</var>)</code></h5></dt>
 </dl>
-
 <p> Noncentral chi-squared probability distribution function (PDF).
 </p>
 <div class="ms-5">
@@ -814,7 +816,8 @@
  constant matrix of the same size as the other inputs.
 </p>
 <p> Further information about the noncentral chi-squared distribution can be
- found at <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
+ found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncx2cdf.html">ncx2cdf</a>, 
@@ -826,98 +829,70 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncx2pdf.m">ncx2pdf</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various PDFs from the noncentral chi-squared distribution
- x = 0:0.1:10;
+          </div>
+          <div class="card-body">
+                <p>Plot various PDFs from the noncentral chi-squared distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.1:10;
  y1 = ncx2pdf (x, 2, 1);
  y2 = ncx2pdf (x, 2, 2);
  y3 = ncx2pdf (x, 2, 3);
  y4 = ncx2pdf (x, 4, 1);
  y5 = ncx2pdf (x, 4, 2);
  y6 = ncx2pdf (x, 4, 3);
- plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", ...
-       x, y4, "-m", x, y5, "-c", x, y6, "-y")
+ plot (x, y1, '-r', x, y2, '-g', x, y3, '-k', ...
+       x, y4, '-m', x, y5, '-c', x, y6, '-y')
  grid on
  xlim ([0, 10])
  ylim ([0, 0.32])
- legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
-          "df = 2, λ = 3", "df = 4, λ = 1", ...
-          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "northeast")
- title ("Noncentral chi-squared PDF")
- xlabel ("values in x")
- ylabel ("density")
+ legend ({'df = 2, λ = 1', 'df = 2, λ = 2', ...
+          'df = 2, λ = 3', 'df = 4, λ = 1', ...
+          'df = 4, λ = 2', 'df = 4, λ = 3'}, 'location', 'northeast')
+ title ('Noncentral chi-squared PDF')
+ xlabel ('values in x')
+ ylabel ('density')</pre>
+                <div class="text-center">
+                  <img src="assets/ncx2pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncx2pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compare the noncentral chi-squared PDF with LAMBDA = 2 to the
- ## chi-squared PDF with the same number of degrees of freedom (4).
-
- x = 0:0.1:10;
+          </div>
+          <div class="card-body">
+                <p>Compare the noncentral chi-squared PDF with LAMBDA = 2 to the chi-squared PDF with the same number of degrees of freedom (4).</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.1:10;
  y1 = ncx2pdf (x, 4, 2);
  y2 = chi2pdf (x, 4);
- plot (x, y1, "-", x, y2, "-");
+ plot (x, y1, '-', x, y2, '-');
  grid on
  xlim ([0, 10])
  ylim ([0, 0.32])
- legend ({"Noncentral T(10,1)", "T(10)"}, "location", "northwest")
- title ("Noncentral chi-squared vs chi-squared PDFs")
- xlabel ("values in x")
- ylabel ("density")
+ legend ({'Noncentral T(10,1)', 'T(10)'}, 'location', 'northwest')
+ title ('Noncentral chi-squared vs chi-squared PDFs')
+ xlabel ('values in x')
+ ylabel ('density')</pre>
+                <div class="text-center">
+                  <img src="assets/ncx2pdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncx2pdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

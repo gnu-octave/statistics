@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: <var>b</var> = <b>stepwisefit</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>b</var>, <var>se</var>, <var>pval</var>, <var>finalmodel</var>, <var>stats</var>, <var>nextstep</var>, <var>history</var> = <b>stepwisefit</b> (<var>X</var>, <var>y</var>, <var>varargin</var>)</code></h5></dt>
 </dl>
-
 <p> Perform stepwise linear regression using conditional p-value criteria.
 </p>
 <div class="ms-5">
@@ -825,101 +827,73 @@
  <code>regress</code> to compute coefficient estimates and inferential statistics
  for both included and excluded predictors.
 </p>
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>X</var> is an <var>n</var>-by-<var>p</var> numeric matrix of predictor variables.
-
- </li><li>
+</li><li>
  <var>y</var> is an <var>n</var>-by-1 numeric response vector.
-
- </li><li>
+</li><li>
  Optional Name–Value pairs may be supplied to control the stepwise
  selection procedure.
- </li></ul>
+</li></ul>
 
- <a name="NameaEUR_0022Value-Arguments"></a>
+<a name="Name–Value-Arguments"></a>
 <h3 class="subheading">Name–Value Arguments</h3>
 
- <dl compact="compact">
-<dt> <code>&quot;InModel&quot;</code></dt>
-</dl>
-<p> Logical row vector of length <var>p</var> specifying predictors that are initially
- included in the model.
-</p>
- </dd>
-<dt> <code>&quot;Keep&quot;</code></dt>
-</dl>
-<p> Logical row vector of length <var>p</var> specifying predictors that must remain
- in the model and are never removed during stepwise selection.
-</p>
- </dd>
-<dt> <code>&quot;PEnter&quot;</code></dt>
-</dl>
-<p> Scalar significance level in the open interval (0,1) specifying the maximum
- p-value required for a predictor to enter the model.  Default is <code>0.05</code>.
-</p>
- </dd>
-<dt> <code>&quot;PRemove&quot;</code></dt>
-</dl>
-<p> Scalar significance level in the open interval (0,1) specifying the minimum
+<dl compact="compact">
+<dt> <code>'InModel'</code></dt>
+<dd> Logical row vector of length <var>p</var> specifying predictors that are initially
+ included in the model.</dd>
+<dt> <code>'Keep'</code></dt>
+<dd> Logical row vector of length <var>p</var> specifying predictors that must remain
+ in the model and are never removed during stepwise selection.</dd>
+<dt> <code>'PEnter'</code></dt>
+<dd> Scalar significance level in the open interval (0,1) specifying the maximum
+ p-value required for a predictor to enter the model.  Default is <code>0.05</code>.</dd>
+<dt> <code>'PRemove'</code></dt>
+<dd> Scalar significance level in the open interval (0,1) specifying the minimum
  p-value required for a predictor to be removed from the model.  If not
- specified, a default value greater than or equal to <code>&quot;PEnter&quot;</code> is used.
-</p>
- </dd>
-<dt> <code>&quot;MaxIter&quot;</code></dt>
-</dl>
-<p> Positive integer specifying the maximum number of stepwise iterations.
- Default is <code>Inf</code>.
-</p>
- </dd>
-<dt> <code>&quot;Scale&quot;</code></dt>
-</dl>
-<p> Either <code>&quot;on&quot;</code> or <code>&quot;off&quot;</code>.  When enabled, predictors are
+ specified, a default value greater than or equal to <code>'PEnter'</code> is used.</dd>
+<dt> <code>'MaxIter'</code></dt>
+<dd> Positive integer specifying the maximum number of stepwise iterations.
+ Default is <code>Inf</code>.</dd>
+<dt> <code>'Scale'</code></dt>
+<dd> Either <code>'on'</code> or <code>'off'</code>.  When enabled, predictors are
  standardized prior to stepwise selection only.  Final regression
- coefficients are always reported on the original data scale.
-</p>
- </dd>
-<dt> <code>&quot;Display&quot;</code></dt>
-</dl>
-<p> Either <code>&quot;on&quot;</code> or <code>&quot;off&quot;</code>.  Accepted for compatibility but
- currently does not affect output.
- </p></dd>
+ coefficients are always reported on the original data scale.</dd>
+<dt> <code>'Display'</code></dt>
+<dd> Either <code>'on'</code> or <code>'off'</code>.  Accepted for compatibility but
+ currently does not affect output.</dd>
 </dl>
 
- <a name="Return-Values"></a>
+<a name="Return-Values"></a>
 <h3 class="subheading">Return Values</h3>
 
- <ul>
+<ul>
 <li>
  <var>b</var> is a <var>p</var>-by-1 vector of regression coefficients.  Coefficients
  for excluded predictors are computed conditionally.
-
- </li><li>
+</li><li>
  <var>se</var> is a <var>p</var>-by-1 vector of standard errors.
-
- </li><li>
+</li><li>
  <var>pval</var> is a <var>p</var>-by-1 vector of two-sided p-values.
-
- </li><li>
+</li><li>
  <var>finalmodel</var> is a logical row vector indicating which predictors are
  included in the final model.
-
- </li><li>
+</li><li>
  <var>stats</var> is a structure containing regression diagnostics, including
  sums of squares, degrees of freedom, residuals, covariance estimates,
  F-statistic, and related quantities.
-
- </li><li>
+</li><li>
  <var>nextstep</var> is a scalar indicating whether an additional stepwise
  iteration is recommended.  Currently always zero.
-
- </li><li>
+</li><li>
  <var>history</var> is a structure summarizing the final model state, including
  selected predictors and coefficient history.
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="regress.html">regress</a>

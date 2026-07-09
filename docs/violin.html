@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,7 +810,6 @@
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>violin</b> (<var>hax</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>violin</b> (&hellip;, <code>&quot;horizontal&quot;</code>)</code></h5></dt>
 </dl>
-
 <p> Produce a Violin plot of the data <var>x</var>.
 </p>
 <div class="ms-5">
@@ -815,50 +817,35 @@
  variables.  It can also be a cell with m elements, for the case in which the
  variables are not uniformly sampled.
 </p>
-<p> The following <var>property</var> can be set using <var>property</var>/<var>value</var> pairs
- (default values in parenthesis).
- The value of the property can be a scalar indicating that it applies
- to all the variables in the data.
- It can also be a cell/array, indicating the property for each variable.
- In this case it should have m columns (as many as variables).
+<p> The following <var>property</var> can be set using <var>property</var>/<var>value</var>
+ pairs (default values in parenthesis). The value of the property can be a
+ scalar indicating that it applies to all the variables in the data. It can
+ also be a cell/array, indicating the property for each variable. In this case
+ it should have m columns (as many as variables).
 </p>
- <dl compact="compact">
+<dl compact="compact">
 <dt> Color</dt>
-</dl>
-<p> (&quot;y&quot;) Indicates the filling color of the violins.
-</p>
- </dd>
+<dd> (&quot;y&quot;) Indicates the filling color of the violins.</dd>
 <dt> Nbins</dt>
-</dl>
-<p> (50) Internally, the function calls <code>hist</code> to compute the histogram
+<dd> (50) Internally, the function calls <code>hist</code> to compute the histogram
  of the data.  This property indicates how many bins to use.
- See <code>help hist</code> for more details.
-</p>
- </dd>
+ See <code>help hist</code> for more details.</dd>
 <dt> SmoothFactor</dt>
-</dl>
-<p> (4) The function performs simple kernel density estimation and automatically
+<dd> (4) The function performs simple kernel density estimation and automatically
  finds the bandwidth of the kernel function that best approximates the
  histogram using optimization (<code>sqp</code>).
  The result is in general very noisy. To smooth the result the bandwidth is
  multiplied by the value of this property. The higher the value the smoother
  the violins, but values too high might remove features from the data
- distribution.
-</p>
- </dd>
+ distribution.</dd>
 <dt> Bandwidth</dt>
-</dl>
-<p> (NA) If this property is given a value other than NA, it sets the bandwidth of
- the kernel function. No optimization is performed and the property
- SmoothFactor is ignored.
-</p>
- </dd>
+<dd> (NA) If this property is given a value other than NA, it sets the bandwidth
+ of the kernel function. No optimization is performed and the property
+ SmoothFactor is ignored.</dd>
 <dt> Width</dt>
-</dl>
-<p> (0.5) Sets the maximum width of the violins. Violins are centered at integer
+<dd> (0.5) Sets the maximum width of the violins. Violins are centered at integer
  axis values.  The distance between two violin middle axis is 1.  Setting a
- value higher than 1 in this property will cause the violins to overlap.
- </p></dd>
+ value higher than 1 in this property will cause the violins to overlap.</dd>
 </dl>
 
 <p> If the string &quot;Horizontal&quot; is among the input arguments, the violin
@@ -869,12 +856,12 @@
 </p>
 <p> Example:
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
+<table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
  axis ([0,3]);
  set (gca, &quot;xtick&quot;, 1:2, &quot;xticklabel&quot;, {&quot;girls&quot;; &quot;boys&quot;});
  h = violin ({randn(100,1)*5+140, randn(130,1)*8+135}, &quot;Nbins&quot;, 10);
  set (h.violin, &quot;linewidth&quot;, 2)
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="boxplot.html">boxplot</a>, 
@@ -883,229 +870,150 @@ hist
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/violin.m">violin</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- clf
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
  x = zeros (9e2, 10);
  for i=1:10
    x(:,i) = (0.1 * randn (3e2, 3) * (randn (3,1) + 1) + 2 * randn (1,3))(:);
  endfor
- h = violin (x, "color", "c");
+ h = violin (x, 'color', 'c');
  axis tight
- set (h.violin, "linewidth", 2);
- set (gca, "xgrid", "on");
- xlabel ("Variables")
- ylabel ("Values")
+ set (h.violin, 'linewidth', 2);
+ set (gca, 'xgrid', 'on');
+ xlabel ('Variables')
+ ylabel ('Values')</pre>
+                <div class="text-center">
+                  <img src="assets/violin_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- clf
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
  data = {randn(100,1)*5+140, randn(130,1)*8+135};
  subplot (1,2,1)
- title ("Grade 3 heights - vertical");
- set (gca, "xtick", 1:2, "xticklabel", {"girls"; "boys"});
- violin (data, "Nbins", 10);
+ title ('Grade 3 heights - vertical');
+ set (gca, 'xtick', 1:2, 'xticklabel', {'girls'; 'boys'});
+ violin (data, 'Nbins', 10);
  axis tight
+ subplot (1,2,2)
+ title ('Grade 3 heights - horizontal');
+ set (gca, 'ytick', 1:2, 'yticklabel', {'girls'; 'boys'});
+ violin (data, 'horizontal', 'Nbins', 10);
+ axis tight</pre>
+                <div class="text-center">
+                  <img src="assets/violin_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
- subplot(1,2,2)
- title ("Grade 3 heights - horizontal");
- set (gca, "ytick", 1:2, "yticklabel", {"girls"; "boys"});
- violin (data, "horizontal", "Nbins", 10);
- axis tight
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- clf
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
  data = exprnd (0.1, 500,4);
- violin (data, "nbins", {5,10,50,100});
- axis ([0 5 0 max(data(:))])
+ violin (data, 'nbins', {5,10,50,100});
+ axis ([0 5 0 max(data(:))])</pre>
+                <div class="text-center">
+                  <img src="assets/violin_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- clf
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
  data = exprnd (0.1, 500,4);
- violin (data, "color", jet(4));
- axis ([0 5 0 max(data(:))])
+ violin (data, 'color', jet (4));
+ axis ([0 5 0 max(data(:))])</pre>
+                <div class="text-center">
+                  <img src="assets/violin_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- clf
- data = repmat(exprnd (0.1, 500,1), 1, 4);
- violin (data, "width", linspace (0.1,0.5,4));
- axis ([0 5 0 max(data(:))])
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_501.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+ data = repmat (exprnd (0.1, 500,1), 1, 4);
+ violin (data, 'width', linspace (0.1,0.5,4));
+ axis ([0 5 0 max(data(:))])</pre>
+                <div class="text-center">
+                  <img src="assets/violin_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> clf
+ data = repmat (exprnd (0.1, 500,1), 1, 4);
+ violin (data, 'nbins', [5,10,50,100], 'smoothfactor', [4 4 8 10]);
+ axis ([0 5 0 max(data(:))])</pre>
+                <div class="text-center">
+                  <img src="assets/violin_601.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
- clf
- data = repmat(exprnd (0.1, 500,1), 1, 4);
- violin (data, "nbins", [5,10,50,100], "smoothfactor", [4 4 8 10]);
- axis ([0 5 0 max(data(:))])
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/violin_601.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

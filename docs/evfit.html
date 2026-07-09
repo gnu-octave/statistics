@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,8 +811,8 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>evfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>evfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code></h5></dt>
 </dl>
-
-<p> Estimate parameters and confidence intervals for the extreme value distribution.
+<p> Estimate parameters and confidence intervals for the extreme value
+ distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>paramhat</var> = evfit (<var>x</var>)</code> returns the maximum likelihood
@@ -843,12 +846,13 @@
  parameters for the iterative algorithm used to compute the maximum likelihood
  estimates.  <var>options</var> is a structure with the following field and its
  default value:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
- </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
- </li><li> <code><var>options</var>.MaxIter = 200</code>
- </li><li> <code><var>options</var>.TolX = 1e-6</code>
- </li></ul>
+</li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+</li><li> <code><var>options</var>.MaxIter = 200</code>
+</li><li> <code><var>options</var>.TolX = 1e-6</code>
+</li></ul>
 
 <p> The Gumbel distribution is used to model the distribution of the maximum (or
  the minimum) of a number of samples of various distributions.  This version
@@ -870,77 +874,61 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/evfit.m">evfit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Sample 3 populations from different extreme value distributions
- rand ("seed", 1);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <p>Sample 3 populations from different extreme value distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 1);    # for reproducibility
  r1 = evrnd (2, 5, 400, 1);
- rand ("seed", 12);    # for reproducibility
+ rand ('seed', 12);    # for reproducibility
  r2 = evrnd (-5, 3, 400, 1);
- rand ("seed", 13);    # for reproducibility
+ rand ('seed', 13);    # for reproducibility
  r3 = evrnd (14, 8, 400, 1);
- r = [r1, r2, r3];
-
- ## Plot them normalized and fix their colors
- hist (r, 25, 0.4);
- h = findobj (gca, "Type", "patch");
- set (h(1), "facecolor", "c");
- set (h(2), "facecolor", "g");
- set (h(3), "facecolor", "r");
+ r = [r1, r2, r3];</pre>
+                <p>Plot them normalized and fix their colors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (r, 25, 0.4);
+ h = findobj (gca, 'Type', 'patch');
+ set (h(1), 'facecolor', 'c');
+ set (h(2), 'facecolor', 'g');
+ set (h(3), 'facecolor', 'r');
  ylim ([0, 0.28])
  xlim ([-30, 30]);
- hold on
-
- ## Estimate their MU and SIGMA parameters
- mu_sigmaA = evfit (r(:,1));
+ hold on</pre>
+                <p>Estimate their MU and SIGMA parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mu_sigmaA = evfit (r(:,1));
  mu_sigmaB = evfit (r(:,2));
- mu_sigmaC = evfit (r(:,3));
-
- ## Plot their estimated PDFs
- x = [min(r(:)):max(r(:))];
+ mu_sigmaC = evfit (r(:,3));</pre>
+                <p>Plot their estimated PDFs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [min(r(:)):max(r(:))];
  y = evpdf (x, mu_sigmaA(1), mu_sigmaA(2));
- plot (x, y, "-pr");
+ plot (x, y, '-pr');
  y = evpdf (x, mu_sigmaB(1), mu_sigmaB(2));
- plot (x, y, "-sg");
+ plot (x, y, '-sg');
  y = evpdf (x, mu_sigmaC(1), mu_sigmaC(2));
- plot (x, y, "-^c");
- legend ({"Normalized HIST of sample 1 with μ=2 and σ=5", ...
-          "Normalized HIST of sample 2 with μ=-5 and σ=3", ...
-          "Normalized HIST of sample 3 with μ=14 and σ=8", ...
+ plot (x, y, '-^c');
+ legend ({'Normalized HIST of sample 1 with μ=2 and σ=5', ...
+          'Normalized HIST of sample 2 with μ=-5 and σ=3', ...
+          'Normalized HIST of sample 3 with μ=14 and σ=8', ...
           sprintf("PDF for sample 1 with estimated μ=%0.2f and σ=%0.2f", ...
                   mu_sigmaA(1), mu_sigmaA(2)), ...
           sprintf("PDF for sample 2 with estimated μ=%0.2f and σ=%0.2f", ...
                   mu_sigmaB(1), mu_sigmaB(2)), ...
           sprintf("PDF for sample 3 with estimated μ=%0.2f and σ=%0.2f", ...
                   mu_sigmaC(1), mu_sigmaC(2))})
- title ("Three population samples from different extreme value distributions")
- hold off
+ title ('Three population samples from different extreme value distributions')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/evfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/evfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

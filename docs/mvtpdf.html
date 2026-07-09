@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,56 +806,52 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>mvtpdf</b> (<var>x</var>, <var>rho</var>, <var>df</var>)</code></h5></dt>
 </dl>
-
 <p> Multivariate Student&rsquo;s t probability density function (PDF).
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>x</var> are the points at which to find the probability, where each row
  corresponds to an observation. (<math>N&times;D</math> matrix)
-
- </li><li>
+</li><li>
  <var>rho</var> is the correlation matrix. (<math>D&times;D</math> symmetric positive
  definite matrix)
-
- </li><li>
+</li><li>
  <var>df</var> is the degrees of freedom. (scalar or vector of length <math>N</math>)
-
 </li></ul>
 
 <p> The distribution is assumed to be centered (zero mean).
 </p>
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>y</var> is the probability density for each row of <var>x</var>.
  (<math>N&times;1</math> vector)
- </li></ul>
+</li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = [1 2];
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = [1 2];
  rho = [1.0 0.5; 0.5 1.0];
  df = 4;
  y = mvtpdf (x, rho, df)
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Michael Roth, On the Multivariate t Distribution, Technical report from
  Automatic Control at Linkoepings universitet,
  <a href="http://users.isy.liu.se/en/rt/roth/student.pdf">http://users.isy.liu.se/en/rt/roth/student.pdf</a>
- </li></ol>
+</li></ol>
 
 <p> <strong>See also: </strong>
   <a href="mvtcdf.html">mvtcdf</a>, 
@@ -862,44 +861,29 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/mvtpdf.m">mvtpdf</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compute the pdf of a multivariate t distribution with correlation
- ## parameters rho = [1 .4; .4 1] and 2 degrees of freedom.
-
- rho = [1, 0.4; 0.4, 1];
+          </div>
+          <div class="card-body">
+                <p>Compute the pdf of a multivariate t distribution with correlation parameters rho = [1 .4; .4 1] and 2 degrees of freedom.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rho = [1, 0.4; 0.4, 1];
  df = 2;
  [X1, X2] = meshgrid (linspace (-2, 2, 25)', linspace (-2, 2, 25)');
  X = [X1(:), X2(:)];
  y = mvtpdf (X, rho, df);
  surf (X1, X2, reshape (y, 25, 25));
- title ("Bivariate Student's t probability density function");
+ title ('Bivariate Student''s t probability density function');</pre>
+                <div class="text-center">
+                  <img src="assets/mvtpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/mvtpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

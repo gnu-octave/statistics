@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>B</var> = <b>standardizeMissing</b> (<var>A</var>, <var>indicator</var>)</code></h5></dt>
 </dl>
-
 <p> Replace selected values by standard missing values.
 </p>
 <div class="ms-5">
@@ -815,14 +817,14 @@
 </p>
 <p> Standard missing values and their corresponding data types are:
 </p>
- <ul>
+<ul>
 <li> <code>NaN</code> - for <code>double</code>, <code>single</code>, <code>duration</code>, and
  <code>calendarDuration</code> arrays.
- </li><li> <code>NaT</code> - for <code>datetime</code> arrays.
- </li><li> <code>&lt;missing&gt;</code> - for <code>string</code> arrays.
- </li><li> <code>&lt;undefined&gt;</code> - for <code>categorical</code> arrays.
- </li><li> <code>{0x0 char}</code> - for <code>cell</code> arrays of character vectors.
- </li></ul>
+</li><li> <code>NaT</code> - for <code>datetime</code> arrays.
+</li><li> <code>&lt;missing&gt;</code> - for <code>string</code> arrays.
+</li><li> <code>&lt;undefined&gt;</code> - for <code>categorical</code> arrays.
+</li><li> <code>{0x0 char}</code> - for <code>cell</code> arrays of character vectors.
+</li></ul>
 
 <p> For any other data type input that does not support missing values,
  <code>standardizeMissing</code> returns <code><var>B</var> = <var>A</var></code> and any
@@ -832,15 +834,15 @@
  data input <var>A</var> or have a compatible data types according to the following
  rules:
 </p>
- <ul>
+<ul>
 <li> all numeric indicators match both <code>double</code> and <code>single</code>
  data types in <var>A</var>.
- </li><li> indicators specified as <code>string</code> arrays, <code>char</code> vectors,
+</li><li> indicators specified as <code>string</code> arrays, <code>char</code> vectors,
  and <code>cell</code> arrays of character vectors match categorical data type in
  <var>A</var>.
- </li><li> a <code>char</code> vector matches a <code>cell</code> array of character vectors
+</li><li> a <code>char</code> vector matches a <code>cell</code> array of character vectors
  in <var>A</var>.
- </li></ul>
+</li></ul>
 
 <p> Note: the generic <code>standardizeMissing</code> function from the statistics does
  not operate on table inputs, which is handled by the overloaded method of the

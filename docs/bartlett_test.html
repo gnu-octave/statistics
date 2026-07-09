@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -809,7 +812,6 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>chisq</var>] = <b>bartlett_test</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>chisq</var>, <var>df</var>] = <b>bartlett_test</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Perform a Bartlett test for the homogeneity of variances.
 </p>
 <div class="ms-5">
@@ -823,14 +825,13 @@
 </p>
 <p> Input Arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>x</var> contains the data and it can either be a vector or matrix.
  If <var>x</var> is a matrix, then each column is treated as a separate group.
  If <var>x</var> is a vector, then the <var>group</var> argument is mandatory.
  NaN values are omitted.
-
- </li><li>
+</li><li>
  <var>group</var> contains the names for each group.  If <var>x</var> is a vector, then
  <var>group</var> must be a vector of the same length, or a string array or cell
  array of strings with one row for each element of <var>x</var>.  <var>x</var> values
@@ -841,13 +842,12 @@
  <var>group</var> can be omitted either by entering an empty array ([]) or by
  parsing only <var>alpha</var> as a second argument (if required to change its
  default value).
-
- </li><li>
+</li><li>
  <var>alpha</var> is the statistical significance value at which the null
  hypothesis is rejected.  Its default value is 0.05 and it can be parsed
  either as a second argument (when <var>group</var> is omitted) or as a third
  argument.
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="levene_test.html">levene_test</a>, 

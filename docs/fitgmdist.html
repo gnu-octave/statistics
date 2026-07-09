@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace fw-bolder"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,61 +806,66 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>GMdist</var> = <b>fitgmdist</b> (<var>data</var>, <var>k</var>, <var>param1</var>, <var>value1</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Fit a Gaussian mixture model with <var>k</var> components to <var>data</var>.
  Each row of <var>data</var> is a data sample.  Each column is a variable.
 </p>
 <div class="ms-5">
 <p> Optional parameters are:
- </p><ul>
-<li> <code>&quot;start&quot;</code>:  Initialization conditions.  Possible values are:
- <ul>
-<li> <code>&quot;randSample&quot;</code> (default) Takes means uniformly from rows of data.
- </li><li> <code>&quot;plus&quot;</code> Use k-means++ to initialize means.
- </li><li> <code>&quot;cluster&quot;</code> Performs an initial clustering with 10% of the data.
- </li><li> <var>vector</var> A vector whose length is the number of rows in data, and
+</p>
+<ul>
+<li> <code>'start'</code>:  Initialization conditions.  Possible values are:
+<ul>
+<li> <code>'randSample'</code> (default) Takes means uniformly from rows of data.
+</li><li> <code>'plus'</code> Use k-means++ to initialize means.
+</li><li> <code>'cluster'</code> Performs an initial clustering with 10% of the data.
+</li><li> <var>vector</var> A vector whose length is the number of rows in data, and
  whose values are 1 to k specify the components each row is initially
  allocated to.  The mean, variance, and weight of each component is calculated
  from that.
- </li><li> <var>structure</var> A structure with fields <code>mu</code>, <code>Sigma</code> and
+</li><li> <var>structure</var> A structure with fields <code>mu</code>, <code>Sigma</code> and
  <code>ComponentProportion</code>.
- </li></ul>
-<p> For <code>&quot;randSample&quot;</code>, <code>&quot;plus&quot;</code>, and <code>&quot;cluster&quot;</code>, the initial
+</li></ul>
+
+
+<p> For <code>'randSample'</code>, <code>'plus'</code>, and <code>'cluster'</code>, the initial
  variance of each component is the variance of the entire data sample.
 </p>
- </li><li> <code>&quot;Replicates&quot;</code>: Number of random restarts to perform.
 
- </li><li> <code>&quot;RegularizationValue&quot;</code> or <code>&quot;Regularize&quot;</code>: A small number
+</li><li> <code>'Replicates'</code>: Number of random restarts to perform.
+</li><li> <code>'RegularizationValue'</code> or <code>'Regularize'</code>: A small number
  added to the diagonal entries of the covariance to prevent singular
  covariances.
-
- </li><li> <code>&quot;SharedCovariance&quot;</code> or <code>&quot;SharedCov&quot;</code> (logical). True if
+</li><li> <code>'SharedCovariance'</code> or <code>'SharedCov'</code> (logical). True if
  all components must share the same variance, to reduce the number of free
  parameters
-
- </li><li> <code>&quot;CovarianceType&quot;</code> or <code>&quot;CovType&quot;</code> (string). Possible values
+</li><li> <code>'CovarianceType'</code> or <code>'CovType'</code> (string). Possible values
  are:
- <ul>
-<li> <code>&quot;full&quot;</code> (default) Allow arbitrary covariance matrices.
- </li><li> <code>&quot;diagonal&quot;</code> Force covariances to be diagonal, to reduce the
+<ul>
+<li> <code>'full'</code> (default) Allow arbitrary covariance matrices.
+</li><li> <code>'diagonal'</code> Force covariances to be diagonal, to reduce the
  number of free parameters.
- </li></ul>
-
- </li><li> <code>&quot;Options&quot;</code>: A structure with all of the following fields:
- <ul>
-<li> <code>MaxIter</code> Maximum number of EM iterations (default 100).
- </li><li> <code>TolFun</code> Threshold increase in likelihood to terminate EM
- (default 1e-6).
- </li><li> <code>Display</code> Possible values are:
- <ul>
-<li> <code>&quot;off&quot;</code> (default): Display nothing.
- </li><li> <code>&quot;final&quot;</code>: Display the total number of iterations and likelihood
- once the execution completes.
- </li><li> <code>&quot;iter&quot;</code>: Display the number of iteration and likelihood after
- each iteration.
- </li></ul>
 </li></ul>
- </li><li> <code>&quot;Weight&quot;</code>:  A column vector or <math>N&times;2</math> matrix. The first
+
+
+</li><li> <code>'Options'</code>: A structure with all of the following fields:
+<ul>
+<li> <code>MaxIter</code> Maximum number of EM iterations (default 100).
+</li><li> <code>TolFun</code> Threshold increase in likelihood to terminate EM
+ (default 1e-6).
+</li><li> <code>Display</code> Possible values are:
+<ul>
+<li> <code>'off'</code> (default): Display nothing.
+</li><li> <code>'final'</code>: Display the total number of iterations and likelihood
+ once the execution completes.
+</li><li> <code>'iter'</code>: Display the number of iteration and likelihood after
+ each iteration.
+</li></ul>
+
+
+</li></ul>
+
+
+</li><li> <code>'Weight'</code>:  A column vector or <math>N&times;2</math> matrix. The first
  column consists of non-negative weights given to the samples.  If these are
  all integers, this is equivalent to specifying <code><var>weight</var>(i)</code> copies
  of row <code>i</code> of <var>data</var>, but potentially faster.  If a row of
@@ -866,7 +874,7 @@
  original samples.  Specifically, in the EM algorithm, the contribution of row
  <code>i</code> towards the variance is set to at least <code><var>weight</var>(i,2)</code>,
  to prevent spurious components with zero variance.
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
 gmdistribution, 
@@ -875,93 +883,65 @@ gmdistribution,
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitgmdist.m">fitgmdist</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a two-cluster problem
- C1 = randn (100, 2) + 2;
- C2 = randn (100, 2) - 2;
- data = [C1; C2];
-
- ## Perform clustering
- GMModel = fitgmdist (data, 2);
-
- ## Plot the result
- figure
- [heights, bins] = hist3([C1; C2]);
- [xx, yy] = meshgrid(bins{1}, bins{2});
- bbins = [xx(:), yy(:)];
- contour (reshape (GMModel.pdf (bbins), size (heights)));
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitgmdist_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Generate a two-cluster problem</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> C1 = randn (100, 2) + 2;
+ C2 = randn (100, 2) - 2;
+ data = [C1; C2];</pre>
+                <p>Perform clustering</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> GMModel = fitgmdist (data, 2);</pre>
+                <p>Plot the result</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ [heights, bins] = hist3 ([C1; C2]);
+ [xx, yy] = meshgrid (bins{1}, bins{2});
+ bbins = [xx(:), yy(:)];
+ contour (reshape (GMModel.pdf (bbins), size (heights)));</pre>
+                <div class="text-center">
+                  <img src="assets/fitgmdist_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Angle_Theta = [ 30 + 10 * randn(1, 10),  60 + 10 * randn(1, 10) ]';
  nbOrientations = 2;
  initial_orientations = [38.0; 18.0];
  initial_weights = ones (1, nbOrientations) / nbOrientations;
  initial_Sigma = 10 * ones (1, 1, nbOrientations);
- start = struct ("mu", initial_orientations, "Sigma", initial_Sigma, ...
-                 "ComponentProportion", initial_weights);
- GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, "Start", start , ...
-                            "RegularizationValue", 0.0001)
-
-Gaussian mixture distribution with 2 components in 1 dimension(s)
+ start = struct ('mu', initial_orientations, 'Sigma', initial_Sigma, ...
+                 'ComponentProportion', initial_weights);
+ GMModel_Theta = fitgmdist (Angle_Theta, nbOrientations, 'Start', start , ...
+                            'RegularizationValue', 0.0001)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Gaussian mixture distribution with 2 components in 1 dimension(s)
 Clust 1: weight 0.701113
 	Mean: 50.5551 
 	Variance:135.42
 Clust 2: weight 0.298887
 	Mean: 19.3242 
 	Variance:23.764
-AIC=175.832 BIC=180.811 NLogL=82.9162 Iter=10 Cged=1 Reg=0.0001
-                    </pre></td></tr></tbody>
-                  </table>
+AIC=175.832 BIC=180.811 NLogL=82.9162 Iter=10 Cged=1 Reg=0.0001</pre>
 
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

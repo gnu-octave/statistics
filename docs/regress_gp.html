@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -802,18 +805,17 @@
             <div class="card-body">
 <dl>
 <dt><code><h5 class="fs">statistics: [<var>Yfit</var>, <var>Yint</var>, <var>m</var>, <var>K</var>] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>Yfit</var>, <var>Yint</var>, <var>m</var>, <var>K</var>] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;linear&quot;</code>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>Yfit</var>, <var>Yint</var>, <var>Ysd</var>] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;rbf&quot;</code>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;linear&quot;</code>, <var>Sp</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>Yfit</var>, <var>Yint</var>, <var>m</var>, <var>K</var>] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'linear'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>Yfit</var>, <var>Yint</var>, <var>Ysd</var>] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'rbf'</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'linear'</code>, <var>Sp</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <var>Sp</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;rbf&quot;</code>, <var>theta</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;rbf&quot;</code>, <var>theta</var>, <var>g</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>&quot;rbf&quot;</code>, <var>theta</var>, <var>g</var>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'rbf'</code>, <var>theta</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'rbf'</code>, <var>theta</var>, <var>g</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <code>'rbf'</code>, <var>theta</var>, <var>g</var>, <var>alpha</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <var>theta</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <var>theta</var>, <var>g</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>regress_gp</b> (<var>X</var>, <var>Y</var>, <var>Xfit</var>, <var>theta</var>, <var>g</var>, <var>alpha</var>)</code></h5></dt>
 </dl>
-
 <p> Regression using Gaussian Processes.
 </p>
 <div class="ms-5">
@@ -835,7 +837,7 @@
  <var>Yfit</var>.
 </p>
 <p> <code>[<var>Yfit</var>, <var>Yint</var>, <var>Ysd</var>, <var>K</var>] = regress_gp (<var>X</var>,
- <var>Y</var>, <var>Xfit</var>, <code>&quot;rbf&quot;</code>)</code> will estimate a Gaussian Process model
+ <var>Y</var>, <var>Xfit</var>, <code>'rbf'</code>)</code> will estimate a Gaussian Process model
  with a Radial Basis Function (RBF) kernel with default parameters
  <code><var>theta</var> = 5</code>, which corresponds to the characteristic lengthscale,
  and <code><var>g</var> = 0.01</code>, which corresponds to the nugget effect, and
@@ -855,508 +857,369 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/regress_gp.m">regress_gp</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Linear fitting of 1D Data
- rand ("seed", 125);
- X = 2 * rand (5, 1) - 1;
- randn ("seed", 25);
- Y = 2 * X - 1 + 0.3 * randn (5, 1);
-
- ## Points for interpolation/extrapolation
- Xfit = linspace (-2, 2, 10)';
-
- ## Fit regression model
- [Yfit, Yint, m] = regress_gp (X, Y, Xfit);
-
- ## Plot fitted data
- plot (X, Y, "xk", Xfit, Yfit, "r-", Xfit, Yint, "b-");
- title ("Gaussian process regression with linear kernel");
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Linear fitting of 1D Data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 125);
+ X = 2 * rand (5, 1) - 1;
+ randn ('seed', 25);
+ Y = 2 * X - 1 + 0.3 * randn (5, 1);</pre>
+                <p>Points for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-2, 2, 10)';</pre>
+                <p>Fit regression model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, m] = regress_gp (X, Y, Xfit);</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (X, Y, 'xk', Xfit, Yfit, 'r-', Xfit, Yint, 'b-');
+ title ('Gaussian process regression with linear kernel');</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Linear fitting of 2D Data
- rand ("seed", 135);
+          </div>
+          <div class="card-body">
+                <p>Linear fitting of 2D Data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 135);
  X = 2 * rand (4, 2) - 1;
- randn ("seed", 35);
- Y = 2 * X(:,1) - 3 * X(:,2) - 1 + 1 * randn (4, 1);
-
- ## Mesh for interpolation/extrapolation
- [x1, x2] = meshgrid (linspace (-1, 1, 10));
- Xfit = [x1(:), x2(:)];
-
- ## Fit regression model
- [Ypred, Yint, Ysd] = regress_gp (X, Y, Xfit);
+ randn ('seed', 35);
+ Y = 2 * X(:,1) - 3 * X(:,2) - 1 + 1 * randn (4, 1);</pre>
+                <p>Mesh for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [x1, x2] = meshgrid (linspace (-1, 1, 10));
+ Xfit = [x1(:), x2(:)];</pre>
+                <p>Fit regression model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Ypred, Yint, Ysd] = regress_gp (X, Y, Xfit);
  Ypred = reshape (Ypred, 10, 10);
  YintU = reshape (Yint(:,1), 10, 10);
- YintL = reshape (Yint(:,2), 10, 10);
-
- ## Plot fitted data
- plot3 (X(:,1), X(:,2), Y, ".k", "markersize", 16);
+ YintL = reshape (Yint(:,2), 10, 10);</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot3 (X(:,1), X(:,2), Y, '.k', 'markersize', 16);
  hold on;
  h = mesh (x1, x2, Ypred, zeros (10, 10));
- set (h, "facecolor", "none", "edgecolor", "yellow");
+ set (h, 'facecolor', 'none', 'edgecolor', 'yellow');
  h = mesh (x1, x2, YintU, ones (10, 10));
- set (h, "facecolor", "none", "edgecolor", "cyan");
+ set (h, 'facecolor', 'none', 'edgecolor', 'cyan');
  h = mesh (x1, x2, YintL, ones (10, 10));
- set (h, "facecolor", "none", "edgecolor", "cyan");
+ set (h, 'facecolor', 'none', 'edgecolor', 'cyan');
  hold off
  axis tight
  view (75, 25)
- title ("Gaussian process regression with linear kernel");
+ title ('Gaussian process regression with linear kernel');</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Projection over basis function with linear kernel
- pp = [2, 2, 0.3, 1];
+          </div>
+          <div class="card-body">
+                <p>Projection over basis function with linear kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
  n = 10;
- rand ("seed", 145);
+ rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ("seed", 45);
- Y = polyval (pp, X) + 0.3 * randn (n, 1);
-
- ## Powers
- px = [sqrt(abs(X)), X, X.^2, X.^3];
-
- ## Points for interpolation/extrapolation
- Xfit = linspace (-1, 1, 100)';
- pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
-
- ## Define a prior covariance assuming that the sqrt component is not present
- Sp = 100 * eye (size (px, 2) + 1);
- Sp(2,2) = 1; # We don't believe the sqrt(abs(X)) is present
-
- ## Fit regression model
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, Sp);
-
- ## Plot fitted data
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ randn ('seed', 45);
+ Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
+                <p>Powers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
+                <p>Points for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-1, 1, 100)';
+ pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];</pre>
+                <p>Define a prior covariance assuming that the sqrt component is not present</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Sp = 100 * eye (size (px, 2) + 1);
+ Sp(2,2) = 1; # We don't believe the sqrt(abs(X)) is present</pre>
+                <p>Fit regression model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, Sp);</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("Linear kernel over basis function with prior covariance");
+ title ('Linear kernel over basis function with prior covariance');</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Projection over basis function with linear kernel
- pp = [2, 2, 0.3, 1];
+          </div>
+          <div class="card-body">
+                <p>Projection over basis function with linear kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
  n = 10;
- rand ("seed", 145);
+ rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ("seed", 45);
- Y = polyval (pp, X) + 0.3 * randn (n, 1);
-
- ## Powers
- px = [sqrt(abs(X)), X, X.^2, X.^3];
-
- ## Points for interpolation/extrapolation
- Xfit = linspace (-1, 1, 100)';
- pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
-
- ## Fit regression model without any assumption on prior covariance
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi);
-
- ## Plot fitted data
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ randn ('seed', 45);
+ Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
+                <p>Powers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
+                <p>Points for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-1, 1, 100)';
+ pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];</pre>
+                <p>Fit regression model without any assumption on prior covariance</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi);</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("Linear kernel over basis function without prior covariance");
+ title ('Linear kernel over basis function without prior covariance');</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Projection over basis function with rbf kernel
- pp = [2, 2, 0.3, 1];
+          </div>
+          <div class="card-body">
+                <p>Projection over basis function with rbf kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
  n = 10;
- rand ("seed", 145);
+ rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ("seed", 45);
- Y = polyval (pp, X) + 0.3 * randn (n, 1);
-
- ## Powers
- px = [sqrt(abs(X)), X, X.^2, X.^3];
-
- ## Points for interpolation/extrapolation
- Xfit = linspace (-1, 1, 100)';
- pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
-
- ## Fit regression model with RBF kernel (standard parameters)
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf");
-
- ## Plot fitted data
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ randn ('seed', 45);
+ Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
+                <p>Powers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
+                <p>Points for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-1, 1, 100)';
+ pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];</pre>
+                <p>Fit regression model with RBF kernel (standard parameters)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf');</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("RBF kernel over basis function with standard parameters");
- text (-0.5, 4, "theta = 5\n g = 0.01");
+ title ('RBF kernel over basis function with standard parameters');
+ text (-0.5, 4, "theta = 5\n g = 0.01");</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_501.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Projection over basis function with rbf kernel
- pp = [2, 2, 0.3, 1];
+          </div>
+          <div class="card-body">
+                <p>Projection over basis function with rbf kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pp = [2, 2, 0.3, 1];
  n = 10;
- rand ("seed", 145);
+ rand ('seed', 145);
  X = 2 * rand (n, 1) - 1;
- randn ("seed", 45);
- Y = polyval (pp, X) + 0.3 * randn (n, 1);
-
- ## Powers
- px = [sqrt(abs(X)), X, X.^2, X.^3];
-
- ## Points for interpolation/extrapolation
- Xfit = linspace (-1, 1, 100)';
- pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];
-
- ## Fit regression model with RBF kernel with different parameters
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 10, 0.01);
-
- ## Plot fitted data
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ randn ('seed', 45);
+ Y = polyval (pp, X) + 0.3 * randn (n, 1);</pre>
+                <p>Powers</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> px = [sqrt(abs(X)), X, X.^2, X.^3];</pre>
+                <p>Points for interpolation/extrapolation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Xfit = linspace (-1, 1, 100)';
+ pxi = [sqrt(abs(Xfit)), Xfit, Xfit.^2, Xfit.^3];</pre>
+                <p>Fit regression model with RBF kernel with different parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 10, 0.01);</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("GP regression with RBF kernel and non default parameters");
- text (-0.5, 4, "theta = 10\n g = 0.01");
-
- ## Fit regression model with RBF kernel with different parameters
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.01);
-
- ## Plot fitted data
- figure
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ title ('GP regression with RBF kernel and non default parameters');
+ text (-0.5, 4, "theta = 10\n g = 0.01");</pre>
+                <p>Fit regression model with RBF kernel with different parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.01);</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_601.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("GP regression with RBF kernel and non default parameters");
- text (-0.5, 4, "theta = 50\n g = 0.01");
-
- ## Fit regression model with RBF kernel with different parameters
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.001);
-
- ## Plot fitted data
- figure
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ title ('GP regression with RBF kernel and non default parameters');
+ text (-0.5, 4, "theta = 50\n g = 0.01");</pre>
+                <p>Fit regression model with RBF kernel with different parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.001);</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_602.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("GP regression with RBF kernel and non default parameters");
- text (-0.5, 4, "theta = 50\n g = 0.001");
-
- ## Fit regression model with RBF kernel with different parameters
- [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, "rbf", 50, 0.05);
-
- ## Plot fitted data
- figure
- plot (X, Y, "xk;Data;", Xfit, Yfit, "r-;Estimation;", ...
-                         Xfit, polyval (pp, Xfit), "g-;True;");
+ title ('GP regression with RBF kernel and non default parameters');
+ text (-0.5, 4, "theta = 50\n g = 0.001");</pre>
+                <p>Fit regression model with RBF kernel with different parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (px, Y, pxi, 'rbf', 50, 0.05);</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_603.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ plot (X, Y, 'xk;Data;', Xfit, Yfit, 'r-;Estimation;', ...
+                         Xfit, polyval (pp, Xfit), 'g-;True;');
  axis tight
  axis manual
  hold on
- plot (Xfit, Yint(:,1), "m-;Upper bound;", Xfit, Yint(:,2), "b-;Lower bound;");
+ plot (Xfit, Yint(:,1), 'm-;Upper bound;', Xfit, Yint(:,2), 'b-;Lower bound;');
  hold off
- title ("GP regression with RBF kernel and non default parameters");
- text (-0.5, 4, "theta = 50\n g = 0.05");
+ title ('GP regression with RBF kernel and non default parameters');
+ text (-0.5, 4, "theta = 50\n g = 0.05");</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_604.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_604.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_603.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_602.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_601.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 7
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 7
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## RBF fitting on noiseless 1D Data
- x = [0:2*pi/7:2*pi]';
- y = 5 * sin (x);
-
- ## Predictive grid of 500 equally spaced locations
- xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';
-
- ## Fit regression model with RBF kernel
- [Yfit, Yint, Ysd] = regress_gp (x, y, xi, "rbf");
-
- ## Plot fitted data
- r = mvnrnd (Yfit, diag (Ysd)', 50);
- plot (xi, r', "c-");
+          </div>
+          <div class="card-body">
+                <p>RBF fitting on noiseless 1D Data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0:2*pi/7:2*pi]';
+ y = 5 * sin (x);</pre>
+                <p>Predictive grid of 500 equally spaced locations</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';</pre>
+                <p>Fit regression model with RBF kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (x, y, xi, 'rbf');</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> r = mvnrnd (Yfit, diag (Ysd)', 50);
+ plot (xi, r', 'c-');
  hold on
- plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
- plot (x, y, ".k;Predictor points;", "markersize", 20)
- plot (xi, 5 * sin (xi), "-y;True Function;");
+ plot (xi, Yfit, 'r-;Estimation;', xi, Yint, 'b-;Confidence interval;');
+ plot (x, y, '.k;Predictor points;', 'markersize', 20)
+ plot (xi, 5 * sin (xi), '-y;True Function;');
  xlim ([-0.5,2*pi+0.5]);
  ylim ([-10,10]);
  hold off
- title ("GP regression with RBF kernel on noiseless 1D data");
- text (0, -7, "theta = 5\n g = 0.01");
+ title ('GP regression with RBF kernel on noiseless 1D data');
+ text (0, -7, "theta = 5\n g = 0.01");</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_701.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_701.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 8
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 8
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## RBF fitting on noisy 1D Data
- x = [0:2*pi/7:2*pi]';
+          </div>
+          <div class="card-body">
+                <p>RBF fitting on noisy 1D Data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0:2*pi/7:2*pi]';
  x = [x; x];
- y = 5 * sin (x) + randn (size (x));
-
- ## Predictive grid of 500 equally spaced locations
- xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';
-
- ## Fit regression model with RBF kernel
- [Yfit, Yint, Ysd] = regress_gp (x, y, xi, "rbf");
-
- ## Plot fitted data
- r = mvnrnd (Yfit, diag (Ysd)', 50);
- plot (xi, r', "c-");
+ y = 5 * sin (x) + randn (size (x));</pre>
+                <p>Predictive grid of 500 equally spaced locations</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> xi = [-0.5:(2*pi+1)/499:2*pi+0.5]';</pre>
+                <p>Fit regression model with RBF kernel</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [Yfit, Yint, Ysd] = regress_gp (x, y, xi, 'rbf');</pre>
+                <p>Plot fitted data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> r = mvnrnd (Yfit, diag (Ysd)', 50);
+ plot (xi, r', 'c-');
  hold on
- plot (xi, Yfit, "r-;Estimation;", xi, Yint, "b-;Confidence interval;");
- plot (x, y, ".k;Predictor points;", "markersize", 20)
- plot (xi, 5 * sin (xi), "-y;True Function;");
+ plot (xi, Yfit, 'r-;Estimation;', xi, Yint, 'b-;Confidence interval;');
+ plot (x, y, '.k;Predictor points;', 'markersize', 20)
+ plot (xi, 5 * sin (xi), '-y;True Function;');
  xlim ([-0.5,2*pi+0.5]);
  ylim ([-10,10]);
  hold off
- title ("GP regression with RBF kernel on noisy 1D data");
- text (0, -7, "theta = 5\n g = 0.01");
+ title ('GP regression with RBF kernel on noisy 1D data');
+ text (0, -7, "theta = 5\n g = 0.01");</pre>
+                <div class="text-center">
+                  <img src="assets/regress_gp_801.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/regress_gp_801.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

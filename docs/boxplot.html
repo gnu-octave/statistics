@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -809,7 +812,6 @@
 <dt><code><h5 class="fs">statistics: <var>s</var> = <b>boxplot</b> (<var>data</var>, <var>group</var>, <var>options</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;, <var>h</var>] = <b>boxplot</b> (<var>data</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Produce a box plot.
 </p>
 <div class="ms-5">
@@ -820,46 +822,45 @@
 </p>
 <p> Input arguments (case-insensitive) recognized by boxplot are:
 </p>
- <ul>
+<ul>
 <li>
  <var>data</var> is a matrix with one column for each data set, or a cell vector
  with one cell for each data set.  Each cell must contain a numerical row or
  column vector (NaN and NA are ignored) and not a nested vector of cells.
-
- </li><li>
+</li><li>
  <var>notched</var> = 1 produces a notched-box plot.  Notches represent a robust
  estimate of the uncertainty about the median.
-
 <p> <var>notched</var> = 0 (default) produces a rectangular box plot.
 </p>
+
 <p> <var>notched</var> within the interval (0,1) produces a notch of the specified
  depth.  Notched values outside (0,1) are amusing if not exactly impractical.
 </p>
- </li><li>
+
+</li><li>
  <var>symbol</var> sets the symbol for the outlier values.  The default symbol
  for points that lie outside 3 times the interquartile range is &rsquo;o&rsquo;;
  the default symbol for points between 1.5 and 3 times the interquartile
  range is &rsquo;+&rsquo;. <br>
  Alternative <var>symbol</var> settings:
-
 <p> <var>symbol</var> = &rsquo;.&rsquo;: points between 1.5 and 3 times the IQR are marked with
  &rsquo;.&rsquo; and points outside 3 times IQR with &rsquo;o&rsquo;.
 </p>
+
 <p> <var>symbol</var> = [&rsquo;x&rsquo;,&rsquo;*&rsquo;]: points between 1.5 and 3 times the IQR are marked
  with &rsquo;x&rsquo; and points outside 3 times IQR with &rsquo;*&rsquo;.
 </p>
- </li><li>
+
+</li><li>
  <var>orientation</var> = 0 makes the boxes horizontally. <br>
  <var>orientation</var> = 1 plots the boxes vertically (default).  Alternatively,
  orientation can be passed as a string, e.g., &rsquo;vertical&rsquo; or &rsquo;horizontal&rsquo;.
-
- </li><li>
+</li><li>
  <var>whisker</var> defines the length of the whiskers as a function of the IQR
  (default = 1.5).  If <var>whisker</var> = 0 then <code>boxplot</code> displays all data
  values outside the box using the plotting symbol for points that lie
  outside 3 times the IQR.
-
- </li><li>
+</li><li>
  <var>group</var> may be passed as an optional argument only in the second
  position after <var>data</var>. <var>group</var> can be a numeric, character,
  string, or categorical vector defining separate categories. To group by
@@ -867,14 +868,12 @@
  (e.g., <code>{group1, group2}</code>). A separate box is plotted for each
  unique combination of group values. All grouping variables must have the
  same length as <var>data</var>.
-
- </li><li>
+</li><li>
  <var>options</var> are additional paired arguments passed with the formalism
  (Name, Value) that provide extra functionality as listed below.
  <var>options</var> can be passed at any order after the initial arguments and
  are case-insensitive.
-
- <table>
+<table>
 <tr><td>&rsquo;Notch&rsquo;</td><td>&rsquo;on&rsquo;</td><td>Notched by 0.25 of the boxes width.</td></tr>
 <tr><td></td><td>&rsquo;off&rsquo;</td><td>Produces a straight box.</td></tr>
 <tr><td></td><td>scalar</td><td>Proportional width of the notch.</td></tr>
@@ -918,6 +917,8 @@
  characters or rows.  If the char string or Nx3 array is exhausted the color
  selection wraps around.</td></tr>
 </table>
+
+
 </li></ul>
 
 <p> Supplemental arguments not described above (&hellip;) are concatenated and
@@ -925,7 +926,7 @@
 </p>
 <p> The returned matrix <var>s</var> has one column for each data set as follows:
 </p>
- <table>
+<table>
 <tr><td width="10%">1</td><td width="80%">Minimum</td></tr>
 <tr><td width="10%">2</td><td width="80%">1st quartile</td></tr>
 <tr><td width="10%">3</td><td width="80%">2nd quartile (median)</td></tr>
@@ -940,155 +941,107 @@
 </p>
 <p> Example
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
+<table><tr><td>&nbsp;</td><td><pre class="example"> title (&quot;Grade 3 heights&quot;);
  axis ([0,3]);
  set(gca (), &quot;xtick&quot;, [1 2], &quot;xticklabel&quot;, {&quot;girls&quot;, &quot;boys&quot;});
  boxplot ({randn(10,1)*5+140, randn(13,1)*8+135});
- </pre></td></tr></table>
-
+</pre></td></tr></table>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/boxplot.m">boxplot</a>
 </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- axis ([0, 3]);
- randn ("seed", 1);    # for reproducibility
- girls = randn (10, 1) * 5 + 140;
- randn ("seed", 2);    # for reproducibility
- boys = randn (13, 1) * 8 + 135;
- boxplot ({girls, boys});
- set (gca (), "xtick", [1 2], "xticklabel", {"girls", "boys"})
- title ("Grade 3 heights");
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> axis ([0, 3]);
+ randn ('seed', 1);    # for reproducibility
+ girls = randn (10, 1) * 5 + 140;
+ randn ('seed', 2);    # for reproducibility
+ boys = randn (13, 1) * 8 + 135;
+ boxplot ({girls, boys});
+ set (gca (), 'xtick', [1 2], 'xticklabel', {'girls', 'boys'})
+ title ('Grade 3 heights');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- randn ("seed", 7);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 7);    # for reproducibility
  A = randn (10, 1) * 5 + 140;
- randn ("seed", 8);    # for reproducibility
+ randn ('seed', 8);    # for reproducibility
  B = randn (25, 1) * 8 + 135;
- randn ("seed", 9);    # for reproducibility
+ randn ('seed', 9);    # for reproducibility
  C = randn (20, 1) * 6 + 165;
  data = [A; B; C];
  groups = [(ones (10, 1)); (ones (25, 1) * 2); (ones (20, 1) * 3)];
- labels = {"Team A", "Team B", "Team C"};
+ labels = {'Team A', 'Team B', 'Team C'};
  pos = [2, 1, 3];
- boxplot (data, groups, "Notch", "on", "Labels", labels, "Positions", pos, ...
-          "OutlierTags", "on", "BoxStyle", "filled");
- title ("Example of Group splitting with paired vectors");
+ boxplot (data, groups, 'Notch', 'on', 'Labels', labels, 'Positions', pos, ...
+          'OutlierTags', 'on', 'BoxStyle', 'filled');
+ title ('Example of Group splitting with paired vectors');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- randn ("seed", 1);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 1);    # for reproducibility
  data = randn (100, 9);
- boxplot (data, "notch", "on", "boxstyle", "filled", ...
-          "colors", "ygcwkmb", "whisker", 1.2);
- title ("Example of different colors specified with characters");
+ boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
+          'colors', 'ygcwkmb', 'whisker', 1.2);
+ title ('Example of different colors specified with characters');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- randn ("seed", 5);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 5);    # for reproducibility
  data = randn (100, 13);
  colors = [0.7 0.7 0.7; ...
            0.0 0.4 0.9; ...
@@ -1097,95 +1050,63 @@
            0.8 0.7 0.4; ...
            0.1 0.8 0.5; ...
            0.9 0.9 0.2];
- boxplot (data, "notch", "on", "boxstyle", "filled", ...
-          "colors", colors, "whisker", 1.3, "boxwidth", "proportional");
- title ("Example of different colors specified as RGB values");
+ boxplot (data, 'notch', 'on', 'boxstyle', 'filled', ...
+          'colors', colors, 'whisker', 1.3, 'boxwidth', 'proportional');
+ title ('Example of different colors specified as RGB values');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- randn ("seed", 11); # for reproducibility
- data = randn (30, 1);
- ## Using modern string arrays
- str_groups = string(repmat(["Control"; "TreatmentA"; "TreatmentB"], 10, 1));
- boxplot (data, str_groups, "colors", "rgb");
- title ("Example using modern string arrays for grouping");
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_501.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 11); # for reproducibility
+ data = randn (30, 1);</pre>
+                <p>Using modern string arrays</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> str_groups = string (repmat (['Control'; 'TreatmentA'; 'TreatmentB'], 10, 1));
+ boxplot (data, str_groups, 'colors', 'rgb');
+ title ('Example using modern string arrays for grouping');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 10); # for reproducibility
+ data = randn (40, 1) * 5 + 50;</pre>
+                <p>Create two different grouping variables</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);
+ group2 = repmat ([2022; 2022; 2023; 2023], 10, 1);</pre>
+                <p>Pass them together as a cell array</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> boxplot (data, {group1, group2});
+ title ('Example of Multiple Grouping Variables (Model &amp; Year)');</pre>
+                <div class="text-center">
+                  <img src="assets/boxplot_601.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
- randn ("seed", 10); # for reproducibility
- data = randn (40, 1) * 5 + 50;
- ## Create two different grouping variables
- group1 = repmat ({'Alpha'; 'Beta'}, 20, 1);
- group2 = repmat ([2022; 2022; 2023; 2023], 10, 1);
- ## Pass them together as a cell array
- boxplot (data, {group1, group2});
- title ("Example of Multiple Grouping Variables (Model & Year)");
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/boxplot_601.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

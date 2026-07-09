@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>x</var> = <b>gevinv</b> (<var>p</var>, <var>k</var>, <var>sigma</var>, <var>mu</var>)</code></h5></dt>
 </dl>
-
 <p> Inverse of the generalized extreme value (GEV) cumulative distribution
  function (iCDF).
 </p>
@@ -843,53 +845,40 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/gevinv.m">gevinv</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various iCDFs from the generalized extreme value distribution
- p = 0.001:0.001:0.999;
+          </div>
+          <div class="card-body">
+                <p>Plot various iCDFs from the generalized extreme value distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
  x1 = gevinv (p, 1, 1, 1);
  x2 = gevinv (p, 0.5, 1, 1);
  x3 = gevinv (p, 1, 1, 5);
  x4 = gevinv (p, 1, 2, 5);
  x5 = gevinv (p, 1, 5, 5);
  x6 = gevinv (p, 1, 0.5, 5);
- plot (p, x1, "-b", p, x2, "-g", p, x3, "-r", ...
-       p, x4, "-c", p, x5, "-m", p, x6, "-k")
+ plot (p, x1, '-b', p, x2, '-g', p, x3, '-r', ...
+       p, x4, '-c', p, x5, '-m', p, x6, '-k')
  grid on
  ylim ([-1, 10])
- legend ({"k = 1, σ = 1, μ = 1", "k = 0.5, σ = 1, μ = 1", ...
-          "k = 1, σ = 1, μ = 5", "k = 1, σ = 2, μ = 5", ...
-          "k = 1, σ = 5, μ = 5", "k = 1, σ = 0.5, μ = 5"}, ...
-         "location", "northwest")
- title ("Generalized extreme value iCDF")
- xlabel ("probability")
- ylabel ("values in x")
+ legend ({'k = 1, σ = 1, μ = 1', 'k = 0.5, σ = 1, μ = 1', ...
+          'k = 1, σ = 1, μ = 5', 'k = 1, σ = 2, μ = 5', ...
+          'k = 1, σ = 5, μ = 5', 'k = 1, σ = 0.5, μ = 5'}, ...
+         'location', 'northwest')
+ title ('Generalized extreme value iCDF')
+ xlabel ('probability')
+ ylabel ('values in x')</pre>
+                <div class="text-center">
+                  <img src="assets/gevinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/gevinv_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

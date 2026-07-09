@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>gumbellike</b> (<var>params</var>, <var>x</var>, <var>censor</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>gumbellike</b> (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
 </dl>
-
 <p> Negative log-likelihood for the extreme value distribution.
 </p>
 <div class="ms-5">
@@ -827,7 +829,8 @@
  observed exactly.  By default, or if left empty,
  <code><var>censor</var> = zeros (size (<var>x</var>))</code>.
 </p>
-<p> <code>[&hellip;] = gumbellike (<var>params</var>, <var>x</var>, <var>censor</var>, <var>freq</var>)</code>
+<p> <code>[&hellip;] = gumbellike (<var>params</var>, <var>x</var>, <var>censor</var>,
+ <var>freq</var>)</code>
  accepts a frequency vector, <var>freq</var>, of the same size as <var>x</var>.
  <var>freq</var> typically contains integer frequencies for the corresponding
  elements in <var>x</var>, but it can contain any non-integer non-negative values.

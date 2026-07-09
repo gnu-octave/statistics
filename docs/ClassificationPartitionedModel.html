@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ClassificationPartitionedModel</h5></code></dl>
-
 <p> Cross-validated classification model
 </p>
 <div class="ms-5">
@@ -820,9 +822,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationPartitionedModel.m">ClassificationPartitionedModel</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>ClassificationPartitionedModel</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -843,12 +843,10 @@ Bin edges
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array specifying the bin edges for binned predictors.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -874,12 +872,10 @@ Indices of categorical predictors
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A vector of positive integers specifying the indices of categorical
  predictors.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -905,13 +901,11 @@ Predictor data
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric matrix containing the unstandardized predictor data.  Each
  column of <var>X</var> represents one predictor (variable), and each row
  represents one observation.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -937,14 +931,12 @@ Class labels
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a logical or numeric column vector, or as a character array
  or a cell array of character vectors with the same number of rows as the
  predictor data.  Each row in <var>Y</var> is the observed class label for
  the corresponding row in <var>X</var>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -970,19 +962,17 @@ Names of classes in the response variable
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
  same data types as the data in <var>Y</var>.  This property is read-only.
  <code>ClassNames</code> can have any of the following datatypes:
 </p>
- <ul>
+<ul>
 <li> Cell array of character vectors
- </li><li> Character array
- </li><li> Logical vector
- </li><li> Numeric vector
- </li></ul>
-
+</li><li> Character array
+</li><li> Logical vector
+</li><li> Numeric vector
+</li></ul>
 
 
 
@@ -1009,7 +999,6 @@ Cost of Misclassification
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A square matrix specifying the cost of misclassification of a point.
  <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
@@ -1022,7 +1011,6 @@ Cost of Misclassification
  <code>Cost(i,j) = 0</code> if <code>i = j</code>.  In other words, the cost is 0
  for correct classification and 1 for incorrect classification.
 </p>
-
 
 
             </div>
@@ -1048,13 +1036,11 @@ Cross-validated model class
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the class of the cross-validated model.
  This field contains the type of model that was used for the training,
- e.g., <code>&quot;ClassificationKNN&quot;</code>.  This property is read-only.
+ e.g., <code>'ClassificationKNN'</code>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1080,12 +1066,10 @@ Number of cross-validated folds
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of cross-validated folds.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1111,13 +1095,11 @@ Model parameters
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A structure containing the model parameters used during training.
  This includes any model-specific parameters that were configured prior
  to training.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1143,13 +1125,11 @@ Number of observations
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of observations in the
  training dataset used for training the cross-validated model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1175,14 +1155,12 @@ Partition configuration
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <code>cvpartition</code> object specifying the partition configuration used
  for cross-validation.  This field stores the cvpartition instance that
  describes how the data was split into training and validation sets.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1208,13 +1186,11 @@ Names of predictor variables
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
  variables.  The names are in the order in which they appear in the
  training dataset.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1240,13 +1216,11 @@ Prior probability for each class
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector specifying the prior probabilities for each class.  The
  order of the elements in <code>Prior</code> corresponds to the order of the
  classes in <code>ClassNames</code>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1272,12 +1246,10 @@ Response variable name
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1303,12 +1275,10 @@ Transformation function for classification scores
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a function handle for transforming the classification
  scores.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1334,12 +1304,10 @@ Standardize predictors flag
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether to standardize the predictors.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1365,7 +1333,6 @@ Models trained on each fold
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of models trained on each fold.  Each cell contains a model
  trained on the minus-one fold of the data (all but one fold used for
@@ -1374,14 +1341,11 @@ Models trained on each fold
 </p>
 
 
-
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>ClassificationPartitionedModel</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1395,8 +1359,8 @@ Models trained on each fold
                   </h4>
                 </div>
                 <div class="col-8">
-Create a <code>ClassificationPartitionedModel</code> class object for cross-validation
- of classification models.
+Create a <code>ClassificationPartitionedModel</code> class object for
+ cross-validation of classification models.
                 </div>
               </div>
           </div>
@@ -1405,12 +1369,12 @@ Create a <code>ClassificationPartitionedModel</code> class object for cross-vali
 <dl>
 <dt><code><h5 class="fs">ClassificationPartitionedModel: <var>this</var> = <b>ClassificationPartitionedModel</b> (<var>Mdl</var>, <var>Partition</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>this</var> = ClassificationPartitionedModel (<var>Mdl</var>,
  <var>Partition</var>)</code> returns a ClassificationPartitionedModel object, with
  <var>Mdl</var> as the trained classification model object and
- <var>Partition</var> as the partitioning object obtained using <code>cvpartition</code>
+ <var>Partition</var> as the partitioning object obtained using
+ <code>cvpartition</code>
  function.
 </p>
 <p> <strong>See also: </strong>
@@ -1445,7 +1409,6 @@ Predict responses for observations not used for training in a
 <dt><code><h5 class="fs">ClassificationPartitionedModel: <var>label</var> = <b>kfoldPredict</b> (<var>this</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationPartitionedModel: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>kfoldPredict</b> (<var>this</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>[label, Score, Cost]</var> = kfoldPredict (<var>this</var>)</code>
  returns the predicted class labels, classification scores, and
@@ -1456,7 +1419,7 @@ Predict responses for observations not used for training in a
  The function predicts the response for each observation that was
  held out during training in the cross-validation process.
 </p>
- <table>
+<table>
 <thead><tr><th width="28%"><var>Output</var></th><th width="2%"></th><th width="70%"><var>Description</var></th></tr></thead>
 <tr><td width="28%"><code>label</code></td><td width="2%"></td><td width="70%">Predicted class labels, returned as a
  vector or cell array. The type of <var>label</var> matches the type of
@@ -1506,26 +1469,16 @@ demo&nbsp;ClassificationPartitionedModel&nbsp;1
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
- y = species;
-
- ## Create a KNN classifier model
- obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-
- ## Create a partition for 5-fold cross-validation
- partition = cvpartition (y, "KFold", 5);
-
- ## Create the ClassificationPartitionedModel object
- cvModel = crossval (obj, 'cvPartition', partition)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-cvModel =
+ y = species;</pre>
+                <p>Create a KNN classifier model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);</pre>
+                <p>Create a partition for 5-fold cross-validation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> partition = cvpartition (y, 'KFold', 5);</pre>
+                <p>Create the ClassificationPartitionedModel object</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cvModel = crossval (obj, 'cvPartition', partition)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">cvModel =
 
   1x1 ClassificationPartitionedModel object with properties:
 
@@ -1542,12 +1495,10 @@ cvModel =
                   Partition: [1x1 cvpartition]
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
-               ResponseName: "Y"
+               ResponseName: 'Y'
              ScoreTransform: [1x1 function_handle]
                 Standardize: 1
-                    Trained: [5x1 cell]
-</pre></td></tr>
-                  </table>
+                    Trained: [5x1 cell]</pre>
 
             </div>
           </div>
@@ -1569,30 +1520,19 @@ demo&nbsp;ClassificationPartitionedModel&nbsp;2
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
- y = species;
-
- ## Create a KNN classifier model
- obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-
- ## Create the ClassificationPartitionedModel object
- cvModel = crossval (obj);
-
- ## Predict the class labels for the observations not used for training
- [label, score, cost] = kfoldPredict (cvModel);
+ y = species;</pre>
+                <p>Create a KNN classifier model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);</pre>
+                <p>Create the ClassificationPartitionedModel object</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cvModel = crossval (obj);</pre>
+                <p>Predict the class labels for the observations not used for training</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [label, score, cost] = kfoldPredict (cvModel);
  fprintf ("Cross-validated accuracy = %1.2f%% (%d/%d)\n", ...
           sum (strcmp (label, y)) / numel (y) *100, ...
-          sum (strcmp (label, y)), numel (y))</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-Cross-validated accuracy = 96.67% (145/150)</pre></td></tr>
-                  </table>
+          sum (strcmp (label, y)), numel (y))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Cross-validated accuracy = 96.67% (145/150)</pre>
 
             </div>
           </div>

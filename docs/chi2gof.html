@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>h</var>, <var>stats</var>] = <b>chi2gof</b> (<var>x</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>chi2gof</b> (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Chi-square goodness-of-fit test.
 </p>
 <div class="ms-5">
@@ -831,11 +833,12 @@
  the null hypothesis (that <var>x</var> is a random sample from a normal
  distribution) cannot be rejected at the 5% significance level, or <var>h</var> = 1
  if the null hypothesis can be rejected at the 5% level.  <code>chi2gof</code> uses
- by default 10 bins (<code>&quot;nbins&quot;</code>), and compares the test statistic to a
+ by default 10 bins (<code>'nbins'</code>), and compares the test statistic to a
  chi-square distribution with <code><var>nbins</var> - 3</code> degrees of freedom, to
  take into account that two parameters were estimated.
 </p>
-<p> <code>[<var>h</var>, <var>p</var>] = chi2gof (<var>x</var>)</code> also returns the p-value <var>p</var>,
+<p> <code>[<var>h</var>, <var>p</var>] = chi2gof (<var>x</var>)</code> also returns the p-value
+ <var>p</var>,
  which is the probability of observing the given result, or one more extreme,
  by chance if the null hypothesis is true.  If there are not enough degrees of
  freedom to carry out the test, <var>p</var> is NaN.
@@ -843,7 +846,7 @@
 <p> <code>[<var>h</var>, <var>p</var>, <var>stats</var>] = chi2gof (<var>x</var>)</code> also returns a
  <var>stats</var> structure with the following fields:
 </p>
- <table>
+<table>
 <tr><td width="5%"></td><td width="30%">&quot;chi2stat&quot;</td><td width="65%">Chi-square statistic</td></tr>
 <tr><td width="5%"></td><td width="30%">&quot;df&quot;</td><td width="65%">Degrees of freedom</td></tr>
 <tr><td width="5%"></td><td width="30%">&quot;binedges&quot;</td><td width="65%">Vector of bin binedges after pooling</td></tr>
@@ -854,226 +857,182 @@
 <p> <code>[&hellip;] = chi2gof (<var>x</var>, <var>Name</var>, <var>Value</var>, &hellip;)</code>
  specifies optional Name/Value pair arguments chosen from the following list.
 </p>
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;nbins&quot;</code></td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;binctrs&quot;</code></td><td width="75%">A vector of bin centers.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;binedges&quot;</code></td><td width="75%">A vector of bin binedges.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cdf&quot;</code></td><td width="75%">A fully specified cumulative distribution
+<tr><td width="5%"></td><td width="20%"><code>'nbins'</code></td><td width="75%">The number of bins to use.  Default is 10.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'binctrs'</code></td><td width="75%">A vector of bin centers.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'binedges'</code></td><td width="75%">A vector of bin binedges.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'cdf'</code></td><td width="75%">A fully specified cumulative distribution
  function or a function handle provided in a cell array whose first element is
  a function handle, and all later elements are its parameter values.  The
  function must take <var>x</var> values as its first argument, and other parameters
  as later arguments.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;expected&quot;</code></td><td width="75%">A vector with one element per bin
+<tr><td width="5%"></td><td width="20%"><code>'expected'</code></td><td width="75%">A vector with one element per bin
  specifying the expected counts for each bin.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;nparams&quot;</code></td><td width="75%">The number of estimated parameters; used to
+<tr><td width="5%"></td><td width="20%"><code>'nparams'</code></td><td width="75%">The number of estimated parameters; used to
  adjust the degrees of freedom to be <code><var>nbins</var> - 1 - <var>nparams</var></code>,
  where <var>nbins</var> is the number of bins.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;emin&quot;</code></td><td width="75%">The minimum allowed expected value for a bin;
+<tr><td width="5%"></td><td width="20%"><code>'emin'</code></td><td width="75%">The minimum allowed expected value for a bin;
  any bin in either tail having an expected value less than this amount is
  pooled with a neighboring bin.  Use the value 0 to prevent pooling.  Default
  is 5.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;frequency&quot;</code></td><td width="75%">A vector of the same length as <var>x</var>
+<tr><td width="5%"></td><td width="20%"><code>'frequency'</code></td><td width="75%">A vector of the same length as <var>x</var>
  containing the frequency of the corresponding <var>x</var> values.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;alpha&quot;</code></td><td width="75%">An <var>alpha</var> value such that the hypothesis
+<tr><td width="5%"></td><td width="20%"><code>'alpha'</code></td><td width="75%">An <var>alpha</var> value such that the hypothesis
  is rejected if <code><var>p</var> &lt; <var>alpha</var></code>.  Default is
  <code><var>alpha</var> = 0.05</code>.</td></tr>
 </table>
 
-<p> You should specify either <code>&quot;cdf&quot;</code> or <code>&quot;expected&quot;</code> parameters, but
- not both.  If your <code>&quot;cdf&quot;</code> input contains extra parameters, these are
- accounted for automatically and there is no need to specify <code>&quot;nparams&quot;</code>.
- If your <code>&quot;expected&quot;</code> input depends on estimated parameters, you should
- use the <code>&quot;nparams&quot;</code> parameter to ensure that the degrees of freedom for
- the test is correct.
+<p> You should specify either <code>'cdf'</code> or <code>'expected'</code> parameters, but
+ not both. If your <code>'cdf'</code> input contains extra parameters, these are
+ accounted for automatically and there is no need to specify
+ <code>'nparams'</code>. If your <code>'expected'</code> input depends on estimated
+ parameters, you should use the <code>'nparams'</code> parameter to ensure that the
+ degrees of freedom for the test is correct.
 </p>
-
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/chi2gof.m">chi2gof</a>
 </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = normrnd (50, 5, 100, 1);
- [h, p, stats] = chi2gof (x)
- [h, p, stats] = chi2gof (x, "cdf", @(x)normcdf (x, mean(x), std(x)))
- [h, p, stats] = chi2gof (x, "cdf", {@normcdf, mean(x), std(x)})
-
-h = 0
-p = 0.5464
-stats =
-
-  scalar structure containing the fields:
-
-    chi2stat = 4.0212
-    df = 5
-    edges =
-
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
-
-    O =
-
-        9    7    9   22   17   14   10   12
-
-    E =
-
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544
-
-
-h = 0
-p = 0.5464
-stats =
-
-  scalar structure containing the fields:
-
-    chi2stat = 4.0212
-    df = 5
-    edges =
-
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
-
-    O =
-
-        9    7    9   22   17   14   10   12
-
-    E =
-
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544
-
-
-h = 0
-p = 0.5464
-stats =
-
-  scalar structure containing the fields:
-
-    chi2stat = 4.0212
-    df = 5
-    edges =
-
-       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
-
-    O =
-
-        9    7    9   22   17   14   10   12
-
-    E =
-
-        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544
-
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = normrnd (50, 5, 100, 1);
+ [h, p, stats] = chi2gof (x)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
+p = 0.5464
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 4.0212
+    df = 5
+    edges =
+
+       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+
+    O =
+
+        9    7    9   22   17   14   10   12
+
+    E =
+
+        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h, p, stats] = chi2gof (x, 'cdf', @(x)normcdf (x, mean (x), std (x)))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
+p = 0.5464
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 4.0212
+    df = 5
+    edges =
+
+       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+
+    O =
+
+        9    7    9   22   17   14   10   12
+
+    E =
+
+        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h, p, stats] = chi2gof (x, 'cdf', {@normcdf, mean(x), std(x)})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
+p = 0.5464
+stats =
+
+  scalar structure containing the fields:
+
+    chi2stat = 4.0212
+    df = 5
+    edges =
+
+       38.399   42.726   44.890   47.053   49.217   51.380   53.544   55.708   60.035
+
+    O =
+
+        9    7    9   22   17   14   10   12
+
+    E =
+
+        6.8588    8.2228   13.0313   16.8721   17.8471   15.4236   10.8899   10.8544</pre>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = rand (100,1 );
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = rand (100,1 );
  n = length (x);
  binedges = linspace (0, 1, 11);
  expectedCounts = n * diff (binedges);
- [h, p, stats] = chi2gof (x, "binedges", binedges, "expected", expectedCounts)
-
-h = 0
-p = 0.9835
+ [h, p, stats] = chi2gof (x, 'binedges', binedges, 'expected', expectedCounts)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
+p = 0.6371
 stats =
 
   scalar structure containing the fields:
 
-    chi2stat = 2.4000
+    chi2stat = 7.0000
     df = 9
     edges =
 
-     Columns 1 through 8:
+     Columns 1 through 10:
 
-       4.2756e-03   1.0230e-01   2.0032e-01   2.9835e-01   3.9637e-01   4.9439e-01   5.9242e-01   6.9044e-01
+       4.2756e-03   1.0197e-01   1.9967e-01   2.9737e-01   3.9507e-01   4.9277e-01   5.9047e-01   6.8817e-01   7.8587e-01   8.8356e-01
 
-     Columns 9 through 11:
+     Column 11:
 
-       7.8847e-01   8.8649e-01   9.8451e-01
+       9.8126e-01
 
     O =
 
-       10    9   12    9    8   10   11    8   10   13
+       11    9   11    6    7   16    8   10   11   11
 
     E =
 
-       10   10   10   10   10   10   10   10   10   10
+       10   10   10   10   10   10   10   10   10   10</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- bins = 0:5;
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> bins = 0:5;
  obsCounts = [6 16 10 12 4 2];
- n = sum(obsCounts);
- lambdaHat = sum(bins.*obsCounts) / n;
- expCounts = n * poisspdf(bins,lambdaHat);
- [h, p, stats] = chi2gof (bins, "binctrs", bins, "frequency", obsCounts, ...
-                          "expected", expCounts, "nparams",1)
-
-h = 0
+ n = sum (obsCounts);
+ lambdaHat = sum (bins.*obsCounts) / n;
+ expCounts = n * poisspdf (bins,lambdaHat);
+ [h, p, stats] = chi2gof (bins, 'binctrs', bins, 'frequency', obsCounts, ...
+                          'expected', expCounts, 'nparams',1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
 p = 0.4654
 stats =
 
@@ -1091,15 +1050,8 @@ stats =
 
     E =
 
-        7.0429   13.8041   13.5280    8.8383    6.0284
+        7.0429   13.8041   13.5280    8.8383    6.0284</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: [<var>yhat</var>, <var>y_lo</var>, <var>y_hi</var>] = <b>glmval</b> (<var>b</var>, <var>X</var>, <var>link</var>, <var>stats</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>glmval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
-
 <p> Predict values for a generalized linear model.
 </p>
 <div class="ms-5">
@@ -814,7 +816,7 @@
  coefficient estimates <var>b</var>, a matrix of predictors <var>X</var>, in which each
  column corresponds to a distinct predictor variable, and a link function
  <var>link</var>, which can be any of the character vectors, numeric scalar, or
- custom-defined link functions used as values for the <code>&quot;link&quot;</code>
+ custom-defined link functions used as values for the <code>'link'</code>
  name-value pair argument in the <code>glmfit</code> function.
 </p>
 <p> <code>[<var>yhat</var>, <var>y_lo</var>, <var>y_hi</var>] = glmval (<var>b</var>, <var>X</var>,
@@ -827,17 +829,17 @@
 <p> <code>[&hellip;] = glmval (&hellip;, <var>Name</var>, <var>Value</var>)</code> specifies
  additional options using <code>Name-Value</code> pair arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;confidence&quot;</code></td><td width="2%"></td><td width="80%">A scalar value between 0 and 1
+<tr><td width="18%"><code>'confidence'</code></td><td width="2%"></td><td width="80%">A scalar value between 0 and 1
  specifying the confidence level for the confidence bounds.</td></tr>
-<tr><td width="18%"><code>&quot;Constant&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
+<tr><td width="18%"><code>'Constant'</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
  include a constant term in the model.  Valid options are <var>&quot;on&quot;</var> (default)
  and <var>&quot;off&quot;</var>.</td></tr>
-<tr><td width="18%"><code>&quot;simultaneous&quot;</code></td><td width="2%"></td><td width="80%">Specifies whether to
+<tr><td width="18%"><code>'simultaneous'</code></td><td width="2%"></td><td width="80%">Specifies whether to
  include a constant term in the model. Options are
  <var>&quot;on&quot;</var> (default) or <var>&quot;off&quot;</var>.</td></tr>
-<tr><td width="18%"><code>&quot;size&quot;</code></td><td width="2%"></td><td width="80%">A numeric scalar or a vector with one value
+<tr><td width="18%"><code>'size'</code></td><td width="2%"></td><td width="80%">A numeric scalar or a vector with one value
  for each row of <var>X</var> specifying the size parameter <math>N</math> for a binomial
  model.</td></tr>
 </table>
@@ -848,40 +850,27 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/glmval.m">glmval</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = [210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430]';
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430]';
  n = [48, 42, 31, 34, 31, 21, 23, 23, 21, 16, 17, 21]';
  y = [1, 2, 0, 3, 8, 8, 14, 17, 19, 15, 17, 21]';
- b = glmfit (x, [y n], "binomial", "Link", "probit");
- yfit = glmval (b, x, "probit", "Size", n);
- plot (x, y./n, 'o', x, yfit ./ n, '-')
+ b = glmfit (x, [y n], 'binomial', 'Link', 'probit');
+ yfit = glmval (b, x, 'probit', 'Size', n);
+ plot (x, y./n, 'o', x, yfit ./ n, '-')</pre>
+                <div class="text-center">
+                  <img src="assets/glmval_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/glmval_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

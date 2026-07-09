@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,7 +810,6 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;pseudotransitions&quot;</code>, <var>pseudotransitions</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>hmmestimate</b> (&hellip;, <code>&quot;pseudoemissions&quot;</code>, <var>pseudoemissions</var>)</code></h5></dt>
 </dl>
-
 <p> Estimation of a hidden Markov model for a given sequence.
 </p>
 <div class="ms-5">
@@ -817,35 +819,33 @@
  state <code>1</code> at step <code>0</code> but does not include step <code>0</code> in the
  generated states and sequence.
 </p>
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>sequence</var> is a vector of a sequence of given outputs. The outputs
  must be integers ranging from <code>1</code> to the number of outputs of the
  hidden Markov model.
-
- </li><li>
+</li><li>
  <var>states</var> is a vector of the same length as <var>sequence</var> of given
  states. The states must be integers ranging from <code>1</code> to the number
  of states of the hidden Markov model.
- </li></ul>
+</li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>transprobest</var> is the matrix of the estimated transition
  probabilities of the states. <code>transprobest(i, j)</code> is the estimated
  probability of a transition to state <code>j</code> given state <code>i</code>.
-
- </li><li>
+</li><li>
  <var>outprobest</var> is the matrix of the estimated output probabilities.
  <code>outprobest(i, j)</code> is the estimated probability of generating
  output <code>j</code> given state <code>i</code>.
- </li></ul>
+</li></ul>
 
 <p> If <code>'symbols'</code> is specified, then <var>sequence</var> is expected to be a
  sequence of the elements of <var>symbols</var> instead of integers.
@@ -871,15 +871,15 @@
  will have the same size as <var>pseudoemissions</var>. Use this if you have
  outputs or states that are very unlikely to occur.
 </p>
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> transprob = [0.8, 0.2; 0.4, 0.6];
+<table><tr><td>&nbsp;</td><td><pre class="example"> transprob = [0.8, 0.2; 0.4, 0.6];
  outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
  [sequence, states] = hmmgenerate (25, transprob, outprob);
  [transprobest, outprobest] = hmmestimate (sequence, states)
- </pre><pre class="example">
- </pre><pre class="example"> symbols = {&quot;A&quot;, &quot;B&quot;, &quot;C&quot;};
+
+ symbols = {&quot;A&quot;, &quot;B&quot;, &quot;C&quot;};
  statenames = {&quot;One&quot;, &quot;Two&quot;};
  [sequence, states] = hmmgenerate (25, transprob, outprob, ...
                                    &quot;symbols&quot;, symbols, ...
@@ -887,34 +887,32 @@
  [transprobest, outprobest] = hmmestimate (sequence, states, ...
                                    &quot;symbols', symbols, ...
                                    &quot;statenames', statenames)
- </pre><pre class="example">
- </pre><pre class="example"> pseudotransitions = [8, 2; 4, 6];
+
+ pseudotransitions = [8, 2; 4, 6];
  pseudoemissions = [2, 4, 4; 7, 2, 1];
  [sequence, states] = hmmgenerate (25, transprob, outprob);
  [transprobest, outprobest] = hmmestimate (sequence, states, ...
                               &quot;pseudotransitions&quot;, pseudotransitions, ...
                               &quot;pseudoemissions&quot;, pseudoemissions)
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
  Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC,
  2001.
-
- </li><li>
+</li><li>
  Lawrence R. Rabiner. A Tutorial on Hidden Markov Models and Selected
  Applications in Speech Recognition. <cite>Proceedings of the IEEE</cite>,
  77(2), pages 257-286, February 1989.
- </li></ol>
+</li></ol>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/hmmestimate.m">hmmestimate</a>
 </div>
-
 
             </div>
           </div>

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,72 +804,52 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fcnntrain</b> (<var>X</var>, <var>Y</var>, @ <var>LayerSizes</var>, <var>Activations</var>, <var>NumThreads</var>, <var>Alpha</var>, @ <var>LearningRate</var>, <var>Epochs</var>, <var>DisplayInfo</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fcnntrain</b> (<var>X</var>, <var>Y</var>,  <var>LayerSizes</var>, <var>Activations</var>, <var>NumThreads</var>, <var>Alpha</var>,  <var>LearningRate</var>, <var>Epochs</var>, <var>DisplayInfo</var>)</code></h5></dt>
 </dl>
-
-
 <p>Train a fully connected Neural Network. 
 </p>
 <div class="ms-5">
-
 <p><code><var>Mdl</var> = fcnntrain (&hellip;)</code> requires the following input arguments.
 </p>
 <ul>
-<li> <var>X</var> : An <math>N&times;M</math> matrix containing the data set to be trained upon.  Rows <math>N</math> correspond to individual samples and columns <math>M</math> correspond to features (dimensions).  Type of <var>X</var> must be double. 
-
-</li><li> <var>Y</var> : An <math>N&times;1</math> column vector containing the labels of the training dataset.  The labels must be natural numbers (positive integers) starting from 1 up to the number of classes, similarly as returned by the &lsquo;grp2idx&lsquo; function. Type of <var>Y</var> must be double. 
-
-</li><li> <var>LayerSizes</var> : A numeric row vector of integer values defining the size of the hidden layers of the network.  Input and output layers are automatically determined by the training data and their labels. 
-
-</li><li> <var>Activations</var> : A numeric row vector of integer values defining the activation functions to be used at each layer including the output layer.  The corresponding codes to activation functions is: 
+<li> <var>X</var> : An <math>N&times;M</math> matrix containing the data set to be trained upon.  Rows <math>N</math> correspond to individual samples and columns <math>M</math> correspond to features (dimensions).  Type of <var>X</var> must be double.
+</li><li> <var>Y</var> : An <math>N&times;1</math> column vector containing the labels of the training dataset.  The labels must be natural numbers (positive integers) starting from 1 up to the number of classes, similarly as returned by the &lsquo;grp2idx&lsquo; function. Type of <var>Y</var> must be double.
+</li><li> <var>LayerSizes</var> : A numeric row vector of integer values defining the size of the hidden layers of the network.  Input and output layers are automatically determined by the training data and their labels.
+</li><li> <var>Activations</var> : A numeric row vector of integer values defining the activation functions to be used at each layer including the output layer.  The corresponding codes to activation functions is:
 <ul>
-<li> <code>0</code> : <code>'Linear'</code> 
-</li><li> <code>1</code> : <code>'Sigmoid'</code> 
-</li><li> <code>2</code> : <code>'Rectified Linear Unit (ReLU)'</code> 
-</li><li> <code>3</code> : <code>'Hyperbolic tangent (tanh)'</code> 
-</li><li> <code>4</code> : <code>'Softmax'</code> 
-</li><li> <code>5</code> : <code>'Parametric or Leaky ReLU'</code> 
-</li><li> <code>6</code> : <code>'Exponential Linear Unit (ELU)'</code> 
-</li><li> <code>7</code> : <code>'Gaussian Error Linear Unit (GELU)'</code> 
+<li> <code>0</code> : <code>'Linear'</code>
+</li><li> <code>1</code> : <code>'Sigmoid'</code>
+</li><li> <code>2</code> : <code>'Rectified Linear Unit (ReLU)'</code>
+</li><li> <code>3</code> : <code>'Hyperbolic tangent (tanh)'</code>
+</li><li> <code>4</code> : <code>'Softmax'</code>
+</li><li> <code>5</code> : <code>'Parametric or Leaky ReLU'</code>
+</li><li> <code>6</code> : <code>'Exponential Linear Unit (ELU)'</code>
+</li><li> <code>7</code> : <code>'Gaussian Error Linear Unit (GELU)'</code>
 </li></ul>
 
 
-
-</li><li> <var>NumThreads</var> : A positive scalar integer value defining the number of threads used for computing the activation layers.  For layers with less than 1000 neurons, <var>NumThreads</var> always defaults to 1. 
-
-</li><li> <var>Alpha</var> : A positive scalar value defining the parameter <code>alpha</code> used in <code>ReLU</code> and <code>ELU</code> activation layers. 
-
-</li><li> <var>LearningRate</var> : A positive scalar value defining the learning rate used by the gradient descend algorithm during training. 
-
-</li><li> <var>Epochs</var> : A positive scalar value defining the number of epochs for training the model. 
-
-</li><li> <var>DisplayInfo</var> : A boolean scalar indicating whether to print information during training. 
+</li><li> <var>NumThreads</var> : A positive scalar integer value defining the number of threads used for computing the activation layers.  For layers with less than 1000 neurons, <var>NumThreads</var> always defaults to 1.
+</li><li> <var>Alpha</var> : A positive scalar value defining the parameter <code>alpha</code> used in <code>ReLU</code> and <code>ELU</code> activation layers.
+</li><li> <var>LearningRate</var> : A positive scalar value defining the learning rate used by the gradient descend algorithm during training.
+</li><li> <var>Epochs</var> : A positive scalar value defining the number of epochs for training the model.
+</li><li> <var>DisplayInfo</var> : A boolean scalar indicating whether to print information during training.
 </li></ul>
-
-
 
 <p><code>fcnntrain</code> returns the trained model, <var>Mdl</var>, as a structure containing the following fields: 
 </p>
 <ul>
 <li> <code>LayerWeights</code> : A cell array with each element containing a matrix with the Weights and Biases of each layer including the output layer.
-
-
-</li><li> <code>Activations</code> : A numeric row vector of integer values defining the activation functions to be used at each layer including the output layer. 
-
-</li><li> <code>Accuracy</code> : The prediction accuracy at each iteration during the neural network model&rsquo;s training process. 
-
-</li><li> <code>Loss</code> : The loss value recorded at each iteration during the neural network model&rsquo;s training process. 
-
-</li><li> <code>Alpha</code> : The value of the Alpha parameter used in <code>ReLU</code> and <code>ELU</code> activation layers. 
-
+</li><li> <code>Activations</code> : A numeric row vector of integer values defining the activation functions to be used at each layer including the output layer.
+</li><li> <code>Accuracy</code> : The prediction accuracy at each iteration during the neural network model&rsquo;s training process.
+</li><li> <code>Loss</code> : The loss value recorded at each iteration during the neural network model&rsquo;s training process.
+</li><li> <code>Alpha</code> : The value of the Alpha parameter used in <code>ReLU</code> and <code>ELU</code> activation layers.
 </li></ul>
-
 
 <p>Installation Note: in order to support parallel processing on MacOS, users have to manually add support for OpenMP by adding the following flags to <code>CFLAGS</code> and <code>CXXFLAGS</code> prior to installing the statistics package:
 </p>
 <p><code>setenv (&quot;CPPFLAGS&quot;, &quot;-I/opt/homebrew/opt/libomp/include -Xclang -fopenmp&quot;)</code> 
 </p>
-<p><strong>See also: </strong>
+<p> <strong>See also: </strong>
   <a href="fcnnpredict.html">fcnnpredict</a>, 
   <a href="fitcnet.html">fitcnet</a>, 
   <a href="ClassificationNeuralNetwork.html">ClassificationNeuralNetwork</a>

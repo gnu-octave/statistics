@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: KDTreeSearcher</h5></code></dl>
-
 <p> KD-tree nearest neighbor searcher
 </p>
 <div class="ms-5">
@@ -828,9 +830,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/KDTreeSearcher.m">KDTreeSearcher</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>KDTreeSearcher</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -851,13 +851,11 @@ Point data
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Point data, specified as an <math>N&times;P</math> numeric matrix where each row is
  an observation and each column is a feature.  This property is private
  and cannot be modified after object creation.
 </p>
-
 
 
             </div>
@@ -883,13 +881,11 @@ Maximum number of data points in each leaf node
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The maximum number of data points in the leaf node of the KD-tree.
  Default value is 50.  This property is private and cannot be modified
  after object creation.
 </p>
-
 
 
             </div>
@@ -915,14 +911,12 @@ Distance metric
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Distance metric used for searches, specified as a character vector.
- Supported metrics are <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;minkowski&quot;</code>, and <code>&quot;chebychev&quot;</code>.  Default value is
- <code>&quot;euclidean&quot;</code>.
+ Supported metrics are <code>'euclidean'</code>, <code>'cityblock'</code>,
+ <code>'minkowski'</code>, and <code>'chebychev'</code>.  Default value is
+ <code>'euclidean'</code>.
 </p>
-
 
 
             </div>
@@ -948,18 +942,16 @@ Distance parameter
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The type and value of the distance parameter depends on the selected
  <code>Distance</code> metric and can be any of the following:
 </p>
- <ul>
-<li> For <code>&quot;minkowski&quot;</code>, a positive scalar exponent (default 2).
- </li><li> Empty for other metrics (<code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;chebychev&quot;</code>). Attempting to set a non-empty value for these
+<ul>
+<li> For <code>'minkowski'</code>, a positive scalar exponent (default 2).
+</li><li> Empty for other metrics (<code>'euclidean'</code>, <code>'cityblock'</code>,
+ <code>'chebychev'</code>). Attempting to set a non-empty value for these
  metrics will result in an error.
- </li></ul>
-
+</li></ul>
 
 
 
@@ -967,9 +959,7 @@ Distance parameter
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>KDTreeSearcher</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -993,27 +983,26 @@ Create a <code>KDTreeSearcher</code> object for nearest neighbor searches.
 <dt><code><h5 class="fs">KDTreeSearcher: <var>obj</var> = <b>KDTreeSearcher</b> (<var>X</var>)</code></h5></dt>
 <dt><code><h5 class="fs">KDTreeSearcher: <var>obj</var> = <b>KDTreeSearcher</b> (<var>X</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>obj</var> = KDTreeSearcher (<var>X</var>)</code> constructs a
  <code>KDTreeSearcher</code> object with training data <var>X</var> using the
- default <code>&quot;euclidean&quot;</code> distance metric. <var>X</var> must be an
+ default <code>'euclidean'</code> distance metric. <var>X</var> must be an
  <math>N&times;P</math> numeric matrix, where rows represent observations and columns
  represent features.
 </p>
 <p> <code><var>obj</var> = KDTreeSearcher (<var>X</var>, <var>name</var>, <var>value</var>)</code>
  allows customization through name-value pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">Distance metric, specified as a
- character vector (<code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;minkowski&quot;</code>, <code>&quot;chebychev&quot;</code>).  Default is
- <code>&quot;euclidean&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;P&quot;</code></td><td width="2%"></td><td width="80%">Minkowski distance exponent, a positive
- scalar.  Valid only when <code>&quot;Distance&quot;</code> is <code>&quot;minkowski&quot;</code>.
+<tr><td width="18%"><code>'Distance'</code></td><td width="2%"></td><td width="80%">Distance metric, specified as a
+ character vector (<code>'euclidean'</code>, <code>'cityblock'</code>,
+ <code>'minkowski'</code>, <code>'chebychev'</code>).  Default is
+ <code>'euclidean'</code>.</td></tr>
+<tr><td width="18%"><code>'P'</code></td><td width="2%"></td><td width="80%">Minkowski distance exponent, a positive
+ scalar.  Valid only when <code>'Distance'</code> is <code>'minkowski'</code>.
  Default is 2.</td></tr>
-<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">Maximum number of data points in the
+<tr><td width="18%"><code>'BucketSize'</code></td><td width="2%"></td><td width="80%">Maximum number of data points in the
  leaf node of the KD-tree, a positive integer.  Default is 50.</td></tr>
 </table>
 
@@ -1054,33 +1043,32 @@ Find the <math>K</math> nearest neighbors in the training data to query points.
 <dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>obj</var>, <var>Y</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>obj</var>, <var>Y</var>, <var>K</var>)</code>
  returns the indices <var>idx</var> and distances <var>D</var> of the <math>K</math>
  nearest neighbors in <var>obj.X</var> to each point in <var>Y</var>, using the
  distance metric specified in <var>obj.Distance</var>.
 </p>
- <ul>
+<ul>
 <li> <var>obj</var> is a <code>KDTreeSearcher</code> object.
- </li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
+</li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
  <math>P</math> must match the number of columns in <var>obj.X</var>.
- </li><li> <var>idx</var> contains the indices of the nearest neighbors in
+</li><li> <var>idx</var> contains the indices of the nearest neighbors in
  <var>obj.X</var>.
- </li><li> <var>D</var> contains the corresponding distances.
- </li></ul>
+</li><li> <var>D</var> contains the corresponding distances.
+</li></ul>
 
 <p> <code>[<var>idx</var>, <var>D</var>] = knnsearch (<var>obj</var>, <var>Y</var>, <var>name</var>,
  <var>value</var>)</code> allows additional options via name-value pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;K&quot;</code></td><td width="2%"></td><td width="80%">A positive integer specifying the number of
+<tr><td width="18%"><code>'K'</code></td><td width="2%"></td><td width="80%">A positive integer specifying the number of
  nearest neighbors to find. Default is 1.</td></tr>
-<tr><td width="18%"><code>&quot;IncludeTies&quot;</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
+<tr><td width="18%"><code>'IncludeTies'</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
  include all neighbors tied with the <math>K</math>th smallest distance. Default
  is <code>false</code>. If <code>true</code>, <var>idx</var> and <var>D</var> are cell arrays.</td></tr>
-<tr><td width="18%"><code>&quot;SortIndices&quot;</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
+<tr><td width="18%"><code>'SortIndices'</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
  sort the indices by distance. Default is <code>true</code>.</td></tr>
 </table>
 
@@ -1116,26 +1104,27 @@ Find all neighbors within a specified radius of query points.
 <dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>)</code></h5></dt>
 <dt><code><h5 class="fs">KDTreeSearcher: [<var>idx</var>, <var>D</var>] = <b>rangesearch</b> (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>obj</var>, <var>Y</var>, <var>r</var>)</code>
  returns the indices <var>idx</var> and distances <var>D</var> of all points in
  <var>obj.X</var> within radius <var>r</var> of each point in <var>Y</var>, using the
  distance metric specified in <var>obj.Distance</var>.
 </p>
- <ul>
+<ul>
 <li> <var>obj</var> is a <code>KDTreeSearcher</code> object.
- </li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
+</li><li> <var>Y</var> is an <math>M&times;P</math> numeric matrix of query points, where
  <math>P</math> must match the number of columns in <var>obj.X</var>.
- </li><li> <var>r</var> is a nonnegative scalar specifying the search radius.
- </li></ul>
+</li><li> <var>r</var> is a nonnegative scalar specifying the search radius.
+</li></ul>
 
-<p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>obj</var>, <var>Y</var>, <var>r</var>, <var>name</var>, <var>value</var>)</code>
+<p> <code>[<var>idx</var>, <var>D</var>] = rangesearch (<var>obj</var>, <var>Y</var>, <var>r</var>,
+ <var>name</var>,
+ <var>value</var>)</code>
  allows additional options via name-value pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;SortIndices&quot;</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
+<tr><td width="18%"><code>'SortIndices'</code></td><td width="2%"></td><td width="80%">Logical flag indicating whether to
  sort the indices by distance. Default is <code>true</code>.</td></tr>
 </table>
 
@@ -1164,56 +1153,46 @@ Find all neighbors within a specified radius of query points.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Demo to verify implementation using fisheriris dataset
+Demo to verify implementation using fisheriris dataset
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  numSamples = size (meas, 1);
  queryIndices = [1, 23, 46, 63, 109];
- dataIndices = ~ismember (1:numSamples, queryIndices);
+ dataIndices = ! ismember (1:numSamples, queryIndices);
  queryPoints = meas(queryIndices, :);
  dataPoints = meas(dataIndices, :);
  searchRadius = 0.3;
- kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')
- nearestNeighbors = knnsearch (kdTree, queryPoints, "K", 2)
- neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-kdTree =
+ kdTree = KDTreeSearcher (dataPoints, 'Distance', 'minkowski')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">kdTree =
 
   KDTreeSearcher with properties:
 
                BucketSize: 50
                  Distance: 'minkowski'
             DistParameter: 2
-                        X: [145x4 double]
-nearestNeighbors =
+                        X: [145x4 double]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> nearestNeighbors = knnsearch (kdTree, queryPoints, 'K', 2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">nearestNeighbors =
 
     17     4
      6     2
      1    12
     89    66
-   124   100
-
-neighborsInRange =
+   124   100</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> neighborsInRange = rangesearch (kdTree, queryPoints, searchRadius)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">neighborsInRange =
   5x1 cell array
 
     {9x1 double}    
     {0x1 double}    
     {7x1 double}    
     {0x1 double}    
-    {0x1 double}    
-</pre></td></tr>
-                  </table>
+    {0x1 double}</pre>
 
             </div>
           </div>
@@ -1228,50 +1207,40 @@ neighborsInRange =
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a KDTreeSearcher with Euclidean distance
+Create a KDTreeSearcher with Euclidean distance
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 3, 4; 5, 6];
- obj = KDTreeSearcher (X);
- ## Find the nearest neighbor to [2, 3]
- Y = [2, 3];
- [idx, D] = knnsearch (obj, Y, "K", 1);
- disp ("Nearest neighbor index:");
- disp (idx);
- disp ("Distance:");
- disp (D);
- ## Find all points within radius 2
- [idx, D] = rangesearch (obj, Y, 2);
- disp ("Indices within radius:");
- disp (idx);
- disp ("Distances:");
- disp (D);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-Nearest neighbor index:
-1
-Distance:
-1.4142
-Indices within radius:
-  1x1 cell array
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 3, 4; 5, 6];
+ obj = KDTreeSearcher (X);</pre>
+                <p>Find the nearest neighbor to [2, 3]</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Y = [2, 3];
+ [idx, D] = knnsearch (obj, Y, 'K', 1);
+ disp ('Nearest neighbor index:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Nearest neighbor index:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distance:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distance:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">1.4142</pre>
+                <p>Find all points within radius 2</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [idx, D] = rangesearch (obj, Y, 2);
+ disp ('Indices within radius:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices within radius:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  1x1 cell array
 
-    {2x1 double}    
+    {2x1 double}</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  1x1 cell array
 
-Distances:
-  1x1 cell array
-
-    {2x1 double}    
-</pre></td></tr>
-                  </table>
+    {2x1 double}</pre>
 
             </div>
           </div>
@@ -1286,34 +1255,26 @@ Distances:
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a KDTreeSearcher with Minkowski distance (P=3)
+Create a KDTreeSearcher with Minkowski distance (P=3)
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo3">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [0, 0; 1, 0; 2, 0];
- obj = KDTreeSearcher (X, "Distance", "minkowski", "P", 3);
- ## Find the nearest neighbor to [1, 0]
- Y = [1, 0];
- [idx, D] = knnsearch (obj, Y, "K", 1);
- disp ("Nearest neighbor index:");
- disp (idx);
- disp ("Distance:");
- disp (D);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-Nearest neighbor index:
-2
-Distance:
-0</pre></td></tr>
-                  </table>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [0, 0; 1, 0; 2, 0];
+ obj = KDTreeSearcher (X, 'Distance', 'minkowski', 'P', 3);</pre>
+                <p>Find the nearest neighbor to [1, 0]</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Y = [1, 0];
+ [idx, D] = knnsearch (obj, Y, 'K', 1);
+ disp ('Nearest neighbor index:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Nearest neighbor index:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distance:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distance:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">0</pre>
 
             </div>
           </div>
@@ -1335,35 +1296,33 @@ demo&nbsp;KDTreeSearcher&nbsp;4
           </div>
           <div class="collapse multi-collapse" id="collapseDemo4">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- rng(42);
- disp('Demonstrating KDTreeSearcher');
-
- n = 100;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (42);
+ disp ('Demonstrating KDTreeSearcher');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Demonstrating KDTreeSearcher</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> n = 100;
  mu1 = [0.3, 0.3];
  mu2 = [0.7, 0.7];
  sigma = 0.1;
  X1 = mu1 + sigma * randn (n / 2, 2);
  X2 = mu2 + sigma * randn (n / 2, 2);
  X = [X1; X2];
-
- obj = KDTreeSearcher(X);
-
+ obj = KDTreeSearcher (X);
  Y = [0.3, 0.3; 0.7, 0.7; 0.5, 0.5];
-
  K = 5;
- [idx, D] = knnsearch (obj, Y, "K", K);
-
- disp ('For the first query point:');
- disp (['Query point: ', num2str(Y(1,:))]);
- disp ('Indices of nearest neighbors:');
- disp (idx(1,:));
- disp ('Distances:');
- disp (D(1,:));
-
- figure;
+ [idx, D] = knnsearch (obj, Y, 'K', K);
+ disp ('For the first query point:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">For the first query point:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (['Query point: ', num2str(Y(1,:))]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Query point: 0.3         0.3</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of nearest neighbors:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of nearest neighbors:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx(1,:));</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   49   19   14   46   34</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D(1,:));</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   0.029932   0.040026   0.046845   0.051107   0.054789</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure;
  scatter (X(:,1), X(:,2), 36, 'b', 'filled'); # Training points
  hold on;
  scatter (Y(:,1), Y(:,2), 36, 'r', 'filled'); # Query points
@@ -1378,52 +1337,16 @@ demo&nbsp;KDTreeSearcher&nbsp;4
  title ('K Nearest Neighbors with KDTreeSearcher');
  xlabel ('X1');
  ylabel ('X2');
-
  r = 0.15;
  [idx, D] = rangesearch (obj, Y, r);
-
- disp ('For the first query point in rangesearch:');
- disp (['Query point: ', num2str(Y(1,:))]);
- disp ('Indices of points within radius:');
- disp (idx{1});
- disp ('Distances:');
- disp (D{1});
-
- figure;
- scatter (X(:,1), X(:,2), 36, 'b', 'filled');
- hold on;
- scatter (Y(:,1), Y(:,2), 36, 'r', 'filled');
- theta = linspace (0, 2 * pi, 100);
- for i = 1:size (Y, 1)
-     center = Y(i,:);
-     x_circle = center(1) + r * cos (theta);
-     y_circle = center(2) + r * sin (theta);
-     plot (x_circle, y_circle, 'g-');
-     ## Highlight points within radius
-     if (! isempty (idx{i}))
-       in_radius = X(idx{i}, :);
-       scatter (in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
-     endif
- endfor
- hold off
- title ('Points within Radius with KDTreeSearcher');
- xlabel ('X1');
- ylabel ('X2');</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-Demonstrating KDTreeSearcher
-For the first query point:
-Query point: 0.3         0.3
-Indices of nearest neighbors:
-   49   19   14   46   34
-Distances:
-   0.029932   0.040026   0.046845   0.051107   0.054789
-For the first query point in rangesearch:
-Query point: 0.3         0.3
-Indices of points within radius:
-   49
+ disp ('For the first query point in rangesearch:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">For the first query point in rangesearch:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (['Query point: ', num2str(Y(1,:))]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Query point: 0.3         0.3</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Indices of points within radius:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Indices of points within radius:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (idx{1});</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   49
    19
    14
    46
@@ -1456,9 +1379,11 @@ Indices of points within radius:
    47
     9
    29
-    8
-Distances:
-   0.029932
+    8</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp ('Distances:');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Distances:</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> disp (D{1});</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   0.029932
    0.040026
    0.046845
    0.051107
@@ -1491,14 +1416,33 @@ Distances:
    0.130208
    0.136007
    0.142870
-   0.143009</pre></td></tr>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/KDTreeSearcher_402.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-                  <div class="text-center">
-                    <img src="assets/KDTreeSearcher_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+   0.143009</pre>
+                <div class="text-center">
+                  <img src="assets/KDTreeSearcher_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure;
+ scatter (X(:,1), X(:,2), 36, 'b', 'filled');
+ hold on;
+ scatter (Y(:,1), Y(:,2), 36, 'r', 'filled');
+ theta = linspace (0, 2 * pi, 100);
+ for i = 1:size (Y, 1)
+     center = Y(i,:);
+     x_circle = center(1) + r * cos (theta);
+     y_circle = center(2) + r * sin (theta);
+     plot (x_circle, y_circle, 'g-');
+     ## Highlight points within radius
+     if (! isempty (idx{i}))
+       in_radius = X(idx{i}, :);
+       scatter (in_radius(:,1), in_radius(:,2), 36, 'g', 'filled');
+     endif
+ endfor
+ hold off
+ title ('Points within Radius with KDTreeSearcher');
+ xlabel ('X1');
+ ylabel ('X2');</pre>
+                <div class="text-center">
+                  <img src="assets/KDTreeSearcher_402.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
             </div>
           </div>

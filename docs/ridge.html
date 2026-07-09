@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>b</var> = <b>ridge</b> (<var>y</var>, <var>X</var>, <var>k</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>b</var> = <b>ridge</b> (<var>y</var>, <var>X</var>, <var>k</var>, <var>scaled</var>)</code></h5></dt>
 </dl>
-
 <p> Ridge regression.
 </p>
 <div class="ms-5">
@@ -822,18 +824,18 @@
  <code><var>scaled</var> = 1</code>, the coefficient estimates correspond to the scaled
  centered data.
 </p>
- <ul>
+<ul>
 <li>
  <code>y</code> must be an <math>N&times;1</math> numeric vector with the response data.
- </li><li>
+</li><li>
  <code>X</code> must be an <math>N&times;p</math> numeric matrix with the predictor data.
- </li><li>
+</li><li>
  <code>k</code> must be a numeric vector with the ridge parameters.
- </li><li>
+</li><li>
  <code>scaled</code> must be a numeric scalar indicating whether the coefficient
  estimates in <var>b</var> are restored to the scale of the original data.  By
  default, <code><var>scaled</var> = 1</code>.
- </li></ul>
+</li></ul>
 
 <p> Further information about Ridge regression can be found at
  <a href="https://en.wikipedia.org/wiki/Ridge_regression">https://en.wikipedia.org/wiki/Ridge_regression</a>
@@ -846,120 +848,76 @@ lasso,
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/ridge.m">ridge</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Perform ridge regression for a range of ridge parameters and observe
- ## how the coefficient estimates change based on the acetylene dataset.
-
- load acetylene
-
- X = [x1, x2, x3];
-
- x1x2 = x1 .* x2;
- x1x3 = x1 .* x3;
- x2x3 = x2 .* x3;
-
- D = [x1, x2, x3, x1x2, x1x3, x2x3];
-
- k = 0:1e-5:5e-3;
-
- b = ridge (y, D, k);
-
- figure
- plot (k, b, "LineWidth", 2)
- ylim ([-100, 100])
- grid on
- xlabel ("Ridge Parameter")
- ylabel ("Standardized Coefficient")
- title ("Ridge Trace")
- legend ("x1", "x2", "x3", "x1x2", "x1x3", "x2x3")
-
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ridge_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Perform ridge regression for a range of ridge parameters and observe how the coefficient estimates change based on the acetylene dataset.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load acetylene
+ X = [x1, x2, x3];
+ x1x2 = x1 .* x2;
+ x1x3 = x1 .* x3;
+ x2x3 = x2 .* x3;
+ D = [x1, x2, x3, x1x2, x1x3, x2x3];
+ k = 0:1e-5:5e-3;
+ b = ridge (y, D, k);
+ figure
+ plot (k, b, 'LineWidth', 2)
+ ylim ([-100, 100])
+ grid on
+ xlabel ('Ridge Parameter')
+ ylabel ('Standardized Coefficient')
+ title ('Ridge Trace')
+ legend ('x1', 'x2', 'x3', 'x1x2', 'x1x3', 'x2x3')</pre>
+                <div class="text-center">
+                  <img src="assets/ridge_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- load carbig
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carbig
  X = [Acceleration Weight Displacement Horsepower];
  y = MPG;
-
- n = length(y);
-
- rand("seed",1); % For reproducibility
-
- c = cvpartition(n,'HoldOut',0.3);
+ n = length (y);
+ rand ('seed',1); % For reproducibility
+ c = cvpartition (n,'HoldOut',0.3);
  idxTrain = training(c,1);
- idxTest = ~idxTrain;
-
+ idxTest = ! idxTrain;
  idxTrain = training(c,1);
- idxTest = ~idxTrain;
-
+ idxTest = ! idxTrain;
  k = 5;
- b = ridge(y(idxTrain),X(idxTrain,:),k,0);
-
- % Predict MPG values for the test data using the model.
- yhat = b(1) + X(idxTest,:)*b(2:end);
- scatter(y(idxTest),yhat)
-
+ b = ridge (y(idxTrain),X(idxTrain,:),k,0);</pre>
+                <p>Predict MPG values for the test data using the model.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> yhat = b(1) + X(idxTest,:)*b(2:end);
+ scatter (y(idxTest),yhat)
  hold on
- plot(y(idxTest),y(idxTest),"r")
- xlabel('Actual MPG')
- ylabel('Predicted MPG')
- hold off
+ plot (y(idxTest),y(idxTest),'r')
+ xlabel ('Actual MPG')
+ ylabel ('Predicted MPG')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/ridge_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ridge_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

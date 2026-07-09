@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>raylpdf</b> (<var>x</var>, <var>sigma</var>)</code></h5></dt>
 </dl>
-
 <p> Rayleigh probability density function (PDF).
 </p>
 <div class="ms-5">
@@ -826,49 +828,36 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/raylpdf.m">raylpdf</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various PDFs from the Rayleigh distribution
- x = 0:0.01:10;
+          </div>
+          <div class="card-body">
+                <p>Plot various PDFs from the Rayleigh distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:10;
  y1 = raylpdf (x, 0.5);
  y2 = raylpdf (x, 1);
  y3 = raylpdf (x, 2);
  y4 = raylpdf (x, 3);
  y5 = raylpdf (x, 4);
- plot (x, y1, "-b", x, y2, "g", x, y3, "-r", x, y4, "-m", x, y5, "-k")
+ plot (x, y1, '-b', x, y2, 'g', x, y3, '-r', x, y4, '-m', x, y5, '-k')
  grid on
  ylim ([0, 1.25])
- legend ({"σ = 0,5", "σ = 1", "σ = 2", ...
-          "σ = 3", "σ = 4"}, "location", "northeast")
- title ("Rayleigh PDF")
- xlabel ("values in x")
- ylabel ("density")
+ legend ({'σ = 0,5', 'σ = 1', 'σ = 2', ...
+          'σ = 3', 'σ = 4'}, 'location', 'northeast')
+ title ('Rayleigh PDF')
+ xlabel ('values in x')
+ ylabel ('density')</pre>
+                <div class="text-center">
+                  <img src="assets/raylpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/raylpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

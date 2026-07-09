@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,11 +806,10 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>runstest</b> (<var>x</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>runstest</b> (<var>x</var>, <var>v</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>h</var> = <b>runstest</b> (<var>x</var>, <code>&quot;ud&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>h</var> = <b>runstest</b> (<var>x</var>, <code>'ud'</code>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>runstest</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>runstest</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Run test for randomness in the vector <var>x</var>.
 </p>
 <div class="ms-5">
@@ -821,7 +823,7 @@
  on the number of runs of consecutive values above or below the specified
  reference value <var>v</var>.  Values exactly equal to <var>v</var> are omitted.
 </p>
-<p> <code><var>h</var> = runstest (<var>x</var>, <code>&quot;ud&quot;</code>)</code> calculates the number of
+<p> <code><var>h</var> = runstest (<var>x</var>, <code>'ud'</code>)</code> calculates the number of
  runs up or down and tests the null hypothesis that the values in the data
  vector <var>x</var> follow a trend.  Too few runs indicate a trend, while too
  many runs indicate an oscillation.  Values exactly equal to the preceding
@@ -831,22 +833,23 @@
  additional options to the above tests by one or more <var>Name</var>-<var>Value</var>
  pair arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="15%">Name</th><th width="5%"></th><th width="80%">Value</th></tr></thead>
-<tr><td width="15%"><code>&quot;alpha&quot;</code></td><td width="5%"></td><td width="80%">the significance level. Default is 0.05.</td></tr>
-<tr><td width="15%"><code>&quot;method&quot;</code></td><td width="5%"></td><td width="80%">a string specifying the method used to
- compute the p-value of the test.  It can be either <code>&quot;exact&quot;</code> to use an
- exact algorithm, or <code>&quot;approximate&quot;</code> to use a normal approximation.  The
- default is <code>&quot;exact&quot;</code> for runs above/below, and for runs up/down when
+<tr><td width="15%"><code>'alpha'</code></td><td width="5%"></td><td width="80%">the significance level. Default is 0.05.</td></tr>
+<tr><td width="15%"><code>'method'</code></td><td width="5%"></td><td width="80%">a string specifying the method used to
+ compute the p-value of the test.  It can be either <code>'exact'</code> to use an
+ exact algorithm, or <code>'approximate'</code> to use a normal approximation.  The
+ default is <code>'exact'</code> for runs above/below, and for runs up/down when
  the length of x is less than or equal to 50.  When testing for runs up/down
  and the length of <var>x</var> is greater than 50, then the default is
- <code>&quot;approximate&quot;</code>, and the <code>&quot;exact&quot;</code> method is not available.</td></tr>
-<tr><td width="15%"><code>&quot;tail&quot;</code></td><td width="5%"></td><td width="80%">a string specifying the alternative hypothesis</td></tr>
+ <code>'approximate'</code>, and the <code>'exact'</code> method is not available.</td></tr>
+<tr><td width="15%"><code>'tail'</code></td><td width="5%"></td><td width="80%">a string specifying the alternative hypothesis</td></tr>
 </table>
- <table>
-<tr><td width="20%"></td><td width="15%"><code>&quot;both&quot;</code></td><td width="5%"></td><td width="50%">two-tailed (default)</td></tr>
-<tr><td width="20%"></td><td width="15%"><code>&quot;left&quot;</code></td><td width="5%"></td><td width="50%">left-tailed</td></tr>
-<tr><td width="20%"></td><td width="15%"><code>&quot;right&quot;</code></td><td width="5%"></td><td width="50%">right-tailed</td></tr>
+
+<table>
+<tr><td width="20%"></td><td width="15%"><code>'both'</code></td><td width="5%"></td><td width="50%">two-tailed (default)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>'left'</code></td><td width="5%"></td><td width="50%">left-tailed</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>'right'</code></td><td width="5%"></td><td width="50%">right-tailed</td></tr>
 </table>
 
 <p> <strong>See also: </strong>

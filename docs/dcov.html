@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: [<var>dCor</var>, <var>dCov</var>, <var>dVarX</var>, <var>dVarY</var>] = <b>dcov</b> (<var>x</var>, <var>y</var>)</code></h5></dt>
 </dl>
-
 <p> Distance correlation, covariance and correlation statistics.
 </p>
 <div class="ms-5">
@@ -818,7 +820,7 @@
 <p> The Brownian covariance is the same as the distance covariance:
 </p>
 <p> $$ cov_W (X, Y) = dCov(X, Y) $$
-</p> 
+</p>
 <p> and thus Brownian correlation is the same as distance correlation.
 </p>
 <p> <strong>See also: </strong>
@@ -828,97 +830,84 @@ cov
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dcov.m">dcov</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- base=@(x) (x- min(x))./(max(x)-min(x));
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> base=@(x) (x- min (x))./(max (x)-min (x));
  N = 5e2;
- x = randn (N,1); x = base (x);
- z = randn (N,1); z = base (z);
- # Linear relations
- cy = [1 0.55 0.3 0 -0.3 -0.55 -1];
+ x = randn (N,1); x = base(x);
+ z = randn (N,1); z = base(z);</pre>
+                <p>Linear relations</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cy = [1 0.55 0.3 0 -0.3 -0.55 -1];
  ly = x .* cy;
- ly(:,[1:3 5:end]) = base (ly(:,[1:3 5:end]));
- # Correlated Gaussian
- cz = 1 - abs (cy);
- gy = base ( ly + cz.*z);
- # Shapes
- sx      = repmat (x,1,7);
+ ly(:,[1:3 5:end]) = base(ly(:,[1:3 5:end]));</pre>
+                <p>Correlated Gaussian</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cz = 1 - abs (cy);
+ gy = base( ly + cz.*z);</pre>
+                <p>Shapes</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> sx      = repmat (x,1,7);
  sy      = zeros (size (ly));
- v       = 2 * rand (size(x,1),2) - 1;
- sx(:,1) = v(:,1); sy(:,1) = cos(2*pi*sx(:,1)) + 0.5*v(:,2).*exp(-sx(:,1).^2/0.5);
+ v       = 2 * rand (size (x,1),2) - 1;
+ sx(:,1) = v(:,1); sy(:,1) = cos (2*pi*sx(:,1)) + 0.5*v(:,2).*exp (-sx(:,1).^2/0.5);
  R       =@(d) [cosd(d) sind(d); -sind(d) cosd(d)];
  tmp     = R(35) * v.';
  sx(:,2) = tmp(1,:); sy(:,2) = tmp(2,:);
  tmp     = R(45) * v.';
  sx(:,3) = tmp(1,:); sy(:,3) = tmp(2,:);
  sx(:,4) = v(:,1); sy(:,4) = sx(:,4).^2 + 0.5*v(:,2);
- sx(:,5) = v(:,1); sy(:,5) = 3*sign(v(:,2)).*(sx(:,5)).^2  + v(:,2);
+ sx(:,5) = v(:,1); sy(:,5) = 3*sign (v(:,2)).*(sx(:,5)).^2  + v(:,2);
  sx(:,6) = cos (2*pi*v(:,1)) + 0.5*(x-0.5);
  sy(:,6) = sin (2*pi*v(:,1)) + 0.5*(z-0.5);
- sx(:,7) = x + sign(v(:,1)); sy(:,7) = z + sign(v(:,2));
- sy      = base (sy);
- sx      = base (sx);
- # scaled shape
- sc  = 1/3;
+ sx(:,7) = x + sign (v(:,1)); sy(:,7) = z + sign (v(:,2));
+ sy      = base(sy);
+ sx      = base(sx);</pre>
+                <p>scaled shape</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> sc  = 1/3;
  ssy = (sy-0.5) * sc + 0.5;
  n = size (ly,2);
  ym = 1.2;
  xm = 0.5;
  fmt={'horizontalalignment','center'};
- ff = "% .2f";
+ ff = '% .2f';
  figure (1)
  for i=1:n
-   subplot(4,n,i);
+   subplot (4,n,i);
    plot (x, gy(:,i), '.b');
    axis tight
    axis off
    text (xm,ym,sprintf (ff, dcov (x,gy(:,i))),fmt{:})
 
-   subplot(4,n,i+n);
+   subplot (4,n,i+n);
    plot (x, ly(:,i), '.b');
    axis tight
    axis off
    text (xm,ym,sprintf (ff, dcov (x,ly(:,i))),fmt{:})
 
-   subplot(4,n,i+2*n);
+   subplot (4,n,i+2*n);
    plot (sx(:,i), sy(:,i), '.b');
    axis tight
    axis off
    text (xm,ym,sprintf (ff, dcov (sx(:,i),sy(:,i))),fmt{:})
    v = axis ();
 
-   subplot(4,n,i+3*n);
+   subplot (4,n,i+3*n);
    plot (sx(:,i), ssy(:,i), '.b');
    axis (v)
    axis off
    text (xm,ym,sprintf (ff, dcov (sx(:,i),ssy(:,i))),fmt{:})
- endfor
+ endfor</pre>
+                <div class="text-center">
+                  <img src="assets/dcov_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/dcov_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

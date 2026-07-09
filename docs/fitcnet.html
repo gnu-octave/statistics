@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcnet</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcnet</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Fit a Neural Network classification model.
 </p>
 <div class="ms-5">
@@ -812,80 +814,80 @@
  classification model, <var>Mdl</var>, with <var>X</var> being the predictor data, and
  <var>Y</var> the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
  corresponding predictor data in <var>X</var>. <var>Y</var> can contain any type of
  categorical data. <var>Y</var> must have same numbers of rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>Mdl</var> = fitcnet (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  Neural Network classification model with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <a name="Model-Parameters"></a>
+<a name="Model-Parameters"></a>
 <h3 class="subheading">Model Parameters</h3>
 
- <table>
+<table>
 <thead><tr><th width="32%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="32%"><code>&quot;Standardize&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether
+<tr><td width="32%"><code>'Standardize'</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether
  the data in <var>X</var> should be standardized prior to training.</td></tr>
-<tr><td width="32%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="32%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
  specifying the predictor variable names.  The variable names are assumed to
  be in the same order as they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="32%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
+<tr><td width="32%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
  of the response variable.</td></tr>
-<tr><td width="32%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+<tr><td width="32%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the Neural Network model.
  <code>ClassNames</code> are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="32%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+<tr><td width="32%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
  probabilities for each class.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="32%"><code>&quot;LayerSizes&quot;</code></td><td width="2%"></td><td width="80%">A vector of positive integers that
+<tr><td width="32%"><code>'LayerSizes'</code></td><td width="2%"></td><td width="80%">A vector of positive integers that
  defines the sizes of the fully connected layers in the neural network model.
  Each element in LayerSizes corresponds to the number of outputs for the
  respective fully connected layer in the neural network model.
  The default value is 10.</td></tr>
-<tr><td width="32%"><code>&quot;LearningRate&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar value that defines
+<tr><td width="32%"><code>'LearningRate'</code></td><td width="2%"></td><td width="80%">A positive scalar value that defines
  the learning rate during the gradient descent.  Default value is 0.01.</td></tr>
-<tr><td width="32%"><code>&quot;Activations&quot;</code></td><td width="2%"></td><td width="80%">A character vector or a cellstr vector
+<tr><td width="32%"><code>'Activations'</code></td><td width="2%"></td><td width="80%">A character vector or a cellstr vector
  specifying the activation functions for the hidden layers of the neural
  network (excluding the output layer).  The available activation functions are
  <code>'linear'</code>, <code>'sigmoid'</code>, <code>'tanh'</code>, <code>'sigmoid'</code>, and
  <code>'none'</code>. The default value is <code>'sigmoid'</code>.</td></tr>
-<tr><td width="32%"><code>&quot;OutputLayerActivation&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
+<tr><td width="32%"><code>'OutputLayerActivation'</code></td><td width="2%"></td><td width="80%">A character vector specifying
  the activation function for the output layer of the neural network.  The
  available activation functions are <code>'linear'</code>, <code>'sigmoid'</code>,
  <code>'tanh'</code>, <code>'sigmoid'</code>, and <code>'none'</code>. The default value is
  <code>'sigmoid'</code>.</td></tr>
-<tr><td width="32%"><code>&quot;IterationLimit&quot;</code></td><td width="2%"></td><td width="80%">A positive integer scalar that
+<tr><td width="32%"><code>'IterationLimit'</code></td><td width="2%"></td><td width="80%">A positive integer scalar that
  specifies the maximum number of training iterations.  The default value is
  1000.</td></tr>
-<tr><td width="32%"><code>&quot;DisplayInfo&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether to
+<tr><td width="32%"><code>'DisplayInfo'</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether to
  print information during training.  Default is <code>false</code>.</td></tr>
-<tr><td width="32%"><code>&quot;ScoreTransform&quot;</code></td><td width="2%"></td><td width="80%">A character vector defining one of
+<tr><td width="32%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A character vector defining one of
  the following functions or a user defined function handle, which is used
  for transforming the prediction scores returned by the <code>predict</code> and
  <code>resubPredict</code> methods.  Default value is <code>'none'</code>.</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="30%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="30%"><code>&quot;doublelogit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;invlogit&quot;</code></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;ismax&quot;</code></td><td width="75%">Sets the score for the class with the largest
+<tr><td width="5%"></td><td width="30%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'invlogit'</code></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the largest
  score to 1, and sets the scores for all other classes to 0</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;logit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;none&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;identity&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;sign&quot;</code></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;symmetric&quot;</code></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;symmetricismax&quot;</code></td><td width="75%">Sets the score for the class with
+<tr><td width="5%"></td><td width="30%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'none'</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'identity'</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'sign'</code></td><td width="75%"><math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt; 0</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class with
  the largest score to 1, and sets the scores for all other classes to -1</td></tr>
-<tr><td width="5%"></td><td width="30%"><code>&quot;symmetriclogit&quot;</code></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="5%"></td><td width="30%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
 
 <p> <strong>See also: </strong>
@@ -894,42 +896,27 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcnet.m">fitcnet</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Train a Neural Network on the Fisher's Iris data set and display
- ## a confusion chart with the classification results.
-
- load fisheriris
+          </div>
+          <div class="card-body">
+                <p>Train a Neural Network on the Fisher's Iris data set and display a confusion chart with the classification results.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  Mdl = fitcnet (meas, species);
  pred_species = resubPredict (Mdl);
- confusionchart (species, pred_species, "Title", ...
- "Fully Connected Neural Network classification on Fisher's Iris dataset");
+ confusionchart (species, pred_species, 'Title', ...
+ 'Fully Connected Neural Network classification on Fisher''s Iris dataset');</pre>
+                <div class="text-center">
+                  <img src="assets/fitcnet_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitcnet_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

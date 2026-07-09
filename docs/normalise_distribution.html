@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: <var>NORMALISED</var> = <b>normalise_distribution</b> (<var>DATA</var>, <var>DISTRIBUTION</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>NORMALISED</var> = <b>normalise_distribution</b> (<var>DATA</var>, <var>DISTRIBUTION</var>, <var>DIMENSION</var>)</code></h5></dt>
 </dl>
-
 <p> Transform a set of data so as to be N(0,1) distributed according to an idea
  by van Albada and Robinson.
 </p>
@@ -833,12 +835,13 @@
  The empirical CDF will map any two sets of data
  having the same size and their ties in the same places after sorting
  to some permutation of the same normalised data:
- </p><table><tr><td>&nbsp;</td><td><pre class="example"> <code>normalise_distribution([1 2 2 3 4])</code>
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"> <code>normalise_distribution([1 2 2 3 4])</code>
  &rArr; -1.28  0.00  0.00  0.52  1.28
 
  <code>normalise_distribution([1 10 100 10 1000])</code>
  &rArr; -1.28  0.00  0.52  0.00  1.28
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> Original source:
  S.J. van Albada, P.A. Robinson
@@ -849,11 +852,10 @@
  15 April 2007, Pages 205-211
  ISSN 0165-0270, 10.1016/j.jneumeth.2006.11.004.
  (http://www.sciencedirect.com/science/article/pii/S0165027006005668)
- </p>
+</p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/normalise_distribution.m">normalise_distribution</a>
 </div>
-
 
             </div>
           </div>

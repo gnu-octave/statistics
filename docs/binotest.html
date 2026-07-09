@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,113 +807,75 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>binotest</b> (<var>pos</var>, <var>N</var>, <var>p0</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>binotest</b> (<var>pos</var>, <var>N</var>, <var>p0</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
-
 <p> Test for probability <var>p</var> of a binomial sample
 </p>
 <div class="ms-5">
 <p> Perform a test of the null hypothesis <var>p</var> ==  <var>p0</var> for a sample
  of size <var>N</var> with <var>pos</var> positive results.
 </p>
-
 <p> Name-Value pair arguments can be used to set various options.
- <code>&quot;alpha&quot;</code> can be used to specify the significance level
- of the test (the default value is 0.05). The option <code>&quot;tail&quot;</code>,
+ <code>'alpha'</code> can be used to specify the significance level
+ of the test (the default value is 0.05). The option <code>'tail'</code>,
  can be used to select the desired alternative hypotheses.  If the
- value is <code>&quot;both&quot;</code> (default) the null is tested against the two-sided
+ value is <code>'both'</code> (default) the null is tested against the two-sided
  alternative <code><var>p</var> != <var>p0</var></code>. The value of <var>pval</var> is
  determined by adding the probabilities of all event less or equally
  likely than the observed number <var>pos</var> of positive events.
- If the value of <code>&quot;tail&quot;</code> is <code>&quot;right&quot;</code>
+ If the value of <code>'tail'</code> is <code>'right'</code>
  the one-sided alternative <code><var>p</var> &gt; <var>p0</var></code> is considered.
- Similarly for <code>&quot;left&quot;</code>, the one-sided alternative
+ Similarly for <code>'left'</code>, the one-sided alternative
  <code><var>p</var> &lt; <var>p0</var></code> is considered.
 </p>
 <p> If <var>h</var> is 0 the null hypothesis is accepted, if it is 1 the null
  hypothesis is rejected. The p-value of the test is returned in <var>pval</var>.
  A 100(1-alpha)% confidence interval is returned in <var>ci</var>.
 </p>
-
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/binotest.m">binotest</a>
 </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- % flip a coin 1000 times, showing 475 heads
- % Hypothesis: coin is fair, i.e. p=1/2
- [h,p_val,ci] = binotest(475,1000,0.5)
- % Result: h = 0 : null hypothesis not rejected, coin could be fair
- %         P value 0.12, i.e. hypothesis not rejected for alpha up to 12%
- %         0.444 <= p <= 0.506 with 95% confidence
-
-h = 0
-p_val = 0.1212
-ci =
-
-   0.4437   0.5065
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>flip a coin 1000 times, showing 475 heads Hypothesis: coin is fair, i.e. p=1/2</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h,p_val,ci] = binotest (475,1000,0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 0
+p_val = 0.1212
+ci =
+
+   0.4437   0.5065</pre>
+                <p>Result: h = 0 : null hypothesis not rejected, coin could be fair P value 0.12, i.e. hypothesis not rejected for alpha up to 12% 0.444 &lt;= p &lt;= 0.506 with 95% confidence</p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- % flip a coin 100 times, showing 65 heads
- % Hypothesis: coin shows less than 50% heads, i.e. p<=1/2
- [h,p_val,ci] = binotest(65,100,0.5,'tail','left','alpha',0.01)
- % Result: h = 1 : null hypothesis is rejected, i.e. coin shows more heads than tails
- %         P value 0.0018, i.e. hypothesis not rejected for alpha up to 0.18%
- %         0 <= p <= 0.76 with 99% confidence
-
-h = 1
+          </div>
+          <div class="card-body">
+                <p>flip a coin 100 times, showing 65 heads Hypothesis: coin shows less than 50% heads, i.e. p&lt;=1/2</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [h,p_val,ci] = binotest (65,100,0.5,'tail','left','alpha',0.01)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 1
 p_val = 1.7588e-03
 ci =
 
-        0   0.7580
+        0   0.7580</pre>
+                <p>Result: h = 1 : null hypothesis is rejected, i.e. coin shows more heads than tails P value 0.0018, i.e. hypothesis not rejected for alpha up to 0.18% 0 &lt;= p &lt;= 0.76 with 99% confidence</p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

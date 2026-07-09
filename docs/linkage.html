@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,7 +811,6 @@
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>linkage</b> (<var>x</var>, <var>method</var>, <var>metric</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>linkage</b> (<var>x</var>, <var>method</var>, <var>arglist</var>)</code></h5></dt>
 </dl>
-
 <p> Produce a hierarchical clustering dendrogram.
 </p>
 <div class="ms-5">
@@ -831,55 +833,35 @@
 <p> <var>method</var> defines the way the distance between two clusters is
  computed and how they are recomputed when two clusters are merged:
 </p>
- <dl compact="compact">
+<dl compact="compact">
 <dt> &lsquo;<samp>&quot;single&quot; (default)</samp>&rsquo;</dt>
-</dl>
-<p> Distance between two clusters is the minimum distance between two
+<dd> Distance between two clusters is the minimum distance between two
  elements belonging each to one cluster.  Produces a cluster tree
- known as minimum spanning tree.
-</p>
- </dd>
+ known as minimum spanning tree.</dd>
 <dt> &lsquo;<samp>&quot;complete&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Furthest distance between two elements belonging each to one cluster.
-</p>
- </dd>
+<dd> Furthest distance between two elements belonging each to one cluster.</dd>
 <dt> &lsquo;<samp>&quot;average&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Unweighted pair group method with averaging (UPGMA).
+<dd> Unweighted pair group method with averaging (UPGMA).
  The mean distance between all pair of elements each belonging to one
- cluster.
-</p>
- </dd>
+ cluster.</dd>
 <dt> &lsquo;<samp>&quot;weighted&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Weighted pair group method with averaging (WPGMA).
+<dd> Weighted pair group method with averaging (WPGMA).
  When two clusters A and B are joined together, the new distance to a
- cluster C is the mean between distances A-C and B-C.
-</p>
- </dd>
+ cluster C is the mean between distances A-C and B-C.</dd>
 <dt> &lsquo;<samp>&quot;centroid&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Unweighted Pair-Group Method using Centroids (UPGMC).
+<dd> Unweighted Pair-Group Method using Centroids (UPGMC).
  Assumes Euclidean metric.  The distance between cluster centroids,
- each centroid being the center of mass of a cluster.
-</p>
- </dd>
+ each centroid being the center of mass of a cluster.</dd>
 <dt> &lsquo;<samp>&quot;median&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Weighted pair-group method using centroids (WPGMC).
+<dd> Weighted pair-group method using centroids (WPGMC).
  Assumes Euclidean metric.  Distance between cluster centroids.  When
  two clusters are joined together, the new centroid is the midpoint
- between the joined centroids.
-</p>
- </dd>
+ between the joined centroids.</dd>
 <dt> &lsquo;<samp>&quot;ward&quot;</samp>&rsquo;</dt>
-</dl>
-<p> Ward&rsquo;s sum of squared deviations about the group mean (ESS).
+<dd> Ward&rsquo;s sum of squared deviations about the group mean (ESS).
  Also known as minimum variance or inner squared distance.
  Assumes Euclidean metric.  How much the moment of inertia of the
- merged cluster exceeds the sum of those of the individual clusters.
- </p></dd>
+ merged cluster exceeds the sum of those of the individual clusters.</dd>
 </dl>
 
 <p> <strong>Reference</strong>

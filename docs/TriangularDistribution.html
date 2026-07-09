@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: TriangularDistribution</h5></code></dl>
-
 <p> Triangular probability distribution object.
 </p>
 <div class="ms-5">
@@ -810,7 +812,7 @@
 </p>
 <p> The triangular distribution uses the following parameters.
 </p>
- <table>
+<table>
 <thead><tr><th width="25%"><var>Parameter</var></th><th width="48%"><var>Description</var></th><th width="27%"><var>Support</var></th></tr></thead>
 <tr><td width="25%"><code>A</code></td><td width="48%">Lower limit</td><td width="27%"><math>-Inf &lt; A &lt; Inf</math></td></tr>
 <tr><td width="25%"><code>B</code></td><td width="48%">Peak location</td><td width="27%"><math>A &lt;= B &lt;= C</math></td></tr>
@@ -819,13 +821,13 @@
 
 <p> There are several ways to create a <code>TriangularDistribution</code> object.
 </p>
- <ul>
+<ul>
 <li> Create a distribution with specified parameter values using the
  <code>makedist</code> function.
- </li><li> Use the constructor <code>TriangularDistribution (<var>A</var>, <var>B</var>,
+</li><li> Use the constructor <code>TriangularDistribution (<var>A</var>, <var>B</var>,
  <var>C</var>)</code> to create a triangular distribution with specified parameter
  values <var>A</var>, <var>B</var>, and <var>C</var>.
- </li></ul>
+</li></ul>
 
 <p> It is highly recommended to use <code>makedist</code> function to create
  probability distribution objects, instead of the constructor.
@@ -845,9 +847,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_obj/TriangularDistribution.m">TriangularDistribution</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>TriangularDistribution</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -868,99 +868,60 @@ Lower limit parameter
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value characterizing the lower limit of the
  triangular distribution.  You can access the <code>A</code>
  property using dot name assignment.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Create a Triangular distribution with default parameters
- pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);
-
- ## Query parameter 'A' (lower limit)
- pd.A
-
- ## Set parameter 'A'
- pd.A = -1
-
- ## Use this to initialize or modify the lower limit parameter of a Triangular
- ## distribution. The lower limit must be a real scalar less than the upper
- ## limit C, useful for defining the minimum possible value in scenarios like
- ## cost estimation or time to completion.
-
-ans = 0
-pd =
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution with default parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);</pre>
+                <p>Query parameter 'A' (lower limit)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.A</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0</pre>
+                <p>Set parameter 'A'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.A = -1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   TriangularDistribution
 
   Triangular distribution
         A =  -1
         B = 0.5
-        C =   1
+        C =   1</pre>
+                <p>Use this to initialize or modify the lower limit parameter of a Triangular distribution. The lower limit must be a real scalar less than the upper limit C, useful for defining the minimum possible value in scenarios like cost estimation or time to completion.</p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution object by calling its constructor</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (1, 2, 3);</pre>
+                <p>Query parameter 'A'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.A</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+                <p>This demonstrates direct construction with a specific lower limit, useful for modeling bounded data, such as project durations or resource requirements.</p>
 
- ## Create a Triangular distribution object by calling its constructor
- pd = TriangularDistribution (1, 2, 3);
-
- ## Query parameter 'A'
- pd.A
-
- ## This demonstrates direct construction with a specific lower limit,
- ## useful for modeling bounded data, such as project durations or resource
- ## requirements.
-
-ans = 1
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -988,98 +949,60 @@ Peak location parameter
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value characterizing the peak location of the
  triangular distribution.  You can access the <code>B</code>
  property using dot name assignment.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Create a Triangular distribution with default parameters
- pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);
-
- ## Query parameter 'B' (peak location)
- pd.B
-
- ## Set parameter 'B'
- pd.B = 0.7
-
- ## Use this to initialize or modify the peak location parameter of a Triangular
- ## distribution. The peak location must be a real scalar between A and C,
- ## representing the most likely value in applications like risk analysis.
-
-ans = 0.5000
-pd =
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution with default parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);</pre>
+                <p>Query parameter 'B' (peak location)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.B</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 0.5000</pre>
+                <p>Set parameter 'B'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.B = 0.7</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   TriangularDistribution
 
   Triangular distribution
         A =   0
         B = 0.7
-        C =   1
+        C =   1</pre>
+                <p>Use this to initialize or modify the peak location parameter of a Triangular distribution. The peak location must be a real scalar between A and C, representing the most likely value in applications like risk analysis.</p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution object by calling its constructor</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (1, 2, 3);</pre>
+                <p>Query parameter 'B'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.B</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 2</pre>
+                <p>This shows how to set the peak location directly via the constructor, ideal for modeling the mode of triangularly distributed data, such as expected task completion times.</p>
 
- ## Create a Triangular distribution object by calling its constructor
- pd = TriangularDistribution (1, 2, 3);
-
- ## Query parameter 'B'
- pd.B
-
- ## This shows how to set the peak location directly via the constructor,
- ## ideal for modeling the mode of triangularly distributed data, such as
- ## expected task completion times.
-
-ans = 2
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1107,97 +1030,60 @@ Upper limit parameter
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value characterizing the upper limit of the
  triangular distribution.  You can access the <code>C</code>
  property using dot name assignment.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Create a Triangular distribution with default parameters
- pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);
-
- ## Query parameter 'C' (upper limit)
- pd.C
-
- ## Set parameter 'C'
- pd.C = 2
-
- ## Use this to initialize or modify the upper limit parameter of a Triangular
- ## distribution. The upper limit must be a real scalar greater than A,
- ## defining the maximum possible value in scenarios like budgeting or scheduling.
-
-ans = 1
-pd =
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution with default parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = makedist ("Triangular", "A", 0, "B", 0.5, "C", 1);</pre>
+                <p>Query parameter 'C' (upper limit)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.C</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 1</pre>
+                <p>Set parameter 'C'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.C = 2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
   TriangularDistribution
 
   Triangular distribution
         A =   0
         B = 0.5
-        C =   2
+        C =   2</pre>
+                <p>Use this to initialize or modify the upper limit parameter of a Triangular distribution. The upper limit must be a real scalar greater than A, defining the maximum possible value in scenarios like budgeting or scheduling.</p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution object by calling its constructor</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (1, 2, 3);</pre>
+                <p>Query parameter 'C'</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd.C</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = 3</pre>
+                <p>This demonstrates setting the upper limit directly via the constructor, useful for modeling the maximum bound in applications like cost or time estimates.</p>
 
- ## Create a Triangular distribution object by calling its constructor
- pd = TriangularDistribution (1, 2, 3);
-
- ## Query parameter 'C'
- pd.C
-
- ## This demonstrates setting the upper limit directly via the constructor,
- ## useful for modeling the maximum bound in applications like cost or time estimates.
-
-ans = 3
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1225,12 +1111,10 @@ Probability distribution name
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the name of the probability distribution
  object.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1256,12 +1140,10 @@ Number of parameters
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar integer value specifying the number of parameters characterizing
  the probability distribution.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1287,12 +1169,10 @@ Names of parameters
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>3&times;1</math> cell array of character vectors with each element containing
  the name of a distribution parameter.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1318,13 +1198,11 @@ Description of parameters
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>3&times;1</math> cell array of character vectors with each element containing
  a short description of a distribution parameter.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1350,14 +1228,12 @@ Distribution parameter values
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>3&times;1</math> numeric vector containing the values of the distribution
  parameters.  This property is read-only.  You can change the distribution
  parameters by assigning new values to the <code>A</code>, <code>B</code>, and
  <code>C</code> properties.
 </p>
-
 
 
             </div>
@@ -1383,7 +1259,6 @@ Truncation interval
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>1&times;2</math> numeric vector specifying the truncation interval for the
  probability distribution.  First element contains the lower boundary,
@@ -1391,7 +1266,6 @@ Truncation interval
  You can only truncate a probability distribution with the
  <code>truncate</code> method.
 </p>
-
 
 
             </div>
@@ -1417,21 +1291,17 @@ Flag for truncated probability distribution
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar value specifying whether a probability distribution is
  truncated or not.  This property is read-only.
 </p>
 
 
-
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>TriangularDistribution</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1453,40 +1323,31 @@ Compute the cumulative distribution function (CDF).
             <div class="border-bottom py-2">
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
-<dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>&quot;upper&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">TriangularDistribution: <var>p</var> = <b>cdf</b> (<var>pd</var>, <var>x</var>, <code>'upper'</code>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>p</var> = cdf (<var>pd</var>, <var>x</var>)</code> computes the CDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
 </p>
-<p> <code><var>p</var> = cdf (&hellip;, <code>&quot;upper&quot;</code>)</code> returns the complement of
+<p> <code><var>p</var> = cdf (&hellip;, <code>'upper'</code>)</code> returns the complement of
  the CDF of the probability distribution object, <var>pd</var>, evaluated at
  the values in <var>x</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various CDFs from the Triangular distribution
- x = -1:0.01:6;
+          </div>
+          <div class="card-body">
+                <p>Plot various CDFs from the Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:6;
  pd1 = TriangularDistribution (0, 1, 2);
  pd2 = TriangularDistribution (1, 2, 3);
  pd3 = TriangularDistribution (2, 3, 4);
@@ -1498,22 +1359,13 @@ Compute the cumulative distribution function (CDF).
  legend ({"A=0, B=1, C=2", "A=1, B=2, C=3", "A=2, B=3, C=4"}, ...
          "location", "southeast")
  title ("Triangular CDF")
- xlabel ("Values in x (A <= x <= C)")
- ylabel ("Cumulative probability")
+ xlabel ("Values in x (A &lt;= x &lt;= C)")
+ ylabel ("Cumulative probability")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Use this to compute and visualize the cumulative distribution function for different Triangular distributions, showing how probability accumulates within the bounds, useful in risk assessment or forecasting.</p>
 
- ## Use this to compute and visualize the cumulative distribution function
- ## for different Triangular distributions, showing how probability accumulates
- ## within the bounds, useful in risk assessment or forecasting.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1543,34 +1395,25 @@ Compute the inverse cumulative distribution function (iCDF).
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>x</var> = <b>icdf</b> (<var>pd</var>, <var>p</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>x</var> = icdf (<var>pd</var>, <var>p</var>)</code> computes the quantile (the
  inverse of the CDF) of the probability distribution object, <var>pd</var>,
  evaluated at the values in <var>p</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various iCDFs from the Triangular distribution
- p = 0.001:0.001:0.999;
+          </div>
+          <div class="card-body">
+                <p>Plot various iCDFs from the Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> p = 0.001:0.001:0.999;
  pd1 = TriangularDistribution (0, 1, 2);
  pd2 = TriangularDistribution (1, 2, 3);
  pd3 = TriangularDistribution (2, 3, 4);
@@ -1583,21 +1426,12 @@ Compute the inverse cumulative distribution function (iCDF).
          "location", "northwest")
  title ("Triangular iCDF")
  xlabel ("Probability")
- ylabel ("Values in x (A <= x <= C)")
+ ylabel ("Values in x (A &lt;= x &lt;= C)")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>This demonstrates the inverse CDF (quantiles) for Triangular distributions, useful for finding values corresponding to given probabilities, such as thresholds in project planning or quality control.</p>
 
- ## This demonstrates the inverse CDF (quantiles) for Triangular distributions,
- ## useful for finding values corresponding to given probabilities, such as
- ## thresholds in project planning or quality control.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.icdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1627,46 +1461,28 @@ Compute the interquartile range of a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>r</var> = <b>iqr</b> (<var>pd</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>r</var> = iqr (<var>pd</var>)</code> computes the interquartile range of the
  probability distribution object, <var>pd</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Compute the interquartile range for a Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (0, 1, 2);
+ iqr_value = iqr (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">iqr_value = 0.5858</pre>
+                <p>Use this to calculate the interquartile range, which measures the spread of the middle 50% of the distribution, helpful for understanding central variability in bounded data like cost estimates.</p>
 
- ## Compute the interquartile range for a Triangular distribution
- pd = TriangularDistribution (0, 1, 2);
- iqr_value = iqr (pd)
-
- ## Use this to calculate the interquartile range, which measures the spread
- ## of the middle 50% of the distribution, helpful for understanding central
- ## variability in bounded data like cost estimates.
-
-iqr_value = 0.5858
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1696,49 +1512,31 @@ Compute the mean of a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>m</var> = <b>mean</b> (<var>pd</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>m</var> = mean (<var>pd</var>)</code> computes the mean of the probability
  distribution object, <var>pd</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compute the mean for different Triangular distributions
- pd1 = TriangularDistribution (0, 1, 2);
+          </div>
+          <div class="card-body">
+                <p>Compute the mean for different Triangular distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd1 = TriangularDistribution (0, 1, 2);
  pd2 = TriangularDistribution (1, 2, 3);
- mean1 = mean (pd1)
- mean2 = mean (pd2)
+ mean1 = mean (pd1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean1 = 1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mean2 = mean (pd2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mean2 = 2</pre>
+                <p>This shows how to compute the expected value for Triangular distributions with different parameters, representing the average value in scenarios like budgeting or time estimation.</p>
 
- ## This shows how to compute the expected value for Triangular distributions
- ## with different parameters, representing the average value in scenarios
- ## like budgeting or time estimation.
-
-mean1 = 1
-mean2 = 2
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1768,49 +1566,31 @@ Compute the median of a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>m</var> = <b>median</b> (<var>pd</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>m</var> = median (<var>pd</var>)</code> computes the median of the probability
  distribution object, <var>pd</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compute the median for different Triangular distributions
- pd1 = TriangularDistribution (0, 1, 2);
+          </div>
+          <div class="card-body">
+                <p>Compute the median for different Triangular distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd1 = TriangularDistribution (0, 1, 2);
  pd2 = TriangularDistribution (1, 2, 3);
- median1 = median (pd1)
- median2 = median (pd2)
+ median1 = median (pd1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median1 = 1</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> median2 = median (pd2)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">median2 = 2</pre>
+                <p>Use this to find the median value, which splits the distribution into two equal probability halves, robust for skewed triangular data in applications like scheduling.</p>
 
- ## Use this to find the median value, which splits the distribution into two
- ## equal probability halves, robust for skewed triangular data in applications
- ## like scheduling.
-
-median1 = 1
-median2 = 2
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1840,34 +1620,25 @@ Compute the probability density function (PDF).
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>y</var> = <b>pdf</b> (<var>pd</var>, <var>x</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>y</var> = pdf (<var>pd</var>, <var>x</var>)</code> computes the PDF of the
  probability distribution object, <var>pd</var>, evaluated at the values in
  <var>x</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various PDFs from the Triangular distribution
- x = -1:0.01:6;
+          </div>
+          <div class="card-body">
+                <p>Plot various PDFs from the Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = -1:0.01:6;
  pd1 = TriangularDistribution (0, 1, 2);
  pd2 = TriangularDistribution (1, 2, 3);
  pd3 = TriangularDistribution (2, 3, 4);
@@ -1879,22 +1650,13 @@ Compute the probability density function (PDF).
  legend ({"A=0, B=1, C=2", "A=1, B=2, C=3", "A=2, B=3, C=4"}, ...
          "location", "northeast")
  title ("Triangular PDF")
- xlabel ("Values in x (A <= x <= C)")
- ylabel ("Probability density")
+ xlabel ("Values in x (A &lt;= x &lt;= C)")
+ ylabel ("Probability density")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>This visualizes the probability density function for Triangular distributions, showing the likelihood within the bounds, useful for understanding data distribution in risk analysis.</p>
 
- ## This visualizes the probability density function for Triangular
- ## distributions, showing the likelihood within the bounds, useful for
- ## understanding data distribution in risk analysis.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.pdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1926,7 +1688,6 @@ Plot a probability distribution object.
 <dt><code><h5 class="fs">TriangularDistribution: <b>plot</b> (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 <dt><code><h5 class="fs">TriangularDistribution: <var>h</var> = <b>plot</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>plot (<var>pd</var>)</code> plots a probability density function (PDF) of the
  probability distribution object <var>pd</var>.
@@ -1934,18 +1695,19 @@ Plot a probability distribution object.
 <p> <code>plot (<var>pd</var>, <var>Name</var>, <var>Value</var>)</code> specifies additional
  options with the <code>Name-Value</code> pair arguments listed below.
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;PlotType&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
- type.  <code>&quot;pdf&quot;</code> plots the probability density function (PDF).
- <code>&quot;cdf&quot;</code> plots the cumulative density function (CDF).</td></tr>
-<tr><td width="18%"><code>&quot;Discrete&quot;</code></td><td width="2%"></td><td width="80%">A logical scalar to specify whether to
+<tr><td width="18%"><code>'PlotType'</code></td><td width="2%"></td><td width="80%">A character vector specifying the plot
+ type.  <code>'pdf'</code> plots the probability density function (PDF).
+ <code>'cdf'</code> plots the cumulative density function (CDF).</td></tr>
+<tr><td width="18%"><code>'Discrete'</code></td><td width="2%"></td><td width="80%">A logical scalar to specify whether to
  plot the PDF or CDF of a discrete distribution object as a line plot or a
  stem plot, by specifying <code>false</code> or <code>true</code>, respectively.  By
  default, it is <code>true</code> for discrete distributions and <code>false</code>
  for continuous distributions.  When <var>pd</var> is a continuous distribution
  object, this option is ignored.</td></tr>
-<tr><td width="18%"><code>&quot;Parent&quot;</code></td><td width="2%"></td><td width="80%">An axes graphics object for the plot.  If
+<tr><td width="18%"><code>'Parent'</code></td><td width="2%"></td><td width="80%">An axes graphics object for the plot.
+ If
  not specified, the <code>plot</code> function plots into the current axes or
  creates a new axes object if one does not exist.</td></tr>
 </table>
@@ -1954,85 +1716,52 @@ Plot a probability distribution object.
  objects.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Create a Triangular distribution with fixed parameters A=0, B=1, C=2
- ## and plot its PDF.
- pd = TriangularDistribution (0, 1, 2);
- plot (pd)
- title ("Triangular distribution with A=0, B=1, C=2")
-
- ## Use this to visualize the PDF of a Triangular distribution with fixed
- ## parameters, useful for understanding the shape of the distribution.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Create a Triangular distribution with fixed parameters A=0, B=1, C=2 and plot its PDF.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (0, 1, 2);
+ plot (pd)
+ title ("Triangular distribution with A=0, B=1, C=2")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.plot_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Use this to visualize the PDF of a Triangular distribution with fixed parameters, useful for understanding the shape of the distribution.</p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate a data set of 100 random samples from a Triangular distribution
- ## with parameters A=0, B=1, C=2. Plot its CDF.
- rand ("seed", 21);
+          </div>
+          <div class="card-body">
+                <p>Generate a data set of 100 random samples from a Triangular distribution with parameters A=0, B=1, C=2. Plot its CDF.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
  data = trirnd (0, 1, 2, 100, 1);
  pd = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
  plot (pd, "PlotType", "cdf")
  title ("Triangular distribution with A=0, B=1, C=2")
- legend ({"Fitted CDF"}, "location", "southeast")
+ legend ({"Fitted CDF"}, "location", "southeast")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Use this to visualize the CDF of a Triangular distribution, useful for assessing cumulative probabilities in bounded data scenarios.</p>
 
- ## Use this to visualize the CDF of a Triangular distribution, useful for
- ## assessing cumulative probabilities in bounded data scenarios.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.plot_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2065,7 +1794,6 @@ Generate random arrays from the probability distribution object.
 <dt><code><h5 class="fs">TriangularDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">TriangularDistribution: <var>r</var> = <b>random</b> (<var>pd</var>, [<var>sz</var>])</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>r</var> = random (<var>pd</var>)</code> returns a random number from the
  distribution object <var>pd</var>.
@@ -2078,45 +1806,29 @@ Generate random arrays from the probability distribution object.
  dimensions, <var>sz</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Generate random samples from a Triangular distribution
- rand ("seed", 21);
+          </div>
+          <div class="card-body">
+                <p>Generate random samples from a Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
  samples = trirnd (0, 1, 2, 500, 1);
  hist (samples, 50)
  title ("Histogram of 500 random samples from Triangular(A=0, B=1, C=2)")
- xlabel ("Values in x (A <= x <= C)")
- ylabel ("Frequency")
+ xlabel ("Values in x (A &lt;= x &lt;= C)")
+ ylabel ("Frequency")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>This generates random samples from a Triangular distribution, useful for simulating bounded data like project costs or completion times.</p>
 
- ## This generates random samples from a Triangular distribution, useful for
- ## simulating bounded data like project costs or completion times.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.random_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2146,45 +1858,28 @@ Compute the standard deviation of a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>s</var> = <b>std</b> (<var>pd</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>s</var> = std (<var>pd</var>)</code> computes the standard deviation of the
  probability distribution object, <var>pd</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Compute the standard deviation for a Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (0, 1, 2);
+ std_value = std (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">std_value = 0.4082</pre>
+                <p>Use this to calculate the standard deviation, which measures the variability within the bounds of the Triangular distribution, useful for risk assessment.</p>
 
- ## Compute the standard deviation for a Triangular distribution
- pd = TriangularDistribution (0, 1, 2);
- std_value = std (pd)
-
- ## Use this to calculate the standard deviation, which measures the variability
- ## within the bounds of the Triangular distribution, useful for risk assessment.
-
-std_value = 0.4082
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2214,7 +1909,6 @@ Truncate a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>t</var> = <b>truncate</b> (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>t</var> = truncate (<var>pd</var>, <var>lower</var>, <var>upper</var>)</code> returns a
  probability distribution <var>t</var>, which is the probability distribution
@@ -2222,61 +1916,39 @@ Truncate a probability distribution.
  <var>lower</var>, and upper limit, <var>upper</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot the PDF of a Triangular distribution with parameters A=0, B=1, C=2,
- ## truncated at [0.5, 1.5] intervals. Generate 10000 random samples from this
- ## truncated distribution and superimpose a histogram scaled accordingly.
- rand ("seed", 21);
+          </div>
+          <div class="card-body">
+                <p>Plot the PDF of a Triangular distribution with parameters A=0, B=1, C=2, truncated at [0.5, 1.5] intervals. Generate 10000 random samples from this truncated distribution and superimpose a histogram scaled accordingly.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ("seed", 21);
  data_all = trirnd (0, 1, 2, 20000, 1);
- data = data_all(data_all >= 0.5 & data_all <= 1.5);
+ data = data_all(data_all &gt;= 0.5 &amp; data_all &lt;= 1.5);
  data = data(1:10000);
-
  pd = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
  t = truncate (pd, 0.5, 1.5);
-
  [counts, centers] = hist (data, 20);
  bin_width = centers(2) - centers(1);
  bar (centers, counts / (sum (counts) * bin_width), 1);
- hold on;
-
- ## Plot histogram and truncated PDF
- x = linspace (0.5, 5, 500);
+ hold on;</pre>
+                <p>Plot histogram and truncated PDF</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = linspace (0.5, 5, 500);
  y = pdf (t, x);
  plot (x, y, "r", "linewidth", 2);
  title ("Triangular distribution (A=0, B=1, C=2) truncated at [0.5, 1.5]")
- legend ("Truncated PDF", "Histogram")
+ legend ("Truncated PDF", "Histogram")</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>This demonstrates truncating a Triangular distribution to a specific range and visualizing the resulting distribution with random samples, useful for constrained scenarios like limited budgets.</p>
 
- ## This demonstrates truncating a Triangular distribution to a specific range
- ## and visualizing the resulting distribution with random samples, useful for
- ## constrained scenarios like limited budgets.
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution.truncate_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2306,45 +1978,28 @@ Compute the variance of a probability distribution.
 <dl>
 <dt><code><h5 class="fs">TriangularDistribution: <var>v</var> = <b>var</b> (<var>pd</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>v</var> = var (<var>pd</var>)</code> computes the variance of the
  probability distribution object, <var>pd</var>.
 </p>
 
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Compute the variance for a Triangular distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd = TriangularDistribution (0, 1, 2);
+ var_value = var (pd)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">var_value = 0.1667</pre>
+                <p>Use this to calculate the variance, which quantifies the spread of values within the bounds of the Triangular distribution, useful for uncertainty analysis.</p>
 
- ## Compute the variance for a Triangular distribution
- pd = TriangularDistribution (0, 1, 2);
- var_value = var (pd)
-
- ## Use this to calculate the variance, which quantifies the spread of values
- ## within the bounds of the Triangular distribution, useful for uncertainty analysis.
-
-var_value = 0.1667
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -2365,47 +2020,33 @@ var_value = 0.1667
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Generate a data set of 5000 random samples from a Triangular distribution with parameters A = 0, B = 1, C = 2. Fit a Triangular distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
+Generate a data set of 5000 random samples from a Triangular distribution with parameters A = 0, B = 1, C = 2. Fit a Triangular distribution to this data and plot a PDF of the fitted distribution superimposed on a histogram of the data.
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- pd_fixed = makedist ("Triangular", "A", 0, "B", 1, "C", 2);
- rand ("seed", 2);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pd_fixed = makedist ('Triangular', 'A', 0, 'B', 1, 'C', 2);
+ rand ('seed', 2);
  data = random (pd_fixed, 5000, 1);
  A = min (data);
  C = mean (data);
  B = max (data);
-
  [counts, centers] = hist (data, 50);
  bin_width = centers(2) - centers(1);
  normalized_counts = counts / (sum (counts) * bin_width);
  bar (centers, normalized_counts, 1);
  hold on;
-
  x = linspace (A, B, 100);
- y = (2 * (x - A) / (C - A) .* (x <= C)) + (2 * (B - x) / (B - C) .* (x > C));
-
+ y = (2 * (x - A) / (C - A) .* (x &lt;= C)) + (2 * (B - x) / (B - C) .* (x &gt; C));
  plot (x, y, 'r-', 'LineWidth', 2);
-
  msg = sprintf ("Fitted Triangular distribution with A = %0.2f, C = %0.2f, B = %0.2f", A, C, B);
  title (msg);
-
- hold off;</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-</pre></td></tr>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/TriangularDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+ hold off;</pre>
+                <div class="text-center">
+                  <img src="assets/TriangularDistribution_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
             </div>
           </div>

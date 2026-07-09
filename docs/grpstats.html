@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,14 +807,13 @@
 <dt><code><h5 class="fs">statistics: <var>stats</var> = <b>grpstats</b> (<var>x</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>stats</var> = <b>grpstats</b> (<var>x</var>, <var>group</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>stats1</var>, &hellip;, <var>statsN</var>] = <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>whichstats</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>stats1</var>, &hellip;, <var>statsN</var>] = <b>grpstats</b>  (<var>x</var>, <var>group</var>, <var>whichstats</var>, <code>'Alpha'</code>, <var>alpha</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: [<var>stats1</var>, &hellip;, <var>statsN</var>] = <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>whichstats</var>, <code>'Alpha'</code>, <var>alpha</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>tblstats</var> = <b>grpstats</b> (<var>tbl</var>, <var>groupvars</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>tblstats</var> = <b>grpstats</b> (<var>tbl</var>, <var>groupvars</var>, <var>whichstats</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>tblstats</var> = <b>grpstats</b> (<var>tbl</var>, <var>groupvars</var>,  <var>whichstats</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>tblstats</var> = <b>grpstats</b> (<var>tbl</var>, <var>groupvars</var>, <var>whichstats</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>alpha</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>h</var> = <b>grpstats</b> (<var>x</var>, <var>group</var>, <var>alpha</var>)</code></h5></dt>
 </dl>
-
 <p> Summary statistics by group.
 </p>
 <div class="ms-5">
@@ -820,7 +822,7 @@
  treated as a single column matrix.  <code>NaN</code>s are treated as missing
  values and removed from calculations.
 </p>
- <a name="Syntax-for-Numeric-Input"></a>
+<a name="Syntax-for-Numeric-Input"></a>
 <h3 class="subheading">Syntax for Numeric Input</h3>
 
 <p> <code><var>stats</var> = grpstats (<var>x</var>)</code> calculates the mean statistic for
@@ -857,32 +859,34 @@
 </p>
 <p> <var>whichstats</var> specifies the statistics to compute. It can be either a
  string array or a cell array of strings specifying any of the following
- builtin statistics.  If omitted, the default is <code>&quot;mean&quot;</code>.
+ builtin statistics.  If omitted, the default is <code>'mean'</code>.
  <var>whichstats</var> can also contain function handles for custom statistics.
 </p>
 <p> The available statistics are:
- </p><table>
-<tr><td width="5%"></td><td width="20%"><code>&quot;mean&quot;</code></td><td width="75%">Mean of each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;median&quot;</code></td><td width="75%">Median of each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;sem&quot;</code></td><td width="75%">Standard error of the mean for each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;std&quot;</code></td><td width="75%">Standard deviation of each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;var&quot;</code></td><td width="75%">Variance of each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;min&quot;</code></td><td width="75%">Minimum value in each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;max&quot;</code></td><td width="75%">Maximum value in each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;range&quot;</code></td><td width="75%">Difference between max and min in each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;numel&quot;</code></td><td width="75%">Number of elements (count) in each group.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;meanci&quot;</code></td><td width="75%">Confidence interval for the mean.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;predci&quot;</code></td><td width="75%">Prediction interval for a new observation.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;gname&quot;</code></td><td width="75%">Group names.</td></tr>
+</p>
+<table>
+<tr><td width="5%"></td><td width="20%"><code>'mean'</code></td><td width="75%">Mean of each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'median'</code></td><td width="75%">Median of each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'sem'</code></td><td width="75%">Standard error of the mean for each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'std'</code></td><td width="75%">Standard deviation of each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'var'</code></td><td width="75%">Variance of each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'min'</code></td><td width="75%">Minimum value in each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'max'</code></td><td width="75%">Maximum value in each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'range'</code></td><td width="75%">Difference between max and min in each
+ group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'numel'</code></td><td width="75%">Number of elements (count) in each group.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'meanci'</code></td><td width="75%">Confidence interval for the mean.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'predci'</code></td><td width="75%">Prediction interval for a new observation.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'gname'</code></td><td width="75%">Group names.</td></tr>
 </table>
 
 <p> <code>[&hellip;] = grpstats (&hellip;, <code>'Alpha'</code>, <var>alpha</var>)</code> specifies
- the significance level for the confidence intervals (<code>&quot;meanci&quot;</code> and
- <code>&quot;predci&quot;</code>) as <code>100 * (1-<var>alpha</var>)@%</code>.  <var>alpha</var> must be a
+ the significance level for the confidence intervals (<code>'meanci'</code> and
+ <code>'predci'</code>) as <code>100 * (1-<var>alpha</var>)@%</code>.  <var>alpha</var> must be a
  scalar between 0 and 1.  When not specified, it defaults to 0.05.  Note that
  this paired input argument is also valid for table input.
 </p>
- <a name="Syntax-for-Table-Input"></a>
+<a name="Syntax-for-Table-Input"></a>
 <h3 class="subheading">Syntax for Table Input</h3>
 
 <p> <code><var>tblstats</var> = grpstats (<var>tbl</var>, <var>groupvars</var>)</code> computes the
@@ -895,7 +899,7 @@
  object, logical vector, function handle).
 </p>
 <p> The output <var>tblstats</var> is a table with one row for each group. It contains
- the grouping variables, an additional  <code>&quot;GroupCount&quot;</code> variable, and the
+ the grouping variables, an additional  <code>'GroupCount'</code> variable, and the
  specified summary statistics for the variables in <var>tbl</var>, expect for those
  specified as grouping variables.  When input is a table, only a single output
  variable, <var>tblstats</var> can be specified.  The output <var>tblstats</var> also
@@ -915,7 +919,7 @@
 <p> For table input specifically, <code>grpstats</code> also accepts the following
  paired arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="20%">Name</th><th width="5%"></th><th width="75%">Value</th></tr></thead>
 <tr><td width="20%"><code>'DataVars'</code></td><td width="5%"></td><td width="75%">A vector specifying the variables in
  <var>tbl</var>, for which to calculate the specified statistics.  The vector can
@@ -926,15 +930,15 @@
  output table.</td></tr>
 </table>
 
- <a name="Plotting-Syntax"></a>
+<a name="Plotting-Syntax"></a>
 <h3 class="subheading">Plotting Syntax</h3>
 
 <p> The syntax <code>grpstats (<var>x</var>, <var>group</var>, <var>alpha</var>)</code> generates an
  <code>errorbar</code> plot with the group means and their respective confidence
  intervals.  <var>x</var> must be a numeric vector or matrix.  <var>alpha</var> is a
  scalar between 0 and 1 that determines the confidence level.  This syntax is
- an alternative to calling <code>errorbar</code> after computing <code>&quot;mean&quot;</code> and
- <code>&quot;meanci&quot;</code> statistics.  The optional output <var>h</var> is a handle to the
+ an alternative to calling <code>errorbar</code> after computing <code>'mean'</code> and
+ <code>'meanci'</code> statistics.  The optional output <var>h</var> is a handle to the
  hggroup object representing the data plot and errorbars.
 </p>
 <p> <strong>See also: </strong>
@@ -943,32 +947,20 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/grpstats.m">grpstats</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load carsmall;
- [m, p, g] = grpstats (Weight, Model_Year, {'mean', 'predci', 'gname'})
- n = length (m);
- errorbar ((1:n)',m,p(:,2)-m);
- set (gca, "xtick", 1:n, "xticklabel", g);
- title ("95% prediction intervals for mean weight by year");
-
-m =
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall;
+ [m, p, g] = grpstats (Weight, Model_Year, {'mean', 'predci', 'gname'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">m =
 
    3441.3
    3078.7
@@ -985,47 +977,33 @@ g =
 
     {'70'}    
     {'76'}    
-    {'82'}    
+    {'82'}</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> n = length (m);
+ errorbar ((1:n)',m,p(:,2)-m);
+ set (gca, 'xtick', 1:n, 'xticklabel', g);
+ title ('95% prediction intervals for mean weight by year');</pre>
+                <div class="text-center">
+                  <img src="assets/grpstats_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/grpstats_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load carsmall;
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall;
  [m, p, g] = grpstats ([Acceleration,Weight/1000],Cylinders, ...
-                       {'mean', 'meanci', 'gname'}, 0.05)
- [c, r] = size (m);
- errorbar ((1:c)'.*ones(c,r),m,p(:,[(1:r)])-m);
- set (gca, "xtick", 1:c, "xticklabel", g);
- title ("95% prediction intervals for mean weight by year");
-
-m =
+                       {'mean', 'meanci', 'gname'}, 0.05)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">m =
 
    16.6706    2.3726
    16.4765    3.1255
@@ -1050,87 +1028,59 @@ g =
 
     {'4'}    
     {'6'}    
-    {'8'}    
+    {'8'}</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [c, r] = size (m);
+ errorbar ((1:c)'.*ones (c,r),m,p(:,[(1:r)])-m);
+ set (gca, 'xtick', 1:c, 'xticklabel', g);
+ title ('95% prediction intervals for mean weight by year');</pre>
+                <div class="text-center">
+                  <img src="assets/grpstats_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/grpstats_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot mean and 95% CI for a single grouping variable
- load carsmall;
+          </div>
+          <div class="card-body">
+                <p>Plot mean and 95% CI for a single grouping variable</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall;
  grpstats (Weight, Model_Year, 0.05);
- title ("Mean Weight by Model Year");
+ title ('Mean Weight by Model Year');</pre>
+                <div class="text-center">
+                  <img src="assets/grpstats_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/grpstats_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot mean and 95% CI for two grouping variables
- load carsmall;
+          </div>
+          <div class="card-body">
+                <p>Plot mean and 95% CI for two grouping variables</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall;
  grpstats (Weight, {Origin, Cylinders}, 0.05);
- title ("Mean Weight by Origin and Number of Cylinders");
+ title ('Mean Weight by Origin and Number of Cylinders');</pre>
+                <div class="text-center">
+                  <img src="assets/grpstats_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/grpstats_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

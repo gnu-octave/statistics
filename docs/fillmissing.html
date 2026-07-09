@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -809,7 +812,6 @@
 <dt><code><h5 class="fs">statistics: <var>B</var> = <b>fillmissing</b> (&hellip;, <var>PropertyName</var>, <var>PropertyValue</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>B</var>, <var>idx</var>] = <b>fillmissing</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Fill missing data in arrays.
 </p>
 <div class="ms-5">
@@ -820,14 +822,14 @@
 </p>
 <p> Standard missing values and their corresponding data types are:
 </p>
- <ul>
+<ul>
 <li> <code>NaN</code> - for <code>double</code>, <code>single</code>, <code>duration</code>, and
  <code>calendarDuration</code> arrays.
- </li><li> <code>NaT</code> - for <code>datetime</code> arrays.
- </li><li> <code>&lt;missing&gt;</code> - for <code>string</code> arrays.
- </li><li> <code>&lt;undefined&gt;</code> - for <code>categorical</code> arrays.
- </li><li> <code>{0x0 char}</code> - for <code>cell</code> arrays of character vectors.
- </li></ul>
+</li><li> <code>NaT</code> - for <code>datetime</code> arrays.
+</li><li> <code>&lt;missing&gt;</code> - for <code>string</code> arrays.
+</li><li> <code>&lt;undefined&gt;</code> - for <code>categorical</code> arrays.
+</li><li> <code>{0x0 char}</code> - for <code>cell</code> arrays of character vectors.
+</li></ul>
 
 <p> For any data types that do not support missing values, <code>ismissing</code>
  returns <code><var>TF</var> = false (size (<var>A</var>))</code>.
@@ -848,40 +850,30 @@
  were filled.
 </p>
 <p> Alternate Input Arguments and Values:
- </p><ul>
+</p>
+<ul>
 <li> <var>method</var> - replace missing values with:
- <dl compact="compact">
+<dl compact="compact">
 <dt> <code>next</code></dt>
 <dt> <code>previous</code></dt>
 <dt> <code>nearest</code></dt>
-</dl>
-<p> next, previous, or nearest non-missing value (nearest defaults to next
- when equidistant as determined by <code>SamplePoints</code>.)
-</p>
- </dd>
+<dd> next, previous, or nearest non-missing value (nearest defaults to next
+ when equidistant as determined by <code>SamplePoints</code>.)</dd>
 <dt> <code>linear</code></dt>
-</dl>
-<p> linear interpolation of neighboring, non-missing values
-</p>
- </dd>
+<dd> linear interpolation of neighboring, non-missing values</dd>
 <dt> <code>spline</code></dt>
-</dl>
-<p> piecewise cubic spline interpolation of neighboring, non-missing values
-</p>
- </dd>
+<dd> piecewise cubic spline interpolation of neighboring, non-missing values</dd>
 <dt> <code>pchip</code></dt>
-</dl>
-<p> &rsquo;shape preserving&rsquo; piecewise cubic spline interpolation of neighboring,
- non-missing values
- </p></dd>
+<dd> &rsquo;shape preserving&rsquo; piecewise cubic spline interpolation of neighboring,
+ non-missing values</dd>
 </dl>
 
- </li><li> <var>move_method</var> - moving window calculated replacement values:
- <dl compact="compact">
+
+</li><li> <var>move_method</var> - moving window calculated replacement values:
+<dl compact="compact">
 <dt> <code>movmean</code></dt>
 <dt> <code>movmedian</code></dt>
-</dl>
-<p> moving average or median using a window determined by <var>window_size</var>.
+<dd> moving average or median using a window determined by <var>window_size</var>.
  <var>window_size</var> must be either a positive scalar value or a two element
  positive vector of sizes <code>[<var>nb</var>, <var>na</var>]</code> measured in the
  same units as <code>SamplePoints</code>.  For scalar values, the window is
@@ -891,31 +883,26 @@
  window limit is inclusive and the forward limit is exclusive.  If a
  two-element <var>window_size</var> vector is specified, the window includes all
  points within a distance of <var>nb</var> backward and <var>na</var> forward from the
- current element at the window center (both limits inclusive).
- </p></dd>
+ current element at the window center (both limits inclusive).</dd>
 </dl>
 
- </li><li> <var>fill_function</var> - custom method specified as a function handle.
+
+</li><li> <var>fill_function</var> - custom method specified as a function handle.
  The supplied fill function must accept three inputs in the following order
  for each missing gap in the data:
- <dl compact="compact">
+<dl compact="compact">
 <dt> <var>A_values -</var></dt>
-</dl>
-<p> elements of <var>A</var> within the window on either side of the gap as
+<dd> elements of <var>A</var> within the window on either side of the gap as
  determined by <var>window_size</var>.  (Note these elements can include missing
- values from other nearby gaps.)
- </p></dd>
+ values from other nearby gaps.)</dd>
 <dt> <var>A_locs -</var></dt>
-</dl>
-<p> locations of the reference data, <var>A_values</var>, in terms of the default
- or specified <code>SamplePoints</code>.
- </p></dd>
+<dd> locations of the reference data, <var>A_values</var>, in terms of the default
+ or specified <code>SamplePoints</code>.</dd>
 <dt> <var>gap_locs -</var></dt>
+<dd> location of the gap data points that need to be filled in terms of the
+ default or specified <code>SamplePoints</code>.</dd>
 </dl>
-<p> location of the gap data points that need to be filled in terms of the
- default or specified <code>SamplePoints</code>.
- </p></dd>
-</dl>
+
 
 <p> The supplied function must return a scalar or vector with the same number of
  elements in <var>gap_locs</var>.  The required <var>window_size</var> parameter
@@ -925,58 +912,52 @@
  (2) the window extended on either side of the gap has inclusive endpoints
  regardless of how <var>window_size</var> is specified.
 </p>
- </li><li> <var>dim</var> - specify a dimension for vector operation (default =
- first non-singeton dimension)
 
- </li><li> <var>PropertyName</var>-<var>PropertyValue</var> pairs
- <dl compact="compact">
+</li><li> <var>dim</var> - specify a dimension for vector operation (default =
+ first non-singeton dimension)
+</li><li> <var>PropertyName</var>-<var>PropertyValue</var> pairs
+<dl compact="compact">
 <dt> <code>SamplePoints</code></dt>
-</dl>
-<p> <var>PropertyValue</var> is a vector of sample point values representing the
+<dd> <var>PropertyValue</var> is a vector of sample point values representing the
  sorted and unique x-axis values of the data in <var>A</var>.  If unspecified,
  the default is assumed to be the vector <var>[1 : size (A, dim)]</var>.  The
  values in <code>SamplePoints</code> will affect methods and properties that rely
  on the effective distance between data points in <var>A</var>, such as
  interpolants and moving window functions where the <var>window_size</var>
  specified for moving window functions is measured relative to the
- <code>SamplePoints</code>.
-</p>
- </dd>
+ <code>SamplePoints</code>.</dd>
 <dt> <code>EndValues</code></dt>
-</dl>
-<p> Apply a separate handling method for missing values at the front or back of
+<dd> Apply a separate handling method for missing values at the front or back of
  the array. <var>PropertyValue</var> can be:
- </p><ul>
+<ul>
 <li> A constant scalar or array with the same shape requirements as <var>v</var>.
- </li><li> <code>none</code> - Do not fill end gap values.
- </li><li> <code>extrap</code> - Use the same procedure as <var>method</var> to fill the
+</li><li> <code>none</code> - Do not fill end gap values.
+</li><li> <code>extrap</code> - Use the same procedure as <var>method</var> to fill the
  end gap values.
- </li><li> Any valid <var>method</var> listed above except for <code>movmean</code>,
+</li><li> Any valid <var>method</var> listed above except for <code>movmean</code>,
  <code>movmedian</code>, and <code>fill_function</code>. Those methods can only be
  applied to end gap values with <code>extrap</code>.
- </li></ul>
+</li></ul>
 
- </dd>
+</dd>
 <dt> <code>MissingLocations</code></dt>
-</dl>
-<p> <var>PropertyValue</var> must be a logical array the same size as <var>A</var>
+<dd> <var>PropertyValue</var> must be a logical array the same size as <var>A</var>
  indicating locations of known missing data with a value of <code>true</code>.
- (cannot be combined with MaxGap)
-</p>
- </dd>
+ (cannot be combined with MaxGap)</dd>
 <dt> <code>MaxGap</code></dt>
-</dl>
-<p> <var>PropertyValue</var> is a numeric scalar indicating the maximum gap length
+<dd> <var>PropertyValue</var> is a numeric scalar indicating the maximum gap length
  to fill, and assumes the same distance scale as the sample points. Gap
  length is calculated by the difference in locations of the sample points
  on either side of the gap, and gaps larger than MaxGap are ignored by
- <var>fillmissing</var>. (cannot be combined with MissingLocations)
- </p></dd>
+ <var>fillmissing</var>. (cannot be combined with MissingLocations)</dd>
 </dl>
+
+
 </li></ul>
 
 <p> Compatibility Notes:
- </p><ul>
+</p>
+<ul>
 <li>
  Numerical and logical inputs for <var>A</var> and <var>v</var> may be specified
  in any combination. The output will be the same class as <var>A</var>, with the
@@ -985,9 +966,9 @@
  <code>missinglocations</code> option specifies the missing value identification of
  logical and other numeric data types, the output will always be
  <code><var>B</var> = <var>A</var></code> with <code><var>idx</var> = false(size(<var>A</var>))</code>.
- </li><li>
+</li><li>
  All interpolation methods can be individually applied to <code>EndValues</code>.
- </li><li>
+</li><li>
  <small>MATLAB</small>&rsquo;s <var>fill_function</var> method currently has several
  inconsistencies with the other methods (tested against version 2022a), and
  Octave&rsquo;s implementation has chosen the following consistent behavior over
@@ -996,7 +977,7 @@
  <var>fill_function</var> processing because the moving window is always empty.
  (3) operation in dimensions higher than 2 perform identically to operations
  in dims 1 and 2, most notable on vectors.
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="ismissing.html">ismissing</a>, 

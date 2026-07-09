@@ -82,9 +82,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="index.html#Regression">
+                  <a class="nav-link" href="index.html#Experimental Design">
                     <i class="fas fa-list-alt"></i>
-                    Regression
+                    Experimental Design
                   </a>
                 </li>
                 <li class="nav-item">
@@ -592,7 +592,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList12" type="checkbox">
+				<input id="togList12" type="checkbox" checked>
 				<label for="togList12">
 					<span><h6>Experimental Design</h6></span>
 					<span><h6>Experimental Design</h6></span>
@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace fw-bolder"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -746,7 +749,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<input id="togList19" type="checkbox" checked>
+				<input id="togList19" type="checkbox">
 				<label for="togList19">
 					<span><h6>Regression</h6></span>
 					<span><h6>Regression</h6></span>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: <var>result</var> = <b>parseWilkinsonFormula</b> (<var>formula</var>, <var>mode</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>X</var>, <var>y</var>, <var>names</var>] = <b>parseWilkinsonFormula</b> (<var>formula</var>, &quot;model_matrix&quot;, <var>data</var>)</code></h5></dt>
 </dl>
-
 <p> Parse and expand statistical model formulae using the Wilkinson notation.
 </p>
 <div class="ms-5">
@@ -827,7 +829,7 @@
  statistical rules of marginality. Additionally, explicit nesting notation
  (e.g., <code>B(A)</code>) is supported to denote that factor B is nested within A.
 </p>
- <table>
+<table>
 <thead><tr><th width="15%">Operator</th><th width="35%">Description</th><th width="50%">Expansion Example</th></tr></thead>
 <tr><td width="15%"><code>+</code></td><td width="35%">Addition (Union)</td><td width="50%"><code>A + B</code> expands to A, B</td></tr>
 <tr><td width="15%"><code>*</code></td><td width="35%">Crossing</td><td width="50%"><code>A * B</code> expands to A, B, A:B</td></tr>
@@ -838,12 +840,11 @@
 <tr><td width="15%"><code>1</code></td><td width="35%">Intercept</td><td width="50%"><code>y ~ A - 1</code> removes intercept</td></tr>
 </table>
 
-
 <p> <strong>Left-Hand Side (Response) Operators</strong>
  The LHS, separated by the <code>~</code> operator, defines the dependent variables.
  It natively supports multi-response syntaxes.
 </p>
- <table>
+<table>
 <thead><tr><th width="15%">Operator</th><th width="35%">Description</th><th width="50%">Usage Example</th></tr></thead>
 <tr><td width="15%"><code>~</code></td><td width="35%">Formula separator</td><td width="50%"><code>y ~ x</code></td></tr>
 <tr><td width="15%"><code>,</code></td><td width="35%">List separator</td><td width="50%"><code>y1, y2 ~ x</code></td></tr>
@@ -854,70 +855,61 @@
  <code>parseWilkinsonFormula (<var>formula</var>, <var>mode</var>)</code> evaluates the
  formula string based on the selected <var>mode</var>:
 </p>
- <ul>
+<ul>
 <li> <code>'expand'</code> (default) - Returns a structure containing
  <code>response</code> and <code>model</code> fields. Each field contains cell arrays
  of the expanded, fundamental terms.
-
- </li><li> <code>'equation'</code> - Generates a string representing the mathematical
+</li><li> <code>'equation'</code> - Generates a string representing the mathematical
  equation of the fitted model. Coefficients are represented generically as
  <code>c1, c2, ...</code>. If multiple responses are specified, it returns a
  string array of equations.
-
- <table>
+<table>
 <thead><tr><th width="40%">Formula String</th><th width="60%">Equation Output</th></tr></thead>
 <tr><td width="40%"><code>y ~ x</code></td><td width="60%"><code>&quot;y = c1 + c2*x&quot;</code></td></tr>
 <tr><td width="40%"><code>y ~ A * B</code></td><td width="60%"><code>&quot;y = c1 + c2*A + c3*B + c4*A*B&quot;</code></td></tr>
-<tr><td width="40%"><code>y ~ School / Class</code></td><td width="60%"><code>&quot;y = c1 + c2*School + c3*Class*School&quot;</code></td></tr>
+<tr><td width="40%"><code>y ~ School / Class</code></td><td width="60%"> <code>&quot;y = c1 + c2*School +
+ c3*Class*School&quot;</code></td></tr>
 <tr><td width="40%"><code>y ~ x^2</code></td><td width="60%"><code>&quot;y = c1 + c2*x + c3*x^2&quot;</code></td></tr>
 <tr><td width="40%"><code>y1 - y2 ~ Trt</code></td><td width="60%"><code>[&quot;y1 = c1 + c2*Trt&quot;, &quot;y2 = ...&quot;]</code></td></tr>
 </table>
 
- </li><li> <code>'matrix'</code> - Returns a schema structure containing a binary
+
+</li><li> <code>'matrix'</code> - Returns a schema structure containing a binary
  matrix defining term membership, useful for internal algorithmic processing.
-
- </li><li> <code>'model_matrix'</code> - Constructs the numeric Design Matrix (<var>X</var>)
+</li><li> <code>'model_matrix'</code> - Constructs the numeric Design Matrix (<var>X</var>)
  and Response Matrix (<var>y</var>) directly from a provided data table.
-
- </li><li> <code>'parse'</code> - Returns the raw Abstract Syntax Tree (AST) structure.
-
- </li><li> <code>'tokenize'</code> - Returns the array of tokens generated by the lexer.
- </li></ul>
+</li><li> <code>'parse'</code> - Returns the raw Abstract Syntax Tree (AST) structure.
+</li><li> <code>'tokenize'</code> - Returns the array of tokens generated by the lexer.
+</li></ul>
 
 <p> <strong>Data Handling (&rsquo;model_matrix&rsquo; mode)</strong>
  When using the <code>'model_matrix'</code> mode, a <var>data</var> argument must be
  provided as an Octave <code>table</code>.
- </p><ul>
+</p>
+<ul>
 <li> <strong>Categorical Variables:</strong> Cell arrays of strings in the table
  are automatically detected as categorical factors and undergo corner-point
  (reference) dummy coding.
- </li><li> <strong>Numeric Variables:</strong> Standard numeric vectors are treated as
+</li><li> <strong>Numeric Variables:</strong> Standard numeric vectors are treated as
  continuous predictors or responses.
- </li><li> <strong>Missing Data:</strong> Rows containing <code>NaN</code> values in any of the
+</li><li> <strong>Missing Data:</strong> Rows containing <code>NaN</code> values in any of the
  active variables are automatically omitted from the final matrices.
- </li></ul>
+</li></ul>
 
 <p> <strong>Outputs</strong>
- </p><dl compact="compact">
+</p>
+<dl compact="compact">
 <dt> <var>terms / result</var></dt>
-</dl>
-<p> The processed model structure, string array, or cell array depending on the
- selected <var>mode</var>.
- </p></dd>
+<dd> The processed model structure, string array, or cell array depending on the
+ selected <var>mode</var>.</dd>
 <dt> <var>X</var></dt>
-</dl>
-<p> The generated numeric design matrix (Observations x Parameters). Includes
- a column of ones for the intercept unless <code>- 1</code> is in the formula.
- </p></dd>
+<dd> The generated numeric design matrix (Observations x Parameters). Includes
+ a column of ones for the intercept unless <code>- 1</code> is in the formula.</dd>
 <dt> <var>y</var></dt>
-</dl>
-<p> The numeric response matrix (Observations x K responses).
- </p></dd>
+<dd> The numeric response matrix (Observations x K responses).</dd>
 <dt> <var>names</var></dt>
-</dl>
-<p> A cell array of character vectors containing the column names corresponding
- to the generated design matrix <var>X</var>.
- </p></dd>
+<dd> A cell array of character vectors containing the column names corresponding
+ to the generated design matrix <var>X</var>.</dd>
 </dl>
 
 <p> <strong>References</strong>
@@ -925,49 +917,34 @@
 <p> Wilkinson, G. N. and Rogers, C. E. (1973). Symbolic Description of Factorial
  Models for Analysis of Variance. Applied Statistics, 22, 392-399.
 </p>
-
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/parseWilkinsonFormula.m">parseWilkinsonFormula</a>
 </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Simple Linear Regression :
- ## This example models a continuous response (Height) as a linear function
- ## of a single continuous predictor (Age). The 'equation' mode returns the
- ## symbolic representation, while 'model_matrix' generates the design matrix.
- Age = [10; 12; 14; 16; 18];
+          </div>
+          <div class="card-body">
+                <p>Simple Linear Regression : This example models a continuous response (Height) as a linear function of a single continuous predictor (Age). The 'equation' mode returns the symbolic representation, while 'model_matrix' generates the design matrix.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Age = [10; 12; 14; 16; 18];
  Height = [140; 148; 155; 162; 170];
  t = table (Height, Age);
-
  formula = 'Height ~ Age';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
-
-Formula: Height ~ Age
-equation =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: Height ~ Age</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "Height = c1 + c2*Age"
-X =
+   "Height = c1 + c2*Age"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">X =
 
     1   10
     1   12
@@ -987,61 +964,42 @@ names =
   2x1 cell array
 
     {'(Intercept)'}    
-    {'Age'        }    
+    {'Age'        }</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Multiple Regression :
- ## Here we model House Price based on two independent predictors: Area and
- ## number of Rooms. The '+' operator adds terms to the model without assuming
- ## any interaction between them.
- Price = [300; 350; 400; 450];
+          </div>
+          <div class="card-body">
+                <p>Multiple Regression : Here we model House Price based on two independent predictors: Area and number of Rooms. The '+' operator adds terms to the model without assuming any interaction between them.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Price = [300; 350; 400; 450];
  Area  = [1500; 1800; 2200; 2500];
  Rooms = [3; 3; 4; 5];
  t = table (Price, Area, Rooms);
-
  formula = 'Price ~ Area + Rooms';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
-
-Formula: Price ~ Area + Rooms
-equation =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: Price ~ Area + Rooms</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "Price = c1 + c2*Area + c3*Rooms"
-X =
+   "Price = c1 + c2*Area + c3*Rooms"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">X =
 
-      1      3   1500
-      1      3   1800
-      1      4   2200
-      1      5   2500
+      1   1500      3
+      1   1800      3
+      1   2200      4
+      1   2500      5
 
 y =
 
@@ -1054,61 +1012,42 @@ names =
   3x1 cell array
 
     {'(Intercept)'}    
-    {'Rooms'      }    
     {'Area'       }    
+    {'Rooms'      }</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Interaction Effects : 
- ## We analyze Relief Score based on Drug Type and Dosage Level.
- ## The '*' operator expands to the main effects PLUS the interaction term.
- ## Categorical variables are automatically created.
- Relief = [5; 7; 6; 8];
+          </div>
+          <div class="card-body">
+                <p>Interaction Effects : We analyze Relief Score based on Drug Type and Dosage Level. The '*' operator expands to the main effects PLUS the interaction term. Categorical variables are automatically created.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Relief = [5; 7; 6; 8];
  Drug   = {'Placebo'; 'Placebo'; 'Active'; 'Active'};
  Dose   = {'Low'; 'High'; 'Low'; 'High'};
  t = table (Relief, Drug, Dose);
-
  formula = 'Relief ~ Drug * Dose';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
-
-Formula: Relief ~ Drug * Dose
-equation =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: Relief ~ Drug * Dose</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "Relief = c1 + c2*Drug + c3*Dose + c4*Dose*Drug"
-X =
+   "Relief = c1 + c2*Drug + c3*Dose + c4*Dose*Drug"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">X =
 
    1   1   1   1
-   1   1   0   0
    1   0   1   0
+   1   1   0   0
    1   0   0   0
 
 y =
@@ -1122,61 +1061,44 @@ names =
   4x1 cell array
 
     {'(Intercept)'          }    
-    {'Drug_Placebo'         }    
     {'Dose_Low'             }    
-    {'Dose_Low:Drug_Placebo'}    
+    {'Drug_Placebo'         }    
+    {'Dose_Low:Drug_Placebo'}</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Polynomial Regression : 
- ## Uses the power operator (^) to model non-linear relationships.
- Distance = [20; 45; 80; 125];
+          </div>
+          <div class="card-body">
+                <p>Polynomial Regression : Uses the power operator (^) to model non-linear relationships.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Distance = [20; 45; 80; 125];
  Speed    = [30; 50; 70; 90];
  Speed_2  = Speed .^ 2; 
  t = table (Distance, Speed, Speed_2, 'VariableNames', {'Distance', 'Speed', 'Speed^2'});
-
  formula = 'Distance ~ Speed^2';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
-
-Formula: Distance ~ Speed^2
-equation =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: Distance ~ Speed^2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "Distance = c1 + c2*Speed + c3*Speed^2"
-X =
+   "Distance = c1 + c2*Speed + c3*Speed^2"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [X, y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">X =
 
-      1    900     30
-      1   2500     50
-      1   4900     70
-      1   8100     90
+      1     30    900
+      1     50   2500
+      1     70   4900
+      1     90   8100
 
 y =
 
@@ -1189,56 +1111,38 @@ names =
   3x1 cell array
 
     {'(Intercept)'}    
-    {'Speed^2'    }    
     {'Speed'      }    
+    {'Speed^2'    }</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Hierarchical Design.
- ## Common in psychometrics. Here, 'Class' is nested within 'School'.
- ## The '/' operator implies School + School:Class.
- Score  = [88; 92; 75; 80];
+          </div>
+          <div class="card-body">
+                <p>Hierarchical Design. Common in psychometrics. Here, 'Class' is nested within 'School'. The '/' operator implies School + School:Class.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Score  = [88; 92; 75; 80];
  School = {'North'; 'North'; 'South'; 'South'};
  Class  = {'Rm101'; 'Rm102'; 'Rm201'; 'Rm202'};
  t = table (Score, School, Class);
-
  formula = 'Score ~ School / Class';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- terms = parseWilkinsonFormula (formula, 'expand')
-
-Formula: Score ~ School / Class
-equation =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: Score ~ School / Class</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "Score = c1 + c2*School + c3*Class*School"
-terms =
+   "Score = c1 + c2*School + c3*Class*School"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> terms = parseWilkinsonFormula (formula, 'expand')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">terms =
 
   scalar structure containing the fields:
 
@@ -1265,52 +1169,33 @@ terms =
         [1,2] = School
       }
 
-    }
+    }</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Explicit Nesting : 
- ## The parser also supports the explicit 'B(A)' syntax, which means
- ## 'B is nested within A'. This is equivalent to the interaction 'A:B'
- ## but often used to denote random effects or specific hierarchy.
- formula = 'y ~ Class(School)';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- terms = parseWilkinsonFormula (formula, 'expand')
-
-Formula: y ~ Class(School)
-equation =
+          </div>
+          <div class="card-body">
+                <p>Explicit Nesting : The parser also supports the explicit 'B(A)' syntax, which means 'B is nested within A'. This is equivalent to the interaction 'A:B' but often used to denote random effects or specific hierarchy.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> formula = 'y ~ Class(School)';
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: y ~ Class(School)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "y = c1 + c2*Class(School)"
-terms =
+   "y = c1 + c2*Class(School)"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> terms = parseWilkinsonFormula (formula, 'expand')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">terms =
 
   scalar structure containing the fields:
 
@@ -1332,52 +1217,33 @@ terms =
         [1,2] = School
       }
 
-    }
+    }</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 7
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 7
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Excluding Terms : 
- ## Demonstrates building a complex model and then simplifying it.
- ## We define a full 3-way interaction (A*B*C) but explicitly remove the
- ## three-way term (A:B:C) using the minus operator.
- formula = 'y ~ (A + B + C)^3 - A:B:C';
- disp (['Formula: ', formula]);
- equation = parseWilkinsonFormula (formula, 'equation')
- terms = parseWilkinsonFormula (formula, 'expand')
-
-Formula: y ~ (A + B + C)^3 - A:B:C
-equation =
+          </div>
+          <div class="card-body">
+                <p>Excluding Terms : Demonstrates building a complex model and then simplifying it. We define a full 3-way interaction (A<em>B</em>C) but explicitly remove the three-way term (A:B:C) using the minus operator.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> formula = 'y ~ (A + B + C)^3 - A:B:C';
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: y ~ (A + B + C)^3 - A:B:C</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equation = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equation =
   string
 
-   "y = c1 + c2*A + c3*B + c4*C + c5*A*B + c6*A*C + c7*B*C"
-terms =
+   "y = c1 + c2*A + c3*B + c4*C + c5*A*B + c6*A*C + c7*B*C"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> terms = parseWilkinsonFormula (formula, 'expand')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">terms =
 
   scalar structure containing the fields:
 
@@ -1426,61 +1292,40 @@ terms =
         [1,2] = C
       }
 
-    }
+    }</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 8
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 8
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- ## Repeated Measures : 
- ## This allows predicting multiple outcomes simultaneously.
- ## The range operator '-' selects all variables between 'T1' and 'T3'
- ## as the response matrix Y.
- T1 = [10; 11];
+          </div>
+          <div class="card-body">
+                <p>Repeated Measures : This allows predicting multiple outcomes simultaneously. The range operator '-' selects all variables between 'T1' and 'T3' as the response matrix Y.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> T1 = [10; 11];
  T2 = [12; 13];
  T3 = [14; 15];
  Treatment = {'Control'; 'Treated'};
  t = table (T1, T2, T3, Treatment);
-
  formula = 'T1 - T3 ~ Treatment';
- disp (['Formula: ', formula]);
- equations = parseWilkinsonFormula (formula, 'equation')
- [X, Y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)
-
-Formula: T1 - T3 ~ Treatment
-equations =
+ disp (['Formula: ', formula]);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">Formula: T1 - T3 ~ Treatment</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> equations = parseWilkinsonFormula (formula, 'equation')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">equations =
   3x1 string array
 
     "T1 = c1 + c2*Treatment"    
     "T2 = c3 + c4*Treatment"    
-    "T3 = c5 + c6*Treatment"    
-
-X =
+    "T3 = c5 + c6*Treatment"</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [X, Y, names] = parseWilkinsonFormula (formula, 'model_matrix', t)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">X =
 
    1   0
    1   1
@@ -1494,14 +1339,8 @@ names =
   2x1 cell array
 
     {'(Intercept)'      }    
-    {'Treatment_Treated'}    
+    {'Treatment_Treated'}</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

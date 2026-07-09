@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,30 +806,28 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>mnpdf</b> (<var>x</var>, <var>pk</var>)</code></h5></dt>
 </dl>
-
 <p> Multinomial probability density function (PDF).
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>x</var> is vector with a single sample of a multinomial distribution with
  parameter <var>pk</var> or a matrix of random samples from multinomial
  distributions. In the latter case, each row of <var>x</var> is a sample from a
  multinomial distribution with the corresponding row of <var>pk</var> being its
  parameter.
-
- </li><li>
+</li><li>
  <var>pk</var> is a vector with the probabilities of the categories or a matrix
  with each row containing the probabilities of a multinomial sample.
- </li></ul>
+</li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>y</var> is a vector of probabilities of the random samples <var>x</var> from the
  multinomial distribution with corresponding parameter <var>pk</var>. The parameter
@@ -834,32 +835,31 @@
  row of <var>x</var>. The length of <var>y</var> is the number of columns of <var>x</var>.
  If a row of <var>pk</var> does not sum to <code>1</code>, then the corresponding element
  of <var>y</var> will be <code>NaN</code>.
- </li></ul>
+</li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = [1, 4, 2];
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = [1, 4, 2];
  pk = [0.2, 0.5, 0.3];
  y = mnpdf (x, pk);
- </pre><pre class="example">
- </pre><pre class="example"> x = [1, 4, 2; 1, 0, 9];
+
+ x = [1, 4, 2; 1, 0, 9];
  pk = [0.2, 0.5, 0.3; 0.1, 0.1, 0.8];
  y = mnpdf (x, pk);
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Wendy L. Martinez and Angel R. Martinez. <cite>Computational Statistics
  Handbook with MATLAB</cite>. Appendix E, pages 547-557, Chapman &amp; Hall/CRC, 2001.
-
- </li><li>
+</li><li>
  Merran Evans, Nicholas Hastings and Brian Peacock. <cite>Statistical
  Distributions</cite>. pages 134-136, Wiley, New York, third edition, 2000.
- </li></ol>
+</li></ol>
 
 <p> <strong>See also: </strong>
   <a href="mnrnd.html">mnrnd</a>

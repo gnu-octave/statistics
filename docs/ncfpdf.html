@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>ncfpdf</b> (<var>x</var>, <var>df1</var>, <var>df2</var>, <var>lambda</var>)</code></h5></dt>
 </dl>
-
 <p> Noncentral <math>F</math>-probability density function (PDF).
 </p>
 <div class="ms-5">
@@ -826,95 +828,67 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncfpdf.m">ncfpdf</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various PDFs from the noncentral F distribution
- x = 0:0.01:5;
+          </div>
+          <div class="card-body">
+                <p>Plot various PDFs from the noncentral F distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.01:5;
  y1 = ncfpdf (x, 2, 5, 1);
  y2 = ncfpdf (x, 2, 5, 2);
  y3 = ncfpdf (x, 5, 10, 1);
  y4 = ncfpdf (x, 10, 20, 10);
- plot (x, y1, "-r", x, y2, "-g", x, y3, "-k", x, y4, "-m")
+ plot (x, y1, '-r', x, y2, '-g', x, y3, '-k', x, y4, '-m')
  grid on
  xlim ([0, 5])
  ylim ([0, 0.8])
- legend ({"df1 = 2, df2 = 5, λ = 1", "df1 = 2, df2 = 5, λ = 2", ...
-          "df1 = 5, df2 = 10, λ = 1", "df1 = 10, df2 = 20, λ = 10"}, ...
-         "location", "northeast")
- title ("Noncentral F PDF")
- xlabel ("values in x")
- ylabel ("density")
+ legend ({'df1 = 2, df2 = 5, λ = 1', 'df1 = 2, df2 = 5, λ = 2', ...
+          'df1 = 5, df2 = 10, λ = 1', 'df1 = 10, df2 = 20, λ = 10'}, ...
+         'location', 'northeast')
+ title ('Noncentral F PDF')
+ xlabel ('values in x')
+ ylabel ('density')</pre>
+                <div class="text-center">
+                  <img src="assets/ncfpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncfpdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the
- ## same number of numerator and denominator degrees of freedom (5, 20)
-
- x = 0.01:0.1:10.01;
+          </div>
+          <div class="card-body">
+                <p>Compare the noncentral F PDF with LAMBDA = 10 to the F PDF with the same number of numerator and denominator degrees of freedom (5, 20)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0.01:0.1:10.01;
  y1 = ncfpdf (x, 5, 20, 10);
  y2 = fpdf (x, 5, 20);
- plot (x, y1, "-", x, y2, "-");
+ plot (x, y1, '-', x, y2, '-');
  grid on
  xlim ([0, 10])
  ylim ([0, 0.8])
- legend ({"Noncentral F(5,20,10)", "F(5,20)"}, "location", "northeast")
- title ("Noncentral F vs F PDFs")
- xlabel ("values in x")
- ylabel ("density")
+ legend ({'Noncentral F(5,20,10)', 'F(5,20)'}, 'location', 'northeast')
+ title ('Noncentral F vs F PDFs')
+ xlabel ('values in x')
+ ylabel ('density')</pre>
+                <div class="text-center">
+                  <img src="assets/ncfpdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncfpdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

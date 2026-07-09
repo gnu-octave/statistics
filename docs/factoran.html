@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,23 +808,22 @@
 <dt><code><h5 class="fs">statistics: [<var>loadings</var>, <var>specvar</var>] = <b>factoran</b> (<var>X</var>, <var>nfac</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>loadings</var>, <var>specvar</var>, <var>fscores</var>] = <b>factoran</b> (<var>X</var>, <var>nfac</var>)</code></h5></dt>
 </dl>
-
 <p> Perform principal axis factor analysis on data matrix.
 </p>
 <div class="ms-5">
 <p> <code><var>loadings</var> = factoran (<var>X</var>, <var>nfac</var>)</code> performs principal
- axis factoring to extract <var>nfac</var> factors from the <math>N&times; P</math> data
+ axis factoring to extract <var>nfac</var> factors from the <math>N &times; P</math> data
  matrix <var>X</var>, where rows correspond to observations and columns to
- variables.  The output <var>loadings</var> is a <math>P&times; <var>nfac</var></math> matrix
+ variables.  The output <var>loadings</var> is a <math>P &times; <var>nfac</var></math> matrix
  whose columns contain the loadings on each factor, in decreasing order of
  importance.
 </p>
 <p> <code>[<var>loadings</var>, <var>specvar</var>] = factoran (&hellip;)</code> also returns a
- <math>P&times; 1</math> vector <var>specvar</var> containing the specific variances (unique
+ <math>P &times; 1</math> vector <var>specvar</var> containing the specific variances (unique
  variances) for each variable.
 </p>
 <p> <code>[<var>loadings</var>, <var>specvar</var>, <var>fscores</var>] = factoran (&hellip;)</code>
- also returns the <math>N&times; <var>nfac</var></math> matrix <var>fscores</var> of estimated
+ also returns the <math>N &times; <var>nfac</var></math> matrix <var>fscores</var> of estimated
  factor scores, computed using the regression method.
 </p>
 <p> The analysis is performed on the correlation matrix of the standardized
@@ -830,13 +832,14 @@
  The sign of each loading vector is chosen so that the element with largest
  absolute value is positive.
 </p>
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
- <ol>
+
+<ol>
 <li>
  Harman, H. H., Modern Factor Analysis, 3rd Edition, University of Chicago
  Press, 1976.
- </li></ol>
+</li></ol>
 
 <p> <strong>See also: </strong>
   <a href="barttest.html">barttest</a>, 
@@ -847,25 +850,18 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/factoran.m">factoran</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = [ 7    26     6    60;
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [ 7    26     6    60;
        1    29    15    52;
       11    56     8    20;
       11    31     8    47;
@@ -879,14 +875,8 @@
       11    66     9    12;
       10    68     8    12
      ];
- [loadings, specvar, fscores] = factoran (x, 2);
+ [loadings, specvar, fscores] = factoran (x, 2);</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

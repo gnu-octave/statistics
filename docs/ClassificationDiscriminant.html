@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ClassificationDiscriminant</h5></code></dl>
-
 <p> Discriminant analysis classification
 </p>
 <div class="ms-5">
@@ -825,9 +827,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationDiscriminant.m">ClassificationDiscriminant</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>ClassificationDiscriminant</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -848,13 +848,11 @@ Predictor data
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric matrix containing the unstandardized predictor data.  Each
  column of <var>X</var> represents one predictor (variable), and each row
  represents one observation.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -880,14 +878,12 @@ Class labels
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a logical or numeric column vector, or as a character array
  or a cell array of character vectors with the same number of rows as the
  predictor data.  Each row in <var>Y</var> is the observed class label for
  the corresponding row in <var>X</var>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -913,13 +909,11 @@ Number of observations
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of observations in the
  training dataset used for training the ClassificationDiscriminant model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -945,14 +939,12 @@ Rows used for fitting
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical column vector with the same length as the observations in the
  original predictor data <var>X</var> specifying which rows have been used for
  fitting the ClassificationDiscriminant model.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -978,13 +970,11 @@ Number of predictors
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of predictors in the
  training dataset used for training the ClassificationDiscriminant model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1010,13 +1000,11 @@ Names of predictor variables
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
  variables.  The names are in the order in which they appear in the
  training dataset.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1042,12 +1030,10 @@ Response variable name
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1073,19 +1059,17 @@ Names of classes in the response variable
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
  same data types as the data in <var>Y</var>.  This property is read-only.
  <code>ClassNames</code> can have any of the following datatypes:
 </p>
- <ul>
+<ul>
 <li> Cell array of character vectors
- </li><li> Character array
- </li><li> Logical vector
- </li><li> Numeric vector
- </li></ul>
-
+</li><li> Character array
+</li><li> Logical vector
+</li><li> Numeric vector
+</li></ul>
 
 
 
@@ -1112,7 +1096,6 @@ Cost of Misclassification
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A square matrix specifying the cost of misclassification of a point.
  <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
@@ -1126,10 +1109,10 @@ Cost of Misclassification
  for correct classification and 1 for incorrect classification.
 </p>
 <p> Add or change the <code>Cost</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1156,17 +1139,16 @@ Prior probability for each class
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector specifying the prior probabilities for each class.  The
  order of the elements in <code>Prior</code> corresponds to the order of the
  classes in <code>ClassNames</code>.
 </p>
 <p> Add or change the <code>Prior</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.Prior = <var>priorVector</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1193,37 +1175,36 @@ Transformation function for classification scores
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a function handle for transforming the classification
  scores.  Add or change the <code>ScoreTransform</code> property using dot
  notation as in:
 </p>
- <ul>
+<ul>
 <li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
- </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
- </li></ul>
+</li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+</li></ul>
 
 <p> When specified as a character vector, it can be any of the following
  built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
  always stores their function handle equivalent.
 </p>
- <table>
+<table>
 <thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
+<tr><td width="20%"><code>'ismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+<tr><td width="20%"><code>'logit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="5%"></td><td width="75%"> <math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt;
+ 0</math></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="5%"></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetricismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
-
 
 
 
@@ -1250,14 +1231,12 @@ Within-class covariance
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric array specifying the within-class covariance.  For linear
  discriminant type (currently supported) this is a <math>P&times;P</math> matrix,
  where <math>P</math> is the number of predictors in <var>X</var>.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1283,14 +1262,12 @@ Class means
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>K&times;P</math> numeric matrix specifying the mean of the multivariate
  normal distribution of each corresponding class, where <math>K</math> is the
  number of classes and <math>P</math> is the number of predictors in <var>X</var>.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1316,7 +1293,6 @@ Coefficient matrices
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A <math>K&times;K</math> structure containing the coefficient matrices, where
  <math>K</math> is the number of classes.  If the <code>'FillCoeffs'</code> parameter
@@ -1328,14 +1304,13 @@ Coefficient matrices
  supported) boundaries between the classes <code>i</code> and <code>j</code> in the
  following fields:
 </p>
- <ul>
+<ul>
 <li> <code>DiscrimType</code> - A character vector
- </li><li> <code>Class1</code> - <code><var>ClassNames</var>(i)</code>
- </li><li> <code>Class2</code> - <code><var>ClassNames</var>(j)</code>
- </li><li> <code>Const</code> - A scalar
- </li><li> <code>Linear</code> - A vector with length as the number of predictors.
- </li></ul>
-
+</li><li> <code>Class1</code> - <code><var>ClassNames</var>(i)</code>
+</li><li> <code>Class2</code> - <code><var>ClassNames</var>(j)</code>
+</li><li> <code>Const</code> - A scalar
+</li><li> <code>Linear</code> - A vector with length as the number of predictors.
+</li></ul>
 
 
 
@@ -1362,13 +1337,11 @@ Delta threshold
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A nonnegative scalar specifying the threshold for linear discriminant
  model.  Currently unimplemented and fixed to 0.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1394,13 +1367,11 @@ Discriminant type
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the type discriminant model.  Currently
  only linear discriminant models are supported.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1426,12 +1397,10 @@ Gamma regularization parameter
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value ranging from 0 to 1, specifying the Gamma regularization
  parameter.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1457,12 +1426,10 @@ Minimum value for Gamma regularization parameter
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value ranging from 0 to 1, specifying the minimum value that the
  Gamma regularization parameter can have.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1488,12 +1455,10 @@ Logarithm of the determinant of the within-class covariance matrix
           <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A scalar value specifying the logarithm of the determinant of the
  within-class covariance matrix.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1519,21 +1484,17 @@ Predictor data with class means subtracted
           <div class="collapse multi-collapse" id="collapseProperty20">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A matrix of the same size as <var>X</var> and the values in <var>X</var> with the
  corresponding class means subtracted.  This property is read-only.
 </p>
 
 
-
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>ClassificationDiscriminant</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1558,30 +1519,29 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationDiscriminant</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationDiscriminant</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>obj</var> = ClassificationDiscriminant (<var>X</var>, <var>Y</var>)</code> returns
  a ClassificationDiscriminant object, with <var>X</var> as the predictor data
  and <var>Y</var> containing the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the discriminant model.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
  of categorical data. <var>Y</var> must have the same number of rows as
  <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>obj</var> = ClassificationDiscriminant (&hellip;, <var>name</var>,
  <var>value</var>)</code> returns a ClassificationDiscriminant object with parameters
  specified by the following <code><var>name</var>, <var>value</var></code> paired input
  arguments:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character
  vectors specifying the names of the predictors. The length of this array
@@ -1601,8 +1561,8 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
 <tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
  probabilities for each class.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.
- Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
- class probabilities or <code>&quot;uniform&quot;</code> to assume equal class
+ Alternatively, you can specify <code>'empirical'</code> to use the empirical
+ class probabilities or <code>'uniform'</code> to assume equal class
  probabilities.</td></tr>
 <tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A user-defined function handle
  or a character vector specifying one of the following builtin functions
@@ -1616,7 +1576,7 @@ Create a <code>ClassificationDiscriminant</code> class object containing a
  supported value is <code>'linear'</code>.</td></tr>
 <tr><td width="18%"><code>'FillCoeffs'</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
  with values <code>'on'</code> or <code>'off'</code> specifying whether to fill the
- coefficients after fitting. If set to <code>&quot;on&quot;</code>, the coefficients are
+ coefficients after fitting. If set to <code>'on'</code>, the coefficients are
  computed during model fitting, which can be useful for prediction.</td></tr>
 <tr><td width="18%"><code>'Gamma'</code></td><td width="2%"></td><td width="80%">A numeric scalar specifying the
  regularization parameter for the covariance matrix. It adjusts the linear
@@ -1658,21 +1618,20 @@ Classify new data points into categories using the discriminant
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationDiscriminant: [<var>label</var>, <var>score</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
  predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
  stored in the ClassificationDiscriminant model, <var>obj</var>.
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> must be a <code>ClassificationDiscriminant</code> class object.
- </li><li>
+</li><li>
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
  features <math>P</math> as the corresponding predictors of the discriminant
  model in <var>obj</var>.
- </li></ul>
+</li></ul>
 
 <p> <code>[<var>label</var>, <var>score</var>, <var>cost</var>] = predict (<var>obj</var>,
  <var>XC</var>)</code> also returns <var>score</var>, which contains the predicted class
@@ -1721,52 +1680,53 @@ Compute loss for a trained ClassificationDiscriminant object.
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
  <var>L</var>, using the default loss function <code>'mincost'</code>.
 </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a <var>ClassificationDiscriminant</var> object trained on
  <code>X</code> and <code>Y</code>.
- </li><li>
+</li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
  additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
+<tr><td width="18%"><code>'LossFun'</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
  Can be a function handle with four input arguments (C, S, W, Cost)
  which returns a scalar value or one of:
  &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
- <ul>
+<ul>
 <li>
  <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
  number of observations and <math>K</math> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
- </li><li>
+</li><li>
  <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
  represents the classification score for the corresponding class.
- </li><li>
+</li><li>
  <code>W</code> is a numeric vector of length <math>N</math>, representing
  the observation weights.
- </li><li>
+</li><li>
  <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
  costs.
- </li></ul></td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+</li></ul>
+
+</td></tr>
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
  a numeric vector of length equal to the number of rows in X.
  Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
  observation weights in each class sum to the prior probability of that
@@ -1804,25 +1764,25 @@ Classification margins for discriminant analysis classifier.
 <dl>
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
  the classification margins for <var>obj</var> with data <var>X</var> and
  classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
 </p>
- <ul>
+<ul>
 <li>
- <code>obj</code> is a <var>ClassificationDiscriminant</var> object trained on <code>X</code>
+ <code>obj</code> is a <var>ClassificationDiscriminant</var> object trained on
+ <code>X</code>
  and <code>Y</code>.
- </li><li>
+</li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> The classification margin for each observation is the difference between
  the classification score for the true class and the maximal
@@ -1860,7 +1820,6 @@ Cross Validate a Discriminant classification object.
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
  object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
@@ -1870,18 +1829,18 @@ Cross Validate a Discriminant classification object.
  specifies additional name-value pair arguments to customize the
  cross-validation process.
 </p>
- <table>
+<table>
 <thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
+<tr><td width="28%"><code>'KFold'</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
  k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
  integer greater than 1.</td></tr>
-<tr><td width="28%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
+<tr><td width="28%"><code>'Holdout'</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
  scalar in the range <math>(0,1)</math>.</td></tr>
-<tr><td width="28%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="70%">Specify whether to perform
+<tr><td width="28%"><code>'Leaveout'</code></td><td width="2%"></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
-<tr><td width="28%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
+<tr><td width="28%"><code>'CVPartition'</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
  object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
  <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
 </table>
@@ -1919,7 +1878,6 @@ Create a CompactClassificationDiscriminant object.
 <dl>
 <dt><code><h5 class="fs">ClassificationDiscriminant: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
  ClassificationDiscriminant object, <var>obj</var>.
@@ -1956,7 +1914,6 @@ Save a ClassificationDiscriminant object.
 <dl>
 <dt><code><h5 class="fs">ClassificationDiscriminant: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  ClassificationDiscriminant object into an Octave binary file, the name of
@@ -1988,28 +1945,19 @@ Save a ClassificationDiscriminant object.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create discriminant classifier Evaluate some model predictions on new data.
+Create discriminant classifier Evaluate some model predictions on new data.
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
  y = species;
  xc = [min(x); mean(x); max(x)];
  obj = fitcdiscr (x, y);
- [label, score, cost] = predict (obj, xc);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-</pre></td></tr>
-                  </table>
+ [label, score, cost] = predict (obj, xc);</pre>
 
             </div>
           </div>
@@ -2031,21 +1979,13 @@ demo&nbsp;ClassificationDiscriminant&nbsp;2
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  model = fitcdiscr (meas, species);
  X = mean (meas);
- Y = {'versicolor'};
- ## Compute loss for discriminant model
- L = loss (model, X, Y)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-L = 0</pre></td></tr>
-                  </table>
+ Y = {'versicolor'};</pre>
+                <p>Compute loss for discriminant model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (model, X, Y)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0</pre>
 
             </div>
           </div>
@@ -2067,21 +2007,13 @@ demo&nbsp;ClassificationDiscriminant&nbsp;3
           </div>
           <div class="collapse multi-collapse" id="collapseDemo3">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  mdl = fitcdiscr (meas, species);
  X = mean (meas);
- Y = {'versicolor'};
- ## Margin for discriminant model
- m = margin (mdl, X, Y)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-m = 1.0000</pre></td></tr>
-                  </table>
+ Y = {'versicolor'};</pre>
+                <p>Margin for discriminant model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> m = margin (mdl, X, Y)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">m = 1.0000</pre>
 
             </div>
           </div>
@@ -2103,20 +2035,13 @@ demo&nbsp;ClassificationDiscriminant&nbsp;4
           </div>
           <div class="collapse multi-collapse" id="collapseDemo4">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
  y = species;
- obj = fitcdiscr (x, y, "gamma", 0.4);
- ## Cross-validation for discriminant model
- CVMdl = crossval (obj)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-CVMdl =
+ obj = fitcdiscr (x, y, 'gamma', 0.4);</pre>
+                <p>Cross-validation for discriminant model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CVMdl = crossval (obj)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CVMdl =
 
   1x1 ClassificationPartitionedModel object with properties:
 
@@ -2136,9 +2061,7 @@ CVMdl =
                ResponseName: 'Y'
              ScoreTransform: [1x1 function_handle]
                 Standardize: []
-                    Trained: [10x1 cell]
-</pre></td></tr>
-                  </table>
+                    Trained: [10x1 cell]</pre>
 
             </div>
           </div>

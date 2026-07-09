@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,26 +806,19 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>model</var> = <b>svmtrain</b> (<var>labels</var>, <var>data</var>, &quot;libsvm_options&quot;)</code></h5></dt>
 </dl>
-
-
 <p>This function trains an SVM <var>model</var> based on known <var>labels</var> and their corresponding <var>data</var> which comprise an instance matrix. 
 </p>
 <div class="ms-5">
 <ul>
-<li> <var>labels</var> : An m by 1 vector of prediction labels. (type must be double) 
-
-</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double) 
-
-</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM. 
-
+<li> <var>labels</var> : An m by 1 vector of prediction labels. (type must be double)
+</li><li> <var>data</var> : An m by n matrix of m testing instances with n features. It can be dense or sparse. (type must be double)
+</li><li> <code>libsvm_options</code> : A string of testing options in the same format as that of LIBSVM.
 </li></ul>
-
 
 <p><code>libsvm_options</code> :
 </p>
 <ul>
-<li> <code>-s</code> : svm_type; set type of SVM (default 0) 
-
+<li> <code>-s</code> : svm_type; set type of SVM (default 0)
 </li></ul>
 
 <table>
@@ -835,85 +831,56 @@
 
 <ul>
 <li> <code>-t</code> : kernel_type; set type of kernel function (default 2)
-
 </li></ul>
 
 <table>
 <tr><td width="10%"></td><td width="10%">0</td><td width="80%">linear: u&rsquo;*v</td></tr>
-<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <math>(gamma&times; u&rsquo;&times; v + coef0) ^ degree</math></td></tr>
-<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <math>e&times;p(-gamma&times; |u-v| ^ 2)</math></td></tr>
-<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <math>tanh(gamma&times; u&rsquo;&times; v + coef0)</math></td></tr>
+<tr><td width="10%"></td><td width="10%">1</td><td width="80%">polynomial: <math>(gamma &times; u' &times; v + coef0) ^ degree</math></td></tr>
+<tr><td width="10%"></td><td width="10%">2</td><td width="80%">radial basis function: <math>e&times;p(-gamma &times; |u-v| ^ 2)</math></td></tr>
+<tr><td width="10%"></td><td width="10%">3</td><td width="80%">sigmoid: <math>tanh(gamma &times; u' &times; v + coef0)</math></td></tr>
 <tr><td width="10%"></td><td width="10%">4</td><td width="80%">precomputed kernel (kernel values in training_instance_matrix)</td></tr>
 </table>
 
 <ul>
-<li> <code>-d</code> : degree; set degree in kernel function (default 3) 
-
-</li><li> <code>-g</code> : gamma; set gamma in kernel function (default 1/num_features) 
-
-</li><li> <code>-r</code> : coef0; set coef0 in kernel function (default 0) 
-
-</li><li> <code>-c</code> : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1) 
-
-</li><li> <code>-n</code> : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5) 
-
-</li><li> <code>-p</code> : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1) 
-
-</li><li> <code>-m</code> : cachesize; set cache memory size in MB (default 100) 
-
-</li><li> <code>-e</code> : epsilon; set tolerance of termination criterion (default 0.001) 
-
-</li><li> <code>-h</code> : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1) 
-
-</li><li> <code>-b</code> : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0) 
-
-</li><li> <code>-w</code> : weight; set the parameter C of class i to weight*C, for C-SVC (default 1) 
-
-</li><li> <code>-v</code> : n; n-fold cross validation mode 
-
-</li><li> <code>-q</code> : quiet mode (no outputs) 
-
+<li> <code>-d</code> : degree; set degree in kernel function (default 3)
+</li><li> <code>-g</code> : gamma; set gamma in kernel function (default 1/num_features)
+</li><li> <code>-r</code> : coef0; set coef0 in kernel function (default 0)
+</li><li> <code>-c</code> : cost; set the parameter C of C-SVC, epsilon-SVR, and nu-SVR (default 1)
+</li><li> <code>-n</code> : nu; set the parameter nu of nu-SVC, one-class SVM, and nu-SVR (default 0.5)
+</li><li> <code>-p</code> : epsilon; set the epsilon in loss function of epsilon-SVR (default 0.1)
+</li><li> <code>-m</code> : cachesize; set cache memory size in MB (default 100)
+</li><li> <code>-e</code> : epsilon; set tolerance of termination criterion (default 0.001)
+</li><li> <code>-h</code> : shrinking; whether to use the shrinking heuristics, 0 or 1 (default 1)
+</li><li> <code>-b</code> : probability_estimates; whether to train a SVC or SVR model for probability estimates, 0 or 1 (default 0)
+</li><li> <code>-w</code> : weight; set the parameter C of class i to weight*C, for C-SVC (default 1)
+</li><li> <code>-v</code> : n; n-fold cross validation mode
+</li><li> <code>-q</code> : quiet mode (no outputs)
 </li></ul>
-
 
 <p>The function <code>svmtrain</code> function returns a <var>model</var> structure which can be used for future prediction and it contains the following fields: 
 </p>
 <ul>
-<li> <code>Parameters</code> : parameters 
-
-</li><li> <code>nr_class</code> : number of classes; = 2 for regression/one-class svm 
-
-</li><li> <code>totalSV</code> : total #SV 
-
-</li><li> <code>rho</code> : <math>-b</math> of the decision function(s) <math>w&times;+b</math> 
-
-</li><li> <code>Label</code> : label of each class; empty for regression/one-class SVM 
-
-</li><li> <code>sv_indices</code> : values in [1,...,num_training_data] to indicate SVs in the training set 
-
-</li><li> <code>ProbA</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM 
-
-</li><li> <code>ProbB</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM 
-
-</li><li> <code>ProbDensityMarks</code> : density marks for one-class SVM probability estimates; empty if <code>-b 0</code> or not one-class SVM. 
-
-</li><li> <code>nSV</code> : number of SVs for each class; empty for regression/one-class SVM 
-
-</li><li> <code>sv_coef</code> : coefficients for SVs in decision functions 
-
-</li><li> <code>SVs</code> : support vectors 
+<li> <code>Parameters</code> : parameters
+</li><li> <code>nr_class</code> : number of classes; = 2 for regression/one-class svm
+</li><li> <code>totalSV</code> : total #SV
+</li><li> <code>rho</code> : <math>-b</math> of the decision function(s) <math>w&times;+b</math>
+</li><li> <code>Label</code> : label of each class; empty for regression/one-class SVM
+</li><li> <code>sv_indices</code> : values in [1,...,num_training_data] to indicate SVs in the training set
+</li><li> <code>ProbA</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM
+</li><li> <code>ProbB</code> : pairwise probability information; empty if <code>-b 0</code> or in one-class SVM
+</li><li> <code>ProbDensityMarks</code> : density marks for one-class SVM probability estimates; empty if <code>-b 0</code> or not one-class SVM.
+</li><li> <code>nSV</code> : number of SVs for each class; empty for regression/one-class SVM
+</li><li> <code>sv_coef</code> : coefficients for SVs in decision functions
+</li><li> <code>SVs</code> : support vectors
 </li></ul>
-
 
 <p>If you do not use the option <code>-b 1</code>, ProbA and ProbB are empty matrices. If the &rsquo;-v&rsquo; option is specified, cross validation is conducted and the returned model is just a scalar: cross-validation accuracy for classification and mean-squared error for regression. 
 </p>
-<p><math>Note on LIBSVM 3.36 Update</math>: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (<code>-s 2</code>) when combined with the probability flag (<code>-b 1</code>).  For One-Class SVM, the  <var>prob_estimates</var> output is a single column vector containing the probability of the instance being an inlier. 
+<p><em>Note on LIBSVM 3.36 Update</em>: This implementation is based on LIBSVM 3.36 (2025) and now supports probability estimates for One-Class SVM (<code>-s 2</code>) when combined with the probability flag (<code>-b 1</code>).  For One-Class SVM, the  <var>prob_estimates</var> output is a single column vector containing the probability of the instance being an inlier. 
 </p>
-
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/src/svmtrain.cc">svmtrain</a>
 </div>
-
 
             </div>
           </div>

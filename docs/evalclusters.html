@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>eva</var> = <b>evalclusters</b> (<var>x</var>, <var>clust</var>, <var>criterion</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>eva</var> = <b>evalclusters</b> (&hellip;, <code>Name</code>, <code>Value</code>)</code></h5></dt>
 </dl>
-
 <p> Create a clustering evaluation object to find the optimal number of clusters.
 </p>
 <div class="ms-5">
@@ -813,49 +815,32 @@
  The input data <var>x</var> is a matrix with <code>n</code> observations of <code>p</code>
  variables.
  The evaluation criterion <var>criterion</var> is one of the following:
- </p><dl compact="compact">
+</p>
+<dl compact="compact">
 <dt> <code><code>CalinskiHarabasz</code></code></dt>
-</dl>
-<p> to create a <code>CalinskiHarabaszEvaluation</code> object.
-</p>
- </dd>
+<dd> to create a <code>CalinskiHarabaszEvaluation</code> object.</dd>
 <dt> <code><code>DaviesBouldin</code></code></dt>
-</dl>
-<p> to create a <code>DaviesBouldinEvaluation</code> object.
-</p>
- </dd>
+<dd> to create a <code>DaviesBouldinEvaluation</code> object.</dd>
 <dt> <code><code>gap</code></code></dt>
-</dl>
-<p> to create a <code>GapEvaluation</code> object.
-</p>
- </dd>
+<dd> to create a <code>GapEvaluation</code> object.</dd>
 <dt> <code><code>silhouette</code></code></dt>
+<dd> to create a <code>SilhouetteEvaluation</code> object.</dd>
 </dl>
-<p> to create a <code>SilhouetteEvaluation</code> object.
-</p>
-</dd>
-</dl>
+
 <p> The clustering algorithm <var>clust</var> is one of the following:
- </p><dl compact="compact">
+</p>
+<dl compact="compact">
 <dt> <code><code>kmeans</code></code></dt>
-</dl>
-<p> to cluster the data using <code>kmeans</code> with <code>EmptyAction</code> set to
- <code>singleton</code> and <code>Replicates</code> set to 5.
-</p>
- </dd>
+<dd> to cluster the data using <code>kmeans</code> with <code>EmptyAction</code> set to
+ <code>singleton</code> and <code>Replicates</code> set to 5.</dd>
 <dt> <code><code>linkage</code></code></dt>
-</dl>
-<p> to cluster the data using <code>clusterdata</code> with <code>linkage</code> set to
- <code>Ward</code>.
-</p>
- </dd>
+<dd> to cluster the data using <code>clusterdata</code> with <code>linkage</code> set to
+ <code>Ward</code>.</dd>
 <dt> <code><code>gmdistribution</code></code></dt>
+<dd> to cluster the data using <code>fitgmdist</code> with <code>SharedCov</code> set to
+ <code>true</code> and <code>Replicates</code> set to 5.</dd>
 </dl>
-<p> to cluster the data using <code>fitgmdist</code> with <code>SharedCov</code> set to
- <code>true</code> and <code>Replicates</code> set to 5.
-</p>
-</dd>
-</dl>
+
 <p> If the <var>criterion</var> is <code>CalinskiHarabasz</code>, <code>DaviesBouldin</code>, or
  <code>silhouette</code>, <var>clust</var> can also be a function handle to a function
  of the form <code>c = clust(x, k)</code>, where <var>x</var> is the input data,
@@ -863,9 +848,9 @@
  The clustering result can be either an array of size <code>n</code> with <code>k</code>
  different integer values, or a matrix of size <code>n</code> by <code>k</code> with a
  likelihood value assigned to each one of the <code>n</code> observations for each
- one of the <var>k</var> clusters.  In the latter case, each observation is assigned
- to the cluster with the higher value.
- If the <var>criterion</var> is <code>CalinskiHarabasz</code>, <code>DaviesBouldin</code>, or
+ one of the <var>k</var> clusters. In the latter case, each observation is assigned
+ to the cluster with the higher value. If the <var>criterion</var> is
+ <code>CalinskiHarabasz</code>, <code>DaviesBouldin</code>, or
  <code>silhouette</code>, <var>clust</var> can also be a matrix of size <code>n</code> by
  <code>k</code>, where <code>k</code> is the number of proposed clustering solutions, so
  that each column of <var>clust</var> is a clustering solution.
@@ -873,65 +858,46 @@
 <p> In addition to the obligatory <var>x</var>, <var>clust</var> and <var>criterion</var> inputs
  there is a number of optional arguments, specified as pairs of <code>Name</code>
  and <code>Value</code> options.  The known <code>Name</code> arguments are:
- </p><dl compact="compact">
-<dt> <code><code>KList</code></code></dt>
-</dl>
-<p> a vector of positive integer numbers, that is the cluster sizes to evaluate.
- This option is necessary, unless <var>clust</var> is a matrix of proposed
- clustering solutions.
 </p>
- </dd>
+<dl compact="compact">
+<dt> <code><code>KList</code></code></dt>
+<dd> a vector of positive integer numbers, that is the cluster sizes to evaluate.
+ This option is necessary, unless <var>clust</var> is a matrix of proposed
+ clustering solutions.</dd>
 <dt> <code><code>Distance</code></code></dt>
-</dl>
-<p> a distance metric as accepted by the chosen <var>clust</var>.  It can be the
+<dd> a distance metric as accepted by the chosen <var>clust</var>.  It can be the
  name of the distance metric as a string or a function handle.  When
  <var>criterion</var> is <code>silhouette</code>, it can be a vector as created by
  function <code>pdist</code>.  Valid distance metric strings are: <code>sqEuclidean</code>
  (default), <code>Euclidean</code>, <code>cityblock</code>, <code>cosine</code>,
  <code>correlation</code>, <code>Hamming</code>, <code>Jaccard</code>.
- Only used by <code>silhouette</code> and <code>gap</code> evaluation.
-</p>
- </dd>
+ Only used by <code>silhouette</code> and <code>gap</code> evaluation.</dd>
 <dt> <code><code>ClusterPriors</code></code></dt>
-</dl>
-<p> the prior probabilities of each cluster, which can be either <code>empirical</code>
+<dd> the prior probabilities of each cluster, which can be either <code>empirical</code>
  (default), or <code>equal</code>.  When <code>empirical</code> the silhouette value is
  the average of the silhouette values of all points; when <code>equal</code> the
  silhouette value is the average of the average silhouette value of each
- cluster.  Only used by <code>silhouette</code> evaluation.
-</p>
- </dd>
+ cluster.  Only used by <code>silhouette</code> evaluation.</dd>
 <dt> <code><code>B</code></code></dt>
-</dl>
-<p> the number of reference datasets generated from the reference distribution.
- Only used by <code>gap</code> evaluation.
-</p>
- </dd>
+<dd> the number of reference datasets generated from the reference distribution.
+ Only used by <code>gap</code> evaluation.</dd>
 <dt> <code><code>ReferenceDistribution</code></code></dt>
-</dl>
-<p> the reference distribution used to create the reference data.  It can be
+<dd> the reference distribution used to create the reference data.  It can be
  <code>PCA</code> (default) for a distribution based on the principal components of
  <var>X</var>, or <code>uniform</code> for a uniform distribution based on the range of
  the observed data.  <code>PCA</code> is currently not implemented.
- Only used by <code>gap</code> evaluation.
-</p>
- </dd>
+ Only used by <code>gap</code> evaluation.</dd>
 <dt> <code><code>SearchMethod</code></code></dt>
-</dl>
-<p> the method for selecting the optimal value with a <code>gap</code> evaluation.  It
+<dd> the method for selecting the optimal value with a <code>gap</code> evaluation.  It
  can be either <code>globalMaxSE</code> (default) for selecting the smallest number
  of clusters which is inside the standard error of the maximum gap value, or
  <code>firstMaxSE</code> for selecting the first number of clusters which is inside
  the standard error of the following cluster number.
- Only used by <code>gap</code> evaluation.
-</p>
-</dd>
+ Only used by <code>gap</code> evaluation.</dd>
 </dl>
 
 <p> Output <var>eva</var> is a clustering evaluation object.
 </p>
-</dd></dl>
-
 <p> <strong>See also: </strong>
   <a href="CalinskiHarabaszEvaluation.html">CalinskiHarabaszEvaluation</a>, 
   <a href="DaviesBouldinEvaluation.html">DaviesBouldinEvaluation</a>, 
@@ -941,52 +907,38 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/evalclusters.m">evalclusters</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load fisheriris;
- eva = evalclusters (meas, "kmeans", "calinskiharabasz", "KList", [1:6])
- plot (eva)
-
-eva =
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris;
+ eva = evalclusters (meas, 'kmeans', 'calinskiharabasz', 'KList', [1:6])</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">eva =
 
   1x1 CalinskiHarabaszEvaluation object with properties:
 
       ClusteringFunction: 'kmeans'
-           CriterionName: "CalinskiHarabasz"
-         CriterionValues: [NaN, 513.92, 561.63, 530.77, 495.54, 473.85]
+           CriterionName: 'CalinskiHarabasz'
+         CriterionValues: [NaN, 513.92, 561.63, 529.20, 495.54, 470.45]
               InspectedK: [1, 2, 3, 4, 5, 6]
                  Missing: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...]
          NumObservations: 150
                 OptimalK: 3
-                OptimalY: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
-                       X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]
+                OptimalY: [2; 2; 2; 2; 2; 2; 2; 2; 2; 2; ...]
+                       X: [5.1000, 3.5000, 1.4000, 0.2000; 4.9000, 3, 1.4000, 0.2000; 4.7000, 3.2000, ...]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> plot (eva)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans = -188.88</pre>
+                <div class="text-center">
+                  <img src="assets/evalclusters_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-ans = -184.88
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/evalclusters_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcknn</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcknn</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Fit a k-Nearest Neighbor classification model.
 </p>
 <div class="ms-5">
@@ -812,143 +814,143 @@
  classification model, <var>Mdl</var>, with <var>X</var> being the predictor data, and
  <var>Y</var> the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
  corresponding predictor data in <var>X</var>.  <var>Y</var> can be numerical, logical,
  char array or cell array of character vectors.  <var>Y</var> must have same number
  of rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>Mdl</var> = fitcknn (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  k-Nearest Neighbor classification model with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <a name="Model-Parameters"></a>
+<a name="Model-Parameters"></a>
 <h3 class="subheading">Model Parameters</h3>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;Standardize&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether
+<tr><td width="18%"><code>'Standardize'</code></td><td width="2%"></td><td width="80%">A boolean flag indicating whether
  the data in <var>X</var> should be standardized prior to training.</td></tr>
-<tr><td width="18%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
  specifying the predictor variable names.  The variable names are assumed to
  be in the same order as they appear in the training data <var>X</var>.</td></tr>
-<tr><td width="18%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
+<tr><td width="18%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the name
  of the response variable.</td></tr>
-<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+<tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the kNN model.  <code>ClassNames</code> are of
  the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+<tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
  probabilities for each class.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
+<tr><td width="18%"><code>'Cost'</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var> where
  <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
  correctly classified into its category the cost is calculated to be 1,
  otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
-<tr><td width="18%"><code>&quot;ScoreTransform&quot;</code></td><td width="2%"></td><td width="80%">A character vector defining one of
+<tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A character vector defining one of
  the following functions or a user defined function handle, which is used
  for transforming the prediction scores returned by the <code>predict</code> and
  <code>resubPredict</code> methods.  Default value is <code>'none'</code>.</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;ismax&quot;</code></td><td width="75%">Sets the score for the class with the largest
+<tr><td width="5%"></td><td width="20%"><code>'doublelogit'</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'invlogit'</code></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'ismax'</code></td><td width="75%">Sets the score for the class with the largest
  score to 1, and sets the scores for all other classes to 0</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;logit&quot;</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;none&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;identity&quot;</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;sign&quot;</code></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="75%">Sets the score for the class with
+<tr><td width="5%"></td><td width="20%"><code>'logit'</code></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'none'</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'identity'</code></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'sign'</code></td><td width="75%"><math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt; 0</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'symmetric'</code></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'symmetricismax'</code></td><td width="75%">Sets the score for the class with
  the largest score to 1, and sets the scores for all other classes to -1</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'symmetriclogit'</code></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;BreakTies&quot;</code></td><td width="2%"></td><td width="80%">Tie-breaking algorithm used by predict
+<tr><td width="18%"><code>'BreakTies'</code></td><td width="2%"></td><td width="80%">Tie-breaking algorithm used by predict
  when multiple classes have the same smallest cost. By default, ties occur
  when multiple classes have the same number of nearest points among the
  <math>k</math> nearest neighbors. The available options are specified by the
  following character arrays:</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;smallest&quot;</code></td><td width="75%">This is the default and it favors the
+<tr><td width="5%"></td><td width="20%"><code>'smallest'</code></td><td width="75%">This is the default and it favors the
  class with the smallest index among the tied groups, i.e. the one that
  appears first in the training labelled data.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;nearest&quot;</code></td><td width="75%">This favors the class with the nearest
+<tr><td width="5%"></td><td width="20%"><code>'nearest'</code></td><td width="75%">This favors the class with the nearest
  neighbor among the tied groups, i.e. the class with the closest member point
  according to the distance metric used.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;random&quot;</code></td><td width="75%">This randomly picks one class among the
+<tr><td width="5%"></td><td width="20%"><code>'random'</code></td><td width="75%">This randomly picks one class among the
  tied groups.</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">The maximum number of data points in the
+<tr><td width="18%"><code>'BucketSize'</code></td><td width="2%"></td><td width="80%">The maximum number of data points in the
  leaf node of the Kd-tree and it must be a positive integer.  By default, it
  is 50. This argument is meaningful only when the selected search method is
- <code>&quot;kdtree&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;NumNeighbors&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
+ <code>'kdtree'</code>.</td></tr>
+<tr><td width="18%"><code>'NumNeighbors'</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
  the number of nearest neighbors to be found in the kNN search.  By default,
  it is 1.</td></tr>
-<tr><td width="18%"><code>&quot;Exponent&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
+<tr><td width="18%"><code>'Exponent'</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
  specifying the Minkowski distance exponent.  This argument is only valid when
- the selected distance metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
-<tr><td width="18%"><code>&quot;Scale&quot;</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying the
+ the selected distance metric is <code>'minkowski'</code>.  By default it is 2.</td></tr>
+<tr><td width="18%"><code>'Scale'</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying the
  scale parameters for the standardized Euclidean distance.  The vector length
  must be equal to the number of columns in <var>X</var>.  This argument is only
- valid when the selected distance metric is <code>&quot;seuclidean&quot;</code>, in which
+ valid when the selected distance metric is <code>'seuclidean'</code>, in which
  case each coordinate of <var>X</var> is scaled by the corresponding element of
- <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By default, the scale
+ <code>'scale'</code>, as is each query point in <var>Y</var>.  By default, the scale
  parameter is the standard deviation of each coordinate in <var>X</var>.  If a
  variable in <var>X</var> is constant, i.e. zero variance, this value is forced
  to 1 to avoid division by zero.  This is the equivalent of this variable not
  being standardized.</td></tr>
-<tr><td width="18%"><code>&quot;Cov&quot;</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of columns
+<tr><td width="18%"><code>'Cov'</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of columns
  as <var>X</var> specifying the covariance matrix for computing the mahalanobis
  distance.  This must be a positive definite matrix matching.  This argument
- is only valid when the selected distance metric is <code>&quot;mahalanobis&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">is the distance metric used by
+ is only valid when the selected distance metric is <code>'mahalanobis'</code>.</td></tr>
+<tr><td width="18%"><code>'Distance'</code></td><td width="2%"></td><td width="80%">is the distance metric used by
  <code>knnsearch</code> as specified below:</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;euclidean&quot;</code></td><td width="75%">Euclidean distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;seuclidean&quot;</code></td><td width="75%">standardized Euclidean distance.  Each
+<tr><td width="5%"></td><td width="20%"><code>'euclidean'</code></td><td width="75%">Euclidean distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'seuclidean'</code></td><td width="75%">standardized Euclidean distance.  Each
  coordinate difference between the rows in <var>X</var> and the query matrix
  <var>Y</var> is scaled by dividing by the corresponding element of the standard
  deviation computed from <var>X</var>.  To specify a different scaling, use the
- <code>&quot;Scale&quot;</code> name-value argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cityblock&quot;</code></td><td width="75%">City block distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;chebychev&quot;</code></td><td width="75%">Chebychev distance (maximum coordinate
+ <code>'Scale'</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'cityblock'</code></td><td width="75%">City block distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'chebychev'</code></td><td width="75%">Chebychev distance (maximum coordinate
  difference).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;minkowski&quot;</code></td><td width="75%">Minkowski distance.  The default exponent
- is 2.  To specify a different exponent, use the <code>&quot;P&quot;</code> name-value
+<tr><td width="5%"></td><td width="20%"><code>'minkowski'</code></td><td width="75%">Minkowski distance.  The default exponent
+ is 2.  To specify a different exponent, use the <code>'P'</code> name-value
  argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;mahalanobis&quot;</code></td><td width="75%">Mahalanobis distance, computed using a
+<tr><td width="5%"></td><td width="20%"><code>'mahalanobis'</code></td><td width="75%">Mahalanobis distance, computed using a
  positive definite covariance matrix.  To change the value of the covariance
- matrix, use the <code>&quot;Cov&quot;</code> name-value argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cosine&quot;</code></td><td width="75%">Cosine distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;correlation&quot;</code></td><td width="75%">One minus the sample linear correlation
+ matrix, use the <code>'Cov'</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'cosine'</code></td><td width="75%">Cosine distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'correlation'</code></td><td width="75%">One minus the sample linear correlation
  between observations (treated as sequences of values).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;spearman&quot;</code></td><td width="75%">One minus the sample Spearman&rsquo;s rank
+<tr><td width="5%"></td><td width="20%"><code>'spearman'</code></td><td width="75%">One minus the sample Spearman&rsquo;s rank
  correlation between observations (treated as sequences of values).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;hamming&quot;</code></td><td width="75%">Hamming distance, which is the percentage
+<tr><td width="5%"></td><td width="20%"><code>'hamming'</code></td><td width="75%">Hamming distance, which is the percentage
  of coordinates that differ.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;jaccard&quot;</code></td><td width="75%">One minus the Jaccard coefficient, which is
+<tr><td width="5%"></td><td width="20%"><code>'jaccard'</code></td><td width="75%">One minus the Jaccard coefficient, which is
  the percentage of nonzero coordinates that differ.</td></tr>
 <tr><td width="5%"></td><td width="20%"><var>@distfun</var></td><td width="75%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
@@ -959,71 +961,71 @@
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">A distance weighting function,
+<tr><td width="18%"><code>'DistanceWeight'</code></td><td width="2%"></td><td width="80%">A distance weighting function,
  specified either as a function handle, which accepts a matrix of nonnegative
  distances and returns a matrix the same size containing nonnegative distance
- weights, or one of the following values: <code>&quot;equal&quot;</code>, which corresponds
- to no weighting; <code>&quot;inverse&quot;</code>, which corresponds to a weight equal to
- <math>1/distance</math>; <code>&quot;squaredinverse&quot;</code>, which corresponds to a weight
+ weights, or one of the following values: <code>'equal'</code>, which corresponds
+ to no weighting; <code>'inverse'</code>, which corresponds to a weight equal to
+ <math>1/distance</math>; <code>'squaredinverse'</code>, which corresponds to a weight
  equal to <math>1/distance^2</math>.</td></tr>
-<tr><td width="18%"><code>&quot;IncludeTies&quot;</code></td><td width="2%"></td><td width="80%">A boolean flag to indicate if the
+<tr><td width="18%"><code>'IncludeTies'</code></td><td width="2%"></td><td width="80%">A boolean flag to indicate if the
  returned values should contain the indices that have same distance as the
  <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
  observation with the smallest index among the observations that have the same
  distance from a query point.  When <code>true</code>, <code>knnsearch</code> includes
  all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
- distance in the output arguments. To specify <math>K</math>, use the <code>&quot;K&quot;</code>
+ distance in the output arguments. To specify <math>K</math>, use the <code>'K'</code>
  name-value pair argument.</td></tr>
-<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
+<tr><td width="18%"><code>'NSMethod'</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
  by <code>knnsearch</code> as specified below.</td></tr>
 </table>
 
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Value</var></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;kdtree&quot;</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
- neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
+<tr><td width="5%"></td><td width="20%"><code>'kdtree'</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
+ neighbors.  <code>'kdtree'</code> is the default value when the number of columns
  in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
- distance metric is <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;manhattan&quot;</code>, <code>&quot;chebychev&quot;</code>, or <code>&quot;minkowski&quot;</code>.  Otherwise,
- the default value is <code>&quot;exhaustive&quot;</code>.  This argument is only valid when
+ distance metric is <code>'euclidean'</code>, <code>'cityblock'</code>,
+ <code>'manhattan'</code>, <code>'chebychev'</code>, or <code>'minkowski'</code>.  Otherwise,
+ the default value is <code>'exhaustive'</code>.  This argument is only valid when
  the distance metric is one of the four aforementioned metrics.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;exhaustive&quot;</code></td><td width="75%">Uses the exhaustive search algorithm by
+<tr><td width="5%"></td><td width="20%"><code>'exhaustive'</code></td><td width="75%">Uses the exhaustive search algorithm by
  computing the distance values from all the points in <var>X</var> to each point in
  <var>Y</var>.</td></tr>
 </table>
 
- <a name="Cross-Validation-Options"></a>
+<a name="Cross-Validation-Options"></a>
 <h3 class="subheading">Cross Validation Options</h3>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;Crossval&quot;</code></td><td width="2%"></td><td width="80%">Cross-validation flag specified as
+<tr><td width="18%"><code>'Crossval'</code></td><td width="2%"></td><td width="80%">Cross-validation flag specified as
  <code>'on'</code> or <code>'off'</code>.  If <code>'on'</code> is specified, a 10-fold
  cross validation is performed and a <code>ClassificationPartitionedModel</code> is
  returned in <var>Mdl</var>.  To override this cross-validation setting, use only
  one of the following Name-Value pair arguments.</td></tr>
-<tr><td width="18%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="80%">A <code>cvpartition</code> object that
+<tr><td width="18%"><code>'CVPartition'</code></td><td width="2%"></td><td width="80%">A <code>cvpartition</code> object that
  specifies the type of cross-validation and the indexing for the training and
  validation sets.  A <code>ClassificationPartitionedModel</code> is returned in
  <var>Mdl</var> and the trained model is stored in the <code>Trained</code> property.</td></tr>
-<tr><td width="18%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="80%">Fraction of the data used for holdout
+<tr><td width="18%"><code>'Holdout'</code></td><td width="2%"></td><td width="80%">Fraction of the data used for holdout
  validation, specified as a scalar value in the range <math>[0,1]</math>.  When
  specified, a randomly selected percentage is reserved as validation data and
  the remaining set is used for training.  The trained model is stored in the
  <code>Trained</code> property of the <code>ClassificationPartitionedModel</code> returned
- in <var>Mdl</var>.  <code>&quot;Holdout&quot;</code> partitioning attempts to ensure that each
+ in <var>Mdl</var>.  <code>'Holdout'</code> partitioning attempts to ensure that each
  partition represents the classes proportionately.</td></tr>
-<tr><td width="18%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="80%">Number of folds to use in the cross-validated
+<tr><td width="18%"><code>'KFold'</code></td><td width="2%"></td><td width="80%">Number of folds to use in the cross-validated
  model, specified as a positive integer value greater than 1.  When specified,
  then the data is randomly partitioned in <math>k</math> sets and for each set, the
  set is reserved as validation data while the remaining <math>k-1</math> sets are
  used for training.  The trained models are stored in the <code>Trained</code>
  property of the <code>ClassificationPartitionedModel</code> returned in <var>Mdl</var>.
- <code>&quot;KFold&quot;</code> partitioning attempts to ensure that each partition
+ <code>'KFold'</code> partitioning attempts to ensure that each partition
  represents the classes proportionately.</td></tr>
-<tr><td width="18%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="80%">Leave-one-out cross-validation flag
+<tr><td width="18%"><code>'Leaveout'</code></td><td width="2%"></td><td width="80%">Leave-one-out cross-validation flag
  specified as <code>'on'</code> or <code>'off'</code>.  If <code>'on'</code> is specified,
  then for each of the <math>n</math> observations (where <math>n</math> is the number of
  observations, excluding missing observations, specified in the
@@ -1043,54 +1045,24 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcknn.m">fitcknn</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Train a k-nearest neighbor classifier for k = 10
- ## and plot the decision boundaries.
-
- load fisheriris
- idx = ! strcmp (species, "setosa");
+          </div>
+          <div class="card-body">
+                <p>Train a k-nearest neighbor classifier for k = 10 and plot the decision boundaries.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ idx = ! strcmp (species, 'setosa');
  X = meas(idx,3:4);
- Y = cast (strcmpi (species(idx), "virginica"), "double");
- obj = fitcknn (X, Y, "Standardize", 1, "NumNeighbors", 10, "NSMethod", "exhaustive")
- x1 = [min(X(:,1)):0.03:max(X(:,1))];
- x2 = [min(X(:,2)):0.02:max(X(:,2))];
- [x1G, x2G] = meshgrid (x1, x2);
- XGrid = [x1G(:), x2G(:)];
- pred = predict (obj, XGrid);
- gidx = logical (pred);
-
- figure
- scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
- hold on
- scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
- plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
- xlabel ("Petal length (cm)");
- ylabel ("Petal width (cm)");
- title ("5-Nearest Neighbor Classifier Decision Boundary");
- legend ({"Versicolor Region", "Virginica Region", ...
-         "Sampled Versicolor", "Sampled Virginica"}, ...
-         "location", "northwest")
- axis tight
- hold off
-
-obj =
+ Y = cast (strcmpi (species(idx), 'virginica'), 'double');
+ obj = fitcknn (X, Y, 'Standardize', 1, 'NumNeighbors', 10, 'NSMethod', 'exhaustive')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
 
   ClassificationKNN
 
@@ -1101,16 +1073,30 @@ obj =
             NumPredictors: 2
                  Distance: 'euclidean'
                  NSMethod: 'exhaustive'
-             NumNeighbors: 10
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitcknn_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+             NumNeighbors: 10</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.03:max(X(:,1))];
+ x2 = [min(X(:,2)):0.02:max(X(:,2))];
+ [x1G, x2G] = meshgrid (x1, x2);
+ XGrid = [x1G(:), x2G(:)];
+ pred = predict (obj, XGrid);
+ gidx = logical (pred);
+ figure
+ scatter (XGrid(gidx,1), XGrid(gidx,2), 'markerfacecolor', 'magenta');
+ hold on
+ scatter (XGrid(! gidx,1), XGrid(! gidx,2), 'markerfacecolor', 'red');
+ plot (X(Y == 0, 1), X(Y == 0, 2), 'ko', X(Y == 1, 1), X(Y == 1, 2), 'kx');
+ xlabel ('Petal length (cm)');
+ ylabel ('Petal width (cm)');
+ title ('5-Nearest Neighbor Classifier Decision Boundary');
+ legend ({'Versicolor Region', 'Virginica Region', ...
+         'Sampled Versicolor', 'Sampled Virginica'}, ...
+         'location', 'northwest')
+ axis tight
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/fitcknn_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

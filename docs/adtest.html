@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace fw-bolder"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>] = <b>adtest</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>adstat</var>, <var>cv</var>] = <b>adtest</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Anderson-Darling goodness-of-fit hypothesis test.
 </p>
 <div class="ms-5">
@@ -825,14 +827,14 @@
 </p>
 <p> The following parameters can be parsed as Name-Value pair arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="25%">Name</th><th width="75%">Description</th></tr></thead>
 <tr><td width="25%">&quot;Distribution&quot;</td><td width="75%">The distribution being tested for.  It tests
  whether <var>x</var> could have come from the specified distribution.  There are
  two choices available for parsing distribution parameters:</td></tr>
 </table>
 
- <ul>
+<ul>
 <li>
  One of the following char strings: &quot;norm&quot;, &quot;exp&quot;, &quot;ev&quot;, &quot;logn&quot;, &quot;weibull&quot;,
  for defining either the &rsquo;normal&rsquo;, &rsquo;exponential&rsquo;, &rsquo;extreme value&rsquo;, lognormal,
@@ -840,15 +842,14 @@
  tested against a composite hypothesis for the specified distribution family
  and the required distribution parameters are estimated from the data in
  <var>x</var>.  The default is &quot;norm&quot;.
-
- </li><li>
+</li><li>
  A cell array defining a distribution in which the first cell contains a char
  string with the distribution name, as mentioned above, and the consecutive
  cells containing all specified parameters of the null distribution.  In this
  case, <var>x</var> is tested against a simple hypothesis.
- </li></ul>
+</li></ul>
 
- <table>
+<table>
 <tr><td width="25%">&quot;Alpha&quot;</td><td width="75%">Significance level alpha for the test.  Any scalar
  numeric value between 0 and 1.  The default is 0.05 corresponding to the 5%
  significance level.</td></tr>
@@ -865,16 +866,15 @@
  more accurate than the small sample size approximation method.</td></tr>
 </table>
 
- <ul>
+<ul>
 <li>
  If you specify a distribution family with unknown parameters for the
  distribution Name-Value pair (i.e. composite distribution hypothesis test),
  the &quot;Asymptotic&quot; option must be false.
- </li><li>
-
+</li><li>
  If you use MCTol to calculate the p-value using a Monte Carlo simulation,
  the &quot;Asymptotic&quot; option must be false.
- </li></ul>
+</li></ul>
 
 <p> <code>[<var>h</var>, <var>pval</var>] = adtest (&hellip;)</code> also returns the p-value,
  <var>pval</var>, of the Anderson-Darling test, using any of the input arguments

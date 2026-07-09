@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,11 +806,10 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (<var>x</var>, <var>p</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (<var>x</var>, <var>p</var>, <var>flag</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (&hellip;, <code>&quot;all&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (&hellip;, <code>'all'</code>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (&hellip;, <var>dim</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>m</var> = <b>trimmean</b> (&hellip;, <var>vecdim</var>)</code></h5></dt>
 </dl>
-
 <p> Compute the trimmed mean.
 </p>
 <div class="ms-5">
@@ -817,14 +819,15 @@
 </p>
 <p> <code><var>m</var> = trimmean (<var>x</var>, <var>p</var>)</code> returns the mean of <var>x</var>
  after removing the outliers in <var>x</var> defined by <var>p</var> percent.
- </p><ul>
+</p>
+<ul>
 <li> If <var>x</var> is a vector, then <code>trimmean (<var>x</var>, <var>p</var>)</code> is the
  mean of all the values of <var>x</var>, computed after removing the outliers.
- </li><li> If <var>x</var> is a matrix, then <code>trimmean (<var>x</var>, <var>p</var>)</code> is a
+</li><li> If <var>x</var> is a matrix, then <code>trimmean (<var>x</var>, <var>p</var>)</code> is a
  row vector of column means, computed after removing the outliers.
- </li><li> If <var>x</var> is a multidimensional array, then <code>trimmean</code> operates
+</li><li> If <var>x</var> is a multidimensional array, then <code>trimmean</code> operates
  along the first nonsingleton dimension of <var>x</var>.
- </li></ul>
+</li></ul>
 
 <p> To specify the operating dimension(s) when <var>x</var> is a matrix or a
  multidimensional array, use the <var>dim</var> or <var>vecdim</var> input argument.
@@ -835,19 +838,20 @@
 <p> <code><var>m</var> = trimmean (<var>x</var>, <var>p</var>, <var>flag</var>)</code> specifies how to
  trim when <math>k</math>, i.e. half the number of outliers, is not an integer.
  <var>flag</var> can be specified as one of the following values:
- </p><table>
+</p>
+<table>
 <thead><tr><th width="20%">Value</th><th width="5%"></th><th width="75%">Description</th></tr></thead>
-<tr><td width="20%"><code>&quot;round&quot;</code></td><td width="5%"></td><td width="75%">Round <math>k</math> to the nearest integer.  This
+<tr><td width="20%"><code>'round'</code></td><td width="5%"></td><td width="75%">Round <math>k</math> to the nearest integer.  This
  is the default.</td></tr>
-<tr><td width="20%"><code>&quot;floor&quot;</code></td><td width="5%"></td><td width="75%">Round <math>k</math> down to the next smaller
+<tr><td width="20%"><code>'floor'</code></td><td width="5%"></td><td width="75%">Round <math>k</math> down to the next smaller
  integer.</td></tr>
-<tr><td width="20%"><code>&quot;weighted&quot;</code></td><td width="5%"></td><td width="75%">If <math>k = i + f</math>, where <math>i</math> is an
+<tr><td width="20%"><code>'weighted'</code></td><td width="5%"></td><td width="75%">If <math>k = i + f</math>, where <math>i</math> is an
  integer and <math>f</math> is a fraction, compute a weighted mean with weight
  <math>(1 - f)</math> for the <math>(i + 1)</math>-th and <math>(n - i)</math>-th values, and
  full weight for the values between them.</td></tr>
 </table>
 
-<p> <code><var>m</var> = trimmean (&hellip;, <code>&quot;all&quot;</code>)</code> returns the trimmed mean
+<p> <code><var>m</var> = trimmean (&hellip;, <code>'all'</code>)</code> returns the trimmed mean
  of all the values in <var>x</var> using any of the input argument combinations in
  the previous syntaxes.
 </p>

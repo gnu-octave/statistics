@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ClassificationSVM</h5></code></dl>
-
 <p> Support Vector Machine classification
 </p>
 <div class="ms-5">
@@ -825,9 +827,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationSVM.m">ClassificationSVM</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>ClassificationSVM</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -848,13 +848,11 @@ Predictor data
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric matrix containing the unstandardized predictor data.  Each
  column of <var>X</var> represents one predictor (variable), and each row
  represents one observation.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -880,14 +878,12 @@ Class labels
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a logical or numeric column vector, or as a character array
  or a cell array of character vectors with the same number of rows as the
  predictor data.  Each row in <var>Y</var> is the observed class label for
  the corresponding row in <var>X</var>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -913,13 +909,11 @@ Number of observations
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of observations in the
  training dataset used for training the ClassificationSVM model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -945,13 +939,11 @@ Rows used for fitting
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical column vector with the same length as the observations in the
  original predictor data <var>X</var> specifying which rows have been used for
  fitting the ClassificationSVM model.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -977,13 +969,11 @@ Number of predictors
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of predictors in the
  training dataset used for training the ClassificationSVM model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1009,13 +999,11 @@ Names of predictor variables
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
  variables.  The names are in the order in which they appear in the
  training dataset.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1041,12 +1029,10 @@ Response variable name
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1072,19 +1058,17 @@ Names of classes in the response variable
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
  same data types as the data in <var>Y</var>.  This property is read-only.
  <code>ClassNames</code> can have any of the following datatypes:
 </p>
- <ul>
+<ul>
 <li> Cell array of character vectors
- </li><li> Character array
- </li><li> Logical vector
- </li><li> Numeric vector
- </li></ul>
-
+</li><li> Character array
+</li><li> Logical vector
+</li><li> Numeric vector
+</li></ul>
 
 
 
@@ -1111,37 +1095,36 @@ Transformation function for classification scores
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a function handle for transforming the classification
  scores.  Add or change the <code>ScoreTransform</code> property using dot
  notation as in:
 </p>
- <ul>
+<ul>
 <li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
- </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
- </li></ul>
+</li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+</li></ul>
 
 <p> When specified as a character vector, it can be any of the following
  built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
  always stores their function handle equivalent.
 </p>
- <table>
+<table>
 <thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
+<tr><td width="20%"><code>'ismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+<tr><td width="20%"><code>'logit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="5%"></td><td width="75%"> <math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt;
+ 0</math></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="5%"></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetricismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
-
 
 
 
@@ -1168,12 +1151,10 @@ Flag to standardize predictors
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A boolean flag indicating whether the data in <var>X</var> have been
  standardized prior to training.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1199,14 +1180,12 @@ Predictor standard deviations
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector of the same length as the columns in <var>X</var> containing
  the standard deviations of predictor variables.  If the predictor
  variables have not been standardized, then <code>Sigma</code> is empty.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1232,13 +1211,11 @@ Predictor means
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector of the same length as the columns in <var>X</var> containing
  the means of predictor variables.  If the predictor variables have not
  been standardized, then <code>Mu</code> is empty.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1264,7 +1241,6 @@ SVM training parameters
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A structure containing the parameters used to train the SVM model with
  the following fields: <code>SVMtype</code>, <code>BoxConstraint</code>,
@@ -1272,7 +1248,6 @@ SVM training parameters
  <code>KernelFunction</code>, <code>PolynomialOrder</code>, <code>Nu</code>,
  <code>Tolerance</code>, and <code>Shrinking</code>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1298,12 +1273,10 @@ Trained SVM model
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A structure containing the trained model in <code>'libsvm'</code> format.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1329,7 +1302,6 @@ Trained classifier coefficients
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The coefficients of the trained SVM classifier specified as an <math>s&times;1</math>
  numeric vector, where <math>s</math> is the number of support vectors equal to
@@ -1337,7 +1309,6 @@ Trained classifier coefficients
  with a kernel function other than <code>'linear'</code>, then <code>Alpha</code> is
  empty.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1363,7 +1334,6 @@ Linear predictor coefficients
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The linear predictor coefficients specified as an <math>s&times;1</math> numeric
  vector, where <math>s</math> is the number of support vectors equal to
@@ -1371,7 +1341,6 @@ Linear predictor coefficients
  with a <code>'linear'</code> kernel function, then <code>Beta</code> is empty.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1397,11 +1366,9 @@ Bias term
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The bias term specified as a scalar.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1427,14 +1394,12 @@ Support vector indicator
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> An <math>N&times;1</math> logical vector that flags whether a corresponding
  observation in the predictor data matrix is a Support Vector.  <math>N</math>
  is the number of observations in the training data.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1460,17 +1425,16 @@ Support vector class labels
           <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
 
-
 <p> </p>
-<p> The support vector class labels specified as an <math>s&times;1</math> numeric vector,
- where <math>s</math> is the number of support vectors equal to
+<p> The support vector class labels specified as an <math>s&times;1</math> numeric
+ vector, where <math>s</math> is the number of support vectors equal to
  <code>sum (obj.IsSupportVector)</code>.  A value of +1 in
- <code>SupportVectorLabels</code> indicates that the corresponding support vector
+ <code>SupportVectorLabels</code> indicates that the corresponding support
+ vector
  belongs to the positive class <code>(ClassNames{2})</code>.  A value of -1
  indicates that the corresponding support vector belongs to the negative
  class <code>(ClassNames{1})</code>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1496,23 +1460,20 @@ Support vectors
           <div class="collapse multi-collapse" id="collapseProperty20">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> The support vectors of the trained SVM classifier specified an <math>s&times;p</math>
  numeric matrix, where <math>s</math> is the number of support vectors equal to
- <code>sum (obj.IsSupportVector)</code>, and <math>p</math> is the number of predictor
+ <code>sum (obj.IsSupportVector)</code>, and <math>p</math> is the number of
+ predictor
  variables in the predictor data.  This property is read-only.
 </p>
-
 
 
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>ClassificationSVM</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1537,29 +1498,28 @@ Create a <code>ClassificationSVM</code> class object containing a Support
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationSVM</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationSVM</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>obj</var> = ClassificationSVM (<var>X</var>, <var>Y</var>)</code> returns a
  ClassificationSVM object, with <var>X</var> as the predictor data and <var>Y</var>
  containing the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the SVM model.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can be either
  numeric, logical, or cell array of character vectors.  It must have same
  numbers of rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>obj</var> = ClassificationSVM (&hellip;, <var>name</var>, <var>value</var>)</code>
  returns a ClassificationSVM object with parameters specified by the
  following <code><var>name</var>, <var>value</var></code> paired input arguments:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character
  vectors specifying the names of the predictors. The length of this array
@@ -1595,7 +1555,7 @@ Create a <code>ClassificationSVM</code> class object containing a Support
 <tr><td width="18%"><code>'BoxConstraint'</code></td><td width="2%"></td><td width="80%">A positive scalar specifying the
  box constraint parameter.  Default is 1.</td></tr>
 <tr><td width="18%"><code>'Nu'</code></td><td width="2%"></td><td width="80%">A positive scalar in the range (0,1]
- specifying the nu parameter for nu-SVM and one-class SVM.  Default is 0.5.</td></tr>
+ specifying the nu parameter for nu-SVM and one-class SVM. Default is 0.5.</td></tr>
 <tr><td width="18%"><code>'CacheSize'</code></td><td width="2%"></td><td width="80%">A positive scalar specifying the
  cache size in MB.  Default is 1000.</td></tr>
 <tr><td width="18%"><code>'Tolerance'</code></td><td width="2%"></td><td width="80%">A positive scalar specifying the
@@ -1638,7 +1598,6 @@ Classify new data points into categories using the Support Vector Machine
 <dt><code><h5 class="fs">ClassificationSVM: <var>label</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationSVM: [<var>label</var>, <var>score</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>label</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the vector of
  labels predicted for the corresponding instances in <var>XC</var>, using the
@@ -1646,14 +1605,14 @@ Classify new data points into categories using the Support Vector Machine
  stored in the ClassificationSVM model, <var>obj</var>.  For one-class SVM
  model, +1 or -1 is returned.
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> must be a <code>ClassificationSVM</code> class object.
- </li><li>
+</li><li>
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
  features <math>P</math> as the corresponding predictors of the SVM model in
  <var>obj</var>.
- </li></ul>
+</li></ul>
 
 <p> <code>[<var>label</var>, <var>score</var>] = predict (<var>obj</var>, <var>XC</var>)</code> also
  returns <var>score</var>, which contains the decision values for each each
@@ -1695,7 +1654,6 @@ Classify the training data using the trained Support Vector Machine
 <dt><code><h5 class="fs">ClassificationSVM: <var>label</var> = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationSVM: [<var>label</var>, <var>score</var>] = <b>resubPredict</b> (<var>obj</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>label</var> = resubPredict (<var>obj</var>)</code> returns the vector of
  labels predicted for the corresponding instances in the training data,
@@ -1703,10 +1661,10 @@ Classify the training data using the trained Support Vector Machine
  <code>obj.Y</code>, stored in the Support Vector Machine classification model,
  <var>obj</var>. For one-class model, +1 or -1 is returned.
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> must be a <code>ClassificationSVM</code> class object.
- </li></ul>
+</li></ul>
 
 <p> <code>[<var>label</var>, <var>scores</var>] = resubPredict (<var>obj</var></code> also
  returns <var>scores</var>, which contains the decision values for each each
@@ -1745,25 +1703,24 @@ Classification margins for Support Vector Machine classifier.
 <dl>
 <dt><code><h5 class="fs">ClassificationSVM: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>m</var> = margin (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> returns
  the classification margins for <var>obj</var> with data <var>X</var> and
  classification <var>Y</var>. <var>m</var> is a numeric vector of length size (X,1).
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> is a <var>ClassificationSVM</var> object trained on <code>X</code>
  and <code>Y</code>.
- </li><li>
+</li><li>
  <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <var>Y</var> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> The classification margin for each observation is the difference between
  the classification score for the true class and the maximal
@@ -1801,52 +1758,53 @@ Compute loss for a trained ClassificationSVM object.
 <dt><code><h5 class="fs">ClassificationSVM: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationSVM: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
  <var>L</var>, using the default loss function <code>'classiferror'</code>.
 </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a <var>ClassificationSVM</var> object trained on
  <code>X</code> and <code>Y</code>.
- </li><li>
+</li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
  additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
+<tr><td width="18%"><code>'LossFun'</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
  Can be a function handle with four input arguments (C, S, W, Cost)
  which returns a scalar value or one of:
  &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
- <ul>
+<ul>
 <li>
  <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
  number of observations and <math>K</math> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
- </li><li>
+</li><li>
  <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
  represents the classification score for the corresponding class.
- </li><li>
+</li><li>
  <code>W</code> is a numeric vector of length <math>N</math>, representing
  the observation weights.
- </li><li>
+</li><li>
  <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
  costs.
- </li></ul></td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+</li></ul>
+
+</td></tr>
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
  a numeric vector of length equal to the number of rows in X.
  Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
  observation weights in each class sum to the prior probability of that
@@ -1885,44 +1843,45 @@ Compute resubstitution loss for a trained ClassificationSVM object.
 <dt><code><h5 class="fs">ClassificationSVM: <var>L</var> = <b>resubLoss</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationSVM: <var>L</var> = <b>resubLoss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>L</var> = resubLoss (<var>obj</var>)</code> computes the resubstitution loss,
  <var>L</var>, using the default loss function <code>'classiferror'</code>.
 </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a <var>ClassificationSVM</var> object trained on
  <code>X</code> and <code>Y</code>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>L</var> = resubLoss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
  additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
+<tr><td width="18%"><code>'LossFun'</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
  Can be a function handle with four input arguments (C, S, W, Cost)
  which returns a scalar value or one of:
  &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
- <ul>
+<ul>
 <li>
  <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
  number of observations and <math>K</math> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
- </li><li>
+</li><li>
  <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
  represents the classification score for the corresponding class.
- </li><li>
+</li><li>
  <code>W</code> is a numeric vector of length <math>N</math>, representing
  the observation weights.
- </li><li>
+</li><li>
  <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
  costs.
- </li></ul></td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+</li></ul>
+
+</td></tr>
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
  a numeric vector of length equal to the number of rows in X.
  Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
  observation weights in each class sum to the prior probability of that
@@ -1961,7 +1920,6 @@ Cross Validate a Support Vector Machine classification object.
 <dt><code><h5 class="fs">ClassificationSVM: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationSVM: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
  object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
@@ -1971,18 +1929,18 @@ Cross Validate a Support Vector Machine classification object.
  specifies additional name-value pair arguments to customize the
  cross-validation process.
 </p>
- <table>
+<table>
 <thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
+<tr><td width="28%"><code>'KFold'</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
  k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
  integer greater than 1.</td></tr>
-<tr><td width="28%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
+<tr><td width="28%"><code>'Holdout'</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
  scalar in the range <math>(0,1)</math>.</td></tr>
-<tr><td width="28%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="70%">Specify whether to perform
+<tr><td width="28%"><code>'Leaveout'</code></td><td width="2%"></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
-<tr><td width="28%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
+<tr><td width="28%"><code>'CVPartition'</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
  object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
  <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
 </table>
@@ -2020,7 +1978,6 @@ Create a CompactClassificationSVM object.
 <dl>
 <dt><code><h5 class="fs">ClassificationSVM: <var>CVMdl</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>CVMdl</var> = compact (<var>obj</var>)</code> creates a compact version of the
  ClassificationSVM object, <var>obj</var>.
@@ -2057,7 +2014,6 @@ Save a ClassificationSVM object.
 <dl>
 <dt><code><h5 class="fs">ClassificationSVM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  ClassificationSVM object into an Octave binary file, the name of which is
@@ -2089,49 +2045,36 @@ Save a ClassificationSVM object.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a Support Vector Machine classifier and determine margin for test data.
+Create a Support Vector Machine classifier and determine margin for test data.
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
- rng(1);  ## For reproducibility
-
- ## Select indices of the non-setosa species
- inds = !strcmp(species, 'setosa');
-
-  ## Select features and labels for non-setosa species
- X = meas(inds, 3:4);
- Y = grp2idx(species(inds));
-
- ##  Convert labels to +1 and -1
- unique_classes = unique(Y);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ rng (1);  ## For reproducibility</pre>
+                <p>Select indices of the non-setosa species</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> inds = ! strcmp (species, 'setosa');</pre>
+                <p>Select features and labels for non-setosa species</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = meas(inds, 3:4);
+ Y = grp2idx (species(inds));</pre>
+                <p>Convert labels to +1 and -1</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> unique_classes = unique (Y);
  Y(Y == unique_classes(1)) = -1;
- Y(Y == unique_classes(2)) = 1;
-
- ## Partition data for training and testing
- cv = cvpartition(Y, 'HoldOut', 0.15);
+ Y(Y == unique_classes(2)) = 1;</pre>
+                <p>Partition data for training and testing</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cv = cvpartition (Y, 'HoldOut', 0.15);
  X_train = X(training(cv), :);
  Y_train = Y(training(cv));
- X_test = X(test(cv), :);
- Y_test = Y(test(cv));
-
- ## Train the SVM model
- CVSVMModel = fitcsvm(X_train, Y_train);
-
- ## Calculate margins
- m = margin(CVSVMModel, X_test, Y_test);
- disp(m);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-   1.1093
+ X_test = X(test (cv), :);
+ Y_test = Y(test (cv));</pre>
+                <p>Train the SVM model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CVSVMModel = fitcsvm (X_train, Y_train);</pre>
+                <p>Calculate margins</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> m = margin (CVSVMModel, X_test, Y_test);
+ disp (m);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">   1.1093
    7.3147
    3.3280
    2.4400
@@ -2145,8 +2088,7 @@ Save a ClassificationSVM object.
    5.5360
    0.2240
    4.2160
-   1.9973</pre></td></tr>
-                  </table>
+   1.9973</pre>
 
             </div>
           </div>
@@ -2161,62 +2103,45 @@ Save a ClassificationSVM object.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a Support Vector Machine classifier and determine loss for test data.
+Create a Support Vector Machine classifier and determine loss for test data.
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
- rng(1);  ## For reproducibility
-
-  ## Select indices of the non-setosa species
- inds = !strcmp(species, 'setosa');
-
-  ## Select features and labels for non-setosa species
- X = meas(inds, 3:4);
- Y = grp2idx(species(inds));
-
- ##  Convert labels to +1 and -1
- unique_classes = unique(Y);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ rng (1);  ## For reproducibility</pre>
+                <p>Select indices of the non-setosa species</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> inds = ! strcmp (species, 'setosa');</pre>
+                <p>Select features and labels for non-setosa species</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = meas(inds, 3:4);
+ Y = grp2idx (species(inds));</pre>
+                <p>Convert labels to +1 and -1</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> unique_classes = unique (Y);
  Y(Y == unique_classes(1)) = -1;
- Y(Y == unique_classes(2)) = 1;
-
- ## Randomly partition the data into training and testing sets
- cv = cvpartition(Y, 'HoldOut', 0.3); # 30% data for testing, 60% for training
-
+ Y(Y == unique_classes(2)) = 1;</pre>
+                <p>Randomly partition the data into training and testing sets</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cv = cvpartition (Y, 'HoldOut', 0.3); # 30% data for testing, 60% for training
  X_train = X(training(cv), :);
  Y_train = Y(training(cv));
-
- X_test = X(test(cv), :);
- Y_test = Y(test(cv));
-
- ## Train the SVM model
- SVMModel = fitcsvm(X_train, Y_train);
-
- ## Calculate loss
-
- L = loss(SVMModel,X_test,Y_test,'LossFun','binodeviance')
- L = loss(SVMModel,X_test,Y_test,'LossFun','classiferror')
- L = loss(SVMModel,X_test,Y_test,'LossFun','exponential')
- L = loss(SVMModel,X_test,Y_test,'LossFun','hinge')
- L = loss(SVMModel,X_test,Y_test,'LossFun','logit')
- L = loss(SVMModel,X_test,Y_test,'LossFun','quadratic')</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-L = 0.1500
-L = 0.066667
-L = 0.2811
-L = 0.1667
-L = 0.2089
-L = 3.6107</pre></td></tr>
-                  </table>
+ X_test = X(test (cv), :);
+ Y_test = Y(test (cv));</pre>
+                <p>Train the SVM model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> SVMModel = fitcsvm (X_train, Y_train);</pre>
+                <p>Calculate loss</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','binodeviance')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0.1500</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','classiferror')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0.066667</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','exponential')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0.2811</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','hinge')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0.1667</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','logit')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0.2089</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (SVMModel,X_test,Y_test,'LossFun','quadratic')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 3.6107</pre>
 
             </div>
           </div>

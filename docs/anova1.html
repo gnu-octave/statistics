@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace fw-bolder"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,7 +811,6 @@
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>atab</var>] = <b>anova1</b> (<var>x</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>atab</var>, <var>stats</var>] = <b>anova1</b> (<var>x</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Perform a one-way analysis of variance (ANOVA) for comparing the means of two
  or more groups of data under the null hypothesis that the groups are drawn
  from distributions with the same mean. For planned contrasts and/or
@@ -817,13 +819,12 @@
 <div class="ms-5">
 <p> anova1 can take up to three input arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>x</var> contains the data and it can either be a vector or matrix.
  If <var>x</var> is a matrix, then each column is treated as a separate group.
  If <var>x</var> is a vector, then the <var>group</var> argument is mandatory.
-
- </li><li>
+</li><li>
  <var>group</var> contains the names for each group.  If <var>x</var> is a matrix, then
  <var>group</var> can either be a cell array of strings of a character array, with
  one row per column of <var>x</var>.  If you want to omit this argument, enter an
@@ -831,55 +832,49 @@
  of the same length, or a string array or cell array of strings with one row
  for each element of <var>x</var>.  <var>x</var> values corresponding to the same value
  of <var>group</var> are placed in the same group.
-
- </li><li>
+</li><li>
  <var>displayopt</var> is an optional parameter for displaying the groups contained
  in the data in a boxplot.  If omitted, it is &rsquo;on&rsquo; by default.  If group names
  are defined in <var>group</var>, these are used to identify the groups in the
  boxplot. Use &rsquo;off&rsquo; to omit displaying this figure.
-
- </li><li>
+</li><li>
  <var>vartype</var> is an optional parameter to used to indicate whether the
  groups can be assumed to come from populations with equal variance. When
- <code>vartype</code> is <code>&quot;equal&quot;</code> the variances are assumed to be equal
- (this is the default). When <code>vartype</code> is <code>&quot;unequal&quot;</code> the
+ <code>vartype</code> is <code>'equal'</code> the variances are assumed to be equal
+ (this is the default). When <code>vartype</code> is <code>'unequal'</code> the
  population variances are not assumed to be equal and Welch&rsquo;s ANOVA test is
  used instead.
- </li></ul>
+</li></ul>
 
 <p> anova1 can return up to three output arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>p</var> is the p-value of the null hypothesis that all group means are equal.
-
- </li><li>
+</li><li>
  <var>atab</var> is a cell array containing the results in a standard ANOVA table.
-
- </li><li>
+</li><li>
  <var>stats</var> is a structure containing statistics useful for performing
  a multiple comparison of means with the MULTCOMPARE function.
- </li></ul>
+</li></ul>
 
 <p> If anova1 is called without any output arguments, then it prints the results
  in a one-way ANOVA table to the standard output. It is also printed when
  <var>displayopt</var> is &rsquo;on&rsquo;.
 </p>
-
 <p> Examples:
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> x = meshgrid (1:6);
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = meshgrid (1:6);
  x = x + normrnd (0, 1, 6, 6);
  anova1 (x, [], 'off');
  [p, atab] = anova1(x);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> x = ones (50, 4) .* [-2, 0, 1, 5];
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = ones (50, 4) .* [-2, 0, 1, 5];
  x = x + normrnd (0, 2, 50, 4);
  groups = {&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;};
  anova1 (x, groups);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="anova2.html">anova2</a>, 
@@ -889,174 +884,118 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/anova1.m">anova1</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = meshgrid (1:6);
- randn ("seed", 15);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = meshgrid (1:6);
+ randn ('seed', 15);    # for reproducibility
  x = x + normrnd (0, 1, 6, 6);
- anova1 (x, [], 'off');
-
-
+ anova1 (x, [], 'off');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
 Groups     96.8124     5    19.3625    31.76    0.0000
 Error      18.2881    30     0.6096
-Total     115.1004    35
+Total     115.1004    35</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = meshgrid (1:6);
- randn ("seed", 15);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = meshgrid (1:6);
+ randn ('seed', 15);    # for reproducibility
  x = x + normrnd (0, 1, 6, 6);
- [p, atab] = anova1(x);
-
-
+ [p, atab] = anova1 (x);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
 Groups     96.8124     5    19.3625    31.76    0.0000
 Error      18.2881    30     0.6096
-Total     115.1004    35
+Total     115.1004    35</pre>
+                <div class="text-center">
+                  <img src="assets/anova1_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/anova1_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = ones (50, 4) .* [-2, 0, 1, 5];
- randn ("seed", 13);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = ones (50, 4) .* [-2, 0, 1, 5];
+ randn ('seed', 13);    # for reproducibility
  x = x + normrnd (0, 2, 50, 4);
- groups = {"A", "B", "C", "D"};
- anova1 (x, groups);
-
-
+ groups = {'A', 'B', 'C', 'D'};
+ anova1 (x, groups);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source        SS      df        MS       F      Prob&gt;F
 ------------------------------------------------------
 Groups   1392.4448     3   464.1483   105.41    0.0000
 Error     863.0487   196     4.4033
-Total    2255.4935   199
+Total    2255.4935   199</pre>
+                <div class="text-center">
+                  <img src="assets/anova1_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/anova1_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [54 87 45; 23 98 39; 45 64 51; 54 77 49; 45 89 50; 47 NaN 55];
  g = [1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ; 1  2  3 ];
- anova1 (y(:), g(:), "on", "unequal");
-
-
+ anova1 (y(:), g(:), 'on', 'unequal');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
            Welch's ANOVA Table
 
 Source        F     df     dfe     Prob&gt;F
 -----------------------------------------
-Groups     15.52     2    7.58     0.0021
+Groups     15.52     2    7.58     0.0021</pre>
+                <div class="text-center">
+                  <img src="assets/anova1_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/anova1_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

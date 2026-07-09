@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>datasample</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>y</var> <var>idcs</var>] = <b>datasample</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Randomly sample data.
 </p>
 <div class="ms-5">
@@ -822,23 +824,14 @@
 <p> Additional options are set through pairs of parameter name and value.
  Available parameters are:
 </p>
- <dl compact="compact">
+<dl compact="compact">
 <dt> <code><code>Replace</code></code></dt>
-</dl>
-<p> a logical value that can be <code>true</code> (default) or <code>false</code>: when set
- to <code>true</code>, <code>datasample</code> returns data sampled with replacement.
-</p>
- </dd>
+<dd> a logical value that can be <code>true</code> (default) or <code>false</code>: when set
+ to <code>true</code>, <code>datasample</code> returns data sampled with replacement.</dd>
 <dt> <code><code>Weights</code></code></dt>
+<dd> a vector of positive numbers that sets the probability of each element.  It
+ must have the same size as <var>data</var> along dimension <var>dim</var>.</dd>
 </dl>
-<p> a vector of positive numbers that sets the probability of each element.  It
- must have the same size as <var>data</var> along dimension <var>dim</var>.
-</p>
-</dd>
-</dl>
-
-
-</dd></dl>
 
 <p> <strong>See also: </strong>
 rand, 

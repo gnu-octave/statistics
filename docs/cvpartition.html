@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: cvpartition</h5></code></dl>
-
 <p> Partition data for cross-validation
 </p>
 <div class="ms-5">
@@ -816,9 +818,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/cvpartition.m">cvpartition</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>cvpartition</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -839,13 +839,11 @@ Number of observations
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer scalar specifying the number of observations in the
  dataset (including any missing data, where applicable).  This property
  is read-only.
 </p>
-
 
 
             </div>
@@ -871,14 +869,12 @@ Number of test sets
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer scalar specifying the number of folds for partition
  types <code>'kfold'</code> and <code>'leaveout'</code>.  When partition type is
  <code>'holdout'</code> and <code>'resubstitution'</code>, then <code>NumTestSets</code>
  is 1.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -904,7 +900,6 @@ Size of each train set
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer scalar specifying the size of the train set for
  partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
@@ -912,7 +907,6 @@ Size of each train set
  partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
  is read-only.
 </p>
-
 
 
             </div>
@@ -938,7 +932,6 @@ Size of each test set
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer scalar specifying the size of the test set for
  partition types <code>'holdout'</code> and <code>'resubstitution'</code> or a
@@ -946,7 +939,6 @@ Size of each test set
  partition types <code>'kfold'</code> and <code>'leaveout'</code>.  This property
  is read-only.
 </p>
-
 
 
             </div>
@@ -972,13 +964,11 @@ Type of validation partition
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the type of the <code>cvpartition</code> object.
  It can be <code>kfold</code>, <code>holdout</code>, <code>leaveout</code>, or
  <code>resubstitution</code>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1004,13 +994,11 @@ Flag for custom partition
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object
  was created using custom partition partitioning (<code>true</code>) or
  not (<code>false</code>).  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1036,13 +1024,11 @@ Flag for grouped partition
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object was
  created using grouping variables (<code>true</code>) or not (<code>false</code>).
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1068,7 +1054,6 @@ Flag for stratified partition
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether the <code>cvpartition</code> object was
  created with a <code>'stratify'</code> value of <code>true</code>.
@@ -1076,14 +1061,11 @@ Flag for stratified partition
 </p>
 
 
-
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>cvpartition</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1119,7 +1101,6 @@ Repartition data for cross-validation.
 <dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<var>X</var>, <code>'Holdout'</code>, <var>p</var>, <code>'Stratify'</code>, <var>opt</var>)</code></h5></dt>
 <dt><code><h5 class="fs">cvpartition: <var>C</var> = <b>cvpartition</b> (<code>'CustomPartition'</code>, <var>testSets</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'KFold'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a random nonstratified
@@ -1134,20 +1115,21 @@ Repartition data for cross-validation.
  scalar smaller than the number of observations <var>n</var>.
 </p>
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'KFold'</code>, <var>k</var>,
- <code>'GroupingVariables'</code>, <var>grpvars</var>)</code> creates a <code>cvpartition</code>
- object <var>C</var> that defines a random partition for k-fold cross-validation
- with each fold containing the same combination of group labels as defined
- by <var>grpvars</var>.  The grouping variables specified in <var>grpvars</var> can
- be one of the following:
+ <code>'GroupingVariables'</code>, <var>grpvars</var>)</code> creates a
+ <code>cvpartition</code>
+ object <var>C</var> that defines a random partition for k-fold
+ cross-validation with each fold containing the same combination of group
+ labels as defined by <var>grpvars</var>. The grouping variables specified in
+ <var>grpvars</var> can be one of the following:
 </p>
- <ul>
+<ul>
 <li> A numeric vector, logical vector, categorical vector, character
  array, string array, or cell array of character vectors containing one
  grouping variable.
- </li><li> A numeric matrix or cell array containing two or more grouping
+</li><li> A numeric matrix or cell array containing two or more grouping
  variables. Each column in the matrix or array must correspond to one
  grouping variable.
- </li></ul>
+</li></ul>
 
 <p> <code><var>C</var> = cvpartition (<var>n</var>, <code>'Holdout'</code>)</code> creates a
  <code>cvpartition</code> object <var>C</var>, which defines a random nonstratified
@@ -1211,22 +1193,23 @@ Repartition data for cross-validation.
  creates a custom partition according to <var>testSets</var>, which can be a
  positive integer vector, a logical vector, or a logical matrix according
  to the following options:
- </p><ul>
+</p>
+<ul>
 <li> A positive integer vector of length <math>N</math> with values in the
  range <math>[1,K]</math>, where <math>K &lt; N</math>, will specify a K-fold
  cross-validation partition, in which each value indicates the test set
  of each observation.  Alternatively, the same vector with values in the
  range <math>[1,N]</math> will specify a leave-one-out cross-validation.
- </li><li> A logical vector will specify a holdout validation, in which the
+</li><li> A logical vector will specify a holdout validation, in which the
  <code>true</code> elements correspond to the test set and the <code>false</code>
  elements correspond to the training set.
- </li><li> A logical matrix with <math>K</math> columns will specify a K-fold
+</li><li> A logical matrix with <math>K</math> columns will specify a K-fold
  cross-validation partition, in which each column corresponds to a fold
  and each row to an observation.  Alternatively, an <math>N&times;N</math> logical
  matrix will specify a leave-one-out cross-validation, where <math>N</math> is
  the number of observations.  <code>true</code> elements correspond to the
  test set and the <code>false</code> elements correspond to the training set.
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="cvpartition.html">cvpartition</a>, 
@@ -1263,7 +1246,6 @@ Repartition data for cross-validation.
 <dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <var>sval</var>)</code></h5></dt>
 <dt><code><h5 class="fs">cvpartition: <var>Cnew</var> = <b>repartition</b> (<var>C</var>, <code>'legacy'</code>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>Cnew</var> = repartition (<var>C</var>)</code> creates a <code>cvpartition</code>
  object <var>Cnew</var> that defines a new random partition of the same type as
@@ -1272,9 +1254,9 @@ Repartition data for cross-validation.
 <p> <code><var>Cnew</var> = repartition (<var>C</var>, <var>sval</var>)</code> also uses the value
  of <var>sval</var> to set the state of the random generator used in
  repartitioning <var>C</var>.  If <var>sval</var> is a vector, then the random
- generator is set using the <code>&quot;state&quot;</code> keyword as in
+ generator is set using the <code>'state'</code> keyword as in
  <code>rand (&quot;state&quot;, <var>sval</var>)</code>.  If <var>sval</var> is a scalar, then the
- <code>&quot;seed&quot;</code> keyword is used as in <code>rand (&quot;seed&quot;, <var>sval</var>)</code> to
+ <code>'seed'</code> keyword is used as in <code>rand (&quot;seed&quot;, <var>sval</var>)</code> to
  specify that old generators should be used.
 </p>
 <p> <code><var>Cnew</var> = repartition (<var>C</var>, <code>'legacy'</code>)</code> only applies
@@ -1317,7 +1299,6 @@ Summarize stratified or grouped cross-validation partitions.
 <dl>
 <dt><code><h5 class="fs">cvpartition: <var>tbl</var> = <b>summary</b> (<var>c</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>tbl</var> = summary (<var>c</var>)</code> returns a summary table <var>tbl</var> of
  the validation partition contained in the <code>cvpartition</code> object
@@ -1327,54 +1308,50 @@ Summarize stratified or grouped cross-validation partitions.
  groups (if grouped) across the entire dataset, as well as within every
  training and test set generated by the partition.
 </p>
- <a name="Inputs"></a>
+<a name="Inputs"></a>
 <h3 class="subheading">Inputs</h3>
- <ul>
+
+<ul>
 <li> <var>c</var>
  A <code>cvpartition</code> object.  The object must satisfy two conditions:
- <ol>
-<li> The partition type (<code>c.Type</code>) must be <code>&quot;kfold&quot;</code> or
- <code>&quot;holdout&quot;</code>.
- </li><li> The partition must be created with a stratification or grouping
+<ol>
+<li> The partition type (<code>c.Type</code>) must be <code>'kfold'</code> or
+ <code>'holdout'</code>.
+</li><li> The partition must be created with a stratification or grouping
  variable (i.e., <code>c.IsStratified</code> or <code>c.IsGrouped</code> must be
  <code>true</code>).
- </li></ol>
+</li></ol>
+
+
 </li></ul>
 
- <a name="Outputs"></a>
+<a name="Outputs"></a>
 <h3 class="subheading">Outputs</h3>
- <ul>
+
+<ul>
 <li> <var>tbl</var>
  A <code>table</code> object containing the summary statistics.  The table
  contains one row for every unique label/group in every set (all, train,
  test).  The columns are:
- <dl compact="compact">
+<dl compact="compact">
 <dt> <code>Set</code></dt>
-</dl>
-<p> The specific subset being described.  Values include <code>&quot;all&quot;</code> (the
- full dataset), <code>&quot;train1&quot;</code>, <code>&quot;test1&quot;</code>, etc.
- </p></dd>
+<dd> The specific subset being described.  Values include <code>'all'</code> (the
+ full dataset), <code>'train1'</code>, <code>'test1'</code>, etc.</dd>
 <dt> <code>SetSize</code></dt>
-</dl>
-<p> The total number of observations in that specific set.
- </p></dd>
+<dd> The total number of observations in that specific set.</dd>
 <dt> <code>Label</code></dt>
-</dl>
-<p> The class or group identifier.  If <code>c.IsStratified</code> is true, this
+<dd> The class or group identifier.  If <code>c.IsStratified</code> is true, this
  column is named <code>StratificationLabel</code>.  If <code>c.IsGrouped</code> is
- true, it is named <code>GroupLabel</code>.
- </p></dd>
+ true, it is named <code>GroupLabel</code>.</dd>
 <dt> <code>Count</code></dt>
-</dl>
-<p> The number of observations of that label within the set.  If stratified,
+<dd> The number of observations of that label within the set.  If stratified,
  this column is named <code>StratificationCount</code>; otherwise,
- <code>GroupCount</code>.
- </p></dd>
+ <code>GroupCount</code>.</dd>
 <dt> <code>PercentInSet</code></dt>
+<dd> The percentage of the set composed of that specific label.</dd>
 </dl>
-<p> The percentage of the set composed of that specific label.
- </p></dd>
-</dl>
+
+
 </li></ul>
 
 <p> <strong>See also: </strong>
@@ -1384,33 +1361,26 @@ test,
 training
 </p>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 1. Basic Usage
- rng (1, "twister");
-
- ## Create simple numeric labels
- labels = [ones(10, 1); 2 * ones(10, 1)];
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Basic Usage</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (1, "twister");</pre>
+                <p>Create simple numeric labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> labels = [ones(10, 1); 2 * ones(10, 1)];
  c = cvpartition (labels, 'KFold', 2);
- summary (c)
-
-ans =
+ summary (c)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
   10x5 table
 
       Set       SetSize    StratificationLabel    StratificationCount    PercentInSet    
@@ -1425,50 +1395,35 @@ ans =
     "train2"         10                      1                      5              50    
     "train2"         10                      2                      5              50    
     "test2"          10                      1                      5              50    
-    "test2"          10                      2                      5              50    
+    "test2"          10                      2                      5              50</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 2. Grouped K-Fold Partition
- rng (101, "twister");
-
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Grouped K-Fold Partition</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (101, "twister");
  Region = repelem ({'North'; 'South'; 'East'; 'West'}, [20; 15; 15; 20]);
  Success = repelem ({'Success'; 'Fail'}, [49;  21]);
  Success = Success(randperm (70));
- Tbl = table (Region, Success);
-
- ## Create Grouped Partition using the 'Region' variable
- c_group = cvpartition (height (Tbl), 'KFold', 4, 'GroupingVariables', Tbl.Region);
-
- ## Generate Summary
- summary (c_group)
-
-ans =
+ Tbl = table (Region, Success);</pre>
+                <p>Create Grouped Partition using the 'Region' variable</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> c_group = cvpartition (height (Tbl), 'KFold', 4, 'GroupingVariables', Tbl.Region);</pre>
+                <p>Generate Summary</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> summary (c_group)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
   36x5 table
 
       Set       SetSize    GroupLabel    GroupCount    PercentInSet    
@@ -1509,49 +1464,34 @@ ans =
     "test4"          15    "North"                0               0    
     "test4"          15    "South"                0               0    
     "test4"          15    "East"                15             100    
-    "test4"          15    "West"                 0               0    
+    "test4"          15    "West"                 0               0</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 3. Stratified K-Fold Partition
- rng (202, "twister");
-
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Stratified K-Fold Partition</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (202, "twister");
  Success = repelem ({'ClassA'; 'ClassB'}, [25; 25]);
  Success = Success(randperm (50));
- Tbl = table (Success);
-
- ## Create Stratified Partition
- c_strat = cvpartition (Tbl.Success, 'KFold', 5);
-
- ## Generate Summary
- summary (c_strat)
-
-ans =
+ Tbl = table (Success);</pre>
+                <p>Create Stratified Partition</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> c_strat = cvpartition (Tbl.Success, 'KFold', 5);</pre>
+                <p>Generate Summary</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> summary (c_strat)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
   22x5 table
 
       Set       SetSize    StratificationLabel    StratificationCount    PercentInSet    
@@ -1578,48 +1518,33 @@ ans =
     "train5"         40    "ClassA"                                20              50    
     "train5"         40    "ClassB"                                20              50    
     "test5"          10    "ClassA"                                 5              50    
-    "test5"          10    "ClassB"                                 5              50    
+    "test5"          10    "ClassB"                                 5              50</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 4. Handling Missing Values (NaN) in Stratification
- rng (404, "twister");
-
- ## Create data with missing values (NaN)
- labels = [ones(10, 1); 2 * ones(10, 1); NaN(5, 1)];
-
- ## Create partition
- c_missing = cvpartition (labels, 'KFold', 2);
-
- ## Generate Summary
- summary (c_missing)
-
-ans =
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Handling Missing Values (NaN) in Stratification</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (404, "twister");</pre>
+                <p>Create data with missing values (NaN)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> labels = [ones(10, 1); 2 * ones(10, 1); NaN(5, 1)];</pre>
+                <p>Create partition</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> c_missing = cvpartition (labels, 'KFold', 2);</pre>
+                <p>Generate Summary</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> summary (c_missing)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
   10x5 table
 
       Set       SetSize    StratificationLabel    StratificationCount    PercentInSet    
@@ -1634,62 +1559,45 @@ ans =
     "train2"         10                      1                      5              50    
     "train2"         10                      2                      5              50    
     "test2"          10                      1                      5              50    
-    "test2"          10                      2                      5              50    
+    "test2"          10                      2                      5              50</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 5. Filtering Summary
- rng (303, "twister");
-
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Filtering Summary</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (303, "twister");
  Success = repelem ({'Yes'; 'No'}, [20; 10]);
- Success = Success(randperm (30));
-
- ## Create Partition and Summary
- c_strat = cvpartition (Success, 'KFold', 3);
- summaryStrat = summary (c_strat);
-
- ## A. Filtering by Exact Set Name
- summaryTest1 = summaryStrat (strcmp (summaryStrat.Set, 'test1'), :)
-
- ## B. Filtering by Partial Match
- is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), 'test'));
- testSummaryTbl = summaryStrat (is_test, :)
-
-summaryTest1 =
+ Success = Success(randperm (30));</pre>
+                <p>Create Partition and Summary</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> c_strat = cvpartition (Success, 'KFold', 3);
+ summaryStrat = summary (c_strat);</pre>
+                <p>A. Filtering by Exact Set Name</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> summaryTest1 = summaryStrat (strcmp (summaryStrat.Set, 'test1'), :)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">summaryTest1 =
   2x5 table
 
       Set      SetSize    StratificationLabel    StratificationCount    PercentInSet    
     _______    _______    ___________________    ___________________    ____________    
 
     "test1"         10    "No"                                     4              40    
-    "test1"         10    "Yes"                                    6              60    
-
-testSummaryTbl =
+    "test1"         10    "Yes"                                    6              60</pre>
+                <p>B. Filtering by Partial Match</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> is_test = ! cellfun ('isempty', strfind (cellstr (summaryStrat.Set), 'test'));
+ testSummaryTbl = summaryStrat (is_test, :)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">testSummaryTbl =
   6x5 table
 
       Set      SetSize    StratificationLabel    StratificationCount    PercentInSet    
@@ -1700,49 +1608,34 @@ testSummaryTbl =
     "test2"         10    "No"                                     3              30    
     "test2"         10    "Yes"                                    7              70    
     "test3"         10    "No"                                     3              30    
-    "test3"         10    "Yes"                                    7              70    
+    "test3"         10    "Yes"                                    7              70</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## 6. Unstacking
- rng (505, "twister");
-
+          </div>
+          <div class="card-body">
+                <ol>
+                  <li>Unstacking</li>
+                </ol>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rng (505, "twister");
  Success = repelem ({'Yes'; 'No'}, [20; 10]);
- Success = Success(randperm (30));
-
- ## Create Partition and Summary
- c_strat = cvpartition (Success, 'KFold', 3);
- summaryStrat = summary (c_strat);
-
- ## Pivot 'StratificationLabel' (Yes/No) into new columns
- speciesSummaryTbl = unstack (summaryStrat(:,1:4), 'StratificationCount', 'StratificationLabel')
-
-speciesSummaryTbl =
+ Success = Success(randperm (30));</pre>
+                <p>Create Partition and Summary</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> c_strat = cvpartition (Success, 'KFold', 3);
+ summaryStrat = summary (c_strat);</pre>
+                <p>Pivot 'StratificationLabel' (Yes/No) into new columns</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> speciesSummaryTbl = unstack (summaryStrat(:,1:4), 'StratificationCount', 'StratificationLabel')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">speciesSummaryTbl =
   7x4 table
 
       Set       SetSize    No    Yes    
@@ -1754,14 +1647,8 @@ speciesSummaryTbl =
     "train2"         20     7     13    
     "test2"          10     3      7    
     "train3"         20     7     13    
-    "test3"          10     3      7    
+    "test3"          10     3      7</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -1791,9 +1678,8 @@ Test indices for cross-validation.
 <dl>
 <dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>)</code></h5></dt>
 <dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <code>&quot;all&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>test</b> (<var>C</var>, <code>'all'</code>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>idx</var> = test (<var>C</var>)</code> returns a logical vector <var>idx</var> with
  <code>true</code> values indicating the elements corresponding to the test
@@ -1809,7 +1695,7 @@ Test indices for cross-validation.
  test set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not exceed the
  number of tests in the <code>cvpartition</code> object <var>C</var>.
 </p>
-<p> <code><var>idx</var> = test (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical vector
+<p> <code><var>idx</var> = test (<var>C</var>, <code>'all'</code>)</code> returns a logical vector
  or matrix for all test sets defined in the <code>cvpartition</code> object
  <var>C</var>.  For holdout and resubstitution partition types, a vector is
  returned.  For K-fold and leave-one-out, a matrix is returned.
@@ -1847,9 +1733,8 @@ Training indices for cross-validation.
 <dl>
 <dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>)</code></h5></dt>
 <dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <var>i</var>)</code></h5></dt>
-<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <code>&quot;all&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">cvpartition: <var>idx</var> = <b>training</b> (<var>C</var>, <code>'all'</code>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>idx</var> = training (<var>C</var>)</code> returns a logical vector <var>idx</var>
  with <code>true</code> values indicating the elements corresponding to the
@@ -1865,7 +1750,7 @@ Training indices for cross-validation.
  in the training set <code><var>i</var>(j)</code>.  The value(s) in <var>i</var> must not
  exceed the number of tests in the <code>cvpartition</code> object <var>C</var>.
 </p>
-<p> <code><var>idx</var> = training (<var>C</var>, <code>&quot;all&quot;</code>)</code> returns a logical
+<p> <code><var>idx</var> = training (<var>C</var>, <code>'all'</code>)</code> returns a logical
  vector or matrix for all training sets defined in the <code>cvpartition</code>
  object <var>C</var>.  For holdout and resubstitution partition types, a vector
  is returned.  For K-fold and leave-one-out, a matrix is returned.

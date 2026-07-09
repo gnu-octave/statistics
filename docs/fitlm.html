@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace fw-bolder"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,207 +804,273 @@
             </div>
             <div class="card-body">
 <dl>
-<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>tab</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>, <var>modelspec</var>, <var>name</var>, <var>value</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>tab</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>tab</var>, <var>stats</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: [<var>tab</var>, <var>stats</var>] = <b>fitlm</b> (&hellip;)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (<var>X</var>, <var>y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (<var>tbl</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (<var>tbl</var>, <var>ResponseVarName</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (<var>tbl</var>, <var>y</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (&hellip;, <var>modelspec</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>mdl</var> = <b>fitlm</b> (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code></h5></dt>
 </dl>
-
-<p> Regress the continuous outcome (i.e. dependent variable) <var>y</var> on
- continuous or categorical predictors (i.e. independent variables) <var>X</var>
- by minimizing the sum-of-squared residuals. Unless requested otherwise,
- <code>fitlm</code> prints the model formula, the regression coefficients (i.e.
- parameters/contrasts) and an ANOVA table. Note that unlike <code>anovan</code>,
- <code>fitlm</code> treats all factors as continuous by default. A bootstrap
- resampling variant of this function, <code>bootlm</code>, is available in the
- statistics-resampling package and has similar usage.
+<p> Fit a linear regression model to data and return a <code>LinearModel</code>
+ object.
 </p>
 <div class="ms-5">
-<p> <var>X</var> must be a column major matrix or cell array consisting of the
- predictors. A constant term (intercept) should not be included in X - it
- is automatically added to the model. <var>y</var> must be a column vector
- corresponding to the outcome variable. <var>modelspec</var> can specified as
- one of the following:
+<p> The returned object stores the fitted coefficients, their standard errors,
+ t-statistics, and p-values, summary statistics of the fit (<math>R^2</math>,
+ RMSE, F-statistic, etc.), and the residuals and diagnostics of the fit, and
+ exposes methods such as <code>predict</code>, <code>plotResiduals</code>,
+ <code>coefTest</code>, <code>addTerms</code>, and <code>removeTerms</code> for further
+ analysis of the fitted model.
 </p>
- <ul>
+<a name="Basic-Syntax"></a>
+<h3 class="subheading">Basic Syntax</h3>
+
+<p> <code><var>mdl</var> = fitlm (<var>X</var>, <var>y</var>)</code> fits a linear regression model
+ of the response <var>y</var> to the predictor data <var>X</var>.  Unless removed via
+ the <code>'Intercept'</code> option, the fitted model contains a constant
+ (intercept) term and one linear term for every column of <var>X</var>.
+</p>
+<ul>
 <li>
- &quot;constant&quot; : model contains only a constant (intercept) term.
+ <var>X</var> is an <math>N&times;P</math> numeric or logical matrix of predictor data, where
+ rows correspond to observations and columns correspond to variables.  By
+ default, the predictors are named <code>'x1'</code>, <code>'x2'</code>, &hellip;,
+ <code>'xP'</code>.
+</li><li>
+ <var>X</var> can also be a categorical vector of length <math>N</math>, representing a
+ single categorical predictor.  In this case <var>y</var> must be supplied as the
+ next argument, and the predictor is named <code>'x1'</code> by default.
+</li><li>
+ <var>y</var> is an <math>N&times;1</math> numeric or logical vector of response values, and
+ must have the same number of observations (rows) as <var>X</var>.  By default,
+ the response is named <code>'y'</code>.
+</li></ul>
 
- </li><li>
- &quot;linear&quot; (default) : model contains an intercept and linear term for each
- predictor.
-
- </li><li>
- &quot;interactions&quot; : model contains an intercept, linear term for each predictor
- and all products of pairs of distinct predictors.
-
- </li><li>
- &quot;full&quot; : model contains an intercept, linear term for each predictor and
- all combinations of the predictors.
-
- </li><li>
- a matrix of term definitions : an t-by-(N+1) matrix specifying terms in
- a model, where t is the number of terms, N is the number of predictor
- variables, and +1 accounts for the outcome variable. The outcome variable
- is the last column in the terms matrix and must be a column of zeros.
- An intercept must be specified in the first row of the terms matrix and
- must be a row of zeros.
- </li></ul>
-
-<p> <code>fitlm</code> can take a number of optional parameters as name-value pairs.
+<p> <code><var>mdl</var> = fitlm (<var>tbl</var>)</code> fits a linear regression model using
+ the variables contained in the table (or dataset) <var>tbl</var>.  By default,
+ the last variable in <var>tbl</var> is used as the response and all other
+ variables are used as predictors.  Variables that are <code>categorical</code>
+ arrays, cell arrays of character vectors, or logical arrays are
+ automatically treated as categorical predictors.
 </p>
-<p> <code>[&hellip;] = fitlm (..., &quot;CategoricalVars&quot;, <var>categorical</var>)</code>
+<p> <code><var>mdl</var> = fitlm (<var>tbl</var>, <var>ResponseVarName</var>)</code> fits a model
+ using the variable named <var>ResponseVarName</var> in <var>tbl</var> as the
+ response, and all remaining variables in <var>tbl</var> as predictors.
 </p>
- <ul>
-<li>
- <var>categorical</var> is a vector of indices indicating which of the columns
- (i.e. variables) in <var>X</var> should be treated as categorical predictors
- rather than as continuous predictors.
- </li></ul>
-
-<p> <code>fitlm</code> also accepts optional <code>anovan</code> parameters as name-value
- pairs (except for the &quot;model&quot; parameter). The accepted parameter names from
- <code>anovan</code> and their default values in <code>fitlm</code> are:
+<p> <code><var>mdl</var> = fitlm (<var>tbl</var>, <var>y</var>)</code> fits a model using the
+ variables in <var>tbl</var> as predictors and the external numeric vector
+ <var>y</var> as the response.  <var>y</var> must have <code>height (<var>tbl</var>)</code>
+ elements.
 </p>
- <ul>
-<li>
- <var>CONTRASTS</var> : &quot;treatment&quot;
+<a name="Model-Specification"></a>
+<h3 class="subheading">Model Specification</h3>
 
- </li><li>
- <var>SSTYPE</var>: 2
-
- </li><li>
- <var>ALPHA</var>: 0.05
-
- </li><li>
- <var>DISPLAY</var>: &quot;on&quot;
-
- </li><li>
- <var>WEIGHTS</var>: [] (empty)
-
- </li><li>
- <var>RANDOM</var>: [] (empty)
-
- </li><li>
- <var>CONTINUOUS</var>: [1:N]
-
- </li><li>
- <var>VARNAMES</var>: [] (empty)
- </li></ul>
-
-<p> Type &rsquo;<code>help anovan</code>&rsquo; to find out more about what these options do.
+<p> <code><var>mdl</var> = fitlm (&hellip;, <var>modelspec</var>)</code> additionally specifies
+ the terms of the model to fit, using any of the input combinations shown
+ above.  <var>modelspec</var> can be any of the following.
 </p>
-<p> <code>fitlm</code> can return up to two output arguments:
+<table>
+<thead><tr><th width="18%"><var>Value</var></th><th width="2%"></th><th width="80%"><var>Description</var></th></tr></thead>
+<tr><td width="18%"><code>'constant'</code></td><td width="2%"></td><td width="80%">Model contains only an intercept term.</td></tr>
+<tr><td width="18%"><code>'linear'</code></td><td width="2%"></td><td width="80%">Model contains an intercept and one term
+ for each predictor variable.  This is the default when <var>modelspec</var> is
+ not specified.</td></tr>
+<tr><td width="18%"><code>'interactions'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all
+ linear terms, and all pairwise products of distinct predictor variables
+ (no squared terms).</td></tr>
+<tr><td width="18%"><code>'purequadratic'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all
+ linear terms, and all squared terms.</td></tr>
+<tr><td width="18%"><code>'quadratic'</code></td><td width="2%"></td><td width="80%">Model contains an intercept, all linear
+ terms, all pairwise products of distinct predictor variables, and all
+ squared terms.</td></tr>
+<tr><td width="18%"><code>'full'</code></td><td width="2%"></td><td width="80%">Model contains an intercept and all terms up
+ to and including the full <math>P</math>-way interaction of the predictor
+ variables, i.e. every combination of one or more distinct predictors.</td></tr>
+<tr><td width="18%">terms matrix</td><td width="2%"></td><td width="80%">A <math>T&times;P</math> or <math>T&times;(P+1)</math> numeric matrix,
+ where <math>T</math> is the number of terms and <math>P</math> is the number of
+ predictor variables.  Each row represents one term, and the value in
+ column <math>j</math> is the exponent to which predictor <math>j</math> is raised in
+ that term; a row of all zeros represents the intercept.  If a
+ <math>T&times;(P+1)</math> matrix is supplied, its last column (representing the
+ response variable) must be all zeros.</td></tr>
+<tr><td width="18%">Wilkinson formula</td><td width="2%"></td><td width="80%">A character vector of the form
+ <code>'y ~ terms'</code> describing the response and predictor terms using
+ Wilkinson notation.  The variable name to the left of <code>'~'</code> is used
+ as the response, overriding any response implied elsewhere in the call.</td></tr>
+</table>
+
+<p> When <var>modelspec</var> is given as a Wilkinson formula, the following
+ operators may be used on its right-hand side to build up <code>terms</code>:
 </p>
-<p> [<var>tab</var>] = fitlm (&hellip;) returns a cell array containing a
- table of model parameters
+<table>
+<thead><tr><th width="12%">Operator</th><th width="38%">Meaning</th><th width="50%">Example</th></tr></thead>
+<tr><td width="12%"><code>+</code></td><td width="38%">add a term</td><td width="50%"><code>'x1 + x2'</code> adds <code>x1</code> and
+ <code>x2</code> as separate terms</td></tr>
+<tr><td width="12%"><code>-</code></td><td width="38%">remove a term</td><td width="50%"><code>'x1*x2 - x1:x2'</code> removes the
+ interaction, leaving only <code>x1</code> and <code>x2</code></td></tr>
+<tr><td width="12%"><code>*</code></td><td width="38%">cross two terms</td><td width="50%"><code>'x1*x2'</code> expands to
+ <code>x1</code>, <code>x2</code>, <code>x1:x2</code></td></tr>
+<tr><td width="12%"><code>:</code></td><td width="38%">interaction only</td><td width="50%"><code>'x1:x2'</code> adds only the
+ interaction term between <code>x1</code> and <code>x2</code></td></tr>
+<tr><td width="12%"><code>^</code></td><td width="38%">power / crossing limit</td><td width="50%"><code>'x^2'</code> adds
+ <code>x</code> and <code>x^2</code>; <code>'(x1+x2)^2'</code> expands to <code>x1</code>,
+ <code>x2</code>, <code>x1:x2</code></td></tr>
+<tr><td width="12%"><code>-1</code></td><td width="38%">remove intercept</td><td width="50%"><code>'x1 + x2 - 1'</code> fits the
+ model without a constant term</td></tr>
+</table>
+
+<p> A formula includes an intercept term by default; append <code>'- 1'</code> to
+ the formula to omit it.  For a categorical predictor, <code>fitlm</code>
+ generates the necessary indicator (dummy) variables automatically from the
+ formula, so a formula does not need to be changed when the underlying
+ design matrix changes.
 </p>
-<p> [<var>tab</var>, <var>stats</var>] = fitlm (&hellip;) returns a structure
- containing additional statistics, including degrees of freedom and effect
- sizes for each term in the linear model, the design matrix, the
- variance-covariance matrix, (weighted) model residuals, and the mean squared
- error. The columns of <var>stats</var>.coeffs (from left-to-right) report the
- model coefficients, standard errors, lower and upper 100*(1-alpha)%
- confidence interval bounds, t-statistics, and p-values relating to the
- contrasts. The number appended to each term name in <var>stats</var>.coeffnames
- corresponds to the column number in the relevant contrast matrix for that
- factor. The <var>stats</var> structure can be used as input for <code>multcompare</code>.
- Note that if the model contains a continuous variable and you wish to use
- the <var>STATS</var> output as input to <code>multcompare</code>, then the model needs
- to be refit with the &quot;contrast&quot; parameter set to a sum-to-zero contrast
- coding scheme, e.g.&quot;simple&quot;.
+<a name="Options"></a>
+<h3 class="subheading">Options</h3>
+
+<p> <code><var>mdl</var> = fitlm (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code>
+ specifies additional options using one or more <code>Name-Value</code> pair
+ arguments, which may be combined with <var>modelspec</var> or used on their own.
+</p>
+<table>
+<thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
+<tr><td width="18%"><code>'Intercept'</code></td><td width="2%"></td><td width="80%">A logical scalar indicating whether to
+ include a constant (intercept) term in the model.  Default is <code>true</code>.
+ This option only applies when <var>modelspec</var> is a character vector model
+ name (or omitted); it is ignored when <var>modelspec</var> is a terms matrix or
+ a Wilkinson formula, where the intercept is instead controlled by the
+ matrix/formula itself.</td></tr>
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">A numeric vector of nonnegative
+ observation weights, with one element per observation, used to fit a
+ weighted least squares model.  Default is a vector of ones, i.e. an
+ unweighted ordinary least squares fit.</td></tr>
+<tr><td width="18%"><code>'Exclude'</code></td><td width="2%"></td><td width="80%">A numeric or logical vector specifying
+ observations to exclude from the fit, given as row indices into the
+ original data or as a logical mask the same length as the number of
+ observations.  Excluded observations, together with any observation that
+ contains a missing (<code>NaN</code>) value in a predictor or the response, are
+ recorded in the <code>ObservationInfo</code> property of the fitted model but do
+ not contribute to the fitted coefficients or summary statistics.</td></tr>
+<tr><td width="18%"><code>'CategoricalVars'</code></td><td width="2%"></td><td width="80%">Specifies which predictor
+ variables are treated as categorical, given as a vector of column indices,
+ a logical vector, or a cell array of variable names (only valid for table
+ input).  Each categorical predictor with <math>L</math> distinct categories is
+ expanded into <math>L-1</math> indicator (dummy) variables, using the first
+ category (in sorted or original order) as the reference level that is
+ omitted from the design matrix.  Variables that are already
+ <code>categorical</code> arrays or cell arrays of character vectors are always
+ treated as categorical, regardless of this option.</td></tr>
+<tr><td width="18%"><code>'VarNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+ naming the predictor and response variables, listed in order with the
+ response variable name last, e.g. <code>{&quot;x1&quot;, &quot;x2&quot;, &quot;y&quot;}</code> for two
+ predictors.  Only applies when <var>X</var> and <var>y</var> (or a categorical
+ vector and <var>y</var>) are supplied directly, since table variables already
+ carry their own names.  By default, predictors are named <code>'x1'</code>,
+ <code>'x2'</code>, etc. and the response is named <code>'y'</code>.</td></tr>
+<tr><td width="18%"><code>'ResponseVar'</code></td><td width="2%"></td><td width="80%">A character vector naming the
+ response variable, used to override the response variable name that would
+ otherwise be inferred (the last table variable, or <code>'y'</code> for matrix
+ input).</td></tr>
+<tr><td width="18%"><code>'PredictorVars'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+ naming which variables in <var>tbl</var> to use as predictors.  By default, all
+ variables in <var>tbl</var> other than the response variable are used as
+ predictors.</td></tr>
+<tr><td width="18%"><code>'RobustOpts'</code></td><td width="2%"></td><td width="80%">Selects ordinary least squares or
+ robust regression fitting.  This value can be <code>'off'</code> (default,
+ ordinary least squares), <code>'on'</code> (robust fitting using the
+ <code>'bisquare'</code> weighting function), the name of one of the weighting
+ functions below, a function handle for a custom weighting function, or a
+ scalar structure with fields <code>RobustWgtFun</code> and <code>Tune</code>
+ specifying the weighting function and its tuning constant.  Robust fitting
+ uses Iteratively Reweighted Least Squares (IRLS), refitting the model with
+ updated observation weights until the coefficients converge.  Supported
+ weighting function names: <code>'andrews'</code>, <code>'bisquare'</code>,
+ <code>'cauchy'</code>, <code>'fair'</code>, <code>'huber'</code>, <code>'logistic'</code>,
+ <code>'ols'</code>, <code>'talwar'</code>, <code>'welsch'</code>, each with its own default
+ tuning constant.</td></tr>
+</table>
+
+<a name="Algorithm"></a>
+<h3 class="subheading">Algorithm</h3>
+
+<p> <code>fitlm</code> solves the (weighted) least squares problem by applying a
+ pivoted QR decomposition to the design matrix, which remains numerically
+ stable even when predictors are collinear; coefficients corresponding to
+ columns beyond the numerically detected rank of the design matrix are set
+ to zero.  Robust fits refine this ordinary least squares solution using
+ IRLS as described above.  Observations with missing values in any variable
+ used by the model, or explicitly excluded via <code>'Exclude'</code>, are
+ omitted from the fit entirely and flagged in <code>ObservationInfo</code>, but
+ are otherwise not counted as errors.
+</p>
+<p> <var>mdl</var> is returned as a <code>LinearModel</code> object.  If
+ <code>'RobustOpts'</code> is anything other than <code>'off'</code>, the returned
+ model is a robust fit rather than an ordinary least squares fit, and its
+ <code>Robust</code> property is populated accordingly.
 </p>
 <p> <strong>See also: </strong>
-  <a href="anovan.html">anovan</a>, 
-  <a href="multcompare.html">multcompare</a>
+  <a href="LinearModel.html">LinearModel</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitlm.m">fitlm</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y =  [ 8.706 10.362 11.552  6.941 10.983 10.092  6.421 14.943 15.931 ...
         22.968 18.590 16.567 15.944 21.637 14.492 17.965 18.851 22.891 ...
         22.028 16.884 17.252 18.325 25.435 19.141 21.238 22.196 18.038 ...
         22.628 31.163 26.053 24.419 32.145 28.966 30.207 29.142 33.212 ...
         25.694 ]';
  X = [1 1 1 1 1 1 1 1 2 2 2 2 2 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5]';
+ mdl = fitlm (X, y, 'linear', 'CategoricalVars', 1)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
 
- [TAB,STATS] = fitlm (X,y,"linear","CategoricalVars",1,"display","on");
+  Linear regression model:
+      y ~ 1 + x1
+
+  Coefficients:
+
+  5x4 table
+
+                   Estimate      SE        tStat       pValue       
+                   ________    _______    _______    ___________    
+
+    (Intercept)          10    1.01775    9.82556    3.48093e-11    
+    x1_2                  8    1.64108    4.87484    2.85812e-05    
+    x1_3                  9    1.43932    6.25295    5.22937e-07    
+    x1_4            11.0001    1.48984    7.38344    2.12795e-08    
+    x1_5            19.0001    1.39877    13.5835    7.82092e-15    
 
 
-MODEL FORMULA (based on Wilkinson's notation):
+Number of observations: 37, Error degrees of freedom: 32
+Root Mean Squared Error: 2.87864
+R-squared: 0.854819,  Adjusted R-Squared: 0.836672
+F-statistic vs. constant model: 47.1038, p-value = 5.71708e-13</pre>
 
-Y ~ 1 + X1
-
-MODEL PARAMETERS (contrasts for the fixed effects)
-
-Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob&gt;|t|
---------------------------------------------------------------------------------
-(Intercept)                   10      1.02      7.93      12.1     9.83    &lt;.001 
-X1_1                           8      1.64      4.66      11.3     4.87    &lt;.001 
-X1_2                           9      1.44      6.07      11.9     6.25    &lt;.001 
-X1_3                          11      1.49      7.97        14     7.38    &lt;.001 
-X1_4                          19       1.4      16.2      21.8    13.58    &lt;.001 
-
-ANOVA TABLE (Type II sums-of-squares):
-
-Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob&gt;F
---------------------------------------------------------------------------------
-X1                        1561.3       4      390.33  0.855        47.10   &lt;.001 
-Error                     265.17      32      8.2866
-Total                     1826.5      36 
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitlm_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
             6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
  brands = {'Gourmet', 'National', 'Generic'; ...
            'Gourmet', 'National', 'Generic'; ...
@@ -1011,45 +1080,34 @@ Total                     1826.5      36
            'Gourmet', 'National', 'Generic'};
  popper = {'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; 'oil', 'oil', 'oil'; ...
            'air', 'air', 'air'; 'air', 'air', 'air'; 'air', 'air', 'air'};
+ T = table (brands(:), popper(:), 'VariableNames', {'brands', 'popper'});
+ mdl = fitlm (T, popcorn(:), 'interactions')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">mdl =
 
- [TAB, STATS] = fitlm ({brands(:),popper(:)},popcorn(:),"interactions",...
-                          "CategoricalVars",[1,2],"display","on");
+  Linear regression model:
+      y ~ 1 + brands + popper + brands:brands + brands:popper
+
+  Coefficients:
+
+  7x4 table
+
+                                      Estimate        SE         tStat        pValue       
+                                      _________    ________    _________    ___________    
+
+    (Intercept)                             4.5    0.215166      20.9141    8.27238e-11    
+    brands_Gourmet                      2.33333     0.30429      7.66812    5.78606e-06    
+    brands_National                    0.666667     0.30429      2.19089      0.0489297    
+    popper_oil                               -1     0.30429     -3.28634     0.00650333    
+    brands_Gourmet:brands_National            0           0          NaN            NaN    
+    brands_Gourmet:popper_oil         -0.166667    0.430331    -0.387298       0.705317    
+    brands_National:popper_oil         0.166667    0.430331     0.387298       0.705317    
 
 
-MODEL FORMULA (based on Wilkinson's notation):
+Number of observations: 18, Error degrees of freedom: 12
+Root Mean Squared Error: 0.372678
+R-squared: 0.924242,  Adjusted R-Squared: 0.892677
+F-statistic vs. constant model: 29.28, p-value = 2.50646e-06</pre>
 
-Y ~ 1 + X1 + X2 + X1:X2
-
-MODEL PARAMETERS (contrasts for the fixed effects)
-
-Parameter               Estimate        SE  Lower.CI  Upper.CI        t Prob&gt;|t|
---------------------------------------------------------------------------------
-(Intercept)                 5.67     0.215       5.2      6.14    26.34    &lt;.001 
-X1_1                       -1.33     0.304        -2     -0.67    -4.38    &lt;.001 
-X1_2                       -2.17     0.304     -2.83      -1.5    -7.12    &lt;.001 
-X2_1                        1.17     0.304     0.504      1.83     3.83     .002 
-X1:X2_1                   -0.333      0.43     -1.27     0.604    -0.77     .454 
-X1:X2_2                   -0.167      0.43      -1.1     0.771    -0.39     .705 
-
-ANOVA TABLE (Type II sums-of-squares):
-
-Source                   Sum Sq.    d.f.    Mean Sq.  R Sq.            F  Prob&gt;F
---------------------------------------------------------------------------------
-X1                         15.75       2       7.875  0.904        56.70   &lt;.001 
-X2                           4.5       1         4.5  0.730        32.40   &lt;.001 
-X1*X2                   0.083333       2    0.041667  0.048         0.30    .746 
-Error                     1.6667      12     0.13889
-Total                         22      17 
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitlm_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

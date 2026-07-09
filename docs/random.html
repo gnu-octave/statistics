@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,7 +811,6 @@
 <dt><code><h5 class="fs">statistics: <var>r</var> = <b>random</b> (<var>name</var>, &hellip;, <var>rows</var>, <var>cols</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>r</var> = <b>random</b> (<var>name</var>, &hellip;, [<var>sz</var>])</code></h5></dt>
 </dl>
-
 <p> Random arrays from a given one-, two-, or three-parameter distribution.
 </p>
 <div class="ms-5">
@@ -830,45 +832,45 @@
  The last column shows the required number of parameters that must be passed
  to the desired <code>*rnd</code> distribution function.
 </p>
- <table>
+<table>
 <thead><tr><th width="40%">Distribution Name</th><th width="5%"></th><th width="20%">Abbreviation</th><th width="5%"></th><th width="30%">Input Parameters</th></tr></thead>
-<tr><td width="40%"><code>&quot;Beta&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;beta&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bino&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Birnbaum-Saunders&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;bisa&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Burr&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;burr&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Cauchy&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;cauchy&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Chi-squared&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;chi2&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ev&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Exponential&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;exp&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;F-Distribution&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;f&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Gamma&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gam&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Geometric&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;geo&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Generalized Extreme Value&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gev&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Generalized Pareto&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gp&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Gumbel&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;gumbel&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Half-normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;hn&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Hypergeometric&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;hyge&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Inverse Gaussian&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;invg&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Laplace&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;laplace&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logi&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Log-Logistic&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logl&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Lognormal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;logn&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Nakagami&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;naka&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Negative Binomial&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;nbin&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Noncentral F-Distribution&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ncf&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Noncentral Student T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;nct&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Noncentral Chi-Squared&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;ncx2&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Normal&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;norm&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Poisson&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;poiss&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Rayleigh&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;rayl&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Rician&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;rice&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Student T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;t&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;location-scale T&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;tls&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Triangular&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;tri&quot;</code></td><td width="5%"></td><td width="30%">3</td></tr>
-<tr><td width="40%"><code>&quot;Discrete Uniform&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;unid&quot;</code></td><td width="5%"></td><td width="30%">1</td></tr>
-<tr><td width="40%"><code>&quot;Uniform&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;unif&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Von Mises&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;vm&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
-<tr><td width="40%"><code>&quot;Weibull&quot;</code></td><td width="5%"></td><td width="20%"><code>&quot;wbl&quot;</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Beta'</code></td><td width="5%"></td><td width="20%"><code>'beta'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Binomial'</code></td><td width="5%"></td><td width="20%"><code>'bino'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Birnbaum-Saunders'</code></td><td width="5%"></td><td width="20%"><code>'bisa'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Burr'</code></td><td width="5%"></td><td width="20%"><code>'burr'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Cauchy'</code></td><td width="5%"></td><td width="20%"><code>'cauchy'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Chi-squared'</code></td><td width="5%"></td><td width="20%"><code>'chi2'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'Extreme Value'</code></td><td width="5%"></td><td width="20%"><code>'ev'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Exponential'</code></td><td width="5%"></td><td width="20%"><code>'exp'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'F-Distribution'</code></td><td width="5%"></td><td width="20%"><code>'f'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Gamma'</code></td><td width="5%"></td><td width="20%"><code>'gam'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Geometric'</code></td><td width="5%"></td><td width="20%"><code>'geo'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'Generalized Extreme Value'</code></td><td width="5%"></td><td width="20%"><code>'gev'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Generalized Pareto'</code></td><td width="5%"></td><td width="20%"><code>'gp'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Gumbel'</code></td><td width="5%"></td><td width="20%"><code>'gumbel'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Half-normal'</code></td><td width="5%"></td><td width="20%"><code>'hn'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Hypergeometric'</code></td><td width="5%"></td><td width="20%"><code>'hyge'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Inverse Gaussian'</code></td><td width="5%"></td><td width="20%"><code>'invg'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Laplace'</code></td><td width="5%"></td><td width="20%"><code>'laplace'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Logistic'</code></td><td width="5%"></td><td width="20%"><code>'logi'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Log-Logistic'</code></td><td width="5%"></td><td width="20%"><code>'logl'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Lognormal'</code></td><td width="5%"></td><td width="20%"><code>'logn'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Nakagami'</code></td><td width="5%"></td><td width="20%"><code>'naka'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Negative Binomial'</code></td><td width="5%"></td><td width="20%"><code>'nbin'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Noncentral F-Distribution'</code></td><td width="5%"></td><td width="20%"><code>'ncf'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Noncentral Student T'</code></td><td width="5%"></td><td width="20%"><code>'nct'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Noncentral Chi-Squared'</code></td><td width="5%"></td><td width="20%"><code>'ncx2'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Normal'</code></td><td width="5%"></td><td width="20%"><code>'norm'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Poisson'</code></td><td width="5%"></td><td width="20%"><code>'poiss'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'Rayleigh'</code></td><td width="5%"></td><td width="20%"><code>'rayl'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'Rician'</code></td><td width="5%"></td><td width="20%"><code>'rice'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Student T'</code></td><td width="5%"></td><td width="20%"><code>'t'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'location-scale T'</code></td><td width="5%"></td><td width="20%"><code>'tls'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Triangular'</code></td><td width="5%"></td><td width="20%"><code>'tri'</code></td><td width="5%"></td><td width="30%">3</td></tr>
+<tr><td width="40%"><code>'Discrete Uniform'</code></td><td width="5%"></td><td width="20%"><code>'unid'</code></td><td width="5%"></td><td width="30%">1</td></tr>
+<tr><td width="40%"><code>'Uniform'</code></td><td width="5%"></td><td width="20%"><code>'unif'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Von Mises'</code></td><td width="5%"></td><td width="20%"><code>'vm'</code></td><td width="5%"></td><td width="30%">2</td></tr>
+<tr><td width="40%"><code>'Weibull'</code></td><td width="5%"></td><td width="20%"><code>'wbl'</code></td><td width="5%"></td><td width="30%">2</td></tr>
 </table>
 
 <p> <strong>See also: </strong>

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -810,7 +813,6 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>normfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>normfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code></h5></dt>
 </dl>
-
 <p> Estimate parameters and confidence intervals for the normal distribution.
 </p>
 <div class="ms-5">
@@ -823,30 +825,27 @@
  (<var>x</var>)</code> returns the 95% confidence intervals for the mean and standard
  deviation estimates in the arrays <var>muci</var> and <var>sigmaci</var>, respectively.
 </p>
- <ul>
+<ul>
 <li>
  <var>x</var> can be a vector or a matrix.  When <var>x</var> is a matrix, the parameter
  estimates and their confidence intervals are computed for each column.  In
  this case, <code>normfit</code> supports only 2 input arguments, <var>x</var> and
  <var>alpha</var>.  Optional arguments <var>censor</var>, <var>freq</var>, and <var>options</var>
  can be used only when <var>x</var> is a vector.
-
- </li><li>
+</li><li>
  <var>alpha</var> is a scalar value in the range <math>(0,1)</math> specifying the
  confidence level for the confidence intervals calculated as
  <math>100&times;(1 – alpha)%</math>.  By default, the optional argument <var>alpha</var> is
  0.05 corresponding to 95% confidence intervals.  Pass in <code>[]</code> for
  <var>alpha</var> to use the default values.
-
- </li><li>
+</li><li>
  <var>censor</var> is a logical vector of the same length as <var>x</var> specifying
  whether each value in <var>x</var> is right-censored or not.  1 indicates
  observations that are right-censored and 0 indicates observations that are
  fully observed.  With censoring, <var>muhat</var> and <var>sigmahat</var> are the
  maximum likelihood estimates (MLEs).  If empty, the default is an array of
  0s, meaning that all observations are fully observed.
-
- </li><li>
+</li><li>
  <var>freq</var> is a vector of the same length as <var>x</var> and it typically
  contains non-negative integer counts of the corresponding elements in
  <var>x</var>.  If empty, the default is an array of 1s, meaning one observation
@@ -860,17 +859,18 @@
  variance estimator when there is no censored data.  When there is censoring
  in the data, the correction is not needed, since <code>normfit</code> does not use
  the unbiased variance estimator in that case.
-
- </li><li>
+</li><li>
  <var>options</var> is a structure with the control parameters for
  <code>fminsearch</code> which is used internally to compute MLEs for censored data.
  By default, it uses the following options:
- <ul>
+<ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
- </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
- </li><li> <code><var>options</var>.MaxIter = 200</code>
- </li><li> <code><var>options</var>.TolX = 1e-6</code>
- </li></ul>
+</li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+</li><li> <code><var>options</var>.MaxIter = 200</code>
+</li><li> <code><var>options</var>.TolX = 1e-6</code>
+</li></ul>
+
+
 </li></ul>
 
 <p> Further information about the normal distribution can be found at
@@ -887,76 +887,60 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/normfit.m">normfit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Sample 3 populations from 3 different normal distributions
- randn ("seed", 1);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <p>Sample 3 populations from 3 different normal distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> randn ('seed', 1);    # for reproducibility
  r1 = normrnd (2, 5, 5000, 1);
- randn ("seed", 2);    # for reproducibility
+ randn ('seed', 2);    # for reproducibility
  r2 = normrnd (5, 2, 5000, 1);
- randn ("seed", 3);    # for reproducibility
+ randn ('seed', 3);    # for reproducibility
  r3 = normrnd (9, 4, 5000, 1);
- r = [r1, r2, r3];
-
- ## Plot them normalized and fix their colors
- hist (r, 15, 0.4);
- h = findobj (gca, "Type", "patch");
- set (h(1), "facecolor", "c");
- set (h(2), "facecolor", "g");
- set (h(3), "facecolor", "r");
- hold on
-
- ## Estimate their mu and sigma parameters
- [muhat, sigmahat] = normfit (r);
-
- ## Plot their estimated PDFs
- x = [min(r(:)):max(r(:))];
+ r = [r1, r2, r3];</pre>
+                <p>Plot them normalized and fix their colors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (r, 15, 0.4);
+ h = findobj (gca, 'Type', 'patch');
+ set (h(1), 'facecolor', 'c');
+ set (h(2), 'facecolor', 'g');
+ set (h(3), 'facecolor', 'r');
+ hold on</pre>
+                <p>Estimate their mu and sigma parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [muhat, sigmahat] = normfit (r);</pre>
+                <p>Plot their estimated PDFs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [min(r(:)):max(r(:))];
  y = normpdf (x, muhat(1), sigmahat(1));
- plot (x, y, "-pr");
+ plot (x, y, '-pr');
  y = normpdf (x, muhat(2), sigmahat(2));
- plot (x, y, "-sg");
+ plot (x, y, '-sg');
  y = normpdf (x, muhat(3), sigmahat(3));
- plot (x, y, "-^c");
+ plot (x, y, '-^c');
  ylim ([0, 0.5])
  xlim ([-20, 20])
  hold off
- legend ({"Normalized HIST of sample 1 with mu=2, σ=5", ...
-          "Normalized HIST of sample 2 with mu=5, σ=2", ...
-          "Normalized HIST of sample 3 with mu=9, σ=4", ...
+ legend ({'Normalized HIST of sample 1 with mu=2, σ=5', ...
+          'Normalized HIST of sample 2 with mu=5, σ=2', ...
+          'Normalized HIST of sample 3 with mu=9, σ=4', ...
           sprintf("PDF for sample 1 with estimated mu=%0.2f and σ=%0.2f", ...
                   muhat(1), sigmahat(1)), ...
           sprintf("PDF for sample 2 with estimated mu=%0.2f and σ=%0.2f", ...
                   muhat(2), sigmahat(2)), ...
           sprintf("PDF for sample 3 with estimated mu=%0.2f and σ=%0.2f", ...
-                  muhat(3), sigmahat(3))}, "location", "northwest")
- title ("Three population samples from different normal distributions")
- hold off
+                  muhat(3), sigmahat(3))}, 'location', 'northwest')
+ title ('Three population samples from different normal distributions')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/normfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/normfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

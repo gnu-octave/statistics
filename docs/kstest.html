@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>p</var>] = <b>kstest</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>p</var>, <var>ksstat</var>, <var>cv</var>] = <b>kstest</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Single sample Kolmogorov-Smirnov (K-S) goodness-of-fit hypothesis test.
 </p>
 <div class="ms-5">
@@ -814,10 +816,10 @@
  determine if a random sample <var>x</var> could have come from a standard normal
  distribution.  <var>h</var> indicates the results of the null hypothesis test.
 </p>
- <ul>
+<ul>
 <li> <var>h</var> = 0 =&gt; Do not reject the null hypothesis at the 5% significance
- </li><li> <var>h</var> = 1 =&gt; Reject the null hypothesis at the 5% significance
- </li></ul>
+</li><li> <var>h</var> = 1 =&gt; Reject the null hypothesis at the 5% significance
+</li></ul>
 
 <p> <var>x</var> is a vector representing a random sample from some unknown
  distribution with a cumulative distribution function F(X).  Missing values
@@ -828,11 +830,12 @@
  specified by one or more <var>Name</var>-<var>Value</var> pair arguments as shown
  below.
 </p>
- <table>
+<table>
 <thead><tr><th width="15%">Name</th><th width="5%"></th><th width="80%">Value</th></tr></thead>
-<tr><td width="15%"><code>&quot;alpha&quot;</code></td><td width="5%"></td><td width="80%">A numeric scalar between 0 and 1 specifying th
+<tr><td width="15%"><code>'alpha'</code></td><td width="5%"></td><td width="80%">A numeric scalar between 0 and 1 specifying
+ th
  the significance level.  Default is 0.05 for 5% significance.</td></tr>
-<tr><td width="15%"><code>&quot;CDF&quot;</code></td><td width="5%"></td><td width="80%">The hypothesized CDF under the null hypothesis.
+<tr><td width="15%"><code>'CDF'</code></td><td width="5%"></td><td width="80%">The hypothesized CDF under the null hypothesis.
  It can be specified as a function handle of an existing cdf function, a
  character vector defining a probability distribution with default parameters,
  a probability distribution object, or a two-column matrix.  If not provided,
@@ -840,13 +843,14 @@
  Kolmogorov-Smirnov test is only valid for continuous cumulative distribution
  functions, and requires the CDF to be predetermined.  The result is not
  accurate if CDF is estimated from the data.</td></tr>
-<tr><td width="15%"><code>&quot;tail&quot;</code></td><td width="5%"></td><td width="80%">A string indicating the type of test:</td></tr>
+<tr><td width="15%"><code>'tail'</code></td><td width="5%"></td><td width="80%">A string indicating the type of test:</td></tr>
 </table>
- <table>
-<tr><td width="20%"></td><td width="15%"><code>&quot;unequal&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) not equal to CDF(X)&quot; (two-sided)
+
+<table>
+<tr><td width="20%"></td><td width="15%"><code>'unequal'</code></td><td width="5%"></td><td width="50%">&quot;F(X) not equal to CDF(X)&quot; (two-sided)
  (Default)</td></tr>
-<tr><td width="20%"></td><td width="15%"><code>&quot;larger&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) &gt; CDF(X)&quot; (one-sided)</td></tr>
-<tr><td width="20%"></td><td width="15%"><code>&quot;smaller&quot;</code></td><td width="5%"></td><td width="50%">&quot;F(X) &lt; CDF(X)&quot; (one-sided)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>'larger'</code></td><td width="5%"></td><td width="50%">&quot;F(X) &gt; CDF(X)&quot; (one-sided)</td></tr>
+<tr><td width="20%"></td><td width="15%"><code>'smaller'</code></td><td width="5%"></td><td width="50%">&quot;F(X) &lt; CDF(X)&quot; (one-sided)</td></tr>
 </table>
 
 <p> Let S(X) be the empirical c.d.f. estimated from the sample vector <var>x</var>,
@@ -888,57 +892,39 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/kstest.m">kstest</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Use the stock return data set to test the null hypothesis that the data
- ## come from a standard normal distribution against the alternative
- ## hypothesis that the population CDF of the data is larger that the
- ## standard normal CDF.
-
- load stockreturns;
+          </div>
+          <div class="card-body">
+                <p>Use the stock return data set to test the null hypothesis that the data come from a standard normal distribution against the alternative hypothesis that the population CDF of the data is larger that the standard normal CDF.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load stockreturns;
  x = stocks(:,2);
- [h, p, k, c] = kstest (x, "Tail", "larger")
-
- ## Compute the empirical CDF and plot against the standard normal CDF
- [f, x_values] = ecdf (x);
+ [h, p, k, c] = kstest (x, 'Tail', 'larger')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">h = 1
+p = 0.015286
+k = 0.1428
+c = 0.1207</pre>
+                <p>Compute the empirical CDF and plot against the standard normal CDF</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [f, x_values] = ecdf (x);
  h1 = plot (x_values, f);
  hold on;
  h2 = plot (x_values, normcdf (x_values), 'r--');
- set (h1, "LineWidth", 2);
- set (h2, "LineWidth", 2);
- legend ([h1, h2], "Empirical CDF", "Standard Normal CDF", ...
-         "Location", "southeast");
- title ("Empirical CDF of stock return data against standard normal CDF")
+ set (h1, 'LineWidth', 2);
+ set (h2, 'LineWidth', 2);
+ legend ([h1, h2], 'Empirical CDF', 'Standard Normal CDF', ...
+         'Location', 'southeast');
+ title ('Empirical CDF of stock return data against standard normal CDF')</pre>
+                <div class="text-center">
+                  <img src="assets/kstest_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-h = 1
-p = 0.015286
-k = 0.1428
-c = 0.1207
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/kstest_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

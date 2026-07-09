@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: [<var>intercept</var>, <var>slope</var>, <var>dev</var>, <var>dl</var>, <var>d2l</var>, <var>P</var>, <var>stats</var>] = <b>logistic_regression</b> (<var>y</var>, <var>x</var>, <var>print</var>, <var>intercept</var>, <var>slope</var>)</code></h5></dt>
 </dl>
-
 <p> Perform ordinal logistic regression.
 </p>
 <div class="ms-5">
@@ -812,13 +814,14 @@
  falls in one of the first i categories given the covariate
  <var>x</var>.  Then
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> [<var>intercept</var>, <var>slope</var>] = logistic_regression (<var>y</var>, <var>x</var>)
- </pre></td></tr></table>
+<table><tr><td>&nbsp;</td><td><pre class="example"> [<var>intercept</var>, <var>slope</var>] = logistic_regression (<var>y</var>, <var>x</var>)
+</pre></td></tr></table>
 
- <p> fits the model
+<p> fits the model
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> logit (P_i (<var>x</var>)) = <var>x</var> * <var>slope</var> + <var>intercept</var>_i,   i = 1 &hellip; k-1
- </pre></td></tr></table>
+<table><tr><td>&nbsp;</td><td><pre class="example"> logit (P_i (<var>x</var>)) = <var>x</var> * <var>slope</var> + <var>intercept</var>_i,
+                         i = 1 &hellip; k-1
+</pre></td></tr></table>
 
 <p> The number of ordinal categories, k, is taken to be the number
  of distinct values of <code>round (<var>y</var>)</code>.  If k equals 2,
@@ -830,11 +833,12 @@
 </p>
 <p> The full form is
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> [<var>intercept</var>, <var>slope</var>, <var>dev</var>, <var>dl</var>, <var>d2l</var>, <var>P</var>, <var>stats</var>]
-    = logistic_regression (<var>y</var>, <var>x</var>, <var>print</var>, <var>intercept</var>, <var>slope</var>)
- </pre><pre class="example"> </pre></td></tr></table>
+<table><tr><td>&nbsp;</td><td><pre class="example"> [<var>intercept</var>, <var>slope</var>, <var>dev</var>, <var>dl</var>, <var>d2l</var>, <var>P</var>, ...
+  <var>stats</var>] = logistic_regression (<var>y</var>, <var>x</var>, <var>print</var>, ...
+                                      <var>intercept</var>, <var>slope</var>)
+</pre></td></tr></table>
 
- <p> in which all output arguments and all input arguments except <var>y</var>
+<p> in which all output arguments and all input arguments except <var>y</var>
  are optional.
 </p>
 <p> Setting <var>print</var> to 1 requests summary information about the fitted
@@ -853,29 +857,29 @@
  given <var>x</var>.
 </p>
 <p> <var>stats</var> returns a structure that contains the following fields:
- </p><ul>
+</p>
+<ul>
 <li>
    &quot;intercept&quot;: intercept coefficients
- </li><li>
+</li><li>
     &quot;slope&quot;: slope coefficients
- </li><li>
+</li><li>
     &quot;coeff&quot;: regression coefficients (intercepts and slops)
- </li><li>
+</li><li>
     &quot;covb&quot;: estimated covariance matrix for coefficients (coeff)
- </li><li>
+</li><li>
     &quot;coeffcorr&quot;: correlation matrix for coeff
- </li><li>
+</li><li>
     &quot;se&quot;: standard errors of the coeff
- </li><li>
+</li><li>
     &quot;z&quot;: z statistics for coeff
- </li><li>
+</li><li>
     &quot;pval&quot;: p-values for coeff
- </li></ul>
+</li></ul>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/logistic_regression.m">logistic_regression</a>
 </div>
-
 
             </div>
           </div>

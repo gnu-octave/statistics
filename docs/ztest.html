@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,7 +810,6 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>] = <b>ztest</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>ci</var>, <var>zvalue</var>] = <b>ztest</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> One-sample Z-test.
 </p>
 <div class="ms-5">
@@ -838,13 +840,14 @@
 <p> <code>[&hellip;] = ztest (&hellip;, <var>Name</var>, <var>Value</var>, &hellip;)</code>
  specifies one or more of the following <var>Name</var>/<var>Value</var> pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
 <tr><td width="5%"></td><td width="20%">&quot;alpha&quot;</td><td width="75%">the significance level. Default is 0.05.</td></tr>
 <tr><td width="5%"></td><td width="20%">&quot;dim&quot;</td><td width="75%">dimension to work along a matrix or an N-D array.</td></tr>
 <tr><td width="5%"></td><td width="20%">&quot;tail&quot;</td><td width="75%">a string specifying the alternative hypothesis:</td></tr>
 </table>
- <table>
+
+<table>
 <tr><td width="10%"></td><td width="15%">&quot;both&quot;</td><td width="75%">&quot;mean is not <var>m</var>&quot; (two-tailed, default)</td></tr>
 <tr><td width="10%"></td><td width="15%">&quot;left&quot;</td><td width="75%">&quot;mean is less than <var>m</var>&quot; (left-tailed)</td></tr>
 <tr><td width="10%"></td><td width="15%">&quot;right&quot;</td><td width="75%">&quot;mean is greater than <var>m</var>&quot; (right-tailed)</td></tr>

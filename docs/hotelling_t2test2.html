@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: [<var>h</var>, <var>pval</var>, <var>stats</var>] = <b>hotelling_t2test2</b> (<var>x</var>, <var>y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>hotelling_t2test2</b> (<var>x</var>, <var>y</var>, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
-
 <p> Compute Hotelling&rsquo;s T^2 (&quot;T-squared&quot;) test for two independent samples.
 </p>
 <div class="ms-5">
@@ -817,7 +819,7 @@
  corresponding rows for each sample independently.
 </p>
 <p> Name-Value pair arguments can be used to set statistical significance.
- <code>&quot;alpha&quot;</code> can be used to specify the significance level of the test
+ <code>'alpha'</code> can be used to specify the significance level of the test
  (the default value is 0.05).
 </p>
 <p> If <var>h</var> is 1 the null hypothesis is rejected, meaning that the tested
@@ -833,7 +835,7 @@
  $$
  {(n_x+n_y-p-1) T^2 \over p(n_x+n_y-2)}
  $$
-   has an F distribution with <math>p</math> and <math>n_&times;+n_y-p-1</math> degrees of
+ has an F distribution with <math>p</math> and <math>n_&times;+n_y-p-1</math> degrees of
  freedom, where <math>n_&times;</math> and <math>n_y</math> are the sample sizes and
  <math>p</math> is the number of variables.
 </p>

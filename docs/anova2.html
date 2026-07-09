@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace fw-bolder"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,61 +810,54 @@
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>atab</var>] = <b>anova2</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>atab</var>, <var>stats</var>] = <b>anova2</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Performs two-way factorial (crossed) or a nested analysis of variance
  (ANOVA) for balanced designs. For unbalanced factorial designs, diagnostic
  plots and/or planned contrasts, use <code>anovan</code> instead.
 </p>
 <div class="ms-5">
-<p> <code>anova2</code> requires two input arguments with an optional third and fourth:
+<p> <code>anova2</code> requires two input arguments with an optional third and
+ fourth:
 </p>
- <ul>
+<ul>
 <li>
  <var>x</var> contains the data and it must be a matrix of at least two columns and
  two rows.
-
- </li><li>
+</li><li>
  <var>reps</var> is the number of replicates for each combination of factor groups.
-
- </li><li>
+</li><li>
  <var>displayopt</var> is an optional parameter for displaying the ANOVA table,
  when it is &rsquo;on&rsquo; (default) and suppressing the display when it is &rsquo;off&rsquo;.
-
- </li><li>
+</li><li>
  <var>model</var> is an optional parameter to specify the model type as either:
-
- <ul>
+<ul>
 <li>
  &quot;interaction&quot; or &quot;full&quot; (default): compute both main effects and their
  interaction
-
- </li><li>
+</li><li>
  &quot;linear&quot;: compute both main effects without an interaction. When <var>reps</var>
  &gt; 1 the test is suitable for a balanced randomized block design. When
  <var>reps</var> == 1, the test becomes a One-way Repeated Measures (RM)-ANOVA
  with Greenhouse-Geisser correction to the column factor degrees of freedom
  to make the test robust to violations of sphericity
-
- </li><li>
+</li><li>
  &quot;nested&quot;: treat the row factor as nested within columns. Note that the row
  factor is considered a random factor in the calculation of the statistics.
-
 </li></ul>
+
+
 </li></ul>
 
 <p> <code>anova2</code> returns up to three output arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>p</var> is the p-value of the null hypothesis that all group means are equal.
-
- </li><li>
+</li><li>
  <var>atab</var> is a cell array containing the results in a standard ANOVA table.
-
- </li><li>
+</li><li>
  <var>stats</var> is a structure containing statistics useful for performing
  a multiple comparison of means with the MULTCOMPARE function.
- </li></ul>
+</li></ul>
 
 <p> If anova2 is called without any output arguments, then it prints the results
  in a one-way ANOVA table to the standard output as if <var>displayopt</var> is
@@ -869,14 +865,13 @@
 </p>
 <p> Examples:
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> load popcorn;
+<table><tr><td>&nbsp;</td><td><pre class="example"> load popcorn;
  anova2 (popcorn, 3);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> [p, anovatab, stats] = anova2 (popcorn, 3, &quot;off&quot;);
+<table><tr><td>&nbsp;</td><td><pre class="example"> [p, anovatab, stats] = anova2 (popcorn, 3, &quot;off&quot;);
  disp (p);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="anova1.html">anova1</a>, 
@@ -886,33 +881,22 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/anova2.m">anova2</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- # Factorial (Crossed) Two-way ANOVA with Interaction
-
- popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+          </div>
+          <div class="card-body">
+                <p>Factorial (Crossed) Two-way ANOVA with Interaction</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
             6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-
- [p, atab, stats] = anova2(popcorn, 3, "on");
-
-
+ [p, atab, stats] = anova2 (popcorn, 3, 'on');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source             SS      df        MS       F      Prob&gt;F
@@ -921,47 +905,30 @@ Columns         15.7500     2     7.8750    56.70    0.0000
 Rows             4.5000     1     4.5000    32.40    0.0001
 Interaction      0.0833     2     0.0417     0.30    0.7462
 Error            1.6667    12     0.1389
-Total           22.0000    17
+Total           22.0000    17</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- # One-way Repeated Measures ANOVA (Rows are a crossed random factor)
-
- data = [54, 43, 78, 111;
+          </div>
+          <div class="card-body">
+                <p>One-way Repeated Measures ANOVA (Rows are a crossed random factor)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = [54, 43, 78, 111;
          23, 34, 37, 41;
          45, 65, 99, 78;
          31, 33, 36, 35;
          15, 25, 30, 26];
-
- [p, atab, stats] = anova2 (data, 1, "on", "linear");
-
-
+ [p, atab, stats] = anova2 (data, 1, 'on', 'linear');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source             SS      df        MS       F      Prob&gt;F
@@ -972,46 +939,29 @@ Error         2404.3000    12   200.3583
 Total        12950.9500    19
 
 Note: Greenhouse-Geisser's correction was applied to the
-degrees of freedom for the Column factor: F(1.74,6.95)
+degrees of freedom for the Column factor: F(1.74,6.95)</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
-
- # Balanced Nested One-way ANOVA (Rows are a nested random factor)
-
- data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
+          </div>
+          <div class="card-body">
+                <p>Balanced Nested One-way ANOVA (Rows are a nested random factor)</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> data = [4.5924 7.3809 21.322; -0.5488 9.2085 25.0426; ...
          6.1605 13.1147 22.66; 2.3374 15.2654 24.1283; ...
          5.1873 12.4188 16.5927; 3.3579 14.3951 10.2129; ...
          6.3092 8.5986 9.8934; 3.2831 3.4945 10.0203];
-
- [p, atab, stats] = anova2 (data, 4, "on", "nested");
-
-
+ [p, atab, stats] = anova2 (data, 4, 'on', 'nested');</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                       ANOVA Table
 
 Source             SS      df        MS       F      Prob&gt;F
@@ -1022,14 +972,8 @@ Error          180.1804    18    10.0100
 Total         1203.5592    23
 
 Note: Rows are a random factor nested within the columns.
-The Column F statistic uses the Row MS instead of the MSE.
+The Column F statistic uses the Row MS instead of the MSE.</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

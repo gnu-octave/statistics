@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ConfusionMatrixChart</h5></code></dl>
-
 <p> Confusion matrix chart for classification results
 </p>
 <div class="ms-5">
@@ -826,9 +828,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ConfusionMatrixChart.m">ConfusionMatrixChart</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>ConfusionMatrixChart</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -849,12 +849,10 @@ X-axis label
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the label for the x-axis.  Default is
  &quot;Predicted Class&quot;.
 </p>
-
 
 
             </div>
@@ -880,12 +878,10 @@ Y-axis label
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the label for the y-axis.  Default is
  &quot;True Class&quot;.
 </p>
-
 
 
             </div>
@@ -911,12 +907,10 @@ Chart title
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the title of the confusion matrix chart.
  Default is empty string.
 </p>
-
 
 
             </div>
@@ -942,12 +936,10 @@ Font name for text elements
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the font name used for all text elements
  in the chart.  Default is empty string, which uses the axes font name.
 </p>
-
 
 
             </div>
@@ -973,12 +965,10 @@ Font size for text elements
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric scalar specifying the font size used for all text elements
  in the chart.  Default is 0, which uses the axes font size.
 </p>
-
 
 
             </div>
@@ -1004,13 +994,11 @@ Color for diagonal elements
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A 1x3 RGB vector specifying the color for the diagonal elements of the
  confusion matrix, which represent correct classifications.  Default is
  [0.0, 0.4471, 0.7412].
 </p>
-
 
 
             </div>
@@ -1036,13 +1024,11 @@ Color for off-diagonal elements
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A 1x3 RGB vector specifying the color for the off-diagonal elements of
  the confusion matrix, which represent misclassifications.  Default is
  [0.8510, 0.3255, 0.0980].
 </p>
-
 
 
             </div>
@@ -1068,19 +1054,17 @@ Normalization method for confusion matrix values
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying how to normalize the confusion matrix
  values.  Supported values are:
 </p>
- <ul>
-<li> <code>&quot;absolute&quot;</code> - Display absolute counts (default)
- </li><li> <code>&quot;column-normalized&quot;</code> - Normalize by column totals
- </li><li> <code>&quot;row-normalized&quot;</code> - Normalize by row totals
- </li><li> <code>&quot;total-normalized&quot;</code> - Normalize by total number of
+<ul>
+<li> <code>'absolute'</code> - Display absolute counts (default)
+</li><li> <code>'column-normalized'</code> - Normalize by column totals
+</li><li> <code>'row-normalized'</code> - Normalize by row totals
+</li><li> <code>'total-normalized'</code> - Normalize by total number of
  observations
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1107,18 +1091,16 @@ Column summary display
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
-<p> A character vector specifying whether and how to display column summaries.
- Supported values are:
+<p> A character vector specifying whether and how to display column
+ summaries. Supported values are:
 </p>
- <ul>
-<li> <code>&quot;off&quot;</code> - Do not display column summary (default)
- </li><li> <code>&quot;absolute&quot;</code> - Display absolute counts
- </li><li> <code>&quot;column-normalized&quot;</code> - Display normalized by column
- </li><li> <code>&quot;total-normalized&quot;</code> - Display normalized by total
- </li></ul>
-
+<ul>
+<li> <code>'off'</code> - Do not display column summary (default)
+</li><li> <code>'absolute'</code> - Display absolute counts
+</li><li> <code>'column-normalized'</code> - Display normalized by column
+</li><li> <code>'total-normalized'</code> - Display normalized by total
+</li></ul>
 
 
 
@@ -1145,18 +1127,16 @@ Row summary display
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying whether and how to display row summaries.
  Supported values are:
 </p>
- <ul>
-<li> <code>&quot;off&quot;</code> - Do not display row summary (default)
- </li><li> <code>&quot;absolute&quot;</code> - Display absolute counts
- </li><li> <code>&quot;row-normalized&quot;</code> - Display normalized by row
- </li><li> <code>&quot;total-normalized&quot;</code> - Display normalized by total
- </li></ul>
-
+<ul>
+<li> <code>'off'</code> - Do not display row summary (default)
+</li><li> <code>'absolute'</code> - Display absolute counts
+</li><li> <code>'row-normalized'</code> - Display normalized by row
+</li><li> <code>'total-normalized'</code> - Display normalized by total
+</li></ul>
 
 
 
@@ -1183,16 +1163,14 @@ Grid visibility
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying whether to display grid lines in the
  confusion matrix.  Supported values are:
 </p>
- <ul>
-<li> <code>&quot;on&quot;</code> - Display grid lines (default)
- </li><li> <code>&quot;off&quot;</code> - Hide grid lines
- </li></ul>
-
+<ul>
+<li> <code>'on'</code> - Display grid lines (default)
+</li><li> <code>'off'</code> - Hide grid lines
+</li></ul>
 
 
 
@@ -1219,12 +1197,10 @@ Handle visibility
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the visibility of the object&rsquo;s handle.
- Supported values are <code>&quot;on&quot;</code>, <code>&quot;off&quot;</code>, and <code>&quot;callback&quot;</code>.
+ Supported values are <code>'on'</code>, <code>'off'</code>, and <code>'callback'</code>.
 </p>
-
 
 
             </div>
@@ -1250,12 +1226,10 @@ Outer position of the chart
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A 1x4 numeric vector specifying the outer position of the chart in the
  format [left, bottom, width, height].
 </p>
-
 
 
             </div>
@@ -1281,12 +1255,10 @@ Position of the chart
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A 1x4 numeric vector specifying the position of the chart in the
  format [left, bottom, width, height].
 </p>
-
 
 
             </div>
@@ -1312,14 +1284,12 @@ Position units
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the units for the position properties.
- Supported values are <code>&quot;centimeters&quot;</code>, <code>&quot;characters&quot;</code>,
- <code>&quot;inches&quot;</code>, <code>&quot;normalized&quot;</code>, <code>&quot;pixels&quot;</code>, and
- <code>&quot;points&quot;</code>.
+ Supported values are <code>'centimeters'</code>, <code>'characters'</code>,
+ <code>'inches'</code>, <code>'normalized'</code>, <code>'pixels'</code>, and
+ <code>'points'</code>.
 </p>
-
 
 
             </div>
@@ -1345,12 +1315,10 @@ Class labels
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of character vectors containing the class labels used in
  the confusion matrix.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1376,13 +1344,11 @@ Normalized confusion matrix values
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric matrix containing the normalized confusion matrix values
  according to the current normalization setting.  This property is
  read-only.
 </p>
-
 
 
             </div>
@@ -1408,21 +1374,17 @@ Parent object
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A handle to the parent figure or container object.  This property is
  read-only.
 </p>
 
 
-
             </div>
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>ConfusionMatrixChart</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1447,72 +1409,72 @@ Create a <code>ConfusionMatrixChart</code> object for visualizing
 <dt><code><h5 class="fs">statistics: <var>cmc</var> = <b>ConfusionMatrixChart</b> (<var>hax</var>, <var>cm</var>, <var>cl</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>cmc</var> = <b>ConfusionMatrixChart</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>cmc</var> = ConfusionMatrixChart (<var>hax</var>, <var>cm</var>, <var>cl</var>)</code>
  returns a ConfusionMatrixChart object with parent axes <var>hax</var>,
  confusion matrix <var>cm</var>, and class labels <var>cl</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>hax</code> must be a valid axes handle where the chart will be displayed.
- </li><li>
+</li><li>
  <code>cm</code> must be a square numeric matrix containing the confusion matrix
  values, where rows represent true classes and columns represent predicted
  classes.
- </li><li>
+</li><li>
  <code>cl</code> must be a cell array of character vectors containing the class
  labels. The number of labels must match the size of the confusion matrix.
- </li></ul>
+</li></ul>
 
-<p> <code><var>cmc</var> = ConfusionMatrixChart (&hellip;, <var>name</var>, <var>value</var>)</code>
+<p> <code><var>cmc</var> = ConfusionMatrixChart (&hellip;, <var>name</var>,
+ <var>value</var>)</code>
  returns a ConfusionMatrixChart object with additional parameters
  specified by <code><var>name</var>, <var>value</var></code> paired arguments:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;XLabel&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'XLabel'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  x-axis label. Default is &quot;Predicted Class&quot;.</td></tr>
-<tr><td width="18%"><code>&quot;YLabel&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'YLabel'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  y-axis label. Default is &quot;True Class&quot;.</td></tr>
-<tr><td width="18%"><code>&quot;Title&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the chart
+<tr><td width="18%"><code>'Title'</code></td><td width="2%"></td><td width="80%">A character vector specifying the chart
  title. Default is empty string.</td></tr>
-<tr><td width="18%"><code>&quot;FontName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'FontName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  font name for text elements. Default is the axes font name.</td></tr>
-<tr><td width="18%"><code>&quot;FontSize&quot;</code></td><td width="2%"></td><td width="80%">A numeric scalar specifying the
+<tr><td width="18%"><code>'FontSize'</code></td><td width="2%"></td><td width="80%">A numeric scalar specifying the
  font size for text elements. Default is the axes font size.</td></tr>
-<tr><td width="18%"><code>&quot;DiagonalColor&quot;</code></td><td width="2%"></td><td width="80%">A 1x3 RGB vector specifying
+<tr><td width="18%"><code>'DiagonalColor'</code></td><td width="2%"></td><td width="80%">A 1x3 RGB vector specifying
  the color for diagonal elements (correct classifications). Default is
  [0.0, 0.4471, 0.7412].</td></tr>
-<tr><td width="18%"><code>&quot;OffDiagonalColor&quot;</code></td><td width="2%"></td><td width="80%">A 1x3 RGB vector specifying
+<tr><td width="18%"><code>'OffDiagonalColor'</code></td><td width="2%"></td><td width="80%">A 1x3 RGB vector specifying
  the color for off-diagonal elements (misclassifications). Default is
  [0.8510, 0.3255, 0.0980].</td></tr>
-<tr><td width="18%"><code>&quot;Normalization&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
- the normalization method. Supported values are <code>&quot;absolute&quot;</code>,
- <code>&quot;column-normalized&quot;</code>, <code>&quot;row-normalized&quot;</code>, and
- <code>&quot;total-normalized&quot;</code>. Default is <code>&quot;absolute&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;ColumnSummary&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
+<tr><td width="18%"><code>'Normalization'</code></td><td width="2%"></td><td width="80%">A character vector specifying
+ the normalization method. Supported values are <code>'absolute'</code>,
+ <code>'column-normalized'</code>, <code>'row-normalized'</code>, and
+ <code>'total-normalized'</code>. Default is <code>'absolute'</code>.</td></tr>
+<tr><td width="18%"><code>'ColumnSummary'</code></td><td width="2%"></td><td width="80%">A character vector specifying
  whether and how to display column summaries. Supported values are
- <code>&quot;off&quot;</code>, <code>&quot;absolute&quot;</code>, <code>&quot;column-normalized&quot;</code>, and
- <code>&quot;total-normalized&quot;</code>. Default is <code>&quot;off&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;RowSummary&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
+ <code>'off'</code>, <code>'absolute'</code>, <code>'column-normalized'</code>, and
+ <code>'total-normalized'</code>. Default is <code>'off'</code>.</td></tr>
+<tr><td width="18%"><code>'RowSummary'</code></td><td width="2%"></td><td width="80%">A character vector specifying
  whether and how to display row summaries. Supported values are
- <code>&quot;off&quot;</code>, <code>&quot;absolute&quot;</code>, <code>&quot;row-normalized&quot;</code>, and
- <code>&quot;total-normalized&quot;</code>. Default is <code>&quot;off&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;GridVisible&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
- whether to display grid lines. Supported values are <code>&quot;on&quot;</code> and
- <code>&quot;off&quot;</code>. Default is <code>&quot;on&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;HandleVisibility&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying
- the handle visibility. Supported values are <code>&quot;on&quot;</code>, <code>&quot;off&quot;</code>,
- and <code>&quot;callback&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;OuterPosition&quot;</code></td><td width="2%"></td><td width="80%">A 1x4 numeric vector specifying
+ <code>'off'</code>, <code>'absolute'</code>, <code>'row-normalized'</code>, and
+ <code>'total-normalized'</code>. Default is <code>'off'</code>.</td></tr>
+<tr><td width="18%"><code>'GridVisible'</code></td><td width="2%"></td><td width="80%">A character vector specifying
+ whether to display grid lines. Supported values are <code>'on'</code> and
+ <code>'off'</code>. Default is <code>'on'</code>.</td></tr>
+<tr><td width="18%"><code>'HandleVisibility'</code></td><td width="2%"></td><td width="80%">A character vector specifying
+ the handle visibility. Supported values are <code>'on'</code>, <code>'off'</code>,
+ and <code>'callback'</code>.</td></tr>
+<tr><td width="18%"><code>'OuterPosition'</code></td><td width="2%"></td><td width="80%">A 1x4 numeric vector specifying
  the outer position of the chart.</td></tr>
-<tr><td width="18%"><code>&quot;Position&quot;</code></td><td width="2%"></td><td width="80%">A 1x4 numeric vector specifying
+<tr><td width="18%"><code>'Position'</code></td><td width="2%"></td><td width="80%">A 1x4 numeric vector specifying
  the position of the chart.</td></tr>
-<tr><td width="18%"><code>&quot;Units&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
- position units. Supported values are <code>&quot;centimeters&quot;</code>,
- <code>&quot;characters&quot;</code>, <code>&quot;inches&quot;</code>, <code>&quot;normalized&quot;</code>,
- <code>&quot;pixels&quot;</code>, and <code>&quot;points&quot;</code>.</td></tr>
+<tr><td width="18%"><code>'Units'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+ position units. Supported values are <code>'centimeters'</code>,
+ <code>'characters'</code>, <code>'inches'</code>, <code>'normalized'</code>,
+ <code>'pixels'</code>, and <code>'points'</code>.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
@@ -1545,7 +1507,6 @@ Display the properties of the ConfusionMatrixChart object.
 <dl>
 <dt><code><h5 class="fs">ConfusionMatrixChart: <b>disp</b> (<var>cmc</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>disp (<var>cmc</var>)</code> displays the main properties of the
  ConfusionMatrixChart object <var>cmc</var>, including the normalized values
@@ -1581,21 +1542,21 @@ Sort the classes in the confusion matrix chart.
 <dl>
 <dt><code><h5 class="fs">ConfusionMatrixChart: <b>sortClasses</b> (<var>cmc</var>, <var>order</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>sortClasses (<var>cmc</var>, <var>order</var>)</code> sorts the classes in the
  confusion matrix chart <var>cmc</var> according to the specified <var>order</var>.
 </p>
 <p> <var>order</var> can be:
- </p><ul>
+</p>
+<ul>
 <li> A cell array of class labels in the desired order
- </li><li> <code>&quot;auto&quot;</code> - Sort class labels alphabetically
- </li><li> <code>&quot;ascending-diagonal&quot;</code> - Sort by ascending diagonal values
- </li><li> <code>&quot;descending-diagonal&quot;</code> - Sort by descending diagonal values
- </li><li> <code>&quot;cluster&quot;</code> - Sort using hierarchical clustering
- </li></ul>
+</li><li> <code>'auto'</code> - Sort class labels alphabetically
+</li><li> <code>'ascending-diagonal'</code> - Sort by ascending diagonal values
+</li><li> <code>'descending-diagonal'</code> - Sort by descending diagonal values
+</li><li> <code>'cluster'</code> - Sort using hierarchical clustering
+</li></ul>
 
-<p> When using <code>&quot;cluster&quot;</code>, the classes are grouped based on similarity
+<p> When using <code>'cluster'</code>, the classes are grouped based on similarity
  using hierarchical clustering, which can help identify groups of
  frequently confused classes.
 </p>
@@ -1622,45 +1583,33 @@ Sort the classes in the confusion matrix chart.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a simple ConfusionMatrixChart Object
+Create a simple ConfusionMatrixChart Object
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- cm = ConfusionMatrixChart (gca, [1 2; 1 2], {"A","B"}, {"XLabel","LABEL A"})
- NormalizedValues = cm.NormalizedValues
- ClassLabels = cm.ClassLabels</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-cm =
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> cm = ConfusionMatrixChart (gca, [1 2; 1 2], {'A','B'}, {'XLabel','LABEL A'})</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">cm =
 
 ConfusionMatrixChart with properties:
 
 	NormalizedValues: [ 2x2 double ]
-	ClassLabels: { 1x2 cell }
-
-
-NormalizedValues =
+	ClassLabels: { 1x2 cell }</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> NormalizedValues = cm.NormalizedValues</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">NormalizedValues =
 
    1   2
-   1   2
-
-ClassLabels =
+   1   2</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ClassLabels = cm.ClassLabels</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ClassLabels =
   1x2 cell array
 
-    {'A'}    {'B'}    
-</pre></td></tr>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ConfusionMatrixChart_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+    {'A'}    {'B'}</pre>
+                <div class="text-center">
+                  <img src="assets/ConfusionMatrixChart_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
             </div>
           </div>

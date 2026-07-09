@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -811,7 +814,6 @@
 <dt><code><h5 class="fs">statistics: <b>hist3</b> (&hellip;, <var>prop</var>, <var>val</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <b>hist3</b> (<var>hax</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Produce bivariate (2D) histogram counts or plots.
 </p>
 <div class="ms-5">
@@ -819,35 +821,26 @@
  <var>X</var>.  Any row with NaN values are ignored.  The actual bins can
  be configured in 3 different: number, centers, or edges of the bins:
 </p>
- <dl compact="compact">
+<dl compact="compact">
 <dt> Number of bins (default)</dt>
-</dl>
-<p> Produces equally spaced bins between the minimum and maximum values
+<dd> Produces equally spaced bins between the minimum and maximum values
  of <var>X</var>.  Defined as a 2 element vector, <var>nbins</var>, one for each
- dimension.  Defaults to <code>[10 10]</code>.
-</p>
- </dd>
+ dimension.  Defaults to <code>[10 10]</code>.</dd>
 <dt> Center of bins</dt>
-</dl>
-<p> Defined as a cell array of 2 monotonically increasing vectors,
+<dd> Defined as a cell array of 2 monotonically increasing vectors,
  <var>centers</var>.  The width of each bin is determined from the adjacent
- values in the vector with the initial and final bin, extending to Infinity.
-</p>
- </dd>
+ values in the vector with the initial and final bin, extending to Infinity.</dd>
 <dt> Edge of bins</dt>
-</dl>
-<p> Defined as a cell array of 2 monotonically increasing vectors,
+<dd> Defined as a cell array of 2 monotonically increasing vectors,
  <var>edges</var>.  <code><var>N</var>(i,j)</code> contains the number of elements
  in <var>X</var> for which:
-</p>
- <ul class="toc">
+<ul>
 <li>
  <var>edges</var>{1}(i) &lt;= <var>X</var>(:,1) &lt; <var>edges</var>{1}(i+1)
- 
 </li><li>
  <var>edges</var>{2}(j) &lt;= <var>X</var>(:,2) &lt; <var>edges</var>{2}(j+1)
- 
 </li></ul>
+
 
 <p> The consequence of this definition is that values outside the initial
  and final edge values are ignored, and that the final bin only contains
@@ -859,9 +852,9 @@
 <p> The return values, <var>N</var> and <var>C</var>, are the bin counts and centers
  respectively.  These are specially useful to produce intensity maps:
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> [counts, centers] = hist3 (data);
+<table><tr><td>&nbsp;</td><td><pre class="example"> [counts, centers] = hist3 (data);
  imagesc (centers{1}, centers{2}, counts)
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> If there is no output argument, or if the axes graphics handle
  <var>hax</var> is defined, the function will plot a 3 dimensional bar
@@ -877,25 +870,18 @@ mesh
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/hist3.m">hist3</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- X = [
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [
     1    1
     1    1
     1   10
@@ -910,17 +896,11 @@ mesh
     7    3
    10   10
    10   10];
- hist3 (X)
+ hist3 (X)</pre>
+                <div class="text-center">
+                  <img src="assets/hist3_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/hist3_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

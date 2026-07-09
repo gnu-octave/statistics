@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: [<var>pshat</var>, <var>psci</var>] = <b>binofit</b> (<var>x</var>, <var>n</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>pshat</var>, <var>psci</var>] = <b>binofit</b> (<var>x</var>, <var>n</var>, <var>alpha</var>)</code></h5></dt>
 </dl>
-
 <p> Estimate parameter and confidence intervals for the binomial distribution.
 </p>
 <div class="ms-5">
@@ -844,68 +846,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/binofit.m">binofit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Sample 2 populations from different binomial distributions
- rand ("seed", 1);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <p>Sample 2 populations from different binomial distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 1);    # for reproducibility
  r1 = binornd (50, 0.15, 1000, 1);
- rand ("seed", 2);    # for reproducibility
+ rand ('seed', 2);    # for reproducibility
  r2 = binornd (100, 0.5, 1000, 1);
- r = [r1, r2];
-
- ## Plot them normalized and fix their colors
- hist (r, 23, 0.35);
- h = findobj (gca, "Type", "patch");
- set (h(1), "facecolor", "c");
- set (h(2), "facecolor", "g");
- hold on
-
- ## Estimate their probability of success
- pshatA = binofit (r(:,1), 50);
- pshatB = binofit (r(:,2), 100);
-
- ## Plot their estimated PDFs
- x = [min(r(:,1)):max(r(:,1))];
+ r = [r1, r2];</pre>
+                <p>Plot them normalized and fix their colors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (r, 23, 0.35);
+ h = findobj (gca, 'Type', 'patch');
+ set (h(1), 'facecolor', 'c');
+ set (h(2), 'facecolor', 'g');
+ hold on</pre>
+                <p>Estimate their probability of success</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> pshatA = binofit (r(:,1), 50);
+ pshatB = binofit (r(:,2), 100);</pre>
+                <p>Plot their estimated PDFs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [min(r(:,1)):max(r(:,1))];
  y = binopdf (x, 50, mean (pshatA));
- plot (x, y, "-pg");
+ plot (x, y, '-pg');
  x = [min(r(:,2)):max(r(:,2))];
  y = binopdf (x, 100, mean (pshatB));
- plot (x, y, "-sc");
+ plot (x, y, '-sc');
  ylim ([0, 0.2])
- legend ({"Normalized HIST of sample 1 with ps=0.15", ...
-          "Normalized HIST of sample 2 with ps=0.50", ...
+ legend ({'Normalized HIST of sample 1 with ps=0.15', ...
+          'Normalized HIST of sample 2 with ps=0.50', ...
           sprintf("PDF for sample 1 with estimated ps=%0.2f", ...
                   mean (pshatA)), ...
           sprintf("PDF for sample 2 with estimated ps=%0.2f", ...
                   mean (pshatB))})
- title ("Two population samples from different binomial distributions")
- hold off
+ title ('Two population samples from different binomial distributions')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/binofit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/binofit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

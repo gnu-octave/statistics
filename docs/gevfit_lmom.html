@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,43 +806,51 @@
 <dl>
 <dt><code><h5 class="fs">statistics: [<var>paramhat</var>, <var>paramci</var>] = <b>gevfit_lmom</b> (<var>data</var>)</code></h5></dt>
 </dl>
-
 <p> Find an estimator (<var>paramhat</var>) of the generalized extreme value (GEV)
  distribution fitting <var>data</var> using the method of L-moments.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>data</var> is the vector of given values.
- </li></ul>
+</li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>paramhat</var> is the 3-parameter maximum-likelihood parameter vector
  [<var>k</var>; <var>sigma</var>; <var>mu</var>], where <var>k</var> is the shape parameter of the
  GEV distribution, <var>sigma</var> is the scale parameter of the GEV distribution,
  and <var>mu</var> is the location parameter of the GEV distribution.
- </li><li>
+</li><li>
  <var>paramci</var> has the approximate 95% confidence intervals of the parameter
  values (currently not implemented).
-
 </li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> data = gevrnd (0.1, 1, 0, 100, 1);
+<table><tr><td>&nbsp;</td><td><pre class="example"> data = gevrnd (0.1, 1, 0, 100, 1);
  [pfit, pci] = gevfit_lmom (data);
  p1 = gevcdf (data,pfit(1),pfit(2),pfit(3));
  [f, x] = ecdf (data);
  plot(data, p1, 's', x, f)
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
+
+<a name="References"></a>
+<h3 class="subheading">References</h3>
+
+<ol>
+<li>
+ Ailliot, P.; Thompson, C. &amp; Thomson, P. Mixed methods for fitting the GEV
+ distribution, Water Resources Research, 2011, 47, W05551
+</li></ol>
+
 <p> <strong>See also: </strong>
   <a href="gevfit.html">gevfit</a>
 </p>

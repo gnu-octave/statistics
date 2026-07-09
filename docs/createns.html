@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">Function File: <var>obj</var> = <b>createns</b> (<var>X</var>)</code></h5></dt>
 <dt><code><h5 class="fs">Function File: <var>obj</var> = <b>createns</b> (<var>X</var>, <var>name</var>, <var>value</var>, &hellip;)</code></h5></dt>
 </dl>
-
 <p> Create a nearest neighbor searcher object.
 </p>
 <div class="ms-5">
@@ -817,50 +819,56 @@
  name-value pairs. The following name-value pair is supported to specify
  the searcher type:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">Specifies the nearest neighbor search
+<tr><td width="18%"><code>'NSMethod'</code></td><td width="2%"></td><td width="80%">Specifies the nearest neighbor search
  method. Possible values are:
-   <ul>
-<li> <code>&quot;exhaustive&quot;</code>: Creates an <code>ExhaustiveSearcher</code> object.
-   </li><li> <code>&quot;kdtree&quot;</code>: Creates a <code>KDTreeSearcher</code> object.
-   </li><li> <code>&quot;hnsw&quot;</code>: Creates an <code>hnswSearcher</code> object.
-   </li></ul>
-<p>   Default is <code>&quot;exhaustive&quot;</code>.
-</p></td></tr>
+<ul>
+<li> <code>'exhaustive'</code>: Creates an <code>ExhaustiveSearcher</code> object.
+</li><li> <code>'kdtree'</code>: Creates a <code>KDTreeSearcher</code> object.
+</li><li> <code>'hnsw'</code>: Creates an <code>hnswSearcher</code> object.
+</li></ul>
+
+
+<p>   Default is <code>'exhaustive'</code>.
+</p>
+</td></tr>
 </table>
 
-<p> Additional name-value pairs depend on the selected <code>&quot;NSMethod&quot;</code> and
+<p> Additional name-value pairs depend on the selected <code>'NSMethod'</code> and
  are passed directly to the constructor of the corresponding class:
 </p>
- <ul>
-<li> For <code>&quot;exhaustive&quot;</code>, see <code>ExhaustiveSearcher</code> documentation
- for parameters like <code>&quot;Distance&quot;</code>, <code>&quot;P&quot;</code>, <code>&quot;Scale&quot;</code>, and
- <code>&quot;Cov&quot;</code>.
- </li><li> For <code>&quot;kdtree&quot;</code>, see <code>KDTreeSearcher</code> documentation for
- parameters like <code>&quot;Distance&quot;</code>, <code>&quot;P&quot;</code>, and <code>&quot;BucketSize&quot;</code>.
- </li><li> For <code>&quot;hnsw&quot;</code>, see <code>hnswSearcher</code> documentation for parameters
- like <code>&quot;Distance&quot;</code>, <code>&quot;P&quot;</code>, <code>&quot;Scale&quot;</code>, <code>&quot;Cov&quot;</code>,
- <code>&quot;MaxNumLinksPerNode&quot;</code>, and <code>&quot;TrainSetSize&quot;</code>.
- </li></ul>
+<ul>
+<li> For <code>'exhaustive'</code>, see <code>ExhaustiveSearcher</code> documentation
+ for parameters like <code>'Distance'</code>, <code>'P'</code>, <code>'Scale'</code>, and
+ <code>'Cov'</code>.
+</li><li> For <code>'kdtree'</code>, see <code>KDTreeSearcher</code> documentation for
+ parameters like <code>'Distance'</code>, <code>'P'</code>, and <code>'BucketSize'</code>.
+</li><li> For <code>'hnsw'</code>, see <code>hnswSearcher</code> documentation for
+ parameters
+ like <code>'Distance'</code>, <code>'P'</code>, <code>'Scale'</code>, <code>'Cov'</code>,
+ <code>'MaxNumLinksPerNode'</code>, and <code>'TrainSetSize'</code>.
+</li></ul>
 
 <p> <strong>Input Arguments:</strong>
- </p><ul>
+</p>
+<ul>
 <li> <var>X</var> - Training data, specified as an <math>N&times;P</math> numeric matrix
  where rows represent observations and columns represent features. Must be
  finite and numeric.
- </li></ul>
+</li></ul>
 
 <p> <strong>Output:</strong>
- </p><ul>
+</p>
+<ul>
 <li> <var>obj</var> - A nearest neighbor searcher object of type
  <code>ExhaustiveSearcher</code>, <code>KDTreeSearcher</code>, or <code>hnswSearcher</code>,
- depending on the specified <code>&quot;NSMethod&quot;</code>.
- </li></ul>
+ depending on the specified <code>'NSMethod'</code>.
+</li></ul>
 
 <p> <strong>Examples:</strong>
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> ## Create an ExhaustiveSearcher with default parameters
+<table><tr><td>&nbsp;</td><td><pre class="example"> ## Create an ExhaustiveSearcher with default parameters
  X = [1, 2; 3, 4; 5, 6];
  obj = createns (X);
 
@@ -868,8 +876,9 @@
  obj = createns (X, &quot;NSMethod&quot;, &quot;kdtree&quot;, &quot;Distance&quot;, &quot;euclidean&quot;);
 
  ## Create an hnswSearcher with Minkowski distance and custom parameters
- obj = createns (X, &quot;NSMethod&quot;, &quot;hnsw&quot;, &quot;Distance&quot;, &quot;minkowski&quot;, &quot;P&quot;, 3, &quot;MaxNumLinksPerNode&quot;, 2);
- </pre></td></tr></table>
+ obj = createns (X, &quot;NSMethod&quot;, &quot;hnsw&quot;, &quot;Distance&quot;, &quot;minkowski&quot;, &quot;P&quot;, 3, ...
+                 &quot;MaxNumLinksPerNode&quot;, 2);
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="ExhaustiveSearcher.html">ExhaustiveSearcher</a>, 

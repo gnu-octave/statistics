@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,7 +811,6 @@
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>loglfit</b> (<var>x</var>, <var>alpha</var>, <var>censor</var>, <var>freq</var>, <var>options</var>)</code></h5></dt>
 </dl>
-
 <p> Estimate mean and confidence intervals for the log-logistic distribution.
 </p>
 <div class="ms-5">
@@ -842,12 +844,13 @@
  parameters for the iterative algorithm used to compute ML estimates with the
  <code>fminsearch</code> function.  <var>options</var> is a structure with the following
  fields and their default values:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>options</var>.Display = &quot;off&quot;</code>
- </li><li> <code><var>options</var>.MaxFunEvals = 400</code>
- </li><li> <code><var>options</var>.MaxIter = 200</code>
- </li><li> <code><var>options</var>.TolX = 1e-6</code>
- </li></ul>
+</li><li> <code><var>options</var>.MaxFunEvals = 400</code>
+</li><li> <code><var>options</var>.MaxIter = 200</code>
+</li><li> <code><var>options</var>.TolX = 1e-6</code>
+</li></ul>
 
 <p> Further information about the loglogistic distribution can be found at
  <a href="https://en.wikipedia.org/wiki/Log-logistic_distribution">https://en.wikipedia.org/wiki/Log-logistic_distribution</a>
@@ -857,10 +860,10 @@
  distribution.  Their relation to the <math>α</math> and <math>b</math> parameters used
  in Wikipedia are given below:
 </p>
- <ul>
+<ul>
 <li> <code><var>mu</var> = log (<var>a</var>)</code>
- </li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
- </li></ul>
+</li><li> <code><var>sigma</var> = 1 / <var>a</var></code>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="loglcdf.html">loglcdf</a>, 
@@ -873,77 +876,61 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/loglfit.m">loglfit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Sample 3 populations from different log-logistic distributions
- rand ("seed", 5)  # for reproducibility
+          </div>
+          <div class="card-body">
+                <p>Sample 3 populations from different log-logistic distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 5)  # for reproducibility
  r1 = loglrnd (0, 1, 2000, 1);
- rand ("seed", 2)   # for reproducibility
+ rand ('seed', 2)   # for reproducibility
  r2 = loglrnd (0, 0.5, 2000, 1);
- rand ("seed", 7)   # for reproducibility
+ rand ('seed', 7)   # for reproducibility
  r3 = loglrnd (0, 0.125, 2000, 1);
- r = [r1, r2, r3];
-
- ## Plot them normalized and fix their colors
- hist (r, [0.05:0.1:2.5], 10);
- h = findobj (gca, "Type", "patch");
- set (h(1), "facecolor", "c");
- set (h(2), "facecolor", "g");
- set (h(3), "facecolor", "r");
+ r = [r1, r2, r3];</pre>
+                <p>Plot them normalized and fix their colors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (r, [0.05:0.1:2.5], 10);
+ h = findobj (gca, 'Type', 'patch');
+ set (h(1), 'facecolor', 'c');
+ set (h(2), 'facecolor', 'g');
+ set (h(3), 'facecolor', 'r');
  ylim ([0, 3.5]);
  xlim ([0, 2.0]);
- hold on
-
- ## Estimate their MU and LAMBDA parameters
- a_bA = loglfit (r(:,1));
+ hold on</pre>
+                <p>Estimate their MU and LAMBDA parameters</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> a_bA = loglfit (r(:,1));
  a_bB = loglfit (r(:,2));
- a_bC = loglfit (r(:,3));
-
- ## Plot their estimated PDFs
- x = [0.01:0.1:2.01];
+ a_bC = loglfit (r(:,3));</pre>
+                <p>Plot their estimated PDFs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0.01:0.1:2.01];
  y = loglpdf (x, a_bA(1), a_bA(2));
- plot (x, y, "-pr");
+ plot (x, y, '-pr');
  y = loglpdf (x, a_bB(1), a_bB(2));
- plot (x, y, "-sg");
+ plot (x, y, '-sg');
  y = loglpdf (x, a_bC(1), a_bC(2));
- plot (x, y, "-^c");
- legend ({"Normalized HIST of sample 1 with α=1 and β=1", ...
-          "Normalized HIST of sample 2 with α=1 and β=2", ...
-          "Normalized HIST of sample 3 with α=1 and β=8", ...
+ plot (x, y, '-^c');
+ legend ({'Normalized HIST of sample 1 with α=1 and β=1', ...
+          'Normalized HIST of sample 2 with α=1 and β=2', ...
+          'Normalized HIST of sample 3 with α=1 and β=8', ...
           sprintf("PDF for sample 1 with estimated α=%0.2f and β=%0.2f", ...
                   a_bA(1), a_bA(2)), ...
           sprintf("PDF for sample 2 with estimated α=%0.2f and β=%0.2f", ...
                   a_bB(1), a_bB(2)), ...
           sprintf("PDF for sample 3 with estimated α=%0.2f and β=%0.2f", ...
                   a_bC(1), a_bC(2))})
- title ("Three population samples from different log-logistic distributions")
- hold off
+ title ('Three population samples from different log-logistic distributions')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/loglfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/loglfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

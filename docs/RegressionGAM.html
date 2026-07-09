@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: RegressionGAM</h5></code></dl>
-
 <p> Create a <code>RegressionGAM</code> class object containing a Generalized Additive
  Model (GAM) for regression.
 </p>
@@ -814,81 +816,81 @@
  class RegressionGAM, with matrix <var>X</var> containing the predictor data and
  vector <var>Y</var> containing the continuous response data.
 </p>
- <ul>
+<ul>
 <li>
  <var>X</var> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or variables.
  <var>X</var> will be used to train the GAM model.
- </li><li>
+</li><li>
  <var>Y</var> must be <math>N&times;1</math> numeric vector containing the response data
  corresponding to the predictor data in <var>X</var>. <var>Y</var> must have same
  number of rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>obj</var> = RegressionGAM (&hellip;, <var>name</var>, <var>value</var>)</code> returns
  an object of class RegressionGAM with additional properties specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%"><var>Name</var></th><th width="75%"><var>Value</var></th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;predictors&quot;</code></td><td width="75%">Predictor Variable names, specified as
+<tr><td width="5%"></td><td width="20%"><code>'predictors'</code></td><td width="75%">Predictor Variable names, specified as
  a row vector cell of strings with the same length as the columns in <var>X</var>.
  If omitted, the program will generate default variable names
  <code>(x1, x2, ..., xn)</code> for each column in <var>X</var>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;responsename&quot;</code></td><td width="75%">Response Variable Name, specified as
- a string.  If omitted, the default value is <code>&quot;Y&quot;</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;formula&quot;</code></td><td width="75%">a model specification given as a string in
- the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the response variable
+<tr><td width="5%"></td><td width="20%"><code>'responsename'</code></td><td width="75%">Response Variable Name, specified as
+ a string.  If omitted, the default value is <code>'Y'</code>.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'formula'</code></td><td width="75%">a model specification given as a string in
+ the form <code>'Y ~ terms'</code> where <code>Y</code> represents the response variable
  and <code>terms</code> the predictor variables.  The formula can be used to
  specify a subset of variables for training model.  For example:
- <code>&quot;Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3&quot;</code> specifies four linear terms
+ <code>'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3'</code> specifies four linear terms
  for the first four columns of for predictor data, and <code>x1:x2</code> and
  <code>x2:x3</code> specify the two interaction terms for 1st-2nd and 3rd-4th
  columns respectively.  Only these terms will be used for training the model,
  but <var>X</var> must have at least as many columns as referenced in the formula.
  If Predictor Variable names have been defined, then the terms in the formula
- must reference to those.  When <code>&quot;formula&quot;</code> is specified, all terms used
+ must reference to those.  When <code>'formula'</code> is specified, all terms used
  for training the model are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object as a matrix containing the column indexes for each
  term including both the predictors and the interactions used.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;interactions&quot;</code></td><td width="75%">a logical matrix, a positive integer
- scalar, or the string <code>&quot;all&quot;</code> for defining the interactions between
+<tr><td width="5%"></td><td width="20%"><code>'interactions'</code></td><td width="75%">a logical matrix, a positive integer
+ scalar, or the string <code>'all'</code> for defining the interactions between
  predictor variables.  When given a logical matrix, it must have the same
  number of columns as <var>X</var> and each row corresponds to a different
  interaction term combining the predictors indexed as <code>true</code>.  Each
  interaction term is appended as a column vector after the available predictor
- column in <var>X</var>.  When <code>&quot;all&quot;</code> is defined, then all possible
+ column in <var>X</var>.  When <code>'all'</code> is defined, then all possible
  combinations of interactions are appended in <var>X</var> before training.  At the
- moment, parsing a positive integer has the same effect as the <code>&quot;all&quot;</code>
- option.  When <code>&quot;interactions&quot;</code> is specified, only the interaction terms
+ moment, parsing a positive integer has the same effect as the <code>'all'</code>
+ option.  When <code>'interactions'</code> is specified, only the interaction terms
  appended to <var>X</var> are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;knots&quot;</code></td><td width="75%">a scalar or a row vector with the same
+<tr><td width="5%"></td><td width="20%"><code>'knots'</code></td><td width="75%">a scalar or a row vector with the same
  columns as <var>X</var>.  It defines the knots for fitting a polynomial when
  training the GAM.  As a scalar, it is expanded to a row vector.  The default
  value is 5, hence expanded to <code>ones (1, columns (X)) * 5</code>.  You can
  parse a row vector with different number of knots for each predictor
  variable to be fitted with, although not recommended.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;order&quot;</code></td><td width="75%">a scalar or a row vector with the same
+<tr><td width="5%"></td><td width="20%"><code>'order'</code></td><td width="75%">a scalar or a row vector with the same
  columns as <var>X</var>.  It defines the order of the polynomial when training the
  GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
  hence expanded to <code>ones (1, columns (X)) * 3</code>.  You can parse a row
  vector with different number of polynomial order for each predictor variable
  to be fitted with, although not recommended.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;dof&quot;</code></td><td width="75%">a scalar or a row vector with the same columns
+<tr><td width="5%"></td><td width="20%"><code>'dof'</code></td><td width="75%">a scalar or a row vector with the same columns
  as <var>X</var>.  It defines the degrees of freedom for fitting a polynomial when
  training the GAM.  As a scalar, it is expanded to a row vector.  The default
  value is 8, hence expanded to <code>ones (1, columns (X)) * 8</code>.  You can
  parse a row vector with different degrees of freedom for each predictor
  variable to be fitted with, although not recommended.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;tol&quot;</code></td><td width="75%">a positive scalar to set the tolerance for
+<tr><td width="5%"></td><td width="20%"><code>'tol'</code></td><td width="75%">a positive scalar to set the tolerance for
  convergence during training. By default, it is set to <code>1e-3</code>.</td></tr>
 </table>
 
-<p> You can parse either a <code>&quot;formula&quot;</code> or an <code>&quot;interactions&quot;</code>
+<p> You can parse either a <code>'formula'</code> or an <code>'interactions'</code>
  optional parameter.  Parsing both parameters will result an error.
- Accordingly, you can only pass up to two parameters among <code>&quot;knots&quot;</code>,
- <code>&quot;order&quot;</code>, and <code>&quot;dof&quot;</code> to define the required polynomial for
+ Accordingly, you can only pass up to two parameters among <code>'knots'</code>,
+ <code>'order'</code>, and <code>'dof'</code> to define the required polynomial for
  training the GAM model.
 </p>
 <p> <strong>See also: </strong>
@@ -900,9 +902,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Regression/RegressionGAM.m">RegressionGAM</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>RegressionGAM</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1272,9 +1272,7 @@ undocumented
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>RegressionGAM</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1288,7 +1286,8 @@ undocumented
                   </h4>
                 </div>
                 <div class="col-8">
-Predict new data points using generalized additive model regression object.
+Predict new data points using generalized additive model regression
+ object.
                 </div>
               </div>
           </div>
@@ -1299,41 +1298,48 @@ Predict new data points using generalized additive model regression object.
 <dt><code><h5 class="fs">RegressionGAM: <var>yFit</var> = <b>predict</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 <dt><code><h5 class="fs">RegressionGAM: [<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = <b>predict</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>yFit</var> = predict (<var>obj</var>, <var>Xfit</var></code> returns a vector of
- predicted responses, <var>yFit</var>, for the predictor data in matrix <var>Xfit</var>
- based on the Generalized Additive Model in <var>obj</var>.  <var>Xfit</var> must have
- the same number of features/variables as the training data in <var>obj</var>.
+ predicted responses, <var>yFit</var>, for the predictor data in matrix
+ <var>Xfit</var> based on the Generalized Additive Model in <var>obj</var>.
+ <var>Xfit</var> must have the same number of features/variables as the
+ training data in <var>obj</var>.
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> must be a <code>RegressionGAM</code> class object.
- </li></ul>
+</li></ul>
 
-<p> <code>[<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = predict (<var>obj</var>, <var>Xfit</var></code>
- also returns the standard deviations, <var>ySD</var>, and prediction intervals,
+<p> <code>[<var>yFit</var>, <var>ySD</var>, <var>yInt</var>] = predict (<var>obj</var>,
+ <var>Xfit</var></code>
+ also returns the standard deviations, <var>ySD</var>, and prediction
+ intervals,
  <var>yInt</var>, of the response variable <var>yFit</var>, evaluated at each
  observation in the predictor data <var>Xfit</var>.
 </p>
-<p> <code><var>yFit</var> = predict (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns the
+<p> <code><var>yFit</var> = predict (&hellip;, <var>Name</var>, <var>Value</var>)</code> returns
+ the
  aforementioned results with additional properties specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <table>
+<table>
 <thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>&quot;alpha&quot;</code></td><td width="2%"></td><td width="70%">significance level of the prediction
- intervals <var>yInt</var>, specified as scalar in range <code>[0,1]</code>. The default
- value is 0.05, which corresponds to 95% prediction intervals.</td></tr>
-<tr><td width="28%"><code>&quot;includeinteractions&quot;</code></td><td width="2%"></td><td width="70%">a boolean flag to include
+<tr><td width="28%"><code>'alpha'</code></td><td width="2%"></td><td width="70%">significance level of the prediction
+ intervals <var>yInt</var>, specified as scalar in range <code>[0,1]</code>. The
+ default value is 0.05, which corresponds to 95% prediction intervals.</td></tr>
+<tr><td width="28%"><code>'includeinteractions'</code></td><td width="2%"></td><td width="70%">a boolean flag to include
  interactions to predict new values based on <var>Xfit</var>.  By default,
- <code>&quot;includeinteractions&quot;</code> is <code>true</code> when the GAM model in <var>obj</var>
- contains a <code>obj.Formula</code> or <code>obj.Interactions</code> fields. Otherwise,
- is set to <code>false</code>.  If set to <code>true</code> when no interactions are
- present in the trained model, it will result to an error.  If set to
- <code>false</code> when using a model that includes interactions, the predictions
- will be made on the basic model without any interaction terms.  This way you
- can make predictions from the same GAM model without having to retrain it.</td></tr>
+ <code>'includeinteractions'</code> is <code>true</code> when the GAM model in
+ <var>obj</var>
+ contains a <code>obj.Formula</code> or <code>obj.Interactions</code> fields.
+ Otherwise, is set to <code>false</code>. If set to <code>true</code> when no
+ interactions are present in the trained model, it will result to an
+ error. If set to
+ <code>false</code> when using a model that includes interactions, the
+ predictions
+ will be made on the basic model without any interaction terms. This way
+ you can make predictions from the same GAM model without having to
+ retrain it.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
@@ -1367,7 +1373,6 @@ Save a RegressionGAM object.
 <dl>
 <dt><code><h5 class="fs">RegressionGAM: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves a RegressionGAM
  object into a file defined by <var>filename</var>.
@@ -1395,29 +1400,22 @@ Save a RegressionGAM object.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Train a RegressionGAM Model for synthetic values
+Train a RegressionGAM Model for synthetic values
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- f1 = @(x) cos (3 * x);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
  f2 = @(x) x .^ 3;
  x1 = 2 * rand (50, 1) - 1;
  x2 = 2 * rand (50, 1) - 1;
  y = f1(x1) + f2(x2);
  y = y + y .* 0.2 .* rand (50,1);
  X = [x1, x2];
- a = fitrgam (X, y, "tol", 1e-3)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-a =
+ a = fitrgam (X, y, 'tol', 1e-3)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">a =
 
   1x1 RegressionGAM object with properties:
 
@@ -1430,15 +1428,13 @@ a =
              RowsUsed: [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; ...]
         NumPredictors: 2
        PredictorNames: [1x2 cell]
-         ResponseName: "Y"
+         ResponseName: 'Y'
               Formula: []
          Interactions: []
                 Knots: [5, 5]
                 Order: [3, 3]
                   DoF: [8, 8]
-                  Tol: 1.0000e-03
-</pre></td></tr>
-                  </table>
+                  Tol: 1.0000e-03</pre>
 
             </div>
           </div>
@@ -1453,79 +1449,63 @@ a =
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Declare two different functions
+Declare two different functions
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- f1 = @(x) cos (3 * x);
- f2 = @(x) x .^ 3;
-
- ## Generate 80 samples for f1 and f2
- x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
- X1 = f1 (x);
- X2 = f2 (x);
-
- ## Create a synthetic response by adding noise
- rand ("seed", 3);
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> f1 = @(x) cos (3 * x);
+ f2 = @(x) x .^ 3;</pre>
+                <p>Generate 80 samples for f1 and f2</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [-4*pi:0.1*pi:4*pi-0.1*pi]';
+ X1 = f1(x);
+ X2 = f2(x);</pre>
+                <p>Create a synthetic response by adding noise</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 3);
  Ytrue = X1 + X2;
- Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);
-
- ## Assemble predictor data
- X = [X1, X2];
-
- ## Train the GAM and test on the same data
- a = fitrgam (X, Y, "order", [5, 5]);
- [ypred, ySDsd, yInt] = predict (a, X);
-
- ## Plot the results
- figure
+ Y = Ytrue + Ytrue .* 0.2 .* rand (80,1);</pre>
+                <p>Assemble predictor data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [X1, X2];</pre>
+                <p>Train the GAM and test on the same data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> a = fitrgam (X, Y, 'order', [5, 5]);
+ [ypred, ySDsd, yInt] = predict (a, X);</pre>
+                <p>Plot the results</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
  [sortedY, indY] = sort (Ytrue);
- plot (sortedY, "r-");
+ plot (sortedY, 'r-');
  xlim ([0, 80]);
  hold on
- plot (ypred(indY), "g+")
- plot (yInt(indY,1), "k:")
- plot (yInt(indY,2), "k:")
- xlabel ("Predictor samples");
- ylabel ("Response");
- title ("actual vs predicted values for function f1(x) = cos (3x) ");
- legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});
-
- ## Use 30% Holdout partitioning for training and testing data
- C = cvpartition (80, "HoldOut", 0.3);
- [ypred, ySDsd, yInt] = predict (a, X(test(C),:));
-
- ## Plot the results
- figure
- [sortedY, indY] = sort (Ytrue(test(C)));
+ plot (ypred(indY), 'g+')
+ plot (yInt(indY,1), 'k:')
+ plot (yInt(indY,2), 'k:')
+ xlabel ('Predictor samples');
+ ylabel ('Response');
+ title ('actual vs predicted values for function f1(x) = cos (3x) ');
+ legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});</pre>
+                <p>Use 30% Holdout partitioning for training and testing data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> C = cvpartition (80, 'HoldOut', 0.3);
+ [ypred, ySDsd, yInt] = predict (a, X(test (C),:));</pre>
+                <div class="text-center">
+                  <img src="assets/RegressionGAM_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>Plot the results</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> figure
+ [sortedY, indY] = sort (Ytrue(test (C)));
  plot (sortedY, 'r-');
  xlim ([0, sum(test(C))]);
  hold on
- plot (ypred(indY), "g+")
+ plot (ypred(indY), 'g+')
  plot (yInt(indY,1),'k:')
  plot (yInt(indY,2),'k:')
- xlabel ("Predictor samples");
- ylabel ("Response");
- title ("actual vs predicted values for function f1(x) = cos (3x) ");
- legend ({"Theoretical Response", "Predicted Response", "Prediction Intervals"});</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-</pre></td></tr>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/RegressionGAM_202.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-                  <div class="text-center">
-                    <img src="assets/RegressionGAM_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+ xlabel ('Predictor samples');
+ ylabel ('Response');
+ title ('actual vs predicted values for function f1(x) = cos (3x) ');
+ legend ({'Theoretical Response', 'Predicted Response', 'Prediction Intervals'});</pre>
+                <div class="text-center">
+                  <img src="assets/RegressionGAM_202.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
             </div>
           </div>

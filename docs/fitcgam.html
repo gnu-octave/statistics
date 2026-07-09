@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcgam</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcgam</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Fit a Generalized Additive Model (GAM) for binary classification.
 </p>
 <div class="ms-5">
@@ -812,87 +814,88 @@
  model, <var>Mdl</var>, with <var>X</var> being the predictor data, and <var>Y</var> the
  binary class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> numeric vector containing binary class labels,
  typically 0 or 1.
- </li></ul>
+</li></ul>
 
 <p> <code><var>Mdl</var> = fitcgam (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  GAM classification model with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <a name="Model-Parameters"></a>
+<a name="Model-Parameters"></a>
 <h3 class="subheading">Model Parameters</h3>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
  specifying the names of the predictors. The length of this array must match
  the number of columns in <var>X</var>.</td></tr>
-<tr><td width="18%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  name of the response variable.</td></tr>
-<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+<tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the Discriminant model. <code>ClassNames</code>
  are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
+<tr><td width="18%"><code>'Cost'</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var> where
  <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
  correctly classified into its category the cost is calculated to be 1,
  otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Formula&quot;</code></td><td width="2%"></td><td width="80%">A model specification given as a string in
- the form <code>&quot;Y ~ terms&quot;</code> where <code>Y</code> represents the response variable
+<tr><td width="18%"><code>'Formula'</code></td><td width="2%"></td><td width="80%">A model specification given as a string in
+ the form <code>'Y ~ terms'</code> where <code>Y</code> represents the response variable
  and <code>terms</code> the predictor variables.  The formula can be used to
  specify a subset of variables for training model.  For example:
- <code>&quot;Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3&quot;</code> specifies four linear terms
+ <code>'Y ~ x1 + x2 + x3 + x4 + x1:x2 + x2:x3'</code> specifies four linear terms
  for the first four columns of for predictor data, and <code>x1:x2</code> and
  <code>x2:x3</code> specify the two interaction terms for 1st-2nd and 3rd-4th
  columns respectively.  Only these terms will be used for training the model,
  but <var>X</var> must have at least as many columns as referenced in the formula.
  If Predictor Variable names have been defined, then the terms in the formula
- must reference to those.  When <code>&quot;formula&quot;</code> is specified, all terms used
+ must reference to those.  When <code>'formula'</code> is specified, all terms used
  for training the model are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object as a matrix containing the column indexes for each
  term including both the predictors and the interactions used.</td></tr>
-<tr><td width="18%"><code>&quot;Interactions&quot;</code></td><td width="2%"></td><td width="80%">A logical matrix, a positive integer
- scalar, or the string <code>&quot;all&quot;</code> for defining the interactions between
+<tr><td width="18%"><code>'Interactions'</code></td><td width="2%"></td><td width="80%">A logical matrix, a positive integer
+ scalar, or the string <code>'all'</code> for defining the interactions between
  predictor variables.  When given a logical matrix, it must have the same
  number of columns as <var>X</var> and each row corresponds to a different
  interaction term combining the predictors indexed as <code>true</code>.  Each
  interaction term is appended as a column vector after the available predictor
- column in <var>X</var>.  When <code>&quot;all&quot;</code> is defined, then all possible
+ column in <var>X</var>.  When <code>'all'</code> is defined, then all possible
  combinations of interactions are appended in <var>X</var> before training.  At the
- moment, parsing a positive integer has the same effect as the <code>&quot;all&quot;</code>
- option.  When <code>&quot;interactions&quot;</code> is specified, only the interaction terms
+ moment, parsing a positive integer has the same effect as the <code>'all'</code>
+ option.  When <code>'interactions'</code> is specified, only the interaction terms
  appended to <var>X</var> are referenced in the <code>IntMatrix</code> field of the
  <var>obj</var> class object.</td></tr>
-<tr><td width="18%"><code>&quot;Knots&quot;</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same
+<tr><td width="18%"><code>'Knots'</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same
  columns as <var>X</var>.  It defines the knots for fitting a polynomial when
  training the GAM.  As a scalar, it is expanded to a row vector.  The default
  value is 5, hence expanded to <code>ones (1, columns (X)) * 5</code>.  You can
  parse a row vector with different number of knots for each predictor
  variable to be fitted with, although not recommended.</td></tr>
-<tr><td width="18%"><code>&quot;Order&quot;</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same
+<tr><td width="18%"><code>'Order'</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same
  columns as <var>X</var>.  It defines the order of the polynomial when training the
  GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
  hence expanded to <code>ones (1, columns (X)) * 3</code>.  You can parse a row
  vector with different number of polynomial order for each predictor variable
  to be fitted with, although not recommended.</td></tr>
-<tr><td width="18%"><code>&quot;DoF&quot;</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same columns
+<tr><td width="18%"><code>'DoF'</code></td><td width="2%"></td><td width="80%">A scalar or a row vector with the same columns
  as <var>X</var>.  It defines the degrees of freedom for fitting a polynomial when
  training the GAM.  As a scalar, it is expanded to a row vector.  The default
  value is 8, hence expanded to <code>ones (1, columns (X)) * 8</code>.  You can
  parse a row vector with different degrees of freedom for each predictor
  variable to be fitted with, although not recommended.</td></tr>
 </table>
-<p> You can parse either a <code>&quot;Formula&quot;</code> or an <code>&quot;Interactions&quot;</code>
+
+<p> You can parse either a <code>'Formula'</code> or an <code>'Interactions'</code>
  optional parameter.  Parsing both parameters will result an error.
- Accordingly, you can only pass up to two parameters among <code>&quot;Knots&quot;</code>,
- <code>&quot;Order&quot;</code>, and <code>&quot;DoF&quot;</code> to define the required polynomial for
+ Accordingly, you can only pass up to two parameters among <code>'Knots'</code>,
+ <code>'Order'</code>, and <code>'DoF'</code> to define the required polynomial for
  training the GAM model.
 </p>
 <p> <strong>See also: </strong>
@@ -901,70 +904,51 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcgam.m">fitcgam</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Train a GAM classifier for binary classification
- ## using specific data and plot the decision boundaries.
-
- ## Define specific data
- X = [1, 2; 2, 3; 3, 3; 4, 5; 5, 5; ...
+          </div>
+          <div class="card-body">
+                <p>Train a GAM classifier for binary classification using specific data and plot the decision boundaries.</p>
+                <p>Define specific data</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 2, 3; 3, 3; 4, 5; 5, 5; ...
      6, 7; 7, 8; 8, 8; 9, 9; 10, 10];
  Y = [0; 0; 0; 0; 0; ...
-     1; 1; 1; 1; 1];
-
- ## Train the GAM model
- obj = fitcgam (X, Y, "Interactions", "all");
-
- ## Create a grid of values for prediction
- x1 = [min(X(:,1)):0.1:max(X(:,1))];
+     1; 1; 1; 1; 1];</pre>
+                <p>Train the GAM model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcgam (X, Y, 'Interactions', 'all');</pre>
+                <p>Create a grid of values for prediction</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.1:max(X(:,1))];
  x2 = [min(X(:,2)):0.1:max(X(:,2))];
  [x1G, x2G] = meshgrid (x1, x2);
  XGrid = [x1G(:), x2G(:)];
- pred = predict (obj, XGrid);
-
- ## Plot decision boundaries and data points
- predNumeric = str2double (pred);
- gidx = predNumeric > 0.5;
-
+ pred = predict (obj, XGrid);</pre>
+                <p>Plot decision boundaries and data points</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> predNumeric = str2double (pred);
+ gidx = predNumeric &gt; 0.5;
  figure
- scatter(XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
+ scatter (XGrid(gidx,1), XGrid(gidx,2), 'markerfacecolor', 'magenta');
  hold on
- scatter(XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
- plot(X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
- xlabel("Feature 1");
- ylabel("Feature 2");
- title("Generalized Additive Model (GAM) Decision Boundary");
- legend({"Class 1 Region", "Class 0 Region", ...
-       "Class 1 Samples", "Class 0 Samples"}, ...
-       "location", "northwest")
+ scatter (XGrid(! gidx,1), XGrid(! gidx,2), 'markerfacecolor', 'red');
+ plot (X(Y == 0, 1), X(Y == 0, 2), 'ko', X(Y == 1, 1), X(Y == 1, 2), 'kx');
+ xlabel ('Feature 1');
+ ylabel ('Feature 2');
+ title ('Generalized Additive Model (GAM) Decision Boundary');
+ legend ({'Class 1 Region', 'Class 0 Region', ...
+       'Class 1 Samples', 'Class 0 Samples'}, ...
+       'location', 'northwest')
  axis tight
- hold off
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/fitcgam_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitcgam_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

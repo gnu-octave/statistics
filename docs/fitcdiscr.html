@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcdiscr</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>Mdl</var> = <b>fitcdiscr</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Fit a Linear Discriminant Analysis classification model.
 </p>
 <div class="ms-5">
@@ -812,113 +814,84 @@
  Analysis (LDA) classification model, <var>Mdl</var>, with <var>X</var> being the
  predictor data, and <var>Y</var> the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of predictor data where rows
  correspond to observations and columns correspond to features or variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels of
  corresponding predictor data in <var>X</var>. <var>Y</var> can be numerical, logical,
  char array or cell array of character vectors. <var>Y</var> must have same number
  of rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>Mdl</var> = fitcdiscr (&hellip;, <var>name</var>, <var>value</var>)</code> returns a
  Linear Discriminant Analysis model with additional options specified by
  <code>Name-Value</code> pair arguments listed below.
 </p>
- <a name="Model-Parameters"></a>
+<a name="Model-Parameters"></a>
 <h3 class="subheading">Model Parameters</h3>
 
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;PredictorNames&quot;</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
+<tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character vectors
  specifying the names of the predictors. The length of this array must match
  the number of columns in <var>X</var>.</td></tr>
-<tr><td width="18%"><code>&quot;ResponseName&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'ResponseName'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  name of the response variable.</td></tr>
-<tr><td width="18%"><code>&quot;ClassNames&quot;</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
+<tr><td width="18%"><code>'ClassNames'</code></td><td width="2%"></td><td width="80%">Names of the classes in the class
  labels, <var>Y</var>, used for fitting the Discriminant model. <code>ClassNames</code>
  are of the same type as the class labels in <var>Y</var>.</td></tr>
-<tr><td width="18%"><code>&quot;Prior&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
+<tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
  probabilities for each class.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.
- Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
- class probabilities or <code>&quot;uniform&quot;</code> to assume equal class probabilities.</td></tr>
-<tr><td width="18%"><code>&quot;Cost&quot;</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
+ Alternatively, you can specify <code>'empirical'</code> to use the empirical
+ class probabilities or <code>'uniform'</code> to assume equal class probabilities.</td></tr>
+<tr><td width="18%"><code>'Cost'</code></td><td width="2%"></td><td width="80%">A <math>N&times;R</math> numeric matrix containing
  misclassification cost for the corresponding instances in <var>X</var> where
  <math>R</math> is the number of unique categories in <var>Y</var>.  If an instance is
  correctly classified into its category the cost is calculated to be 1,
  otherwise 0. cost matrix can be altered use <code><var>Mdl.cost</var> = somecost</code>.
  default value <code><var>cost</var> = ones(rows(X),numel(unique(Y)))</code>.</td></tr>
-<tr><td width="18%"><code>&quot;DiscrimType&quot;</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
+<tr><td width="18%"><code>'DiscrimType'</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
  specifying the type of discriminant analysis to perform. The only supported
- value is <code>&quot;linear&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;FillCoeffs&quot;</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
- with values <code>&quot;on&quot;</code> or <code>&quot;off&quot;</code> specifying whether to fill the
- coefficients after fitting. If set to <code>&quot;on&quot;</code>, the coefficients are
+ value is <code>'linear'</code>.</td></tr>
+<tr><td width="18%"><code>'FillCoeffs'</code></td><td width="2%"></td><td width="80%">A character vector or string scalar
+ with values <code>'on'</code> or <code>'off'</code> specifying whether to fill the
+ coefficients after fitting. If set to <code>'on'</code>, the coefficients are
  computed during model fitting, which can be useful for prediction.</td></tr>
-<tr><td width="18%"><code>&quot;Gamma&quot;</code></td><td width="2%"></td><td width="80%">A numeric scalar specifying the
+<tr><td width="18%"><code>'Gamma'</code></td><td width="2%"></td><td width="80%">A numeric scalar specifying the
  regularization parameter for the covariance matrix. It adjusts the linear
  discriminant analysis to make the model more stable in the presence of
  multicollinearity or small sample sizes. A value of 0 corresponds to no
  regularization, while a value of 1 corresponds to
  a completely regularized model.</td></tr>
 </table>
+
 <p> <strong>See also: </strong>
   <a href="ClassificationDiscriminant.html">ClassificationDiscriminant</a>
 </p>
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/fitcdiscr.m">fitcdiscr</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Train a linear discriminant classifier for Gamma = 0.5
- ## and plot the decision boundaries.
-
- load fisheriris
- idx = ! strcmp (species, "setosa");
+          </div>
+          <div class="card-body">
+                <p>Train a linear discriminant classifier for Gamma = 0.5 and plot the decision boundaries.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ idx = ! strcmp (species, 'setosa');
  X = meas(idx,3:4);
- Y = cast (strcmpi (species(idx), "virginica"), "double");
- obj = fitcdiscr (X, Y, "Gamma", 0.5)
- x1 = [min(X(:,1)):0.03:max(X(:,1))];
- x2 = [min(X(:,2)):0.02:max(X(:,2))];
- [x1G, x2G] = meshgrid (x1, x2);
- XGrid = [x1G(:), x2G(:)];
- pred = predict (obj, XGrid);
- gidx = logical (pred);
-
- figure
- scatter (XGrid(gidx,1), XGrid(gidx,2), "markerfacecolor", "magenta");
- hold on
- scatter (XGrid(!gidx,1), XGrid(!gidx,2), "markerfacecolor", "red");
- plot (X(Y == 0, 1), X(Y == 0, 2), "ko", X(Y == 1, 1), X(Y == 1, 2), "kx");
- xlabel ("Petal length (cm)");
- ylabel ("Petal width (cm)");
- title ("Linear Discriminant Analysis Decision Boundary");
- legend ({"Versicolor Region", "Virginica Region", ...
-         "Sampled Versicolor", "Sampled Virginica"}, ...
-         "location", "northwest")
- axis tight
- hold off
-
-obj =
+ Y = cast (strcmpi (species(idx), 'virginica'), 'double');
+ obj = fitcdiscr (X, Y, 'Gamma', 0.5)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">obj =
 
   ClassificationDiscriminant
 
@@ -929,17 +902,30 @@ obj =
             NumPredictors: 2
               DiscrimType: 'linear'
                        Mu: [2x2 double]
-                   Coeffs: [2x2 struct]
+                   Coeffs: [2x2 struct]</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x1 = [min(X(:,1)):0.03:max(X(:,1))];
+ x2 = [min(X(:,2)):0.02:max(X(:,2))];
+ [x1G, x2G] = meshgrid (x1, x2);
+ XGrid = [x1G(:), x2G(:)];
+ pred = predict (obj, XGrid);
+ gidx = logical (pred);
+ figure
+ scatter (XGrid(gidx,1), XGrid(gidx,2), 'markerfacecolor', 'magenta');
+ hold on
+ scatter (XGrid(! gidx,1), XGrid(! gidx,2), 'markerfacecolor', 'red');
+ plot (X(Y == 0, 1), X(Y == 0, 2), 'ko', X(Y == 1, 1), X(Y == 1, 2), 'kx');
+ xlabel ('Petal length (cm)');
+ ylabel ('Petal width (cm)');
+ title ('Linear Discriminant Analysis Decision Boundary');
+ legend ({'Versicolor Region', 'Virginica Region', ...
+         'Sampled Versicolor', 'Sampled Virginica'}, ...
+         'location', 'northwest')
+ axis tight
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/fitcdiscr_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/fitcdiscr_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

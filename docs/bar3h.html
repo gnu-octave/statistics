@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -810,7 +813,6 @@
 <dt><code><h5 class="fs">statistics: <b>bar3h</b> (<var>ax</var>, &hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>p</var> = <b>bar3h</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Plot a horizontal 3D bar graph.
 </p>
 <div class="ms-5">
@@ -842,7 +844,7 @@
 </p>
 <p> <code>bar3h (&hellip;, <var>style</var>)</code> specifies the style of the bars, where
  <var>style</var> can be <code>'detached'</code>, <code>'grouped'</code>, or
- <code>'stacked'</code>. The default style is @code {&rsquo;detached&rsquo;.
+ <code>'stacked'</code>. The default style is <code>'detached'</code>.
 </p>
 <p> <code>bar3h (&hellip;, <var>color</var>)</code> displays all bars using the color
  specified by color.  For example, use <code>'red'</code> or <code>'r'</code> to
@@ -860,17 +862,17 @@
 <p> <code>bar3h (&hellip;, <var>name</var>, <var>value</var>)</code> specifies one or more of the
  following name/value pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="5%"></th><th width="20%">Name</th><th width="75%">Value</th></tr></thead>
-<tr><td width="5%"></td><td width="20%"><code>&quot;width&quot;</code></td><td width="75%">A two-element vector specifying the width
+<tr><td width="5%"></td><td width="20%"><code>'width'</code></td><td width="75%">A two-element vector specifying the width
  of the bars along the <code>x-</code> and <code>z-axes</code>, respectively.  Each
  element must be in the range <math>(0,1]</math>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;color&quot;</code></td><td width="75%">A character or a cellstr vector, or a
+<tr><td width="5%"></td><td width="20%"><code>'color'</code></td><td width="75%">A character or a cellstr vector, or a
  numerical <math>M&times;3</math> matrix following the same conventions as the <var>color</var>
  input argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;xlabel&quot;</code></td><td width="75%">A cellstr vector specifying the group names
+<tr><td width="5%"></td><td width="20%"><code>'xlabel'</code></td><td width="75%">A cellstr vector specifying the group names
  along the <code>x-axis</code>.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;zlabel&quot;</code></td><td width="75%">A cellstr vector specifying the names of the
+<tr><td width="5%"></td><td width="20%"><code>'zlabel'</code></td><td width="75%">A cellstr vector specifying the names of the
  bars in the same series along the <code>z-axis</code>.</td></tr>
 </table>
 
@@ -890,214 +892,130 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/bar3h.m">bar3h</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plotting 5 bars in the same series.
-
- y = [50; 40; 30; 20; 10];
- bar3h (y);
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
-        </div>
+          <div class="card-body">
+                <p>Plotting 5 bars in the same series.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [50; 40; 30; 20; 10];
+ bar3h (y);</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plotting 5 bars in different groups.
-
- y = [50, 40, 30, 20, 10];
- bar3h (y);
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## A 3D bar graph with each series corresponding to a column in y.
-
- y = [1, 4, 7; 2, 5, 8; 3, 6, 9; 4, 7, 10];
- bar3h (y);
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Plotting 5 bars in different groups.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [50, 40, 30, 20, 10];
+ bar3h (y);</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>A 3D bar graph with each series corresponding to a column in y.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [1, 4, 7; 2, 5, 8; 3, 6, 9; 4, 7, 10];
+ bar3h (y);</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
- ## Specify z-axis locations as tick names. z must be a column vector!
+          </div>
+        </div>
 
- z = [1950, 1960, 1970, 1980, 1990]';
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+                <p>Specify z-axis locations as tick names. z must be a column vector!</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> z = [1950, 1960, 1970, 1980, 1990]';
  y = [16, 8, 4, 2, 1]';
- bar3h (z, y);
+ bar3h (z, y);</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_401.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_401.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 5
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot 3 series as a grouped plot without any space between the grouped bars
-
- y = [70 50 33 10; 75 55 35 15; 80 60 40 20];
- bar3h (y, 1, 'grouped');
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_501.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 5
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>Plot 3 series as a grouped plot without any space between the grouped bars</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [70 50 33 10; 75 55 35 15; 80 60 40 20];
+ bar3h (y, 1, 'grouped');</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_501.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 6
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 6
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <p>Plot a stacked style 3D bar graph</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> y = [19, 30, 21, 30; 40, 16, 32, 12];
+ b = bar3h (y, 0.5, 'stacked');</pre>
+                <div class="text-center">
+                  <img src="assets/bar3h_601.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
- ## Plot a stacked style 3D bar graph
-
- y = [19, 30, 21, 30; 40, 16, 32, 12];
- b = bar3h (y, 0.5, 'stacked');
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/bar3h_601.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

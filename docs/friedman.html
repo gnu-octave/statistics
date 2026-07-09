@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,7 +810,6 @@
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>tbl</var>] = <b>friedman</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>tbl</var>, <var>stats</var>] = <b>friedman</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Performs the nonparametric Friedman&rsquo;s test to compare column effects in a
  two-way layout.  <code>friedman</code> tests the null hypothesis that the column
  effects are all the same against the alternative that they are not all the
@@ -816,45 +818,45 @@
 <div class="ms-5">
 <p> <code>friedman</code> requires one up to three input arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>x</var> contains the data and it must be a matrix of at least two columns and
  two rows.
- </li><li>
+</li><li>
  <var>reps</var> is the number of replicates for each combination of factor groups.
  If not provided, no replicates are assumed.
- </li><li>
+</li><li>
  <var>displayopt</var> is an optional parameter for displaying the Friedman&rsquo;s ANOVA
- table, when it is &rsquo;on&rsquo; and suppressing the display when it is &rsquo;off&rsquo; (default).
- </li></ul>
+ table, when it is &rsquo;on&rsquo; and suppressing the display when it is &rsquo;off&rsquo;
+ (default).
+</li></ul>
 
 <p> <code>friedman</code> returns up to three output arguments:
 </p>
- <ul>
+<ul>
 <li>
  <var>p</var> is the p-value of the null hypothesis that all group means are equal.
- </li><li>
+</li><li>
  <var>tbl</var> is a table containing the results of the Friedman&rsquo;s test in ANOVA
  table format.  The table includes columns for Source, SS, df, MS, Chi-sq, and
  Prob&gt;Chi-sq with rows for Columns, [Interaction], Error, and Total.
- </li><li>
+</li><li>
  <var>stats</var> is a structure containing statistics useful for performing a
  multiple comparison of medians with the MULTCOMPARE function.
- </li></ul>
+</li></ul>
 
 <p> If friedman is called without any output arguments, then it prints the
  results in a Friedman&rsquo;s ANOVA table to the standard output.
 </p>
 <p> Examples:
 </p>
- <table><tr><td>&nbsp;</td><td><pre class="example"> load popcorn;
+<table><tr><td>&nbsp;</td><td><pre class="example"> load popcorn;
  friedman (popcorn, 3);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
-
- <table><tr><td>&nbsp;</td><td><pre class="example"> [p, anovatab, stats] = friedman (popcorn, 3);
+<table><tr><td>&nbsp;</td><td><pre class="example"> [p, anovatab, stats] = friedman (popcorn, 3);
  disp (p);
- </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="anova2.html">anova2</a>, 
@@ -864,28 +866,20 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/friedman.m">friedman</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load popcorn;
- friedman (popcorn, 3);
-
-  4x6 table
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load popcorn;
+ friedman (popcorn, 3);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  4x6 table
 
         Source           SS       df      MS       Chi_sq     Prob_Chi_sq    
     _______________    _______    __    _______    _______    ___________    
@@ -893,46 +887,27 @@
     {'Columns'    }      99.75     2     49.875    13.7586     0.00102885    
     {'Interaction'}          0     1          0          0              1    
     {'Error'      }    16.1667    12    1.34722          0              0    
-    {'Total'      }        116    17          0          0              0    
+    {'Total'      }        116    17          0          0              0</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load popcorn;
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load popcorn;
  [p, atab] = friedman (popcorn, 3);
- disp (p);
+ disp (p);</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">1.0289e-03</pre>
 
-1.0289e-03
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

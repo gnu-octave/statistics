@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,80 +806,74 @@
 <dl>
 <dt><code><h5 class="fs">Function File: <var>r</var> = <b>copularnd</b> (<var>family</var>, <var>theta</var>, <var>n</var>)</code></h5></dt>
 <dt><code><h5 class="fs">Function File: <var>r</var> = <b>copularnd</b> (<var>family</var>, <var>theta</var>, <var>n</var>, <var>d</var>)</code></h5></dt>
-<dt><code><h5 class="fs">Function File: <var>r</var> = <b>copularnd</b> ('t', <var>theta</var>, <var>df</var>, <var>n</var>)</code></h5></dt>
+<dt><code><h5 class="fs">Function File: <var>r</var> = <b>copularnd</b> (&rsquo;t&rsquo;, <var>theta</var>, <var>df</var>, <var>n</var>)</code></h5></dt>
 </dl>
-
 <p> Random arrays from the copula family distributions.
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>family</var> is the copula family name. Currently, <var>family</var> can be
  <code>'Gaussian'</code> for the Gaussian family, <code>'t'</code> for the Student&rsquo;s t
  family, or <code>'Clayton'</code> for the Clayton family.
-
- </li><li>
+</li><li>
  <var>theta</var> is the parameter of the copula. For the Gaussian and Student&rsquo;s t
  copula, <var>theta</var> must be a correlation matrix. For bivariate copulas
  <var>theta</var> can also be a correlation coefficient. For the Clayton family,
  <var>theta</var> must be a vector with the same number of elements as samples to
  be generated or be scalar.
-
- </li><li>
+</li><li>
  <var>df</var> is the degrees of freedom for the Student&rsquo;s t family. <var>df</var> must
  be a vector with the same number of elements as samples to be generated or
  be scalar.
-
- </li><li>
+</li><li>
  <var>n</var> is the number of rows of the matrix to be generated. <var>n</var> must be
  a non-negative integer and corresponds to the number of samples to be
  generated.
-
- </li><li>
+</li><li>
  <var>d</var> is the number of columns of the matrix to be generated. <var>d</var> must
  be a positive integer and corresponds to the dimension of the copula.
- </li></ul>
+</li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>r</var> is a matrix of random samples from the copula with <var>n</var> samples
  of distribution dimension <var>d</var>.
- </li></ul>
+</li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> theta = 0.5;
+<table><tr><td>&nbsp;</td><td><pre class="example"> theta = 0.5;
  r = copularnd (&quot;Gaussian&quot;, theta);
- </pre><pre class="example">
- </pre><pre class="example"> theta = 0.5;
+
+ theta = 0.5;
  df = 2;
  r = copularnd (&quot;t&quot;, theta, df);
- </pre><pre class="example">
- </pre><pre class="example"> theta = 0.5;
+
+ theta = 0.5;
  n = 2;
  r = copularnd (&quot;Clayton&quot;, theta, n);
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Roger B. Nelsen. <cite>An Introduction to Copulas</cite>. Springer, New York,
  second edition, 2006.
- </li></ol>
+</li></ol>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/copularnd.m">copularnd</a>
 </div>
-
 
             </div>
           </div>

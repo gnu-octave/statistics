@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,14 +806,13 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>y</var> = <b>iwishpdf</b> (<var>W</var>, <var>Tau</var>, <var>df</var>, <var>log_y</var>=false)</code></h5></dt>
 </dl>
-
 <p> Compute the probability density function of the inverse Wishart distribution.
 </p>
 <div class="ms-5">
 <p> Inputs: A <var>p</var> x <var>p</var> matrix <var>W</var> where to find the PDF and the
  <var>p</var> x <var>p</var> positive definite scale matrix <var>Tau</var> and scalar degrees
- of freedom parameter <var>df</var> characterizing the inverse Wishart distribution.
- (For the density to be finite, need <var>df</var> &gt; (<var>p</var> - 1).)
+ of freedom parameter <var>df</var> characterizing the inverse Wishart
+ distribution. (For the density to be finite, need <var>df</var> &gt; (<var>p</var> - 1).)
  If the flag <var>log_y</var> is set, return the log probability density &ndash; this
  helps avoid underflow when the numerical value of the density is very small.
 </p>

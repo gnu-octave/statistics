@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -808,7 +811,6 @@
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>stats</var>] = <b>vartestn</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>p</var>, <var>stats</var>] = <b>vartestn</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Test for equal variances across multiple groups.
 </p>
 <div class="ms-5">
@@ -835,33 +837,32 @@
 <p> <code>[<var>p</var>, <var>stats</var>] = vartestn (&hellip;)</code> returns a structure with
  the following fields:
 </p>
- <table>
+<table>
 <tr><td width="5%"></td><td width="20%"><code>chistat</code></td><td width="75%">&ndash; the value of the test statistic</td></tr>
 <tr><td width="5%"></td><td width="20%"><code>df</code></td><td width="75%">&ndash; the degrees of freedom of the test</td></tr>
 </table>
 
-
 <p> <code>[<var>p</var>, <var>stats</var>] = vartestn (&hellip;, <var>name</var>, <var>value</var>)</code>
  specifies one or more of the following <var>name</var>/<var>value</var> pairs:
 </p>
- <table>
-<tr><td width="20%"><code>&quot;display&quot;</code></td><td width="80%"><code>&quot;on&quot;</code> to display a boxplot and table, or
- <code>&quot;off&quot;</code> to omit these displays. Default <code>&quot;on&quot;</code>.</td></tr>
-<tr><td width="20%"><code>&quot;testtype&quot;</code></td><td width="80%">One of the following strings to control the
+<table>
+<tr><td width="20%"><code>'display'</code></td><td width="80%"><code>'on'</code> to display a boxplot and table, or
+ <code>'off'</code> to omit these displays. Default <code>'on'</code>.</td></tr>
+<tr><td width="20%"><code>'testtype'</code></td><td width="80%">One of the following strings to control the
  type of test to perform</td></tr>
 </table>
 
- <table>
-<tr><td width="3%"></td><td width="25%"><code>&quot;Bartlett&quot;</code></td><td width="72%">Bartlett&rsquo;s test (default).</td></tr>
-<tr><td width="3%"></td><td width="25%"><code>&quot;LeveneQuadratic&quot;</code></td><td width="72%">Levene&rsquo;s test computed by
+<table>
+<tr><td width="3%"></td><td width="25%"><code>'Bartlett'</code></td><td width="72%">Bartlett&rsquo;s test (default).</td></tr>
+<tr><td width="3%"></td><td width="25%"><code>'LeveneQuadratic'</code></td><td width="72%">Levene&rsquo;s test computed by
  performing anova on the squared deviations of the data values from their
  group means.</td></tr>
-<tr><td width="3%"></td><td width="25%"><code>&quot;LeveneAbsolute&quot;</code></td><td width="72%">Levene&rsquo;s test computed by performing
+<tr><td width="3%"></td><td width="25%"><code>'LeveneAbsolute'</code></td><td width="72%">Levene&rsquo;s test computed by performing
  anova on the absolute deviations of the data values from their group means.</td></tr>
-<tr><td width="3%"></td><td width="25%"><code>&quot;BrownForsythe&quot;</code></td><td width="72%">Brown-Forsythe test computed by
+<tr><td width="3%"></td><td width="25%"><code>'BrownForsythe'</code></td><td width="72%">Brown-Forsythe test computed by
  performing anova on the absolute deviations of the data values from the group
  medians.</td></tr>
-<tr><td width="3%"></td><td width="25%"><code>&quot;OBrien&quot;</code></td><td width="72%">O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with
+<tr><td width="3%"></td><td width="25%"><code>'OBrien'</code></td><td width="72%">O&rsquo;Brien&rsquo;s modification of Levene&rsquo;s test with
  <math>W=0.5</math>.</td></tr>
 </table>
 
@@ -882,31 +883,21 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/vartestn.m">vartestn</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Test the null hypothesis that the variances are equal across the five
- ## columns of data in the students’ exam grades matrix, grades.
-
- load examgrades
- vartestn (grades)
-
-
+          </div>
+          <div class="card-body">
+                <p>Test the null hypothesis that the variances are equal across the five columns of data in the students’ exam grades matrix, grades.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load examgrades
+ vartestn (grades)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                     Group Summary Table
 
 Group                        Count        Mean       Std Dev
@@ -923,44 +914,29 @@ Bartlett's statistic             38.73324
 Degrees of Freedom               4
 p-value                          0.000000
 
-ans = 7.9086e-08
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/vartestn_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+ans = 7.9086e-08</pre>
+                <div class="text-center">
+                  <img src="assets/vartestn_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Test the null hypothesis that the variances in miles per gallon (MPG) are
- ## equal across different model years.
-
- load carsmall
- vartestn (MPG, Model_Year)
-
-
+          </div>
+          <div class="card-body">
+                <p>Test the null hypothesis that the variances in miles per gallon (MPG) are equal across different model years.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall
+ vartestn (MPG, Model_Year)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                     Group Summary Table
 
 Group                        Count        Mean       Std Dev
@@ -975,44 +951,29 @@ Bartlett's statistic             0.36619
 Degrees of Freedom               2
 p-value                          0.832687
 
-ans = 0.8327
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/vartestn_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+ans = 0.8327</pre>
+                <div class="text-center">
+                  <img src="assets/vartestn_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 3
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 3
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Use Levene’s test to test the null hypothesis that the variances in miles
- ## per gallon (MPG) are equal across different model years.
-
- load carsmall
- p = vartestn (MPG, Model_Year, "TestType", "LeveneAbsolute")
-
-
+          </div>
+          <div class="card-body">
+                <p>Use Levene’s test to test the null hypothesis that the variances in miles per gallon (MPG) are equal across different model years.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load carsmall
+ p = vartestn (MPG, Model_Year, 'TestType', 'LeveneAbsolute')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">
                     Group Summary Table
 
 Group                        Count        Mean       Std Dev
@@ -1027,46 +988,29 @@ Levene's statistic (absolute)    0.46126
 Degrees of Freedom               2,  91
 p-value                          0.631954
 
-p = 0.6320
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/vartestn_301.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
+p = 0.6320</pre>
+                <div class="text-center">
+                  <img src="assets/vartestn_301.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 4
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 4
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Test the null hypothesis that the variances are equal across the five
- ## columns of data in the students’ exam grades matrix, grades, using the
- ## Brown-Forsythe test.  Suppress the display of the summary table of
- ## statistics and the box plot.
-
- load examgrades
- [p, stats] = vartestn (grades, "TestType", "BrownForsythe", "Display", "off")
-
-p = 1.3121e-06
+          </div>
+          <div class="card-body">
+                <p>Test the null hypothesis that the variances are equal across the five columns of data in the students’ exam grades matrix, grades, using the Brown-Forsythe test.  Suppress the display of the summary table of statistics and the box plot.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load examgrades
+ [p, stats] = vartestn (grades, 'TestType', 'BrownForsythe', 'Display', 'off')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">p = 1.3121e-06
 stats =
 
   scalar structure containing the fields:
@@ -1074,15 +1018,8 @@ stats =
     fstat = 8.4160
     df =
 
-         4   595
+         4   595</pre>
 
-
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

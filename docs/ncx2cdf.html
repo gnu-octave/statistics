@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -802,9 +805,8 @@
             <div class="card-body">
 <dl>
 <dt><code><h5 class="fs">statistics: <var>p</var> = <b>ncx2cdf</b> (<var>x</var>, <var>df</var>, <var>lambda</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>p</var> = <b>ncx2cdf</b> (<var>x</var>, <var>df</var>, <var>lambda</var>, <code>&quot;upper&quot;</code>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>ncx2cdf</b> (<var>x</var>, <var>df</var>, <var>lambda</var>, <code>'upper'</code>)</code></h5></dt>
 </dl>
-
 <p> Noncentral chi-squared cumulative distribution function (CDF).
 </p>
 <div class="ms-5">
@@ -819,7 +821,8 @@
  parameters <var>df</var> and <var>lambda</var>, at the values in <var>x</var>.
 </p>
 <p> Further information about the noncentral chi-squared distribution can be
- found at <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
+ found at
+ <a href="https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution">https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution</a>
 </p>
 <p> <strong>See also: </strong>
   <a href="ncx2inv.html">ncx2inv</a>, 
@@ -831,96 +834,68 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fun/ncx2cdf.m">ncx2cdf</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Plot various CDFs from the noncentral chi-squared distribution
- x = 0:0.1:10;
+          </div>
+          <div class="card-body">
+                <p>Plot various CDFs from the noncentral chi-squared distribution</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.1:10;
  p1 = ncx2cdf (x, 2, 1);
  p2 = ncx2cdf (x, 2, 2);
  p3 = ncx2cdf (x, 2, 3);
  p4 = ncx2cdf (x, 4, 1);
  p5 = ncx2cdf (x, 4, 2);
  p6 = ncx2cdf (x, 4, 3);
- plot (x, p1, "-r", x, p2, "-g", x, p3, "-k", ...
-       x, p4, "-m", x, p5, "-c", x, p6, "-y")
+ plot (x, p1, '-r', x, p2, '-g', x, p3, '-k', ...
+       x, p4, '-m', x, p5, '-c', x, p6, '-y')
  grid on
  xlim ([0, 10])
- legend ({"df = 2, λ = 1", "df = 2, λ = 2", ...
-          "df = 2, λ = 3", "df = 4, λ = 1", ...
-          "df = 4, λ = 2", "df = 4, λ = 3"}, "location", "southeast")
- title ("Noncentral chi-squared CDF")
- xlabel ("values in x")
- ylabel ("probability")
+ legend ({'df = 2, λ = 1', 'df = 2, λ = 2', ...
+          'df = 2, λ = 3', 'df = 4, λ = 1', ...
+          'df = 4, λ = 2', 'df = 4, λ = 3'}, 'location', 'southeast')
+ title ('Noncentral chi-squared CDF')
+ xlabel ('values in x')
+ ylabel ('probability')</pre>
+                <div class="text-center">
+                  <img src="assets/ncx2cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncx2cdf_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Compare the noncentral chi-squared CDF with LAMBDA = 2 to the
- ## chi-squared CDF with the same number of degrees of freedom (4).
-
- x = 0:0.1:10;
+          </div>
+          <div class="card-body">
+                <p>Compare the noncentral chi-squared CDF with LAMBDA = 2 to the chi-squared CDF with the same number of degrees of freedom (4).</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = 0:0.1:10;
  p1 = ncx2cdf (x, 4, 2);
  p2 = chi2cdf (x, 4);
- plot (x, p1, "-", x, p2, "-")
+ plot (x, p1, '-', x, p2, '-')
  grid on
  xlim ([0, 10])
- legend ({"Noncentral χ^2(4,2)", "χ^2(4)"}, "location", "northwest")
- title ("Noncentral chi-squared vs chi-squared CDFs")
- xlabel ("values in x")
- ylabel ("probability")
+ legend ({'Noncentral χ^2(4,2)', 'χ^2(4)'}, 'location', 'northwest')
+ title ('Noncentral chi-squared vs chi-squared CDFs')
+ xlabel ('values in x')
+ ylabel ('probability')</pre>
+                <div class="text-center">
+                  <img src="assets/ncx2cdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/ncx2cdf_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

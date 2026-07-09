@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -805,7 +808,6 @@
 <dt><code><h5 class="fs">statistics: [<var>idx</var>, <var>D</var>] = <b>knnsearch</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [&hellip;] = <b>knnsearch</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> Find k-nearest neighbors from input data.
 </p>
 <div class="ms-5">
@@ -823,61 +825,61 @@
 </p>
 <p> Additional parameters can be specified by <code>Name-Value</code> pair arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;K&quot;</code></td><td width="2%"></td><td width="80%">is the number of nearest neighbors to be found
+<tr><td width="18%"><code>'K'</code></td><td width="2%"></td><td width="80%">is the number of nearest neighbors to be found
  in the kNN search.  It must be a positive integer value and by default it is
  1.</td></tr>
-<tr><td width="18%"><code>&quot;P&quot;</code></td><td width="2%"></td><td width="80%">is the Minkowski distance exponent and it must be
+<tr><td width="18%"><code>'P'</code></td><td width="2%"></td><td width="80%">is the Minkowski distance exponent and it must be
  a positive scalar.  This argument is only valid when the selected distance
- metric is <code>&quot;minkowski&quot;</code>.  By default it is 2.</td></tr>
-<tr><td width="18%"><code>&quot;Scale&quot;</code></td><td width="2%"></td><td width="80%">is the scale parameter for the standardized
+ metric is <code>'minkowski'</code>.  By default it is 2.</td></tr>
+<tr><td width="18%"><code>'Scale'</code></td><td width="2%"></td><td width="80%">is the scale parameter for the standardized
  Euclidean distance and it must be a nonnegative numeric vector of equal
  length to the number of columns in <var>X</var>.  This argument is only valid when
- the selected distance metric is <code>&quot;seuclidean&quot;</code>, in which case each
+ the selected distance metric is <code>'seuclidean'</code>, in which case each
  coordinate of <var>X</var> is scaled by the corresponding element of
- <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By default, the scale
+ <code>'scale'</code>, as is each query point in <var>Y</var>.  By default, the scale
  parameter is the standard deviation of each coordinate in <var>X</var>.</td></tr>
-<tr><td width="18%"><code>&quot;Cov&quot;</code></td><td width="2%"></td><td width="80%">is the covariance matrix for computing the
+<tr><td width="18%"><code>'Cov'</code></td><td width="2%"></td><td width="80%">is the covariance matrix for computing the
  mahalanobis distance and it must be a positive definite matrix matching the
  the number of columns in <var>X</var>.  This argument is only valid when the
- selected distance metric is <code>&quot;mahalanobis&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">is the maximum number of data points in
+ selected distance metric is <code>'mahalanobis'</code>.</td></tr>
+<tr><td width="18%"><code>'BucketSize'</code></td><td width="2%"></td><td width="80%">is the maximum number of data points in
  the leaf node of the Kd-tree and it must be a positive integer.  This
- argument is only valid when the selected search method is <code>&quot;kdtree&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;SortIndices&quot;</code></td><td width="2%"></td><td width="80%">is a boolean flag to sort the returned
+ argument is only valid when the selected search method is <code>'kdtree'</code>.</td></tr>
+<tr><td width="18%"><code>'SortIndices'</code></td><td width="2%"></td><td width="80%">is a boolean flag to sort the returned
  indices in ascending order by distance and it is <code>true</code> by default.
- When the selected search method is <code>&quot;exhaustive&quot;</code> or the
- <code>&quot;IncludeTies&quot;</code> flag is true, <code>knnsearch</code> always sorts the
+ When the selected search method is <code>'exhaustive'</code> or the
+ <code>'IncludeTies'</code> flag is true, <code>knnsearch</code> always sorts the
  returned indices.</td></tr>
-<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">is the distance metric used by
+<tr><td width="18%"><code>'Distance'</code></td><td width="2%"></td><td width="80%">is the distance metric used by
  <code>knnsearch</code> as specified below:</td></tr>
 </table>
 
- <table>
-<tr><td width="5%"></td><td width="20%"><code>&quot;euclidean&quot;</code></td><td width="75%">Euclidean distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;seuclidean&quot;</code></td><td width="75%">standardized Euclidean distance.  Each
+<table>
+<tr><td width="5%"></td><td width="20%"><code>'euclidean'</code></td><td width="75%">Euclidean distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'seuclidean'</code></td><td width="75%">standardized Euclidean distance.  Each
  coordinate difference between the rows in <var>X</var> and the query matrix
  <var>Y</var> is scaled by dividing by the corresponding element of the standard
  deviation computed from <var>X</var>.  To specify a different scaling, use the
- <code>&quot;Scale&quot;</code> name-value argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cityblock&quot;</code></td><td width="75%">City block distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;chebychev&quot;</code></td><td width="75%">Chebychev distance (maximum coordinate
+ <code>'Scale'</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'cityblock'</code></td><td width="75%">City block distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'chebychev'</code></td><td width="75%">Chebychev distance (maximum coordinate
  difference).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;minkowski&quot;</code></td><td width="75%">Minkowski distance.  The default exponent
- is 2.  To specify a different exponent, use the <code>&quot;P&quot;</code> name-value
+<tr><td width="5%"></td><td width="20%"><code>'minkowski'</code></td><td width="75%">Minkowski distance.  The default exponent
+ is 2.  To specify a different exponent, use the <code>'P'</code> name-value
  argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;mahalanobis&quot;</code></td><td width="75%">Mahalanobis distance, computed using a
+<tr><td width="5%"></td><td width="20%"><code>'mahalanobis'</code></td><td width="75%">Mahalanobis distance, computed using a
  positive definite covariance matrix.  To change the value of the covariance
- matrix, use the <code>&quot;Cov&quot;</code> name-value argument.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;cosine&quot;</code></td><td width="75%">Cosine distance.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;correlation&quot;</code></td><td width="75%">One minus the sample linear correlation
+ matrix, use the <code>'Cov'</code> name-value argument.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'cosine'</code></td><td width="75%">Cosine distance.</td></tr>
+<tr><td width="5%"></td><td width="20%"><code>'correlation'</code></td><td width="75%">One minus the sample linear correlation
  between observations (treated as sequences of values).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;spearman&quot;</code></td><td width="75%">One minus the sample Spearman&rsquo;s rank
+<tr><td width="5%"></td><td width="20%"><code>'spearman'</code></td><td width="75%">One minus the sample Spearman&rsquo;s rank
  correlation between observations (treated as sequences of values).</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;hamming&quot;</code></td><td width="75%">Hamming distance, which is the percentage
+<tr><td width="5%"></td><td width="20%"><code>'hamming'</code></td><td width="75%">Hamming distance, which is the percentage
  of coordinates that differ.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;jaccard&quot;</code></td><td width="75%">One minus the Jaccard coefficient, which is
+<tr><td width="5%"></td><td width="20%"><code>'jaccard'</code></td><td width="75%">One minus the Jaccard coefficient, which is
  the percentage of nonzero coordinates that differ.</td></tr>
 <tr><td width="5%"></td><td width="20%"><var>@distfun</var></td><td width="75%">Custom distance function handle.  A distance
  function of the form <code>function <var>D2</var> = distfun (<var>XI</var>, <var>YI</var>)</code>,
@@ -888,32 +890,32 @@
  the distance between observations <var>XI</var> and <code>(<var>YI</var>k,:)</code>.</td></tr>
 </table>
 
- <table>
-<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
+<table>
+<tr><td width="18%"><code>'NSMethod'</code></td><td width="2%"></td><td width="80%">is the nearest neighbor search method used
  by <code>knnsearch</code> as specified below.</td></tr>
 </table>
 
- <table>
-<tr><td width="5%"></td><td width="20%"><code>&quot;kdtree&quot;</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
- neighbors.  <code>&quot;kdtree&quot;</code> is the default value when the number of columns
+<table>
+<tr><td width="5%"></td><td width="20%"><code>'kdtree'</code></td><td width="75%">Creates and uses a Kd-tree to find nearest
+ neighbors.  <code>'kdtree'</code> is the default value when the number of columns
  in <var>X</var> is less than or equal to 10, <var>X</var> is not sparse, and the
- distance metric is <code>&quot;euclidean&quot;</code>, <code>&quot;cityblock&quot;</code>,
- <code>&quot;manhattan&quot;</code>, <code>&quot;chebychev&quot;</code>, or <code>&quot;minkowski&quot;</code>.  Otherwise,
- the default value is <code>&quot;exhaustive&quot;</code>.  This argument is only valid when
+ distance metric is <code>'euclidean'</code>, <code>'cityblock'</code>,
+ <code>'manhattan'</code>, <code>'chebychev'</code>, or <code>'minkowski'</code>.  Otherwise,
+ the default value is <code>'exhaustive'</code>.  This argument is only valid when
  the distance metric is one of the four aforementioned metrics.</td></tr>
-<tr><td width="5%"></td><td width="20%"><code>&quot;exhaustive&quot;</code></td><td width="75%">Uses the exhaustive search algorithm by
+<tr><td width="5%"></td><td width="20%"><code>'exhaustive'</code></td><td width="75%">Uses the exhaustive search algorithm by
  computing the distance values from all the points in <var>X</var> to each point in
  <var>Y</var>.</td></tr>
 </table>
 
- <table>
-<tr><td width="18%"><code>&quot;IncludeTies&quot;</code></td><td width="2%"></td><td width="80%">is a boolean flag to indicate if the
+<table>
+<tr><td width="18%"><code>'IncludeTies'</code></td><td width="2%"></td><td width="80%">is a boolean flag to indicate if the
  returned values should contain the indices that have same distance as the
  <math>K^th</math> neighbor.  When <code>false</code>, <code>knnsearch</code> chooses the
  observation with the smallest index among the observations that have the same
  distance from a query point.  When <code>true</code>, <code>knnsearch</code> includes
  all nearest neighbors whose distances are equal to the <math>K^th</math> smallest
- distance in the output arguments.  To specify <math>K</math>, use the <code>&quot;K&quot;</code>
+ distance in the output arguments.  To specify <math>K</math>, use the <code>'K'</code>
  name-value pair argument.</td></tr>
 </table>
 
@@ -925,138 +927,98 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/knnsearch.m">knnsearch</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## find 10 nearest neighbour of a point using different distance metrics
- ## and compare the results by plotting
- load fisheriris
- X = meas(:,3:4);
- Y = species;
- point = [5, 1.45];
-
- ## calculate 10 nearest-neighbours by minkowski distance
- [id, d] = knnsearch (X, point, "K", 10);
-
- ## calculate 10 nearest-neighbours by minkowski distance
- [idm, dm] = knnsearch (X, point, "K", 10, "distance", "minkowski", "p", 5);
-
- ## calculate 10 nearest-neighbours by chebychev distance
- [idc, dc] = knnsearch (X, point, "K", 10, "distance", "chebychev");
-
- ## plotting the results
- gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20);
- title ("Fisher's Iris Data - Nearest Neighbors with different types of distance metrics");
- xlabel("Petal length (cm)");
- ylabel("Petal width (cm)");
-
- line (point(1), point(2), "marker", "X", "color", "k", ...
-       "linewidth", 2, "displayname", "query point")
- line (X(id,1), X(id,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-       "linestyle", "none", "markersize", 10, "displayname", "euclidean")
- line (X(idm,1), X(idm,2), "color", [0.5 0.5 0.5], "marker", "d", ...
-       "linestyle", "none", "markersize", 10, "displayname", "Minkowski")
- line (X(idc,1), X(idc,2), "color", [0.5 0.5 0.5], "marker", "p", ...
-       "linestyle", "none", "markersize", 10, "displayname", "chebychev")
- xlim ([4.5 5.5]);
- ylim ([1 2]);
- axis square;
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/knnsearch_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <p>find 10 nearest neighbour of a point using different distance metrics and compare the results by plotting</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
+ X = meas(:,3:4);
+ Y = species;
+ point = [5, 1.45];</pre>
+                <p>calculate 10 nearest-neighbours by minkowski distance</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [id, d] = knnsearch (X, point, 'K', 10);</pre>
+                <p>calculate 10 nearest-neighbours by minkowski distance</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [idm, dm] = knnsearch (X, point, 'K', 10, 'distance', 'minkowski', 'p', 5);</pre>
+                <p>calculate 10 nearest-neighbours by chebychev distance</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [idc, dc] = knnsearch (X, point, 'K', 10, 'distance', 'chebychev');</pre>
+                <p>plotting the results</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], '.', 20);
+ title ('Fisher''s Iris Data - Nearest Neighbors with different types of distance metrics');
+ xlabel ('Petal length (cm)');
+ ylabel ('Petal width (cm)');
+ line (point(1), point(2), 'marker', 'X', 'color', 'k', ...
+       'linewidth', 2, 'displayname', 'query point')
+ line (X(id,1), X(id,2), 'color', [0.5 0.5 0.5], 'marker', 'o', ...
+       'linestyle', 'none', 'markersize', 10, 'displayname', 'euclidean')
+ line (X(idm,1), X(idm,2), 'color', [0.5 0.5 0.5], 'marker', 'd', ...
+       'linestyle', 'none', 'markersize', 10, 'displayname', 'Minkowski')
+ line (X(idc,1), X(idc,2), 'color', [0.5 0.5 0.5], 'marker', 'p', ...
+       'linestyle', 'none', 'markersize', 10, 'displayname', 'chebychev')
+ xlim ([4.5 5.5]);
+ ylim ([1 2]);
+ axis square;</pre>
+                <div class="text-center">
+                  <img src="assets/knnsearch_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## knnsearch on iris dataset using kdtree method
- load fisheriris
+          </div>
+          <div class="card-body">
+                <p>knnsearch on iris dataset using kdtree method</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  X = meas(:,3:4);
- gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], ".", 20);
- title ("Fisher's iris dataset : Nearest Neighbors with kdtree search");
-
- ## new point to be predicted
- point = [5 1.45];
-
- line (point(1), point(2), "marker", "X", "color", "k", ...
-       "linewidth", 2, "displayname", "query point")
-
- ## knnsearch using kdtree method
- [idx, d] = knnsearch (X, point, "K", 10, "NSMethod", "kdtree");
-
- ## plotting predicted neighbours
- line (X(idx,1), X(idx,2), "color", [0.5 0.5 0.5], "marker", "o", ...
-       "linestyle", "none", "markersize", 10, ...
-       "displayname", "nearest neighbour")
+ gscatter (X(:,1), X(:,2), species, [.75 .75 0; 0 .75 .75; .75 0 .75], '.', 20);
+ title ('Fisher''s iris dataset : Nearest Neighbors with kdtree search');</pre>
+                <p>new point to be predicted</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> point = [5 1.45];
+ line (point(1), point(2), 'marker', 'X', 'color', 'k', ...
+       'linewidth', 2, 'displayname', 'query point')</pre>
+                <p>knnsearch using kdtree method</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [idx, d] = knnsearch (X, point, 'K', 10, 'NSMethod', 'kdtree');</pre>
+                <p>plotting predicted neighbours</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> line (X(idx,1), X(idx,2), 'color', [0.5 0.5 0.5], 'marker', 'o', ...
+       'linestyle', 'none', 'markersize', 10, ...
+       'displayname', 'nearest neighbour')
  xlim ([4 6])
  ylim ([1 3])
- axis square
- ## details of predicted labels
- tabulate (species(idx))
-
- ctr = point - d(end);
- diameter = 2 * d(end);
- ##  Draw a circle around the 10 nearest neighbors.
- h = rectangle ("position", [ctr, diameter, diameter], "curvature", [1 1]);
-
- ## here only 8 neighbours are plotted instead of 10 since the dataset
- ## contains duplicate values
-
-  2x3 table
+ axis square</pre>
+                <p>details of predicted labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> tabulate (species(idx))</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">  2x3 table
 
         Value         Count    Percent    
     ______________    _____    _______    
 
     {'virginica' }        2         20    
-    {'versicolor'}        8         80    
+    {'versicolor'}        8         80</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> ctr = point - d(end);
+ diameter = 2 * d(end);</pre>
+                <p>Draw a circle around the 10 nearest neighbors.</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> h = rectangle ('position', [ctr, diameter, diameter], 'curvature', [1 1]);</pre>
+                <div class="text-center">
+                  <img src="assets/knnsearch_201.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+                <p>here only 8 neighbours are plotted instead of 10 since the dataset contains duplicate values</p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/knnsearch_201.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>] = <b>multiway</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>groupindex</var>, <var>partition</var>, <var>groupsizes</var>] = <b>multiway</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Solve the multiway number partitioning problem.
 </p>
 <div class="ms-5">
@@ -816,11 +818,11 @@
  possible and returns a vector of group indices in <var>groupindex</var> with each
  index corresponding to the set of numbers provided as input.
 </p>
- <ul>
+<ul>
 <li> <var>numbers</var> is a vector of positive real numbers to be partitioned.
- </li><li> <var>num_parts</var> is a positive integer scalar specifying the number of
+</li><li> <var>num_parts</var> is a positive integer scalar specifying the number of
  partitions (subsets) to split the numbers into.
- </li></ul>
+</li></ul>
 
 <p> <code><var>groupindex</var> = multiway (<var>numbers</var>, <var>num_parts</var>,
  <var>method</var>)</code> also specifies the algorithm used for partitioning the set of
@@ -830,30 +832,31 @@
  greedy algorithm, which is optimized for speed, but may not return the
  optimal partitioning.  The following methods are supported:
 </p>
- <ul>
+<ul>
 <li> <code>'greedy'</code> (Greedy algorithm)
- </li><li> <code>'completeKK'</code> (Complete Karmarkar-Karp algorithm)
- </li></ul>
+</li><li> <code>'completeKK'</code> (Complete Karmarkar-Karp algorithm)
+</li></ul>
 
 <p> The <code>multiway</code> function may return up to three output arguments
  described below:
 </p>
- <ul>
+<ul>
 <li>
  <var>groupindex</var>: A vector of the same length as <var>numbers</var> containing
  the group index (from 1 to <var>num_parts</var>) for each number.
- </li><li>
+</li><li>
  <var>partition</var>: A cell array of length <var>num_parts</var> with each cell
  containing the numbers assigned to that partition.
- </li><li>
+</li><li>
  <var>groupsizes</var>: A vector of the sums of the numbers in each partition.
- </li></ul>
+</li></ul>
 
 <p> Example:
- </p><table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> numbers = [4, 5, 6, 7, 8];
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example"> numbers = [4, 5, 6, 7, 8];
  num_parts = 2;
  [groupindex, partition, groupsizes] = multiway (numbers, num_parts);
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
 <p> <strong>See also: </strong>
   <a href="cvpartition.html">cvpartition</a>

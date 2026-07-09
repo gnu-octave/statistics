@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: ClassificationKNN</h5></code></dl>
-
 <p> K-nearest neighbors classification
 </p>
 <div class="ms-5">
@@ -826,9 +828,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Classification/ClassificationKNN.m">ClassificationKNN</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Properties
-        </h4>
+        <p class="lead my-3">The <code>ClassificationKNN</code> class contains the following properties:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -849,13 +849,11 @@ Predictor data
           <div class="collapse multi-collapse" id="collapseProperty1">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric matrix containing the unstandardized predictor data.  Each
  column of <var>X</var> represents one predictor (variable), and each row
  represents one observation.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -881,14 +879,12 @@ Class labels
           <div class="collapse multi-collapse" id="collapseProperty2">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a logical or numeric column vector, or as a character array
  or a cell array of character vectors with the same number of rows as the
  predictor data.  Each row in <var>Y</var> is the observed class label for
  the corresponding row in <var>X</var>.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -914,13 +910,11 @@ Number of observations
           <div class="collapse multi-collapse" id="collapseProperty3">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of observations in the
  training dataset used for training the ClassificationKNN model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -946,13 +940,11 @@ Rows used for fitting
           <div class="collapse multi-collapse" id="collapseProperty4">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical column vector with the same length as the observations in the
  original predictor data <var>X</var> specifying which rows have been used for
  fitting the ClassificationKNN model.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -978,13 +970,11 @@ Number of predictors
           <div class="collapse multi-collapse" id="collapseProperty5">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifying the number of predictors in the
  training dataset used for training the ClassificationKNN model.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1010,13 +1000,11 @@ Names of predictor variables
           <div class="collapse multi-collapse" id="collapseProperty6">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A cell array of character vectors specifying the names of the predictor
  variables.  The names are in the order in which they appear in the
  training dataset.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1042,12 +1030,10 @@ Response variable name
           <div class="collapse multi-collapse" id="collapseProperty7">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the name of the response variable <var>Y</var>.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1073,19 +1059,17 @@ Names of classes in the response variable
           <div class="collapse multi-collapse" id="collapseProperty8">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> An array of unique values of the response variable <var>Y</var>, which has the
  same data types as the data in <var>Y</var>.  This property is read-only.
  <code>ClassNames</code> can have any of the following datatypes:
 </p>
- <ul>
+<ul>
 <li> Cell array of character vectors
- </li><li> Character array
- </li><li> Logical vector
- </li><li> Numeric vector
- </li></ul>
-
+</li><li> Character array
+</li><li> Logical vector
+</li><li> Numeric vector
+</li></ul>
 
 
 
@@ -1112,7 +1096,6 @@ Cost of Misclassification
           <div class="collapse multi-collapse" id="collapseProperty9">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A square matrix specifying the cost of misclassification of a point.
  <code>Cost(i,j)</code> is the cost of classifying a point into class <code>j</code>
@@ -1126,10 +1109,10 @@ Cost of Misclassification
  for correct classification and 1 for incorrect classification.
 </p>
 <p> Add or change the <code>Cost</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.Cost = <var>costMatrix</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1156,17 +1139,16 @@ Prior probability for each class
           <div class="collapse multi-collapse" id="collapseProperty10">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector specifying the prior probabilities for each class.  The
  order of the elements in <code>Prior</code> corresponds to the order of the
  classes in <code>ClassNames</code>.
 </p>
 <p> Add or change the <code>Prior</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.Prior = <var>priorVector</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1193,37 +1175,36 @@ Transformation function for classification scores
           <div class="collapse multi-collapse" id="collapseProperty11">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> Specified as a function handle for transforming the classification
  scores.  Add or change the <code>ScoreTransform</code> property using dot
  notation as in:
 </p>
- <ul>
+<ul>
 <li> <code><var>obj</var>.ScoreTransform = 'function_name'</code>
- </li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
- </li></ul>
+</li><li> <code><var>obj</var>.ScoreTransform = @function_handle</code>
+</li></ul>
 
 <p> When specified as a character vector, it can be any of the following
  built-in functions.  Nevertheless, the <code>ScoreTransform</code> property
  always stores their function handle equivalent.
 </p>
- <table>
+<table>
 <thead><tr><th width="20%"><var>Value</var></th><th width="5%"></th><th width="75%"><var>Description</var></th></tr></thead>
-<tr><td width="20%"><code>&quot;doublelogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2&times;&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;invlogit&quot;</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;ismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
+<tr><td width="20%"><code>'doublelogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-2 &times; &times;))</math></td></tr>
+<tr><td width="20%"><code>'invlogit'</code></td><td width="5%"></td><td width="75%"><math>1 ./ (1 + e&times;p (-&times;))</math></td></tr>
+<tr><td width="20%"><code>'ismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class with the
  largest score to 1, and for all other classes to 0</td></tr>
-<tr><td width="20%"><code>&quot;logit&quot;</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 -&times;))</math></td></tr>
-<tr><td width="20%"><code>&quot;none&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;identity&quot;</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
-<tr><td width="20%"><code>&quot;sign&quot;</code></td><td width="5%"></td><td width="75%"><math>-1 for&times; &lt; 0, 0 for&times; = 0, 1 for&times; &gt; 0</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetric&quot;</code></td><td width="5%"></td><td width="75%"><math>2&times;&times; - 1</math></td></tr>
-<tr><td width="20%"><code>&quot;symmetricismax&quot;</code></td><td width="5%"></td><td width="75%">Sets the score for the class
+<tr><td width="20%"><code>'logit'</code></td><td width="5%"></td><td width="75%"><math>log (&times; ./ (1 - &times;))</math></td></tr>
+<tr><td width="20%"><code>'none'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'identity'</code></td><td width="5%"></td><td width="75%"><math>&times;</math> (no transformation)</td></tr>
+<tr><td width="20%"><code>'sign'</code></td><td width="5%"></td><td width="75%"> <math>-1 for &times; &lt; 0, 0 for &times; = 0, 1 for &times; &gt;
+ 0</math></td></tr>
+<tr><td width="20%"><code>'symmetric'</code></td><td width="5%"></td><td width="75%"><math>2 &times; &times; - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetricismax'</code></td><td width="5%"></td><td width="75%">Sets the score for the class
  with the largest score to 1, and for all other classes to -1</td></tr>
-<tr><td width="20%"><code>&quot;symmetriclogit&quot;</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
+<tr><td width="20%"><code>'symmetriclogit'</code></td><td width="5%"></td><td width="75%"><math>2 ./ (1 + e&times;p (-&times;)) - 1</math></td></tr>
 </table>
-
 
 
 
@@ -1250,12 +1231,10 @@ Standardization flag
           <div class="collapse multi-collapse" id="collapseProperty12">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether the predictor data in <var>X</var> have
  been standardized prior to training.  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1281,14 +1260,12 @@ Predictor standard deviations
           <div class="collapse multi-collapse" id="collapseProperty13">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector of the same length as the columns in <var>X</var> with the
  standard deviations corresponding to each predictor.  If the predictor
- variables have not been standardized, then <code>&quot;obj.Sigma&quot;</code> is empty.
+ variables have not been standardized, then <code>'obj.Sigma'</code> is empty.
  This property is read-only.
 </p>
-
 
 
             </div>
@@ -1314,14 +1291,12 @@ Predictor means
           <div class="collapse multi-collapse" id="collapseProperty14">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A numeric vector of the same length as the columns in <var>X</var> with the
  mean values corresponding to each predictor.  If the predictor variables
- have not been standardized, then <code>&quot;obj.Mu&quot;</code> is empty.  This
+ have not been standardized, then <code>'obj.Mu'</code> is empty.  This
  property is read-only.
 </p>
-
 
 
             </div>
@@ -1347,30 +1322,29 @@ Tie-breaking algorithm
           <div class="collapse multi-collapse" id="collapseProperty15">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the tie-breaking algorithm used by the
  <code>predict</code> method, when multiple classes have the same smallest cost.
  It can be one of the following:
 </p>
- <ul>
-<li> <code>&quot;smallest&quot;</code> (default), which favors the class with the
+<ul>
+<li> <code>'smallest'</code> (default), which favors the class with the
  smallest index among the tied groups, i.e. the one that appears first in
  the training labelled data.
- </li><li> <code>&quot;nearest&quot;</code>, which favors the class with the nearest neighbor
+</li><li> <code>'nearest'</code>, which favors the class with the nearest neighbor
  among the tied groups, i.e. the class with the closest member point
  according to the distance metric used.
- </li><li> <code>&quot;random&quot;</code>, which randomly picks one class among the tied
+</li><li> <code>'random'</code>, which randomly picks one class among the tied
  groups.
- </li></ul>
+</li></ul>
 
 <p> The tie-breaking algorithm is only used when <code>IncludeTies</code> is
  <code>false</code>.  Change the <code>BreakTies</code> property using dot notation
  as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.BreakTies = <var>algorithm</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1397,15 +1371,14 @@ Number of nearest neighbors
           <div class="collapse multi-collapse" id="collapseProperty16">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer value specifyingNumber of nearest neighbors in <var>X</var>
  used to classify each point during prediction.  Change the
  <code>NumNeighbors</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.NumNeighbors = <var>newNumNeighbors</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1432,16 +1405,15 @@ Distance metric
           <div class="collapse multi-collapse" id="collapseProperty17">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector specifying the distance metric used by the
  neighbor-searcher method.  See the available distance metrics in
  <code>knnsearch</code> for more info.  Change the <code>Distance</code> property
  using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.Distance = <var>newDistance</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1468,26 +1440,25 @@ Distance weighting function
           <div class="collapse multi-collapse" id="collapseProperty18">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A character vector or a function handle specifying the distance weighting
  function, which can be any of the following values:
 </p>
- <ul>
-<li> <code>&quot;equal&quot;</code>, which corresponds to <code>@(d) d</code>.
- </li><li> <code>&quot;inverse&quot;</code>, which corresponds to <code>@(d) 1/d</code>.
- </li><li> <code>&quot;squaredinverse&quot;</code>, which corresponds to <code>@(d) 1/d.^2</code>.
- </li><li> <code>@fcn</code>, which is a function handle that accepts a matrix of
+<ul>
+<li> <code>'equal'</code>, which corresponds to <code>(d) d</code>.
+</li><li> <code>'inverse'</code>, which corresponds to <code>(d) 1/d</code>.
+</li><li> <code>'squaredinverse'</code>, which corresponds to <code>(d) 1/d.^2</code>.
+</li><li> <code></code>, which is a function handle that accepts a matrix of
  nonnegative distances, and returns a matrix the same size containing
  nonnegative distance weights.
- </li></ul>
+</li></ul>
 
 <p> Change the <code>DistanceWeight</code> property
  using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.DistanceWeight = <var>newDistanceWeight</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1514,27 +1485,27 @@ Parameter for distance metric
           <div class="collapse multi-collapse" id="collapseProperty19">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive definite covariance matrix, a positive scalar, or a vector of
  positive scale values specifying the parameter for the corresponding
  distance metric as shown below:
 </p>
- <ul>
-<li> <code>&quot;mahalanobis&quot;</code> accepts a positive definite covariance matrix.
- </li><li> <code>&quot;minkowski&quot;</code> accepts a positive scalar as the Minkowski
+<ul>
+<li> <code>'mahalanobis'</code> accepts a positive definite covariance
+ matrix.
+</li><li> <code>'minkowski'</code> accepts a positive scalar as the Minkowski
  distance exponent.
- </li><li> <code>&quot;seuclidean&quot;</code> accepts a vector of positive scale values of
+</li><li> <code>'seuclidean'</code> accepts a vector of positive scale values of
  equal length as the number of predictors in <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> For any other distance metric, <code>DistParameter</code> is empty
  <code>([])</code>.  Change the <code>DistParameter</code> property using dot
  notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.DistParameter = <var>distParam</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1561,18 +1532,17 @@ Nearest neighbor search method
           <div class="collapse multi-collapse" id="collapseProperty20">
             <div class="border-bottom py-2">
 
-
 <p> </p>
-<p> A character vector specified as either <code>&quot;kdtree&quot;</code>, which creates
- and uses a Kd-tree to find nearest neighbors, or <code>&quot;exhaustive&quot;</code>,
+<p> A character vector specified as either <code>'kdtree'</code>, which creates
+ and uses a Kd-tree to find nearest neighbors, or <code>'exhaustive'</code>,
  which uses the exhaustive search algorithm by computing the distance
  values from all points in <var>X</var> to find nearest neighbors.
 </p>
 <p> Change the <code>NSMethod</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.NSMethod = <var>newNSMethod</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1599,7 +1569,6 @@ Flag for handling ties
           <div class="collapse multi-collapse" id="collapseProperty21">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A logical scalar specifying whether prediction includes all the neighbors
  whose distance values are equal to the <math>k^th</math> smallest distance.  If
@@ -1607,10 +1576,10 @@ Flag for handling ties
  neighbors.  Otherwise, prediction uses exactly <math>k</math> neighbors.
 </p>
 <p> Change the <code>IncludeTies</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.IncludeTies = <var>flag</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1637,17 +1606,16 @@ Maximum data points in each node
           <div class="collapse multi-collapse" id="collapseProperty22">
             <div class="border-bottom py-2">
 
-
 <p> </p>
 <p> A positive integer scalar specifying the maximum number of data points in
  the leaf node of the Kd-tree.  <code>BucketSize</code> only applies when the
- <code>NSMethod</code> property is <code>&quot;kdtree&quot;</code>.
+ <code>NSMethod</code> property is <code>'kdtree'</code>.
 </p>
 <p> Change the <code>BucketSize</code> property using dot notation as in:
- </p><ul>
+</p>
+<ul>
 <li> <code><var>obj</var>.BucketSize = <var>maxnum</var></code>
- </li></ul>
-
+</li></ul>
 
 
 
@@ -1655,9 +1623,7 @@ Maximum data points in each node
           </div>
         </div>
 
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>ClassificationKNN</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -1682,28 +1648,27 @@ Create a <code>ClassificationKNN</code> class object containing a k-Nearest
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (<var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>obj</var> = <b>ClassificationKNN</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>obj</var> = ClassificationKNN (<var>X</var>, <var>Y</var>)</code> returns a
  ClassificationKNN object, with <var>X</var> as the predictor data and <var>Y</var>
  containing the class labels of observations in <var>X</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.  <var>X</var> will be used to train the kNN model.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> can contain any type
  of categorical data.  <var>Y</var> must have same numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>obj</var> = ClassificationKNN (&hellip;, <var>name</var>, <var>value</var>)</code>
  returns a ClassificationKNN object with parameters specified by the
  following <code><var>name</var>, <var>value</var></code> paired input arguments:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
 <tr><td width="18%"><code>'PredictorNames'</code></td><td width="2%"></td><td width="80%">A cell array of character
  vectors specifying the names of the predictors. The length of this array
@@ -1723,8 +1688,8 @@ Create a <code>ClassificationKNN</code> class object containing a k-Nearest
 <tr><td width="18%"><code>'Prior'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying the prior
  probabilities for each class.  The order of the elements in <code>Prior</code>
  corresponds to the order of the classes in <code>ClassNames</code>.
- Alternatively, you can specify <code>&quot;empirical&quot;</code> to use the empirical
- class probabilities or <code>&quot;uniform&quot;</code> to assume equal class
+ Alternatively, you can specify <code>'empirical'</code> to use the empirical
+ class probabilities or <code>'uniform'</code> to assume equal class
  probabilities.</td></tr>
 <tr><td width="18%"><code>'ScoreTransform'</code></td><td width="2%"></td><td width="80%">A user-defined function handle
  or a character vector specifying one of the following builtin functions
@@ -1733,56 +1698,56 @@ Create a <code>ClassificationKNN</code> class object containing a k-Nearest
  <code>'ismax'</code>, <code>'logit'</code>, <code>'none'</code>, <code>'identity'</code>,
  <code>'sign'</code>, <code>'symmetric'</code>, <code>'symmetricismax'</code>, and
  <code>'symmetriclogit'</code>.</td></tr>
-<tr><td width="18%"><code>&quot;BreakTies&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'BreakTies'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  tie-breaking algorithm used by <code>predict</code> method, when multiple
  classes have the same smallest cost.  Available options are
- <code>&quot;smallest&quot;</code> (default), which uses the smallest index among tied
- groups, <code>&quot;nearest&quot;</code>, which uses the class with the nearest neighbor
- among tied groups, and <code>&quot;random&quot;</code>, which randomly selects one of
+ <code>'smallest'</code> (default), which uses the smallest index among tied
+ groups, <code>'nearest'</code>, which uses the class with the nearest neighbor
+ among tied groups, and <code>'random'</code>, which randomly selects one of
  the tied groups.</td></tr>
-<tr><td width="18%"><code>&quot;NumNeighbors&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value that
+<tr><td width="18%"><code>'NumNeighbors'</code></td><td width="2%"></td><td width="80%">A positive integer value that
  specifies the number of nearest neighbors to be found in the kNN search
  algorithm for classifying each point during prediction.  By default,
  it is 1.</td></tr>
-<tr><td width="18%"><code>&quot;Distance&quot;</code></td><td width="2%"></td><td width="80%">Any valid distance metric supported by
+<tr><td width="18%"><code>'Distance'</code></td><td width="2%"></td><td width="80%">Any valid distance metric supported by
  the <code>pdist2</code> function.  Note that the allowable distance metrics
  depend on the selected nearest neighbor search method.</td></tr>
-<tr><td width="18%"><code>&quot;DistanceWeight&quot;</code></td><td width="2%"></td><td width="80%">Either a distance weighting
+<tr><td width="18%"><code>'DistanceWeight'</code></td><td width="2%"></td><td width="80%">Either a distance weighting
  function, specified either as a function handle, which accepts a matrix
  of nonnegative distances and returns a matrix the same size containing
  nonnegative distance weights, or a character vector with one of the
- following values: <code>&quot;equal&quot;</code>, which corresponds to no weighting;
- <code>&quot;inverse&quot;</code>, which corresponds to a weight equal to
- <math>1/distance</math>; <code>&quot;squaredinverse&quot;</code>, which corresponds to a
+ following values: <code>'equal'</code>, which corresponds to no weighting;
+ <code>'inverse'</code>, which corresponds to a weight equal to
+ <math>1/distance</math>; <code>'squaredinverse'</code>, which corresponds to a
  weight equal to <math>1/distance^2</math>.</td></tr>
-<tr><td width="18%"><code>&quot;Cov&quot;</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of
+<tr><td width="18%"><code>'Cov'</code></td><td width="2%"></td><td width="80%">A square matrix with the same number of
  columns <var>X</var> specifying the covariance matrix for computing the
  mahalanobis distance.  This must be a positive definite matrix matching.
  This argument is only valid when the selected distance metric is
- <code>&quot;mahalanobis&quot;</code>.</td></tr>
-<tr><td width="18%"><code>&quot;Exponent&quot;</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
+ <code>'mahalanobis'</code>.</td></tr>
+<tr><td width="18%"><code>'Exponent'</code></td><td width="2%"></td><td width="80%">A positive scalar (usually an integer)
  specifying the Minkowski distance exponent.  This argument is only valid
- when the selected distance metric is <code>&quot;minkowski&quot;</code>.  By default,
+ when the selected distance metric is <code>'minkowski'</code>.  By default,
  it is 2.</td></tr>
-<tr><td width="18%"><code>&quot;Scale&quot;</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying
+<tr><td width="18%"><code>'Scale'</code></td><td width="2%"></td><td width="80%">A nonnegative numeric vector specifying
  the scale parameters for the standardized Euclidean distance.  The vector
  length must be equal to the number of columns in <var>X</var>.  This argument
- is only valid when the selected distance metric is <code>&quot;seuclidean&quot;</code>,
+ is only valid when the selected distance metric is <code>'seuclidean'</code>,
  in which case each coordinate of <var>X</var> is scaled by the corresponding
- element of <code>&quot;scale&quot;</code>, as is each query point in <var>Y</var>.  By
+ element of <code>'scale'</code>, as is each query point in <var>Y</var>.  By
  default, the scale parameter is the standard deviation of each coordinate
  in <var>X</var>.  If a variable in <var>X</var> is constant, i.e. zero variance,
  this value is forced to 1 to avoid division by zero.  This is the
  equivalent of this variable not being standardized.</td></tr>
-<tr><td width="18%"><code>&quot;NSMethod&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the
+<tr><td width="18%"><code>'NSMethod'</code></td><td width="2%"></td><td width="80%">A character vector specifying the
  nearest neighbor search method used by <code>knnsearch</code>, which can be
- <code>&quot;kdtree&quot;</code> or <code>&quot;exhaustive&quot;</code>.  See <code>knnsearch</code> for more
+ <code>'kdtree'</code> or <code>'exhaustive'</code>.  See <code>knnsearch</code> for more
  information about default values and allowable distance metrics for each
  search method.</td></tr>
-<tr><td width="18%"><code>&quot;BucketSize&quot;</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
+<tr><td width="18%"><code>'BucketSize'</code></td><td width="2%"></td><td width="80%">A positive integer value specifying
  the maximum number of data points in the leaf node of the Kd-tree.  This
  argument is meaningful only when the selected nearest neighbor search
- method is <code>&quot;kdtree&quot;</code>.  By default, it is 50.</td></tr>
+ method is <code>'kdtree'</code>.  By default, it is 50.</td></tr>
 </table>
 
 <p> <strong>See also: </strong>
@@ -1820,21 +1785,20 @@ Classify new data points into categories using the kNN algorithm from a
 <dt><code><h5 class="fs">ClassificationKNN: <var>labels</var> = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationKNN: [<var>labels</var>, <var>scores</var>, <var>cost</var>] = <b>predict</b> (<var>obj</var>, <var>XC</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>labels</var> = predict (<var>obj</var>, <var>XC</var>)</code> returns the matrix of
  labels predicted for the corresponding instances in <var>XC</var>, using the
  predictor data in <code>obj.X</code> and corresponding labels, <code>obj.Y</code>,
  stored in the k-Nearest Neighbor classification model, <var>obj</var>.
 </p>
- <ul>
+<ul>
 <li>
  <var>obj</var> must be a <code>ClassificationKNN</code> class object.
- </li><li>
+</li><li>
  <var>XC</var> must be an <math>M&times;P</math> numeric matrix with the same number of
  features <math>P</math> as the corresponding predictors of the SVM model in
  <var>obj</var>.
- </li></ul>
+</li></ul>
 
 <p> <code>[<var>labels</var>, <var>scores</var>, <var>cost</var>] = predict (<var>obj</var>,
  <var>XC</var>)</code> also returns <var>scores</var>, which contains the predicted class
@@ -1844,9 +1808,9 @@ Classify new data points into categories using the kNN algorithm from a
  posterior probabilities for KNN models, unless a specific ScoreTransform
  function has been specified.  See <code>fitcknn</code> for more info.
 </p>
-<p> Note! <code>predict</code> is explicitly using <code>&quot;exhaustive&quot;</code> as the
+<p> Note! <code>predict</code> is explicitly using <code>'exhaustive'</code> as the
  nearest search method due to the very slow implementation of
- <code>&quot;kdtree&quot;</code> in the <code>knnsearch</code> function.
+ <code>'kdtree'</code> in the <code>knnsearch</code> function.
 </p>
 <p> <strong>See also: </strong>
   <a href="fitcknn.html">fitcknn</a>, 
@@ -1881,52 +1845,53 @@ Compute loss for a trained ClassificationKNN object.
 <dt><code><h5 class="fs">ClassificationKNN: <var>L</var> = <b>loss</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationKNN: <var>L</var> = <b>loss</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>L</var> = loss (<var>obj</var>, <var>X</var>, <var>Y</var>)</code> computes the loss,
  <var>L</var>, using the default loss function <code>'mincost'</code>.
 </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a <var>ClassificationKNN</var> object trained on <code>X</code> and
  <code>Y</code>.
- </li><li>
+</li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>.  <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> <code><var>L</var> = loss (&hellip;, <var>name</var>, <var>value</var>)</code> allows
  additional options specified by <var>name</var>-<var>value</var> pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;LossFun&quot;</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
+<tr><td width="18%"><code>'LossFun'</code></td><td width="2%"></td><td width="80%">Specifies the loss function to use.
  Can be a function handle with four input arguments (C, S, W, Cost)
  which returns a scalar value or one of:
  &rsquo;binodeviance&rsquo;, &rsquo;classifcost&rsquo;, &rsquo;classiferror&rsquo;, &rsquo;exponential&rsquo;,
  &rsquo;hinge&rsquo;, &rsquo;logit&rsquo;,&rsquo;mincost&rsquo;, &rsquo;quadratic&rsquo;.
- <ul>
+<ul>
 <li>
  <code>C</code> is a logical matrix of size <math>N&times;K</math>, where <math>N</math> is the
  number of observations and <math>K</math> is the number of classes.
  The element <code>C(i,j)</code> is true if the class label of the i-th
  observation is equal to the j-th class.
- </li><li>
+</li><li>
  <code>S</code> is a numeric matrix of size <math>N&times;K</math>, where each element
  represents the classification score for the corresponding class.
- </li><li>
+</li><li>
  <code>W</code> is a numeric vector of length <math>N</math>, representing
  the observation weights.
- </li><li>
+</li><li>
  <code>Cost</code> is a <math>K&times;K</math> matrix representing the misclassification
  costs.
- </li></ul></td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
+</li></ul>
+
+</td></tr>
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">Specifies observation weights, must be
  a numeric vector of length equal to the number of rows in X.
  Default is <code>ones (size (X, 1))</code>. loss normalizes the weights so that
  observation weights in each class sum to the prior probability of that
@@ -1967,21 +1932,20 @@ Compute loss for a trained ClassificationKNN object.
 <dl>
 <dt><code><h5 class="fs">ClassificationKNN: <var>m</var> = <b>margin</b> (<var>obj</var>, <var>X</var>, <var>Y</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a <var>ClassificationKNN</var> object trained on <code>X</code>
  and <code>Y</code>.
- </li><li>
+</li><li>
  <code>X</code> must be a <math>N&times;P</math> numeric matrix of input data where rows
  correspond to observations and columns correspond to features or
  variables.
- </li><li>
+</li><li>
  <code>Y</code> is <math>N&times;1</math> matrix or cell matrix containing the class labels
  of corresponding predictor data in <var>X</var>. <var>Y</var> must have same
  numbers of Rows as <var>X</var>.
- </li></ul>
+</li></ul>
 
 <p> The classification margin for each observation is the difference between
  the classification score for the true class and the maximal
@@ -2020,26 +1984,25 @@ Compute partial dependence for a trained ClassificationKNN object.
 <dt><code><h5 class="fs">ClassificationKNN: <var>[pd, x, y]</var> = <b>partialDependence</b> (&hellip;, <var>Data</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationKNN: <var>[pd, x, y]</var> = <b>partialDependence</b> (&hellip;, <var>name</var>, <var>value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>[pd, x, y]</var> = partialDependence (<var>obj</var>, <var>Vars</var>,
  <var>Labels</var>)</code>
  computes the partial dependence of the classification scores on the
  variables <var>Vars</var> for the specified class <var>Labels</var>.
 </p>
- <ul>
+<ul>
 <li>
  <code>obj</code> is a trained <var>ClassificationKNN</var> object.
- </li><li>
+</li><li>
  <code>Vars</code> is a vector of positive integers, character vector,
  string array, or cell array of character
  vectors representing predictor variables (it can be indices of
  predictor variables in <var>obj.X</var>).
- </li><li>
+</li><li>
  <code>Labels</code> is a character vector, logical vector, numeric vector,
  or cell array of character vectors representing class
  labels. (column vector)
- </li></ul>
+</li></ul>
 
 <p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>Data</var>)</code>
  specifies new predictor data to use for computing the partial dependence.
@@ -2047,28 +2010,29 @@ Compute partial dependence for a trained ClassificationKNN object.
 <p> <code><var>[pd, x, y]</var> = partialDependence (&hellip;, <var>name</var>,
  <var>value</var>)</code> allows additional options specified by name-value pairs:
 </p>
- <table>
+<table>
 <thead><tr><th width="32%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="32%"><code>&quot;NumObservationsToSample&quot;</code></td><td width="2%"></td><td width="70%">Number of
+<tr><td width="32%"><code>'NumObservationsToSample'</code></td><td width="2%"></td><td width="70%">Number of
  observations to sample. Must be a positive integer. Defaults to the
  number of observations in the training data.</td></tr>
-<tr><td width="32%"><code>&quot;QueryPoints&quot;</code></td><td width="2%"></td><td width="70%">Points at which to evaluate
+<tr><td width="32%"><code>'QueryPoints'</code></td><td width="2%"></td><td width="70%">Points at which to evaluate
  the partial dependence.
  Must be a numeric column vector, numeric two-column matrix, or
  cell array of character column vectors.</td></tr>
-<tr><td width="32%"><code>&quot;UseParallel&quot;</code></td><td width="2%"></td><td width="70%">Logical value indicating
+<tr><td width="32%"><code>'UseParallel'</code></td><td width="2%"></td><td width="70%">Logical value indicating
  whether to perform computations in parallel.
  Defaults to <code>false</code>.</td></tr>
 </table>
 
- <a name="Return-Values"></a>
+<a name="Return-Values"></a>
 <h3 class="subheading">Return Values</h3>
- <ul>
+
+<ul>
 <li> <code>pd</code>: Partial dependence values.
- </li><li> <code>x</code>: Query points for the first predictor variable in Vars.
- </li><li> <code>y</code>: Query points for the second predictor variable in
+</li><li> <code>x</code>: Query points for the first predictor variable in Vars.
+</li><li> <code>y</code>: Query points for the second predictor variable in
  Vars (if applicable).
- </li></ul>
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="fitcknn.html">fitcknn</a>, 
@@ -2102,7 +2066,6 @@ Cross Validate a ClassificationKNN object.
 <dt><code><h5 class="fs">ClassificationKNN: <var>CVMdl</var> = <b>crossval</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">ClassificationKNN: <var>CVMdl</var> = <b>crossval</b> (&hellip;, <var>Name</var>, <var>Value</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code><var>CVMdl</var> = crossval (<var>obj</var>)</code> returns a cross-validated model
  object, <var>CVMdl</var>, from a trained model, <var>obj</var>, using 10-fold
@@ -2112,18 +2075,18 @@ Cross Validate a ClassificationKNN object.
  specifies additional name-value pair arguments to customize the
  cross-validation process.
 </p>
- <table>
+<table>
 <thead><tr><th width="28%"><var>Name</var></th><th width="2%"></th><th width="70%"><var>Value</var></th></tr></thead>
-<tr><td width="28%"><code>&quot;KFold&quot;</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
+<tr><td width="28%"><code>'KFold'</code></td><td width="2%"></td><td width="70%">Specify the number of folds to use in
  k-fold cross-validation.  <code>&quot;KFold&quot;, <var>k</var></code>, where <var>k</var> is an
  integer greater than 1.</td></tr>
-<tr><td width="28%"><code>&quot;Holdout&quot;</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
+<tr><td width="28%"><code>'Holdout'</code></td><td width="2%"></td><td width="70%">Specify the fraction of the data to
  hold out for testing.  <code>&quot;Holdout&quot;, <var>p</var></code>, where <var>p</var> is a
  scalar in the range <math>(0,1)</math>.</td></tr>
-<tr><td width="28%"><code>&quot;Leaveout&quot;</code></td><td width="2%"></td><td width="70%">Specify whether to perform
+<tr><td width="28%"><code>'Leaveout'</code></td><td width="2%"></td><td width="70%">Specify whether to perform
  leave-one-out cross-validation.  <code>&quot;Leaveout&quot;, <var>Value</var></code>, where
  <var>Value</var> is &rsquo;on&rsquo; or &rsquo;off&rsquo;.</td></tr>
-<tr><td width="28%"><code>&quot;CVPartition&quot;</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
+<tr><td width="28%"><code>'CVPartition'</code></td><td width="2%"></td><td width="70%">Specify a <code>cvpartition</code>
  object used for cross-validation.  <code>&quot;CVPartition&quot;, <var>cv</var></code>, where
  <code>isa (<var>cv</var>, &quot;cvpartition&quot;)</code> = 1.</td></tr>
 </table>
@@ -2161,7 +2124,6 @@ Save a ClassificationKNN object.
 <dl>
 <dt><code><h5 class="fs">ClassificationKNN: <b>savemodel</b> (<var>obj</var>, <var>filename</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>savemodel (<var>obj</var>, <var>filename</var>)</code> saves each property of a
  ClassificationKNN object into an Octave binary file, the name of which is
@@ -2193,27 +2155,20 @@ Save a ClassificationKNN object.
               <div class="row align-items-center">
                 <div class="col-12">
                   <code class="description">
- Create a k-nearest neighbor classifier for Fisher's iris data with k = 5. Evaluate some model predictions on new data.
+Create a k-nearest neighbor classifier for Fisher's iris data with k = 5. Evaluate some model predictions on new data.
                   </code>
                 </div>
               </div>
           </div>
           <div class="collapse multi-collapse" id="collapseDemo1">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
  y = species;
  xc = [min(x); mean(x); max(x)];
- obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
- [label, score, cost] = predict (obj, xc)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-label =
+ obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);
+ [label, score, cost] = predict (obj, xc)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">label =
   3x1 cell array
 
     {'versicolor'}    
@@ -2230,9 +2185,7 @@ cost =
 
    0.6000   0.4000   1.0000
    1.0000        0   1.0000
-   1.0000   1.0000        0
-</pre></td></tr>
-                  </table>
+   1.0000   1.0000        0</pre>
 
             </div>
           </div>
@@ -2254,21 +2207,13 @@ demo&nbsp;ClassificationKNN&nbsp;2
           </div>
           <div class="collapse multi-collapse" id="collapseDemo2">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
  y = species;
- obj = fitcknn (x, y, "NumNeighbors", 5, "Standardize", 1);
-
- ## Create a cross-validated model
- CVMdl = crossval (obj)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-CVMdl =
+ obj = fitcknn (x, y, 'NumNeighbors', 5, 'Standardize', 1);</pre>
+                <p>Create a cross-validated model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CVMdl = crossval (obj)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CVMdl =
 
   1x1 ClassificationPartitionedModel object with properties:
 
@@ -2285,12 +2230,10 @@ CVMdl =
                   Partition: [1x1 cvpartition]
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
-               ResponseName: "Y"
+               ResponseName: 'Y'
              ScoreTransform: [1x1 function_handle]
                 Standardize: 1
-                    Trained: [10x1 cell]
-</pre></td></tr>
-                  </table>
+                    Trained: [10x1 cell]</pre>
 
             </div>
           </div>
@@ -2312,32 +2255,18 @@ demo&nbsp;ClassificationKNN&nbsp;3
           </div>
           <div class="collapse multi-collapse" id="collapseDemo3">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  x = meas;
  y = species;
- covMatrix = cov (x);
-
- ## Fit the k-NN model using the 'mahalanobis' distance
- ## and the custom covariance matrix
- obj = fitcknn(x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', ...
- 'Cov', covMatrix);
-
- ## Create a partition model using cvpartition
- Partition = cvpartition (size (x, 1), 'kfold', 12);
-
- ## Create cross-validated model using 'cvPartition' name-value argument
- CVMdl = crossval (obj, 'cvPartition', Partition)
-
- ## Access the trained model from first fold of cross-validation
- CVMdl.Trained{1}</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-CVMdl =
+ covMatrix = cov (x);</pre>
+                <p>Fit the k-NN model using the 'mahalanobis' distance and the custom covariance matrix</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> obj = fitcknn (x, y, 'NumNeighbors', 5, 'Distance','mahalanobis', ...
+ 'Cov', covMatrix);</pre>
+                <p>Create a partition model using cvpartition</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Partition = cvpartition (size (x, 1), 'kfold', 12);</pre>
+                <p>Create cross-validated model using 'cvPartition' name-value argument</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CVMdl = crossval (obj, 'cvPartition', Partition)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CVMdl =
 
   1x1 ClassificationPartitionedModel object with properties:
 
@@ -2354,12 +2283,13 @@ CVMdl =
                   Partition: [1x1 cvpartition]
              PredictorNames: [1x4 cell]
                       Prior: [0.3333; 0.3333; 0.3333]
-               ResponseName: "Y"
+               ResponseName: 'Y'
              ScoreTransform: [1x1 function_handle]
                 Standardize: 0
-                    Trained: [12x1 cell]
-
-ans =
+                    Trained: [12x1 cell]</pre>
+                <p>Access the trained model from first fold of cross-validation</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CVMdl.Trained{1}</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">ans =
 
   ClassificationKNN
 
@@ -2370,8 +2300,7 @@ ans =
             NumPredictors: 4
                  Distance: 'mahalanobis'
                  NSMethod: 'exhaustive'
-             NumNeighbors: 5</pre></td></tr>
-                  </table>
+             NumNeighbors: 5</pre>
 
             </div>
           </div>
@@ -2393,21 +2322,13 @@ demo&nbsp;ClassificationKNN&nbsp;4
           </div>
           <div class="collapse multi-collapse" id="collapseDemo4">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 3, 4; 5, 6];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 3, 4; 5, 6];
  Y = {'A'; 'B'; 'A'};
  model = fitcknn (X, Y);
- customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));
- ## Calculate loss using custom loss function
- L = loss (model, X, Y, 'LossFun', customLossFun)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-L = 0</pre></td></tr>
-                  </table>
+ customLossFun = @(C, S, W, Cost) sum (W .* sum (abs (C - S), 2));</pre>
+                <p>Calculate loss using custom loss function</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (model, X, Y, 'LossFun', customLossFun)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0</pre>
 
             </div>
           </div>
@@ -2429,20 +2350,12 @@ demo&nbsp;ClassificationKNN&nbsp;5
           </div>
           <div class="collapse multi-collapse" id="collapseDemo5">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 3, 4; 5, 6];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 3, 4; 5, 6];
  Y = {'A'; 'B'; 'A'};
- model = fitcknn (X, Y);
- ## Calculate loss using 'mincost' loss function
- L = loss (model, X, Y, 'LossFun', 'mincost')</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-L = 0</pre></td></tr>
-                  </table>
+ model = fitcknn (X, Y);</pre>
+                <p>Calculate loss using 'mincost' loss function</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> L = loss (model, X, Y, 'LossFun', 'mincost')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">L = 0</pre>
 
             </div>
           </div>
@@ -2464,23 +2377,14 @@ demo&nbsp;ClassificationKNN&nbsp;6
           </div>
           <div class="collapse multi-collapse" id="collapseDemo6">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 3, 4; 5, 6];
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 3, 4; 5, 6];
  Y = ['1'; '2'; '3'];
  model = fitcknn (X, Y);
  X_test = [3, 3; 5, 7];
- Y_test = ['1'; '2'];
- ## Specify custom Weights
- W = [1; 2];
- L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-</pre></td></tr>
-                  </table>
+ Y_test = ['1'; '2'];</pre>
+                <p>Specify custom Weights</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> W = [1; 2];
+ L = loss (model, X_test, Y_test, 'LossFun', 'logit', 'Weights', W);</pre>
 
             </div>
           </div>
@@ -2502,20 +2406,12 @@ demo&nbsp;ClassificationKNN&nbsp;7
           </div>
           <div class="collapse multi-collapse" id="collapseDemo7">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- load fisheriris
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  mdl = fitcknn (meas, species);
  X = mean (meas);
  Y = {'versicolor'};
- m = margin (mdl, X, Y)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-m = 1</pre></td></tr>
-                  </table>
+ m = margin (mdl, X, Y)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">m = 1</pre>
 
             </div>
           </div>
@@ -2537,24 +2433,15 @@ demo&nbsp;ClassificationKNN&nbsp;8
           </div>
           <div class="collapse multi-collapse" id="collapseDemo8">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 4, 5; 7, 8; 3, 2];
- Y = [2; 1; 3; 2];
- ## Train the model
- mdl = fitcknn (X, Y);
- ## Specify Vars and Labels
- Vars = 1;
- Labels = 2;
- ## Calculate partialDependence
- [pd, x, y] = partialDependence (mdl, Vars, Labels);</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-</pre></td></tr>
-                  </table>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 4, 5; 7, 8; 3, 2];
+ Y = [2; 1; 3; 2];</pre>
+                <p>Train the model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl = fitcknn (X, Y);</pre>
+                <p>Specify Vars and Labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Vars = 1;
+ Labels = 2;</pre>
+                <p>Calculate partialDependence</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [pd, x, y] = partialDependence (mdl, Vars, Labels);</pre>
 
             </div>
           </div>
@@ -2576,25 +2463,18 @@ demo&nbsp;ClassificationKNN&nbsp;9
           </div>
           <div class="collapse multi-collapse" id="collapseDemo9">
             <div class="border-bottom py-2">
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;border: 1px solid black; width:100%; background-color: #D6EEEE"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
- X = [1, 2; 4, 5; 7, 8; 3, 2];
- Y = [2; 1; 3; 2];
- ## Train the model
- mdl = fitcknn (X, Y);
- ## Specify Vars and Labels
- Vars = 1;
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> X = [1, 2; 4, 5; 7, 8; 3, 2];
+ Y = [2; 1; 3; 2];</pre>
+                <p>Train the model</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> mdl = fitcknn (X, Y);</pre>
+                <p>Specify Vars and Labels</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> Vars = 1;
  Labels = 1;
- queryPoints = [linspace(0, 1, 3)', linspace(0, 1, 3)'];
- ## Calculate partialDependence using queryPoints
- [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
- queryPoints)</pre></td></tr>
-                  </table>
-                  <table style="display: block; overflow-x: scroll; white-space: nowrap;"><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-pd =
+ queryPoints = [linspace(0, 1, 3)', linspace(0, 1, 3)'];</pre>
+                <p>Calculate partialDependence using queryPoints</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> [pd, x, y] = partialDependence (mdl, Vars, Labels, 'QueryPoints', ...
+ queryPoints)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">pd =
 
    0.2500   0.2500   0.2500
 
@@ -2604,8 +2484,7 @@ x =
    0.5000   0.5000
    1.0000   1.0000
 
-y = [](0x0)</pre></td></tr>
-                  </table>
+y = [](0x0)</pre>
 
             </div>
           </div>

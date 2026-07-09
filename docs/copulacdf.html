@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -802,16 +805,15 @@
             <div class="card-body">
 <dl>
 <dt><code><h5 class="fs">statistics: <var>p</var> = <b>copulacdf</b> (<var>family</var>, <var>x</var>, <var>theta</var>)</code></h5></dt>
-<dt><code><h5 class="fs">statistics: <var>p</var> = <b>copulacdf</b> ('t', <var>x</var>, <var>theta</var>, <var>df</var>)</code></h5></dt>
+<dt><code><h5 class="fs">statistics: <var>p</var> = <b>copulacdf</b> (&rsquo;t&rsquo;, <var>x</var>, <var>theta</var>, <var>df</var>)</code></h5></dt>
 </dl>
-
 <p> Copula family cumulative distribution functions (CDF).
 </p>
 <div class="ms-5">
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>family</var> is the copula family name. Currently, <var>family</var> can
  be <code>'Gaussian'</code> for the Gaussian family, <code>'t'</code> for the
@@ -819,11 +821,9 @@
  <code>'Gumbel'</code> for the Gumbel-Hougaard family, <code>'Frank'</code> for
  the Frank family, <code>'AMH'</code> for the Ali-Mikhail-Haq family, or
  <code>'FGM'</code> for the Farlie-Gumbel-Morgenstern family.
-
- </li><li>
+</li><li>
  <var>x</var> is the support where each row corresponds to an observation.
-
- </li><li>
+</li><li>
  <var>theta</var> is the parameter of the copula. For the Gaussian and
  Student&rsquo;s t copula, <var>theta</var> must be a correlation matrix. For
  bivariate copulas <var>theta</var> can also be a correlation coefficient.
@@ -835,42 +835,41 @@
  row corresponds to one set of coefficients for an observation in
  <var>x</var>. A single row is expanded. The coefficients are in binary
  order.
-
- </li><li>
+</li><li>
  <var>df</var> is the degrees of freedom for the Student&rsquo;s t family.
  <var>df</var> must be a vector with the same number of elements as
  observations in <var>x</var> or be scalar.
- </li></ul>
+</li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>p</var> is the cumulative distribution of the copula at each row of
  <var>x</var> and corresponding parameter <var>theta</var>.
- </li></ul>
+</li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = [0.2:0.2:0.6; 0.2:0.2:0.6];
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = [0.2:0.2:0.6; 0.2:0.2:0.6];
  theta = [1; 2];
  p = copulacdf (&quot;Clayton&quot;, x, theta)
- </pre><pre class="example">
- </pre><pre class="example"> x = [0.2:0.2:0.6; 0.2:0.1:0.4];
+
+ x = [0.2:0.2:0.6; 0.2:0.1:0.4];
  theta = [0.2, 0.1, 0.1, 0.05];
  p = copulacdf (&quot;FGM&quot;, x, theta)
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Roger B. Nelsen. <cite>An Introduction to Copulas</cite>. Springer,
  New York, second edition, 2006.
- </li></ol>
+</li></ol>
 
 <p> <strong>See also: </strong>
   <a href="copulapdf.html">copulapdf</a>, 

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -801,7 +804,6 @@
             </div>
             <div class="card-body">
 <dl><code><h5 class="description">statistics: CalinskiHarabaszEvaluation</h5></code></dl>
-
 <p> Calinski-Harabasz clustering evaluation.
 </p>
 <div class="ms-5">
@@ -815,7 +817,7 @@
  dense and well-separated.
 </p>
 <p> Create a <code>CalinskiHarabaszEvaluation</code> object by using the
- <code>evalclusters</code> function with the <code>&quot;CalinskiHarabasz&quot;</code> criterion.
+ <code>evalclusters</code> function with the <code>'CalinskiHarabasz'</code> criterion.
 </p>
 <p> <strong>See also: </strong>
   <a href="evalclusters.html">evalclusters</a>, 
@@ -828,9 +830,7 @@
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/Clustering/CalinskiHarabaszEvaluation.m">CalinskiHarabaszEvaluation</a>
 </p>
 </div>
-        <h4 class="d-inline-block my-3">
-          Methods
-        </h4>
+        <p class="lead my-3">The <code>CalinskiHarabaszEvaluation</code> class offers the following public methods:</p>
 
         <div class="container-xl my-1">
           <div class="row">
@@ -853,7 +853,6 @@ Add new cluster sizes for evaluation.
 <dl>
 <dt><code><h5 class="fs">CalinskiHarabaszEvaluation: <var>obj</var> = <b>addK</b> (<var>obj</var>, <var>K</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>addK (<var>obj</var>, <var>K</var>)</code> evaluates clustering solutions for the
  number of clusters specified in the vector <var>K</var> and adds them to the
@@ -891,7 +890,6 @@ Plot the clustering evaluation results.
 <dt><code><h5 class="fs">CalinskiHarabaszEvaluation: <b>plot</b> (<var>obj</var>)</code></h5></dt>
 <dt><code><h5 class="fs">CalinskiHarabaszEvaluation: <var>h</var> = <b>plot</b> (<var>obj</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> <code>plot (<var>obj</var>)</code> plots the Calinski-Harabasz criterion values
  against the number of clusters.  The optimal number of clusters is marked
@@ -931,7 +929,6 @@ Create a compact clustering evaluation object.
 <dl>
 <dt><code><h5 class="fs">CalinskiHarabaszEvaluation: <var>obj</var> = <b>compact</b> (<var>obj</var>)</code></h5></dt>
 </dl>
-
 <p> </p>
 <p> This method is not yet implemented for
  <code>CalinskiHarabaszEvaluation</code> objects.

@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,7 +809,6 @@
 <dt><code><h5 class="fs">statistics: [<var>b</var>, <var>dev</var>] = <b>glmfit</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>b</var>, <var>dev</var>, <var>stats</var>] = <b>glmfit</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Perform generalized linear model fitting.
 </p>
 <div class="ms-5">
@@ -815,45 +817,45 @@
  model of the responses in <var>y</var> on the predictors in <var>X</var>, using the
  distribution defined in <var>distribution</var>.
 </p>
- <ul>
+<ul>
 <li> <var>X</var> is an <math>n&times;p</math> numeric matrix of predictor variables with
  <math>n</math> observations and <math>p</math> predictors.
- </li><li> <var>y</var> is an <math>n&times;1</math> numeric vector of responses for all supported
+</li><li> <var>y</var> is an <math>n&times;1</math> numeric vector of responses for all supported
  distributions, except for the &rsquo;binomial&rsquo; distribution in which case <var>y</var>
  can be either a numeric or logical <math>n&times;1</math> vector or an <math>n&times;2</math>
  matrix, where the first column contains the number of successes and the
  second column contains the number of trials.
- </li><li> <var>distribution</var> is a character vector specifying the distribution of
- the response variable. Supported distributions are <code>&quot;normal&quot;</code>,
- <code>&quot;binomial&quot;</code>, <code>&quot;poisson&quot;</code>, <code>&quot;gamma&quot;</code>, and <code>&quot;inverse
- gaussian&quot;</code>.
- </li></ul>
+</li><li> <var>distribution</var> is a character vector specifying the distribution of
+ the response variable. Supported distributions are <code>'normal'</code>,
+ <code>'binomial'</code>, <code>'poisson'</code>, <code>'gamma'</code>, and <code>'inverse
+ gaussian'</code>.
+</li></ul>
 
 <p> <code><var>b</var> = glmfit (&hellip;, <var>Name</var>, <var>Value</var>)</code> specifies
  additional options using <code>Name-Value</code> pair arguments.
 </p>
- <table>
+<table>
 <thead><tr><th width="18%"><var>Name</var></th><th width="2%"></th><th width="80%"><var>Value</var></th></tr></thead>
-<tr><td width="18%"><code>&quot;B0&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector specifying initial values for
+<tr><td width="18%"><code>'B0'</code></td><td width="2%"></td><td width="80%">A numeric vector specifying initial values for
  the coefficient estimates.  By default, the initial values are fitted values
  fitted from the data.</td></tr>
-<tr><td width="18%"><code>&quot;Constant&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
+<tr><td width="18%"><code>'Constant'</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
  include a constant term in the model.  Valid options are <var>&quot;on&quot;</var> (default)
  and <var>&quot;off&quot;</var>.</td></tr>
-<tr><td width="18%"><code>&quot;EstDisp&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
+<tr><td width="18%"><code>'EstDisp'</code></td><td width="2%"></td><td width="80%">A character vector specifying whether to
  compute dispersion parameter. Valid options are <var>&quot;on&quot;</var> and <var>&quot;off&quot;</var>.
- For <code>&quot;binomial&quot;</code> and <code>&quot;poisson&quot;</code> distributions the default is
- <var>&quot;off&quot;</var>, whereas for the <code>&quot;normal&quot;</code>, <code>&quot;gamma&quot;</code>, and
- <code>&quot;inverse gaussian&quot;</code> distributions the default is <var>&quot;on&quot;</var>.</td></tr>
-<tr><td width="18%"><code>&quot;link&quot;</code></td><td width="2%"></td><td width="80%">A character vector specifying the name of a
- canonical link function or a numeric scalar for specifying a <code>&quot;power&quot;</code>
- link function.  Supported canonical link functions include <code>&quot;identity&quot;</code>
- (default for <code>&quot;normal&quot;</code> distribution), <code>&quot;log&quot;</code> (default for
- <code>&quot;poisson&quot;</code> distribution), <code>&quot;logit&quot;</code> (default for
- <code>&quot;binomial&quot;</code> distribution), <code>&quot;probit&quot;</code>, <code>&quot;loglog&quot;</code>,
- <code>&quot;comploglog&quot;</code>, and <code>&quot;reciprocal&quot;</code> (default for the
- <code>&quot;gamma&quot;</code> distribution).  The <code>&quot;power&quot;</code> link function is the
- default for the <code>&quot;inverse gaussian&quot;</code> distribution with <math>p = -2</math>.
+ For <code>'binomial'</code> and <code>'poisson'</code> distributions the default is
+ <var>&quot;off&quot;</var>, whereas for the <code>'normal'</code>, <code>'gamma'</code>, and
+ <code>'inverse gaussian'</code> distributions the default is <var>&quot;on&quot;</var>.</td></tr>
+<tr><td width="18%"><code>'link'</code></td><td width="2%"></td><td width="80%">A character vector specifying the name of a
+ canonical link function or a numeric scalar for specifying a <code>'power'</code>
+ link function.  Supported canonical link functions include <code>'identity'</code>
+ (default for <code>'normal'</code> distribution), <code>'log'</code> (default for
+ <code>'poisson'</code> distribution), <code>'logit'</code> (default for
+ <code>'binomial'</code> distribution), <code>'probit'</code>, <code>'loglog'</code>,
+ <code>'comploglog'</code>, and <code>'reciprocal'</code> (default for the
+ <code>'gamma'</code> distribution).  The <code>'power'</code> link function is the
+ default for the <code>'inverse gaussian'</code> distribution with <math>p = -2</math>.
  For custom link functions, the user can provide cell array with three
  function handles: the link function, its derivative, and its inverse, or
  alternatively a structure <var>S</var> with three fields: <code>S.Link</code>,
@@ -861,15 +863,15 @@
  function handle or a character vector with the name of an existing function.
  All custom link functions must accept a vector of inputs and return a vector
  of the same size.</td></tr>
-<tr><td width="18%"><code>&quot;Offset&quot;</code></td><td width="2%"></td><td width="80%">A numeric vector of the same length as the
+<tr><td width="18%"><code>'Offset'</code></td><td width="2%"></td><td width="80%">A numeric vector of the same length as the
  response <var>y</var> specifying an offset variable in the fit. It is used as an
  additional predictor with a coefficient value fixed at 1.</td></tr>
-<tr><td width="18%"><code>&quot;Options&quot;</code></td><td width="2%"></td><td width="80%">A scalar structure containing the fields
+<tr><td width="18%"><code>'Options'</code></td><td width="2%"></td><td width="80%">A scalar structure containing the fields
  <code>MaxIter</code> and <code>TolX</code>.  <code>MaxIter</code> must be a scalar positive
  integer specifying the maximum number of iteration allowed for fitting the
  model, and <code>TolX</code> must be a positive scalar value specifying the
  termination tolerance.</td></tr>
-<tr><td width="18%"><code>&quot;Weights&quot;</code></td><td width="2%"></td><td width="80%">An <math>n&times;1</math> numeric vector of nonnegative
+<tr><td width="18%"><code>'Weights'</code></td><td width="2%"></td><td width="80%">An <math>n&times;1</math> numeric vector of nonnegative
  values, where <math>n</math> is the number of observations in <var>X</var>.  By default,
  it is <code>ones (n, 1)</code>.</td></tr>
 </table>
@@ -883,24 +885,24 @@
  structure <var>stats</var>, which contains the model statistics in the following
  fields:
 </p>
- <ul>
+<ul>
 <li> <code>beta</code> - Coefficient estimates <var>b</var>
- </li><li> <code>dfe</code> - Degrees of freedom for error
- </li><li> <code>sfit</code> - Estimated dispersion parameter
- </li><li> <code>s</code> - Theoretical or estimated dispersion parameter
- </li><li> <code>estdisp</code> - <code>false</code> when <code>&quot;EstDisp&quot;</code> is <code>&quot;off&quot;</code>
- and <code>true</code> when <code>&quot;EstDisp&quot;</code> is <code>&quot;on&quot;</code>
- </li><li> <code>covb</code> - Estimated covariance matrix for <var>b</var>
- </li><li> <code>se</code> - Vector of standard errors of the coefficient estimates
+</li><li> <code>dfe</code> - Degrees of freedom for error
+</li><li> <code>sfit</code> - Estimated dispersion parameter
+</li><li> <code>s</code> - Theoretical or estimated dispersion parameter
+</li><li> <code>estdisp</code> - <code>false</code> when <code>'EstDisp'</code> is <code>'off'</code>
+ and <code>true</code> when <code>'EstDisp'</code> is <code>'on'</code>
+</li><li> <code>covb</code> - Estimated covariance matrix for <var>b</var>
+</li><li> <code>se</code> - Vector of standard errors of the coefficient estimates
  <var>b</var>
- </li><li> <code>coeffcorr</code> - Correlation matrix for <var>b</var>
- </li><li> <code>t</code> - <math>t</math> statistics for <var>b</var>
- </li><li> <code>p</code> - <math>p</math>-values for <var>b</var>
- </li><li> <code>resid</code> - Vector of residuals
- </li><li> <code>residp</code> - Vector of Pearson residuals
- </li><li> <code>residd</code> - Vector of deviance residuals
- </li><li> <code>resida</code> - Vector of Anscombe residuals
- </li></ul>
+</li><li> <code>coeffcorr</code> - Correlation matrix for <var>b</var>
+</li><li> <code>t</code> - <math>t</math> statistics for <var>b</var>
+</li><li> <code>p</code> - <math>p</math>-values for <var>b</var>
+</li><li> <code>resid</code> - Vector of residuals
+</li><li> <code>residp</code> - Vector of Pearson residuals
+</li><li> <code>residd</code> - Vector of deviance residuals
+</li><li> <code>resida</code> - Vector of Anscombe residuals
+</li></ul>
 
 <p> <strong>See also: </strong>
   <a href="glmval.html">glmval</a>
@@ -908,80 +910,53 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/glmfit.m">glmfit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- x = [210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430]';
- n = [48, 42, 31, 34, 31, 21, 23, 23, 21, 16, 17, 21]';
- y = [1, 2, 0, 3, 8, 8, 14, 17, 19, 15, 17, 21]';
- b = glmfit (x, [y n], "binomial", "Link", "probit");
- yfit = glmval (b, x, "probit", "Size", n);
- plot (x, y./n, 'o', x, yfit ./ n, '-')
-
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/glmfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
           </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [210, 230, 250, 270, 290, 310, 330, 350, 370, 390, 410, 430]';
+ n = [48, 42, 31, 34, 31, 21, 23, 23, 21, 16, 17, 21]';
+ y = [1, 2, 0, 3, 8, 8, 14, 17, 19, 15, 17, 21]';
+ b = glmfit (x, [y n], 'binomial', 'Link', 'probit');
+ yfit = glmval (b, x, 'probit', 'Size', n);
+ plot (x, y./n, 'o', x, yfit ./ n, '-')</pre>
+                <div class="text-center">
+                  <img src="assets/glmfit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
+
+          </div>
         </div>
 
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 2
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 2
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- load fisheriris
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> load fisheriris
  X = meas (51:end, :);
- y = strcmp ("versicolor", species(51:end));
- b = glmfit (X, y, "binomial", "link", "logit")
-
-b =
+ y = strcmp ('versicolor', species(51:end));
+ b = glmfit (X, y, 'binomial', 'link', 'logit')</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">b =
 
    42.6378
     2.4652
     6.6809
    -9.4294
-  -18.2861
+  -18.2861</pre>
 
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

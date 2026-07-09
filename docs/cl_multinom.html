@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -804,7 +807,6 @@
 <dt><code><h5 class="fs">statistics: <var>CL</var> = <b>cl_multinom</b> (<var>X</var>, <var>N</var>, <var>b</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: <var>CL</var> = <b>cl_multinom</b> (<var>X</var>, <var>N</var>, <var>b</var>, <var>method</var>)</code></h5></dt>
 </dl>
-
 <p> Confidence level of multinomial portions.
 </p>
 <div class="ms-5">
@@ -823,92 +825,82 @@
  the same as in the entire population (ie. the expected value and mean of the
  samples are roughly the same) we need to use this function.
 </p>
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
- <table>
+
+<table>
 <thead><tr><th width="10%">Variable</th><th width="1%"></th><th width="10%">Type</th><th width="1%"></th><th width="78%">Description</th></tr></thead>
 <tr><td width="10%"><var>X</var></td><td width="1%"></td><td width="10%">int vector</td><td width="1%"></td><td width="78%">sample frequencies bins.</td></tr>
 <tr><td width="10%"><var>N</var></td><td width="1%"></td><td width="10%">int scalar</td><td width="1%"></td><td width="78%">Population size that was sampled
  by <var>X</var>.  If <code>N &lt; sum (<var>X</var>)</code>, infinite number assumed.</td></tr>
 <tr><td width="10%"><var>b</var></td><td width="1%"></td><td width="10%">real vector</td><td width="1%"></td><td width="78%">confidence interval. If vector,
- it should be the size of <var>X</var> containing confidence interval for each cells.
- If scalar, each cell will have the same value of b unless it is zero or -1.
- If value is 0, <var>b</var> = 0.02 is assumed which is standard choice at
+ it should be the size of <var>X</var> containing confidence interval for each
+ cells. If scalar, each cell will have the same value of b unless it is zero
+ or -1. If value is 0, <var>b</var> = 0.02 is assumed which is standard choice at
  elections otherwise it is calculated in a way that one sample in a cell
  alteration defines the confidence interval.</td></tr>
 <tr><td width="10%"><var>method</var></td><td width="1%"></td><td width="10%">string</td><td width="1%"></td><td width="78%">An optional argument
  for defining the calculation method.  Available choices are
- <code>&quot;bromaghin&quot;</code> (default), <code>&quot;cochran&quot;</code>, and <code>agresti_cull</code>.</td></tr>
+ <code>'bromaghin'</code> (default), <code>'cochran'</code>, and <code>agresti_cull</code>.</td></tr>
 </table>
 
 <p> Note!  The <code>agresti_cull</code> method is not exactly the solution at
  reference given below but an adjustment of the solutions above.
 </p>
- <a name="Returns"></a>
+<a name="Returns"></a>
 <h3 class="subheading">Returns</h3>
+
 <p> Confidence level.
 </p>
- <a name="Example"></a>
+<a name="Example"></a>
 <h3 class="subheading">Example</h3>
+
 <p> CL = cl_multinom ([27; 43; 19; 11], 10000, 0.05)
  returns 0.69 confidence level.
 </p>
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
- <ol>
+
+<ol>
 <li>
  &quot;bromaghin&quot; calculation type (default) is based on the article:
-
 <p> Jeffrey F. Bromaghin, &quot;Sample Size Determination for Interval Estimation
  of Multinomial Probabilities&quot;, The American Statistician  vol 47, 1993,
  pp 203-206.
 </p>
- </li><li>
- &quot;cochran&quot; calculation type is based on article:
 
+</li><li>
+ &quot;cochran&quot; calculation type is based on article:
 <p> Robert T. Tortora, &quot;A Note on Sample Size Estimation for Multinomial
  Populations&quot;, The American Statistician, , Vol 32. 1978,  pp 100-102.
 </p>
- </li><li>
- &quot;agresti_cull&quot; calculation type is based on article:
 
+</li><li>
+ &quot;agresti_cull&quot; calculation type is based on article:
 <p> A. Agresti and B.A. Coull, &quot;Approximate is better than &rsquo;exact&rsquo; for
  interval estimation of binomial portions&quot;, The American Statistician,
  Vol. 52, 1998, pp 119-126
- </p></li></ol>
+</p>
 
+</li></ol>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/cl_multinom.m">cl_multinom</a>
 </div>
-
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
+          </div>
+          <div class="card-body">
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> CL = cl_multinom ([27; 43; 19; 11], 10000, 0.05)</pre>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0 0.8rem 0; border: 1px solid #e2e2e2; border-left: 4px solid #b7b7b7; border-radius: 4px; background-color: #fafafa;">CL = 0.6923</pre>
 
- CL = cl_multinom ([27; 43; 19; 11], 10000, 0.05)
-
-CL = 0.6923
-                    </pre></td></tr></tbody>
-                  </table>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

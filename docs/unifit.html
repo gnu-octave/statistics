@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -806,8 +809,8 @@
 <dt><code><h5 class="fs">statistics: [<var>paramhat</var>, <var>paramci</var>] = <b>unifit</b> (<var>x</var>, <var>alpha</var>)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>paramhat</var>, <var>paramci</var>] = <b>unifit</b> (<var>x</var>, <var>alpha</var>, <var>freq</var>)</code></h5></dt>
 </dl>
-
-<p> Estimate parameter and confidence intervals for the continuous uniform distribution.
+<p> Estimate parameter and confidence intervals for the continuous uniform
+ distribution.
 </p>
 <div class="ms-5">
 <p> <code><var>paramhat</var> = unifit (<var>x</var>)</code> returns the maximum likelihood
@@ -839,68 +842,52 @@
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/dist_fit/unifit.m">unifit</a>
 </div>
-        <div class="container-xl my-4">
-          <div class="card rounded">
-            <div class="card-header card-header-mod">
-              <div class="row d-flex flex-wrap align-items-center">
-                <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
-                  <h3 class="d-inline-block mr-2">
-                  Example: 1
-                  </h3>
-                </div>
+        <div class="card rounded my-4">
+          <div class="card-header card-header-mod">
+            <div class="row d-flex flex-wrap align-items-center">
+              <div class="col-sm-3 col-md-5 mb-2 mb-sm-0">
+                <h3 class="d-inline-block mr-2">
+                Example: 1
+                </h3>
               </div>
             </div>
-            <div class="card-body">
-              <div class="container bg-light">
-                <div class="row">
-                  <table><tbody><tr>
-                    <td>&nbsp;</td>
-                    <td><pre class="example">
-
- ## Sample 2 populations from different continuous uniform distributions
- rand ("seed", 5);    # for reproducibility
+          </div>
+          <div class="card-body">
+                <p>Sample 2 populations from different continuous uniform distributions</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> rand ('seed', 5);    # for reproducibility
  r1 = unifrnd (2, 5, 2000, 1);
- rand ("seed", 6);    # for reproducibility
+ rand ('seed', 6);    # for reproducibility
  r2 = unifrnd (3, 9, 2000, 1);
- r = [r1, r2];
-
- ## Plot them normalized and fix their colors
- hist (r, 0:0.5:10, 2);
- h = findobj (gca, "Type", "patch");
- set (h(1), "facecolor", "c");
- set (h(2), "facecolor", "g");
- hold on
-
- ## Estimate their probability of success
- a_bA = unifit (r(:,1));
- a_bB = unifit (r(:,2));
-
- ## Plot their estimated PDFs
- x = [0:10];
+ r = [r1, r2];</pre>
+                <p>Plot them normalized and fix their colors</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> hist (r, 0:0.5:10, 2);
+ h = findobj (gca, 'Type', 'patch');
+ set (h(1), 'facecolor', 'c');
+ set (h(2), 'facecolor', 'g');
+ hold on</pre>
+                <p>Estimate their probability of success</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> a_bA = unifit (r(:,1));
+ a_bB = unifit (r(:,2));</pre>
+                <p>Plot their estimated PDFs</p>
+                <pre style="overflow-x: auto; white-space: pre; padding: 0.6rem 0.8rem; margin: 0.3rem 0; border: 1px solid #cfe0e6; border-left: 4px solid #4a90a4; border-radius: 4px; background-color: #eef5f8;"> x = [0:10];
  y = unifpdf (x, a_bA(1), a_bA(2));
- plot (x, y, "-pg");
+ plot (x, y, '-pg');
  y = unifpdf (x, a_bB(1), a_bB(2));
- plot (x, y, "-sc");
+ plot (x, y, '-sc');
  xlim ([1, 10])
  ylim ([0, 0.5])
- legend ({"Normalized HIST of sample 1 with a=2 and b=5", ...
-          "Normalized HIST of sample 2 with a=3 and b=9", ...
+ legend ({'Normalized HIST of sample 1 with a=2 and b=5', ...
+          'Normalized HIST of sample 2 with a=3 and b=9', ...
           sprintf("PDF for sample 1 with estimated a=%0.2f and b=%0.2f", ...
                   a_bA(1), a_bA(2)), ...
           sprintf("PDF for sample 2 with estimated a=%0.2f and b=%0.2f", ...
                   a_bB(1), a_bB(2))})
- title ("Two population samples from different continuous uniform distributions")
- hold off
+ title ('Two population samples from different continuous uniform distributions')
+ hold off</pre>
+                <div class="text-center">
+                  <img src="assets/unifit_101.png" class="rounded img-thumbnail" alt="plotted figure">
+                </div><p></p>
 
-                    </pre></td></tr></tbody>
-                  </table>
-                  <div class="text-center">
-                    <img src="assets/unifit_101.png" class="rounded img-thumbnail" alt="plotted figure">
-                  </div><p></p>
-
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

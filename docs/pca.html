@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -807,7 +810,6 @@
 <dt><code><h5 class="fs">statistics: [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>] = <b>pca</b> (&hellip;)</code></h5></dt>
 <dt><code><h5 class="fs">statistics: [<var>coeff</var>, <var>score</var>, <var>latent</var>, <var>tsquared</var>, <var>explained</var>, <var>mu</var>] = <b>pca</b> (&hellip;)</code></h5></dt>
 </dl>
-
 <p> Performs a principal component analysis on a data matrix.
 </p>
 <div class="ms-5">
@@ -817,92 +819,96 @@
  is the direction that maximizes the variance of the projected data.
 </p>
 <p> Input argument:
- </p><ul>
+</p>
+<ul>
 <li>
  <var>x</var> : a <math>N&times;D</math> data matrix
- </li></ul>
+</li></ul>
 
 <p> The following <var>Name</var>, <var>Value</var> pair arguments can be used:
- </p><ul>
+</p>
+<ul>
 <li>
- <code>&quot;Algorithm&quot;</code> defines the algorithm to use:
- <ul>
-<li> <code>&quot;svd&quot;</code> (default), for singular value decomposition
- </li><li> <code>&quot;eig&quot;</code> for eigenvalue decomposition
- </li></ul>
+ <code>'Algorithm'</code> defines the algorithm to use:
+<ul>
+<li> <code>'svd'</code> (default), for singular value decomposition
+</li><li> <code>'eig'</code> for eigenvalue decomposition
+</li></ul>
 
- </li><li>
- <code>&quot;Centered&quot;</code> is a boolean indicator for centering the observation data.
+
+</li><li>
+ <code>'Centered'</code> is a boolean indicator for centering the observation data.
  It is <code>true</code> by default.
- </li><li>
-
- <code>&quot;Economy&quot;</code> is a boolean indicator for the economy size output.  It is
+</li><li>
+ <code>'Economy'</code> is a boolean indicator for the economy size output.  It is
  <code>true</code> by default.  Hence, <code>pca</code> returns only the elements of
  <var>latent</var> that are not necessarily zero, and the corresponding columns of
  <var>coeff</var> and <var>score</var>, that is, when <math>N &lt;= D</math>, only the first
  <math>N - 1</math>.
-
- </li><li>
- <code>&quot;NumComponents&quot;</code> defines the number of components <math>k</math> to return.
+</li><li>
+ <code>'NumComponents'</code> defines the number of components <math>k</math> to return.
  If <math>k &lt; p</math>, then only the first <math>k</math> columns of <var>coeff</var> and
  <var>score</var> are returned.
-
- </li><li>
- <code>&quot;Rows&quot;</code> defines how to handle missing values:
- <ul>
-<li> <code>&quot;complete&quot;</code> (default), missing values are removed before
+</li><li>
+ <code>'Rows'</code> defines how to handle missing values:
+<ul>
+<li> <code>'complete'</code> (default), missing values are removed before
  computation.
- </li><li> <code>&quot;pairwise&quot;</code> (only valid when <code>&quot;Algorithm&quot;</code> is
- <code>&quot;eig&quot;</code>), the covariance of rows with missing data is computed using
+</li><li> <code>'pairwise'</code> (only valid when <code>'Algorithm'</code> is
+ <code>'eig'</code>), the covariance of rows with missing data is computed using
  the available data, but the covariance matrix could be not positive definite,
  which triggers the termination of <code>pca</code>.
- </li><li> <code>&quot;complete&quot;</code>, missing values are not allowed, <code>pca</code>
+</li><li> <code>'all'</code>, missing values are not allowed, <code>pca</code>
  terminates with an error if there are any.
- </li></ul>
+</li></ul>
 
- </li><li>
- <code>&quot;Weights&quot;</code> defines observation weights as a vector of positive values
+
+</li><li>
+ <code>'Weights'</code> defines observation weights as a vector of positive values
  of length <math>N</math>.
-
- </li><li>
- <code>&quot;VariableWeights&quot;</code> defines variable weights:
- <ul>
+</li><li>
+ <code>'VariableWeights'</code> defines variable weights:
+<ul>
 <li> a <var>vector</var> of positive values of length <math>D</math>.
- </li><li> the string <code>&quot;variance&quot;</code> to use the sample variance as weights.
- </li></ul>
+</li><li> the string <code>'variance'</code> to use the sample variance as weights.
+</li></ul>
+
+
 </li></ul>
 
 <p> Return values:
- </p><ul>
+</p>
+<ul>
 <li>
  <var>coeff</var> : the principal component coefficients, a <math>D&times;D</math>
  transformation matrix
- </li><li>
+</li><li>
  <var>score</var> : the principal component scores, the representation of <var>x</var>
  in the principal component space
- </li><li>
+</li><li>
  <var>latent</var> : the principal component variances, i.e., the eigenvalues of
  the covariance matrix of <var>x</var>
- </li><li>
+</li><li>
  <var>tsquared</var> : Hotelling&rsquo;s T-squared Statistic for each observation in
  <var>x</var>
- </li><li>
+</li><li>
  <var>explained</var> : the percentage of the variance explained by each principal
  component
- </li><li>
+</li><li>
  <var>mu</var> : the estimated mean of each variable of <var>x</var>, it is zero if the
  data are not centered
- </li></ul>
+</li></ul>
 
 <p> Matlab compatibility note:  the alternating least square method &rsquo;als&rsquo; and
  associated options &rsquo;Coeff0&rsquo;, &rsquo;Score0&rsquo;, and &rsquo;Options&rsquo; are not yet implemented
 </p>
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
- <ol>
+
+<ol>
 <li>
  Jolliffe, I. T., Principal Component Analysis, 2nd Edition, Springer, 2002
- </li></ol>
+</li></ol>
 
 <p> <strong>See also: </strong>
   <a href="barttest.html">barttest</a>, 

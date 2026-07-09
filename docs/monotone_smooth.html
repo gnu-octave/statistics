@@ -601,6 +601,7 @@
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="fullfact.html" class="text-decoration-none font-monospace"><small>fullfact</small></a></li>
 					<li><a href="ff2n.html" class="text-decoration-none font-monospace"><small>ff2n</small></a></li>
+					<li><a href="parseWilkinsonFormula.html" class="text-decoration-none font-monospace"><small>parseWilkinsonFormula</small></a></li>
 					<li><a href="sigma_pts.html" class="text-decoration-none font-monospace"><small>sigma_pts</small></a></li>
 					<li><a href="x2fx.html" class="text-decoration-none font-monospace"><small>x2fx</small></a></li>
 				</ul>
@@ -640,6 +641,7 @@
 					<li><a href="fitgmdist.html" class="text-decoration-none font-monospace"><small>fitgmdist</small></a></li>
 					<li><a href="fitlm.html" class="text-decoration-none font-monospace"><small>fitlm</small></a></li>
 					<li><a href="fitrgam.html" class="text-decoration-none font-monospace"><small>fitrgam</small></a></li>
+					<li><a href="LinearModel.html" class="text-decoration-none font-monospace"><small>LinearModel</small></a></li>
 				</ul>
 				</div>
 			</div>
@@ -652,6 +654,7 @@
 				<div class="list">
 				<ul style="list-style-type: none; padding-left: 20px;">
 					<li><a href="adtest.html" class="text-decoration-none font-monospace"><small>adtest</small></a></li>
+					<li><a href="anova.html" class="text-decoration-none font-monospace"><small>anova</small></a></li>
 					<li><a href="anova1.html" class="text-decoration-none font-monospace"><small>anova1</small></a></li>
 					<li><a href="anova2.html" class="text-decoration-none font-monospace"><small>anova2</small></a></li>
 					<li><a href="anovan.html" class="text-decoration-none font-monospace"><small>anovan</small></a></li>
@@ -803,7 +806,6 @@
 <dl>
 <dt><code><h5 class="fs">statistics: <var>yy</var> = <b>monotone_smooth</b> (<var>x</var>, <var>y</var>, <var>h</var>)</code></h5></dt>
 </dl>
-
 <p> Produce a smooth monotone increasing approximation to a sampled functional
  dependence.
 </p>
@@ -812,65 +814,60 @@
  this is integrated to yield the monotone increasing form.  See Reference 1
  for details.)
 </p>
- <a name="Arguments"></a>
+<a name="Arguments"></a>
 <h3 class="subheading">Arguments</h3>
 
- <ul>
+<ul>
 <li>
  <var>x</var> is a vector of values of the independent variable.
-
- </li><li>
+</li><li>
  <var>y</var> is a vector of values of the dependent variable, of the same size as
  <var>x</var>. For best performance, it is recommended that the <var>y</var> already be
  fairly smooth, e.g. by applying a kernel smoothing to the original values if
  they are noisy.
-
- </li><li>
+</li><li>
  <var>h</var> is the kernel bandwidth to use. If <var>h</var> is not given,
  a &quot;reasonable&quot; value is computed.
-
 </li></ul>
 
- <a name="Return-values"></a>
+<a name="Return-values"></a>
 <h3 class="subheading">Return values</h3>
 
- <ul>
+<ul>
 <li>
  <var>yy</var> is the vector of smooth monotone increasing function values at
  <var>x</var>.
-
 </li></ul>
 
- <a name="Examples"></a>
+<a name="Examples"></a>
 <h3 class="subheading">Examples</h3>
 
- <table><tr><td>&nbsp;</td><td><pre class="example"> </pre><pre class="example"> x = 0:0.1:10;
+<table><tr><td>&nbsp;</td><td><pre class="example"> x = 0:0.1:10;
  y = (x .^ 2) + 3 * randn(size(x)); # typically non-monotonic from the added
  noise
  ys = ([y(1) y(1:(end-1))] + y + [y(2:end) y(end)])/3; # crudely smoothed via
  moving average, but still typically non-monotonic
  yy = monotone_smooth(x, ys); # yy is monotone increasing in x
  plot(x, y, '+', x, ys, x, yy)
- </pre><pre class="example"> </pre></td></tr></table>
+</pre></td></tr></table>
 
- <a name="References"></a>
+<a name="References"></a>
 <h3 class="subheading">References</h3>
 
- <ol>
+<ol>
 <li>
  Holger Dette, Natalie Neumeyer and Kay F. Pilz (2006), A simple nonparametric
  estimator of a strictly monotone regression function, <cite>Bernoulli</cite>,
  12:469-490
- </li><li>
+</li><li>
  Regine Scheder (2007), R Package &rsquo;monoProc&rsquo;, Version 1.0-6,
  <a href="http://cran.r-project.org/web/packages/monoProc/monoProc.pdf">http://cran.r-project.org/web/packages/monoProc/monoProc.pdf</a> (The
  implementation here is based on the monoProc function mono.1d)
- </li></ol>
+</li></ol>
 
 <p><strong>Source Code: </strong>
   <a href="https://github.com/gnu-octave/statistics/tree/main/inst/monotone_smooth.m">monotone_smooth</a>
 </div>
-
 
             </div>
           </div>
