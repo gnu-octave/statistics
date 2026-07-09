@@ -191,8 +191,12 @@
  Improvements:
  =============
 
+ ** anova1: add support for categorical arrays as grouping variables
+
  ** fitlm: now returns a LinearModel object; the previous
            `[TAB, STATS] = fitlm (...)` output form is no longer supported
+
+ ** glmfit: fix a variable error (GitHub PR #440)
 
  ** parseWilkinsonFormula: fix power-term resolution from a base table column
 
