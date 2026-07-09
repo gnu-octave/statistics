@@ -31,6 +31,7 @@ if ! ls src/*.oct >/dev/null 2>&1; then
 fi
 
 "$OCTAVE" --no-gui -q --eval "
+  crash_dumps_octave_core (false);   ## no octave-workspace dump if interrupted
   pkg load datatypes;
   addpath (genpath (fullfile (pwd, 'inst')));
 
