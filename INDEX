@@ -247,6 +247,7 @@ Model Fitting
  LinearModel
 Hypothesis Testing
  adtest
+ anova
  anova1
  anova2
  anovan
