@@ -1173,9 +1173,7 @@ endclassdef
 
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
-## fit_(): one-way fixture (anova1 backend; falls back to anovan on
-## Octave 10.3 where iscategorical is missing — both paths populate
-## the unified result surface)
+## fit_(): one-way fixture populates the unified result surface
 %!test
 %! y = [1; 2; 3; 4; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
