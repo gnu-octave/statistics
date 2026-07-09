@@ -1022,7 +1022,11 @@ classdef anova < handle
     function atab = linearModelAtab_ (obj, mdl)
       has_intercept = isfield (mdl.Formula, 'HasIntercept') ...
                       && mdl.Formula.HasIntercept;
-      df_model = mdl.NumEstimatedCoefficients - double (has_intercept);
+      intercept_df = 0;
+      if (has_intercept)
+        intercept_df = 1;
+      endif
+      df_model = mdl.NumEstimatedCoefficients - intercept_df;
       df_model = max (df_model, 0);
       if (df_model > 0)
         ms_model = mdl.SSR / df_model;
@@ -1033,7 +1037,7 @@ classdef anova < handle
               'Model', mdl.SSR, df_model, ms_model, ...
               mdl.ModelFitVsNullModel.Fstat, mdl.ModelFitVsNullModel.Pvalue; ...
               'Error', mdl.SSE, mdl.DFE, mdl.MSE, '', ''; ...
-              'Total', mdl.SST, mdl.NumObservations - double (has_intercept), ...
+              'Total', mdl.SST, mdl.NumObservations - intercept_df, ...
               '', '', ''};
     endfunction
 
@@ -1056,7 +1060,11 @@ classdef anova < handle
       partial_eta = mdl.SSR / max (mdl.SSR + mdl.SSE, eps);
       has_intercept = isfield (mdl.Formula, 'HasIntercept') ...
                       && mdl.Formula.HasIntercept;
-      df_model = max (mdl.NumEstimatedCoefficients - double (has_intercept), 0);
+      intercept_df = 0;
+      if (has_intercept)
+        intercept_df = 1;
+      endif
+      df_model = max (mdl.NumEstimatedCoefficients - intercept_df, 0);
       omega = (mdl.SSR - df_model * mdl.MSE) / max (mdl.SST + mdl.MSE, eps);
       es = struct ();
       es.Source = {'Model'};
