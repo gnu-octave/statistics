@@ -168,3 +168,31 @@
 
  ** RegressionGAM.predict: correct ySD computation using residual variance
 
+
+ Summary of important user-visible changes for statistics 1.8.4:
+-------------------------------------------------------------------
+
+ Important Notice: 1) Update dependency to datatypes 1.2.6
+                   2) Incompatibility with the `nan` package
+                   3) Using `tablicious` as a drop in replacement
+                      for `datatypes` might cause issues.
+
+
+ New functions:
+ ==============
+
+ ** LinearModel: object-oriented linear regression model class,
+                 returned by `fitlm`
+
+ ** anova: object-oriented interface for analysis of variance,
+           built on `anova1`, `anova2`, and `anovan` with a
+           MATLAB-compatible object API
+
+ Improvements:
+ =============
+
+ ** fitlm: now returns a LinearModel object; the previous
+           `[TAB, STATS] = fitlm (...)` output form is no longer supported
+
+ ** parseWilkinsonFormula: fix power-term resolution from a base table column
+
