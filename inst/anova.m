@@ -39,31 +39,221 @@ classdef anova < handle
 
   properties (GetAccess = public, SetAccess = private)
     ## Data
-    Y                                       ## Response (vector or matrix)
-    GROUP                                   ## Grouping variables
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Y
+    ##
+    ## Response data
+    ##
+    ## Numeric response vector or matrix used to fit the ANOVA model.  This
+    ## property is read-only.
+    ##
+    ## @end deftp
+    Y
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} GROUP
+    ##
+    ## Grouping variables
+    ##
+    ## Group labels or predictor variables associated with the response data.
+    ## This property is read-only.
+    ##
+    ## @end deftp
+    GROUP
 
     ## Results (populated after fit; empty until then)
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Coefficients
+    ##
+    ## Model coefficient estimates
+    ##
+    ## Numeric coefficient table returned by the fitted @code{anovan} backend,
+    ## or derived from a @code{LinearModel} object.  This property is read-only.
+    ##
+    ## @end deftp
     Coefficients   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} AnovaTable
+    ##
+    ## ANOVA table
+    ##
+    ## Cell array containing the fitted ANOVA table returned by the selected
+    ## backend.  This property is read-only.
+    ##
+    ## @end deftp
     AnovaTable     = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Residuals
+    ##
+    ## Model residuals
+    ##
+    ## Numeric vector of observed minus fitted values when the selected backend
+    ## exposes residuals.  This property is read-only.
+    ##
+    ## @end deftp
     Residuals      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} FittedValues
+    ##
+    ## Fitted response values
+    ##
+    ## Numeric vector of fitted values for the training data when available.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     FittedValues   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} DFE
+    ##
+    ## Error degrees of freedom
+    ##
+    ## Scalar degrees of freedom for the residual error term.  This property is
+    ## read-only.
+    ##
+    ## @end deftp
     DFE            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} MSE
+    ##
+    ## Mean squared error
+    ##
+    ## Scalar mean squared error estimate for the fitted model.  This property
+    ## is read-only.
+    ##
+    ## @end deftp
     MSE            = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} DesignMatrix
+    ##
+    ## Design matrix
+    ##
+    ## Numeric model matrix used by the @code{anovan} backend when available.
+    ## This property is read-only.
+    ##
+    ## @end deftp
     DesignMatrix   = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Stats
+    ##
+    ## Backend statistics
+    ##
+    ## Structure returned by the selected backend and used by post-hoc methods
+    ## such as @code{multcompare}.  This property is read-only.
+    ##
+    ## @end deftp
     Stats          = struct ();
   endproperties
 
   properties (Access = public)
     ## Model specification (mutations will trigger lazy refit in Week 2+)
-    ModelType   = 'linear';                 ## model name or terms matrix
-    SSType      = 3;                        ## 1, 2, or 3
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} ModelType
+    ##
+    ## ANOVA model specification
+    ##
+    ## Model name, interaction order, or terms matrix passed to
+    ## @code{anovan}.  Valid model names are @qcode{'linear'},
+    ## @qcode{'interaction'}, and @qcode{'full'}.
+    ##
+    ## @end deftp
+    ModelType   = 'linear';
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} SSType
+    ##
+    ## Sum-of-squares type
+    ##
+    ## Scalar value @code{1}, @code{2}, or @code{3} selecting Type I, Type II,
+    ## or Type III sums of squares.
+    ##
+    ## @end deftp
+    SSType      = 3;
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} VarNames
+    ##
+    ## Factor names
+    ##
+    ## Cell array of character vectors used as factor names in the fitted
+    ## ANOVA table.
+    ##
+    ## @end deftp
     VarNames    = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Contrasts
+    ##
+    ## Factor contrasts
+    ##
+    ## Contrast specification passed through to the @code{anovan} backend.
+    ##
+    ## @end deftp
     Contrasts   = {};
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Alpha
+    ##
+    ## Significance level
+    ##
+    ## Scalar value in the open interval @math{(0, 1)} used for confidence
+    ## intervals and post-hoc comparisons.
+    ##
+    ## @end deftp
     Alpha       = 0.05;
-    Continuous  = [];                       ## indices of continuous predictors
-    Random      = [];                       ## indices of random factors
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Continuous
+    ##
+    ## Continuous predictors
+    ##
+    ## Positive integer indices of grouping variables that should be treated as
+    ## continuous predictors by @code{anovan}.
+    ##
+    ## @end deftp
+    Continuous  = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Random
+    ##
+    ## Random factors
+    ##
+    ## Positive integer indices of grouping variables that should be treated as
+    ## random factors by @code{anovan}.
+    ##
+    ## @end deftp
+    Random      = [];
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Weights
+    ##
+    ## Observation weights
+    ##
+    ## Numeric vector of observation weights passed through to
+    ## @code{anovan}.
+    ##
+    ## @end deftp
     Weights     = [];
-    Display     = 'off';                    ## 'on' or 'off'
+
+    ## -*- texinfo -*-
+    ## @deftp {anova} {property} Display
+    ##
+    ## Backend display option
+    ##
+    ## Character vector @qcode{'on'} or @qcode{'off'} controlling whether the
+    ## selected backend prints or plots its default output.
+    ##
+    ## @end deftp
+    Display     = 'off';
   endproperties
 
   properties (Access = private)
@@ -966,17 +1156,17 @@ endclassdef
 %! y = [1; 2; 3; 4; 5; 6];
 %! g = [1; 1; 2; 2; 3; 3];
 %! a = anova (y, g);
-%! assert (class (a), "anova");
-%! assert (a.Y, y);
-%! assert (a.GROUP, g);
+%! assert_equal (class (a), "anova");
+%! assert_equal (a.Y, y);
+%! assert_equal (a.GROUP, g);
 
 ## Basic construction: matrix Y, no GROUP
 %!test
 %! y = magic (4);
 %! a = anova (y);
-%! assert (class (a), "anova");
-%! assert (a.Y, y);
-%! assert (isempty (a.GROUP));
+%! assert_equal (class (a), "anova");
+%! assert_equal (a.Y, y);
+%! assert_equal (a.GROUP, []);
 
 ## Basic construction: cell of two grouping vectors
 %!test
@@ -984,31 +1174,31 @@ endclassdef
 %! g1 = repmat ([1;2;3], 4, 1);
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova (y, {g1, g2});
-%! assert (class (a), "anova");
+%! assert_equal (class (a), "anova");
 %! assert (! isempty (strfind (evalc ("disp (a)"), "nFactors : 2")));
 
 ## Property defaults
 %!test
 %! a = anova ([1;2;3;4], [1;1;2;2]);
-%! assert (a.ModelType, 'linear');
-%! assert (a.SSType, 3);
-%! assert (a.Alpha, 0.05);
-%! assert (a.Display, 'off');
-%! assert (isequal (a.VarNames, {}));
-%! assert (isequal (a.Contrasts, {}));
-%! assert (isempty (a.Continuous));
-%! assert (isempty (a.Random));
-%! assert (isempty (a.Weights));
+%! assert_equal (a.ModelType, 'linear');
+%! assert_equal (a.SSType, 3);
+%! assert_equal (a.Alpha, 0.05);
+%! assert_equal (a.Display, 'off');
+%! assert_equal (a.VarNames, {});
+%! assert_equal (a.Contrasts, {});
+%! assert_equal (a.Continuous, []);
+%! assert_equal (a.Random, []);
+%! assert_equal (a.Weights, []);
 
 ## Result properties stay empty before fit
 %!test
 %! a = anova ([1;2;3;4], [1;1;2;2]);
-%! assert (isempty (a.Coefficients));
-%! assert (isempty (a.Residuals));
-%! assert (isempty (a.FittedValues));
-%! assert (isempty (a.DFE));
-%! assert (isempty (a.MSE));
-%! assert (isempty (a.DesignMatrix));
+%! assert_equal (a.Coefficients, []);
+%! assert_equal (a.Residuals, []);
+%! assert_equal (a.FittedValues, []);
+%! assert_equal (a.DFE, []);
+%! assert_equal (a.MSE, []);
+%! assert_equal (a.DesignMatrix, []);
 
 ## Name-value parsing: SSType, ModelType, Alpha, Display
 %!test
@@ -1017,16 +1207,16 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova (y, {g1, g2}, 'SSType', 2, 'Model', 'full', ...
 %!            'Alpha', 0.01, 'Display', 'on');
-%! assert (a.SSType, 2);
-%! assert (a.ModelType, 'full');
-%! assert (a.Alpha, 0.01);
-%! assert (a.Display, 'on');
+%! assert_equal (a.SSType, 2);
+%! assert_equal (a.ModelType, 'full');
+%! assert_equal (a.Alpha, 0.01);
+%! assert_equal (a.Display, 'on');
 
 ## Name-value parsing: case-insensitive names, displayopt alias
 %!test
 %! a = anova ([1;2;3;4], [1;1;2;2], 'sstype', 1, 'displayopt', 'on');
-%! assert (a.SSType, 1);
-%! assert (a.Display, 'on');
+%! assert_equal (a.SSType, 1);
+%! assert_equal (a.Display, 'on');
 
 ## Backend selection: one-way default -> anova1
 %!test
@@ -1094,83 +1284,6 @@ endclassdef
 %! a = anova ([1;2;3;4;5;6], [1;1;2;2;3;3], 'Weights', ones (6, 1));
 %! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
 
-## Invalid input: no args
-%!error <anova: too few input arguments.> anova ()
-
-## Invalid input: non-numeric Y
-%!error <anova: Y must be a non-empty numeric array.> anova ('abc')
-
-## Invalid input: empty Y
-%!error <anova: Y must be a non-empty numeric array.> anova ([])
-
-## Invalid input: odd number of name-value arguments
-%!error <anova: name-value pairs must come in pairs.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'SSType')
-
-## Invalid input: unknown parameter name
-%!error <anova: parameter 'bogus' is not supported.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'bogus', 1)
-
-## Invalid input: SSType out of range
-%!error <anova: SSType must be 1, 2, or 3.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'SSType', 5)
-
-## Invalid input: Alpha out of range
-%!error <anova: Alpha must be a numeric scalar in .0, 1..> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Alpha', 2)
-
-## Invalid input: bad Display value
-%!error <anova: Display must be 'on' or 'off'.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Display', 'maybe')
-
-## Invalid input: parameter name must be a string
-%!error <anova: parameter name must be a character vector.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 1, 2)
-
-## Invalid input: bad Reps value
-%!error <anova: Reps must be a positive integer scalar.> ...
-%!  anova (magic (4), [], 'reps', -2)
-
-## Invalid input: non-integer Reps value
-%!error <anova: Reps must be a positive integer scalar.> ...
-%!  anova (magic (4), [], 'reps', 1.5)
-
-## Invalid input: bad ModelType
-%!error <anova: ModelType must be> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Model', 'quadratic')
-
-## Invalid input: terms matrix width must match factor count
-%!error <anova: terms matrix must have one column per factor.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Model', [1 0])
-
-## Invalid input: GROUP length mismatch
-%!error <anova: GROUP must match the number of observations.> ...
-%!  anova ([1;2;3;4], [1;1;2])
-
-## Invalid input: cell GROUP variable length mismatch
-%!error <anova: GROUP variables must match the number of observations.> ...
-%!  anova ([1;2;3;4], {[1;1;2], [1;2;1;2]})
-
-## Invalid input: Weights length mismatch
-%!error <anova: Weights must have one value per observation.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Weights', [1;1;1])
-
-## Invalid input: Continuous indices must be positive integers
-%!error <anova: Continuous must contain positive integer indices.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 1.5)
-
-## Invalid input: Continuous index out of range
-%!error <anova: Continuous indices exceed the number of factors.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 2)
-
-## Invalid input: Random indices must be positive integers
-%!error <anova: Random must contain positive integer indices.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 0)
-
-## Invalid input: Random index out of range
-%!error <anova: Random indices exceed the number of factors.> ...
-%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 2)
-
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
 ## fit_(): one-way fixture populates the unified result surface
@@ -1193,7 +1306,7 @@ endclassdef
 %! a.fit ();
 %! assert (! isempty (a.AnovaTable));
 %! assert (isfield (a.Stats, 'sigmasq'));
-%! assert (a.MSE, a.Stats.sigmasq);
+%! assert_equal (a.MSE, a.Stats.sigmasq);
 
 ## fit_(): N-way fixture (anovan backend, three factors)
 %!test
@@ -1208,7 +1321,7 @@ endclassdef
 %! assert (! isempty (a.Coefficients));
 %! assert (! isempty (a.Residuals));
 %! assert (! isempty (a.DesignMatrix));
-%! assert (rows (a.Residuals), numel (y));
+%! assert_equal (rows (a.Residuals), numel (y));
 
 ## fit_(): FittedValues = DesignMatrix * Coefficients(:,1) for anovan
 %!test
@@ -1216,8 +1329,8 @@ endclassdef
 %! g  = [1;1;1;2;2;2;3;3;3];
 %! a  = anova (y, g, 'SSType', 2);
 %! a.fit ();
-%! assert (numel (a.FittedValues), numel (y));
-%! assert (a.FittedValues + a.Residuals, y, 1e-9);
+%! assert_equal (numel (a.FittedValues), numel (y));
+%! assert_equal (a.FittedValues + a.Residuals, y, 1e-9);
 
 ## ensureFit_(): fit() is idempotent (second call does nothing)
 %!test
@@ -1225,7 +1338,7 @@ endclassdef
 %! a.fit ();
 %! first_table = a.AnovaTable;
 %! a.fit ();
-%! assert (isequal (a.AnovaTable, first_table));
+%! assert_equal (a.AnovaTable, first_table);
 
 ## buildAnovanArgs_(): SSType and Alpha are forwarded to anovan
 %!test
@@ -1234,7 +1347,7 @@ endclassdef
 %! a = anova (y, {g}, 'SSType', 2, 'Alpha', 0.10);
 %! a.fit ();
 %! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : anovan")));
-%! assert (a.Stats.alpha, 0.10, 1e-12);
+%! assert_equal (a.Stats.alpha, 0.10, 1e-12);
 
 ## --- Numeric references -------------------------------------------------
 
@@ -1245,35 +1358,35 @@ endclassdef
 %! a = anova (y, g, 'SSType', 2);
 %! a.fit ();
 %! T = a.AnovaTable;
-%! assert (T{2, 2}, 126, 1e-12);       # group SS
-%! assert (T{3, 2}, 6, 1e-12);         # error SS
-%! assert (T{4, 2}, 132, 1e-12);       # total SS
-%! assert (T{2, 3}, 2);
-%! assert (T{3, 3}, 6);
-%! assert (T{2, 4}, 63, 1e-12);
-%! assert (T{3, 4}, 1, 1e-12);
-%! assert (T{2, 6}, 63, 1e-12);
-%! assert (T{2, 7}, 9.3914e-05, 1e-9);
-%! assert (a.MSE, 1, 1e-12);
-%! assert (a.DFE, 6);
+%! assert_equal (T{2, 2}, 126, 1e-12);       # group SS
+%! assert_equal (T{3, 2}, 6, 1e-12);         # error SS
+%! assert_equal (T{4, 2}, 132, 1e-12);       # total SS
+%! assert_equal (T{2, 3}, 2);
+%! assert_equal (T{3, 3}, 6);
+%! assert_equal (T{2, 4}, 63, 1e-12);
+%! assert_equal (T{3, 4}, 1, 1e-12);
+%! assert_equal (T{2, 6}, 63, 1e-12);
+%! assert_equal (T{2, 7}, 9.3914e-05, 1e-9);
+%! assert_equal (a.MSE, 1, 1e-12);
+%! assert_equal (a.DFE, 6);
 
 ## Fitted values and residuals: reference values from one-way cell means.
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (y, g, 'SSType', 2);
-%! assert (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
-%! assert (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
+%! assert_equal (predict (a), [2; 2; 2; 5; 5; 5; 11; 11; 11], 1e-12);
+%! assert_equal (a.Residuals, [-1; 0; 1; -1; 0; 1; -1; 0; 1], 1e-12);
 
 ## Effect sizes: reference formulas eta2=SS/SST and omega2=(SS-df*MSE)/(SST+MSE).
 %!test
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! es = getEffectSizes (anova (y, g, 'SSType', 2));
-%! assert (es.Source, {'X1'});
-%! assert (es.EtaSquared, 126 / 132, 1e-12);
-%! assert (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
-%! assert (es.OmegaSquared, 124 / 133, 1e-12);
+%! assert_equal (es.Source, {'X1'});
+%! assert_equal (es.EtaSquared, 126 / 132, 1e-12);
+%! assert_equal (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
+%! assert_equal (es.OmegaSquared, 124 / 133, 1e-12);
 
 ## Two-way balanced ANOVA: popcorn values match the anova2 documentation example.
 %!test
@@ -1282,13 +1395,13 @@ endclassdef
 %! a = anova (popcorn, [], 'reps', 3);
 %! a.fit ();
 %! T = a.AnovaTable;
-%! assert (T{2, 2}, 15.75, 1e-12);
-%! assert (T{3, 2}, 4.5, 1e-12);
-%! assert (T{4, 2}, 1.75, 1e-12);
-%! assert (T{5, 2}, 22, 1e-12);
-%! assert (T{2, 5}, 63, 1e-12);
-%! assert (T{3, 5}, 36, 1e-12);
-%! assert (a.MSE, 0.125, 1e-12);
+%! assert_equal (T{2, 2}, 15.75, 1e-12);
+%! assert_equal (T{3, 2}, 4.5, 1e-12);
+%! assert_equal (T{4, 2}, 1.75, 1e-12);
+%! assert_equal (T{5, 2}, 22, 1e-12);
+%! assert_equal (T{2, 5}, 63, 1e-12);
+%! assert_equal (T{3, 5}, 36, 1e-12);
+%! assert_equal (a.MSE, 0.125, 1e-12);
 
 ## Post-hoc comparisons: reference values checked against R's TukeyHSD output.
 %!test
@@ -1296,11 +1409,11 @@ endclassdef
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! a = anova (y, g, 'SSType', 2);
 %! C = multcompare (a, 'display', 'off');
-%! assert (C(:, 1:2), [1 2; 1 3; 2 3]);
-%! assert (C(:, 4), [-3; -9; -6], 1e-12);
-%! assert (C(1, 6), 0.010402, 1e-6);
-%! assert (C(2, 6), 9.9474e-05, 1e-9);
-%! assert (C(3, 6), 0.00064995, 1e-8);
+%! assert_equal (C(:, 1:2), [1 2; 1 3; 2 3]);
+%! assert_equal (C(:, 4), [-3; -9; -6], 1e-12);
+%! assert_equal (C(1, 6), 0.010402, 1e-6);
+%! assert_equal (C(2, 6), 9.9474e-05, 1e-9);
+%! assert_equal (C(3, 6), 0.00064995, 1e-8);
 
 ## --- Week 3: summary / disp ---------------------------------------------
 
@@ -1341,7 +1454,7 @@ endclassdef
 %! a = anova (y, g, 'SSType', 2);
 %! C = multcompare (a, 'display', 'off');
 %! assert (! isempty (C));
-%! assert (size (C, 1), 3);              ## 3 pairwise comparisons for 3 groups
+%! assert_equal (size (C, 1), 3);        ## 3 pairwise comparisons for 3 groups
 %! assert (size (C, 2) >= 6);            ## at least i,j,diff,lo,hi,p
 
 ## multcompare(): two-way balanced via anova2 backend
@@ -1370,29 +1483,11 @@ endclassdef
 %!   a = anova (y, g, 'SSType', 2);
 %!   h = plotDiagnostics (a, 'Visible', 'off');
 %!   assert (ishghandle (h));
-%!   assert (numel (findall (h, 'type', 'axes')), 4);
+%!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
 %! unwind_protect_cleanup
 %!   close (h);
 %!   close (hf);
 %! end_unwind_protect
-
-## plotDiagnostics(): fast-path backends report the missing diagnostics
-%!error <diagnostic plots require>
-%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
-%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
-%! plotDiagnostics (anova (popcorn, [], 'reps', 3));
-
-## plotDiagnostics(): rejects odd name-value arguments
-%!error <name-value pairs must come in pairs>
-%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
-%! g = [1;1;1;2;2;2;3;3;3];
-%! plotDiagnostics (anova (y, g, 'SSType', 2), 'Visible');
-
-## plotDiagnostics(): rejects unknown options
-%!error <unknown option>
-%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
-%! g = [1;1;1;2;2;2;3;3;3];
-%! plotDiagnostics (anova (y, g, 'SSType', 2), 'BadOption', true);
 
 ## --- Week 6: predict / effect sizes / LinearModel bridge ----------------
 
@@ -1401,7 +1496,7 @@ endclassdef
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
 %! a = anova (y, g, 'SSType', 2);
-%! assert (predict (a), a.FittedValues, 1e-9);
+%! assert_equal (predict (a), a.FittedValues, 1e-9);
 
 ## predict(): accepts an explicit design matrix for anovan-backed fits
 %!test
@@ -1409,13 +1504,7 @@ endclassdef
 %! g = [1;1;1;2;2;2;3;3;3];
 %! a = anova (y, g, 'SSType', 2);
 %! a.fit ();
-%! assert (predict (a, full (a.DesignMatrix)), a.FittedValues, 1e-9);
-
-## predict(): rejects design matrices with the wrong width
-%!error <Xnew must be a numeric design matrix>
-%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
-%! g = [1;1;1;2;2;2;3;3;3];
-%! predict (anova (y, g, 'SSType', 2), ones (2, 2));
+%! assert_equal (predict (a, full (a.DesignMatrix)), a.FittedValues, 1e-9);
 
 ## getEffectSizes(): anovan-backed fits report effect-size vectors
 %!test
@@ -1424,7 +1513,7 @@ endclassdef
 %! a = anova (y, g, 'SSType', 2);
 %! es = getEffectSizes (a);
 %! assert (iscell (es.Source));
-%! assert (numel (es.EtaSquared), numel (es.Source));
+%! assert_equal (numel (es.EtaSquared), numel (es.Source));
 %! assert (all (isfinite (es.PartialEtaSquared)));
 
 ## anova(LinearModel): builds from Avanish's LinearModel surface
@@ -1435,10 +1524,10 @@ endclassdef
 %! a = anova (mdl);
 %! assert (! isempty (strfind (evalc ("disp (a)"), "backend  : linearmodel")));
 %! assert (! isempty (a.AnovaTable));
-%! assert (predict (a), mdl.Fitted, 1e-9);
+%! assert_equal (predict (a), mdl.Fitted, 1e-9);
 %! es = getEffectSizes (a);
-%! assert (es.Source, {'Model'});
-%! assert (es.EtaSquared, mdl.SSR / mdl.SST, 1e-9);
+%! assert_equal (es.Source, {'Model'});
+%! assert_equal (es.EtaSquared, mdl.SSR / mdl.SST, 1e-9);
 
 ## anova(LinearModel): plotDiagnostics uses LinearModel diagnostics
 %!test
@@ -1449,7 +1538,86 @@ endclassdef
 %! h = plotDiagnostics (a, 'Visible', 'off');
 %! unwind_protect
 %!   assert (ishghandle (h));
-%!   assert (numel (findall (h, 'type', 'axes')), 4);
+%!   assert_equal (numel (findall (h, 'type', 'axes')), 4);
 %! unwind_protect_cleanup
 %!   close (h);
 %! end_unwind_protect
+
+## --- Input validation ---------------------------------------------------
+
+%!error <anova: too few input arguments.> anova ()
+
+%!error <anova: Y must be a non-empty numeric array.> anova ('abc')
+
+%!error <anova: Y must be a non-empty numeric array.> anova ([])
+
+%!error <anova: name-value pairs must come in pairs.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'SSType')
+
+%!error <anova: parameter 'bogus' is not supported.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'bogus', 1)
+
+%!error <anova: SSType must be 1, 2, or 3.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'SSType', 5)
+
+%!error <anova: Alpha must be a numeric scalar in .0, 1..> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Alpha', 2)
+
+%!error <anova: Display must be 'on' or 'off'.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Display', 'maybe')
+
+%!error <anova: parameter name must be a character vector.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 1, 2)
+
+%!error <anova: Reps must be a positive integer scalar.> ...
+%!  anova (magic (4), [], 'reps', -2)
+
+%!error <anova: Reps must be a positive integer scalar.> ...
+%!  anova (magic (4), [], 'reps', 1.5)
+
+%!error <anova: ModelType must be> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Model', 'quadratic')
+
+%!error <anova: terms matrix must have one column per factor.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Model', [1 0])
+
+%!error <anova: GROUP must match the number of observations.> ...
+%!  anova ([1;2;3;4], [1;1;2])
+
+%!error <anova: GROUP variables must match the number of observations.> ...
+%!  anova ([1;2;3;4], {[1;1;2], [1;2;1;2]})
+
+%!error <anova: Weights must have one value per observation.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Weights', [1;1;1])
+
+%!error <anova: Continuous must contain positive integer indices.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 1.5)
+
+%!error <anova: Continuous indices exceed the number of factors.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Continuous', 2)
+
+%!error <anova: Random must contain positive integer indices.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 0)
+
+%!error <anova: Random indices exceed the number of factors.> ...
+%!  anova ([1;2;3;4], [1;1;2;2], 'Random', 2)
+
+%!error <diagnostic plots require>
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! plotDiagnostics (anova (popcorn, [], 'reps', 3));
+
+%!error <name-value pairs must come in pairs>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! plotDiagnostics (anova (y, g, 'SSType', 2), 'Visible');
+
+%!error <unknown option>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! plotDiagnostics (anova (y, g, 'SSType', 2), 'BadOption', true);
+
+%!error <Xnew must be a numeric design matrix>
+%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! g = [1;1;1;2;2;2;3;3;3];
+%! predict (anova (y, g, 'SSType', 2), ones (2, 2));
