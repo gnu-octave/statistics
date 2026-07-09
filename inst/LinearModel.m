@@ -5793,12 +5793,9 @@ endfunction
 %! assert_equal (m.Residuals.Raw, y - m.Fitted, 1e-10);
 
 %!test
-%! warning ('off', 'all');
-%! lastwarn ('');
+%! ws = warning ('off', 'all');
 %! m = removeTerms (mdl, 'x1:x2');
-%! wmsg = lastwarn ();
-%! warning ('on', 'all');
-%! assert_equal (! isempty (strfind (wmsg, 'No specified terms appear in the model')), true);
+%! warning (ws);
 %! assert_equal (m.NumCoefficients, mdl.NumCoefficients);
 %! assert_equal (m.NumEstimatedCoefficients, mdl.NumEstimatedCoefficients);
 %! assert_equal (m.DFE, mdl.DFE);
@@ -7231,6 +7228,12 @@ endfunction
 %! [ypredr2, ycir2] = predict (mdlr, Xnewr, 'Simultaneous', true, 'Alpha', 0.1);
 %! assert_equal (ypredr2, 95.4263340097424, 1e-7);
 %! assert_equal (ycir2, [92.7161333049321, 98.1365347145527], 1e-6);
+
+%!warning<addTerms: There are no new terms among the terms you specified.> ...
+%! m = addTerms (mdl, 'x1');
+
+%!warning<removeTerms: No specified terms appear in the model.> ...
+%! m = removeTerms (mdl, 'x1:x2');
 
 %!error <Unknown option 'NotAKey'> fitlm (X, y, 'NotAKey', 1)
 %!error <VarNames must have 3 elements> fitlm (X, y, 'VarNames', {'a','b','c','d'})
