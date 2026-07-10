@@ -267,6 +267,7 @@ Hypothesis Testing
  kstest
  kstest2
  levene_test
+ lillietest
  manova1
  mcnemar_test
  multcompare

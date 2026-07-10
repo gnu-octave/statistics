@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 145
+# columns: 146
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11088,6 +11088,73 @@ dwtest
 # elements: 1
 # length: 70
 Durbin-Watson test for autocorrelation in linear regression residuals.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+lillietest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2370
+ -- statistics: H = lillietest (X)
+ -- statistics: H = lillietest (X, NAME, VALUE)
+ -- statistics: [H, P] = lillietest (...)
+ -- statistics: [H, P, KSTAT, CRITVAL] = lillietest (...)
+
+     Lilliefors goodness-of-fit hypothesis test.
+
+     ‘H = lillietest (X)’ tests the null hypothesis that the sample in the
+     vector X comes from a normal distribution with unknown mean and variance,
+     against the alternative that it does not, using the Lilliefors test.  H is
+     1 if the test rejects the null at the 5% significance level and 0
+     otherwise.
+
+     The Lilliefors statistic is the Kolmogorov-Smirnov statistic -- the maximum
+     absolute difference between the empirical cumulative distribution function
+     of X and the cumulative distribution function of the hypothesized family
+     with parameters estimated from X.  Because the parameters are estimated,
+     the null distribution of the statistic differs from that of the ordinary
+     Kolmogorov-Smirnov test.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Distribution' The hypothesized family: 'normal' (default), 'exponential', or
+                    'extreme value'.  The parameters are estimated from X: mean
+                    and standard deviation for the normal, mean for the
+                    exponential, and location and scale for the extreme value
+                    distribution.
+                    
+     'Alpha'        The significance level, a scalar.  Without 'MCTol' it must lie
+                    in [0.001, 0.5] (the tabulated range); with 'MCTol' it may be
+                    any value in (0, 1).  The default is 0.05.
+                    
+     'MCTol'        Maximum Monte-Carlo standard error for the p-value.  When
+                    supplied, the p-value and critical value are computed by
+                    Monte-Carlo simulation instead of by interpolating the
+                    embedded table.
+
+     ‘[H, P, KSTAT, CRITVAL] = lillietest (...)’ also returns the p-value P, the
+     test statistic KSTAT, and the critical value CRITVAL.  Without 'MCTol' the
+     p-value is clamped to the tabulated range [0.001, 0.5] and a warning is
+     issued when it lies outside.
+
+     See also: kstest, adtest, jbtest.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Lilliefors goodness-of-fit hypothesis test.
 
 
 
