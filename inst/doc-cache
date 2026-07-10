@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 144
+# columns: 145
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11030,6 +11030,64 @@ jbtest
 # elements: 1
 # length: 51
 Jarque-Bera hypothesis test of composite normality.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+dwtest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1902
+ -- statistics: P = dwtest (R, X)
+ -- statistics: P = dwtest (R, X, NAME, VALUE)
+ -- statistics: [P, D] = dwtest (...)
+
+     Durbin-Watson test for autocorrelation in linear regression residuals.
+
+     ‘P = dwtest (R, X)’ performs the Durbin-Watson test on the residuals R of a
+     linear regression with design matrix X (which should include a column of
+     ones if the model has a constant term).  The null hypothesis is that the
+     residuals are uncorrelated, against the alternative that they are
+     autocorrelated.  R is an Nx1 vector and X is an NxP matrix.  P is the
+     p-value of the test.
+
+     The Durbin-Watson statistic is ‘D = sum ((diff (R)) .^ 2) / sum (R .^ 2)’.
+     Values near 2 indicate no autocorrelation, values towards 0 positive
+     autocorrelation, and values towards 4 negative autocorrelation.
+
+     ‘P = dwtest (R, X, NAME, VALUE)’ specifies additional options using
+     Name-Value pair arguments:
+
+     NAME              VALUE
+                       
+     -----------------------------------------------------------------------------------
+     'Method'          'exact' to compute the exact p-value from the null
+                       distribution of the statistic (a ratio of quadratic forms,
+                       evaluated with Imhof's method), or 'approximate' to use a
+                       normal approximation based on the mean and variance of the
+                       statistic.  The default is 'exact' for n < 400 and
+                       'approximate' otherwise.
+                       
+     'Tail'            The alternative hypothesis: 'both' (default) for a nonzero
+                       autocorrelation, 'right' for a positive autocorrelation, or
+                       'left' for a negative autocorrelation.
+
+     ‘[P, D] = dwtest (...)’ also returns the Durbin-Watson statistic D.
+
+     See also: regress, fitlm, runstest.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Durbin-Watson test for autocorrelation in linear regression residuals.
 
 
 

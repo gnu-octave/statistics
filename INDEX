@@ -257,6 +257,7 @@ Hypothesis Testing
  chi2gof
  chi2test
  correlation_test
+ dwtest
  fishertest
  friedman
  hotelling_t2test
