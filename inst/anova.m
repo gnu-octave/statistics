@@ -271,7 +271,7 @@ classdef anova
         if (! isempty (Y))
           lm_args = [{Y}, lm_args];
         endif
-        obj.initLinearModel_ (factors, lm_args{:});
+        obj = obj.initLinearModel_ (factors, lm_args{:});
         return;
       endif
 
@@ -306,11 +306,11 @@ classdef anova
         endif
         switch (lower (name))
           case {'model', 'modelspecification'}
-            obj.setModelSpecification_ (value);
+            obj = obj.setModelSpecification_ (value);
           case {'sstype', 'sumofsquarestype'}
-            obj.setSumOfSquaresType_ (value);
+            obj = obj.setSumOfSquaresType_ (value);
           case {'varnames', 'factornames'}
-            obj.setFactorNames_ (value);
+            obj = obj.setFactorNames_ (value);
           case 'contrasts'
             obj.Contrasts = value;
           case 'alpha'
@@ -338,13 +338,16 @@ classdef anova
       obj.nFactors_ = obj.countFactors_ ();
       obj.NumFactors = obj.nFactors_;
       obj.NumObservations = numel (obj.Y);
-      obj.syncCategoricalFactors_ ();
-      obj.setFormula_ ();
+      obj = obj.syncCategoricalFactors_ ();
+      obj = obj.setFormula_ ();
       obj.validateSpec_ ();
       obj.validateData_ ();
       obj.Factors = obj.buildFactorsTable_ ();
-      obj.selectBackend_ ();
+      obj = obj.selectBackend_ ();
       obj.dirty_ = true;
+      ## Fit eagerly at construction so result properties are populated on the
+      ## returned value object (value-class semantics; matches MATLAB's anova).
+      obj = obj.ensureFit_ ();
     endfunction
 
   endmethods
@@ -668,7 +671,7 @@ classdef anova
       tf = ischar (value) || (isstring (value) && isscalar (value));
     endfunction
 
-    function setModelSpecification_ (obj, value)
+    function obj = setModelSpecification_ (obj, value)
       if (isstring (value) && isscalar (value))
         value = char (value);
       endif
@@ -680,7 +683,7 @@ classdef anova
       endif
     endfunction
 
-    function setSumOfSquaresType_ (obj, value)
+    function obj = setSumOfSquaresType_ (obj, value)
       if (isnumeric (value) && isscalar (value))
         names = {'one', 'two', 'three'};
         if (! any (value == [1, 2, 3]))
@@ -713,7 +716,7 @@ classdef anova
       endswitch
     endfunction
 
-    function setFactorNames_ (obj, value)
+    function obj = setFactorNames_ (obj, value)
       if (isstring (value))
         value = cellstr (value(:))';
       elseif (ischar (value))
@@ -723,7 +726,7 @@ classdef anova
       obj.VarNames = value;
     endfunction
 
-    function syncCategoricalFactors_ (obj)
+    function obj = syncCategoricalFactors_ (obj)
       if (obj.isName_ (obj.CategoricalFactors) ...
           && strcmpi (char (obj.CategoricalFactors), 'all'))
         obj.Continuous = [];
@@ -742,7 +745,7 @@ classdef anova
       obj.Continuous = setdiff (1:obj.nFactors_, cats);
     endfunction
 
-    function setFormula_ (obj)
+    function obj = setFormula_ (obj)
       if (isempty (obj.FactorNames))
         obj.FactorNames = arrayfun (@(k) sprintf ("X%d", k), ...
                                     1:obj.nFactors_, ...
@@ -924,7 +927,7 @@ classdef anova
                                      'RSquared', 'AdjustedRSquared'});
     endfunction
 
-    function initLinearModel_ (obj, mdl, varargin)
+    function obj = initLinearModel_ (obj, mdl, varargin)
       if (mod (numel (varargin), 2) != 0)
         error ("anova: name-value pairs must come in pairs.");
       endif
@@ -1105,7 +1108,7 @@ classdef anova
     ##             (Y carries the factor structure; reps is required)
     ##   anova1  : 1 factor, no continuous, no weights, SSType == 3
     ##   anovan  : everything else (full generality)
-    function selectBackend_ (obj)
+    function obj = selectBackend_ (obj)
       if (! isempty (obj.reps_) && ismatrix (obj.Y) ...
           && ! isvector (obj.Y) && ! any (isnan (obj.Y(:))) ...
           && isempty (obj.Continuous) && isempty (obj.Weights))
@@ -1119,22 +1122,22 @@ classdef anova
     endfunction
 
     ## Lazy refit guard: only fits when never-fit or spec changed.
-    function ensureFit_ (obj)
+    function obj = ensureFit_ (obj)
       if (! obj.fitted_ || obj.dirty_)
-        obj.selectBackend_ ();
-        obj.fit_ ();
+        obj = obj.selectBackend_ ();
+        obj = obj.fit_ ();
       endif
     endfunction
 
     ## Dispatch to the selected backend; populate result properties.
-    function fit_ (obj)
+    function obj = fit_ (obj)
       switch (obj.backend_)
         case 'anova1'
-          obj.fitAnova1_ ();
+          obj = obj.fitAnova1_ ();
         case 'anova2'
-          obj.fitAnova2_ ();
+          obj = obj.fitAnova2_ ();
         case 'anovan'
-          obj.fitAnovan_ ();
+          obj = obj.fitAnovan_ ();
         case 'linearmodel'
           ## Already populated from the supplied LinearModel object.
       endswitch
@@ -1145,7 +1148,7 @@ classdef anova
       obj.dirty_  = false;
     endfunction
 
-    function fitAnova1_ (obj)
+    function obj = fitAnova1_ (obj)
       if (isvector (obj.Y))
         [~, atab, stats] = anova1 (obj.Y, obj.GROUP, obj.Display);
       else
@@ -1159,7 +1162,7 @@ classdef anova
       ## exposed by anova1's stats; they remain at their empty defaults.
     endfunction
 
-    function fitAnova2_ (obj)
+    function obj = fitAnova2_ (obj)
       modelarg = 'interaction';
       if (ischar (obj.ModelType))
         modelarg = obj.ModelType;
@@ -1172,7 +1175,7 @@ classdef anova
       ## anova2 does not return coeffs / resid / X.
     endfunction
 
-    function fitAnovan_ (obj)
+    function obj = fitAnovan_ (obj)
       ## Unroll a matrix Y with no GROUP into a vector + synthetic
       ## column index — needed for the anova1-matrix-form fallback.
       if (isempty (obj.GROUP) && ! isvector (obj.Y))
@@ -1208,10 +1211,25 @@ classdef anova
       endif
       if (! isempty (obj.DesignMatrix) && ! isempty (obj.Coefficients))
         obj.FittedValues = full (obj.DesignMatrix) * obj.Coefficients(:, 1);
-        ## anovan returns weighted residuals in stats.resid; expose raw
-        ## (observed minus fitted) residuals so FittedValues + Residuals == Y.
-        obj.rawResiduals_ = y_vec - obj.FittedValues;
-        obj.Residuals = obj.residualsTable_ (obj.rawResiduals_);
+        ## anovan drops observations with a missing (NaN) response or numeric
+        ## grouping value, so the design matrix (and fitted values) cover only
+        ## the retained rows.  Align the response with those rows before
+        ## differencing; expose raw (observed minus fitted) residuals so that
+        ## FittedValues + Residuals == Y over the retained observations.
+        keep = ! isnan (y_vec);
+        if (iscell (group_arg))
+          for k = 1:numel (group_arg)
+            if (isnumeric (group_arg{k}))
+              keep = keep & ! isnan (group_arg{k}(:));
+            endif
+          endfor
+        elseif (isnumeric (group_arg) && ! isempty (group_arg))
+          keep = keep & ! any (isnan (group_arg), 2);
+        endif
+        if (numel (obj.FittedValues) == sum (keep))
+          obj.rawResiduals_ = y_vec(keep) - obj.FittedValues;
+          obj.Residuals = obj.residualsTable_ (obj.rawResiduals_);
+        endif
       endif
     endfunction
 
@@ -1592,14 +1610,17 @@ endclassdef
 %! assert_equal (a.NumFactors, 1);
 %! assert_equal (a.NumObservations, 4);
 
-## Result properties stay empty before fit
+## Eager fit at construction populates the table statistics; the anova1
+## backend does not expose coefficients, residuals, fitted values, or a
+## design matrix, so those stay at their empty defaults
 %!test
 %! a = anova ([1;1;2;2], [1;2;3;4]);
+%! assert (! isempty (a.AnovaTable));
+%! assert (! isempty (a.DFE));
+%! assert (! isempty (a.MSE));
 %! assert_equal (a.Coefficients, []);
 %! assert_equal (a.Residuals, []);
 %! assert_equal (a.FittedValues, []);
-%! assert_equal (a.DFE, []);
-%! assert_equal (a.MSE, []);
 %! assert_equal (a.DesignMatrix, []);
 
 ## Name-value parsing: MATLAB-compatible names
