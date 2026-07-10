@@ -57,6 +57,11 @@
 ## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or
 ## @qcode{'loglog'}.  Nominal models always use the logit link.
 ##
+## @item @qcode{'estdisp'} @tab @tab @qcode{'on'} to estimate a dispersion
+## parameter, scaling the coefficient standard errors by it and testing the
+## coefficients against the @math{t} distribution, or @qcode{'off'} (default)
+## for the theoretical dispersion of @math{1}.
+##
 ## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
 ## information about the fitted model.  Default is @qcode{'off'}.
 ## @end multitable
@@ -112,6 +117,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   MODELTYPE = 'nominal';
   DISPLAY = 'off';
   LINK = 'logit';
+  ESTDISP = 'off';
   while (numel (varargin) > 0)
     name = varargin{1};
     value = varargin{2};
@@ -122,6 +128,8 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         DISPLAY = value;
       case 'link'
         LINK = value;
+      case 'estdisp'
+        ESTDISP = value;
       otherwise
         warning (sprintf ("mnrfit: parameter %s will be ignored", name));
     endswitch
@@ -131,6 +139,10 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   if (! any (strcmp (LINK, {'logit', 'probit', 'comploglog', 'loglog'})))
     error ("mnrfit: unrecognised 'link' value.");
   endif
+  if (! (ischar (ESTDISP) && any (strcmpi (ESTDISP, {'on', 'off'}))))
+    error ("mnrfit: 'estdisp' must be 'on' or 'off'.");
+  endif
+  estdisp = strcmpi (ESTDISP, 'on');
 
   ## Evaluate display input argument
   switch (lower (DISPLAY))
@@ -232,11 +244,18 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   ## (common to every model type; individual responses have sample size 1)
   pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
   [STATS.resid, STATS.residp, STATS.residd] = mnrfit_residuals_ (pihat, YN, n);
+  STATS.estdisp = estdisp;
   if (! isempty (STATS.dfe) && STATS.dfe > 0)
-    ## Standard Pearson dispersion estimate (used only when EstDisp is on)
+    ## Standard Pearson dispersion estimate
     STATS.sfit = sqrt (sum (STATS.resid(:) .^ 2 ./ pihat(:)) / STATS.dfe);
-    if (isequal (STATS.estdisp, true))
+    if (estdisp)
+      ## Scale the coefficient covariance and standard errors by the estimated
+      ## dispersion and test the coefficients against the t distribution.
       STATS.s = STATS.sfit;
+      STATS.covb = STATS.covb * STATS.s ^ 2;
+      STATS.se = STATS.se * STATS.s;
+      STATS.t = STATS.beta ./ STATS.se;
+      STATS.p = 2 * tcdf (- abs (STATS.t), STATS.dfe);
     endif
   endif
 
@@ -601,6 +620,18 @@ endfunction
 %! [~, ~, so] = mnrfit (X, Y, 'model', 'ordinal');
 %! assert (so.sfit, 1.0691, 1e-3);
 
+## Test the EstDisp option
+%!test  # EstDisp on scales se/covb by the dispersion and uses t-based p-values
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! [~, ~, s0] = mnrfit (X, Y, 'model', 'nominal');
+%! [~, ~, s1] = mnrfit (X, Y, 'model', 'nominal', 'estdisp', 'on');
+%! assert (s0.s, 1);
+%! assert (s1.s, s1.sfit);
+%! assert (s1.se, s0.se * s1.sfit, 1e-12);
+%! assert (s1.covb, s0.covb * s1.sfit ^ 2, 1e-10);
+%! assert (s1.p, 2 * tcdf (- abs (s1.t), s1.dfe), 1e-12);
+
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
 %!error<mnrfit: Predictors must be numeric.> ...
@@ -627,4 +658,6 @@ endfunction
 %! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'link', 'cauchit')
 %!error<mnrfit: nominal models support only the logit link.> ...
 %! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'model', 'nominal', 'link', 'probit')
+%!error<mnrfit: 'estdisp' must be 'on' or 'off'.> ...
+%! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'estdisp', 'maybe')
 
