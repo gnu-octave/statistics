@@ -64,10 +64,12 @@
 ## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{})} also returns the
 ## deviance of the fit, @var{dev}, and a structure @var{stats} with the fitted
 ## coefficients @qcode{'beta'} (same as @var{B}), their standard errors
-## @qcode{'se'}, covariance matrix @qcode{'covb'}, and correlation matrix
-## @qcode{'coeffcorr'}.  For nominal models @var{stats} also includes the error
-## degrees of freedom @qcode{'dfe'} and the coefficient @math{t} statistics
-## @qcode{'t'} and @math{p}-values @qcode{'p'}.
+## @qcode{'se'}, covariance matrix @qcode{'covb'}, correlation matrix
+## @qcode{'coeffcorr'}, error degrees of freedom @qcode{'dfe'}, the coefficient
+## @math{t} statistics @qcode{'t'} and @math{p}-values @qcode{'p'}, the
+## dispersion parameters @qcode{'s'}, @qcode{'sfit'}, and @qcode{'estdisp'}, and
+## the raw, Pearson, and deviance residuals @qcode{'resid'}, @qcode{'residp'},
+## and @qcode{'residd'}.
 ##
 ## @seealso{mnrval, logistic_regression}
 ## @end deftypefn
@@ -203,19 +205,20 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
                                                                    dispopt);
         B = cat (1, INTERCEPT, SLOPE);
+        se = S.se;
         STATS = struct ('beta', B, ...
-                        'dfe', [], ...      ## Not used
-                        's', [], ...        ## Not used
-                        'sfit', [], ...     ## Not used
-                        'estdisp', [], ...  ## Not used
+                        'dfe', rows (X) * (n - 1) - numel (B), ...
+                        's', 1, ...
+                        'sfit', 1, ...
+                        'estdisp', false, ...
                         'coeffcorr', S.coeffcorr, ...
                         'covb', S.cov, ...
-                        'se', S.se, ...
-                        't', [], ...        ## Not used
-                        'p', [], ...        ## Not used
-                        'resid', [], ...    ## Not used
-                        'residp', [], ...   ## Not used
-                        'residd', []);      ## Not used
+                        'se', se, ...
+                        't', B ./ se, ...
+                        'p', 2 * normcdf (- abs (B ./ se)), ...
+                        'resid', [], ...
+                        'residp', [], ...
+                        'residd', []);
       else
         [B, DEV, STATS] = mnrfit_ordinal_ (X, YN, n, LINK);
       endif
@@ -224,6 +227,18 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     otherwise
       error ("mnrfit: model type not recognised.");
   endswitch
+
+  ## Residuals and dispersion, computed from the fitted category probabilities
+  ## (common to every model type; individual responses have sample size 1)
+  pihat = mnrval (B, X, 'model', lower (MODELTYPE), 'link', LINK);
+  [STATS.resid, STATS.residp, STATS.residd] = mnrfit_residuals_ (pihat, YN, n);
+  if (! isempty (STATS.dfe) && STATS.dfe > 0)
+    ## Standard Pearson dispersion estimate (used only when EstDisp is on)
+    STATS.sfit = sqrt (sum (STATS.resid(:) .^ 2 ./ pihat(:)) / STATS.dfe);
+    if (isequal (STATS.estdisp, true))
+      STATS.s = STATS.sfit;
+    endif
+  endif
 
 endfunction
 
@@ -374,6 +389,20 @@ function [P, Pall] = mnrfit_softmax_ (Z, beta, nobs)
   endif
 endfunction
 
+## Raw, Pearson, and deviance residuals for individual multinomial responses.
+## PIHAT is the nobs-by-K matrix of fitted category probabilities and YN holds
+## the observed category indices.  resid and residp are nobs-by-K; residd is
+## nobs-by-1 (the per-observation deviance contribution).
+function [resid, residp, residd] = mnrfit_residuals_ (pihat, YN, k)
+  nobs = rows (pihat);
+  yind = double (YN(:) == (1:k));          ## observed indicators, nobs-by-K
+  resid = yind - pihat;
+  residp = resid ./ sqrt (pihat .* (1 - pihat));
+  residp(isnan (residp)) = 0;              ## 0/0 at a saturated probability -> 0
+  pobs = pihat (sub2ind ([nobs, k], (1:nobs)', YN(:)));
+  residd = -2 * log (max (pobs, realmin));
+endfunction
+
 ## Fit a cumulative-link (proportional-odds) ordinal model for a non-logit link
 ## by Newton-Raphson with numerical derivatives.  B is a (K-1+P)-by-1 vector of
 ## K-1 thresholds followed by the P shared slopes, matching the logit path.
@@ -423,7 +452,7 @@ function [B, dev, stats] = mnrfit_ordinal_ (X, YN, k, link)
   covb = inv (-H);
   se = sqrt (diag (covb));
   stats = struct ('beta', B, ...
-                  'dfe', nobs - npar, ...
+                  'dfe', nobs * ncat - npar, ...
                   's', 1, ...
                   'sfit', 1, ...
                   'estdisp', false, ...
@@ -552,6 +581,25 @@ endfunction
 %! B = mnrfit (X, Y, 'model', 'hierarchical', 'link', 'probit');
 %! P = mnrval (B, X, 'model', 'hierarchical', 'link', 'probit');
 %! assert (sum (P, 2), ones (12, 1), 1e-9);
+
+## Test residual outputs
+%!test  # residuals have the right shape and are internally consistent
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! [B, dev, stats] = mnrfit (X, Y, 'model', 'nominal');
+%! assert (size (stats.resid), [12, 3]);
+%! assert (size (stats.residp), [12, 3]);
+%! assert (size (stats.residd), [12, 1]);
+%! assert (sum (stats.resid, 2), zeros (12, 1), 1e-10);
+%! assert (sum (stats.residd), dev, 1e-8);
+
+%!test  # dispersion estimate sfit = sqrt (Pearson X2 / dfe) matches MATLAB
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! [~, ~, sn] = mnrfit (X, Y, 'model', 'nominal');
+%! assert (sn.sfit, 1.0954, 1e-3);
+%! [~, ~, so] = mnrfit (X, Y, 'model', 'ordinal');
+%! assert (so.sfit, 1.0691, 1e-3);
 
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
