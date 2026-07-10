@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 148
+# columns: 149
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11320,6 +11320,60 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+robustfit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1898
+ -- statistics: B = robustfit (X, Y)
+ -- statistics: B = robustfit (X, Y, WFUN)
+ -- statistics: B = robustfit (X, Y, WFUN, TUNE)
+ -- statistics: B = robustfit (X, Y, WFUN, TUNE, CONST)
+ -- statistics: [B, STATS] = robustfit (...)
+
+     Robust linear regression.
+
+     ‘B = robustfit (X, Y)’ returns the coefficient vector B of a linear
+     regression of the response Y on the predictors X, fitted by robust
+     M-estimation (iteratively reweighted least squares) so that outlying
+     observations are downweighted.  A column of ones is added to X by default,
+     so ‘B(1)’ is the intercept.
+
+     ‘B = robustfit (X, Y, WFUN, TUNE, CONST)’ selects the weight function WFUN,
+     its tuning constant TUNE, and whether a constant term is included.  WFUN is
+     one of 'bisquare' (default), 'andrews', 'cauchy', 'fair', 'huber',
+     'logistic', 'ols', 'talwar', 'welsch', or a function handle ‘@(r)’ giving
+     the weights as a function of the scaled residual.  TUNE defaults to the
+     value that gives 95% efficiency for each weight function.  CONST is 'on'
+     (default) to include a constant term or 'off' to omit.
+
+     ‘[B, STATS] = robustfit (...)’ also returns a structure STATS with fields
+     ‘ols_s’, ‘robust_s’, ‘mad_s’, ‘s’, ‘se’, ‘covb’, ‘coeffcorr’, ‘t’, ‘p’,
+     ‘w’, ‘R’, ‘dfe’, ‘h’, and ‘resid’.  The coefficients and the fields
+     ‘ols_s’, ‘mad_s’, ‘dfe’, ‘h’, ‘w’, and ‘resid’ match MATLAB. The standard
+     errors and quantities derived from them (‘se’, ‘t’, ‘p’, ‘covb’) agree with
+     MATLAB to within a small fraction of a percent; ‘robust_s’ is the
+     Street-Carroll-Ruppert robust scale estimate, which may differ from
+     MATLAB's by a few percent (it has a negligible effect on the standard
+     errors).
+
+     See also: regress, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Robust linear regression.
 
 
 

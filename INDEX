@@ -333,6 +333,7 @@ Regression
  regress
  regress_gp
  ridge
+ robustfit
  stepwisefit
 Transforms
  logit
