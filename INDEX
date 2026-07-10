@@ -234,6 +234,7 @@ Machine Learning
  hmmestimate
  hmmgenerate
  hmmviterbi
+ perfcurve
  svmpredict
  svmtrain
 Model Fitting

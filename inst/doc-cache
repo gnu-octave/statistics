@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 147
+# columns: 148
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11220,6 +11220,88 @@ ksdensity
 # elements: 1
 # length: 34
 Kernel smoothing density estimate.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+perfcurve
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3176
+ -- statistics: [X, Y] = perfcurve (LABELS, SCORES, POSCLASS)
+ -- statistics: [X, Y, T, AUC, OPTROCPT] = perfcurve (...)
+ -- statistics: [...] = perfcurve (..., NAME, VALUE)
+
+     Receiver operating characteristic (ROC) and other classifier performance
+     curves.
+
+     ‘[X, Y] = perfcurve (LABELS, SCORES, POSCLASS)’ returns the ROC curve for
+     the classifier scores in SCORES given the true class LABELS and the
+     positive class POSCLASS.  LABELS is a numeric vector or a cell array of
+     character vectors; SCORES is a numeric vector of the same length, where
+     larger values indicate stronger evidence for the positive class.  By
+     default X is the false positive rate and Y the true positive rate.
+
+     ‘[X, Y, T, AUC, OPTROCPT] = perfcurve (...)’ also returns the thresholds T
+     on the scores, the area AUC under the (X, Y) curve, and the optimal
+     operating point OPTROCPT ‘= [FPR, TPR]’ of the ROC curve.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'XCrit'        The criterion for X.  The default is 'FPR'.
+                    
+     'YCrit'        The criterion for Y.  The default is 'TPR'. Supported criteria
+                    are 'TPR' ('sens', 'reca'), 'FNR', 'FPR' ('fall'), 'TNR'
+                    ('spec'), 'PPV' ('prec'), 'NPV', 'accu', the counts 'TP', 'FN',
+                    'FP', 'TN', and the rates 'RPP', 'RNP'.
+                    
+     'NegClass'     The negative class(es).  The default, 'all', treats every label
+                    other than POSCLASS as negative.
+                    
+     'Weights'      A vector of non-negative observation weights.
+                    
+     'Cost'         A 2*2 misclassification-cost matrix ‘[C(P|P) C(N|P); C(P|N)
+                    C(N|N)]’ used for OPTROCPT.  The default is ‘[0 1; 1 0]’.
+                    
+     'XVals'        Values of the X criterion at which to return the curve.  'TVals'
+                    does the same for the thresholds.
+                    
+     'ProcessNaN'   How to treat ‘NaN’ scores: 'ignore' (default) or 'addtofalse'.
+                    
+     'NBoot'        Number of bootstrap replicates for confidence bounds on Y and
+                    AUC.  The default 0 computes no bounds.
+                    
+     'BootType'     The bootstrap interval: 'bca' (default, bias-corrected and
+                    accelerated), 'percentile', or 'normal'.
+                    
+     'Alpha'        The significance level for the bounds, so the confidence level
+                    is 1 - ALPHA.  The default is 0.05.
+
+     With 'NBoot' greater than zero, Y is returned as an m*3 array ‘[Y, YLOW,
+     YHIGH]’ and AUC as ‘[AUC, AUCLOW, AUCHIGH]’.  The bootstrap uses an
+     independent random stream, so the bounds do not match MATLAB numerically.
+     ‘[..., SUBY, SUBYNAMES] = perfcurve (...)’ returns the Y values for each
+     negative subclass and their names.
+
+     When called with no output arguments the curve is plotted.
+
+     See also: fitcsvm, fitcknn, glmfit.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 80
+Receiver operating characteristic (ROC) and other classifier performance curv...
 
 
 
