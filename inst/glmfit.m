@@ -492,9 +492,9 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       case 'normal'
         stats.resida(! xymissing) = y - mu;
       case 'binomial'
-        a = b = 2 / 3;
-        stats.resida(! xymissing) = beta(a, b) ...
-                                  * (betainc (y, a, b) - betainc (mu, a, b)) ...
+        ab = 2 / 3;
+        stats.resida(! xymissing) = beta (ab, ab) ...
+                                  * (betainc (y, ab, ab) - betainc (mu, ab, ab)) ...
                                   ./ ((mu .* (1 - mu)) .^ (1 / 6) ./ sqrt (N));
       case 'poisson'
         stats.resida(! xymissing) = 1.5 * ((y .^ (2 / 3) - mu .^ (2 / 3)) ...
@@ -530,6 +530,16 @@ endfunction
 %! y = strcmp ('versicolor', species(51:end));
 %! b = glmfit (X, y, 'binomial', 'link', 'logit');
 %! assert_equal (b, [42.6379; 2.4652; 6.6809; -9.4294; -18.2861], 1e-4);
+
+## Requesting the stats output must not clobber the coefficient vector b; the
+## binomial Anscombe-residual computation previously reused the name "b".
+%!test
+%! load fisheriris;
+%! X = meas(51:end,:);
+%! y = strcmp ('versicolor', species(51:end));
+%! [b, dev, stats] = glmfit (X, y, 'binomial', 'link', 'logit');
+%! assert_equal (b, [42.6379; 2.4652; 6.6809; -9.4294; -18.2861], 1e-4);
+%! assert_equal (numel (stats.se), numel (b));
 
 %!test
 %! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
