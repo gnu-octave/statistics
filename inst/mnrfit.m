@@ -26,8 +26,9 @@
 ##
 ## Nominal models are fitted with a baseline-category multinomial logit, using
 ## the last category of @var{Y} as the reference.  Ordinal models are fitted
-## with a cumulative logit model, and hierarchical models with a sequential
-## (continuation-ratio) logit.  Only the logit link is currently available.
+## with a cumulative link model and hierarchical models with a sequential
+## (continuation-ratio) link model, both honouring the @qcode{'link'} option
+## below.  Nominal models always use the logit link.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y})}  returns a matrix, @var{B}, of
 ## coefficient estimates for a multinomial logistic regression of the nominal
@@ -50,7 +51,11 @@
 ##
 ## @item @qcode{'model'} @tab @tab The type of model to fit: @qcode{'nominal'}
 ## (default) for a baseline-category model, @qcode{'ordinal'} for a cumulative
-## logit model, or @qcode{'hierarchical'} for a sequential logit model.
+## model, or @qcode{'hierarchical'} for a sequential (continuation-ratio) model.
+##
+## @item @qcode{'link'} @tab @tab The link function for ordinal and hierarchical
+## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or
+## @qcode{'loglog'}.  Nominal models always use the logit link.
 ##
 ## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
 ## information about the fitted model.  Default is @qcode{'off'}.
@@ -104,6 +109,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   endif
   MODELTYPE = 'nominal';
   DISPLAY = 'off';
+  LINK = 'logit';
   while (numel (varargin) > 0)
     name = varargin{1};
     value = varargin{2};
@@ -112,11 +118,17 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
         MODELTYPE = value;
       case 'display'
         DISPLAY = value;
+      case 'link'
+        LINK = value;
       otherwise
         warning (sprintf ("mnrfit: parameter %s will be ignored", name));
     endswitch
     varargin(1:2) = [];
   endwhile
+  LINK = lower (LINK);
+  if (! any (strcmp (LINK, {'logit', 'probit', 'comploglog', 'loglog'})))
+    error ("mnrfit: unrecognised 'link' value.");
+  endif
 
   ## Evaluate display input argument
   switch (lower (DISPLAY))
@@ -182,26 +194,33 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
   ## Fit the requested model type
   switch (lower (MODELTYPE))
     case 'nominal'
+      if (! strcmp (LINK, 'logit'))
+        error ("mnrfit: nominal models support only the logit link.");
+      endif
       [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
     case 'ordinal'
-      [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
-                                                                 dispopt);
-      B = cat (1, INTERCEPT, SLOPE);
-      STATS = struct ('beta', B, ...
-                      'dfe', [], ...      ## Not used
-                      's', [], ...        ## Not used
-                      'sfit', [], ...     ## Not used
-                      'estdisp', [], ...  ## Not used
-                      'coeffcorr', S.coeffcorr, ...
-                      'covb', S.cov, ...
-                      'se', S.se, ...
-                      't', [], ...        ## Not used
-                      'p', [], ...        ## Not used
-                      'resid', [], ...    ## Not used
-                      'residp', [], ...   ## Not used
-                      'residd', []);      ## Not used
+      if (strcmp (LINK, 'logit'))
+        [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
+                                                                   dispopt);
+        B = cat (1, INTERCEPT, SLOPE);
+        STATS = struct ('beta', B, ...
+                        'dfe', [], ...      ## Not used
+                        's', [], ...        ## Not used
+                        'sfit', [], ...     ## Not used
+                        'estdisp', [], ...  ## Not used
+                        'coeffcorr', S.coeffcorr, ...
+                        'covb', S.cov, ...
+                        'se', S.se, ...
+                        't', [], ...        ## Not used
+                        'p', [], ...        ## Not used
+                        'resid', [], ...    ## Not used
+                        'residp', [], ...   ## Not used
+                        'residd', []);      ## Not used
+      else
+        [B, DEV, STATS] = mnrfit_ordinal_ (X, YN, n, LINK);
+      endif
     case 'hierarchical'
-      [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, dispopt);
+      [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, LINK);
     otherwise
       error ("mnrfit: model type not recognised.");
   endswitch
@@ -296,7 +315,7 @@ endfunction
 ## Y >= j, giving K-1 independent binary logit fits.  B is a (P+1)-by-(K-1)
 ## matrix whose column j holds the intercept and slopes of the conditional
 ## logit for category j.
-function [B, dev, stats] = mnrfit_hierarchical_ (X, YN, k, dispopt)
+function [B, dev, stats] = mnrfit_hierarchical_ (X, YN, k, link)
 
   YN = YN(:);
   p = columns (X);
@@ -309,9 +328,9 @@ function [B, dev, stats] = mnrfit_hierarchical_ (X, YN, k, dispopt)
   usedobs = 0;
   for j = 1:ncat
     mask = (YN >= j);
-    ## Category j is class 1 (the reference class 2 is the later categories)
-    YNsub = 2 - double (YN(mask) == j);
-    [Bj, devj, sj] = mnrfit_nominal_ (X(mask, :), YNsub, 2, dispopt);
+    ## Each stage is a binary GLM of category j against the later categories
+    ysucc = double (YN(mask) == j);
+    [Bj, devj, sj] = glmfit (X(mask, :), ysucc, 'binomial', 'link', link);
     B(:, j) = Bj;
     se(:, j) = sj.se;
     covb((j-1)*q+(1:q), (j-1)*q+(1:q)) = sj.covb;
@@ -355,6 +374,134 @@ function [P, Pall] = mnrfit_softmax_ (Z, beta, nobs)
   endif
 endfunction
 
+## Fit a cumulative-link (proportional-odds) ordinal model for a non-logit link
+## by Newton-Raphson with numerical derivatives.  B is a (K-1+P)-by-1 vector of
+## K-1 thresholds followed by the P shared slopes, matching the logit path.
+function [B, dev, stats] = mnrfit_ordinal_ (X, YN, k, link)
+
+  nobs = rows (X);
+  p = columns (X);
+  ncat = k - 1;
+  npar = ncat + p;
+  ilink = mnrfit_ilink_ (link);
+
+  ## Initial thresholds from cumulative category frequencies, slopes at zero
+  counts = accumarray (YN(:), 1, [k, 1]);
+  cumfreq = cumsum (counts(1:ncat)) / nobs;
+  cumfreq = min (max (cumfreq, 1e-3), 1 - 1e-3);
+  params = [mnrfit_flink_(link, cumfreq)(:); zeros(p, 1)];
+
+  ll_fn = @(pp) mnrfit_ord_ll_ (pp, X, YN, k, ilink);
+  maxiter = 200;
+  tol = 1e-9;
+  converged = false;
+  for iter = 1:maxiter
+    [g, H] = mnrfit_numderiv_ (ll_fn, params);
+    if (rcond (H) < eps || ! all (isfinite (g(:))))
+      break;
+    endif
+    step = - (H \ g);
+    if (! all (isfinite (step)))
+      break;
+    endif
+    ## Damp large steps for the nonlinear links
+    if (max (abs (step)) > 5)
+      step *= 5 / max (abs (step));
+    endif
+    params += step;
+    if (max (abs (step)) < tol)
+      converged = true;
+      break;
+    endif
+  endfor
+  if (! converged)
+    warning ("mnrfit: iteration limit reached; results may be unreliable.");
+  endif
+
+  B = params;
+  dev = -2 * ll_fn (params);
+  covb = inv (-H);
+  se = sqrt (diag (covb));
+  stats = struct ('beta', B, ...
+                  'dfe', nobs - npar, ...
+                  's', 1, ...
+                  'sfit', 1, ...
+                  'estdisp', false, ...
+                  'coeffcorr', covb ./ (se * se'), ...
+                  'covb', covb, ...
+                  'se', se, ...
+                  't', B ./ se, ...
+                  'p', 2 * normcdf (- abs (B ./ se)), ...
+                  'resid', [], ...
+                  'residp', [], ...
+                  'residd', []);
+
+endfunction
+
+## Log-likelihood of the cumulative-link ordinal model at parameter vector PP
+## ([thresholds; slopes]); ILINK is the inverse link.
+function ll = mnrfit_ord_ll_ (pp, X, YN, k, ilink)
+  ncat = k - 1;
+  theta = pp(1:ncat)(:).';
+  beta = pp(ncat+1:end);
+  gamma = ilink (X * beta + theta);          ## cumulative probabilities
+  Pall = [gamma(:,1), diff(gamma, 1, 2), 1 - gamma(:,end)];
+  nobs = rows (X);
+  pobs = max (Pall(sub2ind ([nobs, k], (1:nobs)', YN(:))), realmin);
+  ll = sum (log (pobs));
+endfunction
+
+## Central-difference gradient and Hessian of a scalar function FN at X.
+function [g, H] = mnrfit_numderiv_ (fn, x)
+  n = numel (x);
+  h = 1e-5 * max (abs (x), 1);
+  g = zeros (n, 1);
+  for i = 1:n
+    xp = x; xp(i) += h(i);
+    xm = x; xm(i) -= h(i);
+    g(i) = (fn (xp) - fn (xm)) / (2 * h(i));
+  endfor
+  H = zeros (n);
+  for i = 1:n
+    for j = i:n
+      xpp = x; xpp(i) += h(i); xpp(j) += h(j);
+      xpm = x; xpm(i) += h(i); xpm(j) -= h(j);
+      xmp = x; xmp(i) -= h(i); xmp(j) += h(j);
+      xmm = x; xmm(i) -= h(i); xmm(j) -= h(j);
+      H(i,j) = (fn (xpp) - fn (xpm) - fn (xmp) + fn (xmm)) / (4 * h(i) * h(j));
+      H(j,i) = H(i,j);
+    endfor
+  endfor
+endfunction
+
+## Inverse link (mean function) handle; matches the links used by mnrval.
+function f = mnrfit_ilink_ (link)
+  switch (link)
+    case 'logit'
+      f = @(e) 1 ./ (1 + exp (-e));
+    case 'probit'
+      f = @(e) normcdf (e);
+    case 'comploglog'
+      f = @(e) 1 - exp (-exp (e));
+    case 'loglog'
+      f = @(e) exp (-exp (e));
+  endswitch
+endfunction
+
+## Forward link, used only to seed the initial thresholds.
+function e = mnrfit_flink_ (link, g)
+  switch (link)
+    case 'logit'
+      e = log (g ./ (1 - g));
+    case 'probit'
+      e = norminv (g);
+    case 'comploglog'
+      e = log (- log (1 - g));
+    case 'loglog'
+      e = log (- log (g));
+  endswitch
+endfunction
+
 ## Test nominal multinomial logit fitting
 %!test  # nominal MLE reproduces the observed category totals
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
@@ -388,6 +535,24 @@ endfunction
 %! Bb = mnrfit (X, 2 - double (Y == 1), 'model', 'nominal');
 %! assert (Bh(:,1), Bb, 1e-8);
 
+## Test link functions for ordinal and hierarchical models
+%!test  # non-logit ordinal fits round-trip through mnrval with valid probs
+%! X = [-2; -1; 0; 1; 2; -1.5; 0.5; 1.2; -0.7; 0.3; -0.4; 0.8];
+%! Y = [1; 1; 2; 2; 3; 1; 2; 3; 3; 2; 1; 3];
+%! for lk = {'probit', 'comploglog', 'loglog'}
+%!   B = mnrfit (X, Y, 'model', 'ordinal', 'link', lk{1});
+%!   P = mnrval (B, X, 'model', 'ordinal', 'link', lk{1});
+%!   assert (sum (P, 2), ones (12, 1), 1e-9);
+%!   assert (all (P(:) >= -1e-12 & P(:) <= 1 + 1e-12));
+%! endfor
+
+%!test  # non-logit hierarchical fit runs and round-trips through mnrval
+%! X = [-2; -1; 0; 1; 2; -1.5; 0.5; 1.2; -0.7; 0.3; -0.4; 0.8];
+%! Y = [1; 1; 2; 2; 3; 1; 2; 3; 3; 2; 1; 3];
+%! B = mnrfit (X, Y, 'model', 'hierarchical', 'link', 'probit');
+%! P = mnrval (B, X, 'model', 'hierarchical', 'link', 'probit');
+%! assert (sum (P, 2), ones (12, 1), 1e-9);
+
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
 %!error<mnrfit: Predictors must be numeric.> ...
@@ -410,4 +575,8 @@ endfunction
 %! mnrfit (ones (5, 4), [1; -1; 1; 2; 1])
 %!error<mnrfit: model type not recognised.> ...
 %! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'whatever')
+%!error<mnrfit: unrecognised 'link' value.> ...
+%! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'link', 'cauchit')
+%!error<mnrfit: nominal models support only the logit link.> ...
+%! mnrfit (ones (5, 4), [1; 2; 1; 2; 1], 'model', 'nominal', 'link', 'probit')
 
