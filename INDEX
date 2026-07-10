@@ -261,6 +261,7 @@ Hypothesis Testing
  friedman
  hotelling_t2test
  hotelling_t2test2
+ jbtest
  kruskalwallis
  kstest
  kstest2

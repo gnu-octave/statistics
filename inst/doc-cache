@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 143
+# columns: 144
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -10956,6 +10956,80 @@ mnrval
 # elements: 1
 # length: 59
 Predict values for a multinomial logistic regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+jbtest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2995
+ -- statistics: H = jbtest (X)
+ -- statistics: H = jbtest (X, ALPHA)
+ -- statistics: H = jbtest (X, ALPHA, MCTOL)
+ -- statistics: [H, P] = jbtest (...)
+ -- statistics: [H, P, JBSTAT, CRITVAL] = jbtest (...)
+
+     Jarque-Bera hypothesis test of composite normality.
+
+     ‘H = jbtest (X)’ performs the Jarque-Bera test of the null hypothesis that
+     the sample in the vector X comes from a normal distribution with unknown
+     mean and variance, against the alternative that it does not come from a
+     normal distribution.  The result H is 1 if the test rejects the null
+     hypothesis at the 5% significance level, and 0 otherwise.  X must be a
+     vector of real values; NaN values are treated as missing and removed.
+
+     The Jarque-Bera test statistic is ‘JB = (n / 6) * (s^2 + (k - 3)^2 / 4)’,
+     where n is the sample size, s is the sample skewness, and k is the sample
+     kurtosis.  Under the null hypothesis it is asymptotically chi-square
+     distributed with two degrees of freedom.
+
+     ‘H = jbtest (X, ALPHA)’ performs the test at the significance level ALPHA,
+     a scalar in the range (0,1).  The default is 0.05.
+
+     ‘H = jbtest (X, ALPHA, MCTOL)’ computes a Monte-Carlo approximation of the
+     p-value instead of interpolating the embedded table.  MCTOL is the maximum
+     Monte-Carlo standard error allowed for the p-value; the number of simulated
+     samples is chosen accordingly.  Use this for small samples, where the
+     chi-square approximation is inaccurate, or for significance levels outside
+     [0.001, 0.5].
+
+     ‘[H, P] = jbtest (...)’ also returns the p-value P of the test.  P is
+     clamped to the tabulated range [0.001, 0.5] and a warning is issued when
+     the value lies outside it, matching MATLAB.
+
+     ‘[H, P, JBSTAT, CRITVAL] = jbtest (...)’ also returns the test statistic
+     JBSTAT and the critical value CRITVAL at significance level ALPHA.  The
+     null hypothesis is rejected when ‘JBSTAT > CRITVAL’.
+
+     Note: for n \le 2000 the p-value and critical value are obtained by
+     interpolating an embedded critical-value table (the same approach MATLAB
+     uses); for larger samples the large-sample chi-square approximation with
+     two degrees of freedom is used instead.  The embedded table was generated
+     here by Monte-Carlo simulation, so it is itself an estimate of the true
+     null quantiles.  MATLAB's table is likewise a Monte-Carlo estimate but from
+     a different simulation, so the two tables agree only to about two decimal
+     places.  As a result the reported p-value and critical value, and — in a
+     narrow band of statistic values around the critical value — the test
+     decision H, can differ slightly from MATLAB in edge cases.  These
+     differences are an unavoidable consequence of the Monte-Carlo origin of
+     both tables, not a difference in method.  Supply MCTOL for a direct
+     Monte-Carlo p-value.
+
+     See also: kstest, adtest, lillietest.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Jarque-Bera hypothesis test of composite normality.
 
 
 
