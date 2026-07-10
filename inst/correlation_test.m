@@ -35,43 +35,43 @@
 ##
 ## The p-value of the test is returned in @var{pval}.  @var{stats} is a
 ## structure with the following fields:
-## @multitable @columnfractions 0.05 0.2 0.05 0.70
-## @headitem @tab Field @tab @tab Value
-## @item @tab @qcode{method} @tab @tab the type of correlation coefficient used
+## @multitable @columnfractions 0.2 0.70
+## @headitem Field @tab Value
+## @item @qcode{method} @tab the type of correlation coefficient used
 ## for the test
-## @item @tab @qcode{df} @tab @tab the degrees of freedom (where applicable)
-## @item @tab @qcode{corrcoef} @tab @tab the correlation coefficient
-## @item @tab @qcode{stat} @tab @tab the test's statistic
-## @item @tab @qcode{dist} @tab @tab the respective distribution for the test
-## @item @tab @qcode{alt} @tab @tab the alternative hypothesis for the test
+## @item @qcode{df} @tab the degrees of freedom (where applicable)
+## @item @qcode{corrcoef} @tab the correlation coefficient
+## @item @qcode{stat} @tab the test's statistic
+## @item @qcode{dist} @tab the respective distribution for the test
+## @item @qcode{alt} @tab the alternative hypothesis for the test
 ## @end multitable
 ##
 ##
 ## @code{[@dots{}] = correlation_test (@dots{}, @var{name}, @var{value})}
 ## specifies one or more of the following name/value pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
-## @item @tab @qcode{'alpha'} @tab the significance level. Default is 0.05.
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @tab @qcode{'tail'} @tab a string specifying the alternative hypothesis
+## @item @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{'both'} @tab @math{corrcoef} is not 0 (two-tailed, default)
-## @item @tab @qcode{'left'} @tab @math{corrcoef} is less than 0 (left-tailed)
-## @item @tab @qcode{'right'} @tab @math{corrcoef} is greater than 0
+## @multitable @columnfractions 0.25 0.65
+## @item @qcode{'both'} @tab @math{corrcoef} is not 0 (two-tailed, default)
+## @item @qcode{'left'} @tab @math{corrcoef} is less than 0 (left-tailed)
+## @item @qcode{'right'} @tab @math{corrcoef} is greater than 0
 ## (right-tailed)
 ## @end multitable
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{'method'} @tab a string specifying the correlation
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{'method'} @tab a string specifying the correlation
 ## coefficient used for the test
 ## @end multitable
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{'pearson'} @tab Pearson's product moment correlation
+## @multitable @columnfractions 0.25 0.65
+## @item @qcode{'pearson'} @tab Pearson's product moment correlation
 ## (Default)
-## @item @tab @qcode{'kendall'} @tab Kendall's rank correlation tau
-## @item @tab @qcode{'spearman'} @tab Spearman's rank correlation rho
+## @item @qcode{'kendall'} @tab Kendall's rank correlation tau
+## @item @qcode{'spearman'} @tab Spearman's rank correlation rho
 ## @end multitable
 ##
 ## @seealso{regression_ftest, regression_ttest}

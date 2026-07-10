@@ -45,14 +45,14 @@
 ##
 ## Additional parameters can be specified by @qcode{Name-Value} pair arguments.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'P'} @tab @tab is the Minkowski distance exponent and it must be
+## @item @qcode{'P'} @tab is the Minkowski distance exponent and it must be
 ## a positive scalar.  This argument is only valid when the selected distance
 ## metric is @qcode{'minkowski'}.  By default it is 2.
 ##
-## @item @qcode{'Scale'} @tab @tab is the scale parameter for the standardized
+## @item @qcode{'Scale'} @tab is the scale parameter for the standardized
 ## Euclidean distance and it must be a nonnegative numeric vector of equal
 ## length to the number of columns in @var{X}.  This argument is only valid when
 ## the selected distance metric is @qcode{'seuclidean'}, in which case each
@@ -60,51 +60,51 @@
 ## @qcode{'scale'}, as is each query point in @var{Y}.  By default, the scale
 ## parameter is the standard deviation of each coordinate in @var{X}.
 ##
-## @item @qcode{'Cov'} @tab @tab is the covariance matrix for computing the
+## @item @qcode{'Cov'} @tab is the covariance matrix for computing the
 ## mahalanobis distance and it must be a positive definite matrix matching the
 ## the number of columns in @var{X}.  This argument is only valid when the
 ## selected distance metric is @qcode{'mahalanobis'}.
 ##
-## @item @qcode{'BucketSize'} @tab @tab is the maximum number of data points in
+## @item @qcode{'BucketSize'} @tab is the maximum number of data points in
 ## the leaf node of the Kd-tree and it must be a positive integer.  This
 ## argument is only valid when the selected search method is @qcode{'kdtree'}.
 ##
-## @item @qcode{'SortIndices'} @tab @tab is a boolean flag to sort the returned
+## @item @qcode{'SortIndices'} @tab is a boolean flag to sort the returned
 ## indices in ascending order by distance and it is @qcode{true} by default.
 ## When the selected search method is @qcode{'exhaustive'} or the
 ## @qcode{'IncludeTies'} flag is true, @code{rangesearch} always sorts the
 ## returned indices.
 ##
-## @item @qcode{'Distance'} @tab @tab is the distance metric used by
+## @item @qcode{'Distance'} @tab is the distance metric used by
 ## @code{rangesearch} as specified below:
 ## @end multitable
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{'euclidean'} @tab Euclidean distance.
-## @item @tab @qcode{'seuclidean'} @tab standardized Euclidean distance.  Each
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{'euclidean'} @tab Euclidean distance.
+## @item @qcode{'seuclidean'} @tab standardized Euclidean distance.  Each
 ## coordinate difference between the rows in @var{X} and the query matrix
 ## @var{Y} is scaled by dividing by the corresponding element of the standard
 ## deviation computed from @var{X}.  To specify a different scaling, use the
 ## @qcode{'Scale'} name-value argument.
-## @item @tab @qcode{'cityblock'} @tab City block distance.
-## @item @tab @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
+## @item @qcode{'cityblock'} @tab City block distance.
+## @item @qcode{'chebychev'} @tab Chebychev distance (maximum coordinate
 ## difference).
-## @item @tab @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
+## @item @qcode{'minkowski'} @tab Minkowski distance.  The default exponent
 ## is 2.  To specify a different exponent, use the @qcode{'P'} name-value
 ## argument.
-## @item @tab @qcode{'mahalanobis'} @tab Mahalanobis distance, computed using a
+## @item @qcode{'mahalanobis'} @tab Mahalanobis distance, computed using a
 ## positive definite covariance matrix.  To change the value of the covariance
 ## matrix, use the @qcode{'Cov'} name-value argument.
-## @item @tab @qcode{'cosine'} @tab Cosine distance.
-## @item @tab @qcode{'correlation'} @tab One minus the sample linear correlation
+## @item @qcode{'cosine'} @tab Cosine distance.
+## @item @qcode{'correlation'} @tab One minus the sample linear correlation
 ## between observations (treated as sequences of values).
-## @item @tab @qcode{'spearman'} @tab One minus the sample Spearman's rank
+## @item @qcode{'spearman'} @tab One minus the sample Spearman's rank
 ## correlation between observations (treated as sequences of values).
-## @item @tab @qcode{'hamming'} @tab Hamming distance, which is the percentage
+## @item @qcode{'hamming'} @tab Hamming distance, which is the percentage
 ## of coordinates that differ.
-## @item @tab @qcode{'jaccard'} @tab One minus the Jaccard coefficient, which is
+## @item @qcode{'jaccard'} @tab One minus the Jaccard coefficient, which is
 ## the percentage of nonzero coordinates that differ.
-## @item @tab @var{@@distfun} @tab Custom distance function handle.  A distance
+## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
 ## where @var{XI} is a @math{1xP} vector containing a single observation in
 ## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
@@ -113,20 +113,20 @@
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @item @qcode{'NSMethod'} @tab @tab is the nearest neighbor search method used
+## @multitable @columnfractions 0.18 0.8
+## @item @qcode{'NSMethod'} @tab is the nearest neighbor search method used
 ## by @code{rangesearch} as specified below.
 ## @end multitable
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{'kdtree'} @tab Creates and uses a Kd-tree to find nearest
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{'kdtree'} @tab Creates and uses a Kd-tree to find nearest
 ## neighbors.  @qcode{'kdtree'} is the default value when the number of columns
 ## in @var{X} is less than or equal to 10, @var{X} is not sparse, and the
 ## distance metric is @qcode{'euclidean'}, @qcode{'cityblock'},
 ## @qcode{'manhattan'}, @qcode{'chebychev'}, or @qcode{'minkowski'}.  Otherwise,
 ## the default value is @qcode{'exhaustive'}.  This argument is only valid when
 ## the distance metric is one of the four aforementioned metrics.
-## @item @tab @qcode{'exhaustive'} @tab Uses the exhaustive search algorithm by
+## @item @qcode{'exhaustive'} @tab Uses the exhaustive search algorithm by
 ## computing the distance values from all the points in @var{X} to each point in
 ## @var{Y}.
 ## @end multitable

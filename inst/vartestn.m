@@ -49,9 +49,9 @@
 ## @code{[@var{p}, @var{stats}] = vartestn (@dots{})} returns a structure with
 ## the following fields:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{chistat} @tab -- the value of the test statistic
-## @item @tab @qcode{df} @tab -- the degrees of freedom of the test
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{chistat} @tab -- the value of the test statistic
+## @item @qcode{df} @tab -- the degrees of freedom of the test
 ## @end multitable
 ##
 ##
@@ -59,6 +59,7 @@
 ## specifies one or more of the following @var{name}/@var{value} pairs:
 ##
 ## @multitable @columnfractions 0.20 0.8
+## @headitem @var{Name} @tab @var{Value}
 ## @item @qcode{'display'} @tab @qcode{'on'} to display a boxplot and table, or
 ## @qcode{'off'} to omit these displays. Default @qcode{'on'}.
 ##
@@ -66,21 +67,21 @@
 ## type of test to perform
 ## @end multitable
 ##
-## @multitable @columnfractions 0.03 0.25 0.72
-## @item @tab @qcode{'Bartlett'} @tab Bartlett's test (default).
+## @multitable @columnfractions 0.25 0.72
+## @item @qcode{'Bartlett'} @tab Bartlett's test (default).
 ##
-## @item @tab @qcode{'LeveneQuadratic'} @tab Levene's test computed by
+## @item @qcode{'LeveneQuadratic'} @tab Levene's test computed by
 ## performing anova on the squared deviations of the data values from their
 ## group means.
 ##
-## @item @tab @qcode{'LeveneAbsolute'} @tab Levene's test computed by performing
+## @item @qcode{'LeveneAbsolute'} @tab Levene's test computed by performing
 ## anova on the absolute deviations of the data values from their group means.
 ##
-## @item @tab @qcode{'BrownForsythe'} @tab Brown-Forsythe test computed by
+## @item @qcode{'BrownForsythe'} @tab Brown-Forsythe test computed by
 ## performing anova on the absolute deviations of the data values from the group
 ## medians.
 ##
-## @item @tab @qcode{'OBrien'} @tab O'Brien's modification of Levene's test with
+## @item @qcode{'OBrien'} @tab O'Brien's modification of Levene's test with
 ## @math{W=0.5}.
 ## @end multitable
 ##

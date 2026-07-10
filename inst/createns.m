@@ -30,10 +30,10 @@
 ## name-value pairs. The following name-value pair is supported to specify
 ## the searcher type:
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'NSMethod'} @tab @tab Specifies the nearest neighbor search
+## @item @qcode{'NSMethod'} @tab Specifies the nearest neighbor search
 ## method. Possible values are:
 ##   @itemize @bullet
 ##   @item @qcode{'exhaustive'}: Creates an @code{ExhaustiveSearcher} object.

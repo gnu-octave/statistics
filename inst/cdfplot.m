@@ -37,12 +37,12 @@
 ## @code{[@var{hCDF}, @var{stats}] = cdfplot (@var{x})} also returns a structure
 ## with the following fields as a statistical summary.
 ##
-## @multitable @columnfractions 0.05 0.3 0.65
-## @item @tab STATS.min @tab minimum value of @var{x}
-## @item @tab STATS.max @tab maximum value of @var{x}
-## @item @tab STATS.mean @tab sample mean of @var{x}
-## @item @tab STATS.median @tab sample median (50th percentile) of @var{x}
-## @item @tab STATS.std @tab sample standard deviation of @var{x}
+## @multitable @columnfractions 0.3 0.65
+## @item STATS.min @tab minimum value of @var{x}
+## @item STATS.max @tab maximum value of @var{x}
+## @item STATS.mean @tab sample mean of @var{x}
+## @item STATS.median @tab sample median (50th percentile) of @var{x}
+## @item STATS.std @tab sample standard deviation of @var{x}
 ## @end multitable
 ##
 ## @seealso{qqplot, cdfcalc}

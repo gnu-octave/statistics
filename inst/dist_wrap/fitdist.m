@@ -31,34 +31,34 @@
 ## creates the probability distribution object with additional options specified
 ## by one or more @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'distribution'} @tab @tab A character vector specifying the
+## @item @qcode{'distribution'} @tab A character vector specifying the
 ## distribution type for which to estimate parameters.
 ##
-## @item @qcode{'Ntrials'} @tab @tab A scalar specifying the number of trials
+## @item @qcode{'Ntrials'} @tab A scalar specifying the number of trials
 ## for the corresponding element of @var{x} for the binomial distribution.
 ##
-## @item @qcode{'theta'} @tab @tab A scalar specifying the location parameter
+## @item @qcode{'theta'} @tab A scalar specifying the location parameter
 ## for the generalized Pareto distribution.
 ##
-## @item @qcode{'mu'} @tab @tab A scalar specifying the location parameter
+## @item @qcode{'mu'} @tab A scalar specifying the location parameter
 ## for the half-normal distribution.
 ##
-## @item @qcode{'censoring'} @tab @tab A vector of the same size as @var{x}
+## @item @qcode{'censoring'} @tab A vector of the same size as @var{x}
 ## indicating censored data in @var{x}.  By default it is
 ## @qcode{@var{censor} = zeros (size (@var{x}))}.
 ##
-## @item @qcode{'frequency'} @tab @tab A vector of nonnegative integer counts of
+## @item @qcode{'frequency'} @tab A vector of nonnegative integer counts of
 ## the same size as @var{x} used as frequency observations.  By default it is
 ## @qcode{@var{freq} = ones (size (@var{x}))}.
 ##
-## @item @qcode{'alpha'} @tab @tab A scalar in the range @math{(0,1)}, as the
+## @item @qcode{'alpha'} @tab A scalar in the range @math{(0,1)}, as the
 ## significance level for the confidence interval @var{pci}.  By default it is
 ## 0.05 corresponding to 95% confidence intervals.
 ##
-## @item @qcode{'options'} @tab @tab A structure specifying the control
+## @item @qcode{'options'} @tab A structure specifying the control
 ## parameters for the iterative algorithm used to compute ML estimates with the
 ## @code{fminsearch} function.
 ## @end multitable

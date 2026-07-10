@@ -52,11 +52,11 @@
 ##
 ## @var{transform} is a structure with fields:
 ##
-## @multitable @columnfractions 0.05 0.1 0.05 0.8
-## @item @tab @qcode{c} @tab @tab the translation component
-## @item @tab @qcode{T} @tab @tab the orthogonal rotation and reflection
+## @multitable @columnfractions 0.1 0.8
+## @item @qcode{c} @tab the translation component
+## @item @qcode{T} @tab the orthogonal rotation and reflection
 ## component
-## @item @tab @qcode{b} @tab @tab the scale component
+## @item @qcode{b} @tab the scale component
 ## @end multitable
 ##
 ## So that @code{@var{Z} = @var{transform}.@qcode{b} * @var{Y} *

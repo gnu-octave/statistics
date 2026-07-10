@@ -44,11 +44,11 @@
 ## the result in the terminal including p-value, chi^2 statistic, and degrees of
 ## freedom.  Otherwise it can return the following output arguments:
 ##
-## @multitable @columnfractions 0.05 0.1 0.85
-## @item @tab @var{pval} @tab the p-value of the relevant test.
-## @item @tab @var{chisq} @tab the chi^2 statistic of the relevant test.
-## @item @tab @var{dF} @tab the degrees of freedom of the relevant test.
-## @item @tab @var{E} @tab the EXPECTED values of the original contingency
+## @multitable @columnfractions 0.1 0.85
+## @item @var{pval} @tab the p-value of the relevant test.
+## @item @var{chisq} @tab the chi^2 statistic of the relevant test.
+## @item @var{dF} @tab the degrees of freedom of the relevant test.
+## @item @var{E} @tab the EXPECTED values of the original contingency
 ## table.
 ## @end multitable
 ##

@@ -45,28 +45,28 @@
 ##
 ## The following TESTTYPE values are available:
 ##
-## @multitable @columnfractions 0.05 0.1 0.85
-## @item @tab "z" @tab one-sample z-test for normally distributed data with
+## @multitable @columnfractions 0.1 0.85
+## @item "z" @tab one-sample z-test for normally distributed data with
 ## known standard deviation.  @var{params} is a two-element vector [MU0 SIGMA0]
 ## of the mean and standard deviation, respectively, under the null hypothesis.
 ## P1 is the value of the mean under the alternative hypothesis.
-## @item @tab "t" @tab one-sample t-test or paired t-test for normally
+## @item "t" @tab one-sample t-test or paired t-test for normally
 ## distributed data with unknown standard deviation.  @var{params} is a
 ## two-element vector [MU0 SIGMA0] of the mean and standard deviation,
 ## respectively, under the null hypothesis.  P1 is the value of the mean under
 ## the alternative hypothesis.
-## @item @tab "t2" @tab two-sample pooled t-test (test for equal means) for
+## @item "t2" @tab two-sample pooled t-test (test for equal means) for
 ## normally distributed data with equal unknown standard deviations.
 ## @var{params} is a two-element vector [MU0 SIGMA0] of the mean and standard
 ## deviation of the first sample under the null and alternative hypotheses.  P1
 ## is the the mean of the second sample under the alternative hypothesis.
-## @item @tab "var" @tab chi-square test of variance for normally distributed
+## @item "var" @tab chi-square test of variance for normally distributed
 ## data.  @var{params} is the variance under the null hypothesis.  P1 is the
 ## variance under the alternative hypothesis.
-## @item @tab "p" @tab test of the P parameter (success probability) for a
+## @item "p" @tab test of the P parameter (success probability) for a
 ## binomial distribution.  @var{params} is the value of P under the null
 ## hypothesis.  P1 is the value of P under the alternative hypothesis.
-## @item @tab "r" @tab test of the correlation coefficient parameter for
+## @item "r" @tab test of the correlation coefficient parameter for
 ## significance.  @var{params} is the value of r under the null hypothesis.
 ## P1 is the value of r under the alternative hypothesis.
 ## @end multitable
@@ -102,24 +102,25 @@
 ## @code{[@dots{}] = sampsizepwr (@dots{}, @var{n}, @var{name}, @var{value})}
 ## specifies one or more of the following @var{name} / @var{value} pairs:
 ##
-## @multitable @columnfractions 0.05 0.15 0.8
-## @item @tab "alpha" @tab significance level of the test (default is 0.05)
-## @item @tab "tail" @tab the type of test which can be:
+## @multitable @columnfractions 0.15 0.8
+## @headitem @var{Name} @tab @var{Value}
+## @item "alpha" @tab significance level of the test (default is 0.05)
+## @item "tail" @tab the type of test which can be:
 ## @end multitable
 ##
-## @multitable @columnfractions 0.1 0.20 0.7
-## @item @tab "both" @tab two-sided test for an alternative @var{p1} not equal
+## @multitable @columnfractions 0.20 0.7
+## @item "both" @tab two-sided test for an alternative @var{p1} not equal
 ## to @var{params}
 ##
-## @item @tab "right" @tab one-sided test for an alternative @var{p1} larger
+## @item "right" @tab one-sided test for an alternative @var{p1} larger
 ## than @var{params}
 ##
-## @item @tab "left" @tab one-sided test for an alternative @var{p1} smaller
+## @item "left" @tab one-sided test for an alternative @var{p1} smaller
 ## than @var{params}
 ## @end multitable
 ##
-## @multitable @columnfractions 0.05 0.15 0.8
-## @item @tab "ratio" @tab desired ratio @var{n2} / @var{n2} of the larger
+## @multitable @columnfractions 0.15 0.8
+## @item "ratio" @tab desired ratio @var{n2} / @var{n2} of the larger
 ## sample size @var{n2} to the smaller sample size @var{n1}.  Used only for the
 ## two-sample t-test.  The value of @code{@var{ratio}} is greater than or equal
 ## to 1 (default is 1).

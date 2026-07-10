@@ -321,62 +321,62 @@ classdef ConfusionMatrixChart < handle
     ## returns a ConfusionMatrixChart object with additional parameters
     ## specified by @qcode{@var{name}, @var{value}} paired arguments:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'XLabel'} @tab @tab A character vector specifying the
+    ## @item @qcode{'XLabel'} @tab A character vector specifying the
     ## x-axis label. Default is "Predicted Class".
     ##
-    ## @item @qcode{'YLabel'} @tab @tab A character vector specifying the
+    ## @item @qcode{'YLabel'} @tab A character vector specifying the
     ## y-axis label. Default is "True Class".
     ##
-    ## @item @qcode{'Title'} @tab @tab A character vector specifying the chart
+    ## @item @qcode{'Title'} @tab A character vector specifying the chart
     ## title. Default is empty string.
     ##
-    ## @item @qcode{'FontName'} @tab @tab A character vector specifying the
+    ## @item @qcode{'FontName'} @tab A character vector specifying the
     ## font name for text elements. Default is the axes font name.
     ##
-    ## @item @qcode{'FontSize'} @tab @tab A numeric scalar specifying the
+    ## @item @qcode{'FontSize'} @tab A numeric scalar specifying the
     ## font size for text elements. Default is the axes font size.
     ##
-    ## @item @qcode{'DiagonalColor'} @tab @tab A 1x3 RGB vector specifying
+    ## @item @qcode{'DiagonalColor'} @tab A 1x3 RGB vector specifying
     ## the color for diagonal elements (correct classifications). Default is
     ## [0.0, 0.4471, 0.7412].
     ##
-    ## @item @qcode{'OffDiagonalColor'} @tab @tab A 1x3 RGB vector specifying
+    ## @item @qcode{'OffDiagonalColor'} @tab A 1x3 RGB vector specifying
     ## the color for off-diagonal elements (misclassifications). Default is
     ## [0.8510, 0.3255, 0.0980].
     ##
-    ## @item @qcode{'Normalization'} @tab @tab A character vector specifying
+    ## @item @qcode{'Normalization'} @tab A character vector specifying
     ## the normalization method. Supported values are @qcode{'absolute'},
     ## @qcode{'column-normalized'}, @qcode{'row-normalized'}, and
     ## @qcode{'total-normalized'}. Default is @qcode{'absolute'}.
     ##
-    ## @item @qcode{'ColumnSummary'} @tab @tab A character vector specifying
+    ## @item @qcode{'ColumnSummary'} @tab A character vector specifying
     ## whether and how to display column summaries. Supported values are
     ## @qcode{'off'}, @qcode{'absolute'}, @qcode{'column-normalized'}, and
     ## @qcode{'total-normalized'}. Default is @qcode{'off'}.
     ##
-    ## @item @qcode{'RowSummary'} @tab @tab A character vector specifying
+    ## @item @qcode{'RowSummary'} @tab A character vector specifying
     ## whether and how to display row summaries. Supported values are
     ## @qcode{'off'}, @qcode{'absolute'}, @qcode{'row-normalized'}, and
     ## @qcode{'total-normalized'}. Default is @qcode{'off'}.
     ##
-    ## @item @qcode{'GridVisible'} @tab @tab A character vector specifying
+    ## @item @qcode{'GridVisible'} @tab A character vector specifying
     ## whether to display grid lines. Supported values are @qcode{'on'} and
     ## @qcode{'off'}. Default is @qcode{'on'}.
     ##
-    ## @item @qcode{'HandleVisibility'} @tab @tab A character vector specifying
+    ## @item @qcode{'HandleVisibility'} @tab A character vector specifying
     ## the handle visibility. Supported values are @qcode{'on'}, @qcode{'off'},
     ## and @qcode{'callback'}.
     ##
-    ## @item @qcode{'OuterPosition'} @tab @tab A 1x4 numeric vector specifying
+    ## @item @qcode{'OuterPosition'} @tab A 1x4 numeric vector specifying
     ## the outer position of the chart.
     ##
-    ## @item @qcode{'Position'} @tab @tab A 1x4 numeric vector specifying
+    ## @item @qcode{'Position'} @tab A 1x4 numeric vector specifying
     ## the position of the chart.
     ##
-    ## @item @qcode{'Units'} @tab @tab A character vector specifying the
+    ## @item @qcode{'Units'} @tab A character vector specifying the
     ## position units. Supported values are @qcode{'centimeters'},
     ## @qcode{'characters'}, @qcode{'inches'}, @qcode{'normalized'},
     ## @qcode{'pixels'}, and @qcode{'points'}.

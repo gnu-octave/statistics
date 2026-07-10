@@ -202,22 +202,22 @@ classdef ClassificationDiscriminant
     ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
     ## always stores their function handle equivalent.
     ##
-    ## @multitable @columnfractions 0.2 0.05 0.75
-    ## @headitem @var{Value} @tab @tab @var{Description}
-    ## @item @qcode{'doublelogit'} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{'ismax'} @tab @tab Sets the score for the class with the
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{'none'} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{'identity'} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{'sign'} @tab @tab
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab
     ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
     ## 0}
-    ## @item @qcode{'symmetric'} @tab @tab @math{2 * x - 1}
-    ## @item @qcode{'symmetricismax'} @tab @tab Sets the score for the class
+    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{'symmetriclogit'} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
     ## @end deftp
@@ -483,21 +483,21 @@ classdef ClassificationDiscriminant
     ## specified by the following @qcode{@var{name}, @var{value}} paired input
     ## arguments:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array
     ## must match the number of columns in @var{X}.
     ##
-    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## @item @qcode{'ResponseName'} @tab A character vector specifying the
     ## name of the response variable.
     ##
-    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
     ## labels, @var{Y}, used for fitting the Discriminant model.
     ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
     ##
-    ## @item @qcode{'Cost'} @tab @tab An @math{NxR} numeric matrix containing
+    ## @item @qcode{'Cost'} @tab An @math{NxR} numeric matrix containing
     ## misclassification cost for the corresponding instances in @var{X}, where
     ## @math{R} is the number of unique categories in @var{Y}.  If an instance
     ## is correctly classified into its category the cost is calculated to be 1,
@@ -505,14 +505,14 @@ classdef ClassificationDiscriminant
     ## @code{@var{Mdl}.cost = somecost}.  By default, its value is
     ## @qcode{@var{cost} = ones (rows (X), numel (unique (Y)))}.
     ##
-    ## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+    ## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
     ## probabilities for each class.  The order of the elements in @qcode{Prior}
     ## corresponds to the order of the classes in @qcode{ClassNames}.
     ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
     ## class probabilities or @qcode{'uniform'} to assume equal class
     ## probabilities.
     ##
-    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
     ## specifying the transformation applied to predicted classification scores.
     ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
@@ -520,16 +520,16 @@ classdef ClassificationDiscriminant
     ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
     ## @qcode{'symmetriclogit'}.
     ##
-    ## @item @qcode{'DiscrimType'} @tab @tab A character vector or string scalar
+    ## @item @qcode{'DiscrimType'} @tab A character vector or string scalar
     ## specifying the type of discriminant analysis to perform. The only
     ## supported value is @qcode{'linear'}.
     ##
-    ## @item @qcode{'FillCoeffs'} @tab @tab A character vector or string scalar
+    ## @item @qcode{'FillCoeffs'} @tab A character vector or string scalar
     ## with values @qcode{'on'} or @qcode{'off'} specifying whether to fill the
     ## coefficients after fitting. If set to @qcode{'on'}, the coefficients are
     ## computed during model fitting, which can be useful for prediction.
     ##
-    ## @item @qcode{'Gamma'} @tab @tab A numeric scalar specifying the
+    ## @item @qcode{'Gamma'} @tab A numeric scalar specifying the
     ## regularization parameter for the covariance matrix. It adjusts the linear
     ## discriminant analysis to make the model more stable in the presence of
     ## multicollinearity or small sample sizes. A value of 0 corresponds to no
@@ -944,10 +944,10 @@ classdef ClassificationDiscriminant
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
     ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'LossFun'} @tab @tab Specifies the loss function to use.
+    ## @item @qcode{'LossFun'} @tab Specifies the loss function to use.
     ## Can be a function handle with four input arguments (C, S, W, Cost)
     ## which returns a scalar value or one of:
     ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
@@ -969,7 +969,7 @@ classdef ClassificationDiscriminant
     ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{'Weights'} @tab @tab Specifies observation weights, must be
+    ## @item @qcode{'Weights'} @tab Specifies observation weights, must be
     ## a numeric vector of length equal to the number of rows in X.
     ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
     ## observation weights in each class sum to the prior probability of that
@@ -1323,22 +1323,22 @@ classdef ClassificationDiscriminant
     ## specifies additional name-value pair arguments to customize the
     ## cross-validation process.
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'KFold'} @tab @tab Specify the number of folds to use in
+    ## @item @qcode{'KFold'} @tab Specify the number of folds to use in
     ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
     ## integer greater than 1.
     ##
-    ## @item @qcode{'Holdout'} @tab @tab Specify the fraction of the data to
+    ## @item @qcode{'Holdout'} @tab Specify the fraction of the data to
     ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
     ## scalar in the range @math{(0,1)}.
     ##
-    ## @item @qcode{'Leaveout'} @tab @tab Specify whether to perform
+    ## @item @qcode{'Leaveout'} @tab Specify whether to perform
     ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
     ## @var{Value} is 'on' or 'off'.
     ##
-    ## @item @qcode{'CVPartition'} @tab @tab Specify a @qcode{cvpartition}
+    ## @item @qcode{'CVPartition'} @tab Specify a @qcode{cvpartition}
     ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
     ## @code{isa (@var{cv}, "cvpartition")} = 1.
     ##

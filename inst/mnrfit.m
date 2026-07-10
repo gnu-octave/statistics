@@ -46,23 +46,23 @@
 ## matrix, @var{B}, of coefficient estimates for a multinomial model fit with
 ## additional parameters specified @qcode{Name-Value} pair arguments.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'model'} @tab @tab The type of model to fit: @qcode{'nominal'}
+## @item @qcode{'model'} @tab The type of model to fit: @qcode{'nominal'}
 ## (default) for a baseline-category model, @qcode{'ordinal'} for a cumulative
 ## model, or @qcode{'hierarchical'} for a sequential (continuation-ratio) model.
 ##
-## @item @qcode{'link'} @tab @tab The link function for ordinal and hierarchical
+## @item @qcode{'link'} @tab The link function for ordinal and hierarchical
 ## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or
 ## @qcode{'loglog'}.  Nominal models always use the logit link.
 ##
-## @item @qcode{'estdisp'} @tab @tab @qcode{'on'} to estimate a dispersion
+## @item @qcode{'estdisp'} @tab @qcode{'on'} to estimate a dispersion
 ## parameter, scaling the coefficient standard errors by it and testing the
 ## coefficients against the @math{t} distribution, or @qcode{'off'} (default)
 ## for the theoretical dispersion of @math{1}.
 ##
-## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
+## @item @qcode{'display'} @tab A flag to enable/disable displaying
 ## information about the fitted model.  Default is @qcode{'off'}.
 ## @end multitable
 ##

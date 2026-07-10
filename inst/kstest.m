@@ -41,13 +41,13 @@
 ## specified by one or more @var{Name}-@var{Value} pair arguments as shown
 ## below.
 ##
-## @multitable @columnfractions 0.15 0.05 0.8
-## @headitem Name @tab @tab Value
-## @item @qcode{'alpha'} @tab @tab A numeric scalar between 0 and 1 specifying
+## @multitable @columnfractions 0.15 0.8
+## @headitem Name @tab Value
+## @item @qcode{'alpha'} @tab A numeric scalar between 0 and 1 specifying
 ## th
 ## the significance level.  Default is 0.05 for 5% significance.
 ##
-## @item @qcode{'CDF'} @tab @tab The hypothesized CDF under the null hypothesis.
+## @item @qcode{'CDF'} @tab The hypothesized CDF under the null hypothesis.
 ## It can be specified as a function handle of an existing cdf function, a
 ## character vector defining a probability distribution with default parameters,
 ## a probability distribution object, or a two-column matrix.  If not provided,
@@ -56,15 +56,15 @@
 ## functions, and requires the CDF to be predetermined.  The result is not
 ## accurate if CDF is estimated from the data.
 ##
-## @item @qcode{'tail'} @tab @tab A string indicating the type of test:
+## @item @qcode{'tail'} @tab A string indicating the type of test:
 ## @end multitable
-## @multitable @columnfractions 0.2 0.15 0.05 0.5
-## @item @tab @qcode{'unequal'} @tab @tab "F(X) not equal to CDF(X)" (two-sided)
+## @multitable @columnfractions 0.15 0.5
+## @item @qcode{'unequal'} @tab "F(X) not equal to CDF(X)" (two-sided)
 ## (Default)
 ##
-## @item @tab @qcode{'larger'} @tab @tab "F(X) > CDF(X)" (one-sided)
+## @item @qcode{'larger'} @tab "F(X) > CDF(X)" (one-sided)
 ##
-## @item @tab @qcode{'smaller'} @tab @tab "F(X) < CDF(X)" (one-sided)
+## @item @qcode{'smaller'} @tab "F(X) < CDF(X)" (one-sided)
 ## @end multitable
 ##
 ## Let S(X) be the empirical c.d.f. estimated from the sample vector @var{x},

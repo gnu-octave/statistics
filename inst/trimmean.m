@@ -49,13 +49,13 @@
 ## @code{@var{m} = trimmean (@var{x}, @var{p}, @var{flag})} specifies how to
 ## trim when @math{k}, i.e. half the number of outliers, is not an integer.
 ## @var{flag} can be specified as one of the following values:
-## @multitable @columnfractions 0.2 0.05 0.75
-## @headitem Value @tab @tab Description
-## @item @qcode{'round'} @tab @tab Round @math{k} to the nearest integer.  This
+## @multitable @columnfractions 0.2 0.75
+## @headitem Value @tab Description
+## @item @qcode{'round'} @tab Round @math{k} to the nearest integer.  This
 ## is the default.
-## @item @qcode{'floor'} @tab @tab Round @math{k} down to the next smaller
+## @item @qcode{'floor'} @tab Round @math{k} down to the next smaller
 ## integer.
-## @item @qcode{'weighted'} @tab @tab If @math{k = i + f}, where @math{i} is an
+## @item @qcode{'weighted'} @tab If @math{k = i + f}, where @math{i} is an
 ## integer and @math{f} is a fraction, compute a weighted mean with weight
 ## @math{(1 - f)} for the @math{(i + 1)}-th and @math{(n - i)}-th values, and
 ## full weight for the values between them.

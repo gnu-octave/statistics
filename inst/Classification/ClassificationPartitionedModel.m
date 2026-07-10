@@ -527,22 +527,22 @@ classdef ClassificationPartitionedModel
     ## The function predicts the response for each observation that was
     ## held out during training in the cross-validation process.
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
-    ## @headitem @var{Output} @tab @tab @var{Description}
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Output} @tab @var{Description}
     ##
-    ## @item @qcode{label} @tab @tab Predicted class labels, returned as a
+    ## @item @qcode{label} @tab Predicted class labels, returned as a
     ## vector or cell array. The type of @var{label} matches the type of
     ## @var{Y} in the original training data. Each element of @var{label}
     ## corresponds to the predicted class
     ## label for the corresponding row in @var{X}.
     ##
-    ## @item @qcode{Score} @tab @tab Classification scores, returned as a
+    ## @item @qcode{Score} @tab Classification scores, returned as a
     ## numeric matrix. Each row of @var{Score} corresponds to an observation,
     ## and each column corresponds to a class. The value in row @var{i} and
     ## column @var{j} is the
     ## classification score for class @var{j} for observation @var{i}.
     ##
-    ## @item @qcode{Cost} @tab @tab Classification costs, returned as a
+    ## @item @qcode{Cost} @tab Classification costs, returned as a
     ## numeric matrix. Each row of @var{Cost} corresponds to an observation,
     ## and each column corresponds to a class. The value in row @var{i}
     ## and column @var{j} is the classification cost for class @var{j} for

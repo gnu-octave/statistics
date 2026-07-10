@@ -42,16 +42,16 @@
 ## @code{@var{p} = dwtest (@var{r}, @var{x}, @var{name}, @var{value})} specifies
 ## additional options using @qcode{Name-Value} pair arguments:
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'Method'} @tab @tab @qcode{'exact'} to compute the exact p-value
+## @item @qcode{'Method'} @tab @qcode{'exact'} to compute the exact p-value
 ## from the null distribution of the statistic (a ratio of quadratic forms,
 ## evaluated with Imhof's method), or @qcode{'approximate'} to use a normal
 ## approximation based on the mean and variance of the statistic.  The default is
 ## @qcode{'exact'} for @math{n < 400} and @qcode{'approximate'} otherwise.
 ##
-## @item @qcode{'Tail'} @tab @tab The alternative hypothesis: @qcode{'both'}
+## @item @qcode{'Tail'} @tab The alternative hypothesis: @qcode{'both'}
 ## (default) for a nonzero autocorrelation, @qcode{'right'} for a positive
 ## autocorrelation, or @qcode{'left'} for a negative autocorrelation.
 ## @end multitable

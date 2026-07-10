@@ -36,18 +36,18 @@
 ## samples are roughly the same) we need to use this function.
 ##
 ## @subheading Arguments
-## @multitable @columnfractions 0.1 0.01 0.10 0.01 0.78
-## @headitem Variable @tab @tab Type @tab @tab Description
-## @item @var{X} @tab @tab int vector @tab @tab sample frequencies bins.
-## @item @var{N} @tab @tab int scalar @tab @tab Population size that was sampled
+## @multitable @columnfractions 0.1 0.10 0.78
+## @headitem Variable @tab Type @tab Description
+## @item @var{X} @tab int vector @tab sample frequencies bins.
+## @item @var{N} @tab int scalar @tab Population size that was sampled
 ## by @var{X}.  If @qcode{N < sum (@var{X})}, infinite number assumed.
-## @item @var{b} @tab @tab real vector @tab @tab confidence interval. If vector,
+## @item @var{b} @tab real vector @tab confidence interval. If vector,
 ## it should be the size of @var{X} containing confidence interval for each
 ## cells. If scalar, each cell will have the same value of b unless it is zero
 ## or -1. If value is 0, @var{b} = 0.02 is assumed which is standard choice at
 ## elections otherwise it is calculated in a way that one sample in a cell
 ## alteration defines the confidence interval.
-## @item @var{method} @tab @tab string @tab @tab An optional argument
+## @item @var{method} @tab string @tab An optional argument
 ## for defining the calculation method.  Available choices are
 ## @qcode{'bromaghin'} (default), @qcode{'cochran'}, and @qcode{agresti_cull}.
 ## @end multitable

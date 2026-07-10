@@ -258,24 +258,24 @@ classdef ExhaustiveSearcher
     ## @code{@var{obj} = ExhaustiveSearcher (@var{X}, @var{name}, @var{value})}
     ## allows customization through name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'Distance'} @tab @tab Distance metric, specified as a
+    ## @item @qcode{'Distance'} @tab Distance metric, specified as a
     ## character vector (e.g., @qcode{'euclidean'}, @qcode{'minkowski'}) or a
     ## function handle.  Default is @qcode{'euclidean'}.  See @code{pdist2} for
     ## supported metrics.
     ##
-    ## @item @qcode{'P'} @tab @tab a positive scalar specifying the exponent for
+    ## @item @qcode{'P'} @tab a positive scalar specifying the exponent for
     ## the Minkowski distance.  Valid only when @qcode{'Distance'} is
     ## @qcode{'minkowski'}.  Default is 2.
     ##
-    ## @item @qcode{'Scale'} @tab @tab a nonnegative vector with the same number
+    ## @item @qcode{'Scale'} @tab a nonnegative vector with the same number
     ## of elements as the columns in @var{X} specifying the scale parameter for
     ## the standardized Euclidean distance.  Valid only when
     ## @qcode{'Distance'} is @qcode{'seuclidean'}.  Default is @code{std (X)}.
     ##
-    ## @item @qcode{'Cov'} @tab @tab a positive definite matrix matching the
+    ## @item @qcode{'Cov'} @tab a positive definite matrix matching the
     ## number of columns in @var{X} specifying the covariance matrix for the
     ## Mahalanobis distance.  Valid only when @qcode{'Distance'} is
     ## @qcode{'mahalanobis'}.  Default is @code{cov (X)}.
@@ -411,13 +411,13 @@ classdef ExhaustiveSearcher
     ## @var{value})}
     ## allows additional options via name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'K'} @tab @tab A positive integer specifying the number of
+    ## @item @qcode{'K'} @tab A positive integer specifying the number of
     ## nearest neighbors to find. Default is 1.
     ##
-    ## @item @qcode{'IncludeTies'} @tab @tab Logical flag indicating whether to
+    ## @item @qcode{'IncludeTies'} @tab Logical flag indicating whether to
     ## include all neighbors tied with the @math{K}th smallest distance. Default
     ## is @qcode{false}. If @qcode{true}, @var{idx} and @var{D} are cell arrays.
     ## @end multitable
@@ -550,10 +550,10 @@ classdef ExhaustiveSearcher
     ## @code{[@var{idx}, @var{D}] = rangesearch (@dots{}, @var{name},
     ## @var{value})} allows additional options via name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'SortIndices'} @tab @tab Logical flag indicating whether to
+    ## @item @qcode{'SortIndices'} @tab Logical flag indicating whether to
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##

@@ -51,18 +51,18 @@
 ## @code{[@dots{}] = ztest2 (@dots{}, @var{Name}, @var{Value}, @dots{})}
 ## specifies one or more of the following @var{Name}/@var{Value} pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
-## @item @tab @qcode{'alpha'} @tab the significance level. Default is 0.05.
+## @multitable @columnfractions 0.2 0.75
+## @headitem @var{Name} @tab @var{Value}
+## @item @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @tab @qcode{'tail'} @tab a string specifying the alternative hypothesis
+## @item @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{'both'} @tab @math{p1} is not @math{p2}
+## @multitable @columnfractions 0.25 0.65
+## @item @qcode{'both'} @tab @math{p1} is not @math{p2}
 ## (two-tailed, default)
-## @item @tab @qcode{'left'} @tab @math{p1} is less than @math{p2}
+## @item @qcode{'left'} @tab @math{p1} is less than @math{p2}
 ## (left-tailed)
-## @item @tab @qcode{'right'} @tab @math{p1} is greater than @math{p2}
+## @item @qcode{'right'} @tab @math{p1} is greater than @math{p2}
 ## (right-tailed)
 ## @end multitable
 ##

@@ -409,21 +409,21 @@ classdef TriangularDistribution
     ## @code{plot (@var{pd}, @var{Name}, @var{Value})} specifies additional
     ## options with the @qcode{Name-Value} pair arguments listed below.
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'PlotType'} @tab @tab A character vector specifying the plot
+    ## @item @qcode{'PlotType'} @tab A character vector specifying the plot
     ## type.  @qcode{'pdf'} plots the probability density function (PDF).
     ## @qcode{'cdf'} plots the cumulative density function (CDF).
     ##
-    ## @item @qcode{'Discrete'} @tab @tab A logical scalar to specify whether to
+    ## @item @qcode{'Discrete'} @tab A logical scalar to specify whether to
     ## plot the PDF or CDF of a discrete distribution object as a line plot or a
     ## stem plot, by specifying @qcode{false} or @qcode{true}, respectively.  By
     ## default, it is @qcode{true} for discrete distributions and @qcode{false}
     ## for continuous distributions.  When @var{pd} is a continuous distribution
     ## object, this option is ignored.
     ##
-    ## @item @qcode{'Parent'} @tab @tab An axes graphics object for the plot. 
+    ## @item @qcode{'Parent'} @tab An axes graphics object for the plot.
     ## If
     ## not specified, the @code{plot} function plots into the current axes or
     ## creates a new axes object if one does not exist.

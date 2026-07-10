@@ -46,21 +46,21 @@
 ## @code{isoutlier (@var{x}, @var{method})} specifies a method for detecting
 ## outliers.  The following methods are available:
 ##
-## @multitable @columnfractions 0.13 0.02 0.8
-## @headitem Method @tab @tab Description
-## @item @qcode{'median'} @tab @tab Outliers are defined as elements more than
+## @multitable @columnfractions 0.13 0.8
+## @headitem Method @tab Description
+## @item @qcode{'median'} @tab Outliers are defined as elements more than
 ## three scaled MAD from the median.
-## @item @qcode{'mean'} @tab @tab Outliers are defined as elements more than
+## @item @qcode{'mean'} @tab Outliers are defined as elements more than
 ## three standard deviations from the mean.
-## @item @qcode{'quartiles'} @tab @tab Outliers are defined as elements more
+## @item @qcode{'quartiles'} @tab Outliers are defined as elements more
 ## than 1.5 interquartile ranges above the upper quartile (75 percent) or below
 ## the lower quartile (25 percent).  This method is useful when the data in
 ## @var{x} is not normally distributed.
-## @item @qcode{'grubbs'} @tab @tab Outliers are detected using Grubbs’ test for
+## @item @qcode{'grubbs'} @tab Outliers are detected using Grubbs’ test for
 ## outliers, which removes one outlier per iteration based on hypothesis
 ## testing.  This method assumes that the data in @var{x} is normally
 ## distributed.
-## @item @qcode{'gesd'} @tab @tab Outliers are detected using the generalized
+## @item @qcode{'gesd'} @tab Outliers are detected using the generalized
 ## extreme Studentized deviate test for outliers.  This iterative method is
 ## similar to @qcode{'grubbs'}, but can perform better when there are multiple
 ## outliers masking each other.
@@ -76,12 +76,12 @@
 ## @code{isoutlier (@var{x}, @var{movmethod}, @var{window})} specifies a moving
 ## method for detecting outliers.  The following methods are available:
 ##
-## @multitable @columnfractions 0.13 0.02 0.8
-## @headitem Method @tab @tab Description
-## @item @qcode{'movmedian'} @tab @tab Outliers are defined as elements more
+## @multitable @columnfractions 0.13 0.8
+## @headitem Method @tab Description
+## @item @qcode{'movmedian'} @tab Outliers are defined as elements more
 ## than three local scaled MAD from the local median over a window length
 ## specified by @var{window}.
-## @item @qcode{'movmean'} @tab @tab Outliers are defined as elements more than
+## @item @qcode{'movmean'} @tab Outliers are defined as elements more than
 ## three local standard deviations from the from the local mean over a window
 ## length specified by @var{window}.
 ## @end multitable

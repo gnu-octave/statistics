@@ -38,7 +38,7 @@
 ##
 ## The following @qcode{Name-Value} pairs are supported:
 ##
-## @multitable @columnfractions 0.18 0.8
+## @multitable @columnfractions 0.2 0.8
 ## @headitem @var{Name} @tab @var{Value}
 ##
 ## @item @qcode{'Distribution'} @tab The hypothesized family:

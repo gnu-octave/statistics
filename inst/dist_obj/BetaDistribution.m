@@ -453,14 +453,14 @@ classdef BetaDistribution
     ## confidence intervals with additional options specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'Alpha'} @tab @tab A scalar value in the range @math{(0,1)}
+    ## @item @qcode{'Alpha'} @tab A scalar value in the range @math{(0,1)}
     ## specifying the significance level for the confidence interval.  The
     ## default value 0.05 corresponds to a 95% confidence interval.
     ##
-    ## @item @qcode{'Parameter'} @tab @tab A character vector or a cell array of
+    ## @item @qcode{'Parameter'} @tab A character vector or a cell array of
     ## character vectors specifying the parameter names for which to compute
     ## confidence intervals.  By default, @code{paramci} computes confidence
     ## intervals for all distribution parameters.

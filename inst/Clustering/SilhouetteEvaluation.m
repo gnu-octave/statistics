@@ -133,13 +133,13 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ##
     ## Optional name-value pairs:
     ##
-    ## @multitable @columnfractions 0.20 0.02 0.78
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.20 0.78
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'Distance'} @tab @tab Distance metric name, function handle,
+    ## @item @qcode{'Distance'} @tab Distance metric name, function handle,
     ## or numeric pdist vector.  Default: @qcode{'sqeuclidean'}.
     ##
-    ## @item @qcode{'ClusterPriors'} @tab @tab Either @qcode{'empirical'}
+    ## @item @qcode{'ClusterPriors'} @tab Either @qcode{'empirical'}
     ## (default) or @qcode{'equal'}.
     ## @end multitable
     ##

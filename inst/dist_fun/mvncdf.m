@@ -62,15 +62,15 @@
 ## which controls specific parameters for the numerical integration used to
 ## compute @var{p}. The required fields are:
 ##
-## @multitable @columnfractions 0.2 0.05 0.75
-## @item @qcode{'TolFun'} @tab @tab Maximum absolute error tolerance.  Default
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{'TolFun'} @tab Maximum absolute error tolerance.  Default
 ## is 1e-8 for D < 4, or 1e-4 for D >= 4.  Note that for bivariate normal cdf,
 ## the Octave implementation has a precision of more than 1e-10.
 ##
-## @item @qcode{'MaxFunEvals'} @tab @tab Maximum number of integrand
+## @item @qcode{'MaxFunEvals'} @tab Maximum number of integrand
 ## evaluations.  Default is 1e7 for D > 4.
 ##
-## @item @qcode{'Display'} @tab @tab Display options.  Choices are @qcode{'off'}
+## @item @qcode{'Display'} @tab Display options.  Choices are @qcode{'off'}
 ## (default), @qcode{'iter'}, which shows the probability and estimated error at
 ## each repetition, and @qcode{'final'}, which shows the final probability and
 ## related error after the integrand has converged successfully.

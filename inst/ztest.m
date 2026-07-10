@@ -53,18 +53,18 @@
 ## @code{[@dots{}] = ztest (@dots{}, @var{Name}, @var{Value}, @dots{})}
 ## specifies one or more of the following @var{Name}/@var{Value} pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
-## @item @tab "alpha" @tab the significance level. Default is 0.05.
+## @multitable @columnfractions 0.2 0.75
+## @headitem @var{Name} @tab @var{Value}
+## @item "alpha" @tab the significance level. Default is 0.05.
 ##
-## @item @tab "dim" @tab dimension to work along a matrix or an N-D array.
+## @item "dim" @tab dimension to work along a matrix or an N-D array.
 ##
-## @item @tab "tail" @tab a string specifying the alternative hypothesis:
+## @item "tail" @tab a string specifying the alternative hypothesis:
 ## @end multitable
-## @multitable @columnfractions 0.1 0.15 0.75
-## @item @tab "both" @tab "mean is not @var{m}" (two-tailed, default)
-## @item @tab "left" @tab "mean is less than @var{m}" (left-tailed)
-## @item @tab "right" @tab "mean is greater than @var{m}" (right-tailed)
+## @multitable @columnfractions 0.15 0.75
+## @item "both" @tab "mean is not @var{m}" (two-tailed, default)
+## @item "left" @tab "mean is less than @var{m}" (left-tailed)
+## @item "right" @tab "mean is greater than @var{m}" (right-tailed)
 ## @end multitable
 ##
 ## @seealso{ttest, vartest, signtest, kstest}

@@ -51,13 +51,13 @@
 ##
 ## The following @qcode{Name-Value} pairs control the model:
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'model'} @tab @tab The model type: @qcode{'nominal'} (default),
+## @item @qcode{'model'} @tab The model type: @qcode{'nominal'} (default),
 ## @qcode{'ordinal'}, or @qcode{'hierarchical'}.
 ##
-## @item @qcode{'interactions'} @tab @tab @qcode{'on'} to include category-specific
+## @item @qcode{'interactions'} @tab @qcode{'on'} to include category-specific
 ## coefficients, or @qcode{'off'} for a common set of coefficients with
 ## category-specific intercepts only.  Default is @qcode{'on'} for nominal and
 ## hierarchical models and @qcode{'off'} for ordinal models.  With
@@ -65,17 +65,17 @@
 ## @qcode{'interactions','off'}, @var{B} is a @math{(K-1+P)x1} vector holding the
 ## @math{K-1} intercepts followed by the @math{P} common slopes.
 ##
-## @item @qcode{'link'} @tab @tab The link function for ordinal and hierarchical
+## @item @qcode{'link'} @tab The link function for ordinal and hierarchical
 ## models: @qcode{'logit'} (default), @qcode{'probit'}, @qcode{'comploglog'}, or
 ## @qcode{'loglog'}.  Nominal models always use the multinomial logit link.
 ##
-## @item @qcode{'type'} @tab @tab The kind of probability returned:
+## @item @qcode{'type'} @tab The kind of probability returned:
 ## @qcode{'category'} (default, @math{NxK} category probabilities),
 ## @qcode{'cumulative'} (@math{Nx(K-1)} cumulative probabilities of the first
 ## @math{K-1} categories), or @qcode{'conditional'} (@math{Nx(K-1)} conditional
 ## probabilities of each category given membership in that or a later category).
 ##
-## @item @qcode{'confidence'} @tab @tab The confidence level for @var{dlo} and
+## @item @qcode{'confidence'} @tab The confidence level for @var{dlo} and
 ## @var{dhi}, a scalar in the range @math{(0,1)}.  Default is @math{0.95}.
 ## @end multitable
 ##

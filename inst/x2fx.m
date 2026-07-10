@@ -31,11 +31,11 @@
 ## @code{x2fx} returns the design matrix for a linear additive model with a
 ## constant term.  @var{model} can be any one of the following strings:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "linear" @tab Constant and linear terms (the default)
-## @item @tab "interaction" @tab Constant, linear, and interaction terms
-## @item @tab "quadratic" @tab Constant, linear, interaction, and squared terms
-## @item @tab "purequadratic" @tab Constant, linear, and squared terms
+## @multitable @columnfractions 0.2 0.75
+## @item "linear" @tab Constant and linear terms (the default)
+## @item "interaction" @tab Constant, linear, and interaction terms
+## @item "quadratic" @tab Constant, linear, interaction, and squared terms
+## @item "purequadratic" @tab Constant, linear, and squared terms
 ## @end multitable
 ##
 ## If @var{x} has n columns, the order of the columns of @var{d} for a full

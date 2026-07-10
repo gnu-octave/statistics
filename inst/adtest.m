@@ -62,6 +62,7 @@
 ## @end itemize
 ##
 ## @multitable @columnfractions 0.25 0.75
+## @headitem @var{Name} @tab @var{Value}
 ## @item "Alpha" @tab Significance level alpha for the test.  Any scalar
 ## numeric value between 0 and 1.  The default is 0.05 corresponding to the 5%
 ## significance level.

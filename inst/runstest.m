@@ -45,11 +45,11 @@
 ## additional options to the above tests by one or more @var{Name}-@var{Value}
 ## pair arguments.
 ##
-## @multitable @columnfractions 0.15 0.05 0.8
-## @headitem Name @tab @tab Value
-## @item @qcode{'alpha'} @tab @tab the significance level. Default is 0.05.
+## @multitable @columnfractions 0.15 0.8
+## @headitem Name @tab Value
+## @item @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @qcode{'method'} @tab @tab a string specifying the method used to
+## @item @qcode{'method'} @tab a string specifying the method used to
 ## compute the p-value of the test.  It can be either @qcode{'exact'} to use an
 ## exact algorithm, or @qcode{'approximate'} to use a normal approximation.  The
 ## default is @qcode{'exact'} for runs above/below, and for runs up/down when
@@ -57,12 +57,12 @@
 ## and the length of @var{x} is greater than 50, then the default is
 ## @qcode{'approximate'}, and the @qcode{'exact'} method is not available.
 ##
-## @item @qcode{'tail'} @tab @tab a string specifying the alternative hypothesis
+## @item @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
-## @multitable @columnfractions 0.2 0.15 0.05 0.5
-## @item @tab @qcode{'both'} @tab @tab two-tailed (default)
-## @item @tab @qcode{'left'} @tab @tab left-tailed
-## @item @tab @qcode{'right'} @tab @tab right-tailed
+## @multitable @columnfractions 0.15 0.5
+## @item @qcode{'both'} @tab two-tailed (default)
+## @item @qcode{'left'} @tab left-tailed
+## @item @qcode{'right'} @tab right-tailed
 ## @end multitable
 ##
 ## @seealso{signrank, signtest}

@@ -62,39 +62,39 @@
 ## @code{[@var{h}, @var{p}, @var{stats}] = chi2gof (@var{x})} also returns a
 ## @var{stats} structure with the following fields:
 ##
-## @multitable @columnfractions 0.05 0.3 0.65
-## @item @tab "chi2stat" @tab Chi-square statistic
-## @item @tab "df" @tab Degrees of freedom
-## @item @tab "binedges" @tab Vector of bin binedges after pooling
-## @item @tab "O" @tab Observed count in each bin
-## @item @tab "E" @tab Expected count in each bin
+## @multitable @columnfractions 0.3 0.65
+## @item "chi2stat" @tab Chi-square statistic
+## @item "df" @tab Degrees of freedom
+## @item "binedges" @tab Vector of bin binedges after pooling
+## @item "O" @tab Observed count in each bin
+## @item "E" @tab Expected count in each bin
 ## @end multitable
 ##
 ## @code{[@dots{}] = chi2gof (@var{x}, @var{Name}, @var{Value}, @dots{})}
 ## specifies optional Name/Value pair arguments chosen from the following list.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
-## @item @tab @qcode{'nbins'} @tab The number of bins to use.  Default is 10.
-## @item @tab @qcode{'binctrs'} @tab A vector of bin centers.
-## @item @tab @qcode{'binedges'} @tab A vector of bin binedges.
-## @item @tab @qcode{'cdf'} @tab A fully specified cumulative distribution
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'nbins'} @tab The number of bins to use.  Default is 10.
+## @item @qcode{'binctrs'} @tab A vector of bin centers.
+## @item @qcode{'binedges'} @tab A vector of bin binedges.
+## @item @qcode{'cdf'} @tab A fully specified cumulative distribution
 ## function or a function handle provided in a cell array whose first element is
 ## a function handle, and all later elements are its parameter values.  The
 ## function must take @var{x} values as its first argument, and other parameters
 ## as later arguments.
-## @item @tab @qcode{'expected'} @tab A vector with one element per bin
+## @item @qcode{'expected'} @tab A vector with one element per bin
 ## specifying the expected counts for each bin.
-## @item @tab @qcode{'nparams'} @tab The number of estimated parameters; used to
+## @item @qcode{'nparams'} @tab The number of estimated parameters; used to
 ## adjust the degrees of freedom to be @qcode{@var{nbins} - 1 - @var{nparams}},
 ## where @var{nbins} is the number of bins.
-## @item @tab @qcode{'emin'} @tab The minimum allowed expected value for a bin;
+## @item @qcode{'emin'} @tab The minimum allowed expected value for a bin;
 ## any bin in either tail having an expected value less than this amount is
 ## pooled with a neighboring bin.  Use the value 0 to prevent pooling.  Default
 ## is 5.
-## @item @tab @qcode{'frequency'} @tab A vector of the same length as @var{x}
+## @item @qcode{'frequency'} @tab A vector of the same length as @var{x}
 ## containing the frequency of the corresponding @var{x} values.
-## @item @tab @qcode{'alpha'} @tab An @var{alpha} value such that the hypothesis
+## @item @qcode{'alpha'} @tab An @var{alpha} value such that the hypothesis
 ## is rejected if @qcode{@var{p} < @var{alpha}}.  Default is
 ## @qcode{@var{alpha} = 0.05}.
 ## @end multitable

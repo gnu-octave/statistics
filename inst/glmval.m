@@ -40,21 +40,21 @@
 ## @code{[@dots{}] = glmval (@dots{}, @var{Name}, @var{Value})} specifies
 ## additional options using @qcode{Name-Value} pair arguments.
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'confidence'} @tab @tab A scalar value between 0 and 1
+## @item @qcode{'confidence'} @tab A scalar value between 0 and 1
 ## specifying the confidence level for the confidence bounds.
 ##
-## @item @qcode{'Constant'} @tab @tab A character vector specifying whether to
+## @item @qcode{'Constant'} @tab A character vector specifying whether to
 ## include a constant term in the model.  Valid options are @var{"on"} (default)
 ## and @var{"off"}.
 ##
-## @item @qcode{'simultaneous'} @tab @tab A logical or numeric (@code{0} or
+## @item @qcode{'simultaneous'} @tab A logical or numeric (@code{0} or
 ## @code{1}) scalar specifying whether the confidence bounds are simultaneous.
 ## The default is @code{false}, which yields nonsimultaneous (pointwise) bounds.
 ##
-## @item @qcode{'size'} @tab @tab A numeric scalar or a vector with one value
+## @item @qcode{'size'} @tab A numeric scalar or a vector with one value
 ## for each row of @var{X} specifying the size parameter @math{N} for a binomial
 ## model.  @qcode{'BinomialSize'} is accepted as an alias for @qcode{'size'}.
 ## @end multitable

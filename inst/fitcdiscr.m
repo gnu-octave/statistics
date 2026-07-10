@@ -42,43 +42,43 @@
 ##
 ## @subheading Model Parameters
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
+## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the names of the predictors. The length of this array must match
 ## the number of columns in @var{X}.
 ##
-## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+## @item @qcode{'ResponseName'} @tab A character vector specifying the
 ## name of the response variable.
 ##
-## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the Discriminant model. @qcode{ClassNames}
 ## are of the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{'Prior'} @tab @tab A numeric vector specifying the prior
+## @item @qcode{'Prior'} @tab A numeric vector specifying the prior
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
 ## class probabilities or @qcode{'uniform'} to assume equal class probabilities.
 ##
-## @item @qcode{'Cost'} @tab @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab A @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,
 ## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{'DiscrimType'} @tab @tab A character vector or string scalar
+## @item @qcode{'DiscrimType'} @tab A character vector or string scalar
 ## specifying the type of discriminant analysis to perform. The only supported
 ## value is @qcode{'linear'}.
 ##
-## @item @qcode{'FillCoeffs'} @tab @tab A character vector or string scalar
+## @item @qcode{'FillCoeffs'} @tab A character vector or string scalar
 ## with values @qcode{'on'} or @qcode{'off'} specifying whether to fill the
 ## coefficients after fitting. If set to @qcode{'on'}, the coefficients are
 ## computed during model fitting, which can be useful for prediction.
 ##
-## @item @qcode{'Gamma'} @tab @tab A numeric scalar specifying the
+## @item @qcode{'Gamma'} @tab A numeric scalar specifying the
 ## regularization parameter for the covariance matrix. It adjusts the linear
 ## discriminant analysis to make the model more stable in the presence of
 ## multicollinearity or small sample sizes. A value of 0 corresponds to no

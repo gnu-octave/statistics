@@ -45,9 +45,9 @@
 ## @code{[@var{p}, @var{pval}, @var{stats}] = fishertest (@dots{})} returns the
 ## structure @var{stats} with the following fields:
 ##
-## @multitable @columnfractions 0.05 0.3 0.65
-## @item @tab @qcode{OddsRatio} @tab -- the odds ratio
-## @item @tab @qcode{ConfidenceInterval} @tab -- the asymptotic confidence
+## @multitable @columnfractions 0.3 0.65
+## @item @qcode{OddsRatio} @tab -- the odds ratio
+## @item @qcode{ConfidenceInterval} @tab -- the asymptotic confidence
 ## interval for the odds ratio.  If any of the four entries in the contingency
 ## table @var{x} is zero, the confidence interval will not be computed, and
 ## @qcode{[-Inf Inf]} will be displayed.
@@ -56,17 +56,17 @@
 ## @code{[@dots{}] = fishertest (@dots{}, @var{name}, @var{value}, @dots{})}
 ## specifies one or more of the following name/value pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
-## @item @tab @qcode{'alpha'} @tab the significance level. Default is 0.05.
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'alpha'} @tab the significance level. Default is 0.05.
 ##
-## @item @tab @qcode{'tail'} @tab a string specifying the alternative hypothesis
+## @item @qcode{'tail'} @tab a string specifying the alternative hypothesis
 ## @end multitable
-## @multitable @columnfractions 0.1 0.25 0.65
-## @item @tab @qcode{'both'} @tab odds ratio not equal to 1, indicating
+## @multitable @columnfractions 0.25 0.65
+## @item @qcode{'both'} @tab odds ratio not equal to 1, indicating
 ## association between two variables (two-tailed test, default)
-## @item @tab @qcode{'left'} @tab odds ratio greater than 1 (right-tailed test)
-## @item @tab @qcode{'right'} @tab odds ratio is less than 1 (left-tailed test)
+## @item @qcode{'left'} @tab odds ratio greater than 1 (right-tailed test)
+## @item @qcode{'right'} @tab odds ratio is less than 1 (left-tailed test)
 ## @end multitable
 ##
 ## @seealso{crosstab, chi2test, mcnemar_test, ztest2}

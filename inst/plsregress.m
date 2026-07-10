@@ -92,16 +92,16 @@
 ## @code{[@dots{}] = plsregress (@dots{}, @var{Name}, @var{Value}, @dots{})}
 ## specifies one or more of the following @var{Name}/@var{Value} pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
-## @item @tab @qcode{'CV'} @tab The method used to compute @var{mse}.  When
+## @multitable @columnfractions 0.2 0.75
+## @headitem @var{Name} @tab @var{Value}
+## @item @qcode{'CV'} @tab The method used to compute @var{mse}.  When
 ## @var{Value} is a positive integer @math{K}, @code{plsregress} uses
 ## @math{K}-fold cross-validation.  Set @var{Value} to a cross-validation
 ## partition, created using @code{cvpartition}, to use other forms of
 ## cross-validation.  Set @var{Value} to @qcode{'resubstitution'} to use both
 ## @var{X} and @var{Y} to fit the model and to estimate the mean squared errors,
 ## without cross-validation. By default, @qcode{@var{Value} = "resubstitution"}.
-## @item @tab @qcode{'MCReps'} @tab A positive integer indicating the number of
+## @item @qcode{'MCReps'} @tab A positive integer indicating the number of
 ## Monte-Carlo repetitions for cross-validation.  By default,
 ## @qcode{@var{Value} = 1}.  A different @qcode{'MCReps'} value is only
 ## meaningful when using the @qcode{'HoldOut'} method for cross-validation,

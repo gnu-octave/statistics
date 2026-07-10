@@ -47,18 +47,18 @@ classdef RegressionGAM
 ## an object of class RegressionGAM with additional properties specified by
 ## @qcode{Name-Value} pair arguments listed below.
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab @var{Name} @tab @var{Value}
+## @multitable @columnfractions 0.2 0.75
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @tab @qcode{'predictors'} @tab Predictor Variable names, specified as
+## @item @qcode{'predictors'} @tab Predictor Variable names, specified as
 ## a row vector cell of strings with the same length as the columns in @var{X}.
 ## If omitted, the program will generate default variable names
 ## @qcode{(x1, x2, ..., xn)} for each column in @var{X}.
 ##
-## @item @tab @qcode{'responsename'} @tab Response Variable Name, specified as
+## @item @qcode{'responsename'} @tab Response Variable Name, specified as
 ## a string.  If omitted, the default value is @qcode{'Y'}.
 ##
-## @item @tab @qcode{'formula'} @tab a model specification given as a string in
+## @item @qcode{'formula'} @tab a model specification given as a string in
 ## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
 ## and @qcode{terms} the predictor variables.  The formula can be used to
 ## specify a subset of variables for training model.  For example:
@@ -73,7 +73,7 @@ classdef RegressionGAM
 ## @var{obj} class object as a matrix containing the column indexes for each
 ## term including both the predictors and the interactions used.
 ##
-## @item @tab @qcode{'interactions'} @tab a logical matrix, a positive integer
+## @item @qcode{'interactions'} @tab a logical matrix, a positive integer
 ## scalar, or the string @qcode{'all'} for defining the interactions between
 ## predictor variables.  When given a logical matrix, it must have the same
 ## number of columns as @var{X} and each row corresponds to a different
@@ -86,28 +86,28 @@ classdef RegressionGAM
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @tab @qcode{'knots'} @tab a scalar or a row vector with the same
+## @item @qcode{'knots'} @tab a scalar or a row vector with the same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{'order'} @tab a scalar or a row vector with the same
+## @item @qcode{'order'} @tab a scalar or a row vector with the same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{'dof'} @tab a scalar or a row vector with the same columns
+## @item @qcode{'dof'} @tab a scalar or a row vector with the same columns
 ## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can
 ## parse a row vector with different degrees of freedom for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @tab @qcode{'tol'} @tab a positive scalar to set the tolerance for
+## @item @qcode{'tol'} @tab a positive scalar to set the tolerance for
 ## convergence during training. By default, it is set to @qcode{1e-3}.
 ## @end multitable
 ##
@@ -425,14 +425,14 @@ classdef RegressionGAM
     ## aforementioned results with additional properties specified by
     ## @qcode{Name-Value} pair arguments listed below.
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'alpha'} @tab @tab significance level of the prediction
+    ## @item @qcode{'alpha'} @tab significance level of the prediction
     ## intervals @var{yInt}, specified as scalar in range @qcode{[0,1]}. The
     ## default value is 0.05, which corresponds to 95% prediction intervals.
     ##
-    ## @item @qcode{'includeinteractions'} @tab @tab a boolean flag to include
+    ## @item @qcode{'includeinteractions'} @tab a boolean flag to include
     ## interactions to predict new values based on @var{Xfit}.  By default,
     ## @qcode{'includeinteractions'} is @qcode{true} when the GAM model in
     ## @var{obj}

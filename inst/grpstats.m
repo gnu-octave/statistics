@@ -78,20 +78,20 @@
 ## @var{whichstats} can also contain function handles for custom statistics.
 ##
 ## The available statistics are:
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab @qcode{'mean'}   @tab Mean of each group.
-## @item @tab @qcode{'median'} @tab Median of each group.
-## @item @tab @qcode{'sem'}    @tab Standard error of the mean for each group.
-## @item @tab @qcode{'std'}    @tab Standard deviation of each group.
-## @item @tab @qcode{'var'}    @tab Variance of each group.
-## @item @tab @qcode{'min'}    @tab Minimum value in each group.
-## @item @tab @qcode{'max'}    @tab Maximum value in each group.
-## @item @tab @qcode{'range'}  @tab Difference between max and min in each
+## @multitable @columnfractions 0.2 0.75
+## @item @qcode{'mean'} @tab Mean of each group.
+## @item @qcode{'median'} @tab Median of each group.
+## @item @qcode{'sem'} @tab Standard error of the mean for each group.
+## @item @qcode{'std'} @tab Standard deviation of each group.
+## @item @qcode{'var'} @tab Variance of each group.
+## @item @qcode{'min'} @tab Minimum value in each group.
+## @item @qcode{'max'} @tab Maximum value in each group.
+## @item @qcode{'range'} @tab Difference between max and min in each
 ## group.
-## @item @tab @qcode{'numel'}  @tab Number of elements (count) in each group.
-## @item @tab @qcode{'meanci'} @tab Confidence interval for the mean.
-## @item @tab @qcode{'predci'} @tab Prediction interval for a new observation.
-## @item @tab @qcode{'gname'}  @tab Group names.
+## @item @qcode{'numel'} @tab Number of elements (count) in each group.
+## @item @qcode{'meanci'} @tab Confidence interval for the mean.
+## @item @qcode{'predci'} @tab Prediction interval for a new observation.
+## @item @qcode{'gname'} @tab Group names.
 ## @end multitable
 ##
 ## @code{[@dots{}] = grpstats (@dots{}, @qcode{'Alpha'}, @var{alpha})} specifies
@@ -132,13 +132,13 @@
 ## For table input specifically, @code{grpstats} also accepts the following
 ## paired arguments.
 ##
-## @multitable @columnfractions 0.2 0.05 0.75
-## @headitem Name @tab @tab Value
-## @item @qcode{'DataVars'} @tab @tab A vector specifying the variables in
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'DataVars'} @tab A vector specifying the variables in
 ## @var{tbl}, for which to calculate the specified statistics.  The vector can
 ## be any of the valid options for indexing table variables.
 ##
-## @item @qcode{'VarNames'} @tab @tab A cell array of character vectors or a
+## @item @qcode{'VarNames'} @tab A cell array of character vectors or a
 ## string array specifying the names of the variables in the output table.  The
 ## number of specified names must match the number of expected variables in the
 ## output table.

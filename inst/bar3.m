@@ -74,20 +74,20 @@
 ## @code{bar3 (@dots{}, @var{name}, @var{value})} specifies one or more of the
 ## following name/value pairs:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @headitem @tab Name @tab Value
-## @item @tab @qcode{'width'} @tab A two-element vector specifying the width
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'width'} @tab A two-element vector specifying the width
 ## of the bars along the @qcode{x-} and @qcode{y-axes}, respectively.  Each
 ## element must be in the range @math{(0,1]}.
 ##
-## @item @tab @qcode{'color'} @tab A character or a cellstr vector, or a
+## @item @qcode{'color'} @tab A character or a cellstr vector, or a
 ## numerical @math{Mx3} matrix following the same conventions as the @var{color}
 ## input argument.
 ##
-## @item @tab @qcode{'xlabel'} @tab A cellstr vector specifying the group names
+## @item @qcode{'xlabel'} @tab A cellstr vector specifying the group names
 ## along the @qcode{x-axis}.
 ##
-## @item @tab @qcode{'ylabel'} @tab A cellstr vector specifying the names of the
+## @item @qcode{'ylabel'} @tab A cellstr vector specifying the names of the
 ## bars in the same series along the @qcode{y-axis}.
 ## @end multitable
 ##

@@ -243,19 +243,19 @@ classdef KDTreeSearcher
     ## @code{@var{obj} = KDTreeSearcher (@var{X}, @var{name}, @var{value})}
     ## allows customization through name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'Distance'} @tab @tab Distance metric, specified as a
+    ## @item @qcode{'Distance'} @tab Distance metric, specified as a
     ## character vector (@qcode{'euclidean'}, @qcode{'cityblock'},
     ## @qcode{'minkowski'}, @qcode{'chebychev'}).  Default is
     ## @qcode{'euclidean'}.
     ##
-    ## @item @qcode{'P'} @tab @tab Minkowski distance exponent, a positive
+    ## @item @qcode{'P'} @tab Minkowski distance exponent, a positive
     ## scalar.  Valid only when @qcode{'Distance'} is @qcode{'minkowski'}.
     ## Default is 2.
     ##
-    ## @item @qcode{'BucketSize'} @tab @tab Maximum number of data points in the
+    ## @item @qcode{'BucketSize'} @tab Maximum number of data points in the
     ## leaf node of the KD-tree, a positive integer.  Default is 50.
     ## @end multitable
     ##
@@ -356,17 +356,17 @@ classdef KDTreeSearcher
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
     ## @var{value})} allows additional options via name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'K'} @tab @tab A positive integer specifying the number of
+    ## @item @qcode{'K'} @tab A positive integer specifying the number of
     ## nearest neighbors to find. Default is 1.
     ##
-    ## @item @qcode{'IncludeTies'} @tab @tab Logical flag indicating whether to
+    ## @item @qcode{'IncludeTies'} @tab Logical flag indicating whether to
     ## include all neighbors tied with the @math{K}th smallest distance. Default
     ## is @qcode{false}. If @qcode{true}, @var{idx} and @var{D} are cell arrays.
     ##
-    ## @item @qcode{'SortIndices'} @tab @tab Logical flag indicating whether to
+    ## @item @qcode{'SortIndices'} @tab Logical flag indicating whether to
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##
@@ -490,10 +490,10 @@ classdef KDTreeSearcher
     ## @var{value})}
     ## allows additional options via name-value pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'SortIndices'} @tab @tab Logical flag indicating whether to
+    ## @item @qcode{'SortIndices'} @tab Logical flag indicating whether to
     ## sort the indices by distance. Default is @qcode{true}.
     ## @end multitable
     ##

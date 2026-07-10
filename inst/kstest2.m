@@ -36,18 +36,19 @@
 ## shown below.
 ##
 ## @multitable @columnfractions 0.20 0.8
+## @headitem @var{Name} @tab @var{Value}
 ## @item "alpha" @tab A value @var{alpha} between 0 and 1 specifying the
 ## significance level.  Default is 0.05 for 5% significance.
 ##
 ## @item "tail" @tab A string indicating the type of test:
 ## @end multitable
 ##
-## @multitable @columnfractions 0.03 0.2 0.77
-## @item @tab "unequal" @tab "F(X1) not equal to F(X2)" (two-sided) [Default]
+## @multitable @columnfractions 0.2 0.77
+## @item "unequal" @tab "F(X1) not equal to F(X2)" (two-sided) [Default]
 ##
-## @item @tab "larger" @tab "F(X1) > F(X2)" (one-sided)
+## @item "larger" @tab "F(X1) > F(X2)" (one-sided)
 ##
-## @item @tab "smaller" @tab "F(X1) < F(X2)" (one-sided)
+## @item "smaller" @tab "F(X1) < F(X2)" (one-sided)
 ## @end multitable
 ##
 ## The two-sided test uses the maximum absolute difference between the cdfs of

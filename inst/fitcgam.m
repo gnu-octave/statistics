@@ -40,28 +40,28 @@
 ##
 ## @subheading Model Parameters
 ##
-## @multitable @columnfractions 0.18 0.02 0.8
-## @headitem @var{Name} @tab @tab @var{Value}
+## @multitable @columnfractions 0.18 0.8
+## @headitem @var{Name} @tab @var{Value}
 ##
-## @item @qcode{'PredictorNames'} @tab @tab A cell array of character vectors
+## @item @qcode{'PredictorNames'} @tab A cell array of character vectors
 ## specifying the names of the predictors. The length of this array must match
 ## the number of columns in @var{X}.
 ##
-## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+## @item @qcode{'ResponseName'} @tab A character vector specifying the
 ## name of the response variable.
 ##
-## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+## @item @qcode{'ClassNames'} @tab Names of the classes in the class
 ## labels, @var{Y}, used for fitting the Discriminant model. @qcode{ClassNames}
 ## are of the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{'Cost'} @tab @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab A @math{NxR} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,
 ## otherwise 0. cost matrix can be altered use @code{@var{Mdl.cost} = somecost}.
 ## default value @qcode{@var{cost} = ones(rows(X),numel(unique(Y)))}.
 ##
-## @item @qcode{'Formula'} @tab @tab A model specification given as a string in
+## @item @qcode{'Formula'} @tab A model specification given as a string in
 ## the form @qcode{'Y ~ terms'} where @qcode{Y} represents the response variable
 ## and @qcode{terms} the predictor variables.  The formula can be used to
 ## specify a subset of variables for training model.  For example:
@@ -76,7 +76,7 @@
 ## @var{obj} class object as a matrix containing the column indexes for each
 ## term including both the predictors and the interactions used.
 ##
-## @item @qcode{'Interactions'} @tab @tab A logical matrix, a positive integer
+## @item @qcode{'Interactions'} @tab A logical matrix, a positive integer
 ## scalar, or the string @qcode{'all'} for defining the interactions between
 ## predictor variables.  When given a logical matrix, it must have the same
 ## number of columns as @var{X} and each row corresponds to a different
@@ -89,21 +89,21 @@
 ## appended to @var{X} are referenced in the @qcode{IntMatrix} field of the
 ## @var{obj} class object.
 ##
-## @item @qcode{'Knots'} @tab @tab A scalar or a row vector with the same
+## @item @qcode{'Knots'} @tab A scalar or a row vector with the same
 ## columns as @var{X}.  It defines the knots for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 5, hence expanded to @qcode{ones (1, columns (X)) * 5}.  You can
 ## parse a row vector with different number of knots for each predictor
 ## variable to be fitted with, although not recommended.
 ##
-## @item @qcode{'Order'} @tab @tab A scalar or a row vector with the same
+## @item @qcode{'Order'} @tab A scalar or a row vector with the same
 ## columns as @var{X}.  It defines the order of the polynomial when training the
 ## GAM.  As a scalar, it is expanded to a row vector.  The default values is 3,
 ## hence expanded to @qcode{ones (1, columns (X)) * 3}.  You can parse a row
 ## vector with different number of polynomial order for each predictor variable
 ## to be fitted with, although not recommended.
 ##
-## @item @qcode{'DoF'} @tab @tab A scalar or a row vector with the same columns
+## @item @qcode{'DoF'} @tab A scalar or a row vector with the same columns
 ## as @var{X}.  It defines the degrees of freedom for fitting a polynomial when
 ## training the GAM.  As a scalar, it is expanded to a row vector.  The default
 ## value is 8, hence expanded to @qcode{ones (1, columns (X)) * 8}.  You can

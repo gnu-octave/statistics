@@ -31,12 +31,12 @@
 ## @code{manovacluster (@var{stats}, @var{method})} uses the @var{method}
 ## algorithm in place of single linkage.  The available methods are:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "single" @tab --- nearest distance
-## @item @tab "complete" @tab --- furthest distance
-## @item @tab "average" @tab --- average distance
-## @item @tab "centroid" @tab --- center of mass distance
-## @item @tab "ward" @tab --- inner squared distance
+## @multitable @columnfractions 0.2 0.75
+## @item "single" @tab --- nearest distance
+## @item "complete" @tab --- furthest distance
+## @item "average" @tab --- average distance
+## @item "centroid" @tab --- center of mass distance
+## @item "ward" @tab --- inner squared distance
 ## @end multitable
 ##
 ## @code{@var{h} = manovacluster (@dots{})} returns a vector of line handles.

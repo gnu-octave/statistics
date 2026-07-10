@@ -49,27 +49,27 @@
 ## @code{[@var{d}, @var{p}, @var{stats}] = manova1 (@dots{})} returns a STATS
 ## structure with the following fields:
 ##
-## @multitable @columnfractions 0.05 0.2 0.75
-## @item @tab "W" @tab within-group sum of squares and products matrix
-## @item @tab "B" @tab between-group sum of squares and products matrix
-## @item @tab "T" @tab total sum of squares and products matrix
-## @item @tab "dfW" @tab degrees of freedom for WSSP matrix
-## @item @tab "dfB" @tab degrees of freedom for BSSP matrix
-## @item @tab "dfT" @tab degrees of freedom for TSSP matrix
-## @item @tab "lambda" @tab value of Wilk's lambda (the test statistic)
-## @item @tab "chisq" @tab transformation of lambda to a chi-square distribution
-## @item @tab "chisqdf" @tab degrees of freedom for chisq
-## @item @tab "eigenval" @tab eigenvalues of (WSSP^-1) * BSSP
-## @item @tab "eigenvec" @tab eigenvectors of (WSSP^-1) * BSSP; these are the
+## @multitable @columnfractions 0.2 0.75
+## @item "W" @tab within-group sum of squares and products matrix
+## @item "B" @tab between-group sum of squares and products matrix
+## @item "T" @tab total sum of squares and products matrix
+## @item "dfW" @tab degrees of freedom for WSSP matrix
+## @item "dfB" @tab degrees of freedom for BSSP matrix
+## @item "dfT" @tab degrees of freedom for TSSP matrix
+## @item "lambda" @tab value of Wilk's lambda (the test statistic)
+## @item "chisq" @tab transformation of lambda to a chi-square distribution
+## @item "chisqdf" @tab degrees of freedom for chisq
+## @item "eigenval" @tab eigenvalues of (WSSP^-1) * BSSP
+## @item "eigenvec" @tab eigenvectors of (WSSP^-1) * BSSP; these are the
 ## coefficients for canonical variables, and they are scaled so the within-group
 ## variance of C is 1
-## @item @tab "canon" @tab canonical variables, equal to XC*eigenvec, where XC
+## @item "canon" @tab canonical variables, equal to XC*eigenvec, where XC
 ## is X with columns centered by subtracting their means
-## @item @tab "mdist" @tab Mahalanobis distance from each point to its group
+## @item "mdist" @tab Mahalanobis distance from each point to its group
 ## mean
-## @item @tab "gmdist" @tab Mahalanobis distances between each pair of group
+## @item "gmdist" @tab Mahalanobis distances between each pair of group
 ## means
-## @item @tab "gnames" @tab Group names
+## @item "gnames" @tab Group names
 ## @end multitable
 ##
 ## The canonical variables C have the property that C(:,1) is the linear

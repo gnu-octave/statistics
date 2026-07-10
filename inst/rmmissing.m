@@ -60,14 +60,14 @@
 ## @code{@var{R} = rmmissing (@dots{}, @var{Name}, @var{Value})} also accepts
 ## the following paired arguments.
 ##
-## @multitable @columnfractions 0.2 0.05 0.75
-## @headitem Name @tab @tab Value
-## @item @qcode{'MinNumMissing'} @tab @tab A positive integer scalar value
+## @multitable @columnfractions 0.2 0.75
+## @headitem Name @tab Value
+## @item @qcode{'MinNumMissing'} @tab A positive integer scalar value
 ## specifying the required minimum number of missing values for removing any
 ## particular row or column from a matrix input.  Note that this argument is
 ## ignored if input @var{A} is a vector.
 ##
-## @item @qcode{'MissingLocations'} @tab @tab A logical array of the same size
+## @item @qcode{'MissingLocations'} @tab A logical array of the same size
 ## as input @var{A} indexing the locations of missing values in input array
 ## @var{A}.  Note that specifying @qcode{'MissingLocations'} overrides any
 ## standard missing values in @var{A}.

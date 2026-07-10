@@ -160,22 +160,22 @@ classdef ClassificationSVM
     ## built-in functions.  Nevertheless, the @qcode{ScoreTransform} property
     ## always stores their function handle equivalent.
     ##
-    ## @multitable @columnfractions 0.2 0.05 0.75
-    ## @headitem @var{Value} @tab @tab @var{Description}
-    ## @item @qcode{'doublelogit'} @tab @tab @math{1 ./ (1 + exp (-2 * x))}
-    ## @item @qcode{'invlogit'} @tab @tab @math{log (x ./ (1 - x))}
-    ## @item @qcode{'ismax'} @tab @tab Sets the score for the class with the
+    ## @multitable @columnfractions 0.2 0.75
+    ## @headitem @var{Value} @tab @var{Description}
+    ## @item @qcode{'doublelogit'} @tab @math{1 ./ (1 + exp (-2 * x))}
+    ## @item @qcode{'invlogit'} @tab @math{log (x ./ (1 - x))}
+    ## @item @qcode{'ismax'} @tab Sets the score for the class with the
     ## largest score to 1, and for all other classes to 0
-    ## @item @qcode{'logit'} @tab @tab @math{1 ./ (1 + exp (-x))}
-    ## @item @qcode{'none'} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{'identity'} @tab @tab @math{x} (no transformation)
-    ## @item @qcode{'sign'} @tab @tab
+    ## @item @qcode{'logit'} @tab @math{1 ./ (1 + exp (-x))}
+    ## @item @qcode{'none'} @tab @math{x} (no transformation)
+    ## @item @qcode{'identity'} @tab @math{x} (no transformation)
+    ## @item @qcode{'sign'} @tab
     ## @math{-1 for x < 0, 0 for x = 0, 1 for x >
     ## 0}
-    ## @item @qcode{'symmetric'} @tab @tab @math{2 * x - 1}
-    ## @item @qcode{'symmetricismax'} @tab @tab Sets the score for the class
+    ## @item @qcode{'symmetric'} @tab @math{2 * x - 1}
+    ## @item @qcode{'symmetricismax'} @tab Sets the score for the class
     ## with the largest score to 1, and for all other classes to -1
-    ## @item @qcode{'symmetriclogit'} @tab @tab @math{2 ./ (1 + exp (-x)) - 1}
+    ## @item @qcode{'symmetriclogit'} @tab @math{2 ./ (1 + exp (-x)) - 1}
     ## @end multitable
     ##
     ## @end deftp
@@ -480,21 +480,21 @@ classdef ClassificationSVM
     ## returns a ClassificationSVM object with parameters specified by the
     ## following @qcode{@var{name}, @var{value}} paired input arguments:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'PredictorNames'} @tab @tab A cell array of character
+    ## @item @qcode{'PredictorNames'} @tab A cell array of character
     ## vectors specifying the names of the predictors. The length of this array
     ## must match the number of columns in @var{X}.
     ##
-    ## @item @qcode{'ResponseName'} @tab @tab A character vector specifying the
+    ## @item @qcode{'ResponseName'} @tab A character vector specifying the
     ## name of the response variable.
     ##
-    ## @item @qcode{'ClassNames'} @tab @tab Names of the classes in the class
+    ## @item @qcode{'ClassNames'} @tab Names of the classes in the class
     ## labels, @var{Y}, used for fitting the SVM model. @qcode{ClassNames} are
     ## of the same type as the class labels in @var{Y}.
     ##
-    ## @item @qcode{'ScoreTransform'} @tab @tab A user-defined function handle
+    ## @item @qcode{'ScoreTransform'} @tab A user-defined function handle
     ## or a character vector specifying one of the following builtin functions
     ## specifying the transformation applied to predicted classification scores.
     ## Supported values include @qcode{'doublelogit'}, @qcode{'invlogit'},
@@ -502,44 +502,44 @@ classdef ClassificationSVM
     ## @qcode{'sign'}, @qcode{'symmetric'}, @qcode{'symmetricismax'}, and
     ## @qcode{'symmetriclogit'}.
     ##
-    ## @item @qcode{'Standardize'} @tab @tab A logical scalar specifying whether
+    ## @item @qcode{'Standardize'} @tab A logical scalar specifying whether
     ## to standardize the predictor variables.  Default is @qcode{false}.
     ##
-    ## @item @qcode{'SVMtype'} @tab @tab A character vector specifying the type
+    ## @item @qcode{'SVMtype'} @tab A character vector specifying the type
     ## of SVM to use.  Supported values are @qcode{'c_svc'} (C-support vector
     ## classification), @qcode{'nu_svc'} (nu-support vector classification), and
     ## @qcode{'one_class_svm'} (one-class SVM).
     ##
-    ## @item @qcode{'KernelFunction'} @tab @tab A character vector specifying
+    ## @item @qcode{'KernelFunction'} @tab A character vector specifying
     ## the kernel function to use.  Supported values are @qcode{'linear'},
     ## @qcode{'rbf'} or @qcode{'gaussian'}, @qcode{'polynomial'}, and
     ## @qcode{'sigmoid'}.
     ##
-    ## @item @qcode{'PolynomialOrder'} @tab @tab A positive integer specifying
+    ## @item @qcode{'PolynomialOrder'} @tab A positive integer specifying
     ## the order of the polynomial kernel function.  Default is 3.
     ##
-    ## @item @qcode{'KernelScale'} @tab @tab A positive scalar specifying the
+    ## @item @qcode{'KernelScale'} @tab A positive scalar specifying the
     ## kernel scale parameter.  Default is 1.
     ##
-    ## @item @qcode{'KernelOffset'} @tab @tab A non-negative scalar specifying
+    ## @item @qcode{'KernelOffset'} @tab A non-negative scalar specifying
     ## the kernel offset parameter.  Default is 0.
     ##
-    ## @item @qcode{'BoxConstraint'} @tab @tab A positive scalar specifying the
+    ## @item @qcode{'BoxConstraint'} @tab A positive scalar specifying the
     ## box constraint parameter.  Default is 1.
     ##
-    ## @item @qcode{'Nu'} @tab @tab A positive scalar in the range (0,1]
+    ## @item @qcode{'Nu'} @tab A positive scalar in the range (0,1]
     ## specifying the nu parameter for nu-SVM and one-class SVM. Default is 0.5.
     ##
-    ## @item @qcode{'CacheSize'} @tab @tab A positive scalar specifying the
+    ## @item @qcode{'CacheSize'} @tab A positive scalar specifying the
     ## cache size in MB.  Default is 1000.
     ##
-    ## @item @qcode{'Tolerance'} @tab @tab A positive scalar specifying the
+    ## @item @qcode{'Tolerance'} @tab A positive scalar specifying the
     ## tolerance of termination criterion.  Default is 1e-6.
     ##
-    ## @item @qcode{'Shrinking'} @tab @tab Either 0 or 1 specifying whether to
+    ## @item @qcode{'Shrinking'} @tab Either 0 or 1 specifying whether to
     ## use the shrinking heuristics.  Default is 1.
     ##
-    ## @item @qcode{'OutlierFraction'} @tab @tab A positive scalar in the range
+    ## @item @qcode{'OutlierFraction'} @tab A positive scalar in the range
     ## [0,1) specifying the fraction of outliers for one-class SVM.
     ## @end multitable
     ##
@@ -1149,10 +1149,10 @@ classdef ClassificationSVM
     ## @code{@var{L} = loss (@dots{}, @var{name}, @var{value})} allows
     ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'LossFun'} @tab @tab Specifies the loss function to use.
+    ## @item @qcode{'LossFun'} @tab Specifies the loss function to use.
     ## Can be a function handle with four input arguments (C, S, W, Cost)
     ## which returns a scalar value or one of:
     ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
@@ -1174,7 +1174,7 @@ classdef ClassificationSVM
     ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{'Weights'} @tab @tab Specifies observation weights, must be
+    ## @item @qcode{'Weights'} @tab Specifies observation weights, must be
     ## a numeric vector of length equal to the number of rows in X.
     ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
     ## observation weights in each class sum to the prior probability of that
@@ -1304,10 +1304,10 @@ classdef ClassificationSVM
     ## @code{@var{L} = resubLoss (@dots{}, @var{name}, @var{value})} allows
     ## additional options specified by @var{name}-@var{value} pairs:
     ##
-    ## @multitable @columnfractions 0.18 0.02 0.8
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'LossFun'} @tab @tab Specifies the loss function to use.
+    ## @item @qcode{'LossFun'} @tab Specifies the loss function to use.
     ## Can be a function handle with four input arguments (C, S, W, Cost)
     ## which returns a scalar value or one of:
     ## 'binodeviance', 'classifcost', 'classiferror', 'exponential',
@@ -1329,7 +1329,7 @@ classdef ClassificationSVM
     ## costs.
     ## @end itemize
     ##
-    ## @item @qcode{'Weights'} @tab @tab Specifies observation weights, must be
+    ## @item @qcode{'Weights'} @tab Specifies observation weights, must be
     ## a numeric vector of length equal to the number of rows in X.
     ## Default is @code{ones (size (X, 1))}. loss normalizes the weights so that
     ## observation weights in each class sum to the prior probability of that
@@ -1437,22 +1437,22 @@ classdef ClassificationSVM
     ## specifies additional name-value pair arguments to customize the
     ## cross-validation process.
     ##
-    ## @multitable @columnfractions 0.28 0.02 0.7
-    ## @headitem @var{Name} @tab @tab @var{Value}
+    ## @multitable @columnfractions 0.28 0.7
+    ## @headitem @var{Name} @tab @var{Value}
     ##
-    ## @item @qcode{'KFold'} @tab @tab Specify the number of folds to use in
+    ## @item @qcode{'KFold'} @tab Specify the number of folds to use in
     ## k-fold cross-validation.  @code{"KFold", @var{k}}, where @var{k} is an
     ## integer greater than 1.
     ##
-    ## @item @qcode{'Holdout'} @tab @tab Specify the fraction of the data to
+    ## @item @qcode{'Holdout'} @tab Specify the fraction of the data to
     ## hold out for testing.  @code{"Holdout", @var{p}}, where @var{p} is a
     ## scalar in the range @math{(0,1)}.
     ##
-    ## @item @qcode{'Leaveout'} @tab @tab Specify whether to perform
+    ## @item @qcode{'Leaveout'} @tab Specify whether to perform
     ## leave-one-out cross-validation.  @code{"Leaveout", @var{Value}}, where
     ## @var{Value} is 'on' or 'off'.
     ##
-    ## @item @qcode{'CVPartition'} @tab @tab Specify a @qcode{cvpartition}
+    ## @item @qcode{'CVPartition'} @tab Specify a @qcode{cvpartition}
     ## object used for cross-validation.  @code{"CVPartition", @var{cv}}, where
     ## @code{isa (@var{cv}, "cvpartition")} = 1.
     ##
