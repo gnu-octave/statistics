@@ -61,7 +61,7 @@
 ##
 ## @strong{Input Arguments:}
 ## @itemize @bullet
-## @item @var{X} - Training data, specified as an @math{NxP} numeric matrix
+## @item @var{X} - Training data, specified as an @math{N*P} numeric matrix
 ## where rows represent observations and columns represent features. Must be
 ## finite and numeric.
 ## @end itemize

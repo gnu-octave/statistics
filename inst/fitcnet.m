@@ -28,10 +28,10 @@
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
+## @code{X} must be a @math{N*P} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can contain any type of
 ## categorical data. @var{Y} must have same numbers of rows as @var{X}.
 ## @end itemize

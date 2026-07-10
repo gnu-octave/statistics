@@ -96,7 +96,7 @@ classdef PoissonDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{1x1} cell array of character vectors with each element containing
+    ## A @math{1*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
@@ -107,7 +107,7 @@ classdef PoissonDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{1x1} cell array of character vectors with each element containing
+    ## A @math{1*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter. This property is
     ## read-only.
     ##
@@ -128,7 +128,7 @@ classdef PoissonDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{1x1} numeric vector containing the values of the distribution
+    ## A @math{1*1} numeric vector containing the values of the distribution
     ## parameters. This property is read-only. You can change the distribution
     ## parameters by assigning new values to the @qcode{lambda} property.
     ##
@@ -140,7 +140,7 @@ classdef PoissonDistribution
     ##
     ## Covariance matrix of the parameter estimates
     ##
-    ## A @math{1x1} numeric matrix containing the variance of the parameter
+    ## A @math{1*1} numeric matrix containing the variance of the parameter
     ## estimate. This matrix is only meaningful when the distribution was fitted
     ## to data. If the distribution object was created with fixed parameters,
     ## or a parameter of a fitted distribution is modified, then the
@@ -166,7 +166,7 @@ classdef PoissonDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution. The first element contains the lower boundary,
     ## the second element contains the upper boundary. This property is
     ## read-only. You can only truncate a probability distribution with the

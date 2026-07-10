@@ -96,7 +96,7 @@ classdef ExponentialDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{1x1} cell array of character vectors with each element containing
+    ## A @math{1*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
@@ -107,7 +107,7 @@ classdef ExponentialDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{1x1} cell array of character vectors with each element containing
+    ## A @math{1*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter. This property is
     ## read-only.
     ##
@@ -128,7 +128,7 @@ classdef ExponentialDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{1x1} numeric vector containing the value of the distribution
+    ## A @math{1*1} numeric vector containing the value of the distribution
     ## parameter. This property is read-only. You can change the distribution
     ## parameter by assigning a new value to the @qcode{mu}
     ## property.
@@ -156,7 +156,7 @@ classdef ExponentialDistribution
     ##
     ## Flag for fixed parameters
     ##
-    ## A @math{1x1} logical vector specifying whether the parameter is fixed or
+    ## A @math{1*1} logical vector specifying whether the parameter is fixed or
     ## estimated. @qcode{true} value corresponds to fixed parameter,
     ## @qcode{false} value corresponds to parameter estimate. This property is
     ## read-only.
@@ -169,7 +169,7 @@ classdef ExponentialDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution. First element contains the lower boundary,
     ## second element contains the upper boundary. This property is read-only.
     ## You can only truncate a probability distribution with the

@@ -102,7 +102,7 @@ classdef LoguniformDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{2x1} cell array of character vectors with each element containing
+    ## A @math{2*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
@@ -113,7 +113,7 @@ classdef LoguniformDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{2x1} cell array of character vectors with each element containing
+    ## A @math{2*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter.  This property is
     ## read-only.
     ##
@@ -134,7 +134,7 @@ classdef LoguniformDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## A @math{2*1} numeric vector containing the values of the distribution
     ## parameters.  This property is read-only. You can change the distribution
     ## parameters by assigning new values to the @qcode{Lower} and @qcode{Upper}
     ## properties.
@@ -147,7 +147,7 @@ classdef LoguniformDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution.  First element contains the lower boundary,
     ## second element contains the upper boundary.  This property is read-only.
     ## You can only truncate a probability distribution with the

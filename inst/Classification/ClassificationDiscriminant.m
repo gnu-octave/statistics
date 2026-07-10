@@ -229,7 +229,7 @@ classdef ClassificationDiscriminant
     ## Within-class covariance
     ##
     ## A numeric array specifying the within-class covariance.  For linear
-    ## discriminant type (currently supported) this is a @math{PxP} matrix,
+    ## discriminant type (currently supported) this is a @math{P*P} matrix,
     ## where @math{P} is the number of predictors in @var{X}.  This property is
     ## read-only.
     ##
@@ -241,7 +241,7 @@ classdef ClassificationDiscriminant
     ##
     ## Class means
     ##
-    ## A @math{KxP} numeric matrix specifying the mean of the multivariate
+    ## A @math{K*P} numeric matrix specifying the mean of the multivariate
     ## normal distribution of each corresponding class, where @math{K} is the
     ## number of classes and @math{P} is the number of predictors in @var{X}.
     ## This property is read-only.
@@ -254,7 +254,7 @@ classdef ClassificationDiscriminant
     ##
     ## Coefficient matrices
     ##
-    ## A @math{KxK} structure containing the coefficient matrices, where
+    ## A @math{K*K} structure containing the coefficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
     ## was set to @qcode{'off'} in either the @code{fitcdiscr} function or the
     ## @code{ClassificationDiscriminant} constructor, then @qcode{Coeffs} is
@@ -468,11 +468,11 @@ classdef ClassificationDiscriminant
     ##
     ## @itemize
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.  @var{X} will be used to train the discriminant model.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
     ## of categorical data. @var{Y} must have the same number of rows as
     ## @var{X}.
@@ -497,7 +497,7 @@ classdef ClassificationDiscriminant
     ## labels, @var{Y}, used for fitting the Discriminant model.
     ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
     ##
-    ## @item @qcode{'Cost'} @tab An @math{NxR} numeric matrix containing
+    ## @item @qcode{'Cost'} @tab An @math{N*R} numeric matrix containing
     ## misclassification cost for the corresponding instances in @var{X}, where
     ## @math{R} is the number of unique categories in @var{Y}.  If an instance
     ## is correctly classified into its category the cost is calculated to be 1,
@@ -847,7 +847,7 @@ classdef ClassificationDiscriminant
     ## @item
     ## @var{obj} must be a @qcode{ClassificationDiscriminant} class object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## @var{XC} must be an @math{M*P} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the discriminant
     ## model in @var{obj}.
     ## @end itemize
@@ -932,11 +932,11 @@ classdef ClassificationDiscriminant
     ## @code{obj} is a @var{ClassificationDiscriminant} object trained on
     ## @code{X} and @code{Y}.
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of Rows as @var{X}.
     ## @end itemize
@@ -954,18 +954,18 @@ classdef ClassificationDiscriminant
     ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
     ## @item
-    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## @code{C} is a logical matrix of size @math{N*K}, where @math{N} is the
     ## number of observations and @math{K} is the number of classes.
     ## The element @code{C(i,j)} is true if the class label of the i-th
     ## observation is equal to the j-th class.
     ## @item
-    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## @code{S} is a numeric matrix of size @math{N*K}, where each element
     ## represents the classification score for the corresponding class.
     ## @item
     ## @code{W} is a numeric vector of length @math{N}, representing
     ## the observation weights.
     ## @item
-    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## @code{Cost} is a @math{K*K} matrix representing the misclassification
     ## costs.
     ## @end itemize
     ##
@@ -1210,11 +1210,11 @@ classdef ClassificationDiscriminant
     ## @code{X}
     ## and @code{Y}.
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of Rows as @var{X}.
     ## @end itemize

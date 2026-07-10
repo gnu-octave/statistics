@@ -172,7 +172,7 @@ classdef RayleighDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution.  First element contains the lower boundary,
     ## second element contains the upper boundary.  This property is read-only.
     ## You can only truncate a probability distribution with the

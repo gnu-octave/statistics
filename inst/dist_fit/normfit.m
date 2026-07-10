@@ -47,7 +47,7 @@
 ## @item
 ## @var{alpha} is a scalar value in the range @math{(0,1)} specifying the
 ## confidence level for the confidence intervals calculated as
-## @math{100x(1 – alpha)%}.  By default, the optional argument @var{alpha} is
+## @math{100*(1 – alpha)%}.  By default, the optional argument @var{alpha} is
 ## 0.05 corresponding to 95% confidence intervals.  Pass in @qcode{[]} for
 ## @var{alpha} to use the default values.
 ##

@@ -27,8 +27,8 @@
 ## @code{@var{pihat} = mnrval (@var{B}, @var{X})} returns the predicted
 ## category probabilities @var{pihat} of a multinomial logistic regression with
 ## coefficients @var{B}, evaluated at the predictor values in @var{X}.  @var{X}
-## is an @math{NxP} numeric matrix of @math{N} observations on @math{P}
-## predictors.  @var{pihat} is an @math{NxK} matrix, where @math{K} is the number
+## is an @math{N*P} numeric matrix of @math{N} observations on @math{P}
+## predictors.  @var{pihat} is an @math{N*K} matrix, where @math{K} is the number
 ## of response categories and each row sums to one.  @var{B} is the coefficient
 ## matrix returned by @code{mnrfit} (see below for its shape under each model).
 ##
@@ -39,7 +39,7 @@
 ##
 ## @code{@var{yhat} = mnrval (@var{B}, @var{X}, @var{ssize})} returns predicted
 ## category counts instead of probabilities, for the sample sizes in @var{ssize}
-## (a scalar or an @math{Nx1} vector).
+## (a scalar or an @math{N*1} vector).
 ##
 ## @code{[@var{pihat}, @var{dlo}, @var{dhi}] = mnrval (@var{B}, @var{X},
 ## @var{stats})} also returns @math{95%} confidence bounds on the predictions.
@@ -61,8 +61,8 @@
 ## coefficients, or @qcode{'off'} for a common set of coefficients with
 ## category-specific intercepts only.  Default is @qcode{'on'} for nominal and
 ## hierarchical models and @qcode{'off'} for ordinal models.  With
-## @qcode{'interactions','on'}, @var{B} is a @math{(P+1)x(K-1)} matrix.  With
-## @qcode{'interactions','off'}, @var{B} is a @math{(K-1+P)x1} vector holding the
+## @qcode{'interactions','on'}, @var{B} is a @math{(P+1)*(K-1)} matrix.  With
+## @qcode{'interactions','off'}, @var{B} is a @math{(K-1+P)*1} vector holding the
 ## @math{K-1} intercepts followed by the @math{P} common slopes.
 ##
 ## @item @qcode{'link'} @tab The link function for ordinal and hierarchical
@@ -70,9 +70,9 @@
 ## @qcode{'loglog'}.  Nominal models always use the multinomial logit link.
 ##
 ## @item @qcode{'type'} @tab The kind of probability returned:
-## @qcode{'category'} (default, @math{NxK} category probabilities),
-## @qcode{'cumulative'} (@math{Nx(K-1)} cumulative probabilities of the first
-## @math{K-1} categories), or @qcode{'conditional'} (@math{Nx(K-1)} conditional
+## @qcode{'category'} (default, @math{N*K} category probabilities),
+## @qcode{'cumulative'} (@math{N*(K-1)} cumulative probabilities of the first
+## @math{K-1} categories), or @qcode{'conditional'} (@math{N*(K-1)} conditional
 ## probabilities of each category given membership in that or a later category).
 ##
 ## @item @qcode{'confidence'} @tab The confidence level for @var{dlo} and

@@ -352,7 +352,7 @@ classdef cvpartition
     ## elements correspond to the training set.
     ## @item A logical matrix with @math{K} columns will specify a K-fold
     ## cross-validation partition, in which each column corresponds to a fold
-    ## and each row to an observation.  Alternatively, an @math{NxN} logical
+    ## and each row to an observation.  Alternatively, an @math{N*N} logical
     ## matrix will specify a leave-one-out cross-validation, where @math{N} is
     ## the number of observations.  @qcode{true} elements correspond to the
     ## test set and the @qcode{false} elements correspond to the training set.

@@ -27,10 +27,10 @@
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
+## @code{X} must be a @math{N*P} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}. @var{Y} can be numerical, logical,
 ## char array or cell array of character vectors. @var{Y} must have same number
 ## of rows as @var{X}.
@@ -62,7 +62,7 @@
 ## Alternatively, you can specify @qcode{'empirical'} to use the empirical
 ## class probabilities or @qcode{'uniform'} to assume equal class probabilities.
 ##
-## @item @qcode{'Cost'} @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,

@@ -457,7 +457,7 @@ classdef CompactClassificationGAM
     ## @item
     ## @var{obj} must be a @qcode{CompactClassificationGAM} class object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix where each row is an
+    ## @var{XC} must be an @math{M*P} numeric matrix where each row is an
     ## observation and each column corresponds to a predictor variable.
     ## @item
     ## @var{includeInteractions} is a logical scalar indicating whether to

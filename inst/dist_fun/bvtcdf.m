@@ -23,7 +23,7 @@
 ##
 ## @code{@var{p} = bvtcdf (@var{x}, @var{rho}, @var{df})} will compute the
 ## bivariate student's t cumulative distribution function of @var{x}, which must
-## be an @math{Nx2} matrix, given a correlation coefficient @var{rho}, which
+## be an @math{N*2} matrix, given a correlation coefficient @var{rho}, which
 ## must be a scalar, and @var{df} degrees of freedom, which can be a scalar or a
 ## vector of positive numbers commensurate with @var{x}.
 ##

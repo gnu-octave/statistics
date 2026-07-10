@@ -35,7 +35,7 @@
 ## between a row and column vector of @var{z}.  Hence, when @var{z} is column
 ## vector, it is plotted as a single series of bars (same color), whereas when
 ## @var{z} is row vector, each bar is plotted as a different group (different
-## colors).  For an @math{MxN} matrix, the function plots the bars corresponding
+## colors).  For an @math{M*N} matrix, the function plots the bars corresponding
 ## to each row on the @qcode{y-axis} ranging from @math{1} to @math{M} and each
 ## column on the @qcode{x-axis} ranging from @math{1} to @math{N}.
 ##
@@ -62,7 +62,7 @@
 ## by color.  For example, use @qcode{'red'} or @qcode{'r'} to specify all red
 ## bars.  When you want to specify colors for several groups, @var{color} can be
 ## a cellstr vector with each element specifying the color of each group.
-## @var{color} can also be specified as a numerical @math{Mx3} matrix, where
+## @var{color} can also be specified as a numerical @math{M*3} matrix, where
 ## each row corresponds to a RGB value with its elements in the range
 ## @math{[0,1]}.  If only one color is specified, then it applies to all bars.
 ## If the number of colors equals the number of groups, then each color is
@@ -81,7 +81,7 @@
 ## element must be in the range @math{(0,1]}.
 ##
 ## @item @qcode{'color'} @tab A character or a cellstr vector, or a
-## numerical @math{Mx3} matrix following the same conventions as the @var{color}
+## numerical @math{M*3} matrix following the same conventions as the @var{color}
 ## input argument.
 ##
 ## @item @qcode{'xlabel'} @tab A cellstr vector specifying the group names

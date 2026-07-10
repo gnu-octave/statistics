@@ -34,11 +34,11 @@ classdef RegressionGAM
 ##
 ## @itemize
 ## @item
-## @var{X} must be a @math{NxP} numeric matrix of input data where rows
+## @var{X} must be a @math{N*P} numeric matrix of input data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @var{X} will be used to train the GAM model.
 ## @item
-## @var{Y} must be @math{Nx1} numeric vector containing the response data
+## @var{Y} must be @math{N*1} numeric vector containing the response data
 ## corresponding to the predictor data in @var{X}. @var{Y} must have same
 ## number of rows as @var{X}.
 ## @end itemize

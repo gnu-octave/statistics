@@ -247,7 +247,7 @@ classdef ClassificationSVM
     ##
     ## Trained classifier coefficients
     ##
-    ## The coefficients of the trained SVM classifier specified as an @math{sx1}
+    ## The coefficients of the trained SVM classifier specified as an @math{s*1}
     ## numeric vector, where @math{s} is the number of support vectors equal to
     ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
     ## with a kernel function other than @qcode{'linear'}, then @qcode{Alpha} is
@@ -261,7 +261,7 @@ classdef ClassificationSVM
     ##
     ## Linear predictor coefficients
     ##
-    ## The linear predictor coefficients specified as an @math{sx1} numeric
+    ## The linear predictor coefficients specified as an @math{s*1} numeric
     ## vector, where @math{s} is the number of support vectors equal to
     ## @qcode{sum (obj.IsSupportVector)}.  If the SVM classifier was trained
     ## with a @qcode{'linear'} kernel function, then @qcode{Beta} is empty.
@@ -285,7 +285,7 @@ classdef ClassificationSVM
     ##
     ## Support vector indicator
     ##
-    ## An @math{Nx1} logical vector that flags whether a corresponding
+    ## An @math{N*1} logical vector that flags whether a corresponding
     ## observation in the predictor data matrix is a Support Vector.  @math{N}
     ## is the number of observations in the training data.  This property is
     ## read-only.
@@ -298,7 +298,7 @@ classdef ClassificationSVM
     ##
     ## Support vector class labels
     ##
-    ## The support vector class labels specified as an @math{sx1} numeric
+    ## The support vector class labels specified as an @math{s*1} numeric
     ## vector, where @math{s} is the number of support vectors equal to
     ## @qcode{sum (obj.IsSupportVector)}.  A value of +1 in
     ## @code{SupportVectorLabels} indicates that the corresponding support
@@ -315,7 +315,7 @@ classdef ClassificationSVM
     ##
     ## Support vectors
     ##
-    ## The support vectors of the trained SVM classifier specified an @math{sxp}
+    ## The support vectors of the trained SVM classifier specified an @math{s*p}
     ## numeric matrix, where @math{s} is the number of support vectors equal to
     ## @qcode{sum (obj.IsSupportVector)}, and @math{p} is the number of
     ## predictor
@@ -466,11 +466,11 @@ classdef ClassificationSVM
     ##
     ## @itemize
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.  @var{X} will be used to train the SVM model.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}.  @var{Y} can be either
     ## numeric, logical, or cell array of character vectors.  It must have same
     ## numbers of rows as @var{X}.
@@ -929,7 +929,7 @@ classdef ClassificationSVM
     ## @item
     ## @var{obj} must be a @qcode{ClassificationSVM} class object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## @var{XC} must be an @math{M*P} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the SVM model in
     ## @var{obj}.
     ## @end itemize
@@ -1080,11 +1080,11 @@ classdef ClassificationSVM
     ## @var{obj} is a @var{ClassificationSVM} object trained on @code{X}
     ## and @code{Y}.
     ## @item
-    ## @var{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @var{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @var{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @var{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of Rows as @var{X}.
     ## @end itemize
@@ -1137,11 +1137,11 @@ classdef ClassificationSVM
     ## @code{obj} is a @var{ClassificationSVM} object trained on
     ## @code{X} and @code{Y}.
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of Rows as @var{X}.
     ## @end itemize
@@ -1159,18 +1159,18 @@ classdef ClassificationSVM
     ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
     ## @item
-    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## @code{C} is a logical matrix of size @math{N*K}, where @math{N} is the
     ## number of observations and @math{K} is the number of classes.
     ## The element @code{C(i,j)} is true if the class label of the i-th
     ## observation is equal to the j-th class.
     ## @item
-    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## @code{S} is a numeric matrix of size @math{N*K}, where each element
     ## represents the classification score for the corresponding class.
     ## @item
     ## @code{W} is a numeric vector of length @math{N}, representing
     ## the observation weights.
     ## @item
-    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## @code{Cost} is a @math{K*K} matrix representing the misclassification
     ## costs.
     ## @end itemize
     ##
@@ -1314,18 +1314,18 @@ classdef ClassificationSVM
     ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
     ## @item
-    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## @code{C} is a logical matrix of size @math{N*K}, where @math{N} is the
     ## number of observations and @math{K} is the number of classes.
     ## The element @code{C(i,j)} is true if the class label of the i-th
     ## observation is equal to the j-th class.
     ## @item
-    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## @code{S} is a numeric matrix of size @math{N*K}, where each element
     ## represents the classification score for the corresponding class.
     ## @item
     ## @code{W} is a numeric vector of length @math{N}, representing
     ## the observation weights.
     ## @item
-    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## @code{Cost} is a @math{K*K} matrix representing the misclassification
     ## costs.
     ## @end itemize
     ##

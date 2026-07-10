@@ -56,7 +56,7 @@
 ##
 ## Matlab incompatibility: Matlab's @code{expfit} produces unpredictable results
 ## for some cases with higher dimensions (specifically 1 x m x n x ... arrays).
-## Octave's implementation allows for @math{nxD} arrays, consistently performing
+## Octave's implementation allows for @math{n*D} arrays, consistently performing
 ## calculations on individual column vectors.  Additionally, @var{censor} and
 ## @var{freq} can be used with arrays of any size, whereas Matlab only allows
 ## their use when @var{x} is a vector.

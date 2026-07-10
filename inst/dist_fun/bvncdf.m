@@ -26,12 +26,12 @@
 ## parameter @var{mu} and a scale parameter @var{sigma}.
 ##
 ## @itemize
-## @item @var{x} must be an @math{Nx2} matrix with each variable as a column
+## @item @var{x} must be an @math{N*2} matrix with each variable as a column
 ## vector.
 ## @item @var{mu} can be either a scalar (common mean) or a two-element row
 ## vector (each element corresponds to a variable).  If empty, a zero mean is
 ## assumed.
-## @item @var{sigma} can be a scalar (common variance) or a @math{2x2}
+## @item @var{sigma} can be a scalar (common variance) or a @math{2*2}
 ## covariance matrix, which must be positive definite.
 ## @end itemize
 ##

@@ -25,14 +25,14 @@
 ## Performs a principal component analysis on a data matrix.
 ##
 ## A principal component analysis of a data matrix of @math{N} observations in a
-## @math{D} dimensional space returns a @math{DxD} transformation matrix, to
+## @math{D} dimensional space returns a @math{D*D} transformation matrix, to
 ## perform a change of basis on the data.  The first component of the new basis
 ## is the direction that maximizes the variance of the projected data.
 ##
 ## Input argument:
 ## @itemize @bullet
 ## @item
-## @var{x} : a @math{NxD} data matrix
+## @var{x} : a @math{N*D} data matrix
 ## @end itemize
 ##
 ## The following @var{Name}, @var{Value} pair arguments can be used:
@@ -88,7 +88,7 @@
 ## Return values:
 ## @itemize @bullet
 ## @item
-## @var{coeff} : the principal component coefficients, a @math{DxD}
+## @var{coeff} : the principal component coefficients, a @math{D*D}
 ## transformation matrix
 ## @item
 ## @var{score} : the principal component scores, the representation of @var{x}

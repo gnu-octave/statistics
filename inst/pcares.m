@@ -22,7 +22,7 @@
 ## Calculate residuals from principal component analysis.
 ##
 ## @code{@var{residuals} = pcares (@var{x}, @var{ndim})} returns the residuals
-## obtained by retaining @var{ndim} principal components of the @math{NxD}
+## obtained by retaining @var{ndim} principal components of the @math{N*D}
 ## matrix @var{x}. Rows of @var{x} correspond to observations, columns of
 ## @var{x} correspond to variables.  @var{ndim} is a scalar and must be less
 ## than or equal to @math{D}.  @var{residuals} is a matrix of the same size as

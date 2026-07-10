@@ -24,11 +24,11 @@
 ## Return the distance between any two rows in @var{X}.
 ##
 ## @code{@var{D} = pdist (@var{X}} calculates the euclidean distance between
-## pairs of observations in @var{X}.  @var{X} must be an @math{MxP} numeric
+## pairs of observations in @var{X}.  @var{X} must be an @math{M*P} numeric
 ## matrix representing @math{M} points in @math{P}-dimensional space.  This
 ## function computes the pairwise distances returned in @var{D} as an
-## @math{Mx(M-1)/P} row vector.  Use @code{@var{Z} = squareform (@var{D})} to
-## convert the row vector @var{D} into a an @math{MxM} symmetric matrix @var{Z},
+## @math{M*(M-1)/P} row vector.  Use @code{@var{Z} = squareform (@var{D})} to
+## convert the row vector @var{D} into a an @math{M*M} symmetric matrix @var{Z},
 ## where @qcode{@var{Z}(i,j)} corresponds to the pairwise distance between
 ## points @qcode{i} and @qcode{j}.
 ##
@@ -69,10 +69,10 @@
 ## correlation between observations (treated as sequences of values).
 ## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
-## where @var{XI} is a @math{1xP} vector containing a single observation in
-## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## where @var{XI} is a @math{1*P} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{N*P} matrix containing an
 ## arbitrary number of observations in the same @math{P}-dimensional space, and
-## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## @var{D2} is an @math{N*P} vector of distances, where @qcode{(@var{D2}k)} is
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##

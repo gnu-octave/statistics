@@ -467,11 +467,11 @@ classdef ClassificationGAM
     ##
     ## @itemize
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.  @var{X} will be used to train the GAM model.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
     ## of categorical data. @var{Y} must have the same number of rows as
     ## @var{X}.
@@ -496,7 +496,7 @@ classdef ClassificationGAM
     ## labels, @var{Y}, used for fitting the GAM model.
     ## @qcode{ClassNames} are of the same type as the class labels in @var{Y}.
     ##
-    ## @item @qcode{'Cost'} @tab An @math{NxR} numeric matrix containing
+    ## @item @qcode{'Cost'} @tab An @math{N*R} numeric matrix containing
     ## misclassification cost for the corresponding instances in @var{X}, where
     ## @math{R} is the number of unique categories in @var{Y}.  If an instance
     ## is correctly classified into its category the cost is calculated to be 1,
@@ -918,7 +918,7 @@ classdef ClassificationGAM
     ## @item
     ## @var{obj} must be a @qcode{ClassificationGAM} class object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix where each row is an
+    ## @var{XC} must be an @math{M*P} numeric matrix where each row is an
     ## observation and each column corresponds to a predictor variable.
     ## @item
     ## @var{includeInteractions} is a logical scalar indicating whether to

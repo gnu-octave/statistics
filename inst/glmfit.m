@@ -31,11 +31,11 @@
 ## distribution defined in @var{distribution}.
 ##
 ## @itemize
-## @item @var{X} is an @math{nxp} numeric matrix of predictor variables with
+## @item @var{X} is an @math{n*p} numeric matrix of predictor variables with
 ## @math{n} observations and @math{p} predictors.
-## @item @var{y} is an @math{nx1} numeric vector of responses for all supported
+## @item @var{y} is an @math{n*1} numeric vector of responses for all supported
 ## distributions, except for the 'binomial' distribution in which case @var{y}
-## can be either a numeric or logical @math{nx1} vector or an @math{nx2}
+## can be either a numeric or logical @math{n*1} vector or an @math{n*2}
 ## matrix, where the first column contains the number of successes and the
 ## second column contains the number of trials.
 ## @item @var{distribution} is a character vector specifying the distribution of
@@ -91,7 +91,7 @@
 ## model, and @qcode{TolX} must be a positive scalar value specifying the
 ## termination tolerance.
 ##
-## @item @qcode{'Weights'} @tab An @math{nx1} numeric vector of nonnegative
+## @item @qcode{'Weights'} @tab An @math{n*1} numeric vector of nonnegative
 ## values, where @math{n} is the number of observations in @var{X}.  By default,
 ## it is @code{ones (n, 1)}.
 ## @end multitable

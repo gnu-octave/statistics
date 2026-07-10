@@ -454,7 +454,7 @@ classdef CompactClassificationNeuralNetwork
     ## @var{obj} must be a @qcode{CompactClassificationNeuralNetwork} class
     ## object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## @var{XC} must be an @math{M*P} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the neural network
     ## model in @var{obj}.
     ## @end itemize

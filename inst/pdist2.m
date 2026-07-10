@@ -28,9 +28,9 @@
 ##
 ## @code{@var{D} = pdist2 (@var{X}, @var{Y})} calculates the euclidean distance
 ## between each pair of observations in @var{X} and @var{Y}.  Let @var{X} be an
-## @math{MxP} matrix representing @math{M} points in @math{P}-dimensional space
-## and @var{Y} be an @math{NxP} matrix representing another set of points in the
-## same space.  This function computes the @math{MxN} distance matrix @var{D},
+## @math{M*P} matrix representing @math{M} points in @math{P}-dimensional space
+## and @var{Y} be an @math{N*P} matrix representing another set of points in the
+## same space.  This function computes the @math{M*N} distance matrix @var{D},
 ## where @qcode{@var{D}(i,j)} is the distance between @qcode{@var{X}(i,:)} and
 ## @qcode{@var{Y}(j,:)}.
 ##
@@ -72,10 +72,10 @@
 ## correlation between observations (treated as sequences of values).
 ## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
-## where @var{XI} is a @math{1xP} vector containing a single observation in
-## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## where @var{XI} is a @math{1*P} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{N*P} matrix containing an
 ## arbitrary number of observations in the same @math{P}-dimensional space, and
-## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## @var{D2} is an @math{N*P} vector of distances, where @qcode{(@var{D2}k)} is
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##

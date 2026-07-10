@@ -26,10 +26,10 @@
 ## @itemize @bullet
 ## @item
 ## @var{x} are the points at which to find the probability, where each row
-## corresponds to an observation. (@math{NxD} matrix)
+## corresponds to an observation. (@math{N*D} matrix)
 ##
 ## @item
-## @var{rho} is the correlation matrix. (@math{DxD} symmetric positive
+## @var{rho} is the correlation matrix. (@math{D*D} symmetric positive
 ## definite matrix)
 ##
 ## @item
@@ -44,7 +44,7 @@
 ## @itemize @bullet
 ## @item
 ## @var{y} is the probability density for each row of @var{x}.
-## (@math{Nx1} vector)
+## (@math{N*1} vector)
 ## @end itemize
 ##
 ## @subheading Examples

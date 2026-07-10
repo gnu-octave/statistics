@@ -43,7 +43,7 @@
 ##
 ## @itemize
 ## @item
-## @var{X} is an @math{NxP} numeric or logical matrix of predictor data, where
+## @var{X} is an @math{N*P} numeric or logical matrix of predictor data, where
 ## rows correspond to observations and columns correspond to variables.  By
 ## default, the predictors are named @qcode{'x1'}, @qcode{'x2'}, @dots{},
 ## @qcode{'xP'}.
@@ -52,7 +52,7 @@
 ## single categorical predictor.  In this case @var{y} must be supplied as the
 ## next argument, and the predictor is named @qcode{'x1'} by default.
 ## @item
-## @var{y} is an @math{Nx1} numeric or logical vector of response values, and
+## @var{y} is an @math{N*1} numeric or logical vector of response values, and
 ## must have the same number of observations (rows) as @var{X}.  By default,
 ## the response is named @qcode{'y'}.
 ## @end itemize
@@ -103,12 +103,12 @@
 ## to and including the full @math{P}-way interaction of the predictor
 ## variables, i.e. every combination of one or more distinct predictors.
 ##
-## @item terms matrix @tab A @math{TxP} or @math{Tx(P+1)} numeric matrix,
+## @item terms matrix @tab A @math{T*P} or @math{T*(P+1)} numeric matrix,
 ## where @math{T} is the number of terms and @math{P} is the number of
 ## predictor variables.  Each row represents one term, and the value in
 ## column @math{j} is the exponent to which predictor @math{j} is raised in
 ## that term; a row of all zeros represents the intercept.  If a
-## @math{Tx(P+1)} matrix is supplied, its last column (representing the
+## @math{T*(P+1)} matrix is supplied, its last column (representing the
 ## response variable) must be all zeros.
 ##
 ## @item Wilkinson formula @tab A character vector of the form

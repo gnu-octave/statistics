@@ -34,13 +34,13 @@
 ## @code{[@var{Yfit}, @var{Yint}, @var{m}, @var{K}] = regress_gp (@var{X},
 ## @var{Y}, @var{Xfit})} will estimate a linear Gaussian Process model @var{m}
 ## in the form @qcode{@var{Y} = @var{X}' * @var{m}}, where @var{X} is an
-## @math{NxP} matrix with @math{N} observations in @math{P} dimensional space
-## and @var{Y} is an @math{Nx1} column vector as the dependent variable.  The
+## @math{N*P} matrix with @math{N} observations in @math{P} dimensional space
+## and @var{Y} is an @math{N*1} column vector as the dependent variable.  The
 ## information about errors of the predictions (interpolation/extrapolation) is
 ## given by the covariance matrix @var{K}.
 ## By default, the linear model defines the prior covariance of @var{m} as
 ## @code{@var{Sp} = 100 * eye (size (@var{X}, 2) + 1)}.  A custom prior
-## covariance matrix can be passed as @var{Sp}, which must be a @math{P+1xP+1}
+## covariance matrix can be passed as @var{Sp}, which must be a @math{P+1*P+1}
 ## positive definite matrix.  The model is evaluated for input @var{Xfit}, which
 ## must have the same columns as @var{X}, and the estimates are returned in
 ## @var{Yfit} along with the estimated variation in @var{Yint}.

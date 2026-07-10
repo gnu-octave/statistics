@@ -32,12 +32,12 @@
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y})}  returns a matrix, @var{B}, of
 ## coefficient estimates for a multinomial logistic regression of the nominal
-## responses in @var{Y} on the predictors in @var{X}.  @var{X} is an @math{NxP}
+## responses in @var{Y} on the predictors in @var{X}.  @var{X} is an @math{N*P}
 ## numeric matrix the observations on predictor variables, where @math{N}
 ## corresponds to the number of observations and @math{P} corresponds to
 ## predictor variables.  @var{Y} contains the response category labels and it
-## either be an @math{NxP} categorical or numerical matrix (containing only 1s
-## and 0s) or an @math{Nx1} numeric vector with positive integer values, a cell
+## either be an @math{N*P} categorical or numerical matrix (containing only 1s
+## and 0s) or an @math{N*1} numeric vector with positive integer values, a cell
 ## array of character vectors and a logical vector.  @var{Y} can also be defined
 ## as a character matrix with each row corresponding to an observation of
 ## @var{X}.

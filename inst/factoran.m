@@ -22,18 +22,18 @@
 ## Perform principal axis factor analysis on data matrix.
 ##
 ## @code{@var{loadings} = factoran (@var{X}, @var{nfac})} performs principal
-## axis factoring to extract @var{nfac} factors from the @math{N x P} data
+## axis factoring to extract @var{nfac} factors from the @math{N * P} data
 ## matrix @var{X}, where rows correspond to observations and columns to
-## variables.  The output @var{loadings} is a @math{P x @var{nfac}} matrix
+## variables.  The output @var{loadings} is a @math{P * @var{nfac}} matrix
 ## whose columns contain the loadings on each factor, in decreasing order of
 ## importance.
 ##
 ## @code{[@var{loadings}, @var{specvar}] = factoran (@dots{})} also returns a
-## @math{P x 1} vector @var{specvar} containing the specific variances (unique
+## @math{P * 1} vector @var{specvar} containing the specific variances (unique
 ## variances) for each variable.
 ##
 ## @code{[@var{loadings}, @var{specvar}, @var{fscores}] = factoran (@dots{})}
-## also returns the @math{N x @var{nfac}} matrix @var{fscores} of estimated
+## also returns the @math{N * @var{nfac}} matrix @var{fscores} of estimated
 ## factor scores, computed using the regression method.
 ##
 ## The analysis is performed on the correlation matrix of the standardized

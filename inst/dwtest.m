@@ -26,8 +26,8 @@
 ## the residuals @var{r} of a linear regression with design matrix @var{x}
 ## (which should include a column of ones if the model has a constant term).
 ## The null hypothesis is that the residuals are uncorrelated, against the
-## alternative that they are autocorrelated.  @var{r} is an @math{Nx1} vector and
-## @var{x} is an @math{NxP} matrix.  @var{p} is the p-value of the test.
+## alternative that they are autocorrelated.  @var{r} is an @math{N*1} vector and
+## @var{x} is an @math{N*P} matrix.  @var{p} is the p-value of the test.
 ##
 ## The Durbin-Watson statistic is
 ## @tex

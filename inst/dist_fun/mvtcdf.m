@@ -27,12 +27,12 @@
 ## @code{@var{p} = mvtcdf (@var{x}, @var{rho}, @var{df})} returns the cumulative
 ## probability of the multivariate student's t distribution with correlation
 ## parameters @var{rho} and degrees of freedom @var{df}, evaluated at each row
-## of @var{x}.  The rows of the @math{NxD} matrix @var{x} correspond to sample
+## of @var{x}.  The rows of the @math{N*D} matrix @var{x} correspond to sample
 ## observations and its columns correspond to variables or coordinates.  The
 ## return argument @var{p} is a column vector with the same number of rows as in
 ## @var{x}.
 ##
-## @var{rho} is a symmetric, positive definite, @math{DxD} correlation matrix.
+## @var{rho} is a symmetric, positive definite, @math{D*D} correlation matrix.
 ## @var{dF} is a scalar or a vector with @math{N} elements.
 ##
 ## Note: @code{mvtcdf} computes the CDF for the standard multivariate Student's

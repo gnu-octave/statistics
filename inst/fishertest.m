@@ -25,7 +25,7 @@
 ## Fisher's exact test.
 ##
 ## @code{@var{h} = fishertest (@var{x})} performs Fisher's exact test on a
-## @math{2x2} contingency table given in matrix @var{x}. This is a test of the
+## @math{2*2} contingency table given in matrix @var{x}. This is a test of the
 ## hypothesis that there are no non-random associations between the two 2-level
 ## categorical variables in @var{x}.  @code{fishertest} returns the result of
 ## the tested hypothesis in @var{h}.  @var{h} = 0 indicates that the null

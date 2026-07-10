@@ -37,7 +37,7 @@
 ## When called with three output arguments, i.e. @qcode{[@var{p}, @var{plo},
 ## @var{pup}]}, @code{gamcdf} computes the confidence bounds for @var{p} when
 ## the input parameters @var{a} and @var{b} are estimates.  In such case,
-## @var{pcov}, a @math{2x2} matrix containing the covariance matrix of the
+## @var{pcov}, a @math{2*2} matrix containing the covariance matrix of the
 ## estimated parameters, is necessary.  Optionally, @var{alpha}, which has a
 ## default value of 0.05, specifies the @qcode{100 * (1 - @var{alpha})} percent
 ## confidence bounds.  @var{plo} and @var{pup} are arrays of the same size as

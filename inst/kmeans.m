@@ -28,7 +28,7 @@
 ## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, @var{k}, @var{param1}, @var{value1}, @dots{})
 ## @deftypefnx {statistics} {[@dots{}] =} kmeans (@var{data}, [], @qcode{'start'}, @var{start}, @dots{})
 ##
-## Perform a @var{k}-means clustering of the @math{NxD} matrix @var{data}.
+## Perform a @var{k}-means clustering of the @math{N*D} matrix @var{data}.
 ##
 ## If parameter @qcode{'start'} is specified, then @var{k} may be empty
 ## in which case @var{k} is set to the number of rows of @var{start}.
@@ -36,16 +36,16 @@
 ## The outputs are:
 ##
 ## @multitable @columnfractions 0.15 0.8
-## @item @var{idx} @tab An @math{Nx1} vector whose @math{i}-th element is
+## @item @var{idx} @tab An @math{N*1} vector whose @math{i}-th element is
 ## the class to which row @math{i} of @var{data} is assigned.
 ##
-## @item @var{centers} @tab A @math{KxD} array whose @math{i}-th row is the
+## @item @var{centers} @tab A @math{K*D} array whose @math{i}-th row is the
 ## centroid of cluster @math{i}.
 ##
-## @item @var{sumd} @tab A @math{kx1} vector whose @math{i}-th entry is the
+## @item @var{sumd} @tab A @math{k*1} vector whose @math{i}-th entry is the
 ## sum of the distances from samples in cluster @math{i} to centroid @math{i}.
 ##
-## @item @var{dist} @tab An @math{Nxk} matrix whose @math{i}@math{j}-th
+## @item @var{dist} @tab An @math{N*k} matrix whose @math{i}@math{j}-th
 ## element is the distance from sample @math{i} to centroid @math{j}.
 ## @end multitable
 ##
@@ -68,9 +68,9 @@
 ## drawn uniformly from the interval between the maximum and minimum values of
 ## that component within @var{data}.  This performs poorly and is implemented
 ## only for Matlab compatibility.
-## @item @var{numeric matrix} @tab A @math{kxD} matrix of centroid
+## @item @var{numeric matrix} @tab A @math{k*D} matrix of centroid
 ## starting locations.  The rows correspond to seeds.
-## @item @var{numeric array} @tab A @math{kxDxr} array of centroid
+## @item @var{numeric array} @tab A @math{k*D*r} array of centroid
 ## starting locations.  The third dimension invokes replication of the
 ## clustering routine.  Page @math{r} contains the set of seeds for replicate
 ## @math{r}.  @qcode{kmeans} infers the number of replicates (specified by the

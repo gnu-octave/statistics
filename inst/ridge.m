@@ -38,9 +38,9 @@
 ##
 ## @itemize
 ## @item
-## @code{y} must be an @math{Nx1} numeric vector with the response data.
+## @code{y} must be an @math{N*1} numeric vector with the response data.
 ## @item
-## @code{X} must be an @math{Nxp} numeric matrix with the predictor data.
+## @code{X} must be an @math{N*p} numeric matrix with the predictor data.
 ## @item
 ## @code{k} must be a numeric vector with the ridge parameters.
 ## @item

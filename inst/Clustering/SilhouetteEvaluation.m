@@ -121,7 +121,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ##
     ## @itemize
     ## @item
-    ## @var{x} is an @math{NxP} numeric matrix of observations (rows) and
+    ## @var{x} is an @math{N*P} numeric matrix of observations (rows) and
     ## predictors (columns).
     ## @item
     ## @var{clust} is a string naming the clustering method (for example

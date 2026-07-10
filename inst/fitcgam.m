@@ -27,10 +27,10 @@
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
+## @code{X} must be a @math{N*P} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} numeric vector containing binary class labels,
+## @code{Y} is @math{N*1} numeric vector containing binary class labels,
 ## typically 0 or 1.
 ## @end itemize
 ##
@@ -54,7 +54,7 @@
 ## labels, @var{Y}, used for fitting the Discriminant model. @qcode{ClassNames}
 ## are of the same type as the class labels in @var{Y}.
 ##
-## @item @qcode{'Cost'} @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,

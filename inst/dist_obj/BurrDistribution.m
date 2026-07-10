@@ -122,7 +122,7 @@ classdef BurrDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{3x1} cell array of character vectors with each element containing
+    ## A @math{3*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter. This property is read-only.
     ##
     ## @end deftp
@@ -133,7 +133,7 @@ classdef BurrDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{3x1} cell array of character vectors with each element containing
+    ## A @math{3*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter. This property is
     ## read-only.
     ##
@@ -154,7 +154,7 @@ classdef BurrDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{3x1} numeric vector containing the values of the distribution
+    ## A @math{3*1} numeric vector containing the values of the distribution
     ## parameters. This property is read-only. You can change the distribution
     ## parameters by assigning new values to the @qcode{alpha}, @qcode{c}, and
     ## @qcode{k} properties.
@@ -167,7 +167,7 @@ classdef BurrDistribution
     ##
     ## Covariance matrix of the parameter estimates
     ##
-    ## A @math{3x3} numeric matrix containing the variance-covariance of the
+    ## A @math{3*3} numeric matrix containing the variance-covariance of the
     ## parameter estimates. Diagonal elements contain the variance of each
     ## estimated parameter, and non-diagonal elements contain the covariance
     ## between the parameter estimates. The covariance matrix is only meaningful
@@ -184,7 +184,7 @@ classdef BurrDistribution
     ##
     ## Flag for fixed parameters
     ##
-    ## A @math{1x3} logical vector specifying which parameters are fixed and
+    ## A @math{1*3} logical vector specifying which parameters are fixed and
     ## which are estimated. @qcode{true} values correspond to fixed parameters,
     ## @qcode{false} values correspond to parameter estimates. This property is
     ## read-only.
@@ -197,7 +197,7 @@ classdef BurrDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution. First element contains the lower boundary,
     ## second element contains the upper boundary. This property is read-only.
     ## You can only truncate a probability distribution with the

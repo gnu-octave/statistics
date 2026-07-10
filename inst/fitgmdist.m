@@ -72,7 +72,7 @@
 ## each iteration.
 ## @end itemize
 ## @end itemize
-## @item @qcode{'Weight'}:  A column vector or @math{Nx2} matrix. The first
+## @item @qcode{'Weight'}:  A column vector or @math{N*2} matrix. The first
 ## column consists of non-negative weights given to the samples.  If these are
 ## all integers, this is equivalent to specifying @qcode{@var{weight}(i)} copies
 ## of row @qcode{i} of @var{data}, but potentially faster.  If a row of

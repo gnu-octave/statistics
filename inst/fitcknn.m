@@ -28,10 +28,10 @@
 ##
 ## @itemize
 ## @item
-## @code{X} must be a @math{NxP} numeric matrix of predictor data where rows
+## @code{X} must be a @math{N*P} numeric matrix of predictor data where rows
 ## correspond to observations and columns correspond to features or variables.
 ## @item
-## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels of
+## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels of
 ## corresponding predictor data in @var{X}.  @var{Y} can be numerical, logical,
 ## char array or cell array of character vectors.  @var{Y} must have same number
 ## of rows as @var{X}.
@@ -64,7 +64,7 @@
 ## probabilities for each class.  The order of the elements in @qcode{Prior}
 ## corresponds to the order of the classes in @qcode{ClassNames}.
 ##
-## @item @qcode{'Cost'} @tab A @math{NxR} numeric matrix containing
+## @item @qcode{'Cost'} @tab A @math{N*R} numeric matrix containing
 ## misclassification cost for the corresponding instances in @var{X} where
 ## @math{R} is the number of unique categories in @var{Y}.  If an instance is
 ## correctly classified into its category the cost is calculated to be 1,
@@ -181,10 +181,10 @@
 ## the percentage of nonzero coordinates that differ.
 ## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
-## where @var{XI} is a @math{1xP} vector containing a single observation in
-## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## where @var{XI} is a @math{1*P} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{N*P} matrix containing an
 ## arbitrary number of observations in the same @math{P}-dimensional space, and
-## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## @var{D2} is an @math{N*P} vector of distances, where @qcode{(@var{D2}k)} is
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##

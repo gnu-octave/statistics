@@ -170,7 +170,7 @@ classdef CompactClassificationDiscriminant
     ## Within-class covariance
     ##
     ## A numeric array specifying the within-class covariance. For linear
-    ## discriminant type (currently supported) this is a @math{PxP} matrix,
+    ## discriminant type (currently supported) this is a @math{P*P} matrix,
     ## where @math{P} is the number of predictors.  This property is read-only.
     ##
     ## @end deftp
@@ -181,7 +181,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## Class means
     ##
-    ## A @math{KxP} numeric matrix specifying the mean of the multivariate
+    ## A @math{K*P} numeric matrix specifying the mean of the multivariate
     ## normal distribution of each corresponding class, where @math{K} is the
     ## number of classes and @math{P} is the number of predictors. This property
     ## is read-only.
@@ -194,7 +194,7 @@ classdef CompactClassificationDiscriminant
     ##
     ## Coefficient matrices
     ##
-    ## A @math{KxK} structure containing the coefficient matrices, where
+    ## A @math{K*K} structure containing the coefficient matrices, where
     ## @math{K} is the number of classes.  If the @qcode{'FillCoeffs'} parameter
     ## was set to @qcode{'off'} in the original
     ## @code{ClassificationDiscriminant} model, then @qcode{Coeffs} is empty
@@ -425,7 +425,7 @@ classdef CompactClassificationDiscriminant
     ## @var{obj} must be a @qcode{CompactClassificationDiscriminant} class
     ## object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## @var{XC} must be an @math{M*P} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the discriminant
     ## model in @var{obj}.
     ## @end itemize
@@ -509,11 +509,11 @@ classdef CompactClassificationDiscriminant
     ## @item
     ## @code{obj} is a @var{CompactClassificationDiscriminant} object.
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of rows as @var{X}.
     ## @end itemize
@@ -531,18 +531,18 @@ classdef CompactClassificationDiscriminant
     ## 'hinge', 'logit','mincost', 'quadratic'.
     ## @itemize
     ## @item
-    ## @code{C} is a logical matrix of size @math{NxK}, where @math{N} is the
+    ## @code{C} is a logical matrix of size @math{N*K}, where @math{N} is the
     ## number of observations and @math{K} is the number of classes.
     ## The element @code{C(i,j)} is true if the class label of the i-th
     ## observation is equal to the j-th class.
     ## @item
-    ## @code{S} is a numeric matrix of size @math{NxK}, where each element
+    ## @code{S} is a numeric matrix of size @math{N*K}, where each element
     ## represents the classification score for the corresponding class.
     ## @item
     ## @code{W} is a numeric vector of length @math{N}, representing
     ## the observation weights.
     ## @item
-    ## @code{Cost} is a @math{KxK} matrix representing the misclassification
+    ## @code{Cost} is a @math{K*K} matrix representing the misclassification
     ## costs.
     ## @end itemize
     ##
@@ -786,11 +786,11 @@ classdef CompactClassificationDiscriminant
     ## @item
     ## @code{obj} is a @var{CompactClassificationDiscriminant} object.
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}. @var{Y} must have same
     ## numbers of rows as @var{X}.
     ## @end itemize

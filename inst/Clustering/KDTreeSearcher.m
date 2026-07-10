@@ -48,7 +48,7 @@ classdef KDTreeSearcher
     ##
     ## Point data
     ##
-    ## Point data, specified as an @math{NxP} numeric matrix where each row is
+    ## Point data, specified as an @math{N*P} numeric matrix where each row is
     ## an observation and each column is a feature.  This property is private
     ## and cannot be modified after object creation.
     ##
@@ -237,7 +237,7 @@ classdef KDTreeSearcher
     ## @code{@var{obj} = KDTreeSearcher (@var{X})} constructs a
     ## @qcode{KDTreeSearcher} object with training data @var{X} using the
     ## default @qcode{'euclidean'} distance metric. @var{X} must be an
-    ## @math{NxP} numeric matrix, where rows represent observations and columns
+    ## @math{N*P} numeric matrix, where rows represent observations and columns
     ## represent features.
     ##
     ## @code{@var{obj} = KDTreeSearcher (@var{X}, @var{name}, @var{value})}
@@ -346,7 +346,7 @@ classdef KDTreeSearcher
     ##
     ## @itemize
     ## @item @var{obj} is a @qcode{KDTreeSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @item @var{Y} is an @math{M*P} numeric matrix of query points, where
     ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{idx} contains the indices of the nearest neighbors in
     ## @var{obj.X}.
@@ -480,7 +480,7 @@ classdef KDTreeSearcher
     ##
     ## @itemize
     ## @item @var{obj} is a @qcode{KDTreeSearcher} object.
-    ## @item @var{Y} is an @math{MxP} numeric matrix of query points, where
+    ## @item @var{Y} is an @math{M*P} numeric matrix of query points, where
     ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize

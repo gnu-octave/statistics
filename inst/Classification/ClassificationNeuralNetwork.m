@@ -473,11 +473,11 @@ classdef ClassificationNeuralNetwork
     ##
     ## @itemize
     ## @item
-    ## @code{X} must be a @math{NxP} numeric matrix of input data where rows
+    ## @code{X} must be a @math{N*P} numeric matrix of input data where rows
     ## correspond to observations and columns correspond to features or
     ## variables.  @var{X} will be used to train the neural network model.
     ## @item
-    ## @code{Y} is @math{Nx1} matrix or cell matrix containing the class labels
+    ## @code{Y} is @math{N*1} matrix or cell matrix containing the class labels
     ## of corresponding predictor data in @var{X}.  @var{Y} can contain any type
     ## of categorical data. @var{Y} must have the same number of rows as
     ## @var{X}.
@@ -828,7 +828,7 @@ classdef ClassificationNeuralNetwork
     ## @item
     ## @var{obj} must be a @qcode{ClassificationNeuralNetwork} class object.
     ## @item
-    ## @var{XC} must be an @math{MxP} numeric matrix with the same number of
+    ## @var{XC} must be an @math{M*P} numeric matrix with the same number of
     ## features @math{P} as the corresponding predictors of the neural network
     ## model in @var{obj}.
     ## @end itemize

@@ -27,9 +27,9 @@
 ## @code{@var{idx} = knnsearch (@var{X}, @var{Y})} finds @math{K} nearest
 ## neighbors in @var{X} for @var{Y}. It returns @var{idx} which contains indices
 ## of @math{K} nearest neighbors of each row of @var{Y}, If not specified,
-## @qcode{@var{K} = 1}.  @var{X} must be an @math{NxP} numeric matrix of input
+## @qcode{@var{K} = 1}.  @var{X} must be an @math{N*P} numeric matrix of input
 ## data, where rows correspond to observations and columns correspond to
-## features or variables.  @var{Y} is an @math{MxP} numeric matrix with query
+## features or variables.  @var{Y} is an @math{M*P} numeric matrix with query
 ## points, which must have the same numbers of column as @var{X}.
 ##
 ## @code{[@var{idx}, @var{D}] = knnsearch (@var{X}, @var{Y})} also returns the
@@ -103,10 +103,10 @@
 ## the percentage of nonzero coordinates that differ.
 ## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
-## where @var{XI} is a @math{1xP} vector containing a single observation in
-## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## where @var{XI} is a @math{1*P} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{N*P} matrix containing an
 ## arbitrary number of observations in the same @math{P}-dimensional space, and
-## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## @var{D2} is an @math{N*P} vector of distances, where @qcode{(@var{D2}k)} is
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##

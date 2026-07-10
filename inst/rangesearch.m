@@ -26,11 +26,11 @@
 ## @code{@var{idx} = rangesearch (@var{X}, @var{Y}, @var{r})} returns all the
 ## points in @var{X} that are within distance @var{r} from the points in
 ## @var{Y}.
-## @var{X} must be an @math{NxP} numeric matrix of input data, where rows
+## @var{X} must be an @math{N*P} numeric matrix of input data, where rows
 ## correspond to observations and columns correspond to features or variables.
-## @var{Y} is an @math{MxP} numeric matrix with query points, which must have
+## @var{Y} is an @math{M*P} numeric matrix with query points, which must have
 ## the same numbers of column as @var{X}.  @var{r} must be a nonnegative scalar
-## value.  @var{idx} is an @math{Mx1} cell array, where @math{M} is the number
+## value.  @var{idx} is an @math{M*1} cell array, where @math{M} is the number
 ## of observations in @var{Y}.  The vector @qcode{@var{Idx}@{j@}} contains the
 ## indices of observations (rows) in @var{X} whose distances to
 ## @qcode{@var{Y}(j,:)} are not greater than @var{r}.
@@ -38,7 +38,7 @@
 ## @code{[@var{idx}, @var{D}] = rangesearch (@var{X}, @var{Y}, @var{r})} also
 ## returns the distances, @var{D}, which correspond to the points in @var{X}
 ## that are within distance @var{r} from the points in @var{Y}.  @var{D} is an
-## @math{Mx1} cell array, where @math{M} is the number of observations in
+## @math{M*1} cell array, where @math{M} is the number of observations in
 ## @var{Y}.  The vector @qcode{@var{D}@{j@}} contains the distances of
 ## observations (rows) in @var{X} whose distances to @qcode{@var{Y}(j,:)} are
 ## not greater than @var{r}.
@@ -106,10 +106,10 @@
 ## the percentage of nonzero coordinates that differ.
 ## @item @var{@@distfun} @tab Custom distance function handle.  A distance
 ## function of the form @code{function @var{D2} = distfun (@var{XI}, @var{YI})},
-## where @var{XI} is a @math{1xP} vector containing a single observation in
-## @math{P}-dimensional space, @var{YI} is an @math{NxP} matrix containing an
+## where @var{XI} is a @math{1*P} vector containing a single observation in
+## @math{P}-dimensional space, @var{YI} is an @math{N*P} matrix containing an
 ## arbitrary number of observations in the same @math{P}-dimensional space, and
-## @var{D2} is an @math{NxP} vector of distances, where @qcode{(@var{D2}k)} is
+## @var{D2} is an @math{N*P} vector of distances, where @qcode{(@var{D2}k)} is
 ## the distance between observations @var{XI} and @qcode{(@var{YI}k,:)}.
 ## @end multitable
 ##

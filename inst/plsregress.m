@@ -36,14 +36,14 @@
 ## the predictor and response loadings in @var{xload} and @var{yload},
 ## respectively.
 ## @itemize
-## @item @var{X} is an @math{NxP} matrix of predictor variables, with rows
+## @item @var{X} is an @math{N*P} matrix of predictor variables, with rows
 ## corresponding to observations, and columns corresponding to variables.
-## @item @var{Y} is an @math{NxM} response matrix.
-## @item @var{xload} is a @math{PxNCOMP} matrix of predictor loadings, where
+## @item @var{Y} is an @math{N*M} response matrix.
+## @item @var{xload} is a @math{P*NCOMP} matrix of predictor loadings, where
 ## each row of @var{xload} contains coefficients that define a linear
 ## combination of PLS components that approximate the original predictor
 ## variables.
-## @item @var{yload} is an @math{MxNCOMP} matrix of response loadings, where
+## @item @var{yload} is an @math{M*NCOMP} matrix of response loadings, where
 ## each row of @var{yload} contains coefficients that define a linear
 ## combination of PLS components that approximate the original response
 ## variables.
@@ -58,33 +58,33 @@
 ## @var{pctVar}, @var{mse}, @var{stats}] = plsregress (@var{X}, @var{Y},
 ## @var{NCOMP})} also returns the following arguments:
 ## @itemize
-## @item @var{xscore} is an @math{NxNCOMP} orthonormal matrix with the predictor
+## @item @var{xscore} is an @math{N*NCOMP} orthonormal matrix with the predictor
 ## scores, i.e., the PLS components that are linear combinations of the
 ## variables in @var{X}, with rows corresponding to observations and columns
 ## corresponding to components.
-## @item @var{yscore} is an @math{NxNCOMP} orthonormal matrix with the response
+## @item @var{yscore} is an @math{N*NCOMP} orthonormal matrix with the response
 ## scores, i.e., the linear combinations of the responses with which the PLS
 ## components @var{xscore} have maximum covariance, with rows corresponding to
 ## observations and columns corresponding to components.
-## @item @var{coef} is a @math{(P+1)xM} matrix with the PLS regression
+## @item @var{coef} is a @math{(P+1)*M} matrix with the PLS regression
 ## coefficients, containing the intercepts in the first row.
-## @item @var{pctVar} is a @math{2xNCOMP} matrix containing the percentage of
+## @item @var{pctVar} is a @math{2*NCOMP} matrix containing the percentage of
 ## the variance explained by the model with the first row containing the
 ## percentage of explained varianced in @var{X} by each PLS component and the
 ## second row containing the percentage of explained variance in @var{Y}.
-## @item @var{mse} is a @math{2x(NCOMP+1)} matrix containing the estimated mean
+## @item @var{mse} is a @math{2*(NCOMP+1)} matrix containing the estimated mean
 ## squared errors for PLS models with @qcode{0:@var{NCOMP}} components with the
 ## first row containing the squared errors for the predictor variables in
 ## @var{X} and the second row containing the mean squared errors for the
 ## response variable(s) in @var{Y}.
 ## @item @var{stats} is a structure with the following fields:
 ## @itemize
-## @item @var{stats}@qcode{.W} is a @math{PxNCOMP} matrix of PLS weights.
+## @item @var{stats}@qcode{.W} is a @math{P*NCOMP} matrix of PLS weights.
 ## @item @var{stats}@qcode{.T2} is the @math{T^2} statistics for each point in
 ## @var{xscore}.
-## @item @var{stats}@qcode{.Xresiduals} is an @math{NxP} matrix with the
+## @item @var{stats}@qcode{.Xresiduals} is an @math{N*P} matrix with the
 ## predictor residuals.
-## @item @var{stats}@qcode{.Yresiduals} is an @math{NxM} matrix with the
+## @item @var{stats}@qcode{.Yresiduals} is an @math{N*M} matrix with the
 ## response residuals.
 ## @end itemize
 ## @end itemize

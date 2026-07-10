@@ -110,7 +110,7 @@ classdef LognormalDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{2x1} cell array of character vectors with each element containing
+    ## A @math{2*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
@@ -121,7 +121,7 @@ classdef LognormalDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{2x1} cell array of character vectors with each element containing
+    ## A @math{2*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter.  This property is
     ## read-only.
     ##
@@ -143,7 +143,7 @@ classdef LognormalDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{2x1} numeric vector containing the values of the distribution
+    ## A @math{2*1} numeric vector containing the values of the distribution
     ## parameters.  This property is read-only. You can change the distribution
     ## parameters by assigning new values to the @qcode{mu} and @qcode{sigma}
     ## properties.
@@ -156,7 +156,7 @@ classdef LognormalDistribution
     ##
     ## Covariance matrix of the parameter estimates
     ##
-    ## A @math{2x2} numeric matrix containing the variance-covariance of the
+    ## A @math{2*2} numeric matrix containing the variance-covariance of the
     ## parameter estimates.  Diagonal elements contain the variance of each
     ## estimated parameter, and non-diagonal elements contain the covariance
     ## between the parameter estimates.  The covariance matrix is only
@@ -173,7 +173,7 @@ classdef LognormalDistribution
     ##
     ## Flag for fixed parameters
     ##
-    ## A @math{1x2} logical vector specifying which parameters are fixed and
+    ## A @math{1*2} logical vector specifying which parameters are fixed and
     ## which are estimated.  @qcode{true} values correspond to fixed parameters,
     ## @qcode{false} values correspond to parameter estimates.  This property is
     ## read-only.
@@ -186,7 +186,7 @@ classdef LognormalDistribution
     ##
     ## Truncation interval
     ##
-    ## A @math{1x2} numeric vector specifying the truncation interval for the
+    ## A @math{1*2} numeric vector specifying the truncation interval for the
     ## probability distribution.  First element contains the lower boundary,
     ## second element contains the upper boundary.  This property is read-only.
     ## You can only truncate a probability distribution with the

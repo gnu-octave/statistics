@@ -25,7 +25,7 @@
 ##
 ## Perform a McNemar's test on paired nominal data.
 ##
-## @nospell{McNemar's} test is applied to a @math{2x2} contingency table @var{x}
+## @nospell{McNemar's} test is applied to a @math{2*2} contingency table @var{x}
 ## with a dichotomous trait, with matched pairs of subjects, of data
 ## cross-classified on the row and column variables to testing the null
 ## hypothesis of symmetry of the classification probabilities.  More formally,
