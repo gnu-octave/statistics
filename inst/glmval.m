@@ -50,13 +50,13 @@
 ## include a constant term in the model.  Valid options are @var{"on"} (default)
 ## and @var{"off"}.
 ##
-## @item @qcode{'simultaneous'} @tab @tab Specifies whether to
-## include a constant term in the model. Options are
-## @var{"on"} (default) or @var{"off"}.
+## @item @qcode{'simultaneous'} @tab @tab A logical or numeric (@code{0} or
+## @code{1}) scalar specifying whether the confidence bounds are simultaneous.
+## The default is @code{false}, which yields nonsimultaneous (pointwise) bounds.
 ##
 ## @item @qcode{'size'} @tab @tab A numeric scalar or a vector with one value
 ## for each row of @var{X} specifying the size parameter @math{N} for a binomial
-## model.
+## model.  @qcode{'BinomialSize'} is accepted as an alias for @qcode{'size'}.
 ## @end multitable
 ##
 ## @seealso{glmfit}
@@ -132,11 +132,15 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
 
       case 'simultaneous'
         simultaneous = varargin {2};
-        if (! (islogical (simultaneous) && isscalar (simultaneous)))
-          error ("glmval: 'simultaneous' must be a boolean scalar.");
+        if (! isscalar (simultaneous) ...
+            || ! (islogical (simultaneous) || isnumeric (simultaneous)) ...
+            || ! any (simultaneous == [0, 1]))
+          error (strcat ("glmval: 'simultaneous' must be a logical or", ...
+                         " numeric (0 or 1) scalar."));
         endif
+        simultaneous = logical (simultaneous);
 
-      case 'size'
+      case {'size', 'binomialsize'}
         N = varargin {2};
         if (! isnumeric (N) ||
             ! (isscalar (N) || isvector (N) && isequal (numel (N), size (X, 1))))
@@ -293,9 +297,21 @@ endfunction
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'offset', [1; 2; 3; 4])
 %!error <glmval: 'Offset' must be a numeric vector of the same length as the rows in X.> ...
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'offset', 'asdfg')
-%!error <glmval: 'simultaneous' must be a boolean scalar.> ...
+%!test  # numeric 0/1 are accepted for 'simultaneous' (MATLAB compatibility)
+%! b = [0.2; 0.5];
+%! X = [1; 2; 3];
+%! assert (numel (glmval (b, X, 'logit', 'simultaneous', 0)), 3);
+%! assert (numel (glmval (b, X, 'logit', 'simultaneous', 1)), 3);
+
+%!test  # 'BinomialSize' is accepted as an alias for 'size'
+%! b = [0.2; 0.5; -0.3];
+%! X = [0.1 0.2; 0.3 0.4; 0.5 0.6; 0.7 0.8];
+%! assert (glmval (b, X, 'logit', 'BinomialSize', 10), ...
+%!         glmval (b, X, 'logit', 'size', 10));
+
+%!error <glmval: 'simultaneous' must be a logical or numeric \(0 or 1\) scalar.> ...
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'simultaneous', 'asdfg')
-%!error <glmval: 'simultaneous' must be a boolean scalar.> ...
+%!error <glmval: 'simultaneous' must be a logical or numeric \(0 or 1\) scalar.> ...
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'simultaneous', [true, false])
 %!error <glmval: 'size' must be a scalar or a vector with one value for each row of X.> ...
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'size', 'asd')
