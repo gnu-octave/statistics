@@ -1270,7 +1270,10 @@ classdef anova
     endfunction
 
     function nv = buildAnovanArgs_ (obj)
-      nv = {'display', obj.Display, 'sstype', obj.SSType, 'alpha', obj.Alpha};
+      ## Always run the anovan backend silently; anova presents results through
+      ## its own summary, disp, and plotDiagnostics methods, so the backend must
+      ## not print a table or open its diagnostic-plots figure during a fit.
+      nv = {'display', 'off', 'sstype', obj.SSType, 'alpha', obj.Alpha};
       if (ischar (obj.ModelType) || isnumeric (obj.ModelType))
         if (! (isnumeric (obj.ModelType) && isempty (obj.ModelType)))
           nv = [nv, {'model', obj.ModelType}];
