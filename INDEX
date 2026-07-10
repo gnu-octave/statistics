@@ -320,6 +320,7 @@ Regression
  factoran
  glmfit
  glmval
+ lasso
  logistic_regression
  mnrfit
  mnrval

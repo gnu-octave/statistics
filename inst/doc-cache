@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 149
+# columns: 150
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11374,6 +11374,94 @@ robustfit
 # elements: 1
 # length: 25
 Robust linear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+lasso
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3411
+ -- statistics: B = lasso (X, Y)
+ -- statistics: [B, FITINFO] = lasso (X, Y)
+ -- statistics: [...] = lasso (..., NAME, VALUE)
+
+     Lasso and elastic-net regularized least-squares regression.
+
+     ‘B = lasso (X, Y)’ fits a series of regularized linear models of the
+     response Y on the predictor matrix X by lasso, over a sequence of values of
+     the regularization parameter LAMBDA.  B is a P*L matrix whose column k
+     holds the coefficient estimates for the k-th LAMBDA, in ascending order of
+     LAMBDA.
+
+     ‘[B, FITINFO] = lasso (...)’ additionally returns a structure FITINFO with
+     fields ‘Intercept’, ‘Lambda’, ‘Alpha’, ‘DF’ (number of non-zero
+     coefficients), and ‘MSE’ (mean squared error), one entry per value of
+     LAMBDA.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'Alpha'        The elastic-net mixing parameter in (0, 1].  1 (default) is the
+                    lasso penalty; smaller values add a ridge penalty.
+                    
+     'Lambda'       A vector of non-negative regularization parameters.  By default
+                    a geometric sequence of 'NumLambda' values is used, from the
+                    smallest value that drives all coefficients to zero down to
+                    'LambdaRatio' times that value.
+                    
+     'NumLambda'    The number of LAMBDA values in the default sequence (default
+                    100).
+                    
+     'LambdaRatio'  The ratio of the smallest to the largest LAMBDA in the default
+                    sequence (default 1e-4, or 1e-2 when the number of observations
+                    is below the number of predictors).
+                    
+     'Standardize'  Whether to standardize X to zero mean and unit variance before
+                    fitting (default true).  Coefficients are always returned on the
+                    original scale.
+                    
+     'Weights'      A vector of non-negative observation weights.
+                    
+     'RelTol'       Convergence tolerance for the coordinate descent (default 1e-4).
+                    
+     'MaxIter'      Maximum number of coordinate-descent iterations (default 1e5).
+                    
+     'DFmax'        The maximum number of non-zero coefficients; the default
+                    sequence stops once this is exceeded.
+                    
+     'Intercept'    Whether to fit a constant term (default true).
+                    
+     'PredictorNames'A cell array of predictor names, kept in FITINFO.
+                    
+     'CV'           The number of folds K for K-fold cross-validation of the mean
+                    squared error, or a ‘cvpartition’ object.
+                    
+     'MCReps'       The number of Monte-Carlo repetitions of the cross-validation
+                    (default 1).
+
+     When 'CV' is used, FITINFO‘.MSE’ is the cross-validated error, plus ‘SE’,
+     ‘LambdaMinMSE’, ‘IndexMinMSE’, ‘Lambda1SE’, and ‘Index1SE’, which report
+     the LAMBDA with the lowest error and the largest LAMBDA within one standard
+     error of it.  The fold assignment is random, so these selections are not
+     reproducible without fixing the random seed.
+
+     See also: ridge, regress, lassoglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Lasso and elastic-net regularized least-squares regression.
 
 
 
