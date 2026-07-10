@@ -67,6 +67,7 @@ Descriptive Statistics
  grpstats
  harmmean
  jackknife
+ ksdensity
  nanmax
  nanmean
  nanmin

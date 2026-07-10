@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 146
+# columns: 147
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11155,6 +11155,71 @@ lillietest
 # elements: 1
 # length: 43
 Lilliefors goodness-of-fit hypothesis test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+ksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2144
+ -- statistics: F = ksdensity (X)
+ -- statistics: F = ksdensity (X, PTS)
+ -- statistics: [F, XI] = ksdensity (...)
+ -- statistics: [F, XI, BW] = ksdensity (...)
+ -- statistics: [...] = ksdensity (..., NAME, VALUE)
+
+     Kernel smoothing density estimate.
+
+     ‘F = ksdensity (X)’ computes a probability density estimate of the sample
+     in the vector X, evaluated at 100 equally spaced points XI that span the
+     range of the data.  ‘[F, XI] = ksdensity (X)’ also returns those points.
+     When called without output arguments, the estimate is plotted instead.
+
+     ‘F = ksdensity (X, PTS)’ evaluates the estimate at the values in PTS
+     instead; F is then the same size as PTS.  For 'Function' equal to 'icdf'
+     the entries of PTS are probabilities in [0, 1].
+
+     ‘[F, XI, BW] = ksdensity (...)’ additionally returns the bandwidth BW of
+     the smoothing kernel.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'Kernel'       The smoothing kernel: 'normal' (default), 'box', 'triangle',
+                    'epanechnikov', or a function handle ‘@(z)’ evaluating a kernel
+                    density at the standardized distance Z.
+                    
+     'Bandwidth'    The kernel bandwidth, a positive scalar.  The default is the
+                    value that is optimal for estimating a normal density, BW =
+                    SIGMA * (4 / (3 * N)) ^ (1 / 5), with SIGMA a robust estimate of
+                    the standard deviation of X.
+                    
+     'Function'     The function to estimate: 'pdf' (default), 'cdf', 'icdf',
+                    'survivor', or 'cumhazard'.
+                    
+     'Weights'      A vector of non-negative weights, one for each element of X.
+                    The default weights are all equal.
+                    
+     'NumPoints'    The number of equally spaced points XI at which to evaluate the
+                    estimate when PTS is not given.  The default is 100.
+
+     See also: hist, histc, ecdf.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 34
+Kernel smoothing density estimate.
 
 
 
