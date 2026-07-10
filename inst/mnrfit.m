@@ -26,8 +26,8 @@
 ##
 ## Nominal models are fitted with a baseline-category multinomial logit, using
 ## the last category of @var{Y} as the reference.  Ordinal models are fitted
-## with a cumulative logit model.  Only the logit link is currently available,
-## and hierarchical models are not yet supported.
+## with a cumulative logit model, and hierarchical models with a sequential
+## (continuation-ratio) logit.  Only the logit link is currently available.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y})}  returns a matrix, @var{B}, of
 ## coefficient estimates for a multinomial logistic regression of the nominal
@@ -49,8 +49,8 @@
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
 ## @item @qcode{'model'} @tab @tab The type of model to fit: @qcode{'nominal'}
-## (default) for a baseline-category model or @qcode{'ordinal'} for a cumulative
-## logit model.
+## (default) for a baseline-category model, @qcode{'ordinal'} for a cumulative
+## logit model, or @qcode{'hierarchical'} for a sequential logit model.
 ##
 ## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
 ## information about the fitted model.  Default is @qcode{'off'}.
@@ -201,7 +201,7 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
                       'residp', [], ...   ## Not used
                       'residd', []);      ## Not used
     case 'hierarchical'
-      error ("mnrfit: fitting hierarchical responses not supported.");
+      [B, DEV, STATS] = mnrfit_hierarchical_ (X, YN, n, dispopt);
     otherwise
       error ("mnrfit: model type not recognised.");
   endswitch
@@ -291,6 +291,55 @@ function [B, dev, stats] = mnrfit_nominal_ (X, YN, k, dispopt)
 
 endfunction
 
+## Fit a hierarchical (sequential / continuation-ratio) model.  Category j is
+## contrasted against the later categories using only the observations with
+## Y >= j, giving K-1 independent binary logit fits.  B is a (P+1)-by-(K-1)
+## matrix whose column j holds the intercept and slopes of the conditional
+## logit for category j.
+function [B, dev, stats] = mnrfit_hierarchical_ (X, YN, k, dispopt)
+
+  YN = YN(:);
+  p = columns (X);
+  q = p + 1;
+  ncat = k - 1;
+  B = zeros (q, ncat);
+  se = zeros (q, ncat);
+  covb = zeros (q * ncat);
+  dev = 0;
+  usedobs = 0;
+  for j = 1:ncat
+    mask = (YN >= j);
+    ## Category j is class 1 (the reference class 2 is the later categories)
+    YNsub = 2 - double (YN(mask) == j);
+    [Bj, devj, sj] = mnrfit_nominal_ (X(mask, :), YNsub, 2, dispopt);
+    B(:, j) = Bj;
+    se(:, j) = sj.se;
+    covb((j-1)*q+(1:q), (j-1)*q+(1:q)) = sj.covb;
+    dev += devj;
+    usedobs += sum (mask);
+  endfor
+
+  se_v = se(:);
+  coeffcorr = covb ./ (se_v * se_v');
+  tstat = B ./ se;
+  pval = 2 * normcdf (- abs (tstat));
+
+  stats = struct ('beta', B, ...
+                  'dfe', usedobs - numel (B), ...
+                  's', 1, ...
+                  'sfit', 1, ...
+                  'estdisp', false, ...
+                  'coeffcorr', coeffcorr, ...
+                  'covb', covb, ...
+                  'se', se, ...
+                  't', tstat, ...
+                  'p', pval, ...
+                  'resid', [], ...
+                  'residp', [], ...
+                  'residd', []);
+
+endfunction
+
 ## Numerically stable baseline-category softmax.  Returns the nobs-by-(K-1)
 ## matrix P of non-reference category probabilities and, optionally, the full
 ## nobs-by-K matrix Pall including the reference category in the last column.
@@ -322,6 +371,23 @@ endfunction
 %! assert (mnrfit (X, Y, 'model', 'nominal'), ...
 %!         mnrfit (X, Y, 'model', 'ordinal'), 1e-5);
 
+## Test hierarchical (sequential) fitting
+%!test  # hierarchical fit yields valid probabilities through mnrval
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! [B, dev, stats] = mnrfit (X, Y, 'model', 'hierarchical');
+%! assert (size (B), [2, 2]);
+%! P = mnrval (B, X, 'model', 'hierarchical');
+%! assert (sum (P, 2), ones (12, 1), 1e-10);
+%! assert (all (P(:) >= 0 & P(:) <= 1));
+
+%!test  # first hierarchical stage is the binary logit of category 1 vs. rest
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! Bh = mnrfit (X, Y, 'model', 'hierarchical');
+%! Bb = mnrfit (X, 2 - double (Y == 1), 'model', 'nominal');
+%! assert (Bh(:,1), Bb, 1e-8);
+
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
 %!error<mnrfit: Predictors must be numeric.> ...
@@ -342,8 +408,6 @@ endfunction
 %! mnrfit (ones (5, 4), [1, 2; 1, 2; 1, 2; 1, 2; 1, 2])
 %!error<mnrfit: Y must contain positive integer category numbers.> ...
 %! mnrfit (ones (5, 4), [1; -1; 1; 2; 1])
-%!error<mnrfit: fitting hierarchical responses not supported.> ...
-%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'hierarchical')
 %!error<mnrfit: model type not recognised.> ...
 %! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'whatever')
 
