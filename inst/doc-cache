@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 142
+# columns: 143
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -10875,6 +10875,87 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+mnrval
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3427
+ -- statistics: PIHAT = mnrval (B, X)
+ -- statistics: [PIHAT, DLO, DHI] = mnrval (B, X, STATS)
+ -- statistics: YHAT = mnrval (B, X, SSIZE)
+ -- statistics: [YHAT, DLO, DHI] = mnrval (B, X, SSIZE, STATS)
+ -- statistics: [...] = mnrval (..., NAME, VALUE)
+
+     Predict values for a multinomial logistic regression model.
+
+     ‘PIHAT = mnrval (B, X)’ returns the predicted category probabilities PIHAT
+     of a multinomial logistic regression with coefficients B, evaluated at the
+     predictor values in X.  X is an NxP numeric matrix of N observations on P
+     predictors.  PIHAT is an NxK matrix, where K is the number of response
+     categories and each row sums to one.  B is the coefficient matrix returned
+     by ‘mnrfit’ (see below for its shape under each model).
+
+     ‘mnrval’ is the prediction companion of ‘mnrfit’.  Unlike the current
+     ‘mnrfit’, which only fits ordinal and two-category nominal models, ‘mnrval’
+     evaluates all three model types, so a coefficient matrix B obtained
+     elsewhere (e.g. MATLAB) can be used for prediction.
+
+     ‘YHAT = mnrval (B, X, SSIZE)’ returns predicted category counts instead of
+     probabilities, for the sample sizes in SSIZE (a scalar or an Nx1 vector).
+
+     ‘[PIHAT, DLO, DHI] = mnrval (B, X, STATS)’ also returns 95% confidence
+     bounds on the predictions.  STATS is the structure returned by ‘mnrfit’;
+     its 'covb' field (the coefficient covariance matrix) is required.  The
+     confidence interval for each prediction is ‘[PIHAT - DLO, PIHAT + DHI]’.
+     The bounds are nonsimultaneous and apply to the fitted values, not to new
+     observations.
+
+     The following Name-Value pairs control the model:
+
+     NAME              VALUE
+                       
+     -----------------------------------------------------------------------------------
+     'model'           The model type: 'nominal' (default), 'ordinal', or
+                       'hierarchical'.
+                       
+     'interactions'    'on' to include category-specific coefficients, or 'off' for a
+                       common set of coefficients with category-specific intercepts
+                       only.  Default is 'on' for nominal and hierarchical models and
+                       'off' for ordinal models.  With 'interactions','on', B is a
+                       (P+1)x(K-1) matrix.  With 'interactions','off', B is a
+                       (K-1+P)x1 vector holding the K-1 intercepts followed by the P
+                       common slopes.
+                       
+     'link'            The link function for ordinal and hierarchical models: 'logit'
+                       (default), 'probit', 'comploglog', or 'loglog'.  Nominal
+                       models always use the multinomial logit link.
+                       
+     'type'            The kind of probability returned: 'category' (default, NxK
+                       category probabilities), 'cumulative' (Nx(K-1) cumulative
+                       probabilities of the first K-1 categories), or 'conditional'
+                       (Nx(K-1) conditional probabilities of each category given
+                       membership in that or a later category).
+                       
+     'confidence'      The confidence level for DLO and DHI, a scalar in the range
+                       (0,1).  Default is 0.95.
+
+     See also: mnrfit, glmval, logistic_regression.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Predict values for a multinomial logistic regression model.
 
 
 

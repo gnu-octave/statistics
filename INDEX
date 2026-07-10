@@ -317,6 +317,7 @@ Regression
  glmval
  logistic_regression
  mnrfit
+ mnrval
  monotone_smooth
  parseWilkinsonFormula
  pca
