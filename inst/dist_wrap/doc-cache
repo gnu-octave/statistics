@@ -13,7 +13,7 @@ cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4654
+# length: 4264
  -- statistics: P = cdf (NAME, X, A)
  -- statistics: P = cdf (NAME, X, A, B)
  -- statistics: P = cdf (NAME, X, A, B, C)
@@ -48,45 +48,45 @@ cdf
      after X to the desired CDF. The optional input argument 'upper' does not
      count in the required number of parameters.
 
-     Distribution Name                     Abbreviation          Input Parameters
-     -------------------------------------------------------------------------------------
-     'Beta'                                'beta'                2
-     'Binomial'                            'bino'                2
-     'Birnbaum-Saunders'                   'bisa'                2
-     'Burr'                                'burr'                3
-     'Cauchy'                              'cauchy'              2
-     'Chi-squared'                         'chi2'                1
-     'Extreme Value'                       'ev'                  2
-     'Exponential'                         'exp'                 1
-     'F-Distribution'                      'f'                   2
-     'Gamma'                               'gam'                 2
-     'Geometric'                           'geo'                 1
-     'Generalized Extreme Value'           'gev'                 3
-     'Generalized Pareto'                  'gp'                  3
-     'Gumbel'                              'gumbel'              2
-     'Half-normal'                         'hn'                  2
-     'Hypergeometric'                      'hyge'                3
-     'Inverse Gaussian'                    'invg'                2
-     'Laplace'                             'laplace'             2
-     'Logistic'                            'logi'                2
-     'Log-Logistic'                        'logl'                2
-     'Lognormal'                           'logn'                2
-     'Nakagami'                            'naka'                2
-     'Negative Binomial'                   'nbin'                2
-     'Noncentral F-Distribution'           'ncf'                 3
-     'Noncentral Student T'                'nct'                 2
-     'Noncentral Chi-Squared'              'ncx2'                2
-     'Normal'                              'norm'                2
-     'Poisson'                             'poiss'               1
-     'Rayleigh'                            'rayl'                1
-     'Rician'                              'rice'                2
-     'Student T'                           't'                   1
-     'location-scale T'                    'tls'                 3
-     'Triangular'                          'tri'                 3
-     'Discrete Uniform'                    'unid'                1
-     'Uniform'                             'unif'                2
-     'Von Mises'                           'vm'                  2
-     'Weibull'                             'wbl'                 2
+     Distribution Name                Abbreviation     Input Parameters
+     ---------------------------------------------------------------------------
+     'Beta'                           'beta'           2
+     'Binomial'                       'bino'           2
+     'Birnbaum-Saunders'              'bisa'           2
+     'Burr'                           'burr'           3
+     'Cauchy'                         'cauchy'         2
+     'Chi-squared'                    'chi2'           1
+     'Extreme Value'                  'ev'             2
+     'Exponential'                    'exp'            1
+     'F-Distribution'                 'f'              2
+     'Gamma'                          'gam'            2
+     'Geometric'                      'geo'            1
+     'Generalized Extreme Value'      'gev'            3
+     'Generalized Pareto'             'gp'             3
+     'Gumbel'                         'gumbel'         2
+     'Half-normal'                    'hn'             2
+     'Hypergeometric'                 'hyge'           3
+     'Inverse Gaussian'               'invg'           2
+     'Laplace'                        'laplace'        2
+     'Logistic'                       'logi'           2
+     'Log-Logistic'                   'logl'           2
+     'Lognormal'                      'logn'           2
+     'Nakagami'                       'naka'           2
+     'Negative Binomial'              'nbin'           2
+     'Noncentral F-Distribution'      'ncf'            3
+     'Noncentral Student T'           'nct'            2
+     'Noncentral Chi-Squared'         'ncx2'           2
+     'Normal'                         'norm'           2
+     'Poisson'                        'poiss'          1
+     'Rayleigh'                       'rayl'           1
+     'Rician'                         'rice'           2
+     'Student T'                      't'              1
+     'location-scale T'               'tls'            3
+     'Triangular'                     'tri'            3
+     'Discrete Uniform'               'unid'           1
+     'Uniform'                        'unif'           2
+     'Von Mises'                      'vm'             2
+     'Weibull'                        'wbl'            2
 
      See also: icdf, pdf, cdf, betacdf, binocdf, bisacdf, burrcdf, cauchycdf,
      chi2cdf, evcdf, expcdf, fcdf, gamcdf, geocdf, gevcdf, gpcdf, gumbelcdf,
@@ -113,7 +113,7 @@ fitdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3093
+# length: 3006
  -- statistics: PD = fitdist (X, DISTNAME)
  -- statistics: PD = fitdist (X, DISTNAME, NAME, VALUE)
  -- statistics: [PDCA, GN, GL] = fitdist (X, DISTNAME, 'By', GROUPVAR)
@@ -129,35 +129,35 @@ fitdist
      distribution object with additional options specified by one or more
      Name-Value pair arguments listed below.
 
-     NAME              VALUE
-                       
-     -----------------------------------------------------------------------------------
-     'distribution'    A character vector specifying the distribution type for which
-                       to estimate parameters.
-                       
-     'Ntrials'         A scalar specifying the number of trials for the corresponding
-                       element of X for the binomial distribution.
-                       
-     'theta'           A scalar specifying the location parameter for the generalized
-                       Pareto distribution.
-                       
-     'mu'              A scalar specifying the location parameter for the half-normal
-                       distribution.
-                       
-     'censoring'       A vector of the same size as X indicating censored data in X.
-                       By default it is CENSOR = zeros (size (X)).
-                       
-     'frequency'       A vector of nonnegative integer counts of the same size as X
-                       used as frequency observations.  By default it is FREQ = ones
-                       (size (X)).
-                       
-     'alpha'           A scalar in the range (0,1), as the significance level for the
-                       confidence interval PCI.  By default it is 0.05 corresponding
-                       to 95% confidence intervals.
-                       
-     'options'         A structure specifying the control parameters for the
-                       iterative algorithm used to compute ML estimates with the
-                       ‘fminsearch’ function.
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'distribution' A character vector specifying the distribution type for which
+                    to estimate parameters.
+                    
+     'Ntrials'      A scalar specifying the number of trials for the corresponding
+                    element of X for the binomial distribution.
+                    
+     'theta'        A scalar specifying the location parameter for the generalized
+                    Pareto distribution.
+                    
+     'mu'           A scalar specifying the location parameter for the half-normal
+                    distribution.
+                    
+     'censoring'    A vector of the same size as X indicating censored data in X.
+                    By default it is CENSOR = zeros (size (X)).
+                    
+     'frequency'    A vector of nonnegative integer counts of the same size as X
+                    used as frequency observations.  By default it is FREQ = ones
+                    (size (X)).
+                    
+     'alpha'        A scalar in the range (0,1), as the significance level for the
+                    confidence interval PCI.  By default it is 0.05 corresponding
+                    to 95% confidence intervals.
+                    
+     'options'      A structure specifying the control parameters for the
+                    iterative algorithm used to compute ML estimates with the
+                    ‘fminsearch’ function.
 
      ‘[PDCA, GN, GL] = fitdist (X, DISTNAME, 'By', GROUPVAR)’ creates
      probability distribution objects by fitting the distribution specified by
@@ -194,7 +194,7 @@ icdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4302
+# length: 3912
  -- statistics: X = icdf (NAME, P, A)
  -- statistics: X = icdf (NAME, P, A, B)
  -- statistics: X = icdf (NAME, P, A, B, C)
@@ -222,45 +222,45 @@ icdf
      column shows the number of required parameters that should be parsed after
      X to the desired iCDF.
 
-     Distribution Name                     Abbreviation          Input Parameters
-     -------------------------------------------------------------------------------------
-     'Beta'                                'beta'                2
-     'Binomial'                            'bino'                2
-     'Birnbaum-Saunders'                   'bisa'                2
-     'Burr'                                'burr'                3
-     'Cauchy'                              'cauchy'              2
-     'Chi-squared'                         'chi2'                1
-     'Extreme Value'                       'ev'                  2
-     'Exponential'                         'exp'                 1
-     'F-Distribution'                      'f'                   2
-     'Gamma'                               'gam'                 2
-     'Geometric'                           'geo'                 1
-     'Generalized Extreme Value'           'gev'                 3
-     'Generalized Pareto'                  'gp'                  3
-     'Gumbel'                              'gumbel'              2
-     'Half-normal'                         'hn'                  2
-     'Hypergeometric'                      'hyge'                3
-     'Inverse Gaussian'                    'invg'                2
-     'Laplace'                             'laplace'             2
-     'Logistic'                            'logi'                2
-     'Log-Logistic'                        'logl'                2
-     'Lognormal'                           'logn'                2
-     'Nakagami'                            'naka'                2
-     'Negative Binomial'                   'nbin'                2
-     'Noncentral F-Distribution'           'ncf'                 3
-     'Noncentral Student T'                'nct'                 2
-     'Noncentral Chi-Squared'              'ncx2'                2
-     'Normal'                              'norm'                2
-     'Poisson'                             'poiss'               1
-     'Rayleigh'                            'rayl'                1
-     'Rician'                              'rice'                2
-     'Student T'                           't'                   1
-     'location-scale T'                    'tls'                 3
-     'Triangular'                          'tri'                 3
-     'Discrete Uniform'                    'unid'                1
-     'Uniform'                             'unif'                2
-     'Von Mises'                           'vm'                  2
-     'Weibull'                             'wbl'                 2
+     Distribution Name                Abbreviation     Input Parameters
+     ---------------------------------------------------------------------------
+     'Beta'                           'beta'           2
+     'Binomial'                       'bino'           2
+     'Birnbaum-Saunders'              'bisa'           2
+     'Burr'                           'burr'           3
+     'Cauchy'                         'cauchy'         2
+     'Chi-squared'                    'chi2'           1
+     'Extreme Value'                  'ev'             2
+     'Exponential'                    'exp'            1
+     'F-Distribution'                 'f'              2
+     'Gamma'                          'gam'            2
+     'Geometric'                      'geo'            1
+     'Generalized Extreme Value'      'gev'            3
+     'Generalized Pareto'             'gp'             3
+     'Gumbel'                         'gumbel'         2
+     'Half-normal'                    'hn'             2
+     'Hypergeometric'                 'hyge'           3
+     'Inverse Gaussian'               'invg'           2
+     'Laplace'                        'laplace'        2
+     'Logistic'                       'logi'           2
+     'Log-Logistic'                   'logl'           2
+     'Lognormal'                      'logn'           2
+     'Nakagami'                       'naka'           2
+     'Negative Binomial'              'nbin'           2
+     'Noncentral F-Distribution'      'ncf'            3
+     'Noncentral Student T'           'nct'            2
+     'Noncentral Chi-Squared'         'ncx2'           2
+     'Normal'                         'norm'           2
+     'Poisson'                        'poiss'          1
+     'Rayleigh'                       'rayl'           1
+     'Rician'                         'rice'           2
+     'Student T'                      't'              1
+     'location-scale T'               'tls'            3
+     'Triangular'                     'tri'            3
+     'Discrete Uniform'               'unid'           1
+     'Uniform'                        'unif'           2
+     'Von Mises'                      'vm'             2
+     'Weibull'                        'wbl'            2
 
      See also: icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
      chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, gumbelinv,
@@ -325,7 +325,7 @@ mle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2172
+# length: 2085
  -- statistics: PHAT = mle (X)
  -- statistics: PHAT = mle (X, NAME, VALUE)
  -- statistics: [PHAT, PCI] = mle (...)
@@ -339,35 +339,35 @@ mle
      ‘PHAT = mle (X, NAME, VALUE)’ returns the MLEs with additional options
      specified by Name-Value pair arguments listed below.
 
-     NAME              VALUE
-                       
-     -----------------------------------------------------------------------------------
-     'distribution'    A character vector specifying the distribution type for which
-                       to estimate parameters.
-                       
-     'Ntrials'         A scalar specifying the number of trials for the corresponding
-                       element of X for the binomial distribution.
-                       
-     'theta'           A scalar specifying the location parameter for the generalized
-                       Pareto distribution.
-                       
-     'mu'              A scalar specifying the location parameter for the half-normal
-                       distribution.
-                       
-     'censoring'       A vector of the same size as X indicating censored data in X.
-                       By default it is CENSOR = zeros (size (X)).
-                       
-     'frequency'       A vector of nonnegative integer counts of the same size as X
-                       used as frequency observations.  By default it is FREQ = ones
-                       (size (X)).
-                       
-     'alpha'           A scalar in the range (0,1), as the significance level for the
-                       confidence interval PCI.  By default it is 0.05 corresponding
-                       to 95% confidence intervals.
-                       
-     'options'         A structure specifying the control parameters for the
-                       iterative algorithm used to compute ML estimates with the
-                       ‘fminsearch’ function.
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'distribution' A character vector specifying the distribution type for which
+                    to estimate parameters.
+                    
+     'Ntrials'      A scalar specifying the number of trials for the corresponding
+                    element of X for the binomial distribution.
+                    
+     'theta'        A scalar specifying the location parameter for the generalized
+                    Pareto distribution.
+                    
+     'mu'           A scalar specifying the location parameter for the half-normal
+                    distribution.
+                    
+     'censoring'    A vector of the same size as X indicating censored data in X.
+                    By default it is CENSOR = zeros (size (X)).
+                    
+     'frequency'    A vector of nonnegative integer counts of the same size as X
+                    used as frequency observations.  By default it is FREQ = ones
+                    (size (X)).
+                    
+     'alpha'        A scalar in the range (0,1), as the significance level for the
+                    confidence interval PCI.  By default it is 0.05 corresponding
+                    to 95% confidence intervals.
+                    
+     'options'      A structure specifying the control parameters for the
+                    iterative algorithm used to compute ML estimates with the
+                    ‘fminsearch’ function.
 
      See also: fitdist, makedist.
 
@@ -390,7 +390,7 @@ pdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4280
+# length: 3890
  -- statistics: Y = pdf (NAME, X, A)
  -- statistics: Y = pdf (NAME, X, A, B)
  -- statistics: Y = pdf (NAME, X, A, B, C)
@@ -418,45 +418,45 @@ pdf
      last column shows the number of required parameters that should be parsed
      after X to the desired PDF.
 
-     Distribution Name                     Abbreviation          Input Parameters
-     -------------------------------------------------------------------------------------
-     'Beta'                                'beta'                2
-     'Binomial'                            'bino'                2
-     'Birnbaum-Saunders'                   'bisa'                2
-     'Burr'                                'burr'                3
-     'Cauchy'                              'cauchy'              2
-     'Chi-squared'                         'chi2'                1
-     'Extreme Value'                       'ev'                  2
-     'Exponential'                         'exp'                 1
-     'F-Distribution'                      'f'                   2
-     'Gamma'                               'gam'                 2
-     'Geometric'                           'geo'                 1
-     'Generalized Extreme Value'           'gev'                 3
-     'Generalized Pareto'                  'gp'                  3
-     'Gumbel'                              'gumbel'              2
-     'Half-normal'                         'hn'                  2
-     'Hypergeometric'                      'hyge'                3
-     'Inverse Gaussian'                    'invg'                2
-     'Laplace'                             'laplace'             2
-     'Logistic'                            'logi'                2
-     'Log-Logistic'                        'logl'                2
-     'Lognormal'                           'logn'                2
-     'Nakagami'                            'naka'                2
-     'Negative Binomial'                   'nbin'                2
-     'Noncentral F-Distribution'           'ncf'                 3
-     'Noncentral Student T'                'nct'                 2
-     'Noncentral Chi-Squared'              'ncx2'                2
-     'Normal'                              'norm'                2
-     'Poisson'                             'poiss'               1
-     'Rayleigh'                            'rayl'                1
-     'Rician'                              'rice'                2
-     'Student T'                           't'                   1
-     'location-scale T'                    'tls'                 3
-     'Triangular'                          'tri'                 3
-     'Discrete Uniform'                    'unid'                1
-     'Uniform'                             'unif'                2
-     'Von Mises'                           'vm'                  2
-     'Weibull'                             'wbl'                 2
+     Distribution Name                Abbreviation     Input Parameters
+     ---------------------------------------------------------------------------
+     'Beta'                           'beta'           2
+     'Binomial'                       'bino'           2
+     'Birnbaum-Saunders'              'bisa'           2
+     'Burr'                           'burr'           3
+     'Cauchy'                         'cauchy'         2
+     'Chi-squared'                    'chi2'           1
+     'Extreme Value'                  'ev'             2
+     'Exponential'                    'exp'            1
+     'F-Distribution'                 'f'              2
+     'Gamma'                          'gam'            2
+     'Geometric'                      'geo'            1
+     'Generalized Extreme Value'      'gev'            3
+     'Generalized Pareto'             'gp'             3
+     'Gumbel'                         'gumbel'         2
+     'Half-normal'                    'hn'             2
+     'Hypergeometric'                 'hyge'           3
+     'Inverse Gaussian'               'invg'           2
+     'Laplace'                        'laplace'        2
+     'Logistic'                       'logi'           2
+     'Log-Logistic'                   'logl'           2
+     'Lognormal'                      'logn'           2
+     'Nakagami'                       'naka'           2
+     'Negative Binomial'              'nbin'           2
+     'Noncentral F-Distribution'      'ncf'            3
+     'Noncentral Student T'           'nct'            2
+     'Noncentral Chi-Squared'         'ncx2'           2
+     'Normal'                         'norm'           2
+     'Poisson'                        'poiss'          1
+     'Rayleigh'                       'rayl'           1
+     'Rician'                         'rice'           2
+     'Student T'                      't'              1
+     'location-scale T'               'tls'            3
+     'Triangular'                     'tri'            3
+     'Discrete Uniform'               'unid'           1
+     'Uniform'                        'unif'           2
+     'Von Mises'                      'vm'             2
+     'Weibull'                        'wbl'            2
 
      See also: cdf, icdf, random, betapdf, binopdf, bisapdf, burrpdf, cauchypdf,
      chi2pdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf, gppdf, gumbelpdf,
@@ -483,7 +483,7 @@ random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4436
+# length: 4046
  -- statistics: R = random (NAME, A)
  -- statistics: R = random (NAME, A, B)
  -- statistics: R = random (NAME, A, B, C)
@@ -511,45 +511,45 @@ random
      last column shows the required number of parameters that must be passed to
      the desired *rnd distribution function.
 
-     Distribution Name                     Abbreviation          Input Parameters
-     -------------------------------------------------------------------------------------
-     'Beta'                                'beta'                2
-     'Binomial'                            'bino'                2
-     'Birnbaum-Saunders'                   'bisa'                2
-     'Burr'                                'burr'                3
-     'Cauchy'                              'cauchy'              2
-     'Chi-squared'                         'chi2'                1
-     'Extreme Value'                       'ev'                  2
-     'Exponential'                         'exp'                 1
-     'F-Distribution'                      'f'                   2
-     'Gamma'                               'gam'                 2
-     'Geometric'                           'geo'                 1
-     'Generalized Extreme Value'           'gev'                 3
-     'Generalized Pareto'                  'gp'                  3
-     'Gumbel'                              'gumbel'              2
-     'Half-normal'                         'hn'                  2
-     'Hypergeometric'                      'hyge'                3
-     'Inverse Gaussian'                    'invg'                2
-     'Laplace'                             'laplace'             2
-     'Logistic'                            'logi'                2
-     'Log-Logistic'                        'logl'                2
-     'Lognormal'                           'logn'                2
-     'Nakagami'                            'naka'                2
-     'Negative Binomial'                   'nbin'                2
-     'Noncentral F-Distribution'           'ncf'                 3
-     'Noncentral Student T'                'nct'                 2
-     'Noncentral Chi-Squared'              'ncx2'                2
-     'Normal'                              'norm'                2
-     'Poisson'                             'poiss'               1
-     'Rayleigh'                            'rayl'                1
-     'Rician'                              'rice'                2
-     'Student T'                           't'                   1
-     'location-scale T'                    'tls'                 3
-     'Triangular'                          'tri'                 3
-     'Discrete Uniform'                    'unid'                1
-     'Uniform'                             'unif'                2
-     'Von Mises'                           'vm'                  2
-     'Weibull'                             'wbl'                 2
+     Distribution Name                Abbreviation     Input Parameters
+     ---------------------------------------------------------------------------
+     'Beta'                           'beta'           2
+     'Binomial'                       'bino'           2
+     'Birnbaum-Saunders'              'bisa'           2
+     'Burr'                           'burr'           3
+     'Cauchy'                         'cauchy'         2
+     'Chi-squared'                    'chi2'           1
+     'Extreme Value'                  'ev'             2
+     'Exponential'                    'exp'            1
+     'F-Distribution'                 'f'              2
+     'Gamma'                          'gam'            2
+     'Geometric'                      'geo'            1
+     'Generalized Extreme Value'      'gev'            3
+     'Generalized Pareto'             'gp'             3
+     'Gumbel'                         'gumbel'         2
+     'Half-normal'                    'hn'             2
+     'Hypergeometric'                 'hyge'           3
+     'Inverse Gaussian'               'invg'           2
+     'Laplace'                        'laplace'        2
+     'Logistic'                       'logi'           2
+     'Log-Logistic'                   'logl'           2
+     'Lognormal'                      'logn'           2
+     'Nakagami'                       'naka'           2
+     'Negative Binomial'              'nbin'           2
+     'Noncentral F-Distribution'      'ncf'            3
+     'Noncentral Student T'           'nct'            2
+     'Noncentral Chi-Squared'         'ncx2'           2
+     'Normal'                         'norm'           2
+     'Poisson'                        'poiss'          1
+     'Rayleigh'                       'rayl'           1
+     'Rician'                         'rice'           2
+     'Student T'                      't'              1
+     'location-scale T'               'tls'            3
+     'Triangular'                     'tri'            3
+     'Discrete Uniform'               'unid'           1
+     'Uniform'                        'unif'           2
+     'Von Mises'                      'vm'             2
+     'Weibull'                        'wbl'            2
 
      See also: cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchyrnd,
      chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,

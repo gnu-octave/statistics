@@ -632,7 +632,7 @@ expfit
 
      Matlab incompatibility: Matlab's ‘expfit’ produces unpredictable results
      for some cases with higher dimensions (specifically 1 x m x n x ...
-     arrays).  Octave's implementation allows for nxD arrays, consistently
+     arrays).  Octave's implementation allows for n*D arrays, consistently
      performing calculations on individual column vectors.  Additionally, CENSOR
      and FREQ can be used with arrays of any size, whereas Matlab only allows
      their use when X is a vector.
@@ -2236,7 +2236,7 @@ normfit
           is a vector.
 
         • ALPHA is a scalar value in the range (0,1) specifying the confidence
-          level for the confidence intervals calculated as 100x(1 – alpha)%.  By
+          level for the confidence intervals calculated as 100*(1 – alpha)%.  By
           default, the optional argument ALPHA is 0.05 corresponding to 95%
           confidence intervals.  Pass in [] for ALPHA to use the default values.
 

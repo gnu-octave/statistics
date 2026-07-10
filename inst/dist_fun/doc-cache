@@ -637,11 +637,11 @@ bvncdf
      distribution function of X given a mean parameter MU and a scale parameter
      SIGMA.
 
-        • X must be an Nx2 matrix with each variable as a column vector.
+        • X must be an N*2 matrix with each variable as a column vector.
         • MU can be either a scalar (common mean) or a two-element row vector
           (each element corresponds to a variable).  If empty, a zero mean is
           assumed.
-        • SIGMA can be a scalar (common variance) or a 2x2 covariance matrix,
+        • SIGMA can be a scalar (common variance) or a 2*2 covariance matrix,
           which must be positive definite.
 
      See also: mvncdf.
@@ -672,7 +672,7 @@ bvtcdf
      Bivariate Student's t cumulative distribution function (CDF).
 
      ‘P = bvtcdf (X, RHO, DF)’ will compute the bivariate student's t cumulative
-     distribution function of X, which must be an Nx2 matrix, given a
+     distribution function of X, which must be an N*2 matrix, given a
      correlation coefficient RHO, which must be a scalar, and DF degrees of
      freedom, which can be a scalar or a vector of positive numbers commensurate
      with X.
@@ -1241,7 +1241,7 @@ evcdf
 
      When called with three output arguments, i.e.  [P, PLO, PUP], ‘evcdf’
      computes the confidence bounds for P when the input parameters MU and SIGMA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
@@ -1300,7 +1300,7 @@ evinv
 
      When called with three output arguments, i.e.  [X, XLO, XUP], ‘evinv’
      computes the confidence bounds for X when the input parameters MU and SIGMA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  XLO and XUP are arrays of the same size as X containing
@@ -1795,7 +1795,7 @@ gamcdf
 
      When called with three output arguments, i.e.  [P, PLO, PUP], ‘gamcdf’
      computes the confidence bounds for P when the input parameters A and B are
-     estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
@@ -2538,7 +2538,7 @@ gumbelcdf
 
      When called with three output arguments, i.e.  ‘[P, PLO, PUP]’, ‘gumbelcdf’
      computes the confidence bounds for P when the input parameters MU and BETA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
@@ -2600,7 +2600,7 @@ gumbelinv
 
      When called with three output arguments, i.e.  [X, XLO, XUP], ‘gumbelinv’
      computes the confidence bounds for X when the input parameters MU and BETA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  XLO and XUP are arrays of the same size as X containing
@@ -3266,13 +3266,13 @@ iwishrnd
      Return a random matrix sampled from the inverse Wishart distribution with
      given parameters.
 
-     Inputs: the p x p positive definite matrix TAU and scalar degrees of
+     Inputs: the p * p positive definite matrix TAU and scalar degrees of
      freedom parameter DF (and optionally the transposed Cholesky factor DI of
      SIGMA = ‘inv(Tau)’).
 
      DF can be non-integer as long as DF > d
 
-     Output: a random p x p matrix W from the inverse Wishart(TAU, DF)
+     Output: a random p * p matrix W from the inverse Wishart(TAU, DF)
      distribution.  (‘inv(W)’ is from the Wishart(‘inv(Tau)’, DF) distribution.)
      If N > 1, then W is P x P x N and holds N such random matrices.
      (Optionally, the transposed Cholesky factor DI of SIGMA is also returned.)
@@ -3925,7 +3925,7 @@ logncdf
 
      When called with three output arguments, i.e.  [P, PLO, PUP], ‘logncdf’
      computes the confidence bounds for P when the input parameters MU and SIGMA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
@@ -4241,7 +4241,7 @@ mvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3025
+# length: 2960
  -- statistics: P = mvncdf (X)
  -- statistics: P = mvncdf (X, MU, SIGMA)
  -- statistics: P = mvncdf (X_LO, X_UP, MU, SIGMA)
@@ -4284,19 +4284,19 @@ mvncdf
      specific parameters for the numerical integration used to compute P.  The
      required fields are:
 
-     'TolFun'              Maximum absolute error tolerance.  Default is 1e-8 for D <
-                           4, or 1e-4 for D >= 4.  Note that for bivariate normal
-                           cdf, the Octave implementation has a precision of more
-                           than 1e-10.
-                           
-     'MaxFunEvals'         Maximum number of integrand evaluations.  Default is 1e7
-                           for D > 4.
-                           
-     'Display'             Display options.  Choices are 'off' (default), 'iter',
-                           which shows the probability and estimated error at each
-                           repetition, and 'final', which shows the final probability
-                           and related error after the integrand has converged
-                           successfully.
+     'TolFun'         Maximum absolute error tolerance.  Default is 1e-8 for D <
+                      4, or 1e-4 for D >= 4.  Note that for bivariate normal
+                      cdf, the Octave implementation has a precision of more
+                      than 1e-10.
+                      
+     'MaxFunEvals'    Maximum number of integrand evaluations.  Default is 1e7
+                      for D > 4.
+                      
+     'Display'        Display options.  Choices are 'off' (default), 'iter',
+                      which shows the probability and estimated error at each
+                      repetition, and 'final', which shows the final probability
+                      and related error after the integrand has converged
+                      successfully.
 
      See also: bvncdf, mvnpdf, mvnrnd.
 
@@ -4426,7 +4426,7 @@ mvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2739
+# length: 2684
  -- statistics: P = mvtcdf (X, RHO, DF)
  -- statistics: P = mvncdf (X_LO, X_UP, RHO, DF)
  -- statistics: P = mvncdf (..., OPTIONS)
@@ -4436,12 +4436,12 @@ mvtcdf
 
      ‘P = mvtcdf (X, RHO, DF)’ returns the cumulative probability of the
      multivariate student's t distribution with correlation parameters RHO and
-     degrees of freedom DF, evaluated at each row of X.  The rows of the NxD
+     degrees of freedom DF, evaluated at each row of X.  The rows of the N*D
      matrix X correspond to sample observations and its columns correspond to
      variables or coordinates.  The return argument P is a column vector with
      the same number of rows as in X.
 
-     RHO is a symmetric, positive definite, DxD correlation matrix.  DF is a
+     RHO is a symmetric, positive definite, D*D correlation matrix.  DF is a
      scalar or a vector with N elements.
 
      Note: ‘mvtcdf’ computes the CDF for the standard multivariate Student's t
@@ -4467,17 +4467,17 @@ mvtcdf
      specific parameters for the numerical integration used to compute P.  The
      required fields are:
 
-     'TolFun'              Maximum absolute error tolerance.  Default is 1e-8 for D <
-                           4, or 1e-4 for D >= 4.
-                           
-     'MaxFunEvals'         Maximum number of integrand evaluations when D >= 4.
-                           Default is 1e7.  Ignored when D < 4.
-                           
-     'Display'             Display options.  Choices are 'off' (default), 'iter',
-                           which shows the probability and estimated error at each
-                           repetition, and 'final', which shows the final probability
-                           and related error after the integrand has converged
-                           successfully.  Ignored when D < 4.
+     'TolFun'         Maximum absolute error tolerance.  Default is 1e-8 for D <
+                      4, or 1e-4 for D >= 4.
+                      
+     'MaxFunEvals'    Maximum number of integrand evaluations when D >= 4.
+                      Default is 1e7.  Ignored when D < 4.
+                      
+     'Display'        Display options.  Choices are 'off' (default), 'iter',
+                      which shows the probability and estimated error at each
+                      repetition, and 'final', which shows the final probability
+                      and related error after the integrand has converged
+                      successfully.  Ignored when D < 4.
 
      See also: bvtcdf, mvtpdf, mvtrnd, mvtcdfqmc.
 
@@ -4556,9 +4556,9 @@ mvtpdf
      ---------
 
         • X are the points at which to find the probability, where each row
-          corresponds to an observation.  (NxD matrix)
+          corresponds to an observation.  (N*D matrix)
 
-        • RHO is the correlation matrix.  (DxD symmetric positive definite
+        • RHO is the correlation matrix.  (D*D symmetric positive definite
           matrix)
 
         • DF is the degrees of freedom.  (scalar or vector of length N)
@@ -4568,7 +4568,7 @@ mvtpdf
      Return values
      -------------
 
-        • Y is the probability density for each row of X.  (Nx1 vector)
+        • Y is the probability density for each row of X.  (N*1 vector)
 
      Examples
      --------
@@ -5572,7 +5572,7 @@ normcdf
 
      When called with three output arguments, i.e.  [P, PLO, PUP], ‘normcdf’
      computes the confidence bounds for P when the input parameters MU and SIGMA
-     are estimates.  In such case, PCOV, a 2x2 matrix containing the covariance
+     are estimates.  In such case, PCOV, a 2*2 matrix containing the covariance
      matrix of the estimated parameters, is necessary.  Optionally, ALPHA, which
      has a default value of 0.05, specifies the 100 * (1 - ALPHA) percent
      confidence bounds.  PLO and PUP are arrays of the same size as P containing
@@ -7593,12 +7593,12 @@ wishrnd
      Return a random matrix sampled from the Wishart distribution with given
      parameters
 
-     Inputs: the p x p positive definite matrix SIGMA (or the lower-triangular
+     Inputs: the p * p positive definite matrix SIGMA (or the lower-triangular
      Cholesky factor D of SIGMA) and scalar degrees of freedom parameter DF.
 
      DF can be non-integer as long as DF > p - 1
 
-     Output: a random p x p matrix W from the Wishart(SIGMA, DF) distribution.
+     Output: a random p * p matrix W from the Wishart(SIGMA, DF) distribution.
      If N > 1, then W is P x P x N and holds N such random matrices.
      (Optionally, the lower-triangular Cholesky factor D of SIGMA is also
      returned.)
