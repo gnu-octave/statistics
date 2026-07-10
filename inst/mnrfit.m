@@ -22,14 +22,12 @@
 ## @deftypefnx {statistics} {[@var{B}, @var{dev}] =} mnrfit (@dots{})
 ## @deftypefnx {statistics} {[@var{B}, @var{dev}, @var{stats}] =} mnrfit (@dots{})
 ##
-## Perform logistic regression for binomial responses or multiple ordinal
-## responses.
+## Fit a multinomial logistic regression model.
 ##
-## Note: This function is currently a wrapper for the @code{logistic_regression}
-## function. It can only be used for fitting an ordinal logistic model and a
-## nominal model with 2 categories (which is an ordinal case).  Hierarchical
-## models as well as nominal model with more than two classes are not currently
-## supported.  This function is a work in progress.
+## Nominal models are fitted with a baseline-category multinomial logit, using
+## the last category of @var{Y} as the reference.  Ordinal models are fitted
+## with a cumulative logit model.  Only the logit link is currently available,
+## and hierarchical models are not yet supported.
 ##
 ## @code{@var{B} = mnrfit (@var{X}, @var{Y})}  returns a matrix, @var{B}, of
 ## coefficient estimates for a multinomial logistic regression of the nominal
@@ -50,23 +48,23 @@
 ## @multitable @columnfractions 0.18 0.02 0.8
 ## @headitem @var{Name} @tab @tab @var{Value}
 ##
-## @item @qcode{'model'} @tab @tab Specifies the type of model to fit.
-## Currently, only @qcode{'ordinal'} is fully supported.  @qcode{'nominal'} is
-## only supported for 2 classes in @var{Y}.
+## @item @qcode{'model'} @tab @tab The type of model to fit: @qcode{'nominal'}
+## (default) for a baseline-category model or @qcode{'ordinal'} for a cumulative
+## logit model.
 ##
 ## @item @qcode{'display'} @tab @tab A flag to enable/disable displaying
 ## information about the fitted model.  Default is @qcode{'off'}.
 ## @end multitable
 ##
-## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{}}  also returns the
-## deviance of the fit, @var{dev}, and the structure @var{stats} for any of the
-## previous input arguments. @var{stats} currently only returns values for the
-## fields @qcode{'beta'}, same as @var{B}, @qcode{'coeffcorr'}, the estimated
-## correlation matrix for @var{B}, @qcode{'covd'}, the estimated covariance
-## matrix for @var{B}, and @qcode{'se'}, the standard errors of the coefficient
-## estimates @var{B}.
+## @code{[@var{B}, @var{dev}, @var{stats}] = mnrfit (@dots{})} also returns the
+## deviance of the fit, @var{dev}, and a structure @var{stats} with the fitted
+## coefficients @qcode{'beta'} (same as @var{B}), their standard errors
+## @qcode{'se'}, covariance matrix @qcode{'covb'}, and correlation matrix
+## @qcode{'coeffcorr'}.  For nominal models @var{stats} also includes the error
+## degrees of freedom @qcode{'dfe'} and the coefficient @math{t} statistics
+## @qcode{'t'} and @math{p}-values @qcode{'p'}.
 ##
-## @seealso{logistic_regression}
+## @seealso{mnrval, logistic_regression}
 ## @end deftypefn
 
 function [B, DEV, STATS] = mnrfit (X, Y, varargin)
@@ -181,41 +179,148 @@ function [B, DEV, STATS] = mnrfit (X, Y, varargin)
     endif
   endif
 
-  ## Evaluate model type input argument
+  ## Fit the requested model type
   switch (lower (MODELTYPE))
     case 'nominal'
-      if (n > 2)
-        error ("mnrfit: fitting more than 2 nominal responses not supported.");
-      else
-        ## Y has two responses. Ordinal logistic regression can be used to fit
-        ## models with binary nominal responses
-      endif
+      [B, DEV, STATS] = mnrfit_nominal_ (X, YN, n, dispopt);
     case 'ordinal'
-      ## Do nothing, ordinal responses are fully supported
+      [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, ...
+                                                                 dispopt);
+      B = cat (1, INTERCEPT, SLOPE);
+      STATS = struct ('beta', B, ...
+                      'dfe', [], ...      ## Not used
+                      's', [], ...        ## Not used
+                      'sfit', [], ...     ## Not used
+                      'estdisp', [], ...  ## Not used
+                      'coeffcorr', S.coeffcorr, ...
+                      'covb', S.cov, ...
+                      'se', S.se, ...
+                      't', [], ...        ## Not used
+                      'p', [], ...        ## Not used
+                      'resid', [], ...    ## Not used
+                      'residp', [], ...   ## Not used
+                      'residd', []);      ## Not used
     case 'hierarchical'
       error ("mnrfit: fitting hierarchical responses not supported.");
     otherwise
       error ("mnrfit: model type not recognised.");
   endswitch
 
-  ## Perform fit and reformat output
-  [INTERCEPT, SLOPE, DEV, ~, ~, ~, S] = logistic_regression (YN - 1, X, dispopt);
-  B = cat (1, INTERCEPT, SLOPE);
-  STATS = struct ('beta', B, ...
-                  'dfe', [], ...      ## Not used
-                  's', [], ...        ## Not used
-                  'sfit', [], ...     ## Not used
-                  'estdisp', [], ...  ## Not used
-                  'coeffcorr', S.coeffcorr, ...
-                  'covb', S.cov, ...
-                  'se', S.se, ...
-                  't', [], ...        ## Not used
-                  'p', [], ...        ## Not used
-                  'resid', [], ...    ## Not used
-                  'residp', [], ...   ## Not used
-                  'residd', []);      ## Not used
+endfunction
+
+## Fit a baseline-category multinomial logit model by Newton-Raphson.  The last
+## category is the reference; B is a (P+1)-by-(K-1) matrix whose column j holds
+## the intercept and slopes contrasting category j against the reference.
+function [B, dev, stats] = mnrfit_nominal_ (X, YN, k, dispopt)
+
+  [nobs, p] = size (X);
+  Z = [ones(nobs, 1), X];               ## design with intercept, nobs-by-q
+  q = p + 1;
+  ncat = k - 1;                         ## non-reference categories (1..k-1)
+
+  ## Response indicator matrix for categories 1..k-1 (reference = category k)
+  Yind = double (YN(:) == (1:ncat));    ## nobs-by-ncat
+
+  ## Newton-Raphson on the multinomial logit log-likelihood
+  beta = zeros (q, ncat);
+  maxiter = 100;
+  tol = 1e-8;
+  converged = false;
+  for iter = 1:maxiter
+    [P, ~] = mnrfit_softmax_ (Z, beta, nobs);
+    grad = Z' * (Yind - P);             ## q-by-ncat
+    ## Hessian of the log-likelihood (block form, negative definite)
+    H = zeros (q * ncat);
+    for a = 1:ncat
+      for b = 1:ncat
+        if (a == b)
+          w = P(:,a) .* (1 - P(:,a));
+        else
+          w = - P(:,a) .* P(:,b);
+        endif
+        H((a-1)*q+(1:q), (b-1)*q+(1:q)) = - (Z' * (Z .* w));
+      endfor
+    endfor
+    ## A vanishing Hessian condition signals (quasi-)separable data with no
+    ## finite maximum likelihood estimate; stop and keep the current estimate.
+    if (rcond (H) < eps)
+      break;
+    endif
+    step = - (H \ grad(:));             ## Newton step (maximise the likelihood)
+    if (! all (isfinite (step)))
+      break;
+    endif
+    beta(:) = beta(:) + step;
+    if (max (abs (step)) < tol)
+      converged = true;
+      break;
+    endif
+  endfor
+  if (! converged)
+    warning ("mnrfit: iteration limit reached; results may be unreliable.");
+  endif
+  B = beta;
+
+  ## Deviance = -2 * log-likelihood (saturated log-likelihood is 0 for
+  ## individual responses)
+  [~, Pall] = mnrfit_softmax_ (Z, beta, nobs);
+  idx = sub2ind ([nobs, k], (1:nobs)', YN(:));
+  dev = -2 * sum (log (Pall(idx)));
+
+  ## Coefficient covariance from the inverse negative Hessian at the MLE
+  covb = inv (-H);
+  se_v = sqrt (diag (covb));
+  se = reshape (se_v, q, ncat);
+  coeffcorr = covb ./ (se_v * se_v');
+  tstat = B ./ se;
+  pval = 2 * normcdf (- abs (tstat));
+
+  stats = struct ('beta', B, ...
+                  'dfe', nobs * ncat - numel (B), ...
+                  's', 1, ...
+                  'sfit', 1, ...
+                  'estdisp', false, ...
+                  'coeffcorr', coeffcorr, ...
+                  'covb', covb, ...
+                  'se', se, ...
+                  't', tstat, ...
+                  'p', pval, ...
+                  'resid', [], ...
+                  'residp', [], ...
+                  'residd', []);
 
 endfunction
+
+## Numerically stable baseline-category softmax.  Returns the nobs-by-(K-1)
+## matrix P of non-reference category probabilities and, optionally, the full
+## nobs-by-K matrix Pall including the reference category in the last column.
+function [P, Pall] = mnrfit_softmax_ (Z, beta, nobs)
+  eta = Z * beta;                       ## nobs-by-(k-1)
+  m = max ([eta, zeros(nobs, 1)], [], 2);   ## row max including baseline 0
+  ee = exp (eta - m);
+  base = exp (-m);                      ## reference category, unnormalised
+  den = base + sum (ee, 2);
+  P = ee ./ den;
+  if (nargout > 1)
+    Pall = [P, base ./ den];
+  endif
+endfunction
+
+## Test nominal multinomial logit fitting
+%!test  # nominal MLE reproduces the observed category totals
+%! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
+%! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
+%! [B, dev, stats] = mnrfit (X, Y, 'model', 'nominal');
+%! assert (size (B), [2, 2]);
+%! P = mnrval (B, X);
+%! assert (sum (P, 2), ones (12, 1), 1e-10);
+%! assert (sum (P, 1), [sum(Y == 1), sum(Y == 2), sum(Y == 3)], 1e-6);
+
+%!test  # binary nominal agrees with the ordinal cumulative-logit fit
+%! X = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
+%! Y = [1; 1; 1; 1; 2; 1; 2; 2; 2; 2];
+%! assert (mnrfit (X, Y, 'model', 'nominal'), ...
+%!         mnrfit (X, Y, 'model', 'ordinal'), 1e-5);
 
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))
@@ -237,8 +342,6 @@ endfunction
 %! mnrfit (ones (5, 4), [1, 2; 1, 2; 1, 2; 1, 2; 1, 2])
 %!error<mnrfit: Y must contain positive integer category numbers.> ...
 %! mnrfit (ones (5, 4), [1; -1; 1; 2; 1])
-%!error<mnrfit: fitting more than 2 nominal responses not supported.> ...
-%! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'nominal')
 %!error<mnrfit: fitting hierarchical responses not supported.> ...
 %! mnrfit (ones (5, 4), [1; 2; 3; 2; 1], 'model', 'hierarchical')
 %!error<mnrfit: model type not recognised.> ...
