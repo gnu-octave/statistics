@@ -1615,9 +1615,9 @@ endclassdef
 ## design matrix, so those stay at their empty defaults
 %!test
 %! a = anova ([1;1;2;2], [1;2;3;4]);
-%! assert (! isempty (a.AnovaTable));
-%! assert (! isempty (a.DFE));
-%! assert (! isempty (a.MSE));
+%! assert_equal (isempty (a.AnovaTable), false);
+%! assert_equal (isempty (a.DFE), false);
+%! assert_equal (isempty (a.MSE), false);
 %! assert_equal (a.Coefficients, []);
 %! assert_equal (a.Residuals, []);
 %! assert_equal (a.FittedValues, []);
@@ -1643,20 +1643,20 @@ endclassdef
 ## Backend selection: one-way default -> anova1
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6]);
-%! assert (! isempty (strfind (evalc ('disp (a)'), '1-way anova')));
+%! assert_equal (isempty (strfind (evalc ('disp (a)'), '1-way anova')), false);
 
 ## Backend selection: one-way matrix-Y form -> anova1
 %!test
 %! a = anova (magic (4));
 %! str = evalc ('disp (a)');
-%! assert (! isempty (strfind (str, '1-way anova')));
+%! assert_equal (isempty (strfind (str, '1-way anova')), false);
 
 ## Backend selection: matrix Y + explicit 'reps' -> anova2
 %!test
 %! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! a = anova (y, [], 'reps', 3);
-%! assert (! isempty (strfind (evalc ('disp (a)'), '2-way anova')));
+%! assert_equal (isempty (strfind (evalc ('disp (a)'), '2-way anova')), false);
 
 ## Backend selection: two-factor cell groups without reps -> anovan
 %!test
@@ -1665,7 +1665,7 @@ endclassdef
 %! g2 = repmat ([1;1;2;2], 3, 1);
 %! a = anova ({g1, g2}, y);
 %! str = evalc ('disp (a)');
-%! assert (! isempty (strfind (str, '2-way anova')));
+%! assert_equal (isempty (strfind (str, '2-way anova')), false);
 
 ## Backend selection: three factors -> anovan
 %!test
@@ -1675,12 +1675,12 @@ endclassdef
 %! g3 = repmat ([1;1;1;1;2;2;2;2], 3, 1);
 %! a = anova ({g1, g2, g3}, y);
 %! str = evalc ('disp (a)');
-%! assert (! isempty (strfind (str, '3-way anova')));
+%! assert_equal (isempty (strfind (str, '3-way anova')), false);
 
 ## Backend selection: SSType != 3 with 1 factor falls through to anovan
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'SumOfSquaresType', 'two');
-%! assert (! isempty (strfind (evalc ('disp (a)'), 'Type II')));
+%! assert_equal (isempty (strfind (evalc ('disp (a)'), 'Type II')), false);
 
 ## Backend selection: continuous predictors force anovan
 %!test
@@ -1701,7 +1701,7 @@ endclassdef
 ## Backend selection: weights force anovan
 %!test
 %! a = anova ([1;1;2;2;3;3], [1;2;3;4;5;6], 'Weights', ones (6, 1));
-%! assert (! isempty (stats (a)));
+%! assert_equal (isempty (stats (a)), false);
 
 ## --- Week 2: fit delegation smoke tests --------------------------------
 
@@ -1711,10 +1711,10 @@ endclassdef
 %! g = [1; 1; 2; 2; 3; 3];
 %! a = anova (g, y);
 %! a.fit ();
-%! assert (! isempty (a.AnovaTable));
-%! assert (isstruct (a.Stats));
-%! assert (! isempty (a.DFE));
-%! assert (! isempty (a.MSE));
+%! assert_equal (isempty (a.AnovaTable), false);
+%! assert_equal (class (a.Stats), 'struct');
+%! assert_equal (isempty (a.DFE), false);
+%! assert_equal (isempty (a.MSE), false);
 
 ## fit_(): two-way balanced fixture (anova2 backend, popcorn data)
 %!test
@@ -2064,86 +2064,60 @@ endclassdef
 ## --- Input validation ---------------------------------------------------
 
 %!error <anova: too few input arguments.> anova ()
-
 %!error <anova: Y must be a non-empty numeric array.> anova ('abc')
-
 %!error <anova: Y must be a non-empty numeric array.> anova ([])
-
 %!error <anova: name-value pairs must come in pairs.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType')
-
+%! anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType')
 %!error <anova: parameter 'bogus' is not supported.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'bogus', 1)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'bogus', 1)
 %!error <anova: SumOfSquaresType must be> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 5)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 5)
 %!error <anova: Alpha must be a numeric scalar in .0, 1..> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'Alpha', 2)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'Alpha', 2)
 %!error <anova: Display must be 'on' or 'off'.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'Display', 'maybe')
-
+%! anova ([1;1;2;2], [1;2;3;4], 'Display', 'maybe')
 %!error <anova: parameter name must be a character vector.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 1, 2)
-
+%! anova ([1;1;2;2], [1;2;3;4], 1, 2)
 %!error <anova: Reps must be a positive integer scalar.> ...
-%!  anova (magic (4), [], 'reps', -2)
-
+%! anova (magic (4), [], 'reps', -2)
 %!error <anova: Reps must be a positive integer scalar.> ...
-%!  anova (magic (4), [], 'reps', 1.5)
-
+%! anova (magic (4), [], 'reps', 1.5)
 %!error <anova: ModelSpecification must be> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'ModelSpecification', 'quadratic')
-
+%! anova ([1;1;2;2], [1;2;3;4], 'ModelSpecification', 'quadratic')
 %!error <anova: terms matrix must have one column per factor.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'Model', [1 0])
-
+%! anova ([1;1;2;2], [1;2;3;4], 'Model', [1 0])
 %!error <anova: GROUP must match the number of observations.> ...
-%!  anova ([1;1;2], [1;2;3;4])
-
+%! anova ([1;1;2], [1;2;3;4])
 %!error <anova: GROUP variables must match the number of observations.> ...
-%!  anova ({[1;1;2], [1;2;1;2]}, [1;2;3;4])
-
+%! anova ({[1;1;2], [1;2;1;2]}, [1;2;3;4])
 %!error <anova: Weights must have one value per observation.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'Weights', [1;1;1])
-
+%! anova ([1;1;2;2], [1;2;3;4], 'Weights', [1;1;1])
 %!error <anova: CategoricalFactors must contain valid factor indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 1.5)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 1.5)
 %!error <anova: CategoricalFactors must contain valid factor indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 2)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 2)
 %!error <anova: RandomFactors must contain positive integer indices.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 0)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 0)
 %!error <anova: RandomFactors indices exceed the number of factors.> ...
-%!  anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 2)
-
+%! anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 2)
 %!error <anova.stats: type must be a character vector.> ...
-%!  stats (anova ([1;1;1;2;2;2;3;3;3], (1:9)'), 5)
-
+%! stats (anova ([1;1;1;2;2;2;3;3;3], (1:9)'), 5)
 %!error <anova.groupmeans: factors are required for group means.> ...
-%!  groupmeans (anova ([1;2;3;4;5;6]))
-
+%! groupmeans (anova ([1;2;3;4;5;6]))
 %!error <anova.varianceComponent: random factors are not implemented.> ...
-%!  varianceComponent (anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'RandomFactors', 1))
-
+%! varianceComponent (anova ([1;1;1;2;2;2;3;3;3], (1:9)', 'RandomFactors', 1))
 %!error <diagnostic plots require>
 %! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
 %!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
 %! plotDiagnostics (anova (popcorn, [], 'reps', 3));
-
 %!error <name-value pairs must come in pairs>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
 %! plotDiagnostics (anova (g, y, 'SumOfSquaresType', 'two'), 'Visible');
-
 %!error <unknown option>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
 %! plotDiagnostics (anova (g, y, 'SumOfSquaresType', 'two'), 'BadOption', true);
-
 %!error <Xnew must be a numeric design matrix>
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
