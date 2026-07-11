@@ -1513,7 +1513,7 @@ classdef LinearModel
       endif
 
       nan_rows     = any (isnan (X_raw), 2);
-      X_enc_new    = LinearModel.lm_predict (X_raw, pred_names, mdl.CatLevelInfo, mdl.EncPredictorNames);
+      X_enc_new    = reencode_predictors (X_raw, pred_names, mdl.CatLevelInfo, mdl.EncPredictorNames);
       X_design_new = build_design (mdl.TermsMatrix, X_enc_new);
 
       beta            = mdl.Coefficients.Estimate;
@@ -3085,8 +3085,8 @@ classdef LinearModel
         X_hi_rows = X_act;  X_hi_rows(:,j) = x_hi_v(j);
         X_lo_rows = X_act;  X_lo_rows(:,j) = x_lo_v(j);
 
-        X_hi_enc = LinearModel.lm_predict (X_hi_rows, pred, cinfo, ename);
-        X_lo_enc = LinearModel.lm_predict (X_lo_rows, pred, cinfo, ename);
+        X_hi_enc = reencode_predictors (X_hi_rows, pred, cinfo, ename);
+        X_lo_enc = reencode_predictors (X_lo_rows, pred, cinfo, ename);
         D_hi     = build_design (mdl.TermsMatrix, X_hi_enc);
         D_lo     = build_design (mdl.TermsMatrix, X_lo_enc);
 
@@ -3303,7 +3303,7 @@ classdef LinearModel
         for L = 1:n_lvl
           X_rows      = X_act;
           X_rows(:,j) = L;
-          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          X_enc = reencode_predictors (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
           D     = build_design (mdl.TermsMatrix, X_enc);
           fit_y(L) = mean (D * beta);
         endfor
@@ -3315,7 +3315,7 @@ classdef LinearModel
         for i = 1:n_act
           X_rows      = X_act;
           X_rows(:,j) = x_active(i);
-          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          X_enc = reencode_predictors (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
           D     = build_design (mdl.TermsMatrix, X_enc);
           g_active(i) = mean (D * beta);
         endfor
@@ -3326,7 +3326,7 @@ classdef LinearModel
         for k = 1:100
           X_rows      = X_act;
           X_rows(:,j) = fit_x(k);
-          X_enc = LinearModel.lm_predict (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
+          X_enc = reencode_predictors (X_rows, pred, mdl.CatLevelInfo, mdl.EncPredictorNames);
           D     = build_design (mdl.TermsMatrix, X_enc);
           fit_y(k) = mean (D * beta);
         endfor
@@ -3533,7 +3533,7 @@ classdef LinearModel
         endif
       endfor
 
-      D = LinearModel.lm_predict (X_act, pred, cinfo, mdl.EncPredictorNames);
+      D = reencode_predictors (X_act, pred, cinfo, mdl.EncPredictorNames);
       D = build_design (mdl.TermsMatrix, D);
 
       beta  = mdl.Coefficients.Estimate;
@@ -3772,53 +3772,6 @@ classdef LinearModel
       crit.AdjRsquared   = R2_adj;
       crit.Fstat         = Fstat;
       crit.Fpval         = Fpval;
-    endfunction
-
-    function X_enc = lm_predict (X_raw, pred_names, cat_info, enc_names)
-      if (nargin < 4)
-        enc_names = pred_names;
-      endif
-      n     = rows (X_raw);
-      X_enc = zeros (n, numel (enc_names));
-      for c = 1:numel (enc_names)
-        name = enc_names{c};
-
-        j = find (strcmp (pred_names, name), 1);
-        if (! isempty (j))
-          X_enc(:, c) = X_raw(:, j);
-          continue;
-        endif
-
-        tok = regexp (name, '^(.+)\^(\d+)$', 'tokens');
-        if (! isempty (tok))
-          j = find (strcmp (pred_names, tok{1}{1}), 1);
-          k = str2double (tok{1}{2});
-          X_enc(:, c) = X_raw(:, j) .^ k;
-          continue;
-        endif
-
-        found = false;
-        for j = 1:numel (pred_names)
-          ci = [];
-          if (! isempty (cat_info.names))
-            ci = find (strcmp (cat_info.names, pred_names{j}));
-          endif
-          if (isempty (ci))
-            continue;
-          endif
-          levels_j = cat_info.levels{ci};
-          for L = 2:numel (levels_j)
-            if (strcmp (name, sprintf ("%s_%s", pred_names{j}, char (levels_j{L}))))
-              X_enc(:, c) = double (X_raw(:, j) == L);
-              found = true;
-              break;
-            endif
-          endfor
-          if (found)
-            break;
-          endif
-        endfor
-      endfor
     endfunction
 
   endmethods
