@@ -459,7 +459,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       RI = R \ eye (numc);
       C = RI * RI';
       if (estDisp)
-        C = C * stats.s ^ 2;
+        C = C * stats.s;
       endif
       stats.covb(P,P) = C;
       se = sqrt (diag (C));
@@ -540,6 +540,18 @@ endfunction
 %! [b, dev, stats] = glmfit (X, y, 'binomial', 'link', 'logit');
 %! assert_equal (b, [42.6379; 2.4652; 6.6809; -9.4294; -18.2861], 1e-4);
 %! assert_equal (numel (stats.se), numel (b));
+
+%!test
+%! ## For an estimated-dispersion family the coefficient covariance is scaled by
+%! ## the dispersion (not its square), so the standard errors match ordinary
+%! ## least squares for the identity-link normal case.
+%! X = [1, 2; 2, 1; 3, 4; 4, 3; 5, 6; 6, 5];
+%! y = [2.1; 1.9; 4.2; 3.8; 6.1; 5.9];
+%! [b, dev, stats] = glmfit (X, y, 'normal');
+%! Xd = [ones(6, 1), X];
+%! mse = sum ((y - Xd * b) .^ 2) / (6 - 3);
+%! se_ols = sqrt (mse * diag (inv (Xd' * Xd)));
+%! assert_equal (stats.se, se_ols, 1e-12);
 
 %!test
 %! X = [1.2, 2.3, 3.4, 4.5, 5.6, 6.7, 7.8, 8.9, 9.0, 10.1]';
