@@ -17,18 +17,27 @@
 
 ## -*- texinfo -*-
 ## @deftypefn  {statistics} {@var{mdl} =} fitglm (@var{X}, @var{y})
-## @deftypefnx {statistics} {@var{mdl} =} fitglm (@var{X}, @var{y}, @var{Name}, @var{Value})
+## @deftypefnx {statistics} {@var{mdl} =} fitglm (@var{X}, @var{y}, @var{modelspec})
+## @deftypefnx {statistics} {@var{mdl} =} fitglm (@var{tbl})
+## @deftypefnx {statistics} {@var{mdl} =} fitglm (@var{tbl}, @var{modelspec})
+## @deftypefnx {statistics} {@var{mdl} =} fitglm (@dots{}, @var{Name}, @var{Value})
 ##
 ## Fit a generalized linear regression model.
 ##
 ## @code{@var{mdl} = fitglm (@var{X}, @var{y})} fits a generalized linear model
 ## of the response vector @var{y} on the columns of the @math{n}-by-@math{p}
 ## numeric predictor matrix @var{X}, and returns a @code{GeneralizedLinearModel}
-## object.  By default the response is @qcode{'normal'} with an identity link and
-## an intercept is included.
+## object.  @code{@var{mdl} = fitglm (@var{tbl})} instead takes the predictors
+## and response from the table @var{tbl} (the last column is the response unless
+## overridden).  By default the response is @qcode{'normal'} with an identity
+## link, an intercept is included, and the model is additive in the predictors.
 ##
-## @code{@var{mdl} = fitglm (@var{X}, @var{y}, @var{Name}, @var{Value})} accepts
-## the following @var{Name}/@var{Value} pairs:
+## @var{modelspec} selects the model terms.  It is either a Wilkinson formula
+## string (e.g.@: @qcode{'y ~ x1 + x2*x3'}), a keyword (@qcode{'constant'},
+## @qcode{'linear'}, @qcode{'interactions'}, @qcode{'purequadratic'},
+## @qcode{'quadratic'}, or @qcode{'full'}), or a terms matrix.
+##
+## The following @var{Name}/@var{Value} pairs are accepted:
 ##
 ## @multitable @columnfractions 0.2 0.75
 ## @headitem Name @tab Value
@@ -42,48 +51,64 @@
 ## @item @qcode{'Offset'} @tab a vector added as a fixed term to the linear
 ## predictor.
 ## @item @qcode{'BinomialSize'} @tab for the @qcode{'binomial'} distribution,
-## the number of trials (a scalar or a per-observation vector); @var{y} holds the
-## proportion of successes.
+## the number of trials (a scalar or a per-observation vector); @var{y} holds
+## the proportion of successes.
 ## @item @qcode{'Intercept'} @tab a logical value (default @qcode{true}) whether
 ## to include an intercept term.
 ## @item @qcode{'DispersionFlag'} @tab a logical value forcing the dispersion
-## parameter to be estimated (@qcode{true}) or held at 1 (@qcode{false}).  The
-## default depends on the distribution.
+## parameter to be estimated (@qcode{true}) or held at 1 (@qcode{false}).
+## @item @qcode{'CategoricalVars'} @tab predictors to treat as categorical (a
+## logical vector, numeric indices, or a cell array of names).
+## @item @qcode{'Exclude'} @tab observations to exclude from the fit (a logical
+## vector or numeric indices).
 ## @item @qcode{'VarNames'} @tab a cell array of @math{p + 1} variable names
-## (predictors followed by the response).
+## (predictors followed by the response) for numeric @var{X}.
+## @item @qcode{'PredictorVars'}, @qcode{'ResponseVar'} @tab for table input,
+## the predictor and response variable names.
 ## @end multitable
 ##
 ## @seealso{GeneralizedLinearModel, fitlm, glmfit, glmval, lassoglm}
 ## @end deftypefn
 
-function mdl = fitglm (X, y, varargin)
+function mdl = fitglm (varargin)
 
-  if (nargin < 2)
+  if (nargin < 1)
     print_usage ();
   endif
 
-  ## An optional positional model specification precedes the Name/Value pairs.
-  ## Full Wilkinson formulae and table inputs are handled in a later phase; for
-  ## now only the additive 'linear' specification is supported for numeric X.
-  args = varargin;
-  if (! isempty (args) && (ischar (args{1}) || isnumeric (args{1})) ...
-      && ! is_param_name (args{1}))
-    modelspec = args{1};
-    args(1) = [];
-    if (! (ischar (modelspec) && strcmpi (modelspec, 'linear')))
-      error (strcat ("fitglm: only the 'linear' model specification is", ...
-                     " currently supported for numeric X."));
+  arg1 = varargin{1};
+  if (istable (arg1))
+    [modelspec, nv] = split_modelspec (varargin(2:end));
+    mdl = GeneralizedLinearModel (arg1, [], modelspec, nv{:});
+  else
+    if (nargin < 2)
+      print_usage ();
     endif
+    [modelspec, nv] = split_modelspec (varargin(3:end));
+    mdl = GeneralizedLinearModel (arg1, varargin{2}, modelspec, nv{:});
   endif
 
-  mdl = GeneralizedLinearModel (X, y, args{:});
+endfunction
 
+## Split an optional leading model specification from the Name/Value pairs.
+function [modelspec, nv] = split_modelspec (rest)
+  modelspec = 'linear';
+  nv        = rest;
+  if (! isempty (rest))
+    a = rest{1};
+    if ((ischar (a) && ! is_param_name (a)) || isnumeric (a))
+      modelspec = a;
+      nv        = rest(2:end);
+    endif
+  endif
 endfunction
 
 ## True if S names one of fitglm's Name/Value parameters.
 function tf = is_param_name (s)
   tf = ischar (s) && any (strcmpi (s, {'Distribution', 'Link', 'Weights', ...
-       'Offset', 'BinomialSize', 'Intercept', 'DispersionFlag', 'VarNames'}));
+       'Offset', 'BinomialSize', 'Intercept', 'DispersionFlag', ...
+       'CategoricalVars', 'Exclude', 'VarNames', 'PredictorVars', ...
+       'ResponseVar'}));
 endfunction
 
 %!demo
@@ -92,12 +117,18 @@ endfunction
 %! y = [1; 0; 2; 3; 1; 4; 2];
 %! mdl = fitglm (X, y, 'Distribution', 'poisson')
 
+%!demo
+%! ## Logistic regression with an interaction, specified by a formula.
+%! X = [0.1, 1.2; 0.4, 0.7; 1.1, 0.2; 1.5, 1.9; 0.3, 0.5; 1.8, 1.1; 0.9, 0.3];
+%! y = [0; 0; 1; 1; 0; 1; 1];
+%! tbl = array2table ([X, y], 'VariableNames', {'x1', 'x2', 'y'});
+%! mdl = fitglm (tbl, 'y ~ x1 + x2 + x1:x2', 'Distribution', 'binomial')
+
 ## Test input validation
-%!error<Invalid call> fitglm (1)
-%!error<GeneralizedLinearModel: X must be a real matrix.> fitglm ("a", [1;2])
-%!error<GeneralizedLinearModel: Y must be a real vector.> ...
-%! fitglm ([1, 2; 3, 4], "a")
+%!error<Invalid call> fitglm ()
+%!error<GeneralizedLinearModel: X must be a real matrix.> ...
+%! fitglm ("a", [1;2])
 %!error<GeneralizedLinearModel: unknown distribution 'wibble'.> ...
 %! fitglm ([1, 2; 3, 4], [1; 0], 'Distribution', 'wibble')
-%!error<fitglm: only the 'linear' model specification> ...
-%! fitglm ([1, 2; 3, 4], [1; 0], 'quadratic')
+%!error<GeneralizedLinearModel: unknown parameter name 'foo'.> ...
+%! fitglm ([1, 2; 3, 4], [1; 0], 'linear', 'foo', 1)
