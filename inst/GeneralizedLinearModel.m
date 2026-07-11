@@ -88,6 +88,16 @@ classdef GeneralizedLinearModel
     ## Table of residuals (Raw, Pearson, Deviance, Anscombe).
     Residuals = [];
 
+    ## Log-likelihood of the fitted model.
+    LogLikelihood = [];
+
+    ## Structure of information criteria (AIC, AICc, BIC, CAIC).
+    ModelCriterion = [];
+
+    ## Structure of R-squared measures (Ordinary, Adjusted, Deviance,
+    ## AdjGeneralized, LLR).
+    Rsquared = [];
+
     ## Offset vector added to the linear predictor (empty if none).
     Offset = [];
 
@@ -118,6 +128,8 @@ classdef GeneralizedLinearModel
     catinfo_    = [];   # categorical level info (names + levels)
     encnames_   = {};   # encoded predictor column names
     prednames_  = {};   # raw predictor names
+    nulldev_    = [];   # deviance of the intercept-only model
+    llnull_     = [];   # log-likelihood of the intercept-only model
   endproperties
 
   methods (Hidden)
@@ -156,6 +168,20 @@ classdef GeneralizedLinearModel
       endif
       if (! isempty (this.Deviance))
         fprintf ("Deviance: %g\n", this.Deviance);
+      endif
+      if (! isempty (this.NumCoefficients) && this.NumCoefficients > 1)
+        df1  = this.NumCoefficients - 1;
+        drop = this.nulldev_ - this.Deviance;
+        if (this.DispersionEstimated)
+          Fstat = (drop / df1) / this.Dispersion;
+          pval  = 1 - fcdf (Fstat, df1, this.DFE);
+          fprintf ("F-statistic vs. constant model: %g, p-value = %g\n", ...
+                   Fstat, pval);
+        else
+          pval = 1 - chi2cdf (drop, df1);
+          fprintf (strcat ("Chi^2-statistic vs. constant model: %g,", ...
+                           " p-value = %g\n"), drop, pval);
+        endif
       endif
     endfunction
 
@@ -433,11 +459,60 @@ classdef GeneralizedLinearModel
       if (! isempty (off_sub))
         eta = eta + off_sub;
       endif
-      mu = ilink (eta);
+      mu_prob = ilink (eta);   # probability (binomial) or mean (others)
       if (strcmp (distr, 'binomial') && ! isempty (N_sub))
-        mu = N_sub .* mu;
+        mu_resp = N_sub .* mu_prob;
+      else
+        mu_resp = mu_prob;
       endif
-      this.Fitted = struct ('Response', mu, 'LinearPredictor', eta);
+      this.Fitted = struct ('Response', mu_resp, 'LinearPredictor', eta);
+
+      ## Log-likelihood, information criteria, and R-squared measures.  These
+      ## use the intercept-only ("null") model as the baseline.
+      if (isempty (w_sub))
+        w_ll = ones (n_obs, 1);
+      else
+        w_ll = w_sub;
+      endif
+      [bn, nulldev, sn] = glmfit (ones (n_obs, 1), yfit, distr, gargs{:});
+      eta0 = bn * ones (n_obs, 1);
+      if (! isempty (off_sub))
+        eta0 = eta0 + off_sub;
+      endif
+      mu0 = ilink (eta0);
+      LL      = glm_loglik (distr, y_sub, mu_prob, N_sub, w_ll, stats.s);
+      LL_null = glm_loglik (distr, y_sub, mu0, N_sub, w_ll, sn.s);
+      this.LogLikelihood = LL;
+      this.nulldev_ = nulldev;
+      this.llnull_  = LL_null;
+
+      k = numel (b);   # MATLAB counts the coefficients only, not the dispersion
+      aic = -2 * LL + 2 * k;
+      if (n_obs - k - 1 > 0)
+        aicc = aic + 2 * k * (k + 1) / (n_obs - k - 1);
+      else
+        aicc = Inf;
+      endif
+      this.ModelCriterion = struct ('AIC', aic, ...
+        'AICc', aicc, 'BIC', -2 * LL + k * log (n_obs), ...
+        'CAIC', -2 * LL + k * (log (n_obs) + 1));
+
+      sse = sum (w_ll .* (y_sub - mu_resp) .^ 2);
+      sst = sum (w_ll .* (y_sub - sum (w_ll .* y_sub) / sum (w_ll)) .^ 2);
+      r2_ord = 1 - sse / max (sst, eps);
+      dfe = stats.dfe;
+      if (dfe > 0)
+        r2_adj = 1 - (1 - r2_ord) * (n_obs - 1) / dfe;
+      else
+        r2_adj = NaN;
+      endif
+      r2_dev = 1 - dev / max (nulldev, eps);
+      r2_llr = 1 - LL / LL_null;
+      r2_gen = 1 - exp (2 * (LL_null - LL) / n_obs);
+      r2_gen_max = 1 - exp (2 * LL_null / n_obs);
+      this.Rsquared = struct ('Ordinary', r2_ord, 'Adjusted', r2_adj, ...
+        'Deviance', r2_dev, 'AdjGeneralized', r2_gen / r2_gen_max, ...
+        'LLR', r2_llr);
 
       ## Model formula string.
       if (is_formula)
@@ -583,6 +658,83 @@ classdef GeneralizedLinearModel
       yhat = predict (mdl, Xnew);
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{ci} =} coefCI (@var{mdl})
+    ## @deftypefnx {GeneralizedLinearModel} {@var{ci} =} coefCI (@var{mdl}, @var{alpha})
+    ##
+    ## Confidence intervals for the coefficient estimates.  @var{ci} is a
+    ## @math{k}-by-2 matrix of @math{100 (1 - @var{alpha})%} intervals (default
+    ## @var{alpha} = 0.05).  The @math{t} distribution is used when the
+    ## dispersion was estimated, the normal distribution otherwise.
+    ##
+    ## @end deftypefn
+    function ci = coefCI (mdl, alpha)
+      if (nargin < 2)
+        alpha = 0.05;
+      endif
+      if (! (isscalar (alpha) && isnumeric (alpha) && alpha >= 0 && alpha <= 1))
+        error ("GeneralizedLinearModel.coefCI: ALPHA must be in [0, 1].");
+      endif
+      b  = mdl.Coefficients.Estimate;
+      se = mdl.Coefficients.SE;
+      crit = tinv (1 - alpha / 2, mdl.DFE);
+      ci = [b - crit .* se, b + crit .* se];
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{p} =} coefTest (@var{mdl})
+    ## @deftypefnx {GeneralizedLinearModel} {[@var{p}, @var{stat}, @var{df}] =} coefTest (@var{mdl}, @var{H})
+    ##
+    ## Wald test of the linear hypothesis @math{H b = 0} on the coefficients.
+    ## @var{H} is an @math{m}-by-@math{k} contrast matrix; when omitted it tests
+    ## that all coefficients except the intercept are zero (the model versus the
+    ## constant model).  Returns the p-value @var{p}, and optionally the test
+    ## statistic @var{stat} and its numerator degrees of freedom @var{df}.
+    ##
+    ## @end deftypefn
+    function [p, stat, df] = coefTest (mdl, H)
+      k = mdl.NumCoefficients;
+      if (nargin < 2)
+        ipos = find (strcmp (mdl.CoefficientNames, '(Intercept)'));
+        rows_h = setdiff (1:k, ipos);
+        H = zeros (numel (rows_h), k);
+        for i = 1:numel (rows_h)
+          H(i, rows_h(i)) = 1;
+        endfor
+      endif
+      b  = mdl.Coefficients.Estimate;
+      df = rows (H);
+      Hb = H * b;
+      HVH = H * mdl.CoefficientCovariance * H';
+      ## Wald F statistic (MATLAB uses the F distribution for coefTest).
+      stat = (Hb' * (HVH \ Hb)) / df;
+      p = 1 - fcdf (stat, df, mdl.DFE);
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{tbl} =} devianceTest (@var{mdl})
+    ##
+    ## Likelihood-ratio (deviance) test of the fitted model against the
+    ## intercept-only model.  Returns a table with the deviance, degrees of
+    ## freedom, and p-value of each model, the last row giving the chi-square
+    ## statistic (the drop in deviance) and its p-value.
+    ##
+    ## @end deftypefn
+    function tbl = devianceTest (mdl)
+      dev_full = mdl.Deviance;
+      dev_null = mdl.nulldev_;
+      df_diff  = mdl.NumCoefficients - 1;
+      chi2stat = dev_null - dev_full;
+      pval     = 1 - chi2cdf (chi2stat, df_diff);
+      Deviance   = [dev_null; dev_full];
+      DFE        = [mdl.DFE + df_diff; mdl.DFE];
+      chi2Stat   = [NaN; chi2stat];
+      pValue     = [NaN; pval];
+      tbl = table (Deviance, DFE, chi2Stat, pValue, ...
+        'VariableNames', {'Deviance', 'DFE', 'chi2Stat', 'pValue'}, ...
+        'RowNames', {'(Constant)', mdl.Formula});
+    endfunction
+
   endmethods
 
 endclassdef
@@ -715,6 +867,36 @@ function s = formula_string (resp_name, coef_names, has_intercept)
     rhs = strjoin (terms, ' + ');
   endif
   s = sprintf ('%s ~ %s', resp_name, rhs);
+endfunction
+
+## Log-likelihood of a GLM fit.  Y is the response (proportion for binomial),
+## MU the fitted probability/mean, N the binomial trials (empty otherwise), W
+## the prior weights, and PHI the dispersion parameter.
+function ll = glm_loglik (distr, y, mu, N, w, phi)
+  rmin = realmin;
+  switch (distr)
+    case 'normal'
+      ne  = sum (w);
+      s2  = sum (w .* (y - mu) .^ 2) / ne;
+      ll  = -0.5 * ne * (log (2 * pi * s2) + 1);
+    case 'poisson'
+      ll = sum (w .* (y .* log (max (mu, rmin)) - mu - gammaln (y + 1)));
+    case 'binomial'
+      if (isempty (N))
+        N = ones (size (y));
+      endif
+      yc = y .* N;
+      ll = sum (w .* (gammaln (N + 1) - gammaln (yc + 1) ...
+           - gammaln (N - yc + 1) + yc .* log (max (mu, rmin)) ...
+           + (N - yc) .* log (max (1 - mu, rmin))));
+    case 'gamma'
+      a  = 1 ./ phi;
+      ll = sum (w .* (a .* log (a) - a .* log (mu) + (a - 1) .* log (y) ...
+           - a .* y ./ mu - gammaln (a)));
+    case 'inverse gaussian'
+      ll = sum (w .* (-0.5 * (log (2 * pi * phi .* y .^ 3) ...
+           + (y - mu) .^ 2 ./ (phi .* mu .^ 2 .* y))));
+  endswitch
 endfunction
 
 ## Response distribution's canonical link specification.
