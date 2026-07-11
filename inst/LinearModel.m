@@ -1130,7 +1130,7 @@ classdef LinearModel
         X_num_sub = X_num_full(subset_mask, :);
         y_sub     = y_full(subset_mask);
 
-        [X_enc_sub, enc_names, cat_info] = lm_encode_categorical ( ...
+        [X_enc_sub, enc_names, cat_info] = encode_categorical ( ...
           X_num_sub, cat_logical, pred_names_raw, cat_str_levels);
         p_enc  = size (X_enc_sub, 2);
 
@@ -4043,36 +4043,6 @@ function [terms, has_intercept, coef_names] = lm_parse_modelspec ( ...
 endfunction
 
 ## expand categorical columns into L-1 dummy variables
-function [X_enc, enc_names, cat_info] = lm_encode_categorical ( ...
-    X_num, cat_cols, pred_names, cat_levels)
-
-  X_enc     = zeros (rows (X_num), 0);
-  enc_names = {};
-  cat_info.names  = {};
-  cat_info.levels = {};
-
-  for j = 1:numel (pred_names)
-    if (! cat_cols(j))
-      X_enc     = [X_enc, X_num(:, j)];
-      enc_names = [enc_names, pred_names{j}];
-    else
-      levels_j = cat_levels{j};
-      if (isempty (levels_j))
-        uvals    = sort (unique (X_num(isfinite (X_num(:,j)), j)));
-        levels_j = cellstr (num2str (uvals(:)));
-      endif
-      n_lev = numel (levels_j);
-      for L = 2:n_lev
-        dummy     = double (X_num(:, j) == L);
-        X_enc     = [X_enc, dummy];
-        enc_names = [enc_names, [pred_names{j}, '_', char(levels_j{L})]];
-      endfor
-      cat_info.names{end+1}  = pred_names{j};
-      cat_info.levels{end+1} = levels_j;
-    endif
-  endfor
-endfunction
-
 ## observation-level influence statistics; returns D struct
 function D = lm_diagnostics (X, y, fit, w)
   n    = rows (X);
