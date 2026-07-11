@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 150
+# columns: 151
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11462,6 +11462,84 @@ lasso
 # elements: 1
 # length: 59
 Lasso and elastic-net regularized least-squares regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+ansaribradley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2914
+ -- statistics: H = ansaribradley (X, Y)
+ -- statistics: H = ansaribradley (X, Y, NAME, VALUE)
+ -- statistics: [H, P] = ansaribradley (...)
+ -- statistics: [H, P, STATS] = ansaribradley (...)
+
+     Ansari-Bradley two-sample test for equal dispersions.
+
+     ‘H = ansaribradley (X, Y)’ performs an Ansari-Bradley test of the
+     hypothesis that the two independent samples in the vectors X and Y come
+     from distributions with the same dispersion parameter, against the
+     alternative that they come from distributions with different dispersions.
+     The result is H = 0 if the null hypothesis of equal dispersions cannot be
+     rejected at the 5% significance level, or H = 1 if it can.
+
+     The Ansari-Bradley test is a nonparametric alternative to the two-sample F
+     test (‘vartest2’) that does not assume normality.  It assumes that the two
+     samples are independent and that they come from distributions with the same
+     median and shape, differing (under the alternative) only in dispersion.  If
+     the medians differ, the data should be recentred (e.g. by subtracting the
+     sample medians) before applying the test.
+
+     ‘ansaribradley’ treats NaNs in X or Y as missing values and ignores them.
+
+     ‘[H, P] = ansaribradley (...)’ returns the p-value of the test, that is the
+     probability, under the null hypothesis, of observing a value of the test
+     statistic as or more extreme than the one observed.
+
+     ‘[H, P, STATS] = ansaribradley (...)’ returns a structure with the
+     following fields:
+
+     W                the value of the Ansari-Bradley test statistic, the sum of
+                      the Ansari-Bradley scores of the sample X
+     Wstar            the value of the approximate normal (z) statistic
+
+     ‘[...] = ansaribradley (..., NAME, VALUE)’ specifies one or more of the
+     following name/value pairs:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'alpha'          the significance level.  Default is 0.05.
+                      
+     'tail'           a string specifying the alternative hypothesis
+                      
+     'method'         a string selecting the p-value computation, either 'exact'
+                      to use the exact permutation distribution of the
+                      statistic, or 'approximate' to use the normal
+                      approximation.  The default is 'exact' when the total
+                      sample size is 25 or less, and 'approximate' otherwise.
+
+     The 'tail' option can take one of the following values:
+
+     'both'       dispersions are not equal (two-tailed, default)
+     'right'      dispersion of X is greater than dispersion of Y
+                  (right-tailed)
+     'left'       dispersion of X is less than dispersion of Y (left-tailed)
+
+     See also: vartest2, vartestn, kstest2, ranksum.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Ansari-Bradley two-sample test for equal dispersions.
 
 
 
