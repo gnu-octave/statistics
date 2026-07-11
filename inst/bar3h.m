@@ -395,7 +395,7 @@ function [varargout] = bar3h (varargin)
   if (! isempty (zlabel))
     set (ax, 'ZTickLabel', zlabel);
   elseif (! isempty (z) && ! isnan (z))
-    zlabel = arrayfun (@(x) sprintf ('%d', x), z, 'UniformOutput', false);
+    zlabel = arrayfun (@(x) sprintf ("%d", x), z, 'UniformOutput', false);
     set (ax, 'ZTickLabel', zlabel);
   endif
 
