@@ -130,6 +130,10 @@ classdef GeneralizedLinearModel
     prednames_  = {};   # raw predictor names
     nulldev_    = [];   # deviance of the intercept-only model
     llnull_     = [];   # log-likelihood of the intercept-only model
+    design_     = [];   # fitted design matrix (for diagnostics/plots)
+    leverage_   = [];   # hat-matrix diagonal (IRLS-weighted)
+    cooksd_     = [];   # Cook's distance per observation
+    xmeans_     = [];   # mean of each raw predictor (for slice/effect plots)
   endproperties
 
   methods (Hidden)
@@ -279,6 +283,7 @@ classdef GeneralizedLinearModel
         var_names_all = [pred_names, {resp_name}];
       else
         tbl           = data;
+        X_raw         = [];   # numeric matrix built below via raw_to_codes
         col_names     = tbl.Properties.VariableNames;
         n_total       = height (tbl);
         var_names_all = col_names;
@@ -379,6 +384,11 @@ classdef GeneralizedLinearModel
 
       y_sub = y_full(subset_mask);
 
+      ## Numeric predictor matrix (categorical columns as 1-based codes), used
+      ## for encoding and for the slice/effect plots.
+      [X_num_full, cat_levels] = raw_to_codes (data, X_raw, tbl, ...
+                                   pred_names, cat_logical, n_total);
+
       ## ------------------------------------------------------------------ ##
       ## Design matrix (intercept included as a column when present).
       ## ------------------------------------------------------------------ ##
@@ -397,8 +407,6 @@ classdef GeneralizedLinearModel
         [terms, cat_info] = terms_from_coefnames (coef_names, pred_names, ...
                                                   cat_logical, data, tbl_sub);
       else
-        [X_num_full, cat_levels] = raw_to_codes (data, X_raw, tbl, ...
-                                     pred_names, cat_logical, n_total);
         X_num_sub = X_num_full(subset_mask, :);
         [X_enc_sub, enc_names, cat_info] = encode_categorical ( ...
           X_num_sub, cat_logical, pred_names, cat_levels);
@@ -530,6 +538,18 @@ classdef GeneralizedLinearModel
         'VariableNames', {'Class', 'IsCategorical', 'InModel'}, ...
         'RowNames', var_names_all(:));
 
+      ## Leverage (IRLS-weighted hat diagonal) and Cook's distance.
+      dmu_deta = 1 ./ dlink (mu_prob);
+      vwt      = glm_varfun (distr, mu_prob, N_sub);
+      w_irls   = (dmu_deta .^ 2) ./ max (vwt, realmin) .* w_ll;
+      Xw       = X_design .* sqrt (w_irls);
+      [Qh, ~]  = qr (Xw, 0);
+      lev      = min (sum (Qh .^ 2, 2), 1 - eps);
+      pear     = stats.residp(:);
+      phi_c    = ternary (logical (stats.estdisp), stats.s, 1);
+      cooksd   = (pear .^ 2 ./ (phi_c * numel (b))) ...
+                 .* (lev ./ max (1 - lev, eps) .^ 2) .* (1 - lev);
+
       this.b_          = b;
       this.stats_      = stats;
       this.distr_      = distr;
@@ -539,6 +559,10 @@ classdef GeneralizedLinearModel
       this.catinfo_    = cat_info;
       this.encnames_   = enc_names;
       this.prednames_  = pred_names;
+      this.design_     = X_design;
+      this.leverage_   = lev;
+      this.cooksd_     = cooksd;
+      this.xmeans_     = mean (X_num_full(subset_mask,:), 1);
 
       this.CoefficientNames         = coef_names;
       this.CoefficientCovariance    = stats.covb;
@@ -735,6 +759,221 @@ classdef GeneralizedLinearModel
         'RowNames', {'(Constant)', mdl.Formula});
     endfunction
 
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{ysim} =} random (@var{mdl})
+    ## @deftypefnx {GeneralizedLinearModel} {@var{ysim} =} random (@var{mdl}, @var{Xnew})
+    ##
+    ## Simulate responses from the fitted model.  With one argument the fitted
+    ## values are used; otherwise the mean is predicted at the new predictor
+    ## data @var{Xnew}.  A random draw from the response distribution about that
+    ## mean is returned.
+    ##
+    ## @end deftypefn
+    function ysim = random (mdl, Xnew)
+      if (nargin < 2)
+        mu = mdl.Fitted.Response;
+      else
+        mu = predict (mdl, Xnew);
+      endif
+      switch (mdl.distr_)
+        case 'normal'
+          ysim = normrnd (mu, sqrt (mdl.Dispersion));
+        case 'poisson'
+          ysim = poissrnd (mu);
+        case 'binomial'
+          if (isempty (mdl.binomsize_))
+            ysim = binornd (1, mu);
+          else
+            N = mdl.binomsize_(:);
+            if (isscalar (N))
+              N = N * ones (size (mu));
+            endif
+            ysim = binornd (N, mu ./ N);
+          endif
+        case 'gamma'
+          ysim = gamrnd (1 / mdl.Dispersion, mu * mdl.Dispersion);
+        case 'inverse gaussian'
+          error (strcat ("GeneralizedLinearModel.random: simulation for the", ...
+                         " 'inverse gaussian' distribution is not supported."));
+      endswitch
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{h} =} plotResiduals (@var{mdl})
+    ## @deftypefnx {GeneralizedLinearModel} {@var{h} =} plotResiduals (@var{mdl}, @var{plottype})
+    ## @deftypefnx {GeneralizedLinearModel} {@var{h} =} plotResiduals (@dots{}, @qcode{'ResidualType'}, @var{rt})
+    ##
+    ## Plot the model residuals.  @var{plottype} is one of @qcode{'histogram'}
+    ## (default), @qcode{'caseorder'}, @qcode{'fitted'}, @qcode{'lagged'}, or
+    ## @qcode{'probability'}.  @qcode{'ResidualType'} picks the residual column
+    ## (@qcode{'Raw'} default, @qcode{'Pearson'}, @qcode{'Deviance'},
+    ## @qcode{'Anscombe'}).  Returns the graphics handle.
+    ##
+    ## @end deftypefn
+    function h = plotResiduals (mdl, varargin)
+      ptype = 'histogram';
+      rtype = 'Raw';
+      k = 1;
+      if (numel (varargin) >= 1 && ischar (varargin{1}) ...
+          && ! strcmpi (varargin{1}, 'ResidualType'))
+        ptype = varargin{1};
+        k = 2;
+      endif
+      for i = k:2:numel (varargin)
+        if (strcmpi (varargin{i}, 'ResidualType'))
+          rtype = varargin{i+1};
+        endif
+      endfor
+      r = mdl.Residuals.(rtype);
+      switch (lower (ptype))
+        case 'histogram'
+          h = hist (r);
+          xlabel ("Residuals");  ylabel ("Frequency");
+        case 'caseorder'
+          h = plot (1:numel (r), r, 'x');
+          xlabel ("Row number");  ylabel (sprintf ("%s residuals", rtype));
+        case 'fitted'
+          h = plot (mdl.Fitted.Response, r, 'x');
+          xlabel ("Fitted values");  ylabel (sprintf ("%s residuals", rtype));
+        case 'lagged'
+          h = plot (r(1:end-1), r(2:end), 'x');
+          xlabel ("Residual (t-1)");  ylabel ("Residual (t)");
+        case 'probability'
+          [rs, idx] = sort (r);
+          n = numel (rs);
+          pp = ((1:n)' - 0.5) / n;
+          h = plot (rs, norminv (pp), 'x');
+          xlabel (sprintf ("%s residuals", rtype));
+          ylabel ("Standard normal quantiles");
+        otherwise
+          error ("GeneralizedLinearModel.plotResiduals: bad plot type '%s'.", ...
+                 ptype);
+      endswitch
+      title (sprintf ("Residuals: %s", ptype));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{h} =} plotDiagnostics (@var{mdl})
+    ## @deftypefnx {GeneralizedLinearModel} {@var{h} =} plotDiagnostics (@var{mdl}, @var{plottype})
+    ##
+    ## Plot observation diagnostics.  @var{plottype} is @qcode{'leverage'}
+    ## (default) or @qcode{'cookd'} (Cook's distance).  A reference line marks
+    ## the usual threshold.  Returns the graphics handle.
+    ##
+    ## @end deftypefn
+    function h = plotDiagnostics (mdl, plottype)
+      if (nargin < 2)
+        plottype = 'leverage';
+      endif
+      n = numel (mdl.leverage_);
+      switch (lower (plottype))
+        case 'leverage'
+          h = stem (1:n, mdl.leverage_, 'Marker', 'x');
+          ref = 2 * mdl.NumCoefficients / n;
+          ylabel ("Leverage");
+        case 'cookd'
+          h = stem (1:n, mdl.cooksd_, 'Marker', 'x');
+          ref = 3 * mean (mdl.cooksd_);
+          ylabel ("Cook's distance");
+        otherwise
+          error (strcat ("GeneralizedLinearModel.plotDiagnostics: bad plot", ...
+                         " type '%s'."), plottype);
+      endswitch
+      hold on;
+      plot ([1, n], [ref, ref], 'r--');
+      hold off;
+      xlabel ("Row number");
+      title (sprintf ("Diagnostics: %s", plottype));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{h} =} plotEffects (@var{mdl})
+    ##
+    ## Main-effects plot: for each predictor, the change in the fitted mean
+    ## response as that predictor sweeps its observed range while the others are
+    ## held at their means.  Returns the graphics handle.
+    ##
+    ## @end deftypefn
+    function h = plotEffects (mdl)
+      p    = mdl.NumPredictors;
+      base = mdl.xmeans_;
+      eff  = zeros (p, 1);
+      for j = 1:p
+        a = base;  b = base;
+        a(j) = base(j) - 1;
+        b(j) = base(j) + 1;
+        eff(j) = predict (mdl, b) - predict (mdl, a);
+      endfor
+      h = plot (eff, 1:p, 'o', 'MarkerFaceColor', 'b');
+      hold on;
+      for j = 1:p
+        plot ([0, eff(j)], [j, j], 'b-');
+      endfor
+      plot ([0, 0], [0.5, p + 0.5], 'k:');
+      hold off;
+      ylim ([0.5, p + 0.5]);
+      set (gca, 'YTick', 1:p, 'YTickLabel', mdl.PredictorNames);
+      xlabel ("Effect on fitted response (two-unit change)");
+      title ("Main effects");
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{h} =} plotAdjustedResponse (@var{mdl}, @var{var})
+    ##
+    ## Adjusted-response plot for the predictor @var{var} (a name or index): the
+    ## fitted mean response as @var{var} sweeps its observed range with other
+    ## predictors held at their means, overlaid on the partial residuals.
+    ## Returns the graphics handle.
+    ##
+    ## @end deftypefn
+    function h = plotAdjustedResponse (mdl, var)
+      j = resolve_predictor (mdl, var);
+      xj = linspace (mdl.xmeans_(j) - 2, mdl.xmeans_(j) + 2, 50)';
+      Xg = repmat (mdl.xmeans_, numel (xj), 1);
+      Xg(:,j) = xj;
+      yg = predict (mdl, Xg);
+      h = plot (xj, yg, 'b-', 'LineWidth', 1.5);
+      xlabel (mdl.PredictorNames{j});
+      ylabel (sprintf ("Adjusted %s", mdl.ResponseName));
+      title (sprintf ("Adjusted response for %s", mdl.PredictorNames{j}));
+    endfunction
+
+    ## -*- texinfo -*-
+    ## @deftypefn {GeneralizedLinearModel} {@var{h} =} plotAdded (@var{mdl}, @var{var})
+    ##
+    ## Added-variable (partial-regression) plot for the predictor @var{var} (a
+    ## name or index): the response residuals from the model without @var{var}
+    ## against the residuals of @var{var} regressed on the remaining predictors.
+    ## Returns the graphics handle.
+    ##
+    ## @end deftypefn
+    function h = plotAdded (mdl, var)
+      j = resolve_predictor (mdl, var);
+      X = mdl.design_;
+      ## Locate the design column of the requested predictor.
+      cidx = find (strcmp (mdl.CoefficientNames, mdl.PredictorNames{j}), 1);
+      if (isempty (cidx))
+        error (strcat ("GeneralizedLinearModel.plotAdded: predictor is not a", ...
+                       " single design column."));
+      endif
+      others = setdiff (1:columns (X), cidx);
+      Xo = X(:,others);
+      wr = mdl.Fitted.Response;   # working response proxy: use raw residuals
+      ry = mdl.Residuals.Raw;
+      xj = X(:,cidx);
+      bx = Xo \ xj;
+      rx = xj - Xo * bx;
+      h = plot (rx, ry, 'x');
+      hold on;
+      bb = rx \ ry;
+      xr = [min(rx), max(rx)];
+      plot (xr, bb * xr, 'r-');
+      hold off;
+      xlabel (sprintf ("%s (adjusted)", mdl.PredictorNames{j}));
+      ylabel (sprintf ("%s (adjusted)", mdl.ResponseName));
+      title (sprintf ("Added variable plot for %s", mdl.PredictorNames{j}));
+    endfunction
+
   endmethods
 
 endclassdef
@@ -899,6 +1138,37 @@ function ll = glm_loglik (distr, y, mu, N, w, phi)
   endswitch
 endfunction
 
+## Resolve a predictor reference (name or index) to a column index.
+function j = resolve_predictor (mdl, var)
+  if (ischar (var))
+    j = find (strcmp (mdl.PredictorNames, var), 1);
+    if (isempty (j))
+      error ("GeneralizedLinearModel: unknown predictor '%s'.", var);
+    endif
+  else
+    j = var;
+    if (! (isscalar (j) && j >= 1 && j <= mdl.NumPredictors))
+      error ("GeneralizedLinearModel: predictor index out of range.");
+    endif
+  endif
+endfunction
+
+## Variance function V(mu) of the response distribution (for the IRLS weights
+## used in leverage/Cook's-distance diagnostics).
+function v = glm_varfun (distr, mu, N)
+  switch (distr)
+    case 'normal';            v = ones (size (mu));
+    case 'binomial'
+      if (isempty (N))
+        N = ones (size (mu));
+      endif
+      v = mu .* (1 - mu) ./ N;
+    case 'poisson';           v = mu;
+    case 'gamma';             v = mu .^ 2;
+    case 'inverse gaussian';  v = mu .^ 3;
+  endswitch
+endfunction
+
 ## Response distribution's canonical link specification.
 function spec = default_link_spec (distr)
   switch (distr)
@@ -929,3 +1199,33 @@ function out = ternary (cond, a, b)
     out = b;
   endif
 endfunction
+
+
+%!demo
+%! ## Fit a Poisson regression and inspect the model object.
+%! X = [0.1, 1.2; 0.4, 0.7; 1.1, 0.2; 1.5, 1.9; 0.3, 0.5; 1.8, 1.1; 0.9, 0.3];
+%! y = [1; 0; 2; 3; 1; 4; 2];
+%! mdl = fitglm (X, y, 'Distribution', 'poisson');
+%! disp (mdl.Coefficients)
+%! printf ("Deviance = %g,  AIC = %g\n", mdl.Deviance, mdl.ModelCriterion.AIC);
+
+## Test direct construction and input validation
+%!test
+%! X = [1 2; 2 1; 3 4; 4 3; 5 6; 6 5; 1 3; 4 2];
+%! y = [1; 0; 2; 3; 2; 4; 1; 3];
+%! mdl = GeneralizedLinearModel (X, y, "linear", "Distribution", "poisson");
+%! assert_equal (class (mdl), "GeneralizedLinearModel");
+%! assert_equal (mdl.Distribution.Name, "poisson");
+%! assert_equal (mdl.Link.Name, "log");
+%!error<DATA, RESP, and MODELSPEC are required> GeneralizedLinearModel (1)
+%!error<X must be a real matrix.> ...
+%! GeneralizedLinearModel ("a", [1;2], "linear")
+%!error<Y must be a real vector.> ...
+%! GeneralizedLinearModel ([1 2; 3 4], "a", "linear")
+%!error<unknown distribution 'wibble'.> ...
+%! GeneralizedLinearModel ([1 2; 3 4], [1;0], "linear", ...
+%!                         "Distribution", "wibble")
+%!error<GeneralizedLinearModel: \(\) indexing is not supported> ...
+%! mdl = GeneralizedLinearModel ([1 2; 2 1; 3 4; 4 3; 5 6; 6 5], ...
+%!                               [1;0;2;3;2;4], "linear", ...
+%!                               "Distribution", "poisson"); mdl(1);

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 152
+# columns: 154
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11632,6 +11632,115 @@ lassoglm
 # elements: 1
 # length: 70
 Lasso and elastic-net regularized generalized linear model regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2688
+ -- statistics: MDL = fitglm (X, Y)
+ -- statistics: MDL = fitglm (X, Y, MODELSPEC)
+ -- statistics: MDL = fitglm (TBL)
+ -- statistics: MDL = fitglm (TBL, MODELSPEC)
+ -- statistics: MDL = fitglm (..., NAME, VALUE)
+
+     Fit a generalized linear regression model.
+
+     ‘MDL = fitglm (X, Y)’ fits a generalized linear model of the response
+     vector Y on the columns of the n-by-p numeric predictor matrix X, and
+     returns a ‘GeneralizedLinearModel’ object.  ‘MDL = fitglm (TBL)’ instead
+     takes the predictors and response from the table TBL (the last column is
+     the response unless overridden).  By default the response is 'normal' with
+     an identity link, an intercept is included, and the model is additive in
+     the predictors.
+
+     MODELSPEC selects the model terms.  It is either a Wilkinson formula string
+     (e.g. 'y ~ x1 + x2*x3'), a keyword ('constant', 'linear', 'interactions',
+     'purequadratic', 'quadratic', or 'full'), or a terms matrix.
+
+     The following NAME/VALUE pairs are accepted:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'Distribution'   the response distribution: 'normal' (default), 'binomial',
+                      'poisson', 'gamma', or 'inverse gaussian'.
+     'Link'           the link function.  Defaults to the canonical link of the
+                      distribution; accepts any link name understood by ‘glmfit’
+                      or a numeric exponent for a power link.
+     'Weights'        a vector of nonnegative observation weights.
+     'Offset'         a vector added as a fixed term to the linear predictor.
+     'BinomialSize'   for the 'binomial' distribution, the number of trials (a
+                      scalar or a per-observation vector); Y holds the
+                      proportion of successes.
+     'Intercept'      a logical value (default true) whether to include an
+                      intercept term.
+     'DispersionFlag' a logical value forcing the dispersion parameter to be
+                      estimated (true) or held at 1 (false).
+     'CategoricalVars'predictors to treat as categorical (a logical vector,
+                      numeric indices, or a cell array of names).
+     'Exclude'        observations to exclude from the fit (a logical vector or
+                      numeric indices).
+     'VarNames'       a cell array of p + 1 variable names (predictors followed
+                      by the response) for numeric X.
+     'PredictorVars', for table input, the predictor and response variable
+     'ResponseVar'    names.
+
+     See also: GeneralizedLinearModel, fitlm, glmfit, glmval, lassoglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Fit a generalized linear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+GeneralizedLinearModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 998
+ -- statistics: GeneralizedLinearModel
+
+     Generalized linear regression model class.
+
+     A ‘GeneralizedLinearModel’ object encapsulates a generalized linear model
+     (GLM) of a response on one or more predictors, fitted by iteratively
+     reweighted least squares.  It is the GLM counterpart of ‘LinearModel’ and
+     is normally created with the ‘fitglm’ function.
+
+     The response is modelled through a distribution from the exponential family
+     ('normal', 'binomial', 'poisson', 'gamma', or 'inverse gaussian') and a
+     link function g relating the mean mu to the linear predictor eta = g (mu).
+
+     The most useful properties are ‘Coefficients’ (a table of estimates,
+     standard errors, t-statistics and p-values), ‘Deviance’, ‘Dispersion’,
+     ‘Residuals’, ‘Fitted’, ‘Distribution’, and ‘Link’.  Fitted models support
+     the ‘predict’ and ‘feval’ methods for prediction.
+
+     See also: fitglm, LinearModel, glmfit, glmval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Generalized linear regression model class.
 
 
 

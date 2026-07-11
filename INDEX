@@ -243,9 +243,11 @@ Model Fitting
  fitcknn
  fitcnet
  fitcsvm
+ fitglm
  fitgmdist
  fitlm
  fitrgam
+ GeneralizedLinearModel
  LinearModel
 Hypothesis Testing
  adtest
