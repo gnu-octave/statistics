@@ -173,7 +173,7 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
       y_hi = NaN (size (yhat));
     else
       V = (stats.se * stats.se') .* stats.coeffcorr;
-      XVX = sum ((X * V) .* X, 2)';
+      XVX = sum ((X * V) .* X, 2);
       if (simultaneous)
         dof = length (b);
         if (stats.estdisp)
@@ -181,8 +181,10 @@ function [yhat, y_lo, y_hi] = glmval (b, X, link, varargin)
         else
           Xcv = sqrt (chi2inv (confidence, dof));
         endif
-      else
+      elseif (stats.estdisp)
         Xcv = tinv ((1 + confidence) / 2, stats.dfe);
+      else
+        Xcv = norminv ((1 + confidence) / 2);
       endif
       interval = Xcv * sqrt (XVX);
       int_hilo = [N.*ilink(eta-interval) N.*ilink(eta+interval)];
@@ -308,6 +310,23 @@ endfunction
 %! X = [0.1 0.2; 0.3 0.4; 0.5 0.6; 0.7 0.8];
 %! assert (glmval (b, X, 'logit', 'BinomialSize', 10), ...
 %!         glmval (b, X, 'logit', 'size', 10));
+
+%!test  # CI: fixed-dispersion uses the normal quantile; rows are independent
+%! X = [1 2; 2 1; 3 3; 4 2; 5 4; 6 5];
+%! y = [1; 0; 2; 3; 2; 4];
+%! [b, dev, stats] = glmfit (X, y, 'poisson');
+%! Xnew = [2 2; 4 3];
+%! [yh, ylo, yhi] = glmval (b, Xnew, 'log', stats);
+%! Xd = [ones(2, 1), Xnew];
+%! se_eta = sqrt (sum ((Xd * stats.covb) .* Xd, 2));
+%! eta = Xd * b;
+%! z = norminv (0.975);
+%! lo = exp (eta) - exp (eta - z * se_eta);
+%! hi = exp (eta + z * se_eta) - exp (eta);
+%! assert_equal (ylo, lo, 1e-10);
+%! assert_equal (yhi, hi, 1e-10);
+%! [~, l1, h1] = glmval (b, Xnew(1,:), 'log', stats);
+%! assert_equal ([ylo(1); yhi(1)], [l1; h1], 1e-12);
 
 %!error <glmval: 'simultaneous' must be a logical or numeric \(0 or 1\) scalar.> ...
 %! glmval (rand (3, 1), rand (5, 2), 'probit', 'simultaneous', 'asdfg')
