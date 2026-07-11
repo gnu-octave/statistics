@@ -322,6 +322,7 @@ Regression
  glmfit
  glmval
  lasso
+ lassoglm
  logistic_regression
  mnrfit
  mnrval

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 151
+# columns: 152
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11540,6 +11540,98 @@ ansaribradley
 # elements: 1
 # length: 53
 Ansari-Bradley two-sample test for equal dispersions.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+lassoglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4109
+ -- statistics: B = lassoglm (X, Y)
+ -- statistics: B = lassoglm (X, Y, DISTR)
+ -- statistics: B = lassoglm (X, Y, DISTR, NAME, VALUE)
+ -- statistics: [B, FITINFO] = lassoglm (...)
+
+     Lasso and elastic-net regularized generalized linear model regression.
+
+     ‘B = lassoglm (X, Y, DISTR)’ returns fitted least-squares regression
+     coefficients for a generalized linear model of the response Y on the
+     predictor data X, penalized by the lasso (L1) or elastic-net penalty.  X is
+     an n-by-p numeric matrix of p predictors at each of n observations, and Y
+     is a numeric vector of n responses.  DISTR names the distribution of the
+     response: 'normal' (default), 'binomial', 'poisson', 'gamma', or 'inverse
+     gaussian'.  The canonical link function of the chosen distribution is used
+     unless overridden by the 'Link' option.
+
+     B is a p-by-L matrix, where L is the number of regularization ('Lambda')
+     values used; column k holds the coefficients for the k-th value of lambda,
+     in order of ascending lambda.
+
+     ‘[B, FITINFO] = lassoglm (...)’ also returns a structure FITINFO with
+     information about the fitted models:
+
+     Intercept        a 1-by-L vector of intercept terms
+     Lambda           the 1-by-L vector of lambda values, in ascending order
+     Alpha            the elastic-net mixing value used
+     DF               the number of nonzero coefficients in each column of B
+     Deviance         the deviance of the fitted model at each lambda; when
+                      cross-validation is requested this is instead the
+                      cross-validated mean deviance
+
+     When cross-validation is requested (see 'CV' below), FITINFO additionally
+     contains SE (standard error of the cross-validated deviance),
+     LambdaMinDeviance and IndexMinDeviance (the lambda with minimum
+     cross-validated deviance and its index), and Lambda1SE and Index1SE (the
+     largest lambda within one standard error of that minimum).
+
+     ‘lassoglm’ accepts the following NAME/VALUE pairs:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'Alpha'          the elastic-net mixing parameter, a scalar in (0, 1].
+                      'Alpha' = 1 is the lasso penalty (default); values towards
+                      0 approach ridge regression.
+     'Lambda'         a vector of non-negative lambda values.
+     'Standardize'    a logical value (default true) specifying whether the
+                      predictors are standardized before fitting.
+     'Weights'        a vector of non-negative observation weights.
+     'Size'           for the 'binomial' distribution, the number of trials (a
+                      scalar or a per-observation vector); Y holds the number of
+                      successes.  Default is 1 (Bernoulli responses).
+     'Link'           the link function to use instead of the family's canonical
+                      link.  Accepts any link name understood by ‘glmfit’ (e.g.
+                      'log', 'probit') or a numeric exponent for a power link.
+     'Offset'         a numeric vector, one value per observation, added as a
+                      fixed term to the linear predictor (not penalized or
+                      fitted).
+     'RelTol'         convergence tolerance for the coordinate descent.
+     'MaxIter'        maximum number of iterations.
+     'DFmax'          maximum number of nonzero coefficients.
+     'Intercept'      a logical value (default true) whether to fit an intercept
+                      term.
+     'PredictorNames' a cell array of predictor names.
+     'CV'             the number of folds K for K-fold cross-validation, or a
+                      ‘cvpartition’ object.  The fold assignment is random, so
+                      the selected lambda values are not reproducible without a
+                      fixed random seed.
+     'MCReps'         the number of Monte-Carlo repetitions of the
+                      cross-validation (default 1).
+
+     See also: lasso, glmfit, glmval, cvpartition.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Lasso and elastic-net regularized generalized linear model regression.
 
 
 
