@@ -1,4 +1,5 @@
 ## Copyright (C) 2026 Andreas Bertsatos <abertsatos@biol.uoa.gr>
+## Copyright (C) 2026 Avanish Salunke <avanishsalunke16@gmail.com>
 ##
 ## This file is part of the statistics package for GNU Octave.
 ##
