@@ -247,10 +247,10 @@ endfunction
 %! warning ("off", "jbtest:pTooBig", "local");
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! [h, p, jbstat, cv] = jbtest (x);
-%! assert (h, 0);
-%! assert (jbstat, 0.624487, 1e-5);    # skewness 0, kurtosis 1.7758
-%! assert (cv, 2.5276, 1e-4);          # tabulated critical value, n=10, a=0.05
-%! assert (p, 0.5, 1e-12);             # clamped to the tabulated maximum
+%! assert_equal (h, 0);
+%! assert_equal (jbstat, 0.624487, 1e-5);    # skewness 0, kurtosis 1.7758
+%! assert_equal (cv, 2.5276, 1e-4);          # tabulated critical value, n=10, a=0.05
+%! assert_equal (p, 0.5, 1e-12);             # clamped to the tabulated maximum
 
 ## A very normal-looking (platykurtic) sample warns that p exceeds 0.5
 %!warning <jbtest: P is greater than the largest tabulated value; returning 0.5.> ...
@@ -259,21 +259,21 @@ endfunction
 %!test  # a strongly non-normal sample is rejected
 %! x = [zeros(1, 20), 100];
 %! h = jbtest (x);
-%! assert (h, 1);
+%! assert_equal (h, 1);
 
 %!test  # NaNs are removed
-%! assert (jbtest ([1 2 3 4 5 6 7 8 9 10, NaN]), jbtest (1:10));
+%! assert_equal (jbtest ([1 2 3 4 5 6 7 8 9 10, NaN]), jbtest (1:10));
 
 %!test  # alpha controls the critical value
 %! x = randn (1, 50);
 %! [~, ~, ~, cv1] = jbtest (x, 0.05);
 %! [~, ~, ~, cv2] = jbtest (x, 0.01);
-%! assert (cv2 > cv1);
+%! assert_equal (cv2 > cv1, true);
 
 %!test  # Monte-Carlo p-value runs and lies in (0,1]
 %! x = [1 2 3 4 5 6 7 8 9 10];
 %! [h, p] = jbtest (x, 0.05, 0.05);
-%! assert (p > 0 && p <= 1);
+%! assert_equal (p > 0 && p <= 1, true);
 
 ## Test input validation
 %!error <Invalid call to jbtest> jbtest ()

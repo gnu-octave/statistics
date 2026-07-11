@@ -288,60 +288,60 @@ endfunction
 
 %!test  # MATLAB parity: bisquare coefficients and exact stats fields
 %! [b, st] = robustfit (X, y);
-%! assert (b, [1.08223788958791; 1.9947584179332], 1e-8);
-%! assert (st.ols_s, 4.58673317428878, 1e-8);
-%! assert (st.mad_s, 0.219326216641263, 1e-8);
-%! assert (st.dfe, 8);
-%! assert (st.h(1), 0.345454545454545, 1e-9);
-%! assert (st.w(10), 0, 1e-10);
-%! assert (st.resid(10), -16.0298220689199, 1e-6);
+%! assert_equal (b, [1.08223788958791; 1.9947584179332], 1e-8);
+%! assert_equal (st.ols_s, 4.58673317428878, 1e-8);
+%! assert_equal (st.mad_s, 0.219326216641263, 1e-8);
+%! assert_equal (st.dfe, 8);
+%! assert_equal (st.h(1), 0.345454545454545, 1e-9);
+%! assert_equal (st.w(10), 0, 1e-10);
+%! assert_equal (st.resid(10), -16.0298220689199, 1e-6);
 
 %!test  # MATLAB parity: standard errors, t, p within a fraction of a percent
 %! [b, st] = robustfit (X, y);
-%! assert (st.s, 2.45430591997485, 5e-3);
-%! assert (st.se, [1.67661012843903; 0.270210188642742], 2e-3);
-%! assert (st.t, [0.64549168064224; 7.38224723483898], 5e-3);
-%! assert (st.p, [0.536678473587217; 7.75017584465372e-05], 5e-3);
-%! assert (st.covb, [2.81102152278434, -0.401574503254905; ...
+%! assert_equal (st.s, 2.45430591997485, 5e-3);
+%! assert_equal (st.se, [1.67661012843903; 0.270210188642742], 2e-3);
+%! assert_equal (st.t, [0.64549168064224; 7.38224723483898], 5e-3);
+%! assert_equal (st.p, [0.536678473587217; 7.75017584465372e-05], 5e-3);
+%! assert_equal (st.covb, [2.81102152278434, -0.401574503254905; ...
 %!                   -0.401574503254905, 0.0730135460463465], 1e-2);
 
 %!test  # weight-function coefficients match MATLAB
-%! assert (robustfit (X, y, "huber"), ...
+%! assert_equal (robustfit (X, y, "huber"), ...
 %!         [1.13942072329047; 1.97894586334502], 1e-6);
-%! assert (robustfit (X, y, "andrews"), ...
+%! assert_equal (robustfit (X, y, "andrews"), ...
 %!         [1.08226666865865; 1.99475428605778], 1e-6);
-%! assert (robustfit (X, y, "cauchy"), ...
+%! assert_equal (robustfit (X, y, "cauchy"), ...
 %!         [1.08721258646419; 1.99357974946387], 1e-6);
-%! assert (robustfit (X, y, "fair"), ...
+%! assert_equal (robustfit (X, y, "fair"), ...
 %!         [1.25156505474148; 1.94736889966414], 1e-6);
-%! assert (robustfit (X, y, "logistic"), ...
+%! assert_equal (robustfit (X, y, "logistic"), ...
 %!         [1.14596301338789; 1.9773188568744], 1e-6);
-%! assert (robustfit (X, y, "talwar"), [1.08055555555555; 1.995], 1e-6);
-%! assert (robustfit (X, y, "welsch"), ...
+%! assert_equal (robustfit (X, y, "talwar"), [1.08055555555555; 1.995], 1e-6);
+%! assert_equal (robustfit (X, y, "welsch"), ...
 %!         [1.08260376495793; 1.99470613677464], 1e-6);
 
 %!test  # 'ols' weight reproduces ordinary least squares
-%! assert (robustfit (X, y, "ols"), regress (y, [ones(10,1), X]), 1e-10);
+%! assert_equal (robustfit (X, y, "ols"), regress (y, [ones(10,1), X]), 1e-10);
 
 %!test  # custom tuning constant and const='off'
-%! assert (robustfit (X, y, "bisquare", 3), ...
+%! assert_equal (robustfit (X, y, "bisquare", 3), ...
 %!         [1.08512259456964; 1.99435302345156], 1e-6);
 %! [b, st] = robustfit (X, y, "bisquare", 4.685, "off");
-%! assert (b, 2.16460032959659, 1e-6);
-%! assert (st.dfe, 9);
+%! assert_equal (b, 2.16460032959659, 1e-6);
+%! assert_equal (st.dfe, 9);
 
 %!test  # a planted outlier is downweighted relative to OLS
 %! x = (1:20)';
 %! yy = 3 * x - 5;  yy(7) = yy(7) + 100;
 %! b = robustfit (x, yy);
-%! assert (b, [-5; 3], 0.1);
+%! assert_equal (b, [-5; 3], 0.1);
 
 %!test  # missing observations are dropped, weights padded with NaN
 %! x = (1:10)';  yy = 2*x + 1;  yy(4) = NaN;
 %! [b, st] = robustfit (x, yy);
-%! assert (b, [1; 2], 1e-8);
-%! assert (isnan (st.w(4)));
-%! assert (st.dfe, 7);
+%! assert_equal (b, [1; 2], 1e-8);
+%! assert_equal (isnan (st.w(4)), true);
+%! assert_equal (st.dfe, 7);
 
 ## Test input validation
 %!error <Invalid call to robustfit> robustfit (1)

@@ -555,15 +555,15 @@ endfunction
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! [B, dev, stats] = mnrfit (X, Y, 'model', 'nominal');
-%! assert (size (B), [2, 2]);
+%! assert_equal (size (B), [2, 2]);
 %! P = mnrval (B, X);
-%! assert (sum (P, 2), ones (12, 1), 1e-10);
-%! assert (sum (P, 1), [sum(Y == 1), sum(Y == 2), sum(Y == 3)], 1e-6);
+%! assert_equal (sum (P, 2), ones (12, 1), 1e-10);
+%! assert_equal (sum (P, 1), [sum(Y == 1), sum(Y == 2), sum(Y == 3)], 1e-6);
 
 %!test  # binary nominal agrees with the ordinal cumulative-logit fit
 %! X = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
 %! Y = [1; 1; 1; 1; 2; 1; 2; 2; 2; 2];
-%! assert (mnrfit (X, Y, 'model', 'nominal'), ...
+%! assert_equal (mnrfit (X, Y, 'model', 'nominal'), ...
 %!         mnrfit (X, Y, 'model', 'ordinal'), 1e-5);
 
 ## Test hierarchical (sequential) fitting
@@ -571,17 +571,17 @@ endfunction
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! [B, dev, stats] = mnrfit (X, Y, 'model', 'hierarchical');
-%! assert (size (B), [2, 2]);
+%! assert_equal (size (B), [2, 2]);
 %! P = mnrval (B, X, 'model', 'hierarchical');
-%! assert (sum (P, 2), ones (12, 1), 1e-10);
-%! assert (all (P(:) >= 0 & P(:) <= 1));
+%! assert_equal (sum (P, 2), ones (12, 1), 1e-10);
+%! assert_equal (all (P(:) >= 0 & P(:) <= 1), true);
 
 %!test  # first hierarchical stage is the binary logit of category 1 vs. rest
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! Bh = mnrfit (X, Y, 'model', 'hierarchical');
 %! Bb = mnrfit (X, 2 - double (Y == 1), 'model', 'nominal');
-%! assert (Bh(:,1), Bb, 1e-8);
+%! assert_equal (Bh(:,1), Bb, 1e-8);
 
 ## Test link functions for ordinal and hierarchical models
 %!test  # non-logit ordinal fits round-trip through mnrval with valid probs
@@ -590,8 +590,8 @@ endfunction
 %! for lk = {'probit', 'comploglog', 'loglog'}
 %!   B = mnrfit (X, Y, 'model', 'ordinal', 'link', lk{1});
 %!   P = mnrval (B, X, 'model', 'ordinal', 'link', lk{1});
-%!   assert (sum (P, 2), ones (12, 1), 1e-9);
-%!   assert (all (P(:) >= -1e-12 & P(:) <= 1 + 1e-12));
+%!   assert_equal (sum (P, 2), ones (12, 1), 1e-9);
+%!   assert_equal (all (P(:) >= -1e-12 & P(:) <= 1 + 1e-12), true);
 %! endfor
 
 %!test  # non-logit hierarchical fit runs and round-trips through mnrval
@@ -599,26 +599,26 @@ endfunction
 %! Y = [1; 1; 2; 2; 3; 1; 2; 3; 3; 2; 1; 3];
 %! B = mnrfit (X, Y, 'model', 'hierarchical', 'link', 'probit');
 %! P = mnrval (B, X, 'model', 'hierarchical', 'link', 'probit');
-%! assert (sum (P, 2), ones (12, 1), 1e-9);
+%! assert_equal (sum (P, 2), ones (12, 1), 1e-9);
 
 ## Test residual outputs
 %!test  # residuals have the right shape and are internally consistent
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! [B, dev, stats] = mnrfit (X, Y, 'model', 'nominal');
-%! assert (size (stats.resid), [12, 3]);
-%! assert (size (stats.residp), [12, 3]);
-%! assert (size (stats.residd), [12, 1]);
-%! assert (sum (stats.resid, 2), zeros (12, 1), 1e-10);
-%! assert (sum (stats.residd), dev, 1e-8);
+%! assert_equal (size (stats.resid), [12, 3]);
+%! assert_equal (size (stats.residp), [12, 3]);
+%! assert_equal (size (stats.residd), [12, 1]);
+%! assert_equal (sum (stats.resid, 2), zeros (12, 1), 1e-10);
+%! assert_equal (sum (stats.residd), dev, 1e-8);
 
 %!test  # dispersion estimate sfit = sqrt (Pearson X2 / dfe) matches MATLAB
 %! X = [-2; -1; 0; 1; 2; -2; -1; 0; 1; 2; -1.5; 1.5];
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! [~, ~, sn] = mnrfit (X, Y, 'model', 'nominal');
-%! assert (sn.sfit, 1.0954, 1e-3);
+%! assert_equal (sn.sfit, 1.0954, 1e-3);
 %! [~, ~, so] = mnrfit (X, Y, 'model', 'ordinal');
-%! assert (so.sfit, 1.0691, 1e-3);
+%! assert_equal (so.sfit, 1.0691, 1e-3);
 
 ## Test the EstDisp option
 %!test  # EstDisp on scales se/covb by the dispersion and uses t-based p-values
@@ -626,11 +626,11 @@ endfunction
 %! Y = [1; 2; 3; 1; 2; 3; 1; 2; 3; 1; 2; 3];
 %! [~, ~, s0] = mnrfit (X, Y, 'model', 'nominal');
 %! [~, ~, s1] = mnrfit (X, Y, 'model', 'nominal', 'estdisp', 'on');
-%! assert (s0.s, 1);
-%! assert (s1.s, s1.sfit);
-%! assert (s1.se, s0.se * s1.sfit, 1e-12);
-%! assert (s1.covb, s0.covb * s1.sfit ^ 2, 1e-10);
-%! assert (s1.p, 2 * tcdf (- abs (s1.t), s1.dfe), 1e-12);
+%! assert_equal (s0.s, 1);
+%! assert_equal (s1.s, s1.sfit);
+%! assert_equal (s1.se, s0.se * s1.sfit, 1e-12);
+%! assert_equal (s1.covb, s0.covb * s1.sfit ^ 2, 1e-10);
+%! assert_equal (s1.p, 2 * tcdf (- abs (s1.t), s1.dfe), 1e-12);
 
 ## Test input validation
 %!error<mnrfit: too few input arguments.> mnrfit (ones (50,1))

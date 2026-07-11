@@ -444,25 +444,25 @@ endfunction
 %!test  # density integrates to ~1 over a wide grid (normal kernel)
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
 %! [f, xi] = ksdensity (x, "NumPoints", 4000);
-%! assert (trapz (xi, f), 1, 5e-3);
+%! assert_equal (trapz (xi, f), 1, 5e-3);
 
 %!test  # every named compact kernel integrates to ~1
 %! x = randn (1, 200);
 %! for k = {"box", "triangle", "epanechnikov"}
 %!   xi = linspace (-8, 8, 6000)';
 %!   f = ksdensity (x, xi, "Kernel", k{1});
-%!   assert (trapz (xi, f), 1, 1e-2);
+%!   assert_equal (trapz (xi, f), 1, 1e-2);
 %! endfor
 
 %!test  # cdf is monotone from 0 to 1 and matches the analytic normal-kernel sum
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
 %! [F, xi] = ksdensity (x, "Function", "cdf", "NumPoints", 500);
-%! assert (all (diff (F) >= -1e-12));
-%! assert (F(1), 0, 5e-3);
-%! assert (F(end), 1, 5e-3);
+%! assert_equal (all (diff (F) >= -1e-12), true);
+%! assert_equal (F(1), 0, 5e-3);
+%! assert_equal (F(end), 1, 5e-3);
 %! [~, ~, bw] = ksdensity (x);
 %! Fdirect = mean (normcdf ((xi - x) / bw), 2);
-%! assert (F, Fdirect, 1e-12);
+%! assert_equal (F, Fdirect, 1e-12);
 
 %!test  # survivor and cumhazard are consistent with the cdf
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
@@ -470,53 +470,53 @@ endfunction
 %! F = ksdensity (x, pts, "Function", "cdf");
 %! S = ksdensity (x, pts, "Function", "survivor");
 %! H = ksdensity (x, pts, "Function", "cumhazard");
-%! assert (S, 1 - F, 1e-12);
-%! assert (H, -log (1 - F), 1e-12);
+%! assert_equal (S, 1 - F, 1e-12);
+%! assert_equal (H, -log (1 - F), 1e-12);
 
 %!test  # icdf inverts the cdf
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
 %! p = [0.1 0.25 0.5 0.75 0.9]';
 %! q = ksdensity (x, p, "Function", "icdf");
 %! Fq = ksdensity (x, q, "Function", "cdf");
-%! assert (Fq, p, 5e-3);
+%! assert_equal (Fq, p, 5e-3);
 
 %!test  # evaluation at supplied points preserves shape
 %! x = randn (1, 50);
 %! pts = [-1 0 1];
 %! f = ksdensity (x, pts);
-%! assert (size (f), size (pts));
+%! assert_equal (size (f), size (pts));
 
 %!test  # weights: a duplicated point equals a doubled weight
 %! x = [0 1 2 3];
 %! pts = linspace (-2, 5, 40)';
 %! f1 = ksdensity ([x, 3], pts, "Bandwidth", 0.5);
 %! f2 = ksdensity (x, pts, "Bandwidth", 0.5, "Weights", [1 1 1 2]);
-%! assert (f1, f2, 1e-12);
+%! assert_equal (f1, f2, 1e-12);
 
 %!test  # MATLAB parity: default bandwidth, grid size and range
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
 %! [~, xi, bw] = ksdensity (x);
-%! assert (bw, 0.6396, 5e-4);
-%! assert (numel (xi), 100);
-%! assert ([xi(1), xi(end)], [-2.6187, 5.1187], 1e-3);
+%! assert_equal (bw, 0.6396, 5e-4);
+%! assert_equal (numel (xi), 100);
+%! assert_equal ([xi(1), xi(end)], [-2.6187, 5.1187], 1e-3);
 
 %!test  # MATLAB parity: pdf (normal and box kernels) and cdf at fixed points
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7];
 %! pts = [-0.5 0 0.5 1 1.5 2 2.5 3];
-%! assert (ksdensity (x, pts), ...
+%! assert_equal (ksdensity (x, pts), ...
 %!         [0.1214 0.2141 0.3051 0.3394 0.3061 0.2375 0.1697 0.1166], 2e-3);
-%! assert (ksdensity (x, pts, "Kernel", "box"), ...
+%! assert_equal (ksdensity (x, pts, "Kernel", "box"), ...
 %!         [0.1505 0.2407 0.2708 0.3611 0.3009 0.2708 0.1805 0.1204], 2e-3);
-%! assert (ksdensity (x, pts, "Function", "cdf"), ...
+%! assert_equal (ksdensity (x, pts, "Function", "cdf"), ...
 %!         [0.0710 0.1538 0.2850 0.4492 0.6128 0.7494 0.8506 0.9217], 2e-3);
 
 %!test  # MATLAB parity: positive support (log) bandwidth, grid and pdf
 %! y = [0.2 0.5 0.7 1.1 1.4 2 2.6 3.3 4.1 5.5];
 %! ypts = [0.1 0.3 0.6 1 2 3 4 5];
 %! [~, xy, by] = ksdensity (y, "Support", "positive");
-%! assert (by, 0.7682, 5e-4);
-%! assert ([xy(1), xy(end)], [0.0200, 55.1111], 1e-3);
-%! assert (ksdensity (y, ypts, "Support", "positive"), ...
+%! assert_equal (by, 0.7682, 5e-4);
+%! assert_equal ([xy(1), xy(end)], [0.0200, 55.1111], 1e-3);
+%! assert_equal (ksdensity (y, ypts, "Support", "positive"), ...
 %!         [0.4300 0.4620 0.3620 0.2740 0.1570 0.0990 0.0660 0.0450], 2e-3);
 
 %!test  # MATLAB parity: positive support with reflection boundary correction
@@ -524,19 +524,19 @@ endfunction
 %! ypts = [0.1 0.3 0.6 1 2 3 4 5];
 %! f = ksdensity (y, ypts, "Support", "positive", ...
 %!                "BoundaryCorrection", "reflection");
-%! assert (f, [0.2920 0.2900 0.2810 0.2620 0.2010 0.1470 0.1070 0.0740], 2e-3);
+%! assert_equal (f, [0.2920 0.2900 0.2810 0.2620 0.2010 0.1470 0.1070 0.0740], 2e-3);
 
 %!test  # bounded support integrates to ~1 and vanishes outside the bounds
 %! y = [0.2 0.5 0.7 1.1 1.4 2 2.6 3.3];
 %! [f, xi] = ksdensity (y, "Support", [0 4], "NumPoints", 4000);
-%! assert (trapz (xi, f), 1, 5e-3);
-%! assert (all (xi >= 0 & xi <= 4));
+%! assert_equal (trapz (xi, f), 1, 5e-3);
+%! assert_equal (all (xi >= 0 & xi <= 4), true);
 
 %!test  # reflection density is confined to the support
 %! y = [0.2 0.5 0.7 1.1 1.4 2 2.6 3.3];
 %! f = ksdensity (y, [-1 -0.1 5], "Support", "positive", ...
 %!                "BoundaryCorrection", "reflection");
-%! assert (f(1:2), [0 0]);
+%! assert_equal (f(1:2), [0 0]);
 
 ## Test input validation
 %!error <Invalid call to ksdensity> ksdensity ()

@@ -373,66 +373,66 @@ endfunction
 %!test  # MATLAB parity: coefficients and intercept at explicit Lambda (lasso)
 %! lam = [2 1 0.5 0.2 0.1 0.05 0.01];
 %! [B, I] = lasso (X, y, "Lambda", lam);
-%! assert (B(:,1), [2.99553372017526; 0; -1.99263231698882; ...
+%! assert_equal (B(:,1), [2.99553372017526; 0; -1.99263231698882; ...
 %!                  0.00211715208971491; 1.49324410153201; 0], 1e-3);
-%! assert (B(:,7), [2.23897682145602; 0; -0.482753193552206; ...
+%! assert_equal (B(:,7), [2.23897682145602; 0; -0.482753193552206; ...
 %!                  0.0267252048528861; 0.118128986514695; 0], 1e-3);
-%! assert (I.Intercept(1), 0.00566677333597632, 1e-3);
-%! assert (I.Intercept(7), 2.00069783707236, 1e-3);
-%! assert (I.DF, [4 4 4 4 4 4 4]);
-%! assert (I.MSE(1), 0.00590963740808093, 1e-3);
+%! assert_equal (I.Intercept(1), 0.00566677333597632, 1e-3);
+%! assert_equal (I.Intercept(7), 2.00069783707236, 1e-3);
+%! assert_equal (I.DF, [4 4 4 4 4 4 4]);
+%! assert_equal (I.MSE(1), 0.00590963740808093, 1e-3);
 
 %!test  # MATLAB parity: Lambda is ascending and columns follow it
 %! [B, I] = lasso (X, y, "Lambda", [2 1 0.5 0.2 0.1 0.05 0.01]);
-%! assert (I.Lambda, [0.01 0.05 0.1 0.2 0.5 1 2], 1e-12);
-%! assert (issorted (I.Lambda));
+%! assert_equal (I.Lambda, [0.01 0.05 0.1 0.2 0.5 1 2], 1e-12);
+%! assert_equal (issorted (I.Lambda), true);
 
 %!test  # MATLAB parity: default path endpoints and length
 %! [B, I] = lasso (X, y);
-%! assert (I.Lambda(end), 7.18535290566157, 1e-4);
-%! assert (I.Lambda(1), 0.119858910419061, 1e-4);
-%! assert (numel (I.Lambda), 45);
+%! assert_equal (I.Lambda(end), 7.18535290566157, 1e-4);
+%! assert_equal (I.Lambda(1), 0.119858910419061, 1e-4);
+%! assert_equal (numel (I.Lambda), 45);
 
 %!test  # MATLAB parity: elastic net (Alpha = 0.5)
 %! B = lasso (X, y, "Lambda", [2 1 0.5 0.2 0.1 0.05 0.01], "Alpha", 0.5);
-%! assert (B(:,1), [2.945477; -0.009332; -1.940313; ...
+%! assert_equal (B(:,1), [2.945477; -0.009332; -1.940313; ...
 %!                  0.053970; 1.485977; -0.049272], 2e-3);
 
 %!test  # MATLAB parity: Standardize = false
 %! [B, I] = lasso (X, y, "Lambda", [2 1 0.5 0.2 0.1 0.05 0.01], ...
 %!                 "Standardize", false);
-%! assert (B(:,1), [2.99774227822918; 0; -1.99668154187853; ...
+%! assert_equal (B(:,1), [2.99774227822918; 0; -1.99668154187853; ...
 %!                  0.00196231656035102; 1.49691209089871; 0], 2e-3);
 
 %!test  # at Lambda -> 0 the lasso solution approaches least squares
 %! B = lasso (X, y, "Lambda", [1 0.1 0.001]);   # columns ascend in Lambda
 %! bols = regress (y - mean (y), (X - mean (X)));
-%! assert (B(:,1), bols, 1e-2);                 # smallest Lambda ~ OLS
+%! assert_equal (B(:,1), bols, 1e-2);                 # smallest Lambda ~ OLS
 
 %!test  # a large Lambda drives all coefficients to exactly zero
 %! B = lasso (X, y, "Lambda", 100);
-%! assert (B, zeros (6, 1));
+%! assert_equal (B, zeros (6, 1));
 
 %!test  # DFmax limits the number of non-zero coefficients on the path
 %! [B, I] = lasso (X, y, "DFmax", 2);
-%! assert (all (I.DF <= 2));
+%! assert_equal (all (I.DF <= 2), true);
 
 %!test  # cross-validation adds the selection fields and they are consistent
 %! rand ("seed", 7);
 %! [B, I] = lasso (X, y, "CV", 5);
-%! assert (numel (I.MSE), numel (I.Lambda));
-%! assert (numel (I.SE), numel (I.Lambda));
-%! assert (all (I.SE >= 0));
-%! assert (I.LambdaMinMSE, I.Lambda(I.IndexMinMSE), 1e-12);
-%! assert (I.Lambda1SE, I.Lambda(I.Index1SE), 1e-12);
-%! assert (I.Index1SE >= I.IndexMinMSE);           # 1-SE picks a larger Lambda
-%! assert (I.MSE(I.IndexMinMSE), min (I.MSE), 1e-12);
+%! assert_equal (numel (I.MSE), numel (I.Lambda));
+%! assert_equal (numel (I.SE), numel (I.Lambda));
+%! assert_equal (all (I.SE >= 0), true);
+%! assert_equal (I.LambdaMinMSE, I.Lambda(I.IndexMinMSE), 1e-12);
+%! assert_equal (I.Lambda1SE, I.Lambda(I.Index1SE), 1e-12);
+%! assert_equal (I.Index1SE >= I.IndexMinMSE, true);           # 1-SE picks a larger Lambda
+%! assert_equal (I.MSE(I.IndexMinMSE), min (I.MSE), 1e-12);
 
 %!test  # cross-validated MSE at the min is within one SE at the 1-SE lambda
 %! rand ("seed", 3);
 %! [~, I] = lasso (X, y, "CV", 4, "MCReps", 2);
 %! thr = I.MSE(I.IndexMinMSE) + I.SE(I.IndexMinMSE);
-%! assert (I.MSE(I.Index1SE) <= thr + 1e-9);
+%! assert_equal (I.MSE(I.Index1SE) <= thr + 1e-9, true);
 
 ## Test input validation
 %!error <Invalid call to lasso> lasso (1)

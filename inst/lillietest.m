@@ -472,46 +472,46 @@ endfunction
 %! xs = sort (x);  n = numel (x);
 %! cdf = normcdf ((xs - mean (x)) / std (x));
 %! d = max (max ((1:n)'/n - cdf), max (cdf - (0:n-1)'/n));
-%! assert (ks, d, 1e-12);
-%! assert (ks, 0.1026, 5e-4);            # MATLAB lillietest reference
+%! assert_equal (ks, d, 1e-12);
+%! assert_equal (ks, 0.1026, 5e-4);            # MATLAB lillietest reference
 
 %!test  # exponential and extreme value statistics match MATLAB references
 %! xe = [0.5 1.2 0.3 2.1 0.8 1.5 0.2 3.0 0.7 1.1 0.4 2.5]';
 %! [~, ~, kse] = lillietest (xe, "Distribution", "exponential");
-%! assert (kse, 0.1545, 5e-4);
+%! assert_equal (kse, 0.1545, 5e-4);
 %! xn = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
 %! [~, ~, ksv] = lillietest (xn, "Distribution", "extreme value");
-%! assert (ksv, 0.1512, 5e-4);
+%! assert_equal (ksv, 0.1512, 5e-4);
 
 %!test  # a clearly non-normal sample is rejected; h, p, critval consistent
 %! x = [zeros(1, 15), 100];
 %! [h, p, ks, cv] = lillietest (x);
-%! assert (h, 1);
-%! assert (h, double (ks > cv));
-%! assert (p, 0.001);                     # clamped to the tabulated minimum
+%! assert_equal (h, 1);
+%! assert_equal (h, double (ks > cv));
+%! assert_equal (p, 0.001);                     # clamped to the tabulated minimum
 
 %!test  # distribution families run and return a decision
 %! x = -log (rand (30, 1));
-%! assert (ismember (lillietest (x, "Distribution", "exponential"), [0 1]));
-%! assert (ismember (lillietest (x, "Distribution", "extreme value"), [0 1]));
+%! assert_equal (ismember (lillietest (x, "Distribution", "exponential"), [0 1]), true);
+%! assert_equal (ismember (lillietest (x, "Distribution", "extreme value"), [0 1]), true);
 
 %!test  # p-value stays in the tabulated range; critval grows as alpha falls
 %! x = [3 1 4 1 5 9 2 6 5 3 5 8 9 7]';
 %! [~, p, ~, cv05] = lillietest (x);
 %! [~, ~, ~, cv01] = lillietest (x, "Alpha", 0.01);
-%! assert (p >= 0.001 && p <= 0.5);
-%! assert (cv01 > cv05);
+%! assert_equal (p >= 0.001 && p <= 0.5, true);
+%! assert_equal (cv01 > cv05, true);
 
 %!test  # Monte-Carlo path runs and returns a valid p-value
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
 %! [h, p] = lillietest (x, "MCTol", 0.05);
-%! assert (ismember (h, [0 1]));
-%! assert (p > 0 && p <= 1);
+%! assert_equal (ismember (h, [0 1]), true);
+%! assert_equal (p > 0 && p <= 1, true);
 
 %!test  # interpolation works for a sample size off the table grid (n = 17)
 %! x = [1 3 2 5 4 7 6 9 8 11 10 13 12 15 14 17 16]';
 %! [~, ~, ~, cv] = lillietest (x);
-%! assert (isfinite (cv) && cv > 0);
+%! assert_equal (isfinite (cv) && cv > 0, true);
 
 %!warning <greater than the largest tabulated value> ...
 %! lillietest (norminv ((1:20)' / 21));

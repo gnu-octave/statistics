@@ -539,79 +539,79 @@ endfunction
 
 %!test  # MATLAB parity: default ROC curve, thresholds, AUC and OPTROCPT
 %! [X, Y, T, AUC, OPT] = perfcurve (labels, scores, 1);
-%! assert (X, [0 0 0 0.2 0.4 0.4 0.6 0.8 0.8 1]', 1e-12);
-%! assert (Y, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
-%! assert (T, [0.95 0.95 0.9 0.85 0.7 0.6 0.55 0.4 0.35 0.2]', 1e-12);
-%! assert (AUC, 0.7, 1e-12);
-%! assert (OPT, [0 0.4], 1e-12);
+%! assert_equal (X, [0 0 0 0.2 0.4 0.4 0.6 0.8 0.8 1]', 1e-12);
+%! assert_equal (Y, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
+%! assert_equal (T, [0.95 0.95 0.9 0.85 0.7 0.6 0.55 0.4 0.35 0.2]', 1e-12);
+%! assert_equal (AUC, 0.7, 1e-12);
+%! assert_equal (OPT, [0 0.4], 1e-12);
 
 %!test  # MATLAB parity: precision-recall and its NaN at the origin
 %! [Xr, Yr] = perfcurve (labels, scores, 1, "XCrit", "reca", "YCrit", "prec");
-%! assert (Xr, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
-%! assert (Yr(2:end), [1 1 2/3 0.6 2/3 4/7 0.5 5/9 0.5]', 1e-12);
-%! assert (isnan (Yr(1)));
+%! assert_equal (Xr, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
+%! assert_equal (Yr(2:end), [1 1 2/3 0.6 2/3 4/7 0.5 5/9 0.5]', 1e-12);
+%! assert_equal (isnan (Yr(1)), true);
 
 %!test  # MATLAB parity: accuracy and specificity/sensitivity criteria
 %! [~, Ya] = perfcurve (labels, scores, 1, "YCrit", "accu");
-%! assert (Ya, [0.5 0.6 0.7 0.6 0.6 0.7 0.6 0.5 0.6 0.5]', 1e-12);
+%! assert_equal (Ya, [0.5 0.6 0.7 0.6 0.6 0.7 0.6 0.5 0.6 0.5]', 1e-12);
 %! [Xs, Ys] = perfcurve (labels, scores, 1, "XCrit", "spec", "YCrit", "sens");
-%! assert (Xs, [1 1 1 0.8 0.6 0.6 0.4 0.2 0.2 0]', 1e-12);
-%! assert (Ys, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
+%! assert_equal (Xs, [1 1 1 0.8 0.6 0.6 0.4 0.2 0.2 0]', 1e-12);
+%! assert_equal (Ys, [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
 
 %!test  # MATLAB parity: weighted curve, AUC and OPTROCPT
 %! w = [2 1 1 1 1 1 1 1 1 2];
 %! [Xw, Yw, Tw, AUCw, OPTw] = perfcurve (labels, scores, 1, "Weights", w);
-%! assert (Xw, [0 0 0 1 2 2 3 4 4 6]'/6, 1e-12);
-%! assert (Yw, [0 2 3 3 4 5 5 5 6 6]'/6, 1e-12);
-%! assert (AUCw, 0.791666666666667, 1e-12);
-%! assert (OPTw, [0 0.5], 1e-12);
+%! assert_equal (Xw, [0 0 0 1 2 2 3 4 4 6]'/6, 1e-12);
+%! assert_equal (Yw, [0 2 3 3 4 5 5 5 6 6]'/6, 1e-12);
+%! assert_equal (AUCw, 0.791666666666667, 1e-12);
+%! assert_equal (OPTw, [0 0.5], 1e-12);
 
 %!test  # MATLAB parity: OPTROCPT shifts with a non-default cost matrix
 %! [~, ~, ~, ~, OPTc] = perfcurve (labels, scores, 1, "Cost", [0 1; 2 0]);
-%! assert (OPTc, [0 0.4], 1e-12);
+%! assert_equal (OPTc, [0 0.4], 1e-12);
 
 %!test  # MATLAB parity: TVals selects nearest thresholds
 %! [Xt, Yt, Tt] = perfcurve (labels, scores, 1, "TVals", [Inf 0.8 0.6 0.4 0.2]);
-%! assert (Xt, [0 0.2 0.4 0.8 1]', 1e-12);
-%! assert (Yt, [0 0.4 0.8 0.8 1]', 1e-12);
-%! assert (Tt, [0.95 0.85 0.6 0.4 0.2]', 1e-12);
+%! assert_equal (Xt, [0 0.2 0.4 0.8 1]', 1e-12);
+%! assert_equal (Yt, [0 0.4 0.8 0.8 1]', 1e-12);
+%! assert_equal (Tt, [0.95 0.85 0.6 0.4 0.2]', 1e-12);
 
 %!test  # MATLAB parity: XVals selects floor points plus the origin
 %! [Xv, Yv, Tv] = perfcurve (labels, scores, 1, "XVals", [0 0.25 0.5 0.75 1]);
-%! assert (Xv, [0 0 0.2 0.4 0.6 1]', 1e-12);
-%! assert (Yv, [0 0.4 0.4 0.8 0.8 1]', 1e-12);
-%! assert (Tv, [0.95 0.9 0.85 0.6 0.55 0.2]', 1e-12);
+%! assert_equal (Xv, [0 0 0.2 0.4 0.6 1]', 1e-12);
+%! assert_equal (Yv, [0 0.4 0.4 0.8 0.8 1]', 1e-12);
+%! assert_equal (Tv, [0.95 0.9 0.85 0.6 0.55 0.2]', 1e-12);
 
 %!test  # MATLAB parity: cell-array string labels
 %! labels2 = {"g","g","b","g","b","g","b","b","g","b"};
 %! [X, Y, T, AUC] = perfcurve (labels2, scores, "g");
-%! assert (AUC, 0.7, 1e-12);
-%! assert (X, [0 0 0 0.2 0.4 0.4 0.6 0.8 0.8 1]', 1e-12);
+%! assert_equal (AUC, 0.7, 1e-12);
+%! assert_equal (X, [0 0 0 0.2 0.4 0.4 0.6 0.8 0.8 1]', 1e-12);
 
 %!test  # AUC of a perfectly separable problem is 1
 %! sc = [0.9 0.8 0.7 0.6 0.3 0.2 0.1 0.05];
 %! lb = [1 1 1 1 0 0 0 0];
 %! [~, ~, ~, auc] = perfcurve (lb, sc, 1);
-%! assert (auc, 1, 1e-12);
+%! assert_equal (auc, 1, 1e-12);
 
 %!test  # bootstrap: shapes, point estimate preserved, bounds bracket it (BCa)
 %! rand ("seed", 42);  randn ("seed", 42);
 %! [X, Y, T, AUC, OPT, SUBY, SUBYN] = ...
 %!   perfcurve (labels, scores, 1, "NBoot", 200);
-%! assert (columns (Y), 3);
-%! assert (size (AUC), [1, 3]);
-%! assert (Y(:,1), [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
-%! assert (all (Y(:,2) <= Y(:,1) + 1e-9));                       # lower <= est
-%! assert (all (Y(:,3) >= Y(:,1) - 1e-9));                       # upper >= est
-%! assert (AUC(2) <= AUC(1) && AUC(1) <= AUC(3));
-%! assert (isequal (SUBY, Y));
+%! assert_equal (columns (Y), 3);
+%! assert_equal (size (AUC), [1, 3]);
+%! assert_equal (Y(:,1), [0 0.2 0.4 0.4 0.6 0.8 0.8 0.8 1 1]', 1e-12);
+%! assert_equal (all (Y(:,2) <= Y(:,1) + 1e-9), true);                       # lower <= est
+%! assert_equal (all (Y(:,3) >= Y(:,1) - 1e-9), true);                       # upper >= est
+%! assert_equal (AUC(2) <= AUC(1) && AUC(1) <= AUC(3), true);
+%! assert_equal (isequal (SUBY, Y), true);
 
 %!test  # bootstrap: percentile bounds also run and bracket the AUC estimate
 %! rand ("seed", 7);  randn ("seed", 7);
 %! [~, Y, ~, AUC] = perfcurve (labels, scores, 1, "NBoot", 200, ...
 %!                             "BootType", "percentile");
-%! assert (columns (Y), 3);
-%! assert (AUC(2) <= AUC(1) && AUC(1) <= AUC(3));
+%! assert_equal (columns (Y), 3);
+%! assert_equal (AUC(2) <= AUC(1) && AUC(1) <= AUC(3), true);
 
 ## Test input validation
 %!error <Invalid call to perfcurve> perfcurve (1, 2)

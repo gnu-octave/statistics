@@ -328,7 +328,7 @@ endfunction
 %! Y = [1;1;1;1;1;0;0;0;0;0];
 %! B = mnrfit (X, Y + 1, 'model', 'ordinal');
 %! [~, ~, ~, ~, ~, Pref] = logistic_regression (Y, X, false);
-%! assert (mnrval (B, X, 'model', 'ordinal'), Pref, 1e-10);
+%! assert_equal (mnrval (B, X, 'model', 'ordinal'), Pref, 1e-10);
 
 ## For a binary response the default nominal call equals the ordinal call
 %!test
@@ -337,17 +337,17 @@ endfunction
 %! B = mnrfit (X, Y, 'model', 'ordinal');
 %! p_nom = mnrval (B, X);
 %! p_ord = mnrval (B, X, 'model', 'ordinal');
-%! assert (p_nom, p_ord, 1e-12);
+%! assert_equal (p_nom, p_ord, 1e-12);
 
 ## Every row of the category probabilities sums to one, for all three models
 %!test
 %! X = randn (20, 2);
 %! Bnom = [0.5, -0.2; 1.0, 0.3; -0.4, 0.1];      # (P+1)-by-(K-1), K = 3
-%! assert (sum (mnrval (Bnom, X), 2), ones (20, 1), 1e-12);
-%! assert (sum (mnrval (Bnom, X, 'model', 'hierarchical'), 2), ...
+%! assert_equal (sum (mnrval (Bnom, X), 2), ones (20, 1), 1e-12);
+%! assert_equal (sum (mnrval (Bnom, X, 'model', 'hierarchical'), 2), ...
 %!         ones (20, 1), 1e-12);
 %! Bord = [-1; 1; 0.5; -0.3];                     # (K-1+P)-by-1, K = 3, P = 2
-%! assert (sum (mnrval (Bord, X, 'model', 'ordinal'), 2), ...
+%! assert_equal (sum (mnrval (Bord, X, 'model', 'ordinal'), 2), ...
 %!         ones (20, 1), 1e-12);
 
 ## Probabilities lie in [0, 1]
@@ -355,7 +355,7 @@ endfunction
 %! X = randn (15, 2);
 %! Bord = [-1; 0.8; 0.5; -0.3];
 %! p = mnrval (Bord, X, 'model', 'ordinal');
-%! assert (all (p(:) >= 0 & p(:) <= 1));
+%! assert_equal (all (p(:) >= 0 & p(:) <= 1), true);
 
 ## Cumulative type equals the running sum of the category probabilities
 %!test
@@ -363,7 +363,7 @@ endfunction
 %! Bord = [-0.5; 1.2; 0.4; -0.2];
 %! pc = mnrval (Bord, X, 'model', 'ordinal', 'type', 'category');
 %! cu = mnrval (Bord, X, 'model', 'ordinal', 'type', 'cumulative');
-%! assert (cu, cumsum (pc(:,1:end-1), 2), 1e-12);
+%! assert_equal (cu, cumsum (pc(:,1:end-1), 2), 1e-12);
 
 ## Predicted counts equal probabilities times the sample size
 %!test
@@ -371,7 +371,7 @@ endfunction
 %! Bord = [-0.5; 1.0; 0.4; -0.2];
 %! p = mnrval (Bord, X, 'model', 'ordinal');
 %! y = mnrval (Bord, X, 100, 'model', 'ordinal');
-%! assert (y, p * 100, 1e-10);
+%! assert_equal (y, p * 100, 1e-10);
 
 ## Confidence bounds have the same size as the prediction and are non-negative
 %!test
@@ -379,9 +379,9 @@ endfunction
 %! Y = [1; 1; 1; 1; 1; 2; 2; 2; 2; 2];
 %! [B, ~, stats] = mnrfit (X, Y, 'model', 'ordinal');
 %! [p, dlo, dhi] = mnrval (B, X, stats, 'model', 'ordinal');
-%! assert (size (dlo), size (p));
-%! assert (size (dhi), size (p));
-%! assert (all (dlo(:) >= 0) && all (dhi(:) >= 0));
+%! assert_equal (size (dlo), size (p));
+%! assert_equal (size (dhi), size (p));
+%! assert_equal (all (dlo(:) >= 0) && all (dhi(:) >= 0), true);
 
 ## Every link produces category probabilities that sum to one
 %!test
@@ -389,7 +389,7 @@ endfunction
 %! Bord = [-0.5; 0.7; 0.4];
 %! for lnk = {'logit', 'probit', 'comploglog', 'loglog'}
 %!   p = mnrval (Bord, X, 'model', 'ordinal', 'link', lnk{1});
-%!   assert (sum (p, 2), ones (10, 1), 1e-10);
+%!   assert_equal (sum (p, 2), ones (10, 1), 1e-10);
 %! endfor
 
 ## Increasing links with ordered intercepts keep probabilities in [0, 1]
@@ -398,7 +398,7 @@ endfunction
 %! Bord = [-0.5; 0.7; 0.4];
 %! for lnk = {'logit', 'probit', 'comploglog'}
 %!   p = mnrval (Bord, X, 'model', 'ordinal', 'link', lnk{1});
-%!   assert (all (p(:) >= 0 & p(:) <= 1));
+%!   assert_equal (all (p(:) >= 0 & p(:) <= 1), true);
 %! endfor
 
 ## The loglog link is decreasing, so a valid ordinal model needs its
@@ -407,8 +407,8 @@ endfunction
 %! X = randn (10, 1);
 %! Bll = [1.0; -0.5; 0.4];
 %! p = mnrval (Bll, X, 'model', 'ordinal', 'link', 'loglog');
-%! assert (sum (p, 2), ones (10, 1), 1e-10);
-%! assert (all (p(:) >= 0 & p(:) <= 1));
+%! assert_equal (sum (p, 2), ones (10, 1), 1e-10);
+%! assert_equal (all (p(:) >= 0 & p(:) <= 1), true);
 
 ## Test input validation
 %!error<mnrval: too few input arguments.> mnrval (1)

@@ -194,16 +194,16 @@ endfunction
 %! x = [ones(6, 1), (1:6)'];
 %! r = [1; -1; 1; -1; 1; -1];              # strong negative autocorrelation
 %! [p, d] = dwtest (r, x);
-%! assert (d, sum (diff (r) .^ 2) / sum (r .^ 2), 1e-12);
-%! assert (d, 20 / 6, 1e-12);
-%! assert (p >= 0 && p <= 1);
+%! assert_equal (d, sum (diff (r) .^ 2) / sum (r .^ 2), 1e-12);
+%! assert_equal (d, 20 / 6, 1e-12);
+%! assert_equal (p >= 0 && p <= 1, true);
 
 %!test  # exact and approximate methods give similar p-values
 %! x = [ones(30, 1), (1:30)', ((1:30)') .^ 2];
 %! r = sin ((1:30)' / 3);
 %! pe = dwtest (r, x, "Method", "exact");
 %! pa = dwtest (r, x, "Method", "approximate");
-%! assert (pe, pa, 0.05);
+%! assert_equal (pe, pa, 0.05);
 
 %!test  # tail selection is consistent
 %! x = [ones(15, 1), (1:15)'];
@@ -211,13 +211,13 @@ endfunction
 %! pr = dwtest (r, x, "Tail", "right");
 %! pl = dwtest (r, x, "Tail", "left");
 %! pb = dwtest (r, x, "Tail", "both");
-%! assert (pr + pl, 1, 1e-10);
-%! assert (pb, 2 * min (pr, pl), 1e-10);
+%! assert_equal (pr + pl, 1, 1e-10);
+%! assert_equal (pb, 2 * min (pr, pl), 1e-10);
 
 %!test  # left tail rejects strong negative autocorrelation (D near 4)
 %! x = [ones(20, 1), (1:20)'];
 %! r = (-1) .^ (1:20)';
-%! assert (dwtest (r, x, "Tail", "left") < 0.05);
+%! assert_equal (dwtest (r, x, "Tail", "left") < 0.05, true);
 
 ## Test input validation
 %!error <Invalid call to dwtest> dwtest (1)
