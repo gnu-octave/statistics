@@ -85,6 +85,7 @@ Distribution Classes
  GeneralizedParetoDistribution
  HalfNormalDistribution
  InverseGaussianDistribution
+ KernelDistribution
  LogisticDistribution
  LoglogisticDistribution
  LognormalDistribution

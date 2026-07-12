@@ -133,6 +133,16 @@ function [lb, ub, xmin, xmax] = compute_boundaries (pd)
   elseif (strcmpi (pd.DistributionCode, 'hn'))
     lb = max (m - 3 * s, m);
     xmin = max (m - 3.5 * s, m);
+  elseif (strcmpi (pd.DistributionCode, 'kernel'))
+    ## Clamp the plotting range to a bounded kernel support
+    if (ischar (pd.Support.range))
+      if (strcmp (pd.Support.range, 'positive'))
+        lb = xmin = max (m - 3 * s, 0);
+      endif
+    else
+      lb = xmin = max (m - 3 * s, pd.Support.range(1));
+      ub = xmax = min (m + 3 * s, pd.Support.range(2));
+    endif
   endif
 endfunction
 

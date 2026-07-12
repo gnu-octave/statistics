@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 27
+# columns: 28
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -584,6 +584,46 @@ InverseGaussianDistribution
 # elements: 1
 # length: 49
 Inverse Gaussian probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+KernelDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 922
+ -- statistics: KernelDistribution
+
+     Kernel probability distribution object.
+
+     A ‘KernelDistribution’ object consists of a nonparametric kernel smoothing
+     density estimate fitted to sample data, together with a model description.
+     Unlike the parametric distribution objects, it has no estimated parameters;
+     the fitted distribution is defined entirely by the data, the smoothing
+     kernel, and the bandwidth.
+
+     A ‘KernelDistribution’ object can only be created by fitting a kernel
+     smoothing distribution to data with the ‘fitdist’ function.  Unlike the
+     parametric distributions, it cannot be created with the ‘makedist’
+     function, since it is not parametric and requires data.
+
+     Further information about the kernel density estimation can be found at
+     <https://en.wikipedia.org/wiki/Kernel_density_estimation>
+
+     See also: fitdist, ksdensity, mvksdensity.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Kernel probability distribution object.
 
 
 

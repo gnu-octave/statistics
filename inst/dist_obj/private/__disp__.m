@@ -55,6 +55,25 @@ function ci = __disp__ (pd, distname)
         fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
       endif
 
+    ## Handle special case of KernelDistribution
+    elseif (strcmpi (pd.DistributionName, 'KernelDistribution'))
+      ## Print distribution header
+      fprintf ("  %s\n\n", pd.DistributionName);
+      ## Print kernel, bandwidth, and support
+      fprintf ("    Kernel = %s\n", pd.Kernel);
+      fprintf ("    Bandwidth = %g\n", pd.Bandwidth);
+      if (ischar (pd.Support.range))
+        fprintf ("    Support = %s\n", pd.Support.range);
+      else
+        fprintf ("    Support = [%g, %g]\n", pd.Support.range);
+      endif
+      ## Print truncation interval if applicable
+      if (pd.IsTruncated)
+        fprintf ("  Truncated to the interval [%g, %g]\n\n", pd.Truncation);
+      else
+        fprintf ("\n");
+      endif
+
     ## Handle all other cases
     else
       ## Get required length for parameter values

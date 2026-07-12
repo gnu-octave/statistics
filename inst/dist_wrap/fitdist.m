@@ -125,6 +125,9 @@ function [varargout] = fitdist (varargin)
   ntrials = 1;
   mu = 0;
   theta = 1;
+  kernel = 'normal';
+  ksupport = 'unbounded';
+  kwidth = [];
   options.Display = 'off';
   options.MaxFunEvals = 400;
   options.MaxIter = 200;
@@ -183,8 +186,12 @@ function [varargout] = fitdist (varargin)
                          " structure compatible for 'fminsearch'."));
         endif
 
-      case {'kernel', 'support', 'width'}
-        warning ("fitdist: parameter not supported yet.");
+      case 'kernel'
+        kernel = varargin{2};
+      case 'support'
+        ksupport = varargin{2};
+      case 'width'
+        kwidth = varargin{2};
       otherwise
         error ("fitdist: unknown parameter name.");
     endswitch
@@ -467,11 +474,26 @@ function [varargout] = fitdist (varargin)
       endif
 
     case 'kernel'
-      warning ("fitdist: 'Kernel' distribution not supported yet.");
+      if (any (censor != 0))
+        error ("fitdist: censoring is not supported for a 'Kernel' distribution.");
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = KernelDistribution.fit ...
+                       (x, kernel, ksupport, kwidth, freq);
       else
-        varargout{1} = [];
+        pd = cell (1, groups);
+        for i = 1:groups
+          x_i = x(g == i);
+          f_i = freq(g == i);
+          if (isempty (x_i))
+            pd{i} = [];
+            warning (msg, gn{i}, distname);
+          else
+            pd{i} = KernelDistribution.fit ...
+                    (x_i, kernel, ksupport, kwidth, f_i);
+          endif
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -727,6 +749,19 @@ function [varargout] = fitdist (varargin)
 endfunction
 
 ## Test output
+%!test  ## fitdist returns a fitted KernelDistribution object
+%! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
+%! pd = fitdist (x, 'Kernel');
+%! assert_equal (class (pd), 'KernelDistribution');
+%! assert_equal (pd.Kernel, 'normal');
+%! assert_equal (pd.Bandwidth, 0.639566, 1e-4);
+%! assert_equal (pd.InputData.data, x);
+%!test  ## grouped kernel fit returns a cell of KernelDistribution objects
+%! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
+%! [pd, gn] = fitdist (x, 'Kernel', 'By', [ones(8, 1); 2*ones(7, 1)]);
+%! assert_equal (numel (pd), 2);
+%! assert_equal (class (pd{1}), 'KernelDistribution');
+%! assert_equal (class (pd{2}), 'KernelDistribution');
 %!test
 %! x = betarnd (1, 1, 100, 1);
 %! pd = fitdist (x, 'Beta');
@@ -1257,9 +1292,8 @@ endfunction
 %! fitdist ([1, 2, 3], 'normal', 'options', 0)
 %!error <fitdist: 'options' argument must be a structure compatible for 'fminsearch'.> ...
 %! fitdist ([1, 2, 3], 'normal', 'options', struct ('options', 1))
-%!warning fitdist ([1, 2, 3], 'kernel', 'kernel', 'normal');
-%!warning fitdist ([1, 2, 3], 'kernel', 'support', 'positive');
-%!warning fitdist ([1, 2, 3], 'kernel', 'width', 1);
+%!error <fitdist: censoring is not supported for a 'Kernel' distribution.> ...
+%! fitdist ([1, 2, 3]', 'kernel', 'Censoring', [1, 0, 0]');
 %!error <fitdist: unknown parameter name.> ...
 %! fitdist ([1, 2, 3], 'normal', 'param', struct ('options', 1))
 %!error <fitdist: no data in X to fit a 'normal' distribution.> ...
