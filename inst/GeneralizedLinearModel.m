@@ -116,6 +116,10 @@ classdef GeneralizedLinearModel
     ## Character-vector representation of the model formula.
     Formula = '';
 
+    ## Structure describing the stepwise term-selection history.  Empty unless
+    ## the model was built by @code{stepwiseglm}.
+    Steps = [];
+
   endproperties
 
   properties (Access = private, Hidden)
@@ -220,6 +224,13 @@ classdef GeneralizedLinearModel
         out = subsref (out, chain_s);
       endif
       varargout{1} = out;
+    endfunction
+
+    ## Attach a stepwise-selection history structure.  Used by @code{stepwiseglm}
+    ## to record the term-selection trace on the returned object; not intended
+    ## for direct use.
+    function this = setSteps (this, steps)
+      this.Steps = steps;
     endfunction
 
   endmethods

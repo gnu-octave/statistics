@@ -2,7 +2,47 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 159
+# columns: 160
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 22
+GeneralizedLinearModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 998
+ -- statistics: GeneralizedLinearModel
+
+     Generalized linear regression model class.
+
+     A ‘GeneralizedLinearModel’ object encapsulates a generalized linear model
+     (GLM) of a response on one or more predictors, fitted by iteratively
+     reweighted least squares.  It is the GLM counterpart of ‘LinearModel’ and
+     is normally created with the ‘fitglm’ function.
+
+     The response is modelled through a distribution from the exponential family
+     ('normal', 'binomial', 'poisson', 'gamma', or 'inverse gaussian') and a
+     link function g relating the mean mu to the linear predictor eta = g (mu).
+
+     The most useful properties are ‘Coefficients’ (a table of estimates,
+     standard errors, t-statistics and p-values), ‘Deviance’, ‘Dispersion’,
+     ‘Residuals’, ‘Fitted’, ‘Distribution’, and ‘Link’.  Fitted models support
+     the ‘predict’ and ‘feval’ methods for prediction.
+
+     See also: fitglm, LinearModel, glmfit, glmval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Generalized linear regression model class.
+
+
+
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -140,6 +180,64 @@ LinearModel
 # elements: 1
 # length: 23
 Linear regression model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+NonLinearModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2198
+ -- statistics: MDL = NonLinearModel (...)
+
+     Nonlinear regression model class.
+
+     A ‘NonLinearModel’ object holds a nonlinear regression fitted by ‘fitnlm’,
+     together with its coefficients, fit statistics, and methods for inference,
+     prediction, and diagnostics.  Construct one with ‘fitnlm’, which documents
+     the accepted inputs and NAME/VALUE pairs.
+
+     The estimated coefficients and their statistics are in the ‘Coefficients’
+     table; ‘Rsquared’, ‘ModelCriterion’, ‘LogLikelihood’, ‘RMSE’, ‘SSE’, ‘SST’,
+     and ‘SSR’ summarize the fit.  The methods ‘predict’, ‘feval’, ‘random’,
+     ‘coefCI’, ‘coefTest’, ‘plotResiduals’, ‘plotDiagnostics’, and ‘plotSlice’
+     operate on the fitted model.
+
+     Fit statistics
+     --------------
+
+     The fit statistics follow MATLAB's conventions.  ‘SSE’ is the residual sum
+     of squares, ‘SST’ the total sum of squares of the response about its
+     (weighted) mean, and ‘SSR’ the regression sum of squares of the fitted
+     values about that mean; because the model is nonlinear, ‘SST’ does _not_ in
+     general equal ‘SSR + SSE’.  ‘Rsquared.Ordinary’ is ‘1 - SSE / SST’ and
+     ‘Rsquared.Adjusted’ corrects for the error degrees of freedom.  ‘RMSE’ is
+     ‘sqrt (MSE)’, and the Gaussian ‘LogLikelihood’ uses the maximum-likelihood
+     error variance ‘SSE / n’.  The information criteria in ‘ModelCriterion’
+     (‘AIC’, ‘AICc’, ‘BIC’, ‘CAIC’) count the p coefficients as the only
+     parameters - the error variance is _not_ counted.  ‘coefTest’ is a Wald
+     test: for a contrast matrix H it forms ‘(H*b)' * inv (H*V*H') * (H*b) / r’
+     with V the coefficient covariance and r the number of rows of H, referred
+     to an F distribution on r and DFE degrees of freedom.  The summary printed
+     by ‘disp’ instead reports an F statistic versus the zero model, formed from
+     the uncorrected regression sum of squares (the sum of the squared fitted
+     values).
+
+     See also: fitnlm, nlinfit, nlparci, nlpredci, LinearModel,
+     GeneralizedLinearModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Nonlinear regression model class.
 
 
 
@@ -639,6 +737,84 @@ anovan
 # elements: 1
 # length: 80
 Perform a multi (N)-way analysis of (co)variance (ANOVA or ANCOVA) to evaluat...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+ansaribradley
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2914
+ -- statistics: H = ansaribradley (X, Y)
+ -- statistics: H = ansaribradley (X, Y, NAME, VALUE)
+ -- statistics: [H, P] = ansaribradley (...)
+ -- statistics: [H, P, STATS] = ansaribradley (...)
+
+     Ansari-Bradley two-sample test for equal dispersions.
+
+     ‘H = ansaribradley (X, Y)’ performs an Ansari-Bradley test of the
+     hypothesis that the two independent samples in the vectors X and Y come
+     from distributions with the same dispersion parameter, against the
+     alternative that they come from distributions with different dispersions.
+     The result is H = 0 if the null hypothesis of equal dispersions cannot be
+     rejected at the 5% significance level, or H = 1 if it can.
+
+     The Ansari-Bradley test is a nonparametric alternative to the two-sample F
+     test (‘vartest2’) that does not assume normality.  It assumes that the two
+     samples are independent and that they come from distributions with the same
+     median and shape, differing (under the alternative) only in dispersion.  If
+     the medians differ, the data should be recentred (e.g. by subtracting the
+     sample medians) before applying the test.
+
+     ‘ansaribradley’ treats NaNs in X or Y as missing values and ignores them.
+
+     ‘[H, P] = ansaribradley (...)’ returns the p-value of the test, that is the
+     probability, under the null hypothesis, of observing a value of the test
+     statistic as or more extreme than the one observed.
+
+     ‘[H, P, STATS] = ansaribradley (...)’ returns a structure with the
+     following fields:
+
+     W                the value of the Ansari-Bradley test statistic, the sum of
+                      the Ansari-Bradley scores of the sample X
+     Wstar            the value of the approximate normal (z) statistic
+
+     ‘[...] = ansaribradley (..., NAME, VALUE)’ specifies one or more of the
+     following name/value pairs:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'alpha'          the significance level.  Default is 0.05.
+                      
+     'tail'           a string specifying the alternative hypothesis
+                      
+     'method'         a string selecting the p-value computation, either 'exact'
+                      to use the exact permutation distribution of the
+                      statistic, or 'approximate' to use the normal
+                      approximation.  The default is 'exact' when the total
+                      sample size is 25 or less, and 'approximate' otherwise.
+
+     The 'tail' option can take one of the following values:
+
+     'both'       dispersions are not equal (two-tailed, default)
+     'right'      dispersion of X is greater than dispersion of Y
+                  (right-tailed)
+     'left'       dispersion of X is less than dispersion of Y (left-tailed)
+
+     See also: vartest2, vartestn, kstest2, ranksum.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Ansari-Bradley two-sample test for equal dispersions.
 
 
 
@@ -3845,6 +4021,75 @@ Fit a Support Vector Machine classification model.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 6
+fitglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2688
+ -- statistics: MDL = fitglm (X, Y)
+ -- statistics: MDL = fitglm (X, Y, MODELSPEC)
+ -- statistics: MDL = fitglm (TBL)
+ -- statistics: MDL = fitglm (TBL, MODELSPEC)
+ -- statistics: MDL = fitglm (..., NAME, VALUE)
+
+     Fit a generalized linear regression model.
+
+     ‘MDL = fitglm (X, Y)’ fits a generalized linear model of the response
+     vector Y on the columns of the n-by-p numeric predictor matrix X, and
+     returns a ‘GeneralizedLinearModel’ object.  ‘MDL = fitglm (TBL)’ instead
+     takes the predictors and response from the table TBL (the last column is
+     the response unless overridden).  By default the response is 'normal' with
+     an identity link, an intercept is included, and the model is additive in
+     the predictors.
+
+     MODELSPEC selects the model terms.  It is either a Wilkinson formula string
+     (e.g. 'y ~ x1 + x2*x3'), a keyword ('constant', 'linear', 'interactions',
+     'purequadratic', 'quadratic', or 'full'), or a terms matrix.
+
+     The following NAME/VALUE pairs are accepted:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'Distribution'   the response distribution: 'normal' (default), 'binomial',
+                      'poisson', 'gamma', or 'inverse gaussian'.
+     'Link'           the link function.  Defaults to the canonical link of the
+                      distribution; accepts any link name understood by ‘glmfit’
+                      or a numeric exponent for a power link.
+     'Weights'        a vector of nonnegative observation weights.
+     'Offset'         a vector added as a fixed term to the linear predictor.
+     'BinomialSize'   for the 'binomial' distribution, the number of trials (a
+                      scalar or a per-observation vector); Y holds the
+                      proportion of successes.
+     'Intercept'      a logical value (default true) whether to include an
+                      intercept term.
+     'DispersionFlag' a logical value forcing the dispersion parameter to be
+                      estimated (true) or held at 1 (false).
+     'CategoricalVars'predictors to treat as categorical (a logical vector,
+                      numeric indices, or a cell array of names).
+     'Exclude'        observations to exclude from the fit (a logical vector or
+                      numeric indices).
+     'VarNames'       a cell array of p + 1 variable names (predictors followed
+                      by the response) for numeric X.
+     'PredictorVars', for table input, the predictor and response variable
+     'ResponseVar'    names.
+
+     See also: GeneralizedLinearModel, fitlm, glmfit, glmval, lassoglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Fit a generalized linear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 fitgmdist
 
@@ -4141,6 +4386,63 @@ fitlm
 Fit a linear regression model to data and return a ‘LinearModel’ object.
 
   
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitnlm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1850
+ -- statistics: MDL = fitnlm (X, Y, MODELFUN, BETA0)
+ -- statistics: MDL = fitnlm (TBL, MODELFUN, BETA0)
+ -- statistics: MDL = fitnlm (..., NAME, VALUE)
+
+     Fit a nonlinear regression model.
+
+     ‘MDL = fitnlm (X, Y, MODELFUN, BETA0)’ fits the nonlinear regression model
+     ‘Y = MODELFUN (BETA, X)’ to the response vector Y and the n-by-p predictor
+     matrix X, starting the iterative fit from the coefficient vector BETA0, and
+     returns a ‘NonLinearModel’ object.  MODELFUN is a function handle ‘@(B, X)’
+     returning the fitted responses.
+
+     ‘MDL = fitnlm (TBL, MODELFUN, BETA0)’ takes the predictors and response
+     from the table TBL; the last column is the response unless overridden by
+     'ResponseVar'.
+
+     The following NAME/VALUE pairs are accepted:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'CoefficientNames'a cell array of names for the coefficients (default 'b1',
+                      'b2', ...).
+     'Weights'        a vector of nonnegative observation weights.
+     'ErrorModel'     the error-variance model: 'constant' (default),
+                      'proportional', or 'combined'.
+     'RobustWgtFun'   the name of a robust weight function, enabling robust
+                      fitting (see ‘nlinfit’).
+     'Options'        a statset-style options structure controlling the
+                      iterative fit (MaxIter, TolFun, TolX).
+     'PredictorVars', for table input, the predictor and response variable
+     'ResponseVar'    names.
+     'VarNames'       a cell array of p + 1 variable names (predictors followed
+                      by the response) for numeric X.
+     'Exclude'        observations to exclude from the fit.
+
+     See also: NonLinearModel, nlinfit, nlparci, nlpredci, fitlm, fitglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Fit a nonlinear regression model.
 
 
 
@@ -6501,6 +6803,186 @@ Two-sample Kolmogorov-Smirnov goodness-of-fit hypothesis test.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 5
+lasso
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3411
+ -- statistics: B = lasso (X, Y)
+ -- statistics: [B, FITINFO] = lasso (X, Y)
+ -- statistics: [...] = lasso (..., NAME, VALUE)
+
+     Lasso and elastic-net regularized least-squares regression.
+
+     ‘B = lasso (X, Y)’ fits a series of regularized linear models of the
+     response Y on the predictor matrix X by lasso, over a sequence of values of
+     the regularization parameter LAMBDA.  B is a P*L matrix whose column k
+     holds the coefficient estimates for the k-th LAMBDA, in ascending order of
+     LAMBDA.
+
+     ‘[B, FITINFO] = lasso (...)’ additionally returns a structure FITINFO with
+     fields ‘Intercept’, ‘Lambda’, ‘Alpha’, ‘DF’ (number of non-zero
+     coefficients), and ‘MSE’ (mean squared error), one entry per value of
+     LAMBDA.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'Alpha'        The elastic-net mixing parameter in (0, 1].  1 (default) is the
+                    lasso penalty; smaller values add a ridge penalty.
+                    
+     'Lambda'       A vector of non-negative regularization parameters.  By default
+                    a geometric sequence of 'NumLambda' values is used, from the
+                    smallest value that drives all coefficients to zero down to
+                    'LambdaRatio' times that value.
+                    
+     'NumLambda'    The number of LAMBDA values in the default sequence (default
+                    100).
+                    
+     'LambdaRatio'  The ratio of the smallest to the largest LAMBDA in the default
+                    sequence (default 1e-4, or 1e-2 when the number of observations
+                    is below the number of predictors).
+                    
+     'Standardize'  Whether to standardize X to zero mean and unit variance before
+                    fitting (default true).  Coefficients are always returned on the
+                    original scale.
+                    
+     'Weights'      A vector of non-negative observation weights.
+                    
+     'RelTol'       Convergence tolerance for the coordinate descent (default 1e-4).
+                    
+     'MaxIter'      Maximum number of coordinate-descent iterations (default 1e5).
+                    
+     'DFmax'        The maximum number of non-zero coefficients; the default
+                    sequence stops once this is exceeded.
+                    
+     'Intercept'    Whether to fit a constant term (default true).
+                    
+     'PredictorNames'A cell array of predictor names, kept in FITINFO.
+                    
+     'CV'           The number of folds K for K-fold cross-validation of the mean
+                    squared error, or a ‘cvpartition’ object.
+                    
+     'MCReps'       The number of Monte-Carlo repetitions of the cross-validation
+                    (default 1).
+
+     When 'CV' is used, FITINFO‘.MSE’ is the cross-validated error, plus ‘SE’,
+     ‘LambdaMinMSE’, ‘IndexMinMSE’, ‘Lambda1SE’, and ‘Index1SE’, which report
+     the LAMBDA with the lowest error and the largest LAMBDA within one standard
+     error of it.  The fold assignment is random, so these selections are not
+     reproducible without fixing the random seed.
+
+     See also: ridge, regress, lassoglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Lasso and elastic-net regularized least-squares regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+lassoglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4109
+ -- statistics: B = lassoglm (X, Y)
+ -- statistics: B = lassoglm (X, Y, DISTR)
+ -- statistics: B = lassoglm (X, Y, DISTR, NAME, VALUE)
+ -- statistics: [B, FITINFO] = lassoglm (...)
+
+     Lasso and elastic-net regularized generalized linear model regression.
+
+     ‘B = lassoglm (X, Y, DISTR)’ returns fitted least-squares regression
+     coefficients for a generalized linear model of the response Y on the
+     predictor data X, penalized by the lasso (L1) or elastic-net penalty.  X is
+     an n-by-p numeric matrix of p predictors at each of n observations, and Y
+     is a numeric vector of n responses.  DISTR names the distribution of the
+     response: 'normal' (default), 'binomial', 'poisson', 'gamma', or 'inverse
+     gaussian'.  The canonical link function of the chosen distribution is used
+     unless overridden by the 'Link' option.
+
+     B is a p-by-L matrix, where L is the number of regularization ('Lambda')
+     values used; column k holds the coefficients for the k-th value of lambda,
+     in order of ascending lambda.
+
+     ‘[B, FITINFO] = lassoglm (...)’ also returns a structure FITINFO with
+     information about the fitted models:
+
+     Intercept        a 1-by-L vector of intercept terms
+     Lambda           the 1-by-L vector of lambda values, in ascending order
+     Alpha            the elastic-net mixing value used
+     DF               the number of nonzero coefficients in each column of B
+     Deviance         the deviance of the fitted model at each lambda; when
+                      cross-validation is requested this is instead the
+                      cross-validated mean deviance
+
+     When cross-validation is requested (see 'CV' below), FITINFO additionally
+     contains SE (standard error of the cross-validated deviance),
+     LambdaMinDeviance and IndexMinDeviance (the lambda with minimum
+     cross-validated deviance and its index), and Lambda1SE and Index1SE (the
+     largest lambda within one standard error of that minimum).
+
+     ‘lassoglm’ accepts the following NAME/VALUE pairs:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'Alpha'          the elastic-net mixing parameter, a scalar in (0, 1].
+                      'Alpha' = 1 is the lasso penalty (default); values towards
+                      0 approach ridge regression.
+     'Lambda'         a vector of non-negative lambda values.
+     'Standardize'    a logical value (default true) specifying whether the
+                      predictors are standardized before fitting.
+     'Weights'        a vector of non-negative observation weights.
+     'Size'           for the 'binomial' distribution, the number of trials (a
+                      scalar or a per-observation vector); Y holds the number of
+                      successes.  Default is 1 (Bernoulli responses).
+     'Link'           the link function to use instead of the family's canonical
+                      link.  Accepts any link name understood by ‘glmfit’ (e.g.
+                      'log', 'probit') or a numeric exponent for a power link.
+     'Offset'         a numeric vector, one value per observation, added as a
+                      fixed term to the linear predictor (not penalized or
+                      fitted).
+     'RelTol'         convergence tolerance for the coordinate descent.
+     'MaxIter'        maximum number of iterations.
+     'DFmax'          maximum number of nonzero coefficients.
+     'Intercept'      a logical value (default true) whether to fit an intercept
+                      term.
+     'PredictorNames' a cell array of predictor names.
+     'CV'             the number of folds K for K-fold cross-validation, or a
+                      ‘cvpartition’ object.  The fold assignment is random, so
+                      the selected lambda values are not reproducible without a
+                      fixed random seed.
+     'MCReps'         the number of Monte-Carlo repetitions of the
+                      cross-validation (default 1).
+
+     See also: lasso, glmfit, glmval, cvpartition.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Lasso and elastic-net regularized generalized linear model regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 11
 levene_test
 
@@ -7902,6 +8384,206 @@ nansum
 # elements: 1
 # length: 42
 Compute the sum while ignoring NaN values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+nlinfit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4146
+ -- statistics: BETA = nlinfit (X, Y, MODELFUN, BETA0)
+ -- statistics: BETA = nlinfit (..., OPTIONS)
+ -- statistics: BETA = nlinfit (..., NAME, VALUE)
+ -- statistics: [BETA, R, J, COVB, MSE, ERRORMODELINFO] = nlinfit (...)
+
+     Fit a nonlinear regression model.
+
+     ‘BETA = nlinfit (X, Y, MODELFUN, BETA0)’ estimates the coefficients of the
+     nonlinear regression model ‘Y = MODELFUN (BETA, X)’ by iteratively
+     minimizing the (possibly weighted) sum of squared residuals, starting from
+     the initial coefficient vector BETA0.  The fit uses the Levenberg-Marquardt
+     algorithm with a numerically computed Jacobian.
+
+        • X is a matrix of predictor values.  ‘nlinfit’ does not interpret the
+          columns of X; the array is passed unchanged as the second argument of
+          MODELFUN, so its shape is whatever MODELFUN expects.
+        • Y is a numeric vector of responses, one element per observation.
+        • MODELFUN is a function handle ‘@(B, X)’ returning a vector of fitted
+          responses the same size as Y.
+        • BETA0 is a numeric vector of initial values for the coefficients.
+
+     Additional options are given either as a statset-style OPTIONS structure or
+     as Name/Value pairs (or both).  The supported options are:
+
+     NAME             VALUE
+     --------------------------------------------------------------------------------
+     'Weights'        A vector of nonnegative observation weights, or a function
+                      handle ‘@(YHAT)’ returning such a vector.  Weighted least
+                      squares is used.
+     'ErrorModel'     The form of the error variance: 'constant' (default),
+                      'proportional', or 'combined'.
+     'ErrorParameters'Initial values for the error-model parameters.
+     'RobustWgtFun'   The name of a robust weight function ('andrews', 'bisquare',
+                      'cauchy', 'fair', 'huber', 'logistic', 'talwar', or
+                      'welsch'), enabling robust iteratively reweighted least
+                      squares.
+     'Tune'           The tuning constant for the robust weight function.
+     'Options'        A statset-style structure whose MaxIter, TolFun, TolX, and
+                      DerivStep fields override the corresponding defaults.
+
+     The remaining outputs describe the converged fit: R is the vector of raw
+     residuals ‘Y - MODELFUN (BETA, X)’, J is the Jacobian of MODELFUN with
+     respect to BETA at the solution, COVB is the estimated covariance matrix of
+     the coefficients, MSE is the mean squared error, and ERRORMODELINFO is a
+     structure describing the fitted error model.
+
+     Algorithm
+     ---------
+
+     The coefficients are estimated by the Levenberg-Marquardt algorithm using a
+     numerically computed (forward-difference) Jacobian.  For an ordinary or
+     weighted fit the coefficient covariance is ‘COVB = MSE * inv (J' * W * J)’,
+     where W is the diagonal matrix of observation weights and MSE is the
+     weighted residual sum of squares divided by the error degrees of freedom n
+     - p (with p coefficients).  A non-constant 'ErrorModel' is fitted by
+     generalized least squares, re-deriving the observation weights from the
+     fitted values each iteration; the 'proportional' model weights each
+     observation by the inverse squared fitted value, and MSE then estimates the
+     proportionality constant of the variance.
+
+     For a robust fit ('RobustWgtFun') the coefficients are found by iteratively
+     reweighted least squares applied to leverage-adjusted residuals (the
+     leverage is taken from the ordinary fit and held fixed).  The robust
+     coefficient covariance follows the Street-Carroll-Ruppert convention, the
+     same one used by ‘robustfit’: ‘COVB = s^2 * inv (J' * J)’ and MSE = s^2,
+     where the scale ‘s’ blends the ordinary-fit scale ‘ols_s’ with the robust
+     scale ‘robust_s’ at the solution as s^2 = (p^2 * ols_s^2 + n * robust_s^2)
+     / (n + p^2), taken to be at least ‘robust_s’.
+
+     See also: fitnlm, nlparci, nlpredci, NonLinearModel, robustfit.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Fit a nonlinear regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+nlparci
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1146
+ -- statistics: CI = nlparci (BETA, RESID, 'covar', COVB)
+ -- statistics: CI = nlparci (BETA, RESID, 'jacobian', J)
+ -- statistics: CI = nlparci (..., 'alpha', ALPHA)
+
+     Confidence intervals for the coefficients of a nonlinear regression.
+
+     ‘CI = nlparci (BETA, RESID, 'covar', COVB)’ returns the 100 (1 - ALPHA)%
+     confidence intervals for the fitted coefficients BETA of a nonlinear
+     regression, given the residual vector RESID and the estimated coefficient
+     covariance matrix COVB (both produced by ‘nlinfit’).  CI is a p-by-2 matrix
+     whose rows are the lower and upper bounds for the corresponding
+     coefficient.
+
+     ‘CI = nlparci (BETA, RESID, 'jacobian', J)’ instead derives the coefficient
+     covariance from the Jacobian J and the residuals.  A legacy positional form
+     ‘nlparci (BETA, RESID, J)’ is also accepted.
+
+     The confidence level defaults to 95%; pass ‘'alpha', ALPHA’ for a 100 (1 -
+     ALPHA)% interval.  The intervals use Student's t distribution with ‘numel
+     (RESID) - numel (BETA)’ degrees of freedom.
+
+     See also: nlinfit, nlpredci, fitnlm, NonLinearModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Confidence intervals for the coefficients of a nonlinear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+nlpredci
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2433
+ -- statistics: [YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Jacobian',
+          J)
+ -- statistics: [YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Covar',
+          COVB)
+ -- statistics: [YPRED, DELTA] = nlpredci (..., NAME, VALUE)
+
+     Confidence intervals for predictions of a nonlinear regression.
+
+     ‘[YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Jacobian', J)’
+     returns the predicted responses YPRED of the model ‘MODELFUN (BETA, X)’ at
+     the new predictor values X, together with the half-widths DELTA of the 100
+     (1 - ALPHA)% confidence intervals, so that ‘YPRED - DELTA’ and ‘YPRED +
+     DELTA’ bound the response.  BETA, RESID (the residuals) and J (the
+     Jacobian) come from ‘nlinfit’.
+
+     Instead of the Jacobian, an estimated coefficient covariance may be
+     supplied with ‘'Covar', COVB’.  The following Name/ Value pairs are also
+     accepted:
+
+     NAME             VALUE
+     --------------------------------------------------------------------------------
+     'MSE'            The mean squared error from ‘nlinfit’, required with 'Covar'
+                      for observation (prediction) intervals.
+     'PredOpt'        'curve' (default) for confidence intervals on the fitted
+                      curve, or 'observation' for prediction intervals on a new
+                      observation.
+     'SimOpt'         'off' (default) for pointwise intervals, or 'on' for
+                      simultaneous (Scheffe) intervals.
+     'Alpha'          The significance level; the interval has confidence 100 (1 -
+                      ALPHA)% (default ALPHA = 0.05).
+
+     Algorithm
+     ---------
+
+     Each half-width is ‘DELTA = c * sqrt (v)’.  The variance ‘v’ of the fitted
+     curve is ‘diag (JNEW * V * JNEW')’, where V is the coefficient covariance
+     (either COVB, or ‘MSE * inv (J' * J)’ when a Jacobian is supplied) and JNEW
+     is the Jacobian of MODELFUN at X; an 'observation' interval adds the error
+     variance MSE to ‘v’.  The critical value ‘c’ is the Student's t quantile at
+     1 - ALPHA/2 with the error degrees of freedom for a pointwise interval, or
+     the Scheffe value ‘sqrt (k * finv (1 - ALPHA, k, dfe))’ for a simultaneous
+     interval, where k is the number of coefficients (plus one for an
+     observation interval).
+
+     See also: nlinfit, nlparci, fitnlm, NonLinearModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 63
+Confidence intervals for predictions of a nonlinear regression.
 
 
 
@@ -9649,6 +10331,60 @@ Remove missing data from arrays.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 9
+robustfit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1898
+ -- statistics: B = robustfit (X, Y)
+ -- statistics: B = robustfit (X, Y, WFUN)
+ -- statistics: B = robustfit (X, Y, WFUN, TUNE)
+ -- statistics: B = robustfit (X, Y, WFUN, TUNE, CONST)
+ -- statistics: [B, STATS] = robustfit (...)
+
+     Robust linear regression.
+
+     ‘B = robustfit (X, Y)’ returns the coefficient vector B of a linear
+     regression of the response Y on the predictors X, fitted by robust
+     M-estimation (iteratively reweighted least squares) so that outlying
+     observations are downweighted.  A column of ones is added to X by default,
+     so ‘B(1)’ is the intercept.
+
+     ‘B = robustfit (X, Y, WFUN, TUNE, CONST)’ selects the weight function WFUN,
+     its tuning constant TUNE, and whether a constant term is included.  WFUN is
+     one of 'bisquare' (default), 'andrews', 'cauchy', 'fair', 'huber',
+     'logistic', 'ols', 'talwar', 'welsch', or a function handle ‘@(r)’ giving
+     the weights as a function of the scaled residual.  TUNE defaults to the
+     value that gives 95% efficiency for each weight function.  CONST is 'on'
+     (default) to include a constant term or 'off' to omit.
+
+     ‘[B, STATS] = robustfit (...)’ also returns a structure STATS with fields
+     ‘ols_s’, ‘robust_s’, ‘mad_s’, ‘s’, ‘se’, ‘covb’, ‘coeffcorr’, ‘t’, ‘p’,
+     ‘w’, ‘R’, ‘dfe’, ‘h’, and ‘resid’.  The coefficients and the fields
+     ‘ols_s’, ‘mad_s’, ‘dfe’, ‘h’, ‘w’, and ‘resid’ match MATLAB. The standard
+     errors and quantities derived from them (‘se’, ‘t’, ‘p’, ‘covb’) agree with
+     MATLAB to within a small fraction of a percent; ‘robust_s’ is the
+     Street-Carroll-Ruppert robust scale estimate, which may differ from
+     MATLAB's by a few percent (it has a negligible effect on the standard
+     errors).
+
+     See also: regress, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 25
+Robust linear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 8
 runstest
 
@@ -10450,6 +11186,81 @@ stepwisefit
 # elements: 1
 # length: 70
 Perform stepwise linear regression using conditional p-value criteria.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+stepwiseglm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3063
+ -- statistics: MDL = stepwiseglm (X, Y)
+ -- statistics: MDL = stepwiseglm (X, Y, MODELSPEC)
+ -- statistics: MDL = stepwiseglm (TBL)
+ -- statistics: MDL = stepwiseglm (TBL, MODELSPEC)
+ -- statistics: MDL = stepwiseglm (..., NAME, VALUE)
+
+     Fit a generalized linear regression model by stepwise term selection.
+
+     ‘MDL = stepwiseglm (X, Y)’ starts from a model given by MODELSPEC and
+     repeatedly adds or removes terms, one at a time, until no further move
+     improves the selection criterion.  It returns the fitted
+     ‘GeneralizedLinearModel’ object MDL, whose ‘Steps’ property records the
+     term-selection trace.  X is an n-by-p numeric predictor matrix and Y the
+     response; ‘MDL = stepwiseglm (TBL)’ instead takes the predictors and
+     response from the table TBL (the last column is the response unless
+     overridden).
+
+     MODELSPEC is the _starting_ model.  It is a Wilkinson formula string (e.g.
+     'y ~ x1 + x2'), a keyword ('constant' (default), 'linear', 'interactions',
+     'purequadratic', 'quadratic', or 'full'), or a terms matrix.  The candidate
+     terms available to the search are bounded below by 'Lower' and above by
+     'Upper'.
+
+     The following NAME/VALUE pairs control the stepwise search:
+
+     Name             Value
+     ------------------------------------------------------------------------------
+     'Lower'          the smallest model considered (terms in it are never
+                      removed).  Defaults to 'constant'.
+     'Upper'          the largest model considered (the candidate term
+                      universe).  Defaults to 'interactions'.
+     'Criterion'      the selection criterion: 'Deviance' (default), 'sse',
+                      'aic', or 'bic'.  Under 'Deviance' and 'sse', terms enter
+                      or leave by a chi-squared or F test on the change in
+                      deviance; under 'aic'/'bic' the move that most reduces the
+                      information criterion is taken.
+     'PEnter'         the p-value (or criterion margin) below which a term is
+                      added.  Defaults to 0.05 for 'Deviance' and 'sse', and 0
+                      for 'aic'/'bic'.
+     'PRemove'        the p-value (or criterion margin) above which a term is
+                      removed.  Defaults to 0.10 for 'Deviance' and 'sse', and 0
+                      for 'aic'/'bic'.
+     'NSteps'         the maximum number of steps.  Defaults to ‘Inf’ (run to
+                      convergence).
+     'Verbose'        0 to run silently, or 1 (default) to print each accepted
+                      step.
+
+     All NAME/VALUE pairs accepted by ‘fitglm’ (such as 'Distribution', 'Link',
+     'Weights', 'Offset', 'BinomialSize', 'Intercept', 'DispersionFlag', and
+     'Exclude') are also accepted and forwarded to the fit.  Categorical
+     predictors are not supported by the stepwise search; use ‘fitglm’ for a
+     fixed model with categorical predictors.
+
+     See also: GeneralizedLinearModel, fitglm, stepwisefit, glmfit, glmval.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Fit a generalized linear regression model by stepwise term selection.
 
 
 
@@ -11320,686 +12131,6 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 9
-robustfit
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1898
- -- statistics: B = robustfit (X, Y)
- -- statistics: B = robustfit (X, Y, WFUN)
- -- statistics: B = robustfit (X, Y, WFUN, TUNE)
- -- statistics: B = robustfit (X, Y, WFUN, TUNE, CONST)
- -- statistics: [B, STATS] = robustfit (...)
-
-     Robust linear regression.
-
-     ‘B = robustfit (X, Y)’ returns the coefficient vector B of a linear
-     regression of the response Y on the predictors X, fitted by robust
-     M-estimation (iteratively reweighted least squares) so that outlying
-     observations are downweighted.  A column of ones is added to X by default,
-     so ‘B(1)’ is the intercept.
-
-     ‘B = robustfit (X, Y, WFUN, TUNE, CONST)’ selects the weight function WFUN,
-     its tuning constant TUNE, and whether a constant term is included.  WFUN is
-     one of 'bisquare' (default), 'andrews', 'cauchy', 'fair', 'huber',
-     'logistic', 'ols', 'talwar', 'welsch', or a function handle ‘@(r)’ giving
-     the weights as a function of the scaled residual.  TUNE defaults to the
-     value that gives 95% efficiency for each weight function.  CONST is 'on'
-     (default) to include a constant term or 'off' to omit.
-
-     ‘[B, STATS] = robustfit (...)’ also returns a structure STATS with fields
-     ‘ols_s’, ‘robust_s’, ‘mad_s’, ‘s’, ‘se’, ‘covb’, ‘coeffcorr’, ‘t’, ‘p’,
-     ‘w’, ‘R’, ‘dfe’, ‘h’, and ‘resid’.  The coefficients and the fields
-     ‘ols_s’, ‘mad_s’, ‘dfe’, ‘h’, ‘w’, and ‘resid’ match MATLAB. The standard
-     errors and quantities derived from them (‘se’, ‘t’, ‘p’, ‘covb’) agree with
-     MATLAB to within a small fraction of a percent; ‘robust_s’ is the
-     Street-Carroll-Ruppert robust scale estimate, which may differ from
-     MATLAB's by a few percent (it has a negligible effect on the standard
-     errors).
-
-     See also: regress, fitlm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 25
-Robust linear regression.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 5
-lasso
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 3411
- -- statistics: B = lasso (X, Y)
- -- statistics: [B, FITINFO] = lasso (X, Y)
- -- statistics: [...] = lasso (..., NAME, VALUE)
-
-     Lasso and elastic-net regularized least-squares regression.
-
-     ‘B = lasso (X, Y)’ fits a series of regularized linear models of the
-     response Y on the predictor matrix X by lasso, over a sequence of values of
-     the regularization parameter LAMBDA.  B is a P*L matrix whose column k
-     holds the coefficient estimates for the k-th LAMBDA, in ascending order of
-     LAMBDA.
-
-     ‘[B, FITINFO] = lasso (...)’ additionally returns a structure FITINFO with
-     fields ‘Intercept’, ‘Lambda’, ‘Alpha’, ‘DF’ (number of non-zero
-     coefficients), and ‘MSE’ (mean squared error), one entry per value of
-     LAMBDA.
-
-     The following Name-Value pairs are supported:
-
-     NAME           VALUE
-                    
-     ----------------------------------------------------------------------------------
-     'Alpha'        The elastic-net mixing parameter in (0, 1].  1 (default) is the
-                    lasso penalty; smaller values add a ridge penalty.
-                    
-     'Lambda'       A vector of non-negative regularization parameters.  By default
-                    a geometric sequence of 'NumLambda' values is used, from the
-                    smallest value that drives all coefficients to zero down to
-                    'LambdaRatio' times that value.
-                    
-     'NumLambda'    The number of LAMBDA values in the default sequence (default
-                    100).
-                    
-     'LambdaRatio'  The ratio of the smallest to the largest LAMBDA in the default
-                    sequence (default 1e-4, or 1e-2 when the number of observations
-                    is below the number of predictors).
-                    
-     'Standardize'  Whether to standardize X to zero mean and unit variance before
-                    fitting (default true).  Coefficients are always returned on the
-                    original scale.
-                    
-     'Weights'      A vector of non-negative observation weights.
-                    
-     'RelTol'       Convergence tolerance for the coordinate descent (default 1e-4).
-                    
-     'MaxIter'      Maximum number of coordinate-descent iterations (default 1e5).
-                    
-     'DFmax'        The maximum number of non-zero coefficients; the default
-                    sequence stops once this is exceeded.
-                    
-     'Intercept'    Whether to fit a constant term (default true).
-                    
-     'PredictorNames'A cell array of predictor names, kept in FITINFO.
-                    
-     'CV'           The number of folds K for K-fold cross-validation of the mean
-                    squared error, or a ‘cvpartition’ object.
-                    
-     'MCReps'       The number of Monte-Carlo repetitions of the cross-validation
-                    (default 1).
-
-     When 'CV' is used, FITINFO‘.MSE’ is the cross-validated error, plus ‘SE’,
-     ‘LambdaMinMSE’, ‘IndexMinMSE’, ‘Lambda1SE’, and ‘Index1SE’, which report
-     the LAMBDA with the lowest error and the largest LAMBDA within one standard
-     error of it.  The fold assignment is random, so these selections are not
-     reproducible without fixing the random seed.
-
-     See also: ridge, regress, lassoglm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 59
-Lasso and elastic-net regularized least-squares regression.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 13
-ansaribradley
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2914
- -- statistics: H = ansaribradley (X, Y)
- -- statistics: H = ansaribradley (X, Y, NAME, VALUE)
- -- statistics: [H, P] = ansaribradley (...)
- -- statistics: [H, P, STATS] = ansaribradley (...)
-
-     Ansari-Bradley two-sample test for equal dispersions.
-
-     ‘H = ansaribradley (X, Y)’ performs an Ansari-Bradley test of the
-     hypothesis that the two independent samples in the vectors X and Y come
-     from distributions with the same dispersion parameter, against the
-     alternative that they come from distributions with different dispersions.
-     The result is H = 0 if the null hypothesis of equal dispersions cannot be
-     rejected at the 5% significance level, or H = 1 if it can.
-
-     The Ansari-Bradley test is a nonparametric alternative to the two-sample F
-     test (‘vartest2’) that does not assume normality.  It assumes that the two
-     samples are independent and that they come from distributions with the same
-     median and shape, differing (under the alternative) only in dispersion.  If
-     the medians differ, the data should be recentred (e.g. by subtracting the
-     sample medians) before applying the test.
-
-     ‘ansaribradley’ treats NaNs in X or Y as missing values and ignores them.
-
-     ‘[H, P] = ansaribradley (...)’ returns the p-value of the test, that is the
-     probability, under the null hypothesis, of observing a value of the test
-     statistic as or more extreme than the one observed.
-
-     ‘[H, P, STATS] = ansaribradley (...)’ returns a structure with the
-     following fields:
-
-     W                the value of the Ansari-Bradley test statistic, the sum of
-                      the Ansari-Bradley scores of the sample X
-     Wstar            the value of the approximate normal (z) statistic
-
-     ‘[...] = ansaribradley (..., NAME, VALUE)’ specifies one or more of the
-     following name/value pairs:
-
-     Name             Value
-     ------------------------------------------------------------------------------
-     'alpha'          the significance level.  Default is 0.05.
-                      
-     'tail'           a string specifying the alternative hypothesis
-                      
-     'method'         a string selecting the p-value computation, either 'exact'
-                      to use the exact permutation distribution of the
-                      statistic, or 'approximate' to use the normal
-                      approximation.  The default is 'exact' when the total
-                      sample size is 25 or less, and 'approximate' otherwise.
-
-     The 'tail' option can take one of the following values:
-
-     'both'       dispersions are not equal (two-tailed, default)
-     'right'      dispersion of X is greater than dispersion of Y
-                  (right-tailed)
-     'left'       dispersion of X is less than dispersion of Y (left-tailed)
-
-     See also: vartest2, vartestn, kstest2, ranksum.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 53
-Ansari-Bradley two-sample test for equal dispersions.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 8
-lassoglm
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4109
- -- statistics: B = lassoglm (X, Y)
- -- statistics: B = lassoglm (X, Y, DISTR)
- -- statistics: B = lassoglm (X, Y, DISTR, NAME, VALUE)
- -- statistics: [B, FITINFO] = lassoglm (...)
-
-     Lasso and elastic-net regularized generalized linear model regression.
-
-     ‘B = lassoglm (X, Y, DISTR)’ returns fitted least-squares regression
-     coefficients for a generalized linear model of the response Y on the
-     predictor data X, penalized by the lasso (L1) or elastic-net penalty.  X is
-     an n-by-p numeric matrix of p predictors at each of n observations, and Y
-     is a numeric vector of n responses.  DISTR names the distribution of the
-     response: 'normal' (default), 'binomial', 'poisson', 'gamma', or 'inverse
-     gaussian'.  The canonical link function of the chosen distribution is used
-     unless overridden by the 'Link' option.
-
-     B is a p-by-L matrix, where L is the number of regularization ('Lambda')
-     values used; column k holds the coefficients for the k-th value of lambda,
-     in order of ascending lambda.
-
-     ‘[B, FITINFO] = lassoglm (...)’ also returns a structure FITINFO with
-     information about the fitted models:
-
-     Intercept        a 1-by-L vector of intercept terms
-     Lambda           the 1-by-L vector of lambda values, in ascending order
-     Alpha            the elastic-net mixing value used
-     DF               the number of nonzero coefficients in each column of B
-     Deviance         the deviance of the fitted model at each lambda; when
-                      cross-validation is requested this is instead the
-                      cross-validated mean deviance
-
-     When cross-validation is requested (see 'CV' below), FITINFO additionally
-     contains SE (standard error of the cross-validated deviance),
-     LambdaMinDeviance and IndexMinDeviance (the lambda with minimum
-     cross-validated deviance and its index), and Lambda1SE and Index1SE (the
-     largest lambda within one standard error of that minimum).
-
-     ‘lassoglm’ accepts the following NAME/VALUE pairs:
-
-     Name             Value
-     ------------------------------------------------------------------------------
-     'Alpha'          the elastic-net mixing parameter, a scalar in (0, 1].
-                      'Alpha' = 1 is the lasso penalty (default); values towards
-                      0 approach ridge regression.
-     'Lambda'         a vector of non-negative lambda values.
-     'Standardize'    a logical value (default true) specifying whether the
-                      predictors are standardized before fitting.
-     'Weights'        a vector of non-negative observation weights.
-     'Size'           for the 'binomial' distribution, the number of trials (a
-                      scalar or a per-observation vector); Y holds the number of
-                      successes.  Default is 1 (Bernoulli responses).
-     'Link'           the link function to use instead of the family's canonical
-                      link.  Accepts any link name understood by ‘glmfit’ (e.g.
-                      'log', 'probit') or a numeric exponent for a power link.
-     'Offset'         a numeric vector, one value per observation, added as a
-                      fixed term to the linear predictor (not penalized or
-                      fitted).
-     'RelTol'         convergence tolerance for the coordinate descent.
-     'MaxIter'        maximum number of iterations.
-     'DFmax'          maximum number of nonzero coefficients.
-     'Intercept'      a logical value (default true) whether to fit an intercept
-                      term.
-     'PredictorNames' a cell array of predictor names.
-     'CV'             the number of folds K for K-fold cross-validation, or a
-                      ‘cvpartition’ object.  The fold assignment is random, so
-                      the selected lambda values are not reproducible without a
-                      fixed random seed.
-     'MCReps'         the number of Monte-Carlo repetitions of the
-                      cross-validation (default 1).
-
-     See also: lasso, glmfit, glmval, cvpartition.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 70
-Lasso and elastic-net regularized generalized linear model regression.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 6
-fitglm
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2688
- -- statistics: MDL = fitglm (X, Y)
- -- statistics: MDL = fitglm (X, Y, MODELSPEC)
- -- statistics: MDL = fitglm (TBL)
- -- statistics: MDL = fitglm (TBL, MODELSPEC)
- -- statistics: MDL = fitglm (..., NAME, VALUE)
-
-     Fit a generalized linear regression model.
-
-     ‘MDL = fitglm (X, Y)’ fits a generalized linear model of the response
-     vector Y on the columns of the n-by-p numeric predictor matrix X, and
-     returns a ‘GeneralizedLinearModel’ object.  ‘MDL = fitglm (TBL)’ instead
-     takes the predictors and response from the table TBL (the last column is
-     the response unless overridden).  By default the response is 'normal' with
-     an identity link, an intercept is included, and the model is additive in
-     the predictors.
-
-     MODELSPEC selects the model terms.  It is either a Wilkinson formula string
-     (e.g. 'y ~ x1 + x2*x3'), a keyword ('constant', 'linear', 'interactions',
-     'purequadratic', 'quadratic', or 'full'), or a terms matrix.
-
-     The following NAME/VALUE pairs are accepted:
-
-     Name             Value
-     ------------------------------------------------------------------------------
-     'Distribution'   the response distribution: 'normal' (default), 'binomial',
-                      'poisson', 'gamma', or 'inverse gaussian'.
-     'Link'           the link function.  Defaults to the canonical link of the
-                      distribution; accepts any link name understood by ‘glmfit’
-                      or a numeric exponent for a power link.
-     'Weights'        a vector of nonnegative observation weights.
-     'Offset'         a vector added as a fixed term to the linear predictor.
-     'BinomialSize'   for the 'binomial' distribution, the number of trials (a
-                      scalar or a per-observation vector); Y holds the
-                      proportion of successes.
-     'Intercept'      a logical value (default true) whether to include an
-                      intercept term.
-     'DispersionFlag' a logical value forcing the dispersion parameter to be
-                      estimated (true) or held at 1 (false).
-     'CategoricalVars'predictors to treat as categorical (a logical vector,
-                      numeric indices, or a cell array of names).
-     'Exclude'        observations to exclude from the fit (a logical vector or
-                      numeric indices).
-     'VarNames'       a cell array of p + 1 variable names (predictors followed
-                      by the response) for numeric X.
-     'PredictorVars', for table input, the predictor and response variable
-     'ResponseVar'    names.
-
-     See also: GeneralizedLinearModel, fitlm, glmfit, glmval, lassoglm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 42
-Fit a generalized linear regression model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 22
-GeneralizedLinearModel
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 998
- -- statistics: GeneralizedLinearModel
-
-     Generalized linear regression model class.
-
-     A ‘GeneralizedLinearModel’ object encapsulates a generalized linear model
-     (GLM) of a response on one or more predictors, fitted by iteratively
-     reweighted least squares.  It is the GLM counterpart of ‘LinearModel’ and
-     is normally created with the ‘fitglm’ function.
-
-     The response is modelled through a distribution from the exponential family
-     ('normal', 'binomial', 'poisson', 'gamma', or 'inverse gaussian') and a
-     link function g relating the mean mu to the linear predictor eta = g (mu).
-
-     The most useful properties are ‘Coefficients’ (a table of estimates,
-     standard errors, t-statistics and p-values), ‘Deviance’, ‘Dispersion’,
-     ‘Residuals’, ‘Fitted’, ‘Distribution’, and ‘Link’.  Fitted models support
-     the ‘predict’ and ‘feval’ methods for prediction.
-
-     See also: fitglm, LinearModel, glmfit, glmval.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 42
-Generalized linear regression model class.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-nlinfit
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2733
- -- statistics: BETA = nlinfit (X, Y, MODELFUN, BETA0)
- -- statistics: BETA = nlinfit (..., OPTIONS)
- -- statistics: BETA = nlinfit (..., NAME, VALUE)
- -- statistics: [BETA, R, J, COVB, MSE, ERRORMODELINFO] = nlinfit (...)
-
-     Fit a nonlinear regression model.
-
-     ‘BETA = nlinfit (X, Y, MODELFUN, BETA0)’ estimates the coefficients of the
-     nonlinear regression model ‘Y = MODELFUN (BETA, X)’ by iteratively
-     minimizing the (possibly weighted) sum of squared residuals, starting from
-     the initial coefficient vector BETA0.  The fit uses the Levenberg-Marquardt
-     algorithm with a numerically computed Jacobian.
-
-        • X is a matrix of predictor values.  ‘nlinfit’ does not interpret the
-          columns of X; the array is passed unchanged as the second argument of
-          MODELFUN, so its shape is whatever MODELFUN expects.
-        • Y is a numeric vector of responses, one element per observation.
-        • MODELFUN is a function handle ‘@(B, X)’ returning a vector of fitted
-          responses the same size as Y.
-        • BETA0 is a numeric vector of initial values for the coefficients.
-
-     Additional options are given either as a statset-style OPTIONS structure or
-     as Name/Value pairs (or both).  The supported options are:
-
-     NAME             VALUE
-     --------------------------------------------------------------------------------
-     'Weights'        A vector of nonnegative observation weights, or a function
-                      handle ‘@(YHAT)’ returning such a vector.  Weighted least
-                      squares is used.
-     'ErrorModel'     The form of the error variance: 'constant' (default),
-                      'proportional', or 'combined'.
-     'ErrorParameters'Initial values for the error-model parameters.
-     'RobustWgtFun'   The name of a robust weight function ('andrews', 'bisquare',
-                      'cauchy', 'fair', 'huber', 'logistic', 'talwar', or
-                      'welsch'), enabling robust iteratively reweighted least
-                      squares.
-     'Tune'           The tuning constant for the robust weight function.
-     'Options'        A statset-style structure whose MaxIter, TolFun, TolX, and
-                      DerivStep fields override the corresponding defaults.
-
-     The remaining outputs describe the converged fit: R is the vector of raw
-     residuals ‘Y - MODELFUN (BETA, X)’, J is the Jacobian of MODELFUN with
-     respect to BETA at the solution, COVB is the estimated covariance matrix of
-     the coefficients, MSE is the mean squared error, and ERRORMODELINFO is a
-     structure describing the fitted error model.
-
-     See also: fitnlm, nlparci, nlpredci, NonLinearModel.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 33
-Fit a nonlinear regression model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-nlparci
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1146
- -- statistics: CI = nlparci (BETA, RESID, 'covar', COVB)
- -- statistics: CI = nlparci (BETA, RESID, 'jacobian', J)
- -- statistics: CI = nlparci (..., 'alpha', ALPHA)
-
-     Confidence intervals for the coefficients of a nonlinear regression.
-
-     ‘CI = nlparci (BETA, RESID, 'covar', COVB)’ returns the 100 (1 - ALPHA)%
-     confidence intervals for the fitted coefficients BETA of a nonlinear
-     regression, given the residual vector RESID and the estimated coefficient
-     covariance matrix COVB (both produced by ‘nlinfit’).  CI is a p-by-2 matrix
-     whose rows are the lower and upper bounds for the corresponding
-     coefficient.
-
-     ‘CI = nlparci (BETA, RESID, 'jacobian', J)’ instead derives the coefficient
-     covariance from the Jacobian J and the residuals.  A legacy positional form
-     ‘nlparci (BETA, RESID, J)’ is also accepted.
-
-     The confidence level defaults to 95%; pass ‘'alpha', ALPHA’ for a 100 (1 -
-     ALPHA)% interval.  The intervals use Student's t distribution with ‘numel
-     (RESID) - numel (BETA)’ degrees of freedom.
-
-     See also: nlinfit, nlpredci, fitnlm, NonLinearModel.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 68
-Confidence intervals for the coefficients of a nonlinear regression.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 8
-nlpredci
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1714
- -- statistics: [YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Jacobian',
-          J)
- -- statistics: [YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Covar',
-          COVB)
- -- statistics: [YPRED, DELTA] = nlpredci (..., NAME, VALUE)
-
-     Confidence intervals for predictions of a nonlinear regression.
-
-     ‘[YPRED, DELTA] = nlpredci (MODELFUN, X, BETA, RESID, 'Jacobian', J)’
-     returns the predicted responses YPRED of the model ‘MODELFUN (BETA, X)’ at
-     the new predictor values X, together with the half-widths DELTA of the 100
-     (1 - ALPHA)% confidence intervals, so that ‘YPRED - DELTA’ and ‘YPRED +
-     DELTA’ bound the response.  BETA, RESID (the residuals) and J (the
-     Jacobian) come from ‘nlinfit’.
-
-     Instead of the Jacobian, an estimated coefficient covariance may be
-     supplied with ‘'Covar', COVB’.  The following Name/ Value pairs are also
-     accepted:
-
-     NAME             VALUE
-     --------------------------------------------------------------------------------
-     'MSE'            The mean squared error from ‘nlinfit’, required with 'Covar'
-                      for observation (prediction) intervals.
-     'PredOpt'        'curve' (default) for confidence intervals on the fitted
-                      curve, or 'observation' for prediction intervals on a new
-                      observation.
-     'SimOpt'         'off' (default) for pointwise intervals, or 'on' for
-                      simultaneous (Scheffe) intervals.
-     'Alpha'          The significance level; the interval has confidence 100 (1 -
-                      ALPHA)% (default ALPHA = 0.05).
-
-     See also: nlinfit, nlparci, fitnlm, NonLinearModel.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 63
-Confidence intervals for predictions of a nonlinear regression.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 6
-fitnlm
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1850
- -- statistics: MDL = fitnlm (X, Y, MODELFUN, BETA0)
- -- statistics: MDL = fitnlm (TBL, MODELFUN, BETA0)
- -- statistics: MDL = fitnlm (..., NAME, VALUE)
-
-     Fit a nonlinear regression model.
-
-     ‘MDL = fitnlm (X, Y, MODELFUN, BETA0)’ fits the nonlinear regression model
-     ‘Y = MODELFUN (BETA, X)’ to the response vector Y and the n-by-p predictor
-     matrix X, starting the iterative fit from the coefficient vector BETA0, and
-     returns a ‘NonLinearModel’ object.  MODELFUN is a function handle ‘@(B, X)’
-     returning the fitted responses.
-
-     ‘MDL = fitnlm (TBL, MODELFUN, BETA0)’ takes the predictors and response
-     from the table TBL; the last column is the response unless overridden by
-     'ResponseVar'.
-
-     The following NAME/VALUE pairs are accepted:
-
-     Name             Value
-     ------------------------------------------------------------------------------
-     'CoefficientNames'a cell array of names for the coefficients (default 'b1',
-                      'b2', ...).
-     'Weights'        a vector of nonnegative observation weights.
-     'ErrorModel'     the error-variance model: 'constant' (default),
-                      'proportional', or 'combined'.
-     'RobustWgtFun'   the name of a robust weight function, enabling robust
-                      fitting (see ‘nlinfit’).
-     'Options'        a statset-style options structure controlling the
-                      iterative fit (MaxIter, TolFun, TolX).
-     'PredictorVars', for table input, the predictor and response variable
-     'ResponseVar'    names.
-     'VarNames'       a cell array of p + 1 variable names (predictors followed
-                      by the response) for numeric X.
-     'Exclude'        observations to exclude from the fit.
-
-     See also: NonLinearModel, nlinfit, nlparci, nlpredci, fitlm, fitglm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 33
-Fit a nonlinear regression model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 14
-NonLinearModel
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 891
- -- statistics: MDL = NonLinearModel (...)
-
-     Nonlinear regression model class.
-
-     A ‘NonLinearModel’ object holds a nonlinear regression fitted by ‘fitnlm’,
-     together with its coefficients, fit statistics, and methods for inference,
-     prediction, and diagnostics.  Construct one with ‘fitnlm’, which documents
-     the accepted inputs and NAME/VALUE pairs.
-
-     The estimated coefficients and their statistics are in the ‘Coefficients’
-     table; ‘Rsquared’, ‘ModelCriterion’, ‘LogLikelihood’, ‘RMSE’, ‘SSE’, ‘SST’,
-     and ‘SSR’ summarize the fit.  The methods ‘predict’, ‘feval’, ‘random’,
-     ‘coefCI’, ‘coefTest’, ‘plotResiduals’, ‘plotDiagnostics’, and ‘plotSlice’
-     operate on the fitted model.
-
-     See also: fitnlm, nlinfit, nlparci, nlpredci, LinearModel,
-     GeneralizedLinearModel.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 33
-Nonlinear regression model class.
 
 
 

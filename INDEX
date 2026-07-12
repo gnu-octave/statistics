@@ -248,6 +248,7 @@ Model Fitting
  fitlm
  fitnlm
  fitrgam
+ stepwiseglm
  GeneralizedLinearModel
  LinearModel
  NonLinearModel
