@@ -246,9 +246,11 @@ Model Fitting
  fitglm
  fitgmdist
  fitlm
+ fitnlm
  fitrgam
  GeneralizedLinearModel
  LinearModel
+ NonLinearModel
 Hypothesis Testing
  adtest
  anova
@@ -329,6 +331,9 @@ Regression
  mnrfit
  mnrval
  monotone_smooth
+ nlinfit
+ nlparci
+ nlpredci
  parseWilkinsonFormula
  pca
  pcacov
