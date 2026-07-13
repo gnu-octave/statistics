@@ -19,6 +19,7 @@ Clustering
  optimalleaforder
  pdist
  pdist2
+ pearsrnd
  procrustes
  rangesearch
  slicesample
