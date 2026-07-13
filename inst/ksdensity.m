@@ -270,9 +270,9 @@ function v = ksdensity_eval_ (q, x, w, h, kernel, L, U, bc, want)
     ## Unbounded: plain kernel sum.
     z = (q - x) / h;
     if (ispdf)
-      v = (ksdensity_kpdf_ (z, kernel) * w(:)) / h;
+      v = (kernelpdf (z, kernel) * w(:)) / h;
     else
-      v = ksdensity_kcdf_ (z, kernel) * w(:);
+      v = kernelcdf (z, kernel) * w(:);
     endif
   elseif (strcmp (bc, 'reflection'))
     ## Reflect the sample across each finite bound (single reflection).
@@ -284,23 +284,23 @@ function v = ksdensity_eval_ (q, x, w, h, kernel, L, U, bc, want)
       a = [a, 2 * U - x];  aw = [aw, w];
     endif
     if (ispdf)
-      v = (ksdensity_kpdf_ ((q - a) / h, kernel) * aw(:)) / h;
+      v = (kernelpdf ((q - a) / h, kernel) * aw(:)) / h;
       v(q < L | q > U) = 0;
     else
       ## Integrate the reflected density from the lower edge of the support.
-      v = (ksdensity_kcdf_ ((q - a) / h, kernel) ...
-           - ksdensity_kcdf_ ((L - a) / h, kernel)) * aw(:);
+      v = (kernelcdf ((q - a) / h, kernel) ...
+           - kernelcdf ((L - a) / h, kernel)) * aw(:);
     endif
   else
     ## Log/logit transform: estimate in the transformed space and map back.
     z = (ksdensity_fwd_ (q, L, U) - ksdensity_fwd_ (x, L, U)) / h;
     if (ispdf)
-      g = (ksdensity_kpdf_ (z, kernel) * w(:)) / h;
+      g = (kernelpdf (z, kernel) * w(:)) / h;
       v = g .* ksdensity_logjac_ (q, L, U);
     elseif (isfinite (U) && ! isfinite (L))    ## upper bound only: t decreases
-      v = 1 - ksdensity_kcdf_ (z, kernel) * w(:);
+      v = 1 - kernelcdf (z, kernel) * w(:);
     else
-      v = ksdensity_kcdf_ (z, kernel) * w(:);
+      v = kernelcdf (z, kernel) * w(:);
     endif
   endif
   if (! ispdf)
@@ -366,72 +366,6 @@ function q = ksdensity_icdf_ (p, x, w, h, kernel, L, U, bc)
   q = interp1 (F(keep), grid(keep), p(:), 'linear', NA);
   q(p(:) <= min (F)) = grid(1);
   q(p(:) >= max (F)) = grid(end);
-endfunction
-
-## Standardized-distance scale of a named kernel: the standard deviation of its
-## canonical form.  The compact kernels are rescaled by this factor so that each
-## has unit variance and the bandwidth is comparable across kernels (as in
-## MATLAB); a function handle is used as supplied.
-function s = ksdensity_kscale_ (kernel)
-  switch (kernel)
-    case 'box'
-      s = 1 / sqrt (3);
-    case 'triangle'
-      s = 1 / sqrt (6);
-    case 'epanechnikov'
-      s = 1 / sqrt (5);
-    otherwise
-      s = 1;
-  endswitch
-endfunction
-
-## Unit-variance kernel density K(z).  For a named compact kernel K(z) =
-## s * K0(s*z) with K0 the canonical form and s its standard deviation.
-function k = ksdensity_kpdf_ (z, kernel)
-  if (is_function_handle (kernel))
-    k = kernel (z);
-    return;
-  endif
-  s = ksdensity_kscale_ (kernel);
-  z = s * z;
-  switch (kernel)
-    case 'normal'
-      k = exp (-0.5 * z .^ 2) / sqrt (2 * pi);
-    case 'box'
-      k = 0.5 * (abs (z) <= 1);
-    case 'triangle'
-      k = max (1 - abs (z), 0);
-    case 'epanechnikov'
-      k = 0.75 * max (1 - z .^ 2, 0);
-  endswitch
-  k = s * k;
-endfunction
-
-## Cumulative distribution function of the unit-variance kernel, at z.  For a
-## named kernel this is the canonical cdf evaluated at s*z.
-function c = ksdensity_kcdf_ (z, kernel)
-  if (is_function_handle (kernel))
-    ## Numeric cumulative for a custom kernel over a fine grid.
-    g = linspace (-1e3, 1e3, 200001)';
-    C = cumtrapz (g, kernel (g));
-    C = C / C(end);
-    c = reshape (interp1 (g, C, z(:), 'linear', 'extrap'), size (z));
-    return;
-  endif
-  z = ksdensity_kscale_ (kernel) * z;
-  switch (kernel)
-    case 'normal'
-      c = 0.5 * erfc (-z / sqrt (2));
-    case 'box'
-      c = min (max ((z + 1) / 2, 0), 1);
-    case 'triangle'
-      zc = max (min (z, 1), -1);
-      c = (zc < 0) .* (0.5 * (zc + 1) .^ 2) ...
-          + (zc >= 0) .* (0.5 + zc - 0.5 * zc .^ 2);
-    case 'epanechnikov'
-      zc = max (min (z, 1), -1);
-      c = 0.75 * zc - 0.25 * zc .^ 3 + 0.5;
-  endswitch
 endfunction
 
 %!demo

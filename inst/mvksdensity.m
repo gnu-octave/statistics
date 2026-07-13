@@ -144,10 +144,10 @@ function f = mvksdensity (x, pts, varargin)
     z = (pts(j,:) - x) ./ bw;
     if (ispdf)
       ## Product of the per-dimension kernels, normalised once by prod (bw).
-      k = prod_dim (mvks_kpdf (z, kernel), d) ./ prod (bw);
+      k = prod_dim (kernelpdf (z, kernel), d) ./ prod (bw);
       f(j) = sum (w .* k);
     else
-      c = prod_dim (mvks_kcdf (z, kernel), d);
+      c = prod_dim (kernelcdf (z, kernel), d);
       f(j) = sum (w .* c);
     endif
   endfor
@@ -176,55 +176,6 @@ function p = prod_dim (k, d)
   else
     p = prod (k, 2);
   endif
-endfunction
-
-## Product-kernel per-dimension unit-variance kernel density at Z (NxD).
-function k = mvks_kpdf (z, kernel)
-  s = mvks_kscale (kernel);
-  z = s * z;
-  switch (kernel)
-    case 'normal'
-      k = exp (-0.5 * z .^ 2) / sqrt (2 * pi);
-    case 'box'
-      k = 0.5 * (abs (z) <= 1);
-    case 'triangle'
-      k = max (1 - abs (z), 0);
-    case 'epanechnikov'
-      k = 0.75 * max (1 - z .^ 2, 0);
-  endswitch
-  k = s * k;
-endfunction
-
-## Product-kernel per-dimension unit-variance kernel cdf at Z (NxD).
-function c = mvks_kcdf (z, kernel)
-  z = mvks_kscale (kernel) * z;
-  switch (kernel)
-    case 'normal'
-      c = 0.5 * erfc (-z / sqrt (2));
-    case 'box'
-      c = min (max ((z + 1) / 2, 0), 1);
-    case 'triangle'
-      zc = max (min (z, 1), -1);
-      c = (zc < 0) .* (0.5 * (zc + 1) .^ 2) ...
-          + (zc >= 0) .* (0.5 + zc - 0.5 * zc .^ 2);
-    case 'epanechnikov'
-      zc = max (min (z, 1), -1);
-      c = 0.75 * zc - 0.25 * zc .^ 3 + 0.5;
-  endswitch
-endfunction
-
-## Standardized-distance scale of a named kernel (its canonical std).
-function s = mvks_kscale (kernel)
-  switch (kernel)
-    case 'box'
-      s = 1 / sqrt (3);
-    case 'triangle'
-      s = 1 / sqrt (6);
-    case 'epanechnikov'
-      s = 1 / sqrt (5);
-    otherwise
-      s = 1;
-  endswitch
 endfunction
 
 %!demo
