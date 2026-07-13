@@ -141,6 +141,7 @@ Distribution Functions
  cauchycdf cauchyinv cauchypdf cauchyrnd
  chi2cdf chi2inv chi2pdf chi2rnd
  copulacdf copulapdf copularnd
+ copulafit copulaparam copulastat
  evcdf evinv evpdf evrnd
  expcdf expinv exppdf exprnd
  fcdf finv fpdf frnd
