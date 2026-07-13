@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 7
+# columns: 8
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -377,6 +377,106 @@ mle
 # elements: 1
 # length: 37
 Compute maximum likelihood estimates.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+mlecov
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4710
+ -- statistics: ACOV = mlecov (PARAMS, DATA, NAME, VALUE)
+
+     Asymptotic covariance matrix of maximum likelihood estimators.
+
+     ‘ACOV = mlecov (PARAMS, DATA, ...)’ returns an approximation to the
+     asymptotic covariance matrix of the maximum likelihood estimators of the
+     parameters of a distribution, evaluated at the parameter values in PARAMS
+     for the sample data in DATA.  PARAMS is a numeric vector of parameter
+     values (typically the estimates returned by ‘mle’ or ‘fitdist’) and DATA is
+     a numeric vector of the sample observations.  ACOV is a p*p matrix, where p
+     = numel (PARAMS).
+
+     The distribution is not identified by name; instead it is supplied through
+     Name-Value paired arguments that give function handles to its density, its
+     log density, or its negative log-likelihood.  Exactly *one* of the
+     following three arguments must be specified:
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'pdf'          A function handle, ‘F(DATA, P1, P2, ...)’, that accepts the
+                    sample data as its first argument and the distribution
+                    parameters as subsequent scalar arguments, and returns a
+                    vector of probability density values, one per observation.
+                    
+     'logpdf'       A function handle, ‘F(DATA, P1, P2, ...)’, with the same
+                    calling convention as 'pdf' but returning the _logarithm_ of
+                    the density.
+                    
+     'nloglf'       A function handle, ‘NLL(PARAMS, DATA, CENS, FREQ)’, that
+                    returns the scalar negative log-likelihood of the whole
+                    sample.  It receives the current parameter vector, the data,
+                    the censoring vector, and the frequency vector, and is
+                    responsible for incorporating censoring and frequency itself.
+                    
+     'cdf'          A function handle to the cumulative distribution function,
+                    with the same calling convention as 'pdf'.  It is *required*
+                    together with 'pdf' when the data are censored, so that
+                    censored observations can contribute their survival
+                    probability.
+                    
+     'logsf'        A function handle to the logarithm of the survivor function
+                    log (1 - cdf), with the same calling convention as 'pdf'.  It
+                    is *required* together with 'logpdf' when the data are
+                    censored.
+                    
+     'Censoring'    A vector of the same size as DATA indicating censored
+                    observations (nonzero for right-censored).  By default no
+                    observation is censored.
+                    
+     'Frequency'    A vector of nonnegative integer counts of the same size as
+                    DATA, giving the number of times each observation was
+                    observed.  By default it is ones (size (DATA)).
+                    
+     'Options'      A structure that may contain a 'DerivStep' field specifying
+                    the relative finite-difference step used to approximate the
+                    Hessian (a positive scalar or a vector the same size as
+                    PARAMS).  The default step is eps ^ (1/4).
+
+     *Computation and numerical behavior.*  ‘mlecov’ approximates the covariance
+     matrix as the inverse of the observed Fisher information, that is, the
+     inverse of the Hessian of the _aggregate_ negative log-likelihood of the
+     sample, evaluated by central finite differences at PARAMS.  The covariance
+     is computed _at_ the supplied PARAMS; ‘mlecov’ does not refit the
+     parameters, so PARAMS should be the maximum likelihood estimates for the
+     result to be meaningful.
+
+     Whichever of 'pdf', 'logpdf', or 'nloglf' is supplied, the Hessian is
+     always formed by differencing the same aggregate negative log-likelihood
+     rather than by differentiating the density itself.  This makes the three
+     input forms consistent with one another and is numerically far more stable
+     than differentiating a density; as a consequence ACOV may differ from other
+     implementations (including MATLAB) in ill-conditioned cases where those
+     differentiate the density directly and return unreliable values or ‘NaN’.
+     If the computed Hessian is not positive definite (for example when PARAMS
+     is not at a likelihood maximum), a warning is issued and ACOV is returned
+     as an all-‘NaN’ matrix.
+
+     See also: mle, fitdist, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Asymptotic covariance matrix of maximum likelihood estimators.
 
 
 

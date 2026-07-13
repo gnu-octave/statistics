@@ -222,6 +222,7 @@ Distribution Wrappers
  icdf
  makedist
  mle
+ mlecov
  pdf
  random
 Experimental Design
