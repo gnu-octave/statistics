@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 28
+# columns: 29
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1447,6 +1447,54 @@ tLocationScaleDistribution
 # elements: 1
 # length: 59
 Location-Scale Student's T probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+paretotails
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1443
+ -- statistics: paretotails
+
+     Piecewise distribution with generalized Pareto tails.
+
+     A ‘paretotails’ object is a piecewise probability distribution fit to
+     sample data.  A generalized Pareto distribution (GPD) is fit to each tail
+     of the data, below a lower quantile and above an upper quantile, while the
+     middle of the distribution is described by the empirical cumulative
+     distribution function of the data.  This gives a smooth model for the
+     tails, useful for extreme value analysis, together with a nonparametric
+     description of the central region.
+
+     Create a ‘paretotails’ object with the constructor ‘PT = paretotails (X,
+     PL, PU)’, where X is the sample data and PL and PU are the cumulative
+     probabilities at the lower and upper tail boundaries.  Data at or below the
+     PL quantile form the lower tail, data at or above the PU quantile form the
+     upper tail, and the rest form the middle segment.
+
+     Query the fitted object with the methods ‘cdf’, ‘pdf’, ‘icdf’, ‘random’,
+     ‘boundary’, ‘nsegments’, ‘segment’, ‘lowerparams’, and ‘upperparams’.
+
+     *Note:* the kernel-smoothed middle option of MATLAB (‘paretotails (X, PL,
+     PU, "kernel")’) is not yet supported; only the default empirical ("ecdf")
+     middle is available.
+
+     See also: gpfit, gpcdf, gppdf, gpinv, ecdf, fitdist,
+     GeneralizedParetoDistribution.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Piecewise distribution with generalized Pareto tails.
 
 
 

@@ -95,6 +95,7 @@ Distribution Classes
  NakagamiDistribution
  NegativeBinomialDistribution
  NormalDistribution
+ paretotails
  PiecewiseLinearDistribution
  PoissonDistribution
  RayleighDistribution
