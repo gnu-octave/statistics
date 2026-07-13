@@ -325,7 +325,7 @@ mle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2085
+# length: 4836
  -- statistics: PHAT = mle (X)
  -- statistics: PHAT = mle (X, NAME, VALUE)
  -- statistics: [PHAT, PCI] = mle (...)
@@ -368,8 +368,54 @@ mle
      'options'      A structure specifying the control parameters for the
                     iterative algorithm used to compute ML estimates with the
                     ‘fminsearch’ function.
+                    
+     'pdf'          A function handle ‘@(DATA, P1, P2, ...)’ to the probability
+                    density of a *custom* distribution, whose parameters are then
+                    estimated by maximum likelihood.  Requires 'start'.  It is
+                    mutually exclusive with 'distribution' and with
+                    'logpdf'/'nloglf'.
+                    
+     'cdf'          A function handle to the cumulative distribution function of
+                    the custom distribution, with the same calling convention as
+                    'pdf'.  Required together with 'pdf' for censored or truncated
+                    data.
+                    
+     'logpdf'       A function handle to the log probability density of a custom
+                    distribution, with the same calling convention as 'pdf'.
+                    Requires 'start'.
+                    
+     'logsf'        A function handle to the log survivor function log (1 - cdf)
+                    of the custom distribution, with the same calling convention
+                    as 'pdf'.  Required together with 'logpdf' for censored data.
+                    
+     'nloglf'       A function handle ‘@(PARAMS, DATA, CENS, FREQ)’ returning the
+                    scalar negative log-likelihood of a custom distribution.
+                    Requires 'start'.
+                    
+     'start'        A vector of initial parameter values for a custom-distribution
+                    fit.  Required with 'pdf', 'logpdf', or 'nloglf'.
+                    
+     'lowerbound'   A scalar or vector of lower bounds for the custom-distribution
+                    parameters.  By default they are unbounded below.
+                    
+     'upperbound'   A scalar or vector of upper bounds for the custom-distribution
+                    parameters.  By default they are unbounded above.
+                    
+     'truncationbounds'A two-element vector [L U] giving the truncation interval of a
+                    custom distribution.  Requires a 'cdf' function.
+                    
+     'optimfun'     The optimizer for a custom-distribution fit.  Only
+                    'fminsearch' is supported; bounded fits are handled by
+                    internal reparameterization of the constrained parameters.
 
-     See also: fitdist, makedist.
+     When a custom distribution is specified through 'pdf', 'logpdf', or
+     'nloglf', the parameters are estimated by maximizing the likelihood with
+     ‘fminsearch’, and the second output PCI gives asymptotic normal (Wald)
+     confidence intervals computed from the observed Fisher information at PHAT
+     (see ‘mlecov’).  Bounded parameters are estimated on an internally
+     reparameterized unconstrained scale.
+
+     See also: mlecov, fitdist, makedist.
 
 
 # name: <cell-element>
