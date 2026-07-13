@@ -164,7 +164,9 @@ function [phat, pci] = mle (x, varargin)
         endif
       case 'frequency'
         freq = varargin{2};
-        if (! isequal (size (x), size (freq)))
+        if (isempty (freq))
+          freq = ones (size (x));
+        elseif (! isequal (size (x), size (freq)))
           error (strcat ("mle: 'frequency' argument must have the same", ...
                          " size as the input data in X."));
         endif
