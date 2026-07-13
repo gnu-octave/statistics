@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 160
+# columns: 161
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -8162,6 +8162,60 @@ multiway
 # elements: 1
 # length: 47
 Solve the multiway number partitioning problem.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+mvksdensity
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1572
+ -- statistics: F = mvksdensity (X, PTS, NAME, VALUE)
+
+     Multivariate kernel smoothing density estimate.
+
+     ‘F = mvksdensity (X, PTS)’ computes a probability density estimate of the
+     sample in the NxD matrix X, evaluated at the points in the MxD matrix PTS.
+     Each row of X is a single D-dimensional observation, and each row of PTS is
+     a point at which to evaluate the estimate.  The result F is an Mx1 vector,
+     with one density value per row of PTS.
+
+     The density estimate uses a product kernel: the multivariate kernel is the
+     product of the univariate kernels applied to each dimension, each with its
+     own bandwidth.
+
+     The following Name-Value pairs are supported:
+
+     NAME           VALUE
+                    
+     ----------------------------------------------------------------------------------
+     'Bandwidth'    The kernel bandwidth, either a positive scalar applied to every
+                    dimension or a 1xD vector of positive values, one per dimension.
+                    The default is a diagonal normal-reference (Silverman) rule
+                    computed from X.
+                    
+     'Kernel'       The smoothing kernel applied in each dimension: 'normal'
+                    (default), 'box', 'triangle', or 'epanechnikov'.
+                    
+     'Function'     The function to estimate: 'pdf' (default) or 'cdf'.
+                    
+     'Weights'      A vector of non-negative weights, one for each row of X.  The
+                    default weights are all equal.
+
+     See also: ksdensity.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Multivariate kernel smoothing density estimate.
 
 
 

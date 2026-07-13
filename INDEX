@@ -68,6 +68,7 @@ Descriptive Statistics
  harmmean
  jackknife
  ksdensity
+ mvksdensity
  nanmax
  nanmean
  nanmin
