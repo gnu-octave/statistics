@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 173
+# columns: 177
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -7623,6 +7623,166 @@ wishrnd
 # length: 80
 Return a random matrix sampled from the Wishart distribution with given
 param...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblpdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 827
+ -- statistics: Y = stblpdf (X, ALPHA, BETA, GAM, DELTA)
+
+     Stable probability density function (PDF).
+
+     For each element of X, compute the probability density function (PDF) of
+     the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.  The size of Y is the
+     size of X.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The density has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
+     with BETA equal to ‘0’ (Cauchy); otherwise it is computed by numerical
+     inversion of the characteristic function.
+
+     See also: stblcdf, stblinv, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Stable probability density function (PDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblcdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 880
+ -- statistics: P = stblcdf (X, ALPHA, BETA, GAM, DELTA)
+
+     Stable cumulative distribution function (CDF).
+
+     For each element of X, compute the cumulative distribution function (CDF)
+     of the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.  The size of P is the
+     size of X.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The cumulative probability has a closed form for ALPHA equal to ‘2’
+     (normal) and for ‘1’ with BETA equal to ‘0’ (Cauchy); otherwise it is
+     computed by numerical inversion of the characteristic function (the
+     Gil-Pelaez formula).
+
+     See also: stblpdf, stblinv, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Stable cumulative distribution function (CDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblinv
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 825
+ -- statistics: X = stblinv (P, ALPHA, BETA, GAM, DELTA)
+
+     Inverse of the stable cumulative distribution function (iCDF).
+
+     For each element of P, compute the quantile (the inverse of the CDF) of the
+     stable distribution with tail index (first shape parameter) ALPHA, skewness
+     (second shape parameter) BETA, scale parameter GAM, and location parameter
+     DELTA, in the Nolan S0 parameterization.  The size of X is the size of P.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The quantile has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
+     with BETA equal to ‘0’ (Cauchy); otherwise it is found by numerical
+     inversion of ‘stblcdf’.
+
+     See also: stblcdf, stblpdf, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Inverse of the stable cumulative distribution function (iCDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblrnd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1018
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, [M, N, ...])
+
+     Random arrays from the stable distribution.
+
+     ‘R = stblrnd (ALPHA, BETA, GAM, DELTA)’ returns a random value drawn from
+     the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     ‘stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)’ or ‘stblrnd (..., [M, N,
+     ...])’ returns an M-by-N-by-... array, following the size conventions of
+     ‘rand’.
+
+     The values are generated with the Chambers-Mallows-Stuck method.
+
+     See also: stblpdf, stblcdf, stblinv, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Random arrays from the stable distribution.
 
 
 

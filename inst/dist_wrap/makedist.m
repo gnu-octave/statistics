@@ -479,8 +479,7 @@ function pd = makedist (varargin)
         endswitch
         varargin([1:2]) = [];
       endwhile
-      warning ("makedist: 'Stable' distribution not supported yet.");
-      pd = [];
+      pd = StableDistribution (alpha, beta, gam, delta);
 
     case {'tlocationscale', 'tls'}
       mu = 0;
@@ -928,10 +927,11 @@ endfunction
 %! pd = makedist ('Rician', 's', 2, 'sigma', 3);
 %! assert_equal (pd.s, 2);
 %! assert_equal (pd.sigma, 3);
-%!warning
+%!test
 %! pd = makedist ('stable');
-%! assert_equal (class (pd), "double");
-%! assert_equal (isempty (pd), true);
+%! assert_equal (class (pd), "StableDistribution");
+%! assert_equal (pd.alpha, 2);
+%! assert_equal (pd.beta, 0);
 %!test
 %! pd = makedist ('tlocationscale');
 %! assert_equal (class (pd), "tLocationScaleDistribution");

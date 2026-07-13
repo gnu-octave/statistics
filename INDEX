@@ -102,6 +102,7 @@ Distribution Classes
  PoissonDistribution
  RayleighDistribution
  RicianDistribution
+ StableDistribution
  tLocationScaleDistribution
  TriangularDistribution
  UniformDistribution
@@ -176,6 +177,7 @@ Distribution Functions
  poisscdf poissinv poisspdf poissrnd
  raylcdf raylinv raylpdf raylrnd
  ricecdf riceinv ricepdf ricernd
+ stblcdf stblinv stblpdf stblrnd
  tcdf tinv tpdf trnd
  tlscdf tlsinv tlspdf tlsrnd
  tricdf triinv tripdf trirnd

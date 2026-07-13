@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 29
+# columns: 30
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1495,6 +1495,52 @@ paretotails
 # elements: 1
 # length: 53
 Piecewise distribution with generalized Pareto tails.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+StableDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1102
+ -- statistics: StableDistribution
+
+     Stable probability distribution object.
+
+     A ‘StableDistribution’ object consists of parameters, a model description,
+     and sample data for a stable probability distribution.
+
+     The stable distribution is a continuous probability distribution family
+     closed under linear combinations, generalizing the normal, Cauchy, and Levy
+     distributions.  It is parameterized, in the Nolan S0 parameterization, by a
+     tail index (first shape parameter) ALPHA in (0, 2], a skewness (second
+     shape parameter) BETA in [-1, 1], a scale parameter GAM greater than zero,
+     and a location parameter DELTA.
+
+     There is one way to create a ‘StableDistribution’ object.
+
+        • Create a distribution with fixed parameter values using the ‘makedist’
+          function.
+
+     Fitting a ‘StableDistribution’ to data is not currently supported.
+
+     Further information about the stable distribution can be found at
+     <https://en.wikipedia.org/wiki/Stable_distribution>
+
+     See also: makedist, stblpdf, stblcdf, stblinv, stblrnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Stable probability distribution object.
 
 
 
