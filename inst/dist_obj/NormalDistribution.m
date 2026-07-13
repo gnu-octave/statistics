@@ -435,7 +435,7 @@ classdef NormalDistribution
         nlogL = [];
         return
       endif
-      nlogL = - normlike ([this.mu, this.sigma], this.InputData.data, ...
+      nlogL = normlike ([this.mu, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -910,6 +910,33 @@ endfunction
 %! plot (NormalDistribution, 'PlotType', 'probability')
 
 ## 'proflik' method
+%!test
+%! ## Profile log-likelihood values verified against MATLAB (nuisance
+%! ## parameters are profiled out, not held fixed).
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
+%! pd = NormalDistribution.fit (x');
+%! [ll, param] = proflik (pd, 1, 2.6:0.2:4.2);
+%! ref = [-20.3706543783445, -19.2807332475991, -18.3460903001355, ...
+%!        -17.6848714616926, -17.4098041938949, -17.5763530516294, ...
+%!        -18.1502877476524, -19.0282120496015, -20.0892153912834];
+%! assert (ll, ref, 1e-6);
+%! assert (param, 2.6:0.2:4.2, 1e-12);
+%!test
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
+%! pd = NormalDistribution.fit (x');
+%! ll = proflik (pd, 2, 0.7:0.1:1.6);
+%! ref = [-19.7905304181301, -18.3358679076856, -17.6533683093276, ...
+%!        -17.4185123984561, -17.4530093494964, -17.6534891355391, ...
+%!        -17.9574383057938, -18.3257710746453, -18.7333992513096, ...
+%!        -19.1638879806549];
+%! assert (ll, ref, 1e-6);
+%!test
+%! ## Default grid spans the 98% CI with 21 points (matching MATLAB).
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
+%! pd = NormalDistribution.fit (x');
+%! [ll, param] = proflik (pd, 1);
+%! assert (numel (param), 21);
+%! assert ([param(1), param(end)], [2.57917008770431, 4.27082991229569], 1e-6);
 %!error <proflik: no fitted data available.> ...
 %! proflik (NormalDistribution, 2)
 %!error <proflik: PNUM must be a scalar number indexing a non-fixed parameter.> ...
@@ -956,6 +983,12 @@ endfunction
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)
 %!error <mean: requires a scalar probability distribution.> mean (pd)
 %!error <median: requires a scalar probability distribution.> median (pd)
+%!test
+%! ## negloglik returns the (positive) negative log-likelihood.
+%! xdat = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
+%! pdfit = NormalDistribution.fit (xdat');
+%! assert (negloglik (pdfit), -sum (log (pdf (pdfit, xdat'))), 1e-9);
+%! assert (negloglik (pdfit) > 0);
 %!error <negloglik: requires a scalar probability distribution.> negloglik (pd)
 %!error <paramci: requires a scalar probability distribution.> paramci (pd)
 %!error <pdf: requires a scalar probability distribution.> pdf (pd, 1)

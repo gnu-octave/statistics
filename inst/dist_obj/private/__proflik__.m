@@ -70,63 +70,75 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
     endif
   endwhile
 
-  ## Get fitted parameter CI and restrict for non-fixed range
-  pname = pd.ParameterNames{pnum};
-  lower = pd.ParameterCI(1, pnum);
-  if (lower < pd.ParameterRange(1,pnum))
-    lower = pd.ParameterRange(1,pnum);
-  endif
-  upper = pd.ParameterCI(2, pnum);
-  if (upper > pd.ParameterRange(2,pnum))
-    upper = pd.ParameterRange(2,pnum);
-  endif
   ## Create parameter vector
+  pname = pd.ParameterNames{pnum};
   if (isempty (param))
-    param = [lower:(upper-lower)/100:upper];
+    ## Default range: 21 equally spaced values over the 98% confidence
+    ## interval, restricted to the non-fixed range (matching MATLAB)
+    ci = paramci (pd, "Alpha", 0.02);
+    lower = max (ci(1, pnum), pd.ParameterRange(1, pnum));
+    upper = min (ci(2, pnum), pd.ParameterRange(2, pnum));
+    param = linspace (lower, upper, 21);
   else
     ## Restrict user defined parameter range within non-fixed range
     param(param < pd.ParameterRange(1,pnum)) = [];
     param(param > pd.ParameterRange(2,pnum)) = [];
   endif
 
-  ## Get nlogl estimate and optimal parameter values
-  optnll = negloglik (pd);
+  ## Optimal parameter values and the free parameters to profile out (the
+  ## non-fixed parameters other than the selected one)
   optpar = pd.ParameterValues;
+  fname = sprintf ("%slike", pd.DistributionCode);
+  freeidx = npvec(npvec != pnum);
 
-  ## Compute negative log likelihood for the given parameter range by
-  ## calling the appropriate likelihood function
+  ## Compute the profile log likelihood: at each value of the selected
+  ## parameter, maximize the log likelihood over the remaining free parameters
   params = pd.ParameterValues;
-  if (pd.CensoringAllowed)
-    for i = 1:numel (param)
-      params(pnum) = param(i);
-      fname = sprintf ("%slike", pd.DistributionCode);
-      nlogl(i) = - feval (fname, params, pd.InputData.data, ...
-                          pd.InputData.cens, pd.InputData.freq);
-    endfor
-  else
-    for i = 1:numel (param)
-      params(pnum) = param(i);
-      fname = sprintf ("%slike", pd.DistributionCode);
-      nlogl(i) = - feval (fname, params, pd.InputData.data, pd.InputData.freq);
-    endfor
-  endif
-
-  ## Plot the loglikelihood values against the range of the selected parameter
-  if (Display)
-    ## Get 95% confidence
-    params(pnum) = lower;
-    if (pd.CensoringAllowed)
-      nll_conf = - feval (fname, params, pd.InputData.data, ...
-                          pd.InputData.cens, pd.InputData.freq);
+  opts = optimset ("Display", "off", "TolX", 1e-6, "TolFun", 1e-6);
+  nlogl = zeros (1, numel (param));
+  for i = 1:numel (param)
+    p0 = params;
+    p0(pnum) = param(i);
+    if (isempty (freeidx))
+      nlogl(i) = - like_value (fname, p0, pd);
     else
-      nll_conf = - feval (fname, params, pd.InputData.data, pd.InputData.freq);
+      objfun = @(pf) like_free (pf, p0, freeidx, fname, pd);
+      [~, fval] = fminsearch (objfun, params(freeidx), opts);
+      nlogl(i) = - fval;
     endif
+  endfor
+  optnll = - like_value (fname, optpar, pd);
+
+  ## Plot the profile log likelihood against the selected parameter, marking
+  ## the estimate and the 95% profile-likelihood confidence threshold
+  if (Display)
+    nll_conf = optnll - 0.5 * chi2inv (0.95, 1);
     plot (optpar(pnum), optnll, 'ok;Estimate;', ...
-          param, nlogl, '-r;Exact log likelihood;', ...
+          param, nlogl, '-r;Profile log likelihood;', ...
           param, repmat (nll_conf, size (param)), ':b;95% confidence;');
     xlabel (pname);
     ylabel ('log likelihood');
     xlim ([param(1), param(end)]);
   endif
 
+endfunction
+
+## Evaluate the family negative log likelihood at a full parameter vector
+function nll = like_value (fname, params, pd)
+  if (pd.CensoringAllowed)
+    nll = feval (fname, params, pd.InputData.data, ...
+                 pd.InputData.cens, pd.InputData.freq);
+  else
+    nll = feval (fname, params, pd.InputData.data, pd.InputData.freq);
+  endif
+endfunction
+
+## Negative log likelihood as a function of the free parameters only
+function nll = like_free (pf, p0, freeidx, fname, pd)
+  p = p0;
+  p(freeidx) = pf;
+  nll = like_value (fname, p, pd);
+  if (! isreal (nll) || ! isfinite (nll))
+    nll = Inf;
+  endif
 endfunction
