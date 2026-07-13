@@ -434,7 +434,7 @@ classdef BetaDistribution
         nlogL = [];
         return
       endif
-      nlogL = - betalike ([this.a, this.b], this.InputData.data, ...
+      nlogL = betalike ([this.a, this.b], this.InputData.data, ...
                           this.InputData.freq);
     endfunction
 

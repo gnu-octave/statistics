@@ -435,7 +435,7 @@ classdef ExtremeValueDistribution
         nlogL = [];
         return
       endif
-      nlogL = - evlike ([this.mu, this.sigma], this.InputData.data, ...
+      nlogL = evlike ([this.mu, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

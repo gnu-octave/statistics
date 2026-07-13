@@ -443,7 +443,7 @@ classdef BinomialDistribution
         nlogL = [];
         return
       endif
-      nlogL = - binolike ([this.N, this.p], this.InputData.data);
+      nlogL = binolike ([this.N, this.p], this.InputData.data);
     endfunction
 
     ## -*- texinfo -*-

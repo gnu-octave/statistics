@@ -434,7 +434,7 @@ classdef NakagamiDistribution
         nlogL = [];
         return
       endif
-      nlogL = - nakalike ([this.mu, this.omega], this.InputData.data, ...
+      nlogL = nakalike ([this.mu, this.omega], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

@@ -435,7 +435,7 @@ classdef WeibullDistribution
         nlogL = [];
         return
       endif
-      nlogL = - wbllike ([this.lambda, this.k], this.InputData.data, ...
+      nlogL = wbllike ([this.lambda, this.k], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 

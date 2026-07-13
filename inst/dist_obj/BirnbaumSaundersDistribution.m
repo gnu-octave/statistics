@@ -438,7 +438,7 @@ classdef BirnbaumSaundersDistribution
         nlogL = [];
         return
       endif
-      nlogL = - bisalike ([this.beta, this.gamma], this.InputData.data, ...
+      nlogL = bisalike ([this.beta, this.gamma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

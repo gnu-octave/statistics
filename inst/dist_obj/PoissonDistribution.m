@@ -419,7 +419,7 @@ classdef PoissonDistribution
         nlogL = [];
         return
       endif
-      nlogL = - poisslike (this.lambda, this.InputData.data, this.InputData.freq);
+      nlogL = poisslike (this.lambda, this.InputData.data, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-

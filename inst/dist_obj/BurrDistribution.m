@@ -458,7 +458,7 @@ classdef BurrDistribution
         nlogL = [];
         return
       endif
-      nlogL = - burrlike ([this.alpha, this.c, this.k], this.InputData.data, ...
+      nlogL = burrlike ([this.alpha, this.c, this.k], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 

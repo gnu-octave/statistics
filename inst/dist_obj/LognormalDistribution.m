@@ -436,7 +436,7 @@ classdef LognormalDistribution
         nlogL = [];
         return
       endif
-      nlogL = - lognlike ([this.mu, this.sigma], this.InputData.data, ...
+      nlogL = lognlike ([this.mu, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

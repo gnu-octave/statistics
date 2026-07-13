@@ -433,7 +433,7 @@ classdef HalfNormalDistribution
         nlogL = [];
         return
       endif
-      nlogL = - hnlike ([this.mu, this.sigma], ...
+      nlogL = hnlike ([this.mu, this.sigma], ...
                         this.InputData.data, this.InputData.freq);
     endfunction
 

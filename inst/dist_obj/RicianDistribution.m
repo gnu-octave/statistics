@@ -433,7 +433,7 @@ classdef RicianDistribution
         nlogL = [];
         return
       endif
-      nlogL = - ricelike ([this.s, this.sigma], this.InputData.data, ...
+      nlogL = ricelike ([this.s, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

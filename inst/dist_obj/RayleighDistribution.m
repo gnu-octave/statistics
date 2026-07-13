@@ -409,7 +409,7 @@ classdef RayleighDistribution
         nlogL = [];
         return
       endif
-      nlogL = - rayllike (this.sigma, this.InputData.data, ...
+      nlogL = rayllike (this.sigma, this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

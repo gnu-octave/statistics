@@ -463,7 +463,7 @@ classdef GeneralizedExtremeValueDistribution
         nlogL = [];
         return
       endif
-      nlogL = - gevlike ([this.k, this.sigma, this.mu], ...
+      nlogL = gevlike ([this.k, this.sigma, this.mu], ...
                          this.InputData.data, this.InputData.freq);
     endfunction
 

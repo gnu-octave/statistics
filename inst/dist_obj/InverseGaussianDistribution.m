@@ -436,7 +436,7 @@ classdef InverseGaussianDistribution
         nlogL = [];
         return
       endif
-      nlogL = - invglike ([this.mu, this.lambda], this.InputData.data, ...
+      nlogL = invglike ([this.mu, this.lambda], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

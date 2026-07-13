@@ -436,7 +436,7 @@ classdef LogisticDistribution
         nlogL = [];
         return
       endif
-      nlogL = - logilike ([this.mu, this.sigma], this.InputData.data, ...
+      nlogL = logilike ([this.mu, this.sigma], this.InputData.data, ...
                           this.InputData.cens, this.InputData.freq);
     endfunction
 

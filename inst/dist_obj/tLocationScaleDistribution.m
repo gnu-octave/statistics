@@ -463,7 +463,7 @@ classdef tLocationScaleDistribution
         nlogL = [];
         return
       endif
-      nlogL = - tlslike ([this.mu, this.sigma, this.nu], this.InputData.data, ...
+      nlogL = tlslike ([this.mu, this.sigma, this.nu], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 

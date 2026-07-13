@@ -455,7 +455,7 @@ classdef NegativeBinomialDistribution
         nlogL = [];
         return
       endif
-      nlogL = - nbinlike ([this.R, this.P], this.InputData.data);
+      nlogL = nbinlike ([this.R, this.P], this.InputData.data);
     endfunction
 
     ## -*- texinfo -*-

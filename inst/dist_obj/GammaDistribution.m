@@ -434,7 +434,7 @@ classdef GammaDistribution
         nlogL = [];
         return
       endif
-      nlogL = - gamlike ([this.a, this.b], this.InputData.data, ...
+      nlogL = gamlike ([this.a, this.b], this.InputData.data, ...
                          this.InputData.cens, this.InputData.freq);
     endfunction
 
@@ -952,6 +952,12 @@ endfunction
 %!error <iqr: requires a scalar probability distribution.> iqr (pd)
 %!error <mean: requires a scalar probability distribution.> mean (pd)
 %!error <median: requires a scalar probability distribution.> median (pd)
+%!test
+%! ## negloglik returns the (positive) negative log-likelihood.
+%! xdat = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
+%! pdfit = GammaDistribution.fit (xdat');
+%! assert (negloglik (pdfit), -sum (log (pdf (pdfit, xdat'))), 1e-9);
+%! assert (negloglik (pdfit) > 0);
 %!error <negloglik: requires a scalar probability distribution.> negloglik (pd)
 %!error <paramci: requires a scalar probability distribution.> paramci (pd)
 %!error <pdf: requires a scalar probability distribution.> pdf (pd, 1)
