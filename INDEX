@@ -76,6 +76,8 @@ Descriptive Statistics
  nanmean
  nanmin
  nansum
+ partialcorr
+ partialcorri
  trimmean
 Distribution Classes
  BetaDistribution
