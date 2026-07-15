@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 171
+# columns: 172
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -5004,6 +5004,89 @@ gmdistribution
 # elements: 1
 # length: 80
 Create an object of the gmdistribution class which represents a Gaussian mixt...
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+gplotmatrix
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2927
+ -- statistics: gplotmatrix (X, Y, GROUP)
+ -- statistics: gplotmatrix (X, [], GROUP)
+ -- statistics: gplotmatrix (X, Y, GROUP, CLR, SYM, SIZ)
+ -- statistics: gplotmatrix (..., DOLEG, DISPOPT)
+ -- statistics: gplotmatrix (..., DOLEG, DISPOPT, XNAM, YNAM)
+ -- statistics: gplotmatrix (PARENT, ...)
+ -- statistics: [H, AX, BIGAX] = gplotmatrix (...)
+
+     Create a matrix of scatter plots grouped by a categorical variable.
+
+     ‘gplotmatrix (X, Y, GROUP)’ creates a matrix of scatter plots.  Each
+     subplot in the resulting figure is a scatter plot of a column of X against
+     a column of Y.  If X is ‘n’-by-P and Y is ‘n’-by-Q, the resulting figure
+     holds a Q-by-P grid of subplots; the subplot in row I and column J plots
+     ‘X(:,j)’ on the horizontal axis against ‘Y(:,i)’ on the vertical axis.
+     Points are grouped and colored according to GROUP, which is a grouping
+     variable (numeric, logical, character, string, or cell array of strings)
+     with one entry per row of X.
+
+     ‘gplotmatrix (X, [], GROUP)’ is equivalent to ‘gplotmatrix (X, X, GROUP)’
+     except that the diagonal of the P-by-P grid is replaced by grouped
+     histograms of the columns of X.
+
+     The appearance of the plot is controlled by further positional arguments:
+
+     CLR
+          Marker colors, given as a character vector of color specifiers (e.g.
+          "rgb") or as a matrix of RGB triplets, one row per group.  Colors
+          cycle if fewer are supplied than there are groups.
+
+     SYM
+          Marker symbols, given as a character vector (e.g.  "o+x"); defaults to
+          ".".  Symbols cycle if fewer are supplied than there are groups.
+
+     SIZ
+          Marker sizes, given as a numeric vector.  Sizes cycle if fewer are
+          supplied than there are groups.
+
+     DOLEG
+          Either "on" (default) to display a legend of the groups or "off" to
+          suppress it.
+
+     DISPOPT
+          Controls the diagonal of the grid when Y is empty: "stairs" (default)
+          for grouped stairstep histograms, "hist" or "grpbars" for grouped bar
+          histograms, "none" to leave the diagonal empty, or "variable" to write
+          the variable names on the diagonal.
+
+     XNAM, YNAM
+          Character vectors or cell arrays of strings giving the names of the
+          columns of X and Y, used to label the outer axes.
+
+     An optional leading PARENT argument (a figure or uipanel handle) selects
+     the container for the plot.
+
+     The optional outputs are H, an array of handles to the plotted objects with
+     size NY-by-P-by-K (where NY is the number of rows of the grid and K the
+     number of groups); AX, the matrix of handles to the subplot axes (with an
+     extra row of hidden axes for the diagonal histograms); and BIGAX, the
+     handle to the invisible enclosing axes used for titles and labels.
+
+     See also: gscatter, plotmatrix, grpstats.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 67
+Create a matrix of scatter plots grouped by a categorical variable.
 
 
 
