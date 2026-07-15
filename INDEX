@@ -59,6 +59,7 @@ Data Manipulation
  isoutlier
  multiway
  normalise_distribution
+ randsample
  rmmissing
  standardizeMissing
  tabulate
