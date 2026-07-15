@@ -691,11 +691,24 @@ function [varargout] = fitdist (varargin)
       endif
 
     case 'stable'
-      warning ("fitdist: 'Stable' distribution not supported yet.");
+      if (any (censor != 0))
+        error ("fitdist: censoring is not supported for a 'Stable' distribution.");
+      endif
       if (isempty (groupvar))
-        varargout{1} = [];
+        varargout{1} = StableDistribution.fit (x, alpha, freq, options);
       else
-        varargout{1} = [];
+        pd = cell (1, groups);
+        for i = 1:groups
+          x_i = x(g == i);
+          f_i = freq(g == i);
+          if (isempty (x_i))
+            pd{i} = [];
+            warning (msg, gn{i}, distname);
+          else
+            pd{i} = StableDistribution.fit (x_i, alpha, f_i, options);
+          endif
+        endfor
+        varargout{1} = pd;
         varargout{2} = gn;
         varargout{3} = gl;
       endif
@@ -1217,8 +1230,15 @@ endfunction
 %!warning <fitdist: no data in group '2' to fit a 'rician' distribution.> ...
 %! fitdist ([ricernd(1, 1, 100, 1); nan(100, 1)], 'rician', ...
 %!          'By', [ones(100, 1); 2*ones(100, 1)]);
-%!warning <fitdist: 'Stable' distribution not supported yet.> ...
-%! fitdist ([1 2 3 4 5], 'Stable');
+%!test  ## fitdist returns a fitted StableDistribution object
+%! rand ("seed", 2718);
+%! randn ("seed", 2718);
+%! x = stblrnd (1.5, 0.5, 2, 1, 150, 1);
+%! pd = fitdist (x, 'Stable');
+%! assert_equal (class (pd), 'StableDistribution');
+%! assert (! any (pd.ParameterIsFixed));
+%! assert (pd.alpha, 1.5, 0.4);
+%! assert (pd.gam, 2, 0.5);
 %!test
 %! x = tlsrnd (0, 1, 1, 100, 1);
 %! pd = fitdist (x, 'tlocationscale');
@@ -1294,6 +1314,8 @@ endfunction
 %! fitdist ([1, 2, 3], 'normal', 'options', struct ('options', 1))
 %!error <fitdist: censoring is not supported for a 'Kernel' distribution.> ...
 %! fitdist ([1, 2, 3]', 'kernel', 'Censoring', [1, 0, 0]');
+%!error <fitdist: censoring is not supported for a 'Stable' distribution.> ...
+%! fitdist ([1, 2, 3]', 'Stable', 'Censoring', [1, 0, 0]');
 %!error <fitdist: unknown parameter name.> ...
 %! fitdist ([1, 2, 3], 'normal', 'param', struct ('options', 1))
 %!error <fitdist: no data in X to fit a 'normal' distribution.> ...

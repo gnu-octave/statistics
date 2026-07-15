@@ -131,6 +131,7 @@ Distribution Fitting
  poissfit poisslike
  raylfit rayllike
  ricefit ricelike
+ stblfit stbllike
  tlsfit tlslike
  unidfit
  unifit

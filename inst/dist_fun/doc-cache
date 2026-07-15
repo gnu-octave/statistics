@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 177
+# columns: 182
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1072,6 +1072,123 @@ Copula family cumulative distribution functions (CDF).
 # type: sq_string
 # elements: 1
 # length: 9
+copulafit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2167
+ -- statistics: RHO = copulafit ("Gaussian", U)
+ -- statistics: [RHO, NU] = copulafit ("t", U)
+ -- statistics: [PARAM, CI] = copulafit (FAMILY, U)
+ -- statistics: [...] = copulafit (..., "alpha", A)
+
+     Fit a copula to data.
+
+     ‘copulafit (FAMILY, U)’ returns the maximum-likelihood estimate of the
+     parameter of a copula of the family FAMILY, fit to the data in U.  The rows
+     of U are observations and its columns are variables; all entries must lie
+     strictly inside the unit interval (0,1), as produced for example by a
+     probability-integral transform or by ‘ecdf’/‘ksdensity’.
+
+     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
+     family, "t" for the Student's t family, "Clayton" for the Clayton family,
+     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
+
+     The returned value depends on the family:
+
+        • For "Gaussian", ‘RHO = copulafit ("Gaussian", U)’ returns the
+          estimated linear correlation matrix RHO, computed as the sample
+          correlation of the normal scores ‘norminv (U)’.  The data may have two
+          or more columns.
+
+        • For "t", ‘copulafit ("t", U)’ returns the estimated correlation matrix
+          RHO and the degrees of freedom NU as ‘[RHO, NU]’, obtained by
+          maximizing the copula log-likelihood.  Only bivariate data (two
+          columns) are supported.
+
+        • For the Archimedean families "Clayton", "Gumbel", and "Frank",
+          ‘[PARAM, CI] = copulafit (FAMILY, U)’ returns the scalar copula
+          parameter PARAM and, optionally, a two-element vector CI with the
+          lower and upper confidence bounds.  Only bivariate data are supported.
+
+     ‘copulafit (..., "alpha", A)’ sets the significance level for the
+     confidence interval to A, so that CI has coverage ‘100 * (1 - A)’ percent.
+     The default is ‘A = 0.05’.  The confidence interval is a Wald interval
+     whose standard error is obtained from the outer-product-of-gradients
+     estimate of the information.
+
+     See also: copulastat, copulaparam, copulacdf, copulapdf, copularnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 21
+Fit a copula to data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+copulaparam
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1843
+ -- statistics: PARAM = copulaparam (FAMILY, R)
+ -- statistics: PARAM = copulaparam (..., "type", TYPE)
+
+     Copula parameter as a function of rank correlation.
+
+     ‘PARAM = copulaparam (FAMILY, R)’ returns the linear or copula parameter
+     PARAM corresponding to a copula of the family FAMILY that has Kendall's
+     rank correlation R.  It is the inverse of ‘copulastat’.
+
+     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
+     family, "t" for the Student's t family, "Clayton" for the Clayton family,
+     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
+
+     For the Gaussian and Student's t families, R is a scalar rank correlation
+     or a matrix of pairwise rank correlations, and PARAM is the corresponding
+     linear correlation of the same size.  For the Clayton, Gumbel-Hougaard, and
+     Frank families, R is a scalar rank correlation and PARAM is the scalar
+     copula parameter.  The Gumbel-Hougaard family models positive dependence
+     only, so R must be non-negative for that family.
+
+     ‘PARAM = copulaparam (..., "type", TYPE)’ selects the measure of rank
+     correlation given in R.  TYPE can be "Kendall" (the default) for Kendall's
+     tau, or "Spearman" for Spearman's rho.
+
+     The Gaussian and Student's t families and the Kendall's tau of the Clayton
+     and Gumbel-Hougaard families are inverted in closed form.  The remaining
+     cases are inverted numerically from ‘copulastat’.
+
+     *Note:* for the Archimedean families with "Spearman", the underlying
+     relationship is computed by exact numerical integration rather than the
+     interpolated table used by MATLAB, so results may differ from MATLAB by up
+     to about 10^{-4}.  See ‘copulastat’.
+
+     See also: copulastat, copulafit, copulacdf, copulapdf, copularnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 51
+Copula parameter as a function of rank correlation.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
 copulapdf
 
 
@@ -1206,6 +1323,64 @@ copularnd
 # elements: 1
 # length: 51
 Random arrays from the copula family distributions.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+copulastat
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1940
+ -- statistics: R = copulastat (FAMILY, PARAM)
+ -- statistics: R = copulastat (..., "type", TYPE)
+
+     Rank correlation for a copula family.
+
+     ‘R = copulastat (FAMILY, PARAM)’ returns Kendall's rank correlation R
+     corresponding to a copula of the family FAMILY with linear or copula
+     parameter PARAM.
+
+     FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
+     family, "t" for the Student's t family, "Clayton" for the Clayton family,
+     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
+
+     For the Gaussian and Student's t families, PARAM is a linear correlation
+     coefficient RHO in the range [-1,1], or a p-by-p correlation matrix, in
+     which case R has the same size and each element is computed elementwise.
+     For the Clayton, Gumbel-Hougaard, and Frank families, PARAM is the scalar
+     copula parameter.
+
+     ‘R = copulastat (..., "type", TYPE)’ selects the measure of rank
+     correlation.  TYPE can be "Kendall" (the default) for Kendall's tau, or
+     "Spearman" for Spearman's rho.
+
+     The relationships are closed form for the Gaussian and Student's t families
+     (r = 2 \arcsin(\rho) / \pi for Kendall's tau and r = 6 \arcsin(\rho/2) /
+     \pi for Spearman's rho) and for the Kendall's tau of the Archimedean
+     families.  Spearman's rho of the Archimedean families has no closed form
+     and is computed by accurate numerical integration of the copula.
+
+     *Note:* MATLAB returns the Archimedean Spearman's rho by interpolating an
+     internal precomputed table, whose values deviate from the true relationship
+     by up to about 10^{-4}.  This implementation returns the mathematically
+     exact value instead, so results for ‘copulastat (FAMILY, PARAM, "type",
+     "Spearman")’ with an Archimedean FAMILY may differ from MATLAB at that
+     level.
+
+     See also: copulaparam, copulafit, copulacdf, copulapdf, copularnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 37
+Rank correlation for a copula family.
 
 
 
@@ -6330,6 +6505,287 @@ Random arrays from the Rician distribution.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+stblcdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 880
+ -- statistics: P = stblcdf (X, ALPHA, BETA, GAM, DELTA)
+
+     Stable cumulative distribution function (CDF).
+
+     For each element of X, compute the cumulative distribution function (CDF)
+     of the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.  The size of P is the
+     size of X.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The cumulative probability has a closed form for ALPHA equal to ‘2’
+     (normal) and for ‘1’ with BETA equal to ‘0’ (Cauchy); otherwise it is
+     computed by numerical inversion of the characteristic function (the
+     Gil-Pelaez formula).
+
+     See also: stblpdf, stblinv, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 46
+Stable cumulative distribution function (CDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblfit
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2762
+ -- statistics: PARAMHAT = stblfit (X)
+ -- statistics: [PARAMHAT, PARAMCI] = stblfit (X)
+ -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA)
+ -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, FREQ)
+ -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, OPTIONS)
+ -- statistics: [PARAMHAT, PARAMCI] = stblfit (X, ALPHA, FREQ, OPTIONS)
+
+     Estimate parameters and confidence intervals for the stable distribution.
+
+     ‘PARAMHAT = stblfit (X)’ returns the maximum likelihood estimates of the
+     parameters of the stable distribution, in the Nolan S0 parameterization,
+     given the data in X.  PARAMHAT(1) is the tail index ALPHA, PARAMHAT(2) is
+     the skewness BETA, PARAMHAT(3) is the scale GAM, and PARAMHAT(4) is the
+     location DELTA.
+
+     ‘[PARAMHAT, PARAMCI] = stblfit (X)’ returns the 95% confidence intervals
+     for the parameter estimates.  The intervals are Wald intervals from the
+     observed Fisher information.
+
+     ‘[...] = stblfit (X, ALPHA)’ also returns the 100 * (1 - ALPHA) percent
+     confidence intervals for the parameter estimates.  By default, the optional
+     argument ALPHA is 0.05 corresponding to 95% confidence intervals.  Pass in
+     [] for ALPHA to use the default value.
+
+     ‘[...] = stblfit (X, ALPHA, FREQ)’ accepts a frequency vector, FREQ, of the
+     same size as X.  FREQ must contain non-negative integer frequencies for the
+     corresponding elements in X.  By default, or if left empty, FREQ = ones
+     (size (X)).
+
+     ‘[PARAMHAT, PARAMCI] = stblfit (X, ALPHA, OPTIONS)’ specifies control
+     parameters for the iterative algorithm used to compute the ML estimates
+     with the ‘fminsearch’ function.  OPTIONS is a structure with the following
+     fields and their default values:
+        • OPTIONS.Display = "off"
+        • OPTIONS.MaxFunEvals = 400
+        • OPTIONS.MaxIter = 200
+        • OPTIONS.TolX = 1e-6
+
+     The stable density has no closed form; it is evaluated by numerical
+     inversion of the characteristic function, which makes fitting considerably
+     slower than for the closed-form distributions.  Censoring is not supported.
+
+     The estimates are the maximum-likelihood estimates under the mathematically
+     exact density.  MATLAB fits an interpolation-based approximation of the
+     stable density, whose maximum-likelihood estimates deviate from the exact
+     ones by about 10^{-2} (and the resulting confidence intervals by up to
+     roughly 20%); ‘stblfit’ returns the exact (more accurate) estimates.
+
+     Further information about the stable distribution can be found at
+     <https://en.wikipedia.org/wiki/Stable_distribution>
+
+     See also: stbllike, stblpdf, stblcdf, stblinv, stblrnd, fitdist, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Estimate parameters and confidence intervals for the stable distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblinv
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 825
+ -- statistics: X = stblinv (P, ALPHA, BETA, GAM, DELTA)
+
+     Inverse of the stable cumulative distribution function (iCDF).
+
+     For each element of P, compute the quantile (the inverse of the CDF) of the
+     stable distribution with tail index (first shape parameter) ALPHA, skewness
+     (second shape parameter) BETA, scale parameter GAM, and location parameter
+     DELTA, in the Nolan S0 parameterization.  The size of X is the size of P.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The quantile has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
+     with BETA equal to ‘0’ (Cauchy); otherwise it is found by numerical
+     inversion of ‘stblcdf’.
+
+     See also: stblcdf, stblpdf, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 62
+Inverse of the stable cumulative distribution function (iCDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+stbllike
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1396
+ -- statistics: NLOGL = stbllike (PARAMS, X)
+ -- statistics: [NLOGL, ACOV] = stbllike (PARAMS, X)
+ -- statistics: [NLOGL, ACOV] = stbllike (PARAMS, X, FREQ)
+
+     Negative log-likelihood for the stable distribution.
+
+     ‘NLOGL = stbllike (PARAMS, X)’ returns the negative log-likelihood of the
+     data in X corresponding to the stable distribution, in the Nolan S0
+     parameterization, with (1) tail index ALPHA, (2) skewness BETA, (3) scale
+     GAM, and (4) location DELTA given in the four-element vector PARAMS.
+
+     ‘[NLOGL, ACOV] = stbllike (PARAMS, X)’ also returns the inverse of the
+     observed Fisher information matrix, ACOV.  If the input parameter values in
+     PARAMS are the maximum likelihood estimates, the diagonal elements of ACOV
+     are their asymptotic variances.  ACOV is based on the numerically evaluated
+     Hessian of the negative log-likelihood, since the stable density has no
+     closed form.
+
+     ‘[...] = stbllike (PARAMS, X, FREQ)’ accepts a frequency vector, FREQ, of
+     the same size as X.  FREQ must contain non-negative integer frequencies for
+     the corresponding elements in X.  By default, or if left empty, FREQ = ones
+     (size (X)).
+
+     Further information about the stable distribution can be found at
+     <https://en.wikipedia.org/wiki/Stable_distribution>
+
+     See also: stblfit, stblpdf, stblcdf, stblinv, stblrnd.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+Negative log-likelihood for the stable distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblpdf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 827
+ -- statistics: Y = stblpdf (X, ALPHA, BETA, GAM, DELTA)
+
+     Stable probability density function (PDF).
+
+     For each element of X, compute the probability density function (PDF) of
+     the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.  The size of Y is the
+     size of X.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     The density has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
+     with BETA equal to ‘0’ (Cauchy); otherwise it is computed by numerical
+     inversion of the characteristic function.
+
+     See also: stblcdf, stblinv, stblrnd, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Stable probability density function (PDF).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+stblrnd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1018
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)
+ -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, [M, N, ...])
+
+     Random arrays from the stable distribution.
+
+     ‘R = stblrnd (ALPHA, BETA, GAM, DELTA)’ returns a random value drawn from
+     the stable distribution with tail index (first shape parameter) ALPHA,
+     skewness (second shape parameter) BETA, scale parameter GAM, and location
+     parameter DELTA, in the Nolan S0 parameterization.
+
+     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
+     real.  The parameters must be scalars.
+
+     ‘stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)’ or ‘stblrnd (..., [M, N,
+     ...])’ returns an M-by-N-by-... array, following the size conventions of
+     ‘rand’.
+
+     The values are generated with the Chambers-Mallows-Stuck method.
+
+     See also: stblpdf, stblcdf, stblinv, makedist.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Random arrays from the stable distribution.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 4
 tcdf
 
@@ -7623,166 +8079,6 @@ wishrnd
 # length: 80
 Return a random matrix sampled from the Wishart distribution with given
 param...
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-stblpdf
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 827
- -- statistics: Y = stblpdf (X, ALPHA, BETA, GAM, DELTA)
-
-     Stable probability density function (PDF).
-
-     For each element of X, compute the probability density function (PDF) of
-     the stable distribution with tail index (first shape parameter) ALPHA,
-     skewness (second shape parameter) BETA, scale parameter GAM, and location
-     parameter DELTA, in the Nolan S0 parameterization.  The size of Y is the
-     size of X.
-
-     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
-     real.  The parameters must be scalars.
-
-     The density has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
-     with BETA equal to ‘0’ (Cauchy); otherwise it is computed by numerical
-     inversion of the characteristic function.
-
-     See also: stblcdf, stblinv, stblrnd, makedist.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 42
-Stable probability density function (PDF).
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-stblcdf
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 880
- -- statistics: P = stblcdf (X, ALPHA, BETA, GAM, DELTA)
-
-     Stable cumulative distribution function (CDF).
-
-     For each element of X, compute the cumulative distribution function (CDF)
-     of the stable distribution with tail index (first shape parameter) ALPHA,
-     skewness (second shape parameter) BETA, scale parameter GAM, and location
-     parameter DELTA, in the Nolan S0 parameterization.  The size of P is the
-     size of X.
-
-     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
-     real.  The parameters must be scalars.
-
-     The cumulative probability has a closed form for ALPHA equal to ‘2’
-     (normal) and for ‘1’ with BETA equal to ‘0’ (Cauchy); otherwise it is
-     computed by numerical inversion of the characteristic function (the
-     Gil-Pelaez formula).
-
-     See also: stblpdf, stblinv, stblrnd, makedist.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 46
-Stable cumulative distribution function (CDF).
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-stblinv
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 825
- -- statistics: X = stblinv (P, ALPHA, BETA, GAM, DELTA)
-
-     Inverse of the stable cumulative distribution function (iCDF).
-
-     For each element of P, compute the quantile (the inverse of the CDF) of the
-     stable distribution with tail index (first shape parameter) ALPHA, skewness
-     (second shape parameter) BETA, scale parameter GAM, and location parameter
-     DELTA, in the Nolan S0 parameterization.  The size of X is the size of P.
-
-     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
-     real.  The parameters must be scalars.
-
-     The quantile has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
-     with BETA equal to ‘0’ (Cauchy); otherwise it is found by numerical
-     inversion of ‘stblcdf’.
-
-     See also: stblcdf, stblpdf, stblrnd, makedist.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 62
-Inverse of the stable cumulative distribution function (iCDF).
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-stblrnd
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1018
- -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA)
- -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M)
- -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)
- -- statistics: R = stblrnd (ALPHA, BETA, GAM, DELTA, [M, N, ...])
-
-     Random arrays from the stable distribution.
-
-     ‘R = stblrnd (ALPHA, BETA, GAM, DELTA)’ returns a random value drawn from
-     the stable distribution with tail index (first shape parameter) ALPHA,
-     skewness (second shape parameter) BETA, scale parameter GAM, and location
-     parameter DELTA, in the Nolan S0 parameterization.
-
-     ALPHA must be in the range (0, 2], BETA in [-1, 1], GAM positive, and DELTA
-     real.  The parameters must be scalars.
-
-     ‘stblrnd (ALPHA, BETA, GAM, DELTA, M, N, ...)’ or ‘stblrnd (..., [M, N,
-     ...])’ returns an M-by-N-by-... array, following the size conventions of
-     ‘rand’.
-
-     The values are generated with the Chambers-Mallows-Stuck method.
-
-     See also: stblpdf, stblcdf, stblinv, makedist.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 43
-Random arrays from the stable distribution.
 
 
 

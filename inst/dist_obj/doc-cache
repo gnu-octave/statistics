@@ -1508,7 +1508,7 @@ StableDistribution
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1102
+# length: 1986
  -- statistics: StableDistribution
 
      Stable probability distribution object.
@@ -1523,17 +1523,32 @@ StableDistribution
      shape parameter) BETA in [-1, 1], a scale parameter GAM greater than zero,
      and a location parameter DELTA.
 
-     There is one way to create a ‘StableDistribution’ object.
+     There are several ways to create a ‘StableDistribution’ object.
 
+        • Fit a distribution to data using the ‘fitdist’ function.
         • Create a distribution with fixed parameter values using the ‘makedist’
           function.
+        • Use the constructor StableDistribution (ALPHA, BETA, GAM, DELTA) to
+          create a stable distribution with fixed parameter values ALPHA, BETA,
+          GAM, and DELTA.
+        • Use the static method StableDistribution.fit (X, ALPHA, FREQ, OPTIONS)
+          to fit a distribution to the data in X using the same input arguments
+          as the ‘stblfit’ function.
 
-     Fitting a ‘StableDistribution’ to data is not currently supported.
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions to
+     create probability distribution objects, instead of the class constructor
+     or the aforementioned static method.
+
+     Fitting is by maximum likelihood.  Because the stable density has no closed
+     form, it is evaluated by numerical inversion of the characteristic
+     function, which makes fitting considerably slower than for the closed-form
+     distributions.
 
      Further information about the stable distribution can be found at
      <https://en.wikipedia.org/wiki/Stable_distribution>
 
-     See also: makedist, stblpdf, stblcdf, stblinv, stblrnd.
+     See also: fitdist, makedist, stblpdf, stblcdf, stblinv, stblrnd, stblfit,
+     stbllike.
 
 
 # name: <cell-element>

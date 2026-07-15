@@ -32,19 +32,34 @@ classdef StableDistribution
   ## @math{[-1, 1]}, a scale parameter @var{gam} greater than zero, and a
   ## location parameter @var{delta}.
   ##
-  ## There is one way to create a @code{StableDistribution} object.
+  ## There are several ways to create a @code{StableDistribution} object.
   ##
   ## @itemize
+  ## @item Fit a distribution to data using the @code{fitdist} function.
   ## @item Create a distribution with fixed parameter values using the
   ## @code{makedist} function.
+  ## @item Use the constructor @qcode{StableDistribution (@var{alpha},
+  ## @var{beta}, @var{gam}, @var{delta})} to create a stable distribution with
+  ## fixed parameter values @var{alpha}, @var{beta}, @var{gam}, and @var{delta}.
+  ## @item Use the static method @qcode{StableDistribution.fit (@var{x},
+  ## @var{alpha}, @var{freq}, @var{options})} to fit a distribution to the data
+  ## in @var{x} using the same input arguments as the @code{stblfit} function.
   ## @end itemize
   ##
-  ## Fitting a @code{StableDistribution} to data is not currently supported.
+  ## It is highly recommended to use @code{fitdist} and @code{makedist}
+  ## functions to create probability distribution objects, instead of the class
+  ## constructor or the aforementioned static method.
+  ##
+  ## Fitting is by maximum likelihood.  Because the stable density has no closed
+  ## form, it is evaluated by numerical inversion of the characteristic function,
+  ## which makes fitting considerably slower than for the closed-form
+  ## distributions.
   ##
   ## Further information about the stable distribution can be found at
   ## @url{https://en.wikipedia.org/wiki/Stable_distribution}
   ##
-  ## @seealso{makedist, stblpdf, stblcdf, stblinv, stblrnd}
+  ## @seealso{fitdist, makedist, stblpdf, stblcdf, stblinv, stblrnd, stblfit,
+  ## stbllike}
   ## @end deftp
 
   properties (Dependent = true)
@@ -148,7 +163,7 @@ classdef StableDistribution
     CensoringAllowed = false;
     DistributionCode = "stbl";
     ParameterRange = [realmin, -1, realmin, -Inf; 2, 1, Inf, Inf];
-    ParameterLogCI = [false, false, true, false];
+    ParameterLogCI = [false, false, false, false];
   endproperties
 
   properties (GetAccess = public, SetAccess = protected)
@@ -175,6 +190,18 @@ classdef StableDistribution
     ##
     ## @end deftp
     ParameterCovariance
+
+    ## -*- texinfo -*-
+    ## @deftp {StableDistribution} {property} ParameterCI
+    ##
+    ## Confidence intervals for the parameter estimates
+    ##
+    ## A @math{2x4} numeric matrix containing the lower and upper boundaries of
+    ## the confidence interval for each parameter, when the distribution has been
+    ## fitted to data.  This property is read-only.
+    ##
+    ## @end deftp
+    ParameterCI
 
     ## -*- texinfo -*-
     ## @deftp {StableDistribution} {property} ParameterIsFixed
@@ -214,8 +241,9 @@ classdef StableDistribution
     ##
     ## Data used for fitting the distribution
     ##
-    ## An empty value, since fitting a @code{StableDistribution} is not
-    ## supported.  This property is read-only.
+    ## A structure containing the data used to fit the distribution.  It is empty
+    ## unless the distribution was fitted with @code{fitdist} or the static
+    ## @code{fit} method.  This property is read-only.
     ##
     ## @end deftp
     InputData
@@ -439,32 +467,63 @@ classdef StableDistribution
     ##
     ## Compute the negative loglikelihood of a probability distribution.
     ##
-    ## @code{@var{nlogL} = negloglik (@var{pd})} returns an empty value, since a
-    ## @code{StableDistribution} object cannot be fitted to data.
+    ## @code{@var{nlogL} = negloglik (@var{pd})} computes the negative
+    ## loglikelihood of the probability distribution object, @var{pd}.  It
+    ## returns an empty value when @var{pd} is not fitted to data.
     ##
     ## @end deftypefn
     function nlogL = negloglik (this)
       if (! isscalar (this))
         error ("negloglik: requires a scalar probability distribution.");
       endif
-      nlogL = [];
+      if (isempty (this.InputData))
+        nlogL = [];
+        return
+      endif
+      nlogL = stbllike ([this.alpha, this.beta, this.gam, this.delta], ...
+                        this.InputData.data, this.InputData.freq);
     endfunction
 
     ## -*- texinfo -*-
     ## @deftypefn  {StableDistribution} {@var{ci} =} paramci (@var{pd})
+    ## @deftypefnx {StableDistribution} {@var{ci} =} paramci (@var{pd}, @var{Name}, @var{Value})
     ##
     ## Compute the confidence intervals for probability distribution parameters.
     ##
-    ## @code{@var{ci} = paramci (@var{pd})} returns the parameter values, since
-    ## a @code{StableDistribution} object cannot be fitted to data and therefore
-    ## carries no confidence intervals.
+    ## @code{@var{ci} = paramci (@var{pd})} computes the lower and upper
+    ## boundaries of the 95% confidence interval for each parameter of the
+    ## probability distribution object, @var{pd}.
+    ##
+    ## @code{@var{ci} = paramci (@var{pd}, @var{Name}, @var{Value})} computes the
+    ## confidence intervals with additional options specified by
+    ## @qcode{Name-Value} pair arguments listed below.
+    ##
+    ## @multitable @columnfractions 0.18 0.8
+    ## @headitem @var{Name} @tab @var{Value}
+    ##
+    ## @item @qcode{'Alpha'} @tab A scalar value in the range @math{(0,1)}
+    ## specifying the significance level for the confidence interval.  The
+    ## default value 0.05 corresponds to a 95% confidence interval.
+    ##
+    ## @item @qcode{'Parameter'} @tab A character vector or a cell array of
+    ## character vectors specifying the parameter names for which to compute
+    ## confidence intervals.  By default, @code{paramci} computes confidence
+    ## intervals for all distribution parameters.
+    ## @end multitable
+    ##
+    ## @code{paramci} is meaningful only when @var{pd} is fitted to data,
+    ## otherwise the parameter values are returned in both rows.
     ##
     ## @end deftypefn
     function ci = paramci (this, varargin)
       if (! isscalar (this))
         error ("paramci: requires a scalar probability distribution.");
       endif
-      ci = [this.ParameterValues; this.ParameterValues];
+      if (isempty (this.InputData))
+        ci = [this.ParameterValues; this.ParameterValues];
+      else
+        ci = __paramci__ (this, varargin{:});
+      endif
     endfunction
 
     ## -*- texinfo -*-
@@ -515,20 +574,46 @@ classdef StableDistribution
     endfunction
 
     ## -*- texinfo -*-
-    ## @deftypefn  {StableDistribution} {@var{ci} =} proflik (@var{pd}, @var{pnum})
+    ## @deftypefn  {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum})
+    ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{'Display'}, @var{display})
+    ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
+    ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{'Display'}, @var{display})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
-    ## Profiling the likelihood is not available for a @code{StableDistribution}
-    ## object, which cannot be fitted to data.
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum})} returns
+    ## a vector @var{nlogL} of negative loglikelihood values and a vector
+    ## @var{param} of corresponding parameter values for the parameter in the
+    ## position indicated by @var{pnum}.  By default, @code{proflik} uses the
+    ## lower and upper bounds of the 95% confidence interval and computes 100
+    ## equispaced values for the selected parameter.  @var{pd} must be fitted to
+    ## data.
+    ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
+    ## @qcode{'Display'}, @qcode{'on'})} also plots the profile likelihood
+    ## against the default range of the selected parameter.
+    ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
+    ## @var{setparam})} defines a user-defined range of the selected parameter.
+    ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
+    ## @var{setparam}, @qcode{'Display'}, @qcode{'on'})} also plots the profile
+    ## likelihood against the user-defined range of the selected parameter.
+    ##
+    ## For the stable distribution, @qcode{@var{pnum} = 1} selects the tail index
+    ## @qcode{alpha}, @qcode{@var{pnum} = 2} selects the skewness @qcode{beta},
+    ## @qcode{@var{pnum} = 3} selects the scale @qcode{gam}, and
+    ## @qcode{@var{pnum} = 4} selects the location @qcode{delta}.
     ##
     ## @end deftypefn
     function [varargout] = proflik (this, pnum, varargin)
       if (! isscalar (this))
         error ("proflik: requires a scalar probability distribution.");
       endif
-      error (strcat ("proflik: no fitted data available; the Stable", ...
-                     " distribution does not support fitting."));
+      if (isempty (this.InputData))
+        error ("proflik: no fitted data available.");
+      endif
+      [varargout{1:nargout}] = __proflik__ (this, pnum, varargin{:});
     endfunction
 
     ## -*- texinfo -*-
@@ -637,6 +722,49 @@ classdef StableDistribution
       else
         v = NaN;
       endif
+    endfunction
+
+  endmethods
+
+  methods (Static, Hidden)
+
+    function pd = fit (x, varargin)
+      ## Check input arguments
+      if (nargin < 2)
+        alpha = 0.05;
+      else
+        alpha = varargin{1};
+      endif
+      if (nargin < 3)
+        freq = [];
+      else
+        freq = varargin{2};
+      endif
+      if (nargin < 4)
+        options.Display = "off";
+        options.MaxFunEvals = 400;
+        options.MaxIter = 200;
+        options.TolX = 1e-6;
+      else
+        options = varargin{3};
+      endif
+      ## Fit data
+      [phat, pci] = stblfit (x, alpha, freq, options);
+      [~, acov] = stbllike (phat, x, freq);
+      ## Create fitted distribution object
+      pd = StableDistribution.makeFitted (phat, pci, acov, x, freq);
+    endfunction
+
+    function pd = makeFitted (phat, pci, acov, x, freq)
+      alpha = phat(1);
+      beta = phat(2);
+      gam = phat(3);
+      delta = phat(4);
+      pd = StableDistribution (alpha, beta, gam, delta);
+      pd.ParameterCI = pci;
+      pd.ParameterIsFixed = [false, false, false, false];
+      pd.ParameterCovariance = acov;
+      pd.InputData = struct ("data", x, "cens", [], "freq", freq);
     endfunction
 
   endmethods

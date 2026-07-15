@@ -464,6 +464,17 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = ricefit (x, alpha, censor, freq, options);
       endif
 
+    case {'stbl', 'stable'}
+      if (! isempty (censor))
+        error (strcat ("mle: censoring is not supported for", ...
+                       " the Stable distribution."));
+      endif
+      if (nargout < 2)
+        phat = stblfit (x, alpha, freq, options);
+      else
+        [phat, pci] = stblfit (x, alpha, freq, options);
+      endif
+
     case {'tls', 'tlocationscale'}
       if (nargout < 2)
         phat = tlsfit (x, alpha, censor, freq, options);
