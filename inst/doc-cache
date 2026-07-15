@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 176
+# columns: 177
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -5088,6 +5088,72 @@ glmval
 # elements: 1
 # length: 46
 Predict values for a generalized linear model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+glyphplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1823
+ -- statistics: glyphplot (X)
+ -- statistics: glyphplot (X, NAME, VALUE, ...)
+ -- statistics: G = glyphplot (...)
+
+     Create a star (glyph) plot of the multivariate data in X.
+
+     ‘glyphplot (X)’ draws each observation (row) of the ‘n’-by-‘p’ matrix X as
+     a star glyph, arranged on a grid.  The P spokes of each star radiate from
+     its center at equally spaced angles, with lengths proportional to the
+     values of the P variables; the tips of the spokes are joined to form the
+     star perimeter.
+
+     The following name/value pairs are accepted:
+
+     "Glyph"
+          "star" (default) draws star glyphs.  "face" (Chernoff faces) is not
+          currently supported.
+
+     "Standardize"
+          How the columns of X are scaled to spoke lengths: "column" (default)
+          scales each column to the range [0,1], "matrix" scales the whole
+          matrix to [0,1], "PCA" uses principal component scores scaled to
+          [0,1], and "off" uses the values as given.  A spoke of relative length
+          0 is still drawn at 10% of the maximum radius so that it remains
+          visible.
+
+     "Grid"
+          A two-element vector ‘[rows cols]’ specifying the layout of the
+          glyphs.  The default is chosen automatically.
+
+     "Centers"
+          An ‘n’-by-2 matrix giving the center coordinates of the glyphs
+          explicitly, overriding "Grid".
+
+     "Radius"
+          The maximum glyph radius (default 0.4).
+
+     "ObsLabels"
+          A character array or cell array of strings labeling the observations.
+          The default is the observation numbers.
+
+     The optional output G is an ‘n’-by-3 matrix of handles whose columns hold,
+     respectively, the star perimeters, the star spokes, and the text labels.
+
+     See also: andrewsplot, parallelcoords.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Create a star (glyph) plot of the multivariate data in X.
 
 
 

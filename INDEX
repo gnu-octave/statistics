@@ -329,6 +329,7 @@ Plotting
  ecdf
  ecdfhist
  einstein
+ glyphplot
  gplotmatrix
  gscatter
  histfit
