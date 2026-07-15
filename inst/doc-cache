@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 166
+# columns: 170
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -8272,6 +8272,52 @@ Multivariate kernel smoothing density estimate.
 # type: sq_string
 # elements: 1
 # length: 6
+nancov
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1282
+ -- statistics: C = nancov (X)
+ -- statistics: C = nancov (X, Y)
+ -- statistics: C = nancov (..., NORMALIZATION)
+ -- statistics: C = nancov (..., METHOD)
+
+     Compute the covariance matrix while ignoring NaN values.
+
+     ‘C = nancov (X)’ returns the covariance matrix of the columns of X,
+     treating each row as an observation, after removing NaN values.  If X is a
+     vector, the scalar variance of its non-NaN elements is returned.
+
+     ‘C = nancov (X, Y)’, where X and Y are of equal length, is equivalent to
+     ‘nancov ([X(:), Y(:)])’ and returns the 2-by-2 covariance matrix.
+
+     ‘C = nancov (..., NORMALIZATION)’ specifies the normalization.  When
+     NORMALIZATION is 0 (default), the covariance is normalized by N-1, where N
+     is the number of observations used.  When it is 1, it is normalized by N.
+
+     ‘C = nancov (..., METHOD)’ selects how NaN values are handled.  With
+     "complete" (the default), any row of the data that contains a NaN value is
+     removed before the covariance is computed.  With "pairwise", each element
+     ‘C(i,j)’ is computed using all rows in which both column I and column J are
+     non-NaN; the resulting matrix may fail to be positive semidefinite.
+
+     See also: cov, nanvar, nanstd, nanmean.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+Compute the covariance matrix while ignoring NaN values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
 nanmax
 
 
@@ -8385,6 +8431,53 @@ Compute the mean while ignoring NaN values.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 9
+nanmedian
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1296
+ -- statistics: M = nanmedian (X)
+ -- statistics: M = nanmedian (X, 'all')
+ -- statistics: M = nanmedian (X, DIM)
+ -- statistics: M = nanmedian (X, VECDIM)
+
+     Compute the median while ignoring NaN values.
+
+     ‘M = nanmedian (X)’ returns the median of X, after removing NaN values.  If
+     X is a vector, a scalar value is returned.  If X is a matrix, a row vector
+     of column medians is returned.  If X is a multidimensional array,
+     ‘nanmedian’ operates along the first nonsingleton dimension.  If all values
+     along a dimension are NaN, the median is returned as NaN.
+
+     ‘M = nanmedian (X, 'all')’ returns the median of all elements of X, after
+     removing NaN values.  It is the equivalent of ‘nanmedian (X(:))’.
+
+     ‘M = nanmedian (X, DIM)’ operates along the dimension DIM of X.
+
+     ‘M = nanmedian (X, VECDIM)’ returns the median over the dimensions
+     specified in the vector VECDIM.  Each element of VECDIM represents a
+     dimension of the input array X and the output M has length 1 in the
+     specified operating dimensions.  If VECDIM indexes all dimensions of X,
+     then it is equivalent to ‘nanmedian (X, 'all')’.  Any dimension in VECDIM
+     greater than ‘ndims (X)’ is ignored.
+
+     See also: median, nanmean, nansum.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Compute the median while ignoring NaN values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 6
 nanmin
 
@@ -8444,6 +8537,62 @@ Find the minimum while ignoring NaN values.
 # type: sq_string
 # elements: 1
 # length: 6
+nanstd
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1750
+ -- statistics: S = nanstd (X)
+ -- statistics: S = nanstd (X, W)
+ -- statistics: S = nanstd (X, W, 'all')
+ -- statistics: S = nanstd (X, W, DIM)
+ -- statistics: S = nanstd (X, W, VECDIM)
+
+     Compute the standard deviation while ignoring NaN values.
+
+     ‘S = nanstd (X)’ returns the standard deviation of X, after removing NaN
+     values.  If X is a vector, a scalar value is returned.  If X is a matrix, a
+     row vector of column standard deviations is returned.  If X is a
+     multidimensional array, ‘nanstd’ operates along the first nonsingleton
+     dimension.  If a dimension contains fewer than two non-NaN values, the
+     standard deviation is returned as 0 for a single value and as NaN when all
+     values are NaN.
+
+     ‘S = nanstd (X, W)’ specifies the normalization.  When W is 0 (default),
+     the standard deviation is normalized by N-1, where N is the number of
+     non-NaN observations.  When W is 1, it is normalized by N. W may also be a
+     vector of nonnegative weights whose length matches the operating dimension,
+     in which case the weighted standard deviation normalized by the sum of the
+     weights is returned.
+
+     ‘S = nanstd (X, W, 'all')’ returns the standard deviation of all elements
+     of X, after removing NaN values.  Use an empty value, ‘W = []’, to pass the
+     default normalization.
+
+     ‘S = nanstd (X, W, DIM)’ operates along the dimension DIM of X.
+
+     ‘S = nanstd (X, W, VECDIM)’ returns the standard deviation over the
+     dimensions specified in the vector VECDIM.  A weight vector is not
+     supported together with 'all' or VECDIM.  Any dimension in VECDIM greater
+     than ‘ndims (X)’ is ignored.
+
+     See also: std, nanvar, nanmean, nansum.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Compute the standard deviation while ignoring NaN values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
 nansum
 
 
@@ -8487,6 +8636,61 @@ nansum
 # elements: 1
 # length: 42
 Compute the sum while ignoring NaN values.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+nanvar
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1665
+ -- statistics: V = nanvar (X)
+ -- statistics: V = nanvar (X, W)
+ -- statistics: V = nanvar (X, W, 'all')
+ -- statistics: V = nanvar (X, W, DIM)
+ -- statistics: V = nanvar (X, W, VECDIM)
+
+     Compute the variance while ignoring NaN values.
+
+     ‘V = nanvar (X)’ returns the variance of X, after removing NaN values.  If
+     X is a vector, a scalar value is returned.  If X is a matrix, a row vector
+     of column variances is returned.  If X is a multidimensional array,
+     ‘nanvar’ operates along the first nonsingleton dimension.  If a dimension
+     contains fewer than two non-NaN values, the variance is returned as 0 for a
+     single value and as NaN when all values are NaN.
+
+     ‘V = nanvar (X, W)’ specifies the normalization.  When W is 0 (default),
+     the variance is normalized by N-1, where N is the number of non-NaN
+     observations.  When W is 1, it is normalized by N. W may also be a vector
+     of nonnegative weights whose length matches the operating dimension, in
+     which case the weighted variance normalized by the sum of the weights is
+     returned.
+
+     ‘V = nanvar (X, W, 'all')’ returns the variance of all elements of X, after
+     removing NaN values.  Use an empty value, ‘W = []’, to pass the default
+     normalization.
+
+     ‘V = nanvar (X, W, DIM)’ operates along the dimension DIM of X.
+
+     ‘V = nanvar (X, W, VECDIM)’ returns the variance over the dimensions
+     specified in the vector VECDIM.  A weight vector is not supported together
+     with 'all' or VECDIM.  Any dimension in VECDIM greater than ‘ndims (X)’ is
+     ignored.
+
+     See also: var, nanstd, nanmean, nansum.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 47
+Compute the variance while ignoring NaN values.
 
 
 

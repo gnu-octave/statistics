@@ -72,10 +72,14 @@ Descriptive Statistics
  jackknife
  ksdensity
  mvksdensity
+ nancov
  nanmax
  nanmean
+ nanmedian
  nanmin
+ nanstd
  nansum
+ nanvar
  partialcorr
  partialcorri
  trimmean
