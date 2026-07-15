@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 170
+# columns: 171
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2729,6 +2729,59 @@ ecdf
 # elements: 1
 # length: 58
 Empirical (Kaplan-Meier) cumulative distribution function.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+ecdfhist
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1401
+ -- statistics: [N, C] = ecdfhist (F, X)
+ -- statistics: [N, C] = ecdfhist (F, X, M)
+ -- statistics: [N, C] = ecdfhist (F, X, CENTERS)
+ -- statistics: ecdfhist (...)
+ -- statistics: ecdfhist (AX, ...)
+
+     Create a histogram from the output of ‘ecdf’.
+
+     ‘[N, C] = ecdfhist (F, X)’ takes the empirical cumulative distribution
+     function F evaluated at the points X, as computed by ‘ecdf’, and returns
+     the heights N of histogram bars for 10 equally spaced bins together with
+     their centers C.  Unlike a count histogram, the bar heights are normalized
+     so that the area of the histogram is equal to 1, giving an estimate of the
+     probability density function.
+
+     ‘[N, C] = ecdfhist (F, X, M)’ uses M equally spaced bins.
+
+     ‘[N, C] = ecdfhist (F, X, CENTERS)’ uses bins with the specified centers,
+     given as a vector of monotonically increasing values.
+
+     ‘ecdfhist (...)’ without output arguments plots the histogram.
+
+     ‘ecdfhist (AX, ...)’ plots into the axes AX instead of the current axes.
+
+     The probability mass assigned to each bin is the sum of the increments of
+     the empirical cdf, ‘diff (F)’, over the points X that fall closest to the
+     corresponding bin center; ties are assigned to the lower center.  Each bar
+     height is that mass divided by the bin width.
+
+     See also: ecdf, cdfplot, hist, histogram.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Create a histogram from the output of ‘ecdf’.
+
+  
 
 
 

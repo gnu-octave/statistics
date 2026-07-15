@@ -325,6 +325,7 @@ Plotting
  confusionchart
  dendrogram
  ecdf
+ ecdfhist
  einstein
  gscatter
  histfit
