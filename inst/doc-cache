@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 175
+# columns: 176
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -11444,6 +11444,72 @@ sampsizepwr
 # elements: 1
 # length: 54
 Sample size and power calculation for hypothesis test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+scatterhist
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1811
+ -- statistics: scatterhist (X, Y)
+ -- statistics: scatterhist (X, Y, NAME, VALUE, ...)
+ -- statistics: H = scatterhist (...)
+
+     Create a scatter plot of X and Y with marginal histograms.
+
+     ‘scatterhist (X, Y)’ draws a scatter plot of the vectors X and Y in a
+     central set of axes, with a histogram of X above it and a histogram of Y to
+     its right.  X and Y must be vectors of the same length; NaN values are
+     removed pairwise from the scatter plot and individually from each marginal
+     histogram.
+
+     The following name/value pairs are accepted:
+
+     "Group"
+          A grouping variable (numeric, logical, character, string, or cell
+          array of strings) with one entry per point.  The scatter points and
+          the marginal histograms are separated and colored by group.
+
+     "NBins"
+          The number of bins for the marginal histograms, either a scalar
+          applied to both or a two-element vector ‘[nx ny]’.  The default is
+          chosen by Scott's rule.
+
+     "Kernel"
+          "off" (default) draws histograms for the marginals; "on" or "overlay"
+          draws kernel density estimates instead.
+
+     "Location"
+          Position of the marginal plots: "SouthWest" (default), "SouthEast",
+          "NorthEast", or "NorthWest".
+
+     "Legend"
+          "on" or "off" to show or hide the group legend.  The default is "on"
+          when a grouping variable is supplied.
+
+     "Marker", "MarkerSize"
+          The marker symbol(s) and size(s) for the scatter points, cycled over
+          the groups.
+
+     The optional output H is a three-element vector of axes handles: the
+     central scatter axes, the axes of the X (horizontal) histogram, and the
+     axes of the Y (vertical) histogram.
+
+     See also: gscatter, scatter, hist, ksdensity.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 58
+Create a scatter plot of X and Y with marginal histograms.
 
 
 

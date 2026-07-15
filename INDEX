@@ -339,6 +339,7 @@ Plotting
  ppplot
  probplot
  qqplot
+ scatterhist
  silhouette
  violin
  wblplot
