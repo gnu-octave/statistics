@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 174
+# columns: 175
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -9307,6 +9307,67 @@ optimalleaforder
 # elements: 1
 # length: 72
 Compute the optimal leaf ordering of a hierarchical binary cluster tree.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 14
+parallelcoords
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1694
+ -- statistics: parallelcoords (X)
+ -- statistics: parallelcoords (X, NAME, VALUE, ...)
+ -- statistics: parallelcoords (AX, ...)
+ -- statistics: H = parallelcoords (...)
+
+     Create a parallel coordinates plot of the multivariate data in X.
+
+     ‘parallelcoords (X)’ plots each observation (row) of the ‘n’-by-‘p’ matrix
+     X as a line connecting the values of its P coordinates, which are placed at
+     the equally spaced horizontal positions ‘1, 2, ..., p’.
+
+     The following name/value pairs are accepted:
+
+     "Group"
+          A grouping variable (numeric, logical, character, string, or cell
+          array of strings) with one entry per row of X.  Lines are colored by
+          group.
+
+     "Standardize"
+          Controls how the columns of X are transformed before plotting: "off"
+          (default) uses the raw data, "on" centers and scales each column to
+          zero mean and unit standard deviation, "PCA" uses the principal
+          component scores, and "PCAStd" uses the principal component scores of
+          the standardized data.
+
+     "Quantile"
+          A scalar ALPHA in the interval (0,1).  Instead of one line per
+          observation, only three lines per group are drawn: the coordinate-wise
+          median and the ALPHA and 1-ALPHA quantiles of the group.
+
+     "Labels"
+          A character array or cell array of strings giving the tick labels for
+          the coordinate axis.
+
+     ‘parallelcoords (AX, ...)’ plots into the axes AX.
+
+     The optional output H is a vector of handles to the plotted lines: one per
+     observation, or three per group when "Quantile" is used.
+
+     See also: andrewsplot, glyphplot, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Create a parallel coordinates plot of the multivariate data in X.
 
 
 

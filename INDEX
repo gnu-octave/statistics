@@ -335,6 +335,7 @@ Plotting
  hist3
  manovacluster
  normplot
+ parallelcoords
  ppplot
  probplot
  qqplot
