@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 173
+# columns: 174
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -341,6 +341,68 @@ adtest
 # elements: 1
 # length: 49
 Anderson-Darling goodness-of-fit hypothesis test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+andrewsplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1720
+ -- statistics: andrewsplot (X)
+ -- statistics: andrewsplot (X, NAME, VALUE, ...)
+ -- statistics: andrewsplot (AX, ...)
+ -- statistics: H = andrewsplot (...)
+
+     Create an Andrews plot of the multivariate data in X.
+
+     ‘andrewsplot (X)’ plots each observation (row) of the ‘n’-by-‘p’ matrix X
+     as a smooth curve defined by the finite Fourier series
+
+          f_i(t) = x_i1/sqrt(2) + x_i2 sin(2*pi*t) + x_i3 cos(2*pi*t)
+                   + x_i4 sin(4*pi*t) + x_i5 cos(4*pi*t) + ...
+
+     evaluated over t in the interval [0,1], where X_IJ is the j-th variable of
+     the i-th observation.
+
+     The following name/value pairs are accepted:
+
+     "Group"
+          A grouping variable (numeric, logical, character, string, or cell
+          array of strings) with one entry per row of X.  Curves are colored by
+          group.
+
+     "Standardize"
+          Controls how the columns of X are transformed before the curves are
+          computed: "off" (default) uses the raw data, "on" centers and scales
+          each column to zero mean and unit standard deviation, "PCA" uses the
+          principal component scores, and "PCAStd" uses the principal component
+          scores of the standardized data.
+
+     "Quantile"
+          A scalar ALPHA in the interval (0,1).  Instead of one curve per
+          observation, only three curves per group are drawn: the pointwise
+          median and the ALPHA and 1-ALPHA quantiles of the group's curves.
+
+     ‘andrewsplot (AX, ...)’ plots into the axes AX.
+
+     The optional output H is a vector of handles to the plotted lines: one per
+     observation, or three per group when "Quantile" is used.
+
+     See also: parallelcoords, glyphplot, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Create an Andrews plot of the multivariate data in X.
 
 
 
