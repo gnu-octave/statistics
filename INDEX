@@ -320,6 +320,7 @@ Interpolation
 Plotting
  bar3
  bar3h
+ biplot
  boxplot
  cdfplot
  confusionchart

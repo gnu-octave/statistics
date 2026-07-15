@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 172
+# columns: 173
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -1159,6 +1159,75 @@ binotest
 # elements: 1
 # length: 43
 Test for probability P of a binomial sample
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+biplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2077
+ -- statistics: biplot (COEFS)
+ -- statistics: biplot (COEFS, NAME, VALUE, ...)
+ -- statistics: biplot (AX, ...)
+ -- statistics: H = biplot (...)
+
+     Create a biplot of the coefficients in COEFS.
+
+     ‘biplot (COEFS)’ plots the rows of COEFS, typically the principal component
+     coefficients returned by ‘pca’ or ‘pcacov’ or the factor loadings returned
+     by ‘factoran’, as vectors from the origin.  COEFS has one row per observed
+     variable and either two columns (for a 2-D biplot) or three columns (for a
+     3-D biplot).
+
+     The following name/value pairs are accepted:
+
+     "Scores"
+          A matrix of scores with the same number of columns as COEFS (one row
+          per observation).  The scores are plotted as points, scaled to fit
+          within the unit circle relative to the maximum coefficient length:
+          each score is divided by the maximum absolute score value and
+          multiplied by the length of the longest coefficient vector.
+
+     "VarLabels"
+          A character array or cell array of strings labeling each variable
+          vector.
+
+     "ObsLabels"
+          A character array or cell array of strings labeling each observation.
+
+     "Positive"
+          If true, the reference axes are drawn only over the positive quadrant
+          (2-D) or octant (3-D). The default is false.
+
+     Any additional name/value pairs are treated as line properties and applied
+     to the variable vectors.
+
+     For readability the sign of each column of COEFS is chosen so that its
+     largest-magnitude element is positive; the same sign change is applied to
+     the corresponding column of the scores.
+
+     ‘biplot (AX, ...)’ plots into the axes AX.
+
+     The optional output H is a column vector of handles to the plotted graphics
+     objects, ordered as the variable vector lines, the variable markers, the
+     variable text labels (if any), the observation markers, the observation
+     text labels (if any), and finally the reference axis lines.
+
+     See also: pca, pcacov, factoran, rotatefactors.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Create a biplot of the coefficients in COEFS.
 
 
 
