@@ -328,6 +328,7 @@ Plotting
  manovacluster
  normplot
  ppplot
+ probplot
  qqplot
  silhouette
  violin

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 165
+# columns: 166
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -9837,6 +9837,70 @@ probit
 # elements: 1
 # length: 21
 Probit transformation
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+probplot
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2136
+ -- statistics: probplot (Y)
+ -- statistics: probplot (DIST, Y)
+ -- statistics: probplot (DIST, Y, CENS)
+ -- statistics: probplot (DIST, Y, CENS, FREQ)
+ -- statistics: probplot (AX, ...)
+ -- statistics: probplot (..., "noref")
+ -- statistics: H = probplot (...)
+
+     Produce a probability plot of the data in Y against the distribution DIST.
+
+     On a probability plot the ordered data are drawn against a nonlinear
+     probability axis chosen so that a sample from the reference distribution
+     DIST falls approximately along a straight line.  Systematic departures from
+     the reference line indicate departures from the distribution.
+
+     DIST is one of "normal" (the default when DIST is omitted), "lognormal",
+     "exponential", "extreme value", "weibull", "rayleigh", "logistic", or
+     "loglogistic".  For "lognormal", "weibull", and "loglogistic" the data axis
+     is logarithmic.
+
+     Y is a numeric vector, or a matrix in which case each column is plotted as
+     a separate sample.  ‘NaN’ values are ignored.
+
+     CENS is a logical vector the same size as Y that is true for right-censored
+     observations; censored points are not plotted and the plotting positions of
+     the remaining points follow the Kaplan-Meier estimate.  FREQ is a vector of
+     nonnegative integer frequencies (counts) the same size as Y.  Pass ‘[]’ to
+     omit either one.
+
+     ‘probplot (AX, ...)’ plots into the axes AX instead of the current axes.
+     The trailing option "noref" suppresses the reference line.
+
+     ‘H = probplot (...)’ returns a column vector of handles to the plotted line
+     objects (the data markers, followed by the reference line unless "noref"
+     was given).
+
+     The reference line is a robust fit through the first and third quartiles of
+     the data on the transformed scale.  For censored data the quartiles are
+     taken from the Kaplan-Meier plotting positions; when heavy censoring
+     prevents the data from reaching a quartile the position is linearly
+     extrapolated, which may deviate slightly from MATLAB.
+
+     See also: normplot, wblplot, qqplot, cdfplot, ecdf.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 74
+Produce a probability plot of the data in Y against the distribution DIST.
 
 
 
