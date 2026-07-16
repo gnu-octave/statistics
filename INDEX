@@ -367,6 +367,7 @@ Regression
  pcacov
  pcares
  plsregress
+ ppca
  princomp
  regress
  regress_gp
