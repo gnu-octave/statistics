@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 182
+# columns: 183
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13626,6 +13626,73 @@ mdscale
 # elements: 1
 # length: 61
 Nonclassical (metric and nonmetric) multidimensional scaling.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+nnmf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1895
+ -- statistics: [W, H] = nnmf (A, K)
+ -- statistics: [W, H, D] = nnmf (A, K)
+ -- statistics: [...] = nnmf (..., NAME, VALUE)
+
+     Nonnegative matrix factorization.
+
+     ‘[W, H] = nnmf (A, K)’ factors the nonnegative N * M matrix A into
+     nonnegative factors W (N * K) and H (K * M) whose product approximates A,
+     by minimizing the root-mean-square residual between A and ‘W * H’.  K, the
+     number of factors, is typically smaller than N and M.
+
+     ‘[W, H, D] = nnmf (...)’ also returns the root-mean-square residual D, that
+     is ‘norm (A - W * H, "fro") / sqrt (N * M)’.
+
+     The factorization is not unique: the returned factors are normalized so
+     that the rows of H have unit length, and the columns of W (and the
+     corresponding rows of H) are ordered by decreasing length of the columns of
+     W.  Because the objective is not convex, the iteration converges to a local
+     minimum that depends on the starting point; use 'Replicates' to try several
+     random starts and keep the best.
+
+     Name/Value pairs:
+
+     'Algorithm'
+          'als' (default) for alternating least squares, or 'mult' for
+          multiplicative updates.  Alternating least squares usually converges
+          faster and more reliably; multiplicative updates are more sensitive to
+          the starting point.
+
+     'W0'
+          An N * K initial value for W.
+
+     'H0'
+          A K * M initial value for H.
+
+     'Replicates'
+          The number of times to repeat the factorization from new random
+          starting points, keeping the result with the smallest residual.  The
+          default is 1.  Ignored for a starting point fixed by both 'W0' and
+          'H0'.
+
+     'Options'
+          A structure of algorithm options (as returned by ‘statset’) whose
+          MaxIter, TolFun, and TolX fields control the iteration.
+
+     See also: pca, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Nonnegative matrix factorization.
 
 
 

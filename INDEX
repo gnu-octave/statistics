@@ -363,6 +363,7 @@ Regression
  nlinfit
  nlparci
  nlpredci
+ nnmf
  parseWilkinsonFormula
  pca
  pcacov
