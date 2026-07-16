@@ -1240,3 +1240,158 @@ endfunction
 %! mdl = GeneralizedLinearModel ([1 2; 2 1; 3 4; 4 3; 5 6; 6 5], ...
 %!                               [1;0;2;3;2;4], "linear", ...
 %!                               "Distribution", "poisson"); mdl(1);
+
+## Comprehensive property and method coverage
+%!shared X, yp, yb, yn
+%! X = [ 0.37,  0.06,  1.76; -0.76, -1.52,  0.84;  0.76, -0.19, -0.47; ...
+%!      -0.80, -2.74, -0.90;  0.08,  0.39,  1.05; -0.41, -0.03,  0.74; ...
+%!       0.23,  1.21,  0.35;  0.66,  0.94,  0.13;  0.66, -0.12, -0.06; ...
+%!       2.09,  1.33, -0.71;  1.50,  0.08, -0.52;  0.59,  0.07, -1.13; ...
+%!      -1.17, -0.35, -1.28;  0.68,  0.63, -0.80; -0.69,  0.08,  0.41; ...
+%!       2.04,  0.96, -0.56];
+%! yp = [5 2 0 3 1 1 0 1 2 1 3 0 0 1 1 3]';
+%! yb = [1 1 1 0 0 1 1 1 1 1 1 0 0 0 0 1]';
+%! yn = [2.1 -0.3 1.2 -1.1 0.8 0.4 1.5 1.1 0.6 2.9 2.0 0.7 -1.3 0.9 -0.2 2.5]';
+
+%!test  # a normal-distribution GLM with identity link reproduces OLS exactly
+%! mdl = fitglm (X, yn, "Distribution", "normal");
+%! b_ols = [ones(16, 1), X] \ yn;
+%! assert_equal (mdl.Coefficients.Estimate, b_ols, 1e-10);
+%! assert_equal (mdl.Fitted.Response, [ones(16, 1), X] * b_ols, 1e-10);
+%! assert_equal (mdl.Residuals.Raw, yn - [ones(16, 1), X] * b_ols, 1e-10);
+%! assert_equal (mdl.Deviance, sum ((yn - [ones(16, 1), X] * b_ols) .^ 2), 1e-10);
+%! assert_equal (mdl.Link.Name, "identity");
+
+%!test  # the normal-GLM standard errors match those from regress
+%! mdl = fitglm (X, yn, "Distribution", "normal");
+%! [~, bint] = regress (yn, [ones(16, 1), X], 0.05);
+%! se_reg = (bint(:,1) - bint(:,2)) / 2 / tinv (0.025, 12);
+%! assert_equal (mdl.Coefficients.SE, se_reg, 1e-9);
+
+%!test  # normal-GLM dispersion is estimated as SSE/DFE; log-likelihood closed form
+%! mdl = fitglm (X, yn, "Distribution", "normal");
+%! rss = mdl.Deviance;
+%! assert_equal (mdl.DispersionEstimated, true);
+%! assert_equal (mdl.Dispersion, rss / mdl.DFE, 1e-12);
+%! assert_equal (mdl.LogLikelihood, -8 * (log (2 * pi * rss / 16) + 1), 1e-6);
+
+%!test  # Poisson coefficients and fit statistics (verified against MATLAB)
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Coefficients.Estimate, ...
+%!   [-0.3420955; 1.2804868; -1.0743272; 0.8395779], 1e-6);
+%! assert_equal (mdl.Deviance, 7.403008, 1e-5);
+%! assert_equal (mdl.LogLikelihood, -18.543280, 1e-5);
+%! assert_equal (mdl.ModelCriterion.AIC, 45.086559, 1e-5);
+%! assert_equal (mdl.Rsquared.Deviance, 0.6627677, 1e-6);
+
+%!test  # scalar count/size properties of the Poisson fit
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.NumCoefficients, 4);
+%! assert_equal (mdl.NumEstimatedCoefficients, 4);
+%! assert_equal (mdl.NumPredictors, 3);
+%! assert_equal (mdl.NumObservations, 16);
+%! assert_equal (mdl.DFE, 12);
+%! assert_equal (mdl.ResponseName, "y");
+%! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'x1', 'x2', 'x3'});
+
+%!test  # Poisson has a fixed unit dispersion (not estimated)
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Dispersion, 1);
+%! assert_equal (mdl.DispersionEstimated, false);
+%! assert_equal (mdl.Distribution.Name, "poisson");
+%! assert_equal (mdl.Link.Name, "log");
+
+%!test  # the coefficient covariance is symmetric with SE^2 on its diagonal
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! C = mdl.CoefficientCovariance;
+%! assert_equal (size (C), [4, 4]);
+%! assert_equal (C, C', 1e-14);
+%! assert_equal (diag (C), mdl.Coefficients.SE .^ 2, 1e-12);
+
+%!test  # predict at the training data reproduces the fitted response
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! [yhat, yci] = predict (mdl, X);
+%! assert_equal (yhat, mdl.Fitted.Response, 1e-10);
+%! assert_equal (size (yci), [16, 2]);
+%! assert_equal (all (yci(:,1) <= yhat & yhat <= yci(:,2)), true);
+
+%!test  # feval evaluates the model and agrees with predict
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (feval (mdl, X(:,1), X(:,2), X(:,3)), predict (mdl, X), 1e-12);
+
+%!test  # coefCI matches the t-interval and honours a custom alpha
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! b = mdl.Coefficients.Estimate;  se = mdl.Coefficients.SE;
+%! t95 = tinv (0.975, mdl.DFE);
+%! assert_equal (coefCI (mdl), [b - t95 * se, b + t95 * se], 1e-12);
+%! t90 = tinv (0.95, mdl.DFE);
+%! assert_equal (coefCI (mdl, 0.10), [b - t90 * se, b + t90 * se], 1e-12);
+
+%!test  # coefTest gives the Wald F statistic against the constant model
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! [p, F, df] = coefTest (mdl);
+%! assert_equal (F, 3.685312, 1e-5);
+%! assert_equal (p, 0.04331745, 1e-7);
+%! assert_equal (df, 3);
+
+%!test  # devianceTest chi-square equals the drop from the null deviance
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! dt = devianceTest (mdl);
+%! assert_equal (class (dt), "table");
+%! assert_equal (dt.chi2Stat(2), dt.Deviance(1) - dt.Deviance(2), 1e-10);
+
+%!test  # information criteria satisfy their defining identities
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! k = mdl.NumEstimatedCoefficients;  ll = mdl.LogLikelihood;
+%! assert_equal (mdl.ModelCriterion.AIC, -2 * ll + 2 * k, 1e-9);
+%! assert_equal (mdl.ModelCriterion.BIC, -2 * ll + k * log (16), 1e-9);
+
+%!test  # raw residuals are response minus fit; random draws match the response size
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Residuals.Raw, yp - mdl.Fitted.Response, 1e-12);
+%! ysim = random (mdl);
+%! assert_equal (size (ysim), [16, 1]);
+%! assert_equal (all (ysim == round (ysim) & ysim >= 0), true);
+
+%!test  # binomial/logistic fit: coefficients agree with the glmfit engine
+%! mdl = fitglm (X, yb, "Distribution", "binomial");
+%! assert_equal (mdl.Coefficients.Estimate, glmfit (X, yb, "binomial"), 1e-8);
+%! assert_equal (mdl.Link.Name, "logit");
+%! assert_equal (all (mdl.Fitted.Response >= 0 & mdl.Fitted.Response <= 1), true);
+%! assert_equal (mdl.Deviance, 10.997099, 1e-5);
+
+%!test  # an interaction model adds the cross term and one coefficient
+%! mdl = fitglm (X, yp, "interactions", "Distribution", "poisson");
+%! assert_equal (any (strcmp (mdl.CoefficientNames, "x1:x2")), true);
+%! assert_equal (mdl.NumCoefficients, 7);
+
+%!test  # an offset is stored and applied
+%! mdl = fitglm (X, yp, "Distribution", "poisson", "Offset", log (2 * ones (16, 1)));
+%! assert_equal (numel (mdl.Offset), 16);
+
+%!test  # disp prints the model header and the coefficient table
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! s = evalc ("disp (mdl)");
+%! assert_equal (isempty (strfind (s, "Generalized linear regression model")), false);
+%! assert_equal (isempty (strfind (s, "Estimate")), false);
+
+%!test  # chained subsref reaches property -> table column -> element
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (numel (mdl.Coefficients.Estimate), 4);
+%! assert_equal (mdl.Coefficients.Estimate(1), -0.3420955, 1e-6);
+%! assert_equal (mdl.Coefficients.Estimate(2), mdl.Coefficients{2, "Estimate"}, 1e-12);
+
+%!test  # the diagnostic and effect plots run without error
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   plotResiduals (mdl);
+%!   plotResiduals (mdl, "fitted", "ResidualType", "Pearson");
+%!   plotDiagnostics (mdl);
+%!   plotDiagnostics (mdl, "cookd");
+%!   plotEffects (mdl);
+%!   plotAdjustedResponse (mdl, 1);
+%!   plotAdded (mdl, "x2");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
