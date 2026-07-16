@@ -233,6 +233,15 @@ function [sequence, states] = hmmgenerate (len, transprob, outprob, varargin)
 
 endfunction
 
+%!demo
+%! ## Generate an output sequence and its hidden states from a two-state model
+%! ## (a fair and a loaded die).
+%!
+%! transprob = [0.95, 0.05; 0.10, 0.90];
+%! outprob = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6; 1/10, 1/10, 1/10, 1/10, 1/10, 1/2];
+%! [sequence, states] = hmmgenerate (15, transprob, outprob, ...
+%!                                   "statenames", {"fair", "loaded"})
+
 %!test
 %! len = 25;
 %! transprob = [0.8, 0.2; 0.4, 0.6];

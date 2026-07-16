@@ -203,35 +203,34 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   # - for transprob
   s = sum (transprob, 2);
   s(s == 0) = 1;
-  transprob = log (transprob ./ (s * ones (1, columns (transprob))));
+  transprob = log (transprob ./ s);
   # - for outprob
   s = sum (outprob, 2);
   s(s == 0) = 1;
-  outprob = log (outprob ./ (s * ones (1, columns (outprob))));
+  outprob = log (outprob ./ s);
 
-  # Store the path starting from i in spath(i, :)
-  spath = ones (nstate, len + 1);
-  # Set the first state for each path
-  spath(:, 1) = (1:nstate)';
-  # Store the probability of path i in spathprob(i)
-  spathprob = transprob(1, :);
-
-  # Find the most likely paths for the given output sequence
-  for i = 1:len
-    # Calculate the new probabilities of the continuation with each state
-    nextpathprob = ((spathprob' + outprob(:, sequence(i))) * ...
-                    ones (1, nstate)) + transprob;
-    # Find the paths with the highest probabilities
-    [spathprob, mindex] = max (nextpathprob);
-    # Update spath and spathprob with the new paths
-    spath = spath(mindex, :);
-    spath(:, i + 1) = (1:nstate)';
-  endfor
-
-  # Set vpath to the most likely path
-  # We do not want the last state because we do not have an output for it
-  [m, mindex] = max (spathprob);
-  vpath = spath(mindex, 1:len);
+  # Viterbi recursion.  The model starts in state 1 at step 0, so the first
+  # observation is emitted after one transition from state 1.  delta(k) holds
+  # the log probability of the most likely path that ends in state k at the
+  # current step; back(:, i) stores, for each state, the predecessor state on
+  # that best path, used for the traceback.
+  if (len == 0)
+    vpath = zeros (1, 0);
+  else
+    delta = transprob(1, :)' + outprob(:, sequence(1));
+    back = zeros (nstate, len);
+    for i = 2:len
+      # best predecessor for each current state, then add the emission
+      [delta, back(:, i)] = max (delta + transprob, [], 1);
+      delta = delta' + outprob(:, sequence(i));
+    endfor
+    # Trace back from the most likely final state
+    vpath = zeros (1, len);
+    [~, vpath(len)] = max (delta);
+    for i = len - 1:-1:1
+      vpath(i) = back(vpath(i + 1), i + 1);
+    endfor
+  endif
 
   # Transform vpath into statenames if requested
   if (usesn)
@@ -239,6 +238,24 @@ function vpath = hmmviterbi (sequence, transprob, outprob, varargin)
   endif
 
 endfunction
+
+%!demo
+%! ## Most likely (Viterbi) state path for a two-state, three-symbol model.
+%!
+%! transprob = [0.8, 0.2; 0.4, 0.6];
+%! outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
+%! sequence = [1, 2, 1, 1, 3, 2, 3, 1, 2, 3];
+%! vpath = hmmviterbi (sequence, transprob, outprob)
+
+%!demo
+%! ## The state path can also be reported using custom state names.
+%!
+%! transprob = [0.95, 0.05; 0.10, 0.90];
+%! outprob = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6; 1/10, 1/10, 1/10, 1/10, 1/10, 1/2];
+%! [sequence, states] = hmmgenerate (12, transprob, outprob, ...
+%!                                   "statenames", {"fair", "loaded"});
+%! vpath = hmmviterbi (sequence, transprob, outprob, ...
+%!                     "statenames", {"fair", "loaded"})
 
 %!test
 %! sequence = [1, 2, 1, 1, 1, 2, 2, 1, 2, 3, 3, 3, ...
@@ -263,3 +280,21 @@ endfunction
 %!             'One', 'One', 'One', 'One', 'One', 'One', 'One', 'Two', ...
 %!             'Two', 'Two', 'Two', 'One', 'One', 'One', 'One', 'One', 'One'};
 %! assert_equal (vpath, expected);
+
+%!test
+%! ## The returned path is the true maximum-probability path.  A former bug
+%! ## scored a spurious transition out of the last state, biasing the final
+%! ## states of the path; these cases guard against a regression.
+%! transprob = [0.1854, 0.8146; 0.5948, 0.4052];
+%! outprob = [0.5536, 0.4464; 0.2712, 0.7288];
+%! assert_equal (hmmviterbi ([1, 2], transprob, outprob), [2, 2]);
+
+%!test
+%! transprob = [0.6056, 0.3944; 0.2036, 0.7964];
+%! outprob = [0.6525, 0.3475; 0.2878, 0.7122];
+%! assert_equal (hmmviterbi ([1, 1, 2, 1], transprob, outprob), [1, 1, 1, 1]);
+
+%!test
+%! ## An empty sequence yields an empty path
+%! vpath = hmmviterbi ([], [0.8, 0.2; 0.4, 0.6], [0.5, 0.5; 0.3, 0.7]);
+%! assert_equal (vpath, zeros (1, 0));

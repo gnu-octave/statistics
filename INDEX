@@ -248,8 +248,10 @@ Experimental Design
 Machine Learning
  fcnnpredict
  fcnntrain
+ hmmdecode
  hmmestimate
  hmmgenerate
+ hmmtrain
  hmmviterbi
  perfcurve
  svmpredict
