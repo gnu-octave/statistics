@@ -467,6 +467,8 @@ endfunction
 %! [h, p, kstat] = lillietest (x)
 
 %!test  # statistic matches a direct Kolmogorov-Smirnov computation and MATLAB
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
 %! [~, ~, ks] = lillietest (x);
 %! xs = sort (x);  n = numel (x);
@@ -476,6 +478,8 @@ endfunction
 %! assert_equal (ks, 0.1026, 5e-4);            # MATLAB lillietest reference
 
 %!test  # exponential and extreme value statistics match MATLAB references
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! xe = [0.5 1.2 0.3 2.1 0.8 1.5 0.2 3.0 0.7 1.1 0.4 2.5]';
 %! [~, ~, kse] = lillietest (xe, "Distribution", "exponential");
 %! assert_equal (kse, 0.1545, 5e-4);
@@ -484,6 +488,7 @@ endfunction
 %! assert_equal (ksv, 0.1512, 5e-4);
 
 %!test  # a clearly non-normal sample is rejected; h, p, critval consistent
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = [zeros(1, 15), 100];
 %! [h, p, ks, cv] = lillietest (x);
 %! assert_equal (h, 1);
@@ -491,11 +496,15 @@ endfunction
 %! assert_equal (p, 0.001);                     # clamped to the tabulated minimum
 
 %!test  # distribution families run and return a decision
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = -log (rand (30, 1));
 %! assert_equal (ismember (lillietest (x, "Distribution", "exponential"), [0 1]), true);
 %! assert_equal (ismember (lillietest (x, "Distribution", "extreme value"), [0 1]), true);
 
 %!test  # p-value stays in the tabulated range; critval grows as alpha falls
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = [3 1 4 1 5 9 2 6 5 3 5 8 9 7]';
 %! [~, p, ~, cv05] = lillietest (x);
 %! [~, ~, ~, cv01] = lillietest (x, "Alpha", 0.01);
@@ -503,12 +512,16 @@ endfunction
 %! assert_equal (cv01 > cv05, true);
 
 %!test  # Monte-Carlo path runs and returns a valid p-value
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = [2.1 0.3 1.2 -0.7 0.9 1.5 2.8 0.1 0.4 1.1 3.2 0.6 2.0 0.9 1.7]';
 %! [h, p] = lillietest (x, "MCTol", 0.05);
 %! assert_equal (ismember (h, [0 1]), true);
 %! assert_equal (p > 0 && p <= 1, true);
 
 %!test  # interpolation works for a sample size off the table grid (n = 17)
+%! warning ("off", "lillietest:pTooBig", "local");
+%! warning ("off", "lillietest:pTooSmall", "local");
 %! x = [1 3 2 5 4 7 6 9 8 11 10 13 12 15 14 17 16]';
 %! [~, ~, ~, cv] = lillietest (x);
 %! assert_equal (isfinite (cv) && cv > 0, true);
