@@ -15,6 +15,7 @@ Clustering
  knnsearch
  linkage
  mahal
+ mdscale
  mhsample
  optimalleaforder
  pdist

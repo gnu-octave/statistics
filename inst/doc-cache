@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 179
+# columns: 182
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13335,6 +13335,297 @@ hmmtrain
 # elements: 1
 # length: 72
 Estimate the parameters of a hidden Markov model from emitted sequences.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+rotatefactors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3226
+ -- statistics: B = rotatefactors (A)
+ -- statistics: B = rotatefactors (A, NAME, VALUE, ...)
+ -- statistics: [B, T] = rotatefactors (...)
+
+     Rotate a factor-loading matrix.
+
+     ‘B = rotatefactors (A)’ rotates the D * M factor loadings matrix A (D
+     observed variables, M factors) to the 'varimax' criterion and returns the
+     rotated loadings B, the same size as A.
+
+     ‘[B, T] = rotatefactors (...)’ also returns the M * M rotation matrix T, so
+     that ‘B = A * T’.  For the orthogonal methods T is orthonormal (‘T' * T’ is
+     the identity); for the oblique methods ('promax' and oblique 'procrustes')
+     it is a general invertible matrix.
+
+     The rotation is controlled by NAME/VALUE pairs:
+
+     'Method'
+          The rotation criterion, one of:
+
+          'varimax' (default)
+               Orthomax with a criterion coefficient of 1; maximizes the
+               variance of the squared loadings within each factor.
+
+          'quartimax'
+               Orthomax with a coefficient of 0; simplifies the description of
+               each variable.
+
+          'equamax'
+               Orthomax with a coefficient of M / 2.
+
+          'parsimax'
+               Orthomax with a coefficient of D (M - 1) / (D + M - 2).
+
+          'orthomax'
+               General orthomax with the coefficient given by 'Coeff'.
+
+          'promax'
+               Oblique rotation obtained by fitting an oblique transformation to
+               a target built from a 'varimax' solution raised to the power
+               'Power'.
+
+          'procrustes'
+               Rotation towards the 'Target' matrix, either orthogonal or
+               oblique according to 'Type'.
+
+     'Normalize'
+          'on' (default) applies Kaiser normalization (each row of A is scaled
+          to unit length before the orthomax rotation and unscaled afterwards);
+          'off' disables it.  Ignored by 'procrustes'.
+
+     'Reltol'
+          Relative convergence tolerance for the iterative orthomax rotation.
+          The default is ‘sqrt (eps)’.
+
+     'Maxit'
+          Maximum number of iterations for the iterative orthomax rotation.  The
+          default is 250.
+
+     'Coeff'
+          The orthomax coefficient used when 'Method' is 'orthomax'.  The
+          default is 1 (equivalent to 'varimax').
+
+     'Power'
+          The power used to build the 'promax' target, a scalar greater than or
+          equal to 1.  The default is 4.
+
+     'Target'
+          The target loadings matrix for 'procrustes', the same size as A.
+          Required for that method.
+
+     'Type'
+          'orthogonal' (default) or 'oblique', selecting the kind of
+          'procrustes' rotation.
+
+     *Note on the orthomax family:* for coefficients up to 1 ('varimax',
+     'quartimax', and small 'orthomax') the rotation follows the same
+     successive-SVD iteration as MATLAB and stops at the same relative
+     tolerance.  For larger coefficients ('equamax', 'parsimax') that iteration
+     does not converge, so a monotonically convergent pairwise algorithm is used
+     instead; it reaches the same optimum as MATLAB to that solution's own
+     convergence precision.
+
+     See also: factoran, pca, pcacov, procrustes.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Rotate a factor-loading matrix.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+ppca
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2480
+ -- statistics: COEFF = ppca (Y, K)
+ -- statistics: [COEFF, SCORE] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU, V] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU, V, S] = ppca (Y, K)
+ -- statistics: [...] = ppca (..., NAME, VALUE)
+
+     Probabilistic principal component analysis.
+
+     ‘COEFF = ppca (Y, K)’ fits a probabilistic principal component analysis
+     (PPCA) model with K components to the N * P data matrix Y (rows are
+     observations, columns are variables) and returns the P * K matrix COEFF of
+     orthonormal principal component coefficients, ordered by decreasing
+     component variance.  Y may contain ‘NaN’ values marking missing
+     observations; the model is fitted by an expectation-maximization algorithm
+     that accounts for them.  K must be a positive integer smaller than P.
+
+     ‘[COEFF, SCORE, PCVAR, MU, V, S] = ppca (...)’ returns further outputs:
+
+     SCORE
+          The N * K principal component scores (the data projected onto the
+          components; missing entries are reconstructed from the model before
+          projection).
+
+     PCVAR
+          A K * 1 vector of the principal component variances (the variance
+          explained by each component).
+
+     MU
+          A 1 * P vector of the estimated mean of Y.
+
+     V
+          The estimated residual (isotropic noise) variance.
+
+     S
+          A structure with the fitted model details: the loadings W, the
+          expected scores Xexp, the reconstruction Recon, the number of
+          iterations NumIter, and the root-mean-square residual RMSResid.
+
+     Name/Value pairs control the fit:
+
+     'W0'
+          A P * K initial value for the loadings used by the
+          expectation-maximization algorithm (missing-data case).
+
+     'Options'
+          A structure of algorithm options, as returned by ‘statset’, whose
+          MaxIter, TolFun, and TolX fields set the maximum number of iterations
+          and the convergence tolerances of the expectation-maximization
+          algorithm.
+
+     When Y has no missing values the model is fitted directly from the
+     eigendecomposition of its covariance matrix; COEFF, PCVAR, and V are then
+     the principal component directions, the leading variances, and the mean of
+     the trailing variances, respectively.
+
+     See also: pca, pcacov, pcares, factoran, barttest.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Probabilistic principal component analysis.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+mdscale
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3907
+ -- statistics: Y = mdscale (D, P)
+ -- statistics: [Y, STRESS] = mdscale (D, P)
+ -- statistics: [Y, STRESS, DISPARITIES] = mdscale (D, P)
+ -- statistics: [...] = mdscale (..., NAME, VALUE)
+
+     Nonclassical (metric and nonmetric) multidimensional scaling.
+
+     ‘Y = mdscale (D, P)’ takes a matrix of dissimilarities D and returns a
+     configuration Y of N points in P dimensions (an N * P matrix) whose
+     interpoint distances approximate D, by minimizing a stress criterion.  D
+     may be given either as a full N * N symmetric matrix with zero diagonal, or
+     as the vector of the N (N - 1) / 2 upper-triangle dissimilarities returned
+     by ‘pdist’.
+
+     ‘[Y, STRESS, DISPARITIES] = mdscale (...)’ also returns the final value of
+     the STRESS criterion and the DISPARITIES (the transformed dissimilarities
+     the distances are fitted to).  For the nonmetric criteria the disparities
+     are the monotone (isotonic) regression of the dissimilarities onto the
+     distances; for the metric criteria they are the dissimilarities themselves.
+
+     Name/Value pairs:
+
+     'Criterion'
+          The goodness-of-fit criterion to minimize, one of:
+
+          'stress' (default)
+               Kruskal's normalized stress-1, sqrt (sum ((d - dhat)^2) / sum
+               (d^2)), computed from disparities DHAT (nonmetric).
+
+          'sstress'
+               Squared stress, sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4))
+               (nonmetric).
+
+          'metricstress'
+               Metric stress, sqrt (sum ((d - delta)^2) / sum (delta^2)),
+               fitting the dissimilarities DELTA directly.
+
+          'metricsstress'
+               Metric squared stress, sqrt (sum ((d^2 - delta^2)^2) / sum
+               (delta^4)).
+
+          'sammon'
+               Sammon's nonlinear mapping criterion, (1 / sum (delta)) sum ((d -
+               delta)^2 / delta).
+
+          'strain'
+               The classical scaling criterion; equivalent to ‘cmdscale’.
+
+     'Weights'
+          A matrix or vector of nonnegative weights, the same size as D,
+          weighting each dissimilarity in the criterion.
+
+     'Start'
+          The initial configuration: 'cmdscale' (default, classical scaling),
+          'random', or an explicit N * P matrix.
+
+     'Replicates'
+          The number of times to repeat the minimization from different starting
+          points, keeping the best (lowest-stress) result.  The default is 1.
+
+     'Options'
+          A structure of algorithm options (as returned by ‘statset’) whose
+          MaxIter, TolFun, and TolX fields control the iterative minimization.
+
+     Non-uniqueness of the solution
+     ------------------------------
+
+     A stress-minimizing configuration is defined only up to a translation,
+     rotation, and reflection, because these leave all interpoint distances (and
+     hence the stress) unchanged.  ‘mdscale’ removes this ambiguity by returning
+     Y centred at the origin and rotated to its principal axes (with the
+     largest-magnitude coordinate on each axis made positive), matching the
+     convention used by MATLAB.
+
+     Beyond that rigid ambiguity, the *nonmetric* criteria ('stress' and
+     'sstress') are non-convex and typically have several local minima; the one
+     reached depends on the starting configuration and the details of the
+     optimizer.  As a result the returned configuration for these criteria may
+     differ from the one another program (including MATLAB) reports even when
+     the *stress value* agrees, and different runs may find configurations with
+     slightly different stress.  Use 'Replicates' with a 'random' start to
+     search for a lower-stress solution.  The metric criteria and 'strain' have
+     an essentially unique solution and are reproducible up to the rigid
+     ambiguity above.
+
+     See also: cmdscale, pdist, squareform, procrustes, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Nonclassical (metric and nonmetric) multidimensional scaling.
 
 
 
