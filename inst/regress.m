@@ -126,9 +126,14 @@ function [b, bint, r, rint, stats] = regress (y, X, alpha)
     SSE = sum (r .^ 2);
     v = SSE / dof;
 
-    # c = diag(inv (X' * X)) using (economy) QR decomposition
-    # which means that we only have to use Xr
-    c = diag (inv (Xr' * Xr));
+    # c = diag (inv (X' * X)) using the (economy) QR factor Xr = R.  Since
+    # X' * X == R' * R, we have inv (X' * X) == inv (R) * inv (R)', whose
+    # diagonal is the row-wise sum of squares of inv (R).  Forming R' * R
+    # would square the condition number (and warns "matrix singular to
+    # machine precision" for ill-conditioned designs, e.g. the Longley data);
+    # working from inv (R) directly avoids that.
+    Xri = inv (Xr);
+    c = sum (Xri .^ 2, 2);
 
     db = t_alpha_2 * sqrt (v * c);
 
@@ -208,4 +213,4 @@ endfunction
 %! assert_equal (b,V(:,1),4e-6);
 %! assert_equal (stats(1),Rsq,1e-12);
 %! assert_equal (stats(2),F,3e-8);
-%! assert_equal (((bint(:,1)-bint(:,2))/2)/tinv (alpha/2,9),V(:,2),-1.e-5);
+%! assert_equal (((bint(:,1)-bint(:,2))/2)/tinv (alpha/2,9),V(:,2),-1e-11);
