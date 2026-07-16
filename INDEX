@@ -372,6 +372,7 @@ Regression
  regress_gp
  ridge
  robustfit
+ rotatefactors
  stepwisefit
 Transforms
  logit
