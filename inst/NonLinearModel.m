@@ -700,3 +700,152 @@ function out = ternary (cond, a, b)
     out = b;
   endif
 endfunction
+
+%!demo
+%! ## Fit an exponential growth model y = b1 * exp (b2 * x) and inspect it.
+%! x = (1:10)';
+%! y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+%! modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+%! mdl = fitnlm (x, y, modelfun, [1; 0.3]);
+%! disp (mdl.Coefficients)
+%! printf ("RMSE = %g,  R^2 = %g\n", mdl.RMSE, mdl.Rsquared.Ordinary);
+
+## Comprehensive property and method coverage
+%!shared X, y, modelfun, beta0
+%! X = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10];
+%! y = [2.1; 2.9; 4.2; 5.3; 7.1; 9.4; 12.8; 16.5; 22.1; 29.8];
+%! modelfun = @(b, x) b(1) .* exp (b(2) .* x);
+%! beta0 = [1; 0.3];
+
+%!test  # coefficient table (estimate, SE, tStat) verified against MATLAB
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (mdl.Coefficients.Estimate, [1.683747025; 0.286911087], 1e-6);
+%! assert_equal (mdl.Coefficients.SE, [0.035194899; 0.002350913], 1e-6);
+%! assert_equal (mdl.Coefficients.tStat, [47.8406555; 122.042406], -1e-4);
+%! assert_equal (mdl.Coefficients.tStat, ...
+%!               mdl.Coefficients.Estimate ./ mdl.Coefficients.SE, 1e-8);
+
+%!test  # sums of squares and their internal relationships
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! bhat = mdl.Coefficients.Estimate;  fit = modelfun (bhat, X);
+%! assert_equal (mdl.Fitted, fit, 1e-8);
+%! assert_equal (mdl.SSE, sum ((y - fit) .^ 2), 1e-8);
+%! assert_equal (mdl.SST, sum ((y - mean (y)) .^ 2), 1e-6);
+%! assert_equal (mdl.SSR, sum ((fit - mean (y)) .^ 2), 1e-6);
+%! assert_equal (mdl.SSE, 0.233771954, 1e-7);
+%! assert_equal (mdl.SST, 750.976, 1e-3);
+
+%!test  # MSE/RMSE/DFE and the coefficient of determination
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (mdl.DFE, 8);
+%! assert_equal (mdl.MSE, mdl.SSE / mdl.DFE, 1e-12);
+%! assert_equal (mdl.RMSE, sqrt (mdl.MSE), 1e-12);
+%! assert_equal (mdl.RMSE, 0.170942956, 1e-7);
+%! assert_equal (mdl.Rsquared.Ordinary, 1 - mdl.SSE / mdl.SST, 1e-12);
+%! assert_equal (mdl.Rsquared.Ordinary, 0.999688709, 1e-8);
+%! assert_equal (mdl.Rsquared.Adjusted, 0.999649798, 1e-8);
+
+%!test  # log-likelihood and information criteria (values and identities)
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! ll = mdl.LogLikelihood;  k = mdl.NumEstimatedCoefficients;  n = 10;
+%! assert_equal (ll, 4.590586096, 1e-6);
+%! assert_equal (mdl.ModelCriterion.AIC, -5.181172193, 1e-6);
+%! assert_equal (mdl.ModelCriterion.BIC, -4.576002007, 1e-6);
+%! assert_equal (mdl.ModelCriterion.AIC, -2 * ll + 2 * k, 1e-9);
+%! assert_equal (mdl.ModelCriterion.BIC, -2 * ll + k * log (n), 1e-9);
+%! assert_equal (mdl.ModelCriterion.AICc, ...
+%!               -2 * ll + 2 * k + 2 * k * (k + 1) / (n - k - 1), 1e-9);
+
+%!test  # count/size properties and default names
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (mdl.NumCoefficients, 2);
+%! assert_equal (mdl.NumEstimatedCoefficients, 2);
+%! assert_equal (mdl.NumPredictors, 1);
+%! assert_equal (mdl.NumObservations, 10);
+%! assert_equal (mdl.CoefficientNames, {'b1', 'b2'});
+%! assert_equal (mdl.ResponseName, "y");
+
+%!test  # the coefficient covariance is symmetric with SE^2 on the diagonal
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! C = mdl.CoefficientCovariance;
+%! assert_equal (size (C), [2, 2]);
+%! assert_equal (C, C', 1e-14);
+%! assert_equal (diag (C), mdl.Coefficients.SE .^ 2, 1e-12);
+
+%!test  # raw residuals are response minus fit
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (class (mdl.Residuals), "table");
+%! assert_equal (mdl.Residuals.Raw, y - mdl.Fitted, 1e-10);
+
+%!test  # predict returns fitted values (verified against MATLAB) with CIs
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! [yhat, yci] = predict (mdl, [2.5; 5.5; 8.5]);
+%! assert_equal (yhat, [3.449741842; 8.158274281; 19.293455074], 1e-6);
+%! assert_equal (yci(:,1), [3.329126146; 7.997938483; 19.121921613], 1e-5);
+%! assert_equal (yci(:,2), [3.570357538; 8.318610079; 19.464988535], 1e-5);
+%! assert_equal (all (yci(:,1) <= yhat & yhat <= yci(:,2)), true);
+
+%!test  # predict at the training data reproduces the fitted response
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (predict (mdl, X), mdl.Fitted, 1e-8);
+
+%!test  # feval agrees with predict; random draws match the response size
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (feval (mdl, [2.5; 5.5]), predict (mdl, [2.5; 5.5]), 1e-12);
+%! ysim = random (mdl);
+%! assert_equal (size (ysim), [10, 1]);
+
+%!test  # coefCI matches beta +/- t * SE and honours a custom alpha
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! b = mdl.Coefficients.Estimate;  se = mdl.Coefficients.SE;
+%! t95 = tinv (0.975, mdl.DFE);
+%! assert_equal (coefCI (mdl), [b - t95 * se, b + t95 * se], 1e-12);
+%! t90 = tinv (0.95, mdl.DFE);
+%! assert_equal (coefCI (mdl, 0.10), [b - t90 * se, b + t90 * se], 1e-12);
+
+%!test  # coefTest reports a Wald F statistic versus the zero model
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! [p, F, df] = coefTest (mdl);
+%! assert_equal (df, 2);
+%! assert_equal (F > 1e5, true);
+%! assert_equal (p < 1e-10, true);
+
+%!test  # table input gives the same fit as matrix input
+%! tbl = table (X, y, "VariableNames", {'x', 'y'});
+%! mdl = fitnlm (tbl, modelfun, beta0);
+%! assert_equal (mdl.Coefficients.Estimate, [1.683747025; 0.286911087], 1e-6);
+%! assert_equal (mdl.CoefficientNames, {'b1', 'b2'});
+
+%!test  # custom coefficient names are stored and used
+%! mdl = fitnlm (X, y, modelfun, beta0, "CoefficientNames", {'A', 'k'});
+%! assert_equal (mdl.CoefficientNames, {'A', 'k'});
+
+%!test  # disp prints the model header and the coefficient table
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! s = evalc ("disp (mdl)");
+%! assert_equal (isempty (strfind (s, "Nonlinear regression model")), false);
+%! assert_equal (isempty (strfind (s, "Estimate")), false);
+
+%!test  # chained subsref reaches property -> table column -> element
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! assert_equal (numel (mdl.Coefficients.Estimate), 2);
+%! assert_equal (mdl.Coefficients.Estimate(1), 1.683747025, 1e-6);
+
+%!test  # the residual and slice plots run without error
+%! mdl = fitnlm (X, y, modelfun, beta0);
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   plotResiduals (mdl);
+%!   plotResiduals (mdl, "fitted");
+%!   plotDiagnostics (mdl);
+%!   plotSlice (mdl);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Test input validation
+%!error<DATA, RESP, MODELFUN, and BETA0 are required> NonLinearModel (1)
+%!error<MODELFUN must be a function handle.> ...
+%! NonLinearModel ([1; 2], [1; 2], "bad", [1])
+%!error<NonLinearModel: \(\) indexing is not supported> ...
+%! mdl = fitnlm ([1;2;3;4], [1;2;3;4], @(b, x) b(1) * x, 1); mdl(1);
