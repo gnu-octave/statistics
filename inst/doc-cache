@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 188
+# columns: 189
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14033,6 +14033,71 @@ tsne
 # elements: 1
 # length: 52
 t-distributed stochastic neighbor embedding (t-SNE).
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+fitlmematrix
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1987
+ -- statistics: LME = fitlmematrix (X, Y, Z, G)
+ -- statistics: LME = fitlmematrix (..., NAME, VALUE)
+
+     Fit a linear mixed-effects model from design matrices.
+
+     ‘fitlmematrix (X, Y, Z, G)’ fits the linear mixed-effects model ‘y = X*beta
+     + Z*b + e’ with fixed-effects design X, response Y, random-effects design
+     Z, and grouping variable G.  The random effects B are normally distributed
+     with mean zero and an unstructured covariance PSI (shared across the levels
+     of the grouping variable), and the observation errors are independent ‘N(0,
+     sigma2)’.
+
+     X is an N-by-P numeric matrix and Y an N-by-1 response vector.  Z is an
+     N-by-Q random-effects design and G an N-by-1 grouping variable (numeric,
+     logical, char, cell array of strings, or categorical).  To specify several
+     grouping terms, pass Z and G as cell arrays of the same length, one design
+     and one grouping variable per term.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "FitMethod"
+          The estimation criterion, either "ML" (maximum likelihood, the
+          default) or "REML" (restricted maximum likelihood).
+
+     "FixedEffectPredictors"
+          A cell array of P names for the columns of X (default ‘{"x1", ...,
+          "xp"}’).
+
+     "RandomEffectPredictors"
+          A cell array (one entry per grouping term) of cell arrays naming the
+          columns of each Z (default ‘z1, z2, ...’).
+
+     "RandomEffectGroups"
+          A cell array of names for the grouping terms (default ‘g1, g2, ...’).
+
+     The returned LME is a structure describing the fitted model, with the
+     estimated fixed effects and their covariance, the covariance parameters
+     (PSI per grouping term and the residual variance), the random-effects
+     BLUPs, the log-likelihood, fitted values, and residuals.
+
+     Only the full (unstructured) random-effects covariance is currently
+     supported.
+
+     See also: fitlm, parseWilkinsonFormula.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Fit a linear mixed-effects model from design matrices.
 
 
 
