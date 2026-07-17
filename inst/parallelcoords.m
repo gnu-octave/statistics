@@ -283,3 +283,10 @@ endfunction
 %! parallelcoords (ones (3, 2), "Group", [1 2])
 %!error <parallelcoords: Quantile ALPHA must be a scalar in .0,1..> ...
 %! parallelcoords (ones (3, 2), "Quantile", 0)
+
+## A bad Quantile ALPHA must error before any figure is created (no stray figure)
+%!test
+%! nfig = numel (get (0, "children"));
+%! fail ('parallelcoords (ones (3, 2), "Quantile", 0)', ...
+%!       'parallelcoords: Quantile ALPHA must be a scalar in .0,1..');
+%! assert_equal (numel (get (0, "children")), nfig);

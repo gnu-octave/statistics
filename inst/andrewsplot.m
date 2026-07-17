@@ -280,3 +280,10 @@ endfunction
 %! andrewsplot (ones (3, 2), "Group", [1 2])
 %!error <andrewsplot: Quantile ALPHA must be a scalar in .0,1..> ...
 %! andrewsplot (ones (3, 2), "Quantile", 1.5)
+
+## A bad Quantile ALPHA must error before any figure is created (no stray figure)
+%!test
+%! nfig = numel (get (0, "children"));
+%! fail ('andrewsplot (ones (3, 2), "Quantile", 1.5)', ...
+%!       'andrewsplot: Quantile ALPHA must be a scalar in .0,1..');
+%! assert_equal (numel (get (0, "children")), nfig);
