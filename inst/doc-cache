@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 191
+# columns: 193
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14185,6 +14185,120 @@ fitlme
 # elements: 1
 # length: 56
 Fit a linear mixed-effects model specified by a formula.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+mvregress
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1982
+ -- statistics: BETA = mvregress (X, Y)
+ -- statistics: BETA = mvregress (..., NAME, VALUE)
+ -- statistics: [BETA, SIGMA, E, COVB, LOGL] = mvregress (...)
+
+     Multivariate (multiple-response) linear regression by maximum likelihood.
+
+     ‘mvregress (X, Y)’ fits the multivariate normal regression of the N-by-D
+     response matrix Y on the design X and returns the coefficient estimates
+     BETA.
+
+     X is either a numeric N-by-P matrix, in which case the same P predictors
+     apply to every response and BETA is returned as a P-by-D matrix; or a cell
+     array of N design matrices, each D-by-K, in which case BETA is a K-by-1
+     vector.
+
+     Missing responses (‘NaN’ entries of Y) are handled according to the
+     estimation algorithm.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "algorithm"
+          "mvn" (multivariate normal; observations with any missing response are
+          discarded), "ecm" (expectation-conditional-maximization, using every
+          observed response), or "cwls" (covariance-weighted least squares, with
+          the weight given by "covar0").  The default is "mvn" when Y has no
+          missing values and "ecm" otherwise.
+
+     "covar0"
+          The D-by-D covariance weight for "cwls" (default the identity), or the
+          initial covariance for "ecm".
+
+     "maxiter"
+          Maximum number of iterations (default 100).
+
+     "tolbeta", "tolobj"
+          Convergence tolerances on the coefficients and the objective (defaults
+          ‘1e-8’ and ‘1e-8’).
+
+     The additional outputs are the estimated residual covariance SIGMA
+     (D-by-D), the residuals E (N-by-D), the covariance COVB of the coefficient
+     estimates, and the log-likelihood LOGL.  (With missing data and the "ecm"
+     algorithm, COVB is the standard observed-information covariance and can
+     differ from MATLAB's value at the ‘1e-3’ level; all other outputs agree.)
+
+     See also: mvregresslike, regress, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Multivariate (multiple-response) linear regression by maximum likelihood.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+mvregresslike
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1461
+ -- statistics: NLOGL = mvregresslike (X, Y, BETA, SIGMA, ALG)
+ -- statistics: [NLOGL, COVB] = mvregresslike (...)
+
+     Negative log-likelihood for a multivariate regression model.
+
+     ‘mvregresslike (X, Y, BETA, SIGMA, ALG)’ returns the negative
+     log-likelihood NLOGL of the multivariate normal regression model with
+     responses Y (an N-by-D matrix, one row per observation), coefficients BETA,
+     and residual covariance SIGMA (D-by-D).
+
+     X specifies the design.  It is either a numeric N-by-P matrix, in which
+     case the same P predictors apply to every response and BETA is P-by-D; or a
+     cell array of N design matrices, each D-by-K, in which case BETA is K-by-1.
+
+     ALG selects how missing responses (‘NaN’ entries of Y) are handled: "ecm"
+     (the default) and "cwls" use every observed response through the marginal
+     likelihood of the observed components, while "mvn" discards any observation
+     that has a missing response.  With no missing data all three agree.
+
+     The optional second output COVB is the covariance matrix of the coefficient
+     estimates, computed as the inverse of the observed Fisher information at
+     BETA and SIGMA.  With missing data and the "ecm"/"cwls" algorithms this is
+     the standard observed-data covariance and can differ from MATLAB's value
+     (which uses a different information convention) at the ‘1e-3’ level; NLOGL
+     agrees exactly.
+
+     See also: mvregress.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+Negative log-likelihood for a multivariate regression model.
 
 
 

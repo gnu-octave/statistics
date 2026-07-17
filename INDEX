@@ -363,6 +363,8 @@ Regression
  mnrfit
  mnrval
  monotone_smooth
+ mvregress
+ mvregresslike
  nlinfit
  nlparci
  nlpredci
