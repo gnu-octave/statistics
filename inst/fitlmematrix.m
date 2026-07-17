@@ -61,15 +61,17 @@
 ## A cell array of names for the grouping terms (default @code{g1, g2}, etc.).
 ## @end table
 ##
-## The returned @var{lme} is a structure describing the fitted model, with the
-## estimated fixed effects and their covariance, the covariance parameters
-## (@var{Psi} per grouping term and the residual variance), the random-effects
-## BLUPs, the log-likelihood, fitted values, and residuals.
+## The returned @var{lme} is a @code{LinearMixedModel} object describing the
+## fitted model: the estimated fixed effects and their statistics
+## (@code{lme.Coefficients}), the covariance parameters
+## (@code{covarianceParameters}), the random-effects BLUPs (@code{randomEffects}),
+## the log-likelihood, and methods for prediction, residuals, and hypothesis
+## tests.
 ##
 ## Only the full (unstructured) random-effects covariance is currently
 ## supported.
 ##
-## @seealso{fitlm, parseWilkinsonFormula}
+## @seealso{LinearMixedModel, fitlm, parseWilkinsonFormula}
 ## @end deftypefn
 
 function lme = fitlmematrix (X, y, Z, G, varargin)
@@ -161,32 +163,27 @@ function lme = fitlmematrix (X, y, Z, G, varargin)
   if (isempty (grnames))
     grnames = arrayfun (@(k) sprintf ("g%d", k), 1:nt, "UniformOutput", false);
   endif
+  if (isempty (renames))
+    renames = cell (1, nt);
+    for k = 1:nt
+      renames{k} = arrayfun (@(j) sprintf ("z%d", j), 1:columns (Z{k}), ...
+                             "UniformOutput", false);
+    endfor
+  endif
 
   ## --- fit ---
   fit = __lmefit__ (X, y, Z, G, method);
 
-  ## --- assemble the fitted-model structure ---
-  lme = struct ();
-  lme.FitMethod = method;
-  lme.NumObservations = n;
-  lme.NumCoefficients = p;
-  lme.CoefficientNames = fenames;
-  lme.FixedEffects = fit.beta;
-  lme.CoefficientCovariance = fit.covbeta;
-  lme.MSE = fit.sigma2;
-  lme.CovarianceParameters = fit.Psi;
-  lme.RandomEffects = fit.b;
-  lme.LogLikelihood = fit.loglik;
-  lme.Fitted = fit.fitted;
-  lme.Residuals = fit.resid;
-  lme.DFE = fit.dfe;
-  lme.GroupNames = grnames;
-  lme.RandomEffectPredictors = renames;
-  lme.NumGroupingTerms = nt;
-  lme.qk = fit.qk;
-  lme.nlev = fit.nlev;
-  lme.levels = fit.levels;
-  lme.theta = fit.theta;
+  ## --- build the info struct and wrap it in a LinearMixedModel object ---
+  info = fit;
+  info.X = X;             info.y = y;
+  info.Zcell = Z;         info.Gcell = G;
+  info.CoefficientNames = fenames;
+  info.GroupNames = grnames;
+  info.REPred = renames;
+  info.method = method;
+
+  lme = LinearMixedModel (info);
 
 endfunction
 
@@ -199,9 +196,10 @@ endfunction
 %!         + 0.1 * sin (1:20)';
 %! X = [ones(20,1), x];
 %! lme = fitlmematrix (X, y, ones (20, 1), subject, "FitMethod", "REML");
-%! printf ("intercept = %.4f, slope = %.4f\n", lme.FixedEffects);
-%! printf ("between-subject var = %.4f, residual var = %.4f\n", ...
-%!         lme.CovarianceParameters{1}, lme.MSE);
+%! beta = fixedEffects (lme);
+%! [psi, mse] = covarianceParameters (lme);
+%! printf ("intercept = %.4f, slope = %.4f\n", beta);
+%! printf ("between-subject var = %.4f, residual var = %.4f\n", psi{1}, mse);
 
 ## --- Balanced one-way random-intercept model: closed-form REML/ANOVA check ---
 ## For a balanced one-way design (a groups of r observations) the REML estimates
@@ -220,9 +218,10 @@ endfunction
 %! SSB = r * sum ((gmeans - gm) .^ 2);   MSB = SSB / (a - 1);
 %! SSE = sum ((yv - gmeans(grp)) .^ 2);  MSE = SSE / (n - a);
 %! tau2 = (MSB - MSE) / r;
-%! assert (lme.FixedEffects, gm, 1e-8);
-%! assert (lme.MSE, MSE, 1e-6);
-%! assert (lme.CovarianceParameters{1}, tau2, 1e-6);
+%! [psi, mse] = covarianceParameters (lme);
+%! assert (fixedEffects (lme), gm, 1e-8);
+%! assert (mse, MSE, 1e-6);
+%! assert (psi{1}, tau2, 1e-6);
 
 ## --- Internal consistency: sigma2 and covbeta satisfy their defining GLS
 ## relations at the returned fit. ---
@@ -235,12 +234,13 @@ endfunction
 %! X = [ones(n,1), x];
 %! lme = fitlmematrix (X, yv, ones (n, 1), grp, "FitMethod", "REML");
 %! ## rebuild V = Psi over groups + sigma2 I and check the GLS identities
+%! [psi, mse] = covarianceParameters (lme);
 %! Zx = zeros (n, a);
 %! for l = 1:a, Zx(grp==l, l) = 1; end
-%! V = lme.CovarianceParameters{1} * (Zx * Zx') + lme.MSE * eye (n);
+%! V = psi{1} * (Zx * Zx') + mse * eye (n);
 %! Vi = inv (V);
 %! beta = (X' * Vi * X) \ (X' * Vi * yv);
-%! assert (lme.FixedEffects, beta, 1e-6);
+%! assert (fixedEffects (lme), beta, 1e-6);
 %! assert (lme.CoefficientCovariance, inv (X' * Vi * X), 1e-5);
 
 ## --- MATLAB-verified parity: unbalanced random-intercept fit (ML). ---
@@ -271,34 +271,41 @@ endfunction
 %!  5 6 1 2 3 4 5 6]';
 %! X = [ones(42,1), xL, x2];
 
+%!test  # returns a LinearMixedModel object
+%! lme = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
+%! assert (isa (lme, "LinearMixedModel"));
+
 %!test  # random intercept, ML -- matches MATLAB fitlmematrix
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
-%! assert (lme.FixedEffects, [1.9685543; -1.3771207; 0.81016147], 1e-4);
-%! assert (lme.MSE, 0.36422151, 1e-4);
-%! assert (lme.CovarianceParameters{1}, 0.65265828, 1e-4);
+%! [psi, mse] = covarianceParameters (lme);
+%! assert (fixedEffects (lme), [1.9685543; -1.3771207; 0.81016147], 1e-4);
+%! assert (mse, 0.36422151, 1e-4);
+%! assert (psi{1}, 0.65265828, 1e-4);
 %! assert (lme.LogLikelihood, -46.203282, 1e-4);
 
 %!test  # correlated random intercept + slope, REML -- matches MATLAB
 %! Z = [ones(42,1), xL];
 %! lme = fitlmematrix (X, yL, Z, grp, "FitMethod", "REML");
-%! assert (lme.FixedEffects, [2.0034354; -1.3374715; 0.83788802], 1e-3);
-%! assert (lme.MSE, 0.36649172, 1e-3);
+%! [psi, mse] = covarianceParameters (lme);
+%! assert (fixedEffects (lme), [2.0034354; -1.3374715; 0.83788802], 1e-3);
+%! assert (mse, 0.36649172, 1e-3);
 %! assert (lme.LogLikelihood, -48.280962, 1e-3);
-%! Psi = lme.CovarianceParameters{1};
-%! assert (Psi, [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
+%! assert (psi{1}, [0.7846112, -0.14287556; -0.14287556, 0.026017248], 1e-3);
 
 %!test  # ML and REML give different (both sensible) variance components
 %! lme_ml = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
 %! lme_re = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "REML");
-%! assert (lme_re.CovarianceParameters{1} > lme_ml.CovarianceParameters{1});
-%! assert (lme_ml.FixedEffects, lme_re.FixedEffects, 5e-3);   # close, not equal
+%! pml = covarianceParameters (lme_ml);
+%! pre = covarianceParameters (lme_re);
+%! assert (pre{1} > pml{1});
+%! assert (fixedEffects (lme_ml), fixedEffects (lme_re), 5e-3);  # close, not equal
 
 %!test  # default FitMethod is ML
 %! l1 = fitlmematrix (X, yL, ones (42, 1), grp);
 %! l2 = fitlmematrix (X, yL, ones (42, 1), grp, "FitMethod", "ML");
 %! assert (l1.LogLikelihood, l2.LogLikelihood, 1e-10);
 
-%!test  # names propagate to the fitted structure
+%!test  # names propagate to the fitted object
 %! lme = fitlmematrix (X, yL, ones (42, 1), grp, ...
 %!                     "FixedEffectPredictors", {"Int", "x", "x2"});
 %! assert (lme.CoefficientNames, {"Int", "x", "x2"});

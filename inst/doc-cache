@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 189
+# columns: 190
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14046,7 +14046,7 @@ fitlmematrix
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1987
+# length: 2083
  -- statistics: LME = fitlmematrix (X, Y, Z, G)
  -- statistics: LME = fitlmematrix (..., NAME, VALUE)
 
@@ -14080,17 +14080,18 @@ fitlmematrix
           columns of each Z (default ‘z1, z2, ...’).
 
      "RandomEffectGroups"
-          A cell array of names for the grouping terms (default ‘g1, g2, ...’).
+          A cell array of names for the grouping terms (default ‘g1, g2’, etc.).
 
-     The returned LME is a structure describing the fitted model, with the
-     estimated fixed effects and their covariance, the covariance parameters
-     (PSI per grouping term and the residual variance), the random-effects
-     BLUPs, the log-likelihood, fitted values, and residuals.
+     The returned LME is a ‘LinearMixedModel’ object describing the fitted
+     model: the estimated fixed effects and their statistics
+     (‘lme.Coefficients’), the covariance parameters (‘covarianceParameters’),
+     the random-effects BLUPs (‘randomEffects’), the log-likelihood, and methods
+     for prediction, residuals, and hypothesis tests.
 
      Only the full (unstructured) random-effects covariance is currently
      supported.
 
-     See also: fitlm, parseWilkinsonFormula.
+     See also: LinearMixedModel, fitlm, parseWilkinsonFormula.
 
 
 # name: <cell-element>
@@ -14098,6 +14099,43 @@ fitlmematrix
 # elements: 1
 # length: 54
 Fit a linear mixed-effects model from design matrices.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+LinearMixedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 822
+ -- statistics: LinearMixedModel
+
+     Linear mixed-effects model fitted to data.
+
+     A ‘LinearMixedModel’ object represents a fitted linear mixed-effects model
+     ‘y = X*beta + Z*b + e’, with fixed effects BETA, random effects B
+     distributed as ‘N(0, Psi)’, and independent errors ‘N(0, sigma2)’.  Objects
+     are created with ‘fitlmematrix’ (from design matrices).
+
+     The estimated fixed effects and their statistics are available through the
+     ‘Coefficients’ table; the covariance parameters through
+     ‘covarianceParameters’; the random-effect BLUPs through ‘randomEffects’;
+     and predictions, residuals, and hypothesis tests through the ‘predict’,
+     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
+
+     See also: fitlmematrix, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Linear mixed-effects model fitted to data.
 
 
 

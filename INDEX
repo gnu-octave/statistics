@@ -271,6 +271,7 @@ Model Fitting
  fitrgam
  stepwiseglm
  GeneralizedLinearModel
+ LinearMixedModel
  LinearModel
  NonLinearModel
 Hypothesis Testing
