@@ -373,10 +373,15 @@ Regression
  princomp
  regress
  regress_gp
+ rica
+ ReconstructionICA
  ridge
  robustfit
  rotatefactors
+ sparsefilt
+ SparseFiltering
  stepwisefit
+ tsne
 Transforms
  logit
  probit

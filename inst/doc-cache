@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 183
+# columns: 188
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13693,6 +13693,314 @@ nnmf
 # elements: 1
 # length: 33
 Nonnegative matrix factorization.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+rica
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2087
+ -- statistics: MDL = rica (X, Q)
+ -- statistics: MDL = rica (X, Q, NAME, VALUE)
+
+     Reconstruction independent component analysis (RICA) for feature
+     extraction.
+
+     ‘MDL = rica (X, Q)’ learns Q features from the N * P data matrix X (rows
+     are observations, columns are predictors) and returns a ReconstructionICA
+     object MDL.  Apply the learned transformation to data with ‘transform (MDL,
+     X)’, which returns ‘X * MDL.TransformWeights’.
+
+     The P * Q weight matrix (with unit-length columns) minimizes the objective
+
+          LAMBDA * ||X * W * W' - X||_F^2
+                + sum (sum (0.5 * log (cosh (2 * X * W))))
+
+     over the transformation weights W, combining a reconstruction cost with a
+     'logcosh' sparsity contrast.
+
+     Name/Value pairs:
+
+     'IterationLimit'
+          Maximum number of iterations (default 1000).
+
+     'Lambda'
+          Weight of the reconstruction term (default 1).
+
+     'Standardize'
+          Logical; center and scale each predictor before fitting (default
+          false).
+
+     'ContrastFcn'
+          The sparsity contrast.  Only 'logcosh' — that is 0.5 \log (\cosh (2
+          z)) — is supported.
+
+     'InitialTransformWeights'
+          A P * Q initial value for the weights.  The default is random.
+
+     'GradientTolerance', 'StepTolerance'
+          Accepted for MATLAB compatibility and recorded in ModelParameters; the
+          built-in solver iterates up to 'IterationLimit' with tight internal
+          tolerances.
+
+     Note on reproducibility
+     -----------------------
+
+     The RICA objective is not convex and is minimized by a quasi-Newton solver,
+     so the learned weights depend on the starting point and the solver, and are
+     only defined up to a permutation and sign of the feature columns.
+     Different runs (or different software, including MATLAB) may return
+     different weights that nonetheless describe an equally valid feature
+     transformation.  Fix 'InitialTransformWeights' for a reproducible result.
+
+     See also: ReconstructionICA, sparsefilt, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 76
+Reconstruction independent component analysis (RICA) for feature extraction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ReconstructionICA
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1066
+ -- statistics: ReconstructionICA
+
+     Reconstruction independent component analysis (RICA) feature-extraction
+     model.
+
+     A ReconstructionICA object stores the transformation learned by ‘rica’ for
+     extracting features from data.  Create one with ‘rica’; apply it to data
+     with the ‘transform’ method.
+
+     An object of this class has the following properties:
+
+        • TransformWeights — the P * Q matrix of learned transformation weights
+          (unit-length columns).
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise).
+        • FitInfo — a structure with the number of Iterations and the final
+          Objective value of the fit.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          number of learned features Q.
+        • InitialTransformWeights — the starting weights used by the fit.
+
+     See also: rica, sparsefilt.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 78
+Reconstruction independent component analysis (RICA) feature-extraction model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+sparsefilt
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1915
+ -- statistics: MDL = sparsefilt (X, Q)
+ -- statistics: MDL = sparsefilt (X, Q, NAME, VALUE)
+
+     Sparse filtering for feature extraction.
+
+     ‘MDL = sparsefilt (X, Q)’ learns Q features from the N * P data matrix X
+     (rows are observations, columns are predictors) and returns a
+     SparseFiltering object MDL.  Apply the learned transformation to data with
+     ‘transform (MDL, X)’.
+
+     The N * Q features returned by ‘transform’ are the soft-absolute
+     activations ‘sqrt ((X * W) .^ 2 + 1e-8)’, normalized first across
+     observations (each feature) and then across features (each observation).
+     The P * Q weight matrix W minimizes the sum of those features plus an L2
+     penalty ‘LAMBDA * ||W ||_F^2’, driving the features to be sparse.
+
+     Name/Value pairs:
+
+     'IterationLimit'
+          Maximum number of iterations (default 1000).
+
+     'Lambda'
+          Weight of the L2 penalty on the transform weights (default 1).
+
+     'Standardize'
+          Logical; center and scale each predictor before fitting (default
+          false).
+
+     'InitialTransformWeights'
+          A P * Q initial value for the weights.  The default is random.
+
+     'GradientTolerance', 'StepTolerance'
+          Accepted for MATLAB compatibility and recorded in ModelParameters; the
+          built-in solver iterates up to 'IterationLimit' with tight internal
+          tolerances.
+
+     Note on reproducibility
+     -----------------------
+
+     The sparse filtering objective is not convex and is minimized by a
+     quasi-Newton solver, so the learned weights depend on the starting point
+     and the solver.  Different runs (or different software, including MATLAB)
+     may return different weights that nonetheless describe an equally valid
+     feature transformation.  Fix 'InitialTransformWeights' for a reproducible
+     result.
+
+     See also: SparseFiltering, rica, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Sparse filtering for feature extraction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+SparseFiltering
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1001
+ -- statistics: SparseFiltering
+
+     Sparse filtering feature-extraction model.
+
+     A SparseFiltering object stores the transformation learned by ‘sparsefilt’
+     for extracting features from data.  Create one with ‘sparsefilt’; apply it
+     to data with the ‘transform’ method.
+
+     An object of this class has the following properties:
+
+        • TransformWeights — the P * Q matrix of learned transformation weights.
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise).
+        • FitInfo — a structure with the number of Iterations and the final
+          Objective value of the fit.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          number of learned features Q.
+        • InitialTransformWeights — the starting weights used by the fit.
+
+     See also: sparsefilt, rica.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Sparse filtering feature-extraction model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+tsne
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2101
+ -- statistics: Y = tsne (X)
+ -- statistics: [Y, LOSS] = tsne (X)
+ -- statistics: [...] = tsne (..., NAME, VALUE)
+
+     t-distributed stochastic neighbor embedding (t-SNE).
+
+     ‘Y = tsne (X)’ embeds the N * P data matrix X (rows are observations) into
+     a low-dimensional space and returns the N * NUMDIMENSIONS matrix Y of
+     embedded points, whose pairwise (Student-t) affinities approximate the
+     Gaussian affinities of the rows of X.
+
+     ‘[Y, LOSS] = tsne (...)’ also returns the Kullback-Leibler divergence LOSS
+     between the two affinity distributions at the returned embedding.
+
+     Name/Value pairs:
+
+     'Algorithm'
+          Only 'exact' is supported (MATLAB's approximate 'barneshut' algorithm
+          is not available).
+
+     'Distance'
+          The distance metric used for the high-dimensional affinities, as
+          accepted by ‘pdist’ (default 'euclidean').
+
+     'NumDimensions'
+          The dimension of the embedding Y (default ‘min (P, 2)’).
+
+     'NumPCAComponents'
+          If positive, reduce X to this many principal components before
+          embedding (default 0, no reduction).
+
+     'Standardize'
+          Logical; center and scale each column of X before embedding (default
+          false).
+
+     'Perplexity'
+          The effective number of local neighbors (default 30).  It must be
+          smaller than N.
+
+     'Exaggeration'
+          Tightness factor applied to the high-dimensional affinities for the
+          first 100 iterations (default 4, no less than 1).
+
+     'LearnRate'
+          The learning rate of the optimization (default 500).
+
+     'InitialY'
+          An N * NUMDIMENSIONS initial embedding (default ‘1e-4 * randn’).
+
+     'Options'
+          A structure (as returned by ‘statset’) whose MaxIter (default 1000)
+          and TolFun (default ‘1e-10’) fields control the optimization.
+
+     The embedding is not unique: it depends on the initial configuration and
+     the random state.  Set 'InitialY' (or the random seed) for a reproducible
+     result.
+
+     See also: pca, pdist, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+t-distributed stochastic neighbor embedding (t-SNE).
 
 
 
