@@ -280,6 +280,26 @@ endfunction
 %! assert (glme.FitMethod, "MPL");
 %! assert (glme.ResponseName, "yBin");
 
+
+%!test  # all 8 fits (binomial/poisson x MPL/REMPL/Laplace/ApproximateLaplace)
+%! fits = { "yBin", "MPL", [-0.5591172; 0.7606217], [0.3385596; 0.3997127], -92.58872; ...
+%!          "yBin", "REMPL", [-0.5591172; 0.7606217], [0.3385596; 0.3997127], -92.75162; ...
+%!          "yBin", "Laplace", [-0.5591172; 0.7606217], [0.3385596; 0.3997127], -25.3601; ...
+%!          "yBin", "ApproximateLaplace", [-0.5591172; 0.7606217], [0.3385596; 0.3997127], -25.3601; ...
+%!          "yPois", "MPL", [0.2317919; 0.6848705], [0.1450691; 0.1496462], -55.13664; ...
+%!          "yPois", "REMPL", [0.2309183; 0.6780919], [0.1539524; 0.1521982], -56.90296; ...
+%!          "yPois", "Laplace", [0.2317919; 0.6848705], [0.1450691; 0.1496462], -59.2123; ...
+%!          "yPois", "ApproximateLaplace", [0.2317919; 0.6848705], [0.1450691; 0.1496462], -59.2123 };
+%! for k = 1:rows (fits)
+%!   dist = "binomial";
+%!   if (strcmp (fits{k,1}, "yPois")), dist = "poisson"; endif
+%!   glme = fitglme (tbl, [fits{k,1} " ~ xL + (1 | g)"], "Distribution", dist, ...
+%!                   "FitMethod", fits{k,2});
+%!   assert (glme.Coefficients.Estimate, fits{k,3}, 1e-3);
+%!   assert (glme.Coefficients.SE, fits{k,4}, 1e-3);
+%!   assert (glme.LogLikelihood, fits{k,5}, 1e-2);
+%! endfor
+
 ## Input validation
 %!error <Invalid call> fitglme (table ())
 %!error <TBL must be a table> fitglme (magic (3), "y ~ x + (1|g)")

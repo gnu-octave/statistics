@@ -667,6 +667,8 @@ endclassdef
 %! assert (names, {"(Intercept)", "x", "x2"});
 %! b = randomEffects (lme);
 %! assert (numel (b), 6);                 # 6 intercept BLUPs
+%! assert (b, [0.9760378; -1.118301; -0.1922078; 0.8754252; ...
+%!            -0.7955462; 0.2545924], 1e-4);   # BLUPs vs MATLAB
 %! assert (size (designMatrix (lme, "Fixed")), [42, 3]);
 %! assert (size (designMatrix (lme, "Random")), [42, 6]);
 
