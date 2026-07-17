@@ -1246,6 +1246,67 @@ Rician probability distribution object.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 18
+StableDistribution
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1986
+ -- statistics: StableDistribution
+
+     Stable probability distribution object.
+
+     A ‘StableDistribution’ object consists of parameters, a model description,
+     and sample data for a stable probability distribution.
+
+     The stable distribution is a continuous probability distribution family
+     closed under linear combinations, generalizing the normal, Cauchy, and Levy
+     distributions.  It is parameterized, in the Nolan S0 parameterization, by a
+     tail index (first shape parameter) ALPHA in (0, 2], a skewness (second
+     shape parameter) BETA in [-1, 1], a scale parameter GAM greater than zero,
+     and a location parameter DELTA.
+
+     There are several ways to create a ‘StableDistribution’ object.
+
+        • Fit a distribution to data using the ‘fitdist’ function.
+        • Create a distribution with fixed parameter values using the ‘makedist’
+          function.
+        • Use the constructor StableDistribution (ALPHA, BETA, GAM, DELTA) to
+          create a stable distribution with fixed parameter values ALPHA, BETA,
+          GAM, and DELTA.
+        • Use the static method StableDistribution.fit (X, ALPHA, FREQ, OPTIONS)
+          to fit a distribution to the data in X using the same input arguments
+          as the ‘stblfit’ function.
+
+     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions to
+     create probability distribution objects, instead of the class constructor
+     or the aforementioned static method.
+
+     Fitting is by maximum likelihood.  Because the stable density has no closed
+     form, it is evaluated by numerical inversion of the characteristic
+     function, which makes fitting considerably slower than for the closed-form
+     distributions.
+
+     Further information about the stable distribution can be found at
+     <https://en.wikipedia.org/wiki/Stable_distribution>
+
+     See also: fitdist, makedist, stblpdf, stblcdf, stblinv, stblrnd, stblfit,
+     stbllike.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 39
+Stable probability distribution object.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 22
 TriangularDistribution
 
@@ -1397,6 +1458,54 @@ Weibull probability distribution object.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 11
+paretotails
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1443
+ -- statistics: paretotails
+
+     Piecewise distribution with generalized Pareto tails.
+
+     A ‘paretotails’ object is a piecewise probability distribution fit to
+     sample data.  A generalized Pareto distribution (GPD) is fit to each tail
+     of the data, below a lower quantile and above an upper quantile, while the
+     middle of the distribution is described by the empirical cumulative
+     distribution function of the data.  This gives a smooth model for the
+     tails, useful for extreme value analysis, together with a nonparametric
+     description of the central region.
+
+     Create a ‘paretotails’ object with the constructor ‘PT = paretotails (X,
+     PL, PU)’, where X is the sample data and PL and PU are the cumulative
+     probabilities at the lower and upper tail boundaries.  Data at or below the
+     PL quantile form the lower tail, data at or above the PU quantile form the
+     upper tail, and the rest form the middle segment.
+
+     Query the fitted object with the methods ‘cdf’, ‘pdf’, ‘icdf’, ‘random’,
+     ‘boundary’, ‘nsegments’, ‘segment’, ‘lowerparams’, and ‘upperparams’.
+
+     *Note:* the kernel-smoothed middle option of MATLAB (‘paretotails (X, PL,
+     PU, "kernel")’) is not yet supported; only the default empirical ("ecdf")
+     middle is available.
+
+     See also: gpfit, gpcdf, gppdf, gpinv, ecdf, fitdist,
+     GeneralizedParetoDistribution.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 53
+Piecewise distribution with generalized Pareto tails.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 26
 tLocationScaleDistribution
 
@@ -1447,115 +1556,6 @@ tLocationScaleDistribution
 # elements: 1
 # length: 59
 Location-Scale Student's T probability distribution object.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 11
-paretotails
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1443
- -- statistics: paretotails
-
-     Piecewise distribution with generalized Pareto tails.
-
-     A ‘paretotails’ object is a piecewise probability distribution fit to
-     sample data.  A generalized Pareto distribution (GPD) is fit to each tail
-     of the data, below a lower quantile and above an upper quantile, while the
-     middle of the distribution is described by the empirical cumulative
-     distribution function of the data.  This gives a smooth model for the
-     tails, useful for extreme value analysis, together with a nonparametric
-     description of the central region.
-
-     Create a ‘paretotails’ object with the constructor ‘PT = paretotails (X,
-     PL, PU)’, where X is the sample data and PL and PU are the cumulative
-     probabilities at the lower and upper tail boundaries.  Data at or below the
-     PL quantile form the lower tail, data at or above the PU quantile form the
-     upper tail, and the rest form the middle segment.
-
-     Query the fitted object with the methods ‘cdf’, ‘pdf’, ‘icdf’, ‘random’,
-     ‘boundary’, ‘nsegments’, ‘segment’, ‘lowerparams’, and ‘upperparams’.
-
-     *Note:* the kernel-smoothed middle option of MATLAB (‘paretotails (X, PL,
-     PU, "kernel")’) is not yet supported; only the default empirical ("ecdf")
-     middle is available.
-
-     See also: gpfit, gpcdf, gppdf, gpinv, ecdf, fitdist,
-     GeneralizedParetoDistribution.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 53
-Piecewise distribution with generalized Pareto tails.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 18
-StableDistribution
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1986
- -- statistics: StableDistribution
-
-     Stable probability distribution object.
-
-     A ‘StableDistribution’ object consists of parameters, a model description,
-     and sample data for a stable probability distribution.
-
-     The stable distribution is a continuous probability distribution family
-     closed under linear combinations, generalizing the normal, Cauchy, and Levy
-     distributions.  It is parameterized, in the Nolan S0 parameterization, by a
-     tail index (first shape parameter) ALPHA in (0, 2], a skewness (second
-     shape parameter) BETA in [-1, 1], a scale parameter GAM greater than zero,
-     and a location parameter DELTA.
-
-     There are several ways to create a ‘StableDistribution’ object.
-
-        • Fit a distribution to data using the ‘fitdist’ function.
-        • Create a distribution with fixed parameter values using the ‘makedist’
-          function.
-        • Use the constructor StableDistribution (ALPHA, BETA, GAM, DELTA) to
-          create a stable distribution with fixed parameter values ALPHA, BETA,
-          GAM, and DELTA.
-        • Use the static method StableDistribution.fit (X, ALPHA, FREQ, OPTIONS)
-          to fit a distribution to the data in X using the same input arguments
-          as the ‘stblfit’ function.
-
-     It is highly recommended to use ‘fitdist’ and ‘makedist’ functions to
-     create probability distribution objects, instead of the class constructor
-     or the aforementioned static method.
-
-     Fitting is by maximum likelihood.  Because the stable density has no closed
-     form, it is evaluated by numerical inversion of the characteristic
-     function, which makes fitting considerably slower than for the closed-form
-     distributions.
-
-     Further information about the stable distribution can be found at
-     <https://en.wikipedia.org/wiki/Stable_distribution>
-
-     See also: fitdist, makedist, stblpdf, stblcdf, stblinv, stblrnd, stblfit,
-     stbllike.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 39
-Stable probability distribution object.
 
 
 

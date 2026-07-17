@@ -6,6 +6,43 @@
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 27
+GeneralizedLinearMixedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 850
+ -- statistics: GeneralizedLinearMixedModel
+
+     Generalized linear mixed-effects model fitted to data.
+
+     A ‘GeneralizedLinearMixedModel’ object represents a fitted generalized
+     linear mixed-effects model: a generalized linear model whose linear
+     predictor ‘X*beta + Z*b’ includes normally distributed random effects ‘b ~
+     N(0, Psi)’.  Objects are created with ‘fitglme’.
+
+     The model is fitted by penalized quasi-likelihood.  The fixed-effects
+     estimates and their statistics are available through the ‘Coefficients’
+     table, the covariance parameters through ‘covarianceParameters’, and
+     predictions, residuals, and hypothesis tests through the ‘predict’,
+     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
+
+     See also: fitglme, fitlme, GeneralizedLinearModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Generalized linear mixed-effects model fitted to data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 22
 GeneralizedLinearModel
 
@@ -40,6 +77,43 @@ GeneralizedLinearModel
 # elements: 1
 # length: 42
 Generalized linear regression model class.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 16
+LinearMixedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 822
+ -- statistics: LinearMixedModel
+
+     Linear mixed-effects model fitted to data.
+
+     A ‘LinearMixedModel’ object represents a fitted linear mixed-effects model
+     ‘y = X*beta + Z*b + e’, with fixed effects BETA, random effects B
+     distributed as ‘N(0, Psi)’, and independent errors ‘N(0, sigma2)’.  Objects
+     are created with ‘fitlmematrix’ (from design matrices).
+
+     The estimated fixed effects and their statistics are available through the
+     ‘Coefficients’ table; the covariance parameters through
+     ‘covarianceParameters’; the random-effect BLUPs through ‘randomEffects’;
+     and predictions, residuals, and hypothesis tests through the ‘predict’,
+     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
+
+     See also: fitlmematrix, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Linear mixed-effects model fitted to data.
 
 
 
@@ -238,6 +312,92 @@ NonLinearModel
 # elements: 1
 # length: 33
 Nonlinear regression model class.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 17
+ReconstructionICA
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1066
+ -- statistics: ReconstructionICA
+
+     Reconstruction independent component analysis (RICA) feature-extraction
+     model.
+
+     A ReconstructionICA object stores the transformation learned by ‘rica’ for
+     extracting features from data.  Create one with ‘rica’; apply it to data
+     with the ‘transform’ method.
+
+     An object of this class has the following properties:
+
+        • TransformWeights — the P * Q matrix of learned transformation weights
+          (unit-length columns).
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise).
+        • FitInfo — a structure with the number of Iterations and the final
+          Objective value of the fit.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          number of learned features Q.
+        • InitialTransformWeights — the starting weights used by the fit.
+
+     See also: rica, sparsefilt.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 78
+Reconstruction independent component analysis (RICA) feature-extraction model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+SparseFiltering
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1001
+ -- statistics: SparseFiltering
+
+     Sparse filtering feature-extraction model.
+
+     A SparseFiltering object stores the transformation learned by ‘sparsefilt’
+     for extracting features from data.  Create one with ‘sparsefilt’; apply it
+     to data with the ‘transform’ method.
+
+     An object of this class has the following properties:
+
+        • TransformWeights — the P * Q matrix of learned transformation weights.
+        • Mu, Sigma — the per-predictor mean and standard deviation used when
+          'Standardize' is true (empty otherwise).
+        • FitInfo — a structure with the number of Iterations and the final
+          Objective value of the fit.
+        • ModelParameters — a structure of the options used for the fit.
+        • NumPredictors, NumLearnedFeatures — the input dimension P and the
+          number of learned features Q.
+        • InitialTransformWeights — the starting weights used by the fit.
+
+     See also: sparsefilt, rica.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Sparse filtering feature-extraction model.
 
 
 
@@ -4274,6 +4434,60 @@ Fit a generalized linear regression model.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+fitglme
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1403
+ -- statistics: GLME = fitglme (TBL, FORMULA)
+ -- statistics: GLME = fitglme (..., NAME, VALUE)
+
+     Fit a generalized linear mixed-effects model specified by a formula.
+
+     ‘fitglme (TBL, FORMULA)’ fits the generalized linear mixed-effects model
+     described by FORMULA to the table TBL and returns a
+     ‘GeneralizedLinearMixedModel’ object.
+
+     FORMULA uses the same syntax as ‘fitlme’: a response, a fixed-effects part,
+     and one or more random-effects terms ‘(EXPR | GROUP)’, for example "y ~ x +
+     (1 | g)".  The model is fitted by penalized quasi-likelihood.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "Distribution"
+          The response distribution: "normal" (default), "binomial", or
+          "poisson".
+
+     "Link"
+          The link function: "identity", "logit", or "log".  The default is the
+          canonical link of the chosen distribution.
+
+     "FitMethod"
+          "MPL" (maximum pseudo-likelihood, the default), "REMPL" (restricted
+          MPL), "Laplace", or "ApproximateLaplace".  The first two differ in the
+          pseudo-likelihood used for the covariance parameters; the last two
+          report the Laplace-approximated marginal log-likelihood.
+
+     Only the canonical links and the full (unstructured) random-effects
+     covariance are currently supported.
+
+     See also: GeneralizedLinearMixedModel, fitlme, fitglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Fit a generalized linear mixed-effects model specified by a formula.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 9
 fitgmdist
 
@@ -4570,6 +4784,121 @@ fitlm
 Fit a linear regression model to data and return a ‘LinearModel’ object.
 
   
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitlme
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1309
+ -- statistics: LME = fitlme (TBL, FORMULA)
+ -- statistics: LME = fitlme (..., NAME, VALUE)
+
+     Fit a linear mixed-effects model specified by a formula.
+
+     ‘fitlme (TBL, FORMULA)’ fits the linear mixed-effects model described by
+     FORMULA to the variables in the table TBL, and returns a ‘LinearMixedModel’
+     object.
+
+     FORMULA is a character vector in Wilkinson notation extended with
+     random-effects terms, for example "y ~ x1 + x2 + (1 | g)".  The part to the
+     left of ‘~’ names the response; the fixed-effects part uses the usual
+     operators (‘+’, ‘*’, ‘:’, ‘^’, and ‘-1’ to drop the intercept); and each
+     random-effects term ‘(EXPR | GROUP)’ adds random intercepts and slopes EXPR
+     grouped by the factor GROUP (or an interaction of factors, e.g. ‘g1:g2’).
+     As with fixed effects, a random intercept is implicit unless suppressed
+     with ‘0’ or ‘-1’.
+
+     Rows of TBL with missing values in any model variable are removed before
+     fitting.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "FitMethod"
+          The estimation criterion, "ML" (maximum likelihood, the default) or
+          "REML" (restricted maximum likelihood).
+
+     See also: LinearMixedModel, fitlmematrix, fitlm, parseWilkinsonFormula.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+Fit a linear mixed-effects model specified by a formula.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 12
+fitlmematrix
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2083
+ -- statistics: LME = fitlmematrix (X, Y, Z, G)
+ -- statistics: LME = fitlmematrix (..., NAME, VALUE)
+
+     Fit a linear mixed-effects model from design matrices.
+
+     ‘fitlmematrix (X, Y, Z, G)’ fits the linear mixed-effects model ‘y = X*beta
+     + Z*b + e’ with fixed-effects design X, response Y, random-effects design
+     Z, and grouping variable G.  The random effects B are normally distributed
+     with mean zero and an unstructured covariance PSI (shared across the levels
+     of the grouping variable), and the observation errors are independent ‘N(0,
+     sigma2)’.
+
+     X is an N-by-P numeric matrix and Y an N-by-1 response vector.  Z is an
+     N-by-Q random-effects design and G an N-by-1 grouping variable (numeric,
+     logical, char, cell array of strings, or categorical).  To specify several
+     grouping terms, pass Z and G as cell arrays of the same length, one design
+     and one grouping variable per term.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "FitMethod"
+          The estimation criterion, either "ML" (maximum likelihood, the
+          default) or "REML" (restricted maximum likelihood).
+
+     "FixedEffectPredictors"
+          A cell array of P names for the columns of X (default ‘{"x1", ...,
+          "xp"}’).
+
+     "RandomEffectPredictors"
+          A cell array (one entry per grouping term) of cell arrays naming the
+          columns of each Z (default ‘z1, z2, ...’).
+
+     "RandomEffectGroups"
+          A cell array of names for the grouping terms (default ‘g1, g2’, etc.).
+
+     The returned LME is a ‘LinearMixedModel’ object describing the fitted
+     model: the estimated fixed effects and their statistics
+     (‘lme.Coefficients’), the covariance parameters (‘covarianceParameters’),
+     the random-effects BLUPs (‘randomEffects’), the log-likelihood, and methods
+     for prediction, residuals, and hypothesis tests.
+
+     Only the full (unstructured) random-effects covariance is currently
+     supported.
+
+     See also: LinearMixedModel, fitlm, parseWilkinsonFormula.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Fit a linear mixed-effects model from design matrices.
 
 
 
@@ -5747,6 +6076,95 @@ Plot histogram with superimposed distribution fit.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 9
+hmmdecode
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3047
+ -- statistics: PSTATES = hmmdecode (SEQUENCE, TRANSPROB, OUTPROB)
+ -- statistics: [PSTATES, LOGPSEQ] = hmmdecode (...)
+ -- statistics: [PSTATES, LOGPSEQ, FS, BS, S] = hmmdecode (...)
+ -- statistics: [...] = hmmdecode (..., "symbols", SYMBOLS)
+
+     Posterior state probabilities of a hidden Markov model.
+
+     Calculate the posterior state probabilities of the sequence SEQUENCE from a
+     hidden Markov model.  The posterior state probabilities are the conditional
+     probabilities of being in each state given the whole observed sequence.
+     The model assumes that the generation starts in state ‘1’ at step ‘0’ but
+     does not include step ‘0’ in the sequence.
+
+     Arguments
+     ---------
+
+        • SEQUENCE is a vector of length LEN of given outputs.  The outputs must
+          be integers ranging from ‘1’ to ‘columns (outprob)’.
+
+        • TRANSPROB is the matrix of transition probabilities of the states.
+          ‘transprob(i, j)’ is the probability of a transition to state ‘j’
+          given state ‘i’.
+
+        • OUTPROB is the matrix of output probabilities.  ‘outprob(i, j)’ is the
+          probability of generating output ‘j’ given state ‘i’.
+
+     Return values
+     -------------
+
+        • PSTATES is the matrix of posterior state probabilities.  It has one
+          row for each state and one column for each element of SEQUENCE.
+          ‘pstates(i, j)’ is the conditional probability that the model is in
+          state ‘i’ when it generates the ‘j’-th output of SEQUENCE, given that
+          SEQUENCE is emitted.
+
+        • LOGPSEQ is the logarithm of the probability of the sequence SEQUENCE.
+
+        • FS and BS are the scaled forward and backward probabilities,
+          respectively, and S is the vector of scale factors used to keep the
+          computation numerically stable.
+
+     If ‘"symbols"’ is specified, then SEQUENCE is expected to be a sequence of
+     the elements of SYMBOLS instead of integers ranging from ‘1’ to ‘columns
+     (outprob)’.  SYMBOLS can be a cell array.
+
+     Examples
+     --------
+
+          transprob = [0.8, 0.2; 0.4, 0.6];
+          outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
+          [sequence, states] = hmmgenerate (25, transprob, outprob);
+          pstates = hmmdecode (sequence, transprob, outprob);
+
+          symbols = {"A", "B", "C"};
+          [sequence, states] = hmmgenerate (25, transprob, outprob, ...
+                                            "symbols", symbols);
+          pstates = hmmdecode (sequence, transprob, outprob, "symbols", symbols);
+
+     References
+     ----------
+
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
+          2001.
+
+       2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
+          pages 257-286, February 1989.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 55
+Posterior state probabilities of a hidden Markov model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 11
 hmmestimate
 
@@ -5940,6 +6358,117 @@ hmmgenerate
 # elements: 1
 # length: 59
 Output sequence and hidden states of a hidden Markov model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+hmmtrain
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4188
+ -- statistics: [ESTTR, ESTOUT] = hmmtrain (SEQUENCE, TRANSGUESS, OUTGUESS)
+ -- statistics: [...] = hmmtrain (..., "algorithm", ALGORITHM)
+ -- statistics: [...] = hmmtrain (..., "symbols", SYMBOLS)
+ -- statistics: [...] = hmmtrain (..., "tolerance", TOL)
+ -- statistics: [...] = hmmtrain (..., "maxiterations", MAXITER)
+ -- statistics: [...] = hmmtrain (..., "pseudotransitions", PSEUDOTRANSITIONS)
+ -- statistics: [...] = hmmtrain (..., "pseudoemissions", PSEUDOEMISSIONS)
+ -- statistics: [...] = hmmtrain (..., "verbose", VFLAG)
+
+     Estimate the parameters of a hidden Markov model from emitted sequences.
+
+     Given one or more observed output sequences and initial guesses for the
+     transition and output probability matrices, ‘hmmtrain’ finds maximum
+     likelihood estimates of the two matrices using the Baum-Welch algorithm
+     (the default) or Viterbi training.  The model assumes that the generation
+     starts in state ‘1’ at step ‘0’ but does not include step ‘0’ in the
+     sequence.
+
+     Arguments
+     ---------
+
+        • SEQUENCE is a vector of a sequence of given outputs, or, for training
+          from several sequences, a cell array of such vectors or a matrix whose
+          rows are individual sequences.  The outputs must be integers ranging
+          from ‘1’ to ‘columns (outguess)’.
+
+        • TRANSGUESS is the initial guess for the matrix of transition
+          probabilities.  ‘transguess(i, j)’ is the probability of a transition
+          to state ‘j’ given state ‘i’.
+
+        • OUTGUESS is the initial guess for the matrix of output probabilities.
+          ‘outguess(i, j)’ is the probability of generating output ‘j’ given
+          state ‘i’.
+
+     Return values
+     -------------
+
+        • ESTTR is the estimated matrix of transition probabilities.
+
+        • ESTOUT is the estimated matrix of output probabilities.
+
+     Name-Value pair arguments
+     -------------------------
+
+        • ‘"algorithm"’ selects the training algorithm, either ‘"BaumWelch"’
+          (default) or ‘"Viterbi"’.  ‘"BaumWelch"’ performs the standard
+          forward-backward re-estimation and is recommended for most uses.
+          ‘"Viterbi"’ performs segmental (hard) re-estimation from the most
+          likely state path of each sequence; it is faster but only approximates
+          the maximum-likelihood estimate.
+
+        • ‘"symbols"’ specifies the possible outputs.  If given, SEQUENCE is
+          expected to hold the elements of SYMBOLS instead of integers.  SYMBOLS
+          can be a cell array.
+
+        • ‘"tolerance"’ is the convergence tolerance (default ‘1e-6’).  The
+          algorithm terminates when the change in the log-likelihood and in both
+          estimated matrices falls below TOL.
+
+        • ‘"maxiterations"’ is the maximum number of iterations (default ‘500’).
+          A warning is issued if the algorithm has not converged within this
+          many iterations.
+
+        • ‘"pseudotransitions"’ and ‘"pseudoemissions"’ supply pseudo-count
+          matrices for Viterbi training, used to keep transitions or outputs
+          that are very unlikely to occur from collapsing to zero probability.
+
+        • ‘"verbose"’, when true, prints the log-likelihood and the change in
+          the estimates at each iteration.
+
+     Examples
+     --------
+
+          transprob = [0.8, 0.2; 0.4, 0.6];
+          outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
+          sequence = hmmgenerate (100, transprob, outprob);
+          transguess = [0.6, 0.4; 0.5, 0.5];
+          outguess = [0.3, 0.3, 0.4; 0.5, 0.3, 0.2];
+          [esttr, estout] = hmmtrain (sequence, transguess, outguess);
+
+     References
+     ----------
+
+       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
+          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
+          2001.
+
+       2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
+          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
+          pages 257-286, February 1989.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 72
+Estimate the parameters of a hidden Markov model from emitted sequences.
 
 
 
@@ -8002,6 +8531,113 @@ Perform a McNemar's test on paired nominal data.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 7
+mdscale
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3907
+ -- statistics: Y = mdscale (D, P)
+ -- statistics: [Y, STRESS] = mdscale (D, P)
+ -- statistics: [Y, STRESS, DISPARITIES] = mdscale (D, P)
+ -- statistics: [...] = mdscale (..., NAME, VALUE)
+
+     Nonclassical (metric and nonmetric) multidimensional scaling.
+
+     ‘Y = mdscale (D, P)’ takes a matrix of dissimilarities D and returns a
+     configuration Y of N points in P dimensions (an N * P matrix) whose
+     interpoint distances approximate D, by minimizing a stress criterion.  D
+     may be given either as a full N * N symmetric matrix with zero diagonal, or
+     as the vector of the N (N - 1) / 2 upper-triangle dissimilarities returned
+     by ‘pdist’.
+
+     ‘[Y, STRESS, DISPARITIES] = mdscale (...)’ also returns the final value of
+     the STRESS criterion and the DISPARITIES (the transformed dissimilarities
+     the distances are fitted to).  For the nonmetric criteria the disparities
+     are the monotone (isotonic) regression of the dissimilarities onto the
+     distances; for the metric criteria they are the dissimilarities themselves.
+
+     Name/Value pairs:
+
+     'Criterion'
+          The goodness-of-fit criterion to minimize, one of:
+
+          'stress' (default)
+               Kruskal's normalized stress-1, sqrt (sum ((d - dhat)^2) / sum
+               (d^2)), computed from disparities DHAT (nonmetric).
+
+          'sstress'
+               Squared stress, sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4))
+               (nonmetric).
+
+          'metricstress'
+               Metric stress, sqrt (sum ((d - delta)^2) / sum (delta^2)),
+               fitting the dissimilarities DELTA directly.
+
+          'metricsstress'
+               Metric squared stress, sqrt (sum ((d^2 - delta^2)^2) / sum
+               (delta^4)).
+
+          'sammon'
+               Sammon's nonlinear mapping criterion, (1 / sum (delta)) sum ((d -
+               delta)^2 / delta).
+
+          'strain'
+               The classical scaling criterion; equivalent to ‘cmdscale’.
+
+     'Weights'
+          A matrix or vector of nonnegative weights, the same size as D,
+          weighting each dissimilarity in the criterion.
+
+     'Start'
+          The initial configuration: 'cmdscale' (default, classical scaling),
+          'random', or an explicit N * P matrix.
+
+     'Replicates'
+          The number of times to repeat the minimization from different starting
+          points, keeping the best (lowest-stress) result.  The default is 1.
+
+     'Options'
+          A structure of algorithm options (as returned by ‘statset’) whose
+          MaxIter, TolFun, and TolX fields control the iterative minimization.
+
+     Non-uniqueness of the solution
+     ------------------------------
+
+     A stress-minimizing configuration is defined only up to a translation,
+     rotation, and reflection, because these leave all interpoint distances (and
+     hence the stress) unchanged.  ‘mdscale’ removes this ambiguity by returning
+     Y centred at the origin and rotated to its principal axes (with the
+     largest-magnitude coordinate on each axis made positive), matching the
+     convention used by MATLAB.
+
+     Beyond that rigid ambiguity, the *nonmetric* criteria ('stress' and
+     'sstress') are non-convex and typically have several local minima; the one
+     reached depends on the starting configuration and the details of the
+     optimizer.  As a result the returned configuration for these criteria may
+     differ from the one another program (including MATLAB) reports even when
+     the *stress value* agrees, and different runs may find configurations with
+     slightly different stress.  Use 'Replicates' with a 'random' start to
+     search for a lower-stress solution.  The metric criteria and 'strain' have
+     an essentially unique solution and are reproducible up to the rigid
+     ambiguity above.
+
+     See also: cmdscale, pdist, squareform, procrustes, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+Nonclassical (metric and nonmetric) multidimensional scaling.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 8
 mhsample
 
@@ -8599,6 +9235,120 @@ mvksdensity
 # elements: 1
 # length: 47
 Multivariate kernel smoothing density estimate.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+mvregress
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1982
+ -- statistics: BETA = mvregress (X, Y)
+ -- statistics: BETA = mvregress (..., NAME, VALUE)
+ -- statistics: [BETA, SIGMA, E, COVB, LOGL] = mvregress (...)
+
+     Multivariate (multiple-response) linear regression by maximum likelihood.
+
+     ‘mvregress (X, Y)’ fits the multivariate normal regression of the N-by-D
+     response matrix Y on the design X and returns the coefficient estimates
+     BETA.
+
+     X is either a numeric N-by-P matrix, in which case the same P predictors
+     apply to every response and BETA is returned as a P-by-D matrix; or a cell
+     array of N design matrices, each D-by-K, in which case BETA is a K-by-1
+     vector.
+
+     Missing responses (‘NaN’ entries of Y) are handled according to the
+     estimation algorithm.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "algorithm"
+          "mvn" (multivariate normal; observations with any missing response are
+          discarded), "ecm" (expectation-conditional-maximization, using every
+          observed response), or "cwls" (covariance-weighted least squares, with
+          the weight given by "covar0").  The default is "mvn" when Y has no
+          missing values and "ecm" otherwise.
+
+     "covar0"
+          The D-by-D covariance weight for "cwls" (default the identity), or the
+          initial covariance for "ecm".
+
+     "maxiter"
+          Maximum number of iterations (default 100).
+
+     "tolbeta", "tolobj"
+          Convergence tolerances on the coefficients and the objective (defaults
+          ‘1e-8’ and ‘1e-8’).
+
+     The additional outputs are the estimated residual covariance SIGMA
+     (D-by-D), the residuals E (N-by-D), the covariance COVB of the coefficient
+     estimates, and the log-likelihood LOGL.  (With missing data and the "ecm"
+     algorithm, COVB is the standard observed-information covariance and can
+     differ from MATLAB's value at the ‘1e-3’ level; all other outputs agree.)
+
+     See also: mvregresslike, regress, fitlm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 73
+Multivariate (multiple-response) linear regression by maximum likelihood.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+mvregresslike
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1461
+ -- statistics: NLOGL = mvregresslike (X, Y, BETA, SIGMA, ALG)
+ -- statistics: [NLOGL, COVB] = mvregresslike (...)
+
+     Negative log-likelihood for a multivariate regression model.
+
+     ‘mvregresslike (X, Y, BETA, SIGMA, ALG)’ returns the negative
+     log-likelihood NLOGL of the multivariate normal regression model with
+     responses Y (an N-by-D matrix, one row per observation), coefficients BETA,
+     and residual covariance SIGMA (D-by-D).
+
+     X specifies the design.  It is either a numeric N-by-P matrix, in which
+     case the same P predictors apply to every response and BETA is P-by-D; or a
+     cell array of N design matrices, each D-by-K, in which case BETA is K-by-1.
+
+     ALG selects how missing responses (‘NaN’ entries of Y) are handled: "ecm"
+     (the default) and "cwls" use every observed response through the marginal
+     likelihood of the observed components, while "mvn" discards any observation
+     that has a missing response.  With no missing data all three agree.
+
+     The optional second output COVB is the covariance matrix of the coefficient
+     estimates, computed as the inverse of the observed Fisher information at
+     BETA and SIGMA.  With missing data and the "ecm"/"cwls" algorithms this is
+     the standard observed-data covariance and can differ from MATLAB's value
+     (which uses a different information convention) at the ‘1e-3’ level; NLOGL
+     agrees exactly.
+
+     See also: mvregress.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+Negative log-likelihood for a multivariate regression model.
 
 
 
@@ -9225,6 +9975,73 @@ nlpredci
 # elements: 1
 # length: 63
 Confidence intervals for predictions of a nonlinear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+nnmf
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1895
+ -- statistics: [W, H] = nnmf (A, K)
+ -- statistics: [W, H, D] = nnmf (A, K)
+ -- statistics: [...] = nnmf (..., NAME, VALUE)
+
+     Nonnegative matrix factorization.
+
+     ‘[W, H] = nnmf (A, K)’ factors the nonnegative N * M matrix A into
+     nonnegative factors W (N * K) and H (K * M) whose product approximates A,
+     by minimizing the root-mean-square residual between A and ‘W * H’.  K, the
+     number of factors, is typically smaller than N and M.
+
+     ‘[W, H, D] = nnmf (...)’ also returns the root-mean-square residual D, that
+     is ‘norm (A - W * H, "fro") / sqrt (N * M)’.
+
+     The factorization is not unique: the returned factors are normalized so
+     that the rows of H have unit length, and the columns of W (and the
+     corresponding rows of H) are ordered by decreasing length of the columns of
+     W.  Because the objective is not convex, the iteration converges to a local
+     minimum that depends on the starting point; use 'Replicates' to try several
+     random starts and keep the best.
+
+     Name/Value pairs:
+
+     'Algorithm'
+          'als' (default) for alternating least squares, or 'mult' for
+          multiplicative updates.  Alternating least squares usually converges
+          faster and more reliably; multiplicative updates are more sensitive to
+          the starting point.
+
+     'W0'
+          An N * K initial value for W.
+
+     'H0'
+          A K * M initial value for H.
+
+     'Replicates'
+          The number of times to repeat the factorization from new random
+          starting points, keeping the result with the smallest residual.  The
+          default is 1.  Ignored for a starting point fixed by both 'W0' and
+          'H0'.
+
+     'Options'
+          A structure of algorithm options (as returned by ‘statset’) whose
+          MaxIter, TolFun, and TolX fields control the iteration.
+
+     See also: pca, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 33
+Nonnegative matrix factorization.
 
 
 
@@ -10351,6 +11168,85 @@ Calculate partial least squares regression using SIMPLS algorithm.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 4
+ppca
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2480
+ -- statistics: COEFF = ppca (Y, K)
+ -- statistics: [COEFF, SCORE] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU, V] = ppca (Y, K)
+ -- statistics: [COEFF, SCORE, PCVAR, MU, V, S] = ppca (Y, K)
+ -- statistics: [...] = ppca (..., NAME, VALUE)
+
+     Probabilistic principal component analysis.
+
+     ‘COEFF = ppca (Y, K)’ fits a probabilistic principal component analysis
+     (PPCA) model with K components to the N * P data matrix Y (rows are
+     observations, columns are variables) and returns the P * K matrix COEFF of
+     orthonormal principal component coefficients, ordered by decreasing
+     component variance.  Y may contain ‘NaN’ values marking missing
+     observations; the model is fitted by an expectation-maximization algorithm
+     that accounts for them.  K must be a positive integer smaller than P.
+
+     ‘[COEFF, SCORE, PCVAR, MU, V, S] = ppca (...)’ returns further outputs:
+
+     SCORE
+          The N * K principal component scores (the data projected onto the
+          components; missing entries are reconstructed from the model before
+          projection).
+
+     PCVAR
+          A K * 1 vector of the principal component variances (the variance
+          explained by each component).
+
+     MU
+          A 1 * P vector of the estimated mean of Y.
+
+     V
+          The estimated residual (isotropic noise) variance.
+
+     S
+          A structure with the fitted model details: the loadings W, the
+          expected scores Xexp, the reconstruction Recon, the number of
+          iterations NumIter, and the root-mean-square residual RMSResid.
+
+     Name/Value pairs control the fit:
+
+     'W0'
+          A P * K initial value for the loadings used by the
+          expectation-maximization algorithm (missing-data case).
+
+     'Options'
+          A structure of algorithm options, as returned by ‘statset’, whose
+          MaxIter, TolFun, and TolX fields set the maximum number of iterations
+          and the convergence tolerances of the expectation-maximization
+          algorithm.
+
+     When Y has no missing values the model is fitted directly from the
+     eigendecomposition of its covariance matrix; COEFF, PCVAR, and V are then
+     the principal component directions, the leading variances, and the mean of
+     the trailing variances, respectively.
+
+     See also: pca, pcacov, pcares, factoran, barttest.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 43
+Probabilistic principal component analysis.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 6
 ppplot
 
@@ -11179,6 +12075,81 @@ Perform a linear regression t-test.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 4
+rica
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2087
+ -- statistics: MDL = rica (X, Q)
+ -- statistics: MDL = rica (X, Q, NAME, VALUE)
+
+     Reconstruction independent component analysis (RICA) for feature
+     extraction.
+
+     ‘MDL = rica (X, Q)’ learns Q features from the N * P data matrix X (rows
+     are observations, columns are predictors) and returns a ReconstructionICA
+     object MDL.  Apply the learned transformation to data with ‘transform (MDL,
+     X)’, which returns ‘X * MDL.TransformWeights’.
+
+     The P * Q weight matrix (with unit-length columns) minimizes the objective
+
+          LAMBDA * ||X * W * W' - X||_F^2
+                + sum (sum (0.5 * log (cosh (2 * X * W))))
+
+     over the transformation weights W, combining a reconstruction cost with a
+     'logcosh' sparsity contrast.
+
+     Name/Value pairs:
+
+     'IterationLimit'
+          Maximum number of iterations (default 1000).
+
+     'Lambda'
+          Weight of the reconstruction term (default 1).
+
+     'Standardize'
+          Logical; center and scale each predictor before fitting (default
+          false).
+
+     'ContrastFcn'
+          The sparsity contrast.  Only 'logcosh' — that is 0.5 \log (\cosh (2
+          z)) — is supported.
+
+     'InitialTransformWeights'
+          A P * Q initial value for the weights.  The default is random.
+
+     'GradientTolerance', 'StepTolerance'
+          Accepted for MATLAB compatibility and recorded in ModelParameters; the
+          built-in solver iterates up to 'IterationLimit' with tight internal
+          tolerances.
+
+     Note on reproducibility
+     -----------------------
+
+     The RICA objective is not convex and is minimized by a quasi-Newton solver,
+     so the learned weights depend on the starting point and the solver, and are
+     only defined up to a permutation and sign of the feature columns.
+     Different runs (or different software, including MATLAB) may return
+     different weights that nonetheless describe an equally valid feature
+     transformation.  Fix 'InitialTransformWeights' for a reproducible result.
+
+     See also: ReconstructionICA, sparsefilt, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 76
+Reconstruction independent component analysis (RICA) for feature extraction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 5
 ridge
 
@@ -11349,6 +12320,111 @@ robustfit
 # elements: 1
 # length: 25
 Robust linear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 13
+rotatefactors
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3226
+ -- statistics: B = rotatefactors (A)
+ -- statistics: B = rotatefactors (A, NAME, VALUE, ...)
+ -- statistics: [B, T] = rotatefactors (...)
+
+     Rotate a factor-loading matrix.
+
+     ‘B = rotatefactors (A)’ rotates the D * M factor loadings matrix A (D
+     observed variables, M factors) to the 'varimax' criterion and returns the
+     rotated loadings B, the same size as A.
+
+     ‘[B, T] = rotatefactors (...)’ also returns the M * M rotation matrix T, so
+     that ‘B = A * T’.  For the orthogonal methods T is orthonormal (‘T' * T’ is
+     the identity); for the oblique methods ('promax' and oblique 'procrustes')
+     it is a general invertible matrix.
+
+     The rotation is controlled by NAME/VALUE pairs:
+
+     'Method'
+          The rotation criterion, one of:
+
+          'varimax' (default)
+               Orthomax with a criterion coefficient of 1; maximizes the
+               variance of the squared loadings within each factor.
+
+          'quartimax'
+               Orthomax with a coefficient of 0; simplifies the description of
+               each variable.
+
+          'equamax'
+               Orthomax with a coefficient of M / 2.
+
+          'parsimax'
+               Orthomax with a coefficient of D (M - 1) / (D + M - 2).
+
+          'orthomax'
+               General orthomax with the coefficient given by 'Coeff'.
+
+          'promax'
+               Oblique rotation obtained by fitting an oblique transformation to
+               a target built from a 'varimax' solution raised to the power
+               'Power'.
+
+          'procrustes'
+               Rotation towards the 'Target' matrix, either orthogonal or
+               oblique according to 'Type'.
+
+     'Normalize'
+          'on' (default) applies Kaiser normalization (each row of A is scaled
+          to unit length before the orthomax rotation and unscaled afterwards);
+          'off' disables it.  Ignored by 'procrustes'.
+
+     'Reltol'
+          Relative convergence tolerance for the iterative orthomax rotation.
+          The default is ‘sqrt (eps)’.
+
+     'Maxit'
+          Maximum number of iterations for the iterative orthomax rotation.  The
+          default is 250.
+
+     'Coeff'
+          The orthomax coefficient used when 'Method' is 'orthomax'.  The
+          default is 1 (equivalent to 'varimax').
+
+     'Power'
+          The power used to build the 'promax' target, a scalar greater than or
+          equal to 1.  The default is 4.
+
+     'Target'
+          The target loadings matrix for 'procrustes', the same size as A.
+          Required for that method.
+
+     'Type'
+          'orthogonal' (default) or 'oblique', selecting the kind of
+          'procrustes' rotation.
+
+     *Note on the orthomax family:* for coefficients up to 1 ('varimax',
+     'quartimax', and small 'orthomax') the rotation follows the same
+     successive-SVD iteration as MATLAB and stops at the same relative
+     tolerance.  For larger coefficients ('equamax', 'parsimax') that iteration
+     does not converge, so a monotonically convergent pairwise algorithm is used
+     instead; it reaches the same optimum as MATLAB to that solution's own
+     convergence precision.
+
+     See also: factoran, pca, pcacov, procrustes.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 31
+Rotate a factor-loading matrix.
 
 
 
@@ -12010,6 +13086,74 @@ Draws NSAMPLES samples from a target stationary distribution PDF using slice
 # type: sq_string
 # elements: 1
 # length: 10
+sparsefilt
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1915
+ -- statistics: MDL = sparsefilt (X, Q)
+ -- statistics: MDL = sparsefilt (X, Q, NAME, VALUE)
+
+     Sparse filtering for feature extraction.
+
+     ‘MDL = sparsefilt (X, Q)’ learns Q features from the N * P data matrix X
+     (rows are observations, columns are predictors) and returns a
+     SparseFiltering object MDL.  Apply the learned transformation to data with
+     ‘transform (MDL, X)’.
+
+     The N * Q features returned by ‘transform’ are the soft-absolute
+     activations ‘sqrt ((X * W) .^ 2 + 1e-8)’, normalized first across
+     observations (each feature) and then across features (each observation).
+     The P * Q weight matrix W minimizes the sum of those features plus an L2
+     penalty ‘LAMBDA * ||W ||_F^2’, driving the features to be sparse.
+
+     Name/Value pairs:
+
+     'IterationLimit'
+          Maximum number of iterations (default 1000).
+
+     'Lambda'
+          Weight of the L2 penalty on the transform weights (default 1).
+
+     'Standardize'
+          Logical; center and scale each predictor before fitting (default
+          false).
+
+     'InitialTransformWeights'
+          A P * Q initial value for the weights.  The default is random.
+
+     'GradientTolerance', 'StepTolerance'
+          Accepted for MATLAB compatibility and recorded in ModelParameters; the
+          built-in solver iterates up to 'IterationLimit' with tight internal
+          tolerances.
+
+     Note on reproducibility
+     -----------------------
+
+     The sparse filtering objective is not convex and is minimized by a
+     quasi-Newton solver, so the learned weights depend on the starting point
+     and the solver.  Different runs (or different software, including MATLAB)
+     may return different weights that nonetheless describe an equally valid
+     feature transformation.  Fix 'InitialTransformWeights' for a reproducible
+     result.
+
+     See also: SparseFiltering, rica, pca.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 40
+Sparse filtering for feature extraction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
 squareform
 
 
@@ -12463,6 +13607,85 @@ trimmean
 # elements: 1
 # length: 25
 Compute the trimmed mean.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 4
+tsne
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2101
+ -- statistics: Y = tsne (X)
+ -- statistics: [Y, LOSS] = tsne (X)
+ -- statistics: [...] = tsne (..., NAME, VALUE)
+
+     t-distributed stochastic neighbor embedding (t-SNE).
+
+     ‘Y = tsne (X)’ embeds the N * P data matrix X (rows are observations) into
+     a low-dimensional space and returns the N * NUMDIMENSIONS matrix Y of
+     embedded points, whose pairwise (Student-t) affinities approximate the
+     Gaussian affinities of the rows of X.
+
+     ‘[Y, LOSS] = tsne (...)’ also returns the Kullback-Leibler divergence LOSS
+     between the two affinity distributions at the returned embedding.
+
+     Name/Value pairs:
+
+     'Algorithm'
+          Only 'exact' is supported (MATLAB's approximate 'barneshut' algorithm
+          is not available).
+
+     'Distance'
+          The distance metric used for the high-dimensional affinities, as
+          accepted by ‘pdist’ (default 'euclidean').
+
+     'NumDimensions'
+          The dimension of the embedding Y (default ‘min (P, 2)’).
+
+     'NumPCAComponents'
+          If positive, reduce X to this many principal components before
+          embedding (default 0, no reduction).
+
+     'Standardize'
+          Logical; center and scale each column of X before embedding (default
+          false).
+
+     'Perplexity'
+          The effective number of local neighbors (default 30).  It must be
+          smaller than N.
+
+     'Exaggeration'
+          Tightness factor applied to the high-dimensional affinities for the
+          first 100 iterations (default 4, no less than 1).
+
+     'LearnRate'
+          The learning rate of the optimization (default 500).
+
+     'InitialY'
+          An N * NUMDIMENSIONS initial embedding (default ‘1e-4 * randn’).
+
+     'Options'
+          A structure (as returned by ‘statset’) whose MaxIter (default 1000)
+          and TolFun (default ‘1e-10’) fields control the optimization.
+
+     The embedding is not unique: it depends on the initial configuration and
+     the random state.  Set 'InitialY' (or the random seed) for a reproducible
+     result.
+
+     See also: pca, pdist, statset.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 52
+t-distributed stochastic neighbor embedding (t-SNE).
 
 
 
@@ -13167,1229 +14390,6 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 9
-hmmdecode
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 3047
- -- statistics: PSTATES = hmmdecode (SEQUENCE, TRANSPROB, OUTPROB)
- -- statistics: [PSTATES, LOGPSEQ] = hmmdecode (...)
- -- statistics: [PSTATES, LOGPSEQ, FS, BS, S] = hmmdecode (...)
- -- statistics: [...] = hmmdecode (..., "symbols", SYMBOLS)
-
-     Posterior state probabilities of a hidden Markov model.
-
-     Calculate the posterior state probabilities of the sequence SEQUENCE from a
-     hidden Markov model.  The posterior state probabilities are the conditional
-     probabilities of being in each state given the whole observed sequence.
-     The model assumes that the generation starts in state ‘1’ at step ‘0’ but
-     does not include step ‘0’ in the sequence.
-
-     Arguments
-     ---------
-
-        • SEQUENCE is a vector of length LEN of given outputs.  The outputs must
-          be integers ranging from ‘1’ to ‘columns (outprob)’.
-
-        • TRANSPROB is the matrix of transition probabilities of the states.
-          ‘transprob(i, j)’ is the probability of a transition to state ‘j’
-          given state ‘i’.
-
-        • OUTPROB is the matrix of output probabilities.  ‘outprob(i, j)’ is the
-          probability of generating output ‘j’ given state ‘i’.
-
-     Return values
-     -------------
-
-        • PSTATES is the matrix of posterior state probabilities.  It has one
-          row for each state and one column for each element of SEQUENCE.
-          ‘pstates(i, j)’ is the conditional probability that the model is in
-          state ‘i’ when it generates the ‘j’-th output of SEQUENCE, given that
-          SEQUENCE is emitted.
-
-        • LOGPSEQ is the logarithm of the probability of the sequence SEQUENCE.
-
-        • FS and BS are the scaled forward and backward probabilities,
-          respectively, and S is the vector of scale factors used to keep the
-          computation numerically stable.
-
-     If ‘"symbols"’ is specified, then SEQUENCE is expected to be a sequence of
-     the elements of SYMBOLS instead of integers ranging from ‘1’ to ‘columns
-     (outprob)’.  SYMBOLS can be a cell array.
-
-     Examples
-     --------
-
-          transprob = [0.8, 0.2; 0.4, 0.6];
-          outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-          [sequence, states] = hmmgenerate (25, transprob, outprob);
-          pstates = hmmdecode (sequence, transprob, outprob);
-
-          symbols = {"A", "B", "C"};
-          [sequence, states] = hmmgenerate (25, transprob, outprob, ...
-                                            "symbols", symbols);
-          pstates = hmmdecode (sequence, transprob, outprob, "symbols", symbols);
-
-     References
-     ----------
-
-       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
-          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
-          2001.
-
-       2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
-          pages 257-286, February 1989.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 55
-Posterior state probabilities of a hidden Markov model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 8
-hmmtrain
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4188
- -- statistics: [ESTTR, ESTOUT] = hmmtrain (SEQUENCE, TRANSGUESS, OUTGUESS)
- -- statistics: [...] = hmmtrain (..., "algorithm", ALGORITHM)
- -- statistics: [...] = hmmtrain (..., "symbols", SYMBOLS)
- -- statistics: [...] = hmmtrain (..., "tolerance", TOL)
- -- statistics: [...] = hmmtrain (..., "maxiterations", MAXITER)
- -- statistics: [...] = hmmtrain (..., "pseudotransitions", PSEUDOTRANSITIONS)
- -- statistics: [...] = hmmtrain (..., "pseudoemissions", PSEUDOEMISSIONS)
- -- statistics: [...] = hmmtrain (..., "verbose", VFLAG)
-
-     Estimate the parameters of a hidden Markov model from emitted sequences.
-
-     Given one or more observed output sequences and initial guesses for the
-     transition and output probability matrices, ‘hmmtrain’ finds maximum
-     likelihood estimates of the two matrices using the Baum-Welch algorithm
-     (the default) or Viterbi training.  The model assumes that the generation
-     starts in state ‘1’ at step ‘0’ but does not include step ‘0’ in the
-     sequence.
-
-     Arguments
-     ---------
-
-        • SEQUENCE is a vector of a sequence of given outputs, or, for training
-          from several sequences, a cell array of such vectors or a matrix whose
-          rows are individual sequences.  The outputs must be integers ranging
-          from ‘1’ to ‘columns (outguess)’.
-
-        • TRANSGUESS is the initial guess for the matrix of transition
-          probabilities.  ‘transguess(i, j)’ is the probability of a transition
-          to state ‘j’ given state ‘i’.
-
-        • OUTGUESS is the initial guess for the matrix of output probabilities.
-          ‘outguess(i, j)’ is the probability of generating output ‘j’ given
-          state ‘i’.
-
-     Return values
-     -------------
-
-        • ESTTR is the estimated matrix of transition probabilities.
-
-        • ESTOUT is the estimated matrix of output probabilities.
-
-     Name-Value pair arguments
-     -------------------------
-
-        • ‘"algorithm"’ selects the training algorithm, either ‘"BaumWelch"’
-          (default) or ‘"Viterbi"’.  ‘"BaumWelch"’ performs the standard
-          forward-backward re-estimation and is recommended for most uses.
-          ‘"Viterbi"’ performs segmental (hard) re-estimation from the most
-          likely state path of each sequence; it is faster but only approximates
-          the maximum-likelihood estimate.
-
-        • ‘"symbols"’ specifies the possible outputs.  If given, SEQUENCE is
-          expected to hold the elements of SYMBOLS instead of integers.  SYMBOLS
-          can be a cell array.
-
-        • ‘"tolerance"’ is the convergence tolerance (default ‘1e-6’).  The
-          algorithm terminates when the change in the log-likelihood and in both
-          estimated matrices falls below TOL.
-
-        • ‘"maxiterations"’ is the maximum number of iterations (default ‘500’).
-          A warning is issued if the algorithm has not converged within this
-          many iterations.
-
-        • ‘"pseudotransitions"’ and ‘"pseudoemissions"’ supply pseudo-count
-          matrices for Viterbi training, used to keep transitions or outputs
-          that are very unlikely to occur from collapsing to zero probability.
-
-        • ‘"verbose"’, when true, prints the log-likelihood and the change in
-          the estimates at each iteration.
-
-     Examples
-     --------
-
-          transprob = [0.8, 0.2; 0.4, 0.6];
-          outprob = [0.2, 0.4, 0.4; 0.7, 0.2, 0.1];
-          sequence = hmmgenerate (100, transprob, outprob);
-          transguess = [0.6, 0.4; 0.5, 0.5];
-          outguess = [0.3, 0.3, 0.4; 0.5, 0.3, 0.2];
-          [esttr, estout] = hmmtrain (sequence, transguess, outguess);
-
-     References
-     ----------
-
-       1. Wendy L. Martinez and Angel R. Martinez.  ‘Computational Statistics
-          Handbook with MATLAB’. Appendix E, pages 547-557, Chapman & Hall/CRC,
-          2001.
-
-       2. Lawrence R. Rabiner.  A Tutorial on Hidden Markov Models and Selected
-          Applications in Speech Recognition.  ‘Proceedings of the IEEE’, 77(2),
-          pages 257-286, February 1989.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 72
-Estimate the parameters of a hidden Markov model from emitted sequences.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 13
-rotatefactors
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 3226
- -- statistics: B = rotatefactors (A)
- -- statistics: B = rotatefactors (A, NAME, VALUE, ...)
- -- statistics: [B, T] = rotatefactors (...)
-
-     Rotate a factor-loading matrix.
-
-     ‘B = rotatefactors (A)’ rotates the D * M factor loadings matrix A (D
-     observed variables, M factors) to the 'varimax' criterion and returns the
-     rotated loadings B, the same size as A.
-
-     ‘[B, T] = rotatefactors (...)’ also returns the M * M rotation matrix T, so
-     that ‘B = A * T’.  For the orthogonal methods T is orthonormal (‘T' * T’ is
-     the identity); for the oblique methods ('promax' and oblique 'procrustes')
-     it is a general invertible matrix.
-
-     The rotation is controlled by NAME/VALUE pairs:
-
-     'Method'
-          The rotation criterion, one of:
-
-          'varimax' (default)
-               Orthomax with a criterion coefficient of 1; maximizes the
-               variance of the squared loadings within each factor.
-
-          'quartimax'
-               Orthomax with a coefficient of 0; simplifies the description of
-               each variable.
-
-          'equamax'
-               Orthomax with a coefficient of M / 2.
-
-          'parsimax'
-               Orthomax with a coefficient of D (M - 1) / (D + M - 2).
-
-          'orthomax'
-               General orthomax with the coefficient given by 'Coeff'.
-
-          'promax'
-               Oblique rotation obtained by fitting an oblique transformation to
-               a target built from a 'varimax' solution raised to the power
-               'Power'.
-
-          'procrustes'
-               Rotation towards the 'Target' matrix, either orthogonal or
-               oblique according to 'Type'.
-
-     'Normalize'
-          'on' (default) applies Kaiser normalization (each row of A is scaled
-          to unit length before the orthomax rotation and unscaled afterwards);
-          'off' disables it.  Ignored by 'procrustes'.
-
-     'Reltol'
-          Relative convergence tolerance for the iterative orthomax rotation.
-          The default is ‘sqrt (eps)’.
-
-     'Maxit'
-          Maximum number of iterations for the iterative orthomax rotation.  The
-          default is 250.
-
-     'Coeff'
-          The orthomax coefficient used when 'Method' is 'orthomax'.  The
-          default is 1 (equivalent to 'varimax').
-
-     'Power'
-          The power used to build the 'promax' target, a scalar greater than or
-          equal to 1.  The default is 4.
-
-     'Target'
-          The target loadings matrix for 'procrustes', the same size as A.
-          Required for that method.
-
-     'Type'
-          'orthogonal' (default) or 'oblique', selecting the kind of
-          'procrustes' rotation.
-
-     *Note on the orthomax family:* for coefficients up to 1 ('varimax',
-     'quartimax', and small 'orthomax') the rotation follows the same
-     successive-SVD iteration as MATLAB and stops at the same relative
-     tolerance.  For larger coefficients ('equamax', 'parsimax') that iteration
-     does not converge, so a monotonically convergent pairwise algorithm is used
-     instead; it reaches the same optimum as MATLAB to that solution's own
-     convergence precision.
-
-     See also: factoran, pca, pcacov, procrustes.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 31
-Rotate a factor-loading matrix.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4
-ppca
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2480
- -- statistics: COEFF = ppca (Y, K)
- -- statistics: [COEFF, SCORE] = ppca (Y, K)
- -- statistics: [COEFF, SCORE, PCVAR] = ppca (Y, K)
- -- statistics: [COEFF, SCORE, PCVAR, MU] = ppca (Y, K)
- -- statistics: [COEFF, SCORE, PCVAR, MU, V] = ppca (Y, K)
- -- statistics: [COEFF, SCORE, PCVAR, MU, V, S] = ppca (Y, K)
- -- statistics: [...] = ppca (..., NAME, VALUE)
-
-     Probabilistic principal component analysis.
-
-     ‘COEFF = ppca (Y, K)’ fits a probabilistic principal component analysis
-     (PPCA) model with K components to the N * P data matrix Y (rows are
-     observations, columns are variables) and returns the P * K matrix COEFF of
-     orthonormal principal component coefficients, ordered by decreasing
-     component variance.  Y may contain ‘NaN’ values marking missing
-     observations; the model is fitted by an expectation-maximization algorithm
-     that accounts for them.  K must be a positive integer smaller than P.
-
-     ‘[COEFF, SCORE, PCVAR, MU, V, S] = ppca (...)’ returns further outputs:
-
-     SCORE
-          The N * K principal component scores (the data projected onto the
-          components; missing entries are reconstructed from the model before
-          projection).
-
-     PCVAR
-          A K * 1 vector of the principal component variances (the variance
-          explained by each component).
-
-     MU
-          A 1 * P vector of the estimated mean of Y.
-
-     V
-          The estimated residual (isotropic noise) variance.
-
-     S
-          A structure with the fitted model details: the loadings W, the
-          expected scores Xexp, the reconstruction Recon, the number of
-          iterations NumIter, and the root-mean-square residual RMSResid.
-
-     Name/Value pairs control the fit:
-
-     'W0'
-          A P * K initial value for the loadings used by the
-          expectation-maximization algorithm (missing-data case).
-
-     'Options'
-          A structure of algorithm options, as returned by ‘statset’, whose
-          MaxIter, TolFun, and TolX fields set the maximum number of iterations
-          and the convergence tolerances of the expectation-maximization
-          algorithm.
-
-     When Y has no missing values the model is fitted directly from the
-     eigendecomposition of its covariance matrix; COEFF, PCVAR, and V are then
-     the principal component directions, the leading variances, and the mean of
-     the trailing variances, respectively.
-
-     See also: pca, pcacov, pcares, factoran, barttest.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 43
-Probabilistic principal component analysis.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-mdscale
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 3907
- -- statistics: Y = mdscale (D, P)
- -- statistics: [Y, STRESS] = mdscale (D, P)
- -- statistics: [Y, STRESS, DISPARITIES] = mdscale (D, P)
- -- statistics: [...] = mdscale (..., NAME, VALUE)
-
-     Nonclassical (metric and nonmetric) multidimensional scaling.
-
-     ‘Y = mdscale (D, P)’ takes a matrix of dissimilarities D and returns a
-     configuration Y of N points in P dimensions (an N * P matrix) whose
-     interpoint distances approximate D, by minimizing a stress criterion.  D
-     may be given either as a full N * N symmetric matrix with zero diagonal, or
-     as the vector of the N (N - 1) / 2 upper-triangle dissimilarities returned
-     by ‘pdist’.
-
-     ‘[Y, STRESS, DISPARITIES] = mdscale (...)’ also returns the final value of
-     the STRESS criterion and the DISPARITIES (the transformed dissimilarities
-     the distances are fitted to).  For the nonmetric criteria the disparities
-     are the monotone (isotonic) regression of the dissimilarities onto the
-     distances; for the metric criteria they are the dissimilarities themselves.
-
-     Name/Value pairs:
-
-     'Criterion'
-          The goodness-of-fit criterion to minimize, one of:
-
-          'stress' (default)
-               Kruskal's normalized stress-1, sqrt (sum ((d - dhat)^2) / sum
-               (d^2)), computed from disparities DHAT (nonmetric).
-
-          'sstress'
-               Squared stress, sqrt (sum ((d^2 - dhat^2)^2) / sum (d^4))
-               (nonmetric).
-
-          'metricstress'
-               Metric stress, sqrt (sum ((d - delta)^2) / sum (delta^2)),
-               fitting the dissimilarities DELTA directly.
-
-          'metricsstress'
-               Metric squared stress, sqrt (sum ((d^2 - delta^2)^2) / sum
-               (delta^4)).
-
-          'sammon'
-               Sammon's nonlinear mapping criterion, (1 / sum (delta)) sum ((d -
-               delta)^2 / delta).
-
-          'strain'
-               The classical scaling criterion; equivalent to ‘cmdscale’.
-
-     'Weights'
-          A matrix or vector of nonnegative weights, the same size as D,
-          weighting each dissimilarity in the criterion.
-
-     'Start'
-          The initial configuration: 'cmdscale' (default, classical scaling),
-          'random', or an explicit N * P matrix.
-
-     'Replicates'
-          The number of times to repeat the minimization from different starting
-          points, keeping the best (lowest-stress) result.  The default is 1.
-
-     'Options'
-          A structure of algorithm options (as returned by ‘statset’) whose
-          MaxIter, TolFun, and TolX fields control the iterative minimization.
-
-     Non-uniqueness of the solution
-     ------------------------------
-
-     A stress-minimizing configuration is defined only up to a translation,
-     rotation, and reflection, because these leave all interpoint distances (and
-     hence the stress) unchanged.  ‘mdscale’ removes this ambiguity by returning
-     Y centred at the origin and rotated to its principal axes (with the
-     largest-magnitude coordinate on each axis made positive), matching the
-     convention used by MATLAB.
-
-     Beyond that rigid ambiguity, the *nonmetric* criteria ('stress' and
-     'sstress') are non-convex and typically have several local minima; the one
-     reached depends on the starting configuration and the details of the
-     optimizer.  As a result the returned configuration for these criteria may
-     differ from the one another program (including MATLAB) reports even when
-     the *stress value* agrees, and different runs may find configurations with
-     slightly different stress.  Use 'Replicates' with a 'random' start to
-     search for a lower-stress solution.  The metric criteria and 'strain' have
-     an essentially unique solution and are reproducible up to the rigid
-     ambiguity above.
-
-     See also: cmdscale, pdist, squareform, procrustes, statset.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 61
-Nonclassical (metric and nonmetric) multidimensional scaling.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4
-nnmf
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1895
- -- statistics: [W, H] = nnmf (A, K)
- -- statistics: [W, H, D] = nnmf (A, K)
- -- statistics: [...] = nnmf (..., NAME, VALUE)
-
-     Nonnegative matrix factorization.
-
-     ‘[W, H] = nnmf (A, K)’ factors the nonnegative N * M matrix A into
-     nonnegative factors W (N * K) and H (K * M) whose product approximates A,
-     by minimizing the root-mean-square residual between A and ‘W * H’.  K, the
-     number of factors, is typically smaller than N and M.
-
-     ‘[W, H, D] = nnmf (...)’ also returns the root-mean-square residual D, that
-     is ‘norm (A - W * H, "fro") / sqrt (N * M)’.
-
-     The factorization is not unique: the returned factors are normalized so
-     that the rows of H have unit length, and the columns of W (and the
-     corresponding rows of H) are ordered by decreasing length of the columns of
-     W.  Because the objective is not convex, the iteration converges to a local
-     minimum that depends on the starting point; use 'Replicates' to try several
-     random starts and keep the best.
-
-     Name/Value pairs:
-
-     'Algorithm'
-          'als' (default) for alternating least squares, or 'mult' for
-          multiplicative updates.  Alternating least squares usually converges
-          faster and more reliably; multiplicative updates are more sensitive to
-          the starting point.
-
-     'W0'
-          An N * K initial value for W.
-
-     'H0'
-          A K * M initial value for H.
-
-     'Replicates'
-          The number of times to repeat the factorization from new random
-          starting points, keeping the result with the smallest residual.  The
-          default is 1.  Ignored for a starting point fixed by both 'W0' and
-          'H0'.
-
-     'Options'
-          A structure of algorithm options (as returned by ‘statset’) whose
-          MaxIter, TolFun, and TolX fields control the iteration.
-
-     See also: pca, statset.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 33
-Nonnegative matrix factorization.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4
-rica
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2087
- -- statistics: MDL = rica (X, Q)
- -- statistics: MDL = rica (X, Q, NAME, VALUE)
-
-     Reconstruction independent component analysis (RICA) for feature
-     extraction.
-
-     ‘MDL = rica (X, Q)’ learns Q features from the N * P data matrix X (rows
-     are observations, columns are predictors) and returns a ReconstructionICA
-     object MDL.  Apply the learned transformation to data with ‘transform (MDL,
-     X)’, which returns ‘X * MDL.TransformWeights’.
-
-     The P * Q weight matrix (with unit-length columns) minimizes the objective
-
-          LAMBDA * ||X * W * W' - X||_F^2
-                + sum (sum (0.5 * log (cosh (2 * X * W))))
-
-     over the transformation weights W, combining a reconstruction cost with a
-     'logcosh' sparsity contrast.
-
-     Name/Value pairs:
-
-     'IterationLimit'
-          Maximum number of iterations (default 1000).
-
-     'Lambda'
-          Weight of the reconstruction term (default 1).
-
-     'Standardize'
-          Logical; center and scale each predictor before fitting (default
-          false).
-
-     'ContrastFcn'
-          The sparsity contrast.  Only 'logcosh' — that is 0.5 \log (\cosh (2
-          z)) — is supported.
-
-     'InitialTransformWeights'
-          A P * Q initial value for the weights.  The default is random.
-
-     'GradientTolerance', 'StepTolerance'
-          Accepted for MATLAB compatibility and recorded in ModelParameters; the
-          built-in solver iterates up to 'IterationLimit' with tight internal
-          tolerances.
-
-     Note on reproducibility
-     -----------------------
-
-     The RICA objective is not convex and is minimized by a quasi-Newton solver,
-     so the learned weights depend on the starting point and the solver, and are
-     only defined up to a permutation and sign of the feature columns.
-     Different runs (or different software, including MATLAB) may return
-     different weights that nonetheless describe an equally valid feature
-     transformation.  Fix 'InitialTransformWeights' for a reproducible result.
-
-     See also: ReconstructionICA, sparsefilt, pca.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 76
-Reconstruction independent component analysis (RICA) for feature extraction.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 17
-ReconstructionICA
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1066
- -- statistics: ReconstructionICA
-
-     Reconstruction independent component analysis (RICA) feature-extraction
-     model.
-
-     A ReconstructionICA object stores the transformation learned by ‘rica’ for
-     extracting features from data.  Create one with ‘rica’; apply it to data
-     with the ‘transform’ method.
-
-     An object of this class has the following properties:
-
-        • TransformWeights — the P * Q matrix of learned transformation weights
-          (unit-length columns).
-        • Mu, Sigma — the per-predictor mean and standard deviation used when
-          'Standardize' is true (empty otherwise).
-        • FitInfo — a structure with the number of Iterations and the final
-          Objective value of the fit.
-        • ModelParameters — a structure of the options used for the fit.
-        • NumPredictors, NumLearnedFeatures — the input dimension P and the
-          number of learned features Q.
-        • InitialTransformWeights — the starting weights used by the fit.
-
-     See also: rica, sparsefilt.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 78
-Reconstruction independent component analysis (RICA) feature-extraction model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 10
-sparsefilt
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1915
- -- statistics: MDL = sparsefilt (X, Q)
- -- statistics: MDL = sparsefilt (X, Q, NAME, VALUE)
-
-     Sparse filtering for feature extraction.
-
-     ‘MDL = sparsefilt (X, Q)’ learns Q features from the N * P data matrix X
-     (rows are observations, columns are predictors) and returns a
-     SparseFiltering object MDL.  Apply the learned transformation to data with
-     ‘transform (MDL, X)’.
-
-     The N * Q features returned by ‘transform’ are the soft-absolute
-     activations ‘sqrt ((X * W) .^ 2 + 1e-8)’, normalized first across
-     observations (each feature) and then across features (each observation).
-     The P * Q weight matrix W minimizes the sum of those features plus an L2
-     penalty ‘LAMBDA * ||W ||_F^2’, driving the features to be sparse.
-
-     Name/Value pairs:
-
-     'IterationLimit'
-          Maximum number of iterations (default 1000).
-
-     'Lambda'
-          Weight of the L2 penalty on the transform weights (default 1).
-
-     'Standardize'
-          Logical; center and scale each predictor before fitting (default
-          false).
-
-     'InitialTransformWeights'
-          A P * Q initial value for the weights.  The default is random.
-
-     'GradientTolerance', 'StepTolerance'
-          Accepted for MATLAB compatibility and recorded in ModelParameters; the
-          built-in solver iterates up to 'IterationLimit' with tight internal
-          tolerances.
-
-     Note on reproducibility
-     -----------------------
-
-     The sparse filtering objective is not convex and is minimized by a
-     quasi-Newton solver, so the learned weights depend on the starting point
-     and the solver.  Different runs (or different software, including MATLAB)
-     may return different weights that nonetheless describe an equally valid
-     feature transformation.  Fix 'InitialTransformWeights' for a reproducible
-     result.
-
-     See also: SparseFiltering, rica, pca.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 40
-Sparse filtering for feature extraction.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 15
-SparseFiltering
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1001
- -- statistics: SparseFiltering
-
-     Sparse filtering feature-extraction model.
-
-     A SparseFiltering object stores the transformation learned by ‘sparsefilt’
-     for extracting features from data.  Create one with ‘sparsefilt’; apply it
-     to data with the ‘transform’ method.
-
-     An object of this class has the following properties:
-
-        • TransformWeights — the P * Q matrix of learned transformation weights.
-        • Mu, Sigma — the per-predictor mean and standard deviation used when
-          'Standardize' is true (empty otherwise).
-        • FitInfo — a structure with the number of Iterations and the final
-          Objective value of the fit.
-        • ModelParameters — a structure of the options used for the fit.
-        • NumPredictors, NumLearnedFeatures — the input dimension P and the
-          number of learned features Q.
-        • InitialTransformWeights — the starting weights used by the fit.
-
-     See also: sparsefilt, rica.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 42
-Sparse filtering feature-extraction model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 4
-tsne
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2101
- -- statistics: Y = tsne (X)
- -- statistics: [Y, LOSS] = tsne (X)
- -- statistics: [...] = tsne (..., NAME, VALUE)
-
-     t-distributed stochastic neighbor embedding (t-SNE).
-
-     ‘Y = tsne (X)’ embeds the N * P data matrix X (rows are observations) into
-     a low-dimensional space and returns the N * NUMDIMENSIONS matrix Y of
-     embedded points, whose pairwise (Student-t) affinities approximate the
-     Gaussian affinities of the rows of X.
-
-     ‘[Y, LOSS] = tsne (...)’ also returns the Kullback-Leibler divergence LOSS
-     between the two affinity distributions at the returned embedding.
-
-     Name/Value pairs:
-
-     'Algorithm'
-          Only 'exact' is supported (MATLAB's approximate 'barneshut' algorithm
-          is not available).
-
-     'Distance'
-          The distance metric used for the high-dimensional affinities, as
-          accepted by ‘pdist’ (default 'euclidean').
-
-     'NumDimensions'
-          The dimension of the embedding Y (default ‘min (P, 2)’).
-
-     'NumPCAComponents'
-          If positive, reduce X to this many principal components before
-          embedding (default 0, no reduction).
-
-     'Standardize'
-          Logical; center and scale each column of X before embedding (default
-          false).
-
-     'Perplexity'
-          The effective number of local neighbors (default 30).  It must be
-          smaller than N.
-
-     'Exaggeration'
-          Tightness factor applied to the high-dimensional affinities for the
-          first 100 iterations (default 4, no less than 1).
-
-     'LearnRate'
-          The learning rate of the optimization (default 500).
-
-     'InitialY'
-          An N * NUMDIMENSIONS initial embedding (default ‘1e-4 * randn’).
-
-     'Options'
-          A structure (as returned by ‘statset’) whose MaxIter (default 1000)
-          and TolFun (default ‘1e-10’) fields control the optimization.
-
-     The embedding is not unique: it depends on the initial configuration and
-     the random state.  Set 'InitialY' (or the random seed) for a reproducible
-     result.
-
-     See also: pca, pdist, statset.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 52
-t-distributed stochastic neighbor embedding (t-SNE).
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 12
-fitlmematrix
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 2083
- -- statistics: LME = fitlmematrix (X, Y, Z, G)
- -- statistics: LME = fitlmematrix (..., NAME, VALUE)
-
-     Fit a linear mixed-effects model from design matrices.
-
-     ‘fitlmematrix (X, Y, Z, G)’ fits the linear mixed-effects model ‘y = X*beta
-     + Z*b + e’ with fixed-effects design X, response Y, random-effects design
-     Z, and grouping variable G.  The random effects B are normally distributed
-     with mean zero and an unstructured covariance PSI (shared across the levels
-     of the grouping variable), and the observation errors are independent ‘N(0,
-     sigma2)’.
-
-     X is an N-by-P numeric matrix and Y an N-by-1 response vector.  Z is an
-     N-by-Q random-effects design and G an N-by-1 grouping variable (numeric,
-     logical, char, cell array of strings, or categorical).  To specify several
-     grouping terms, pass Z and G as cell arrays of the same length, one design
-     and one grouping variable per term.
-
-     The following NAME/VALUE pairs are accepted:
-
-     "FitMethod"
-          The estimation criterion, either "ML" (maximum likelihood, the
-          default) or "REML" (restricted maximum likelihood).
-
-     "FixedEffectPredictors"
-          A cell array of P names for the columns of X (default ‘{"x1", ...,
-          "xp"}’).
-
-     "RandomEffectPredictors"
-          A cell array (one entry per grouping term) of cell arrays naming the
-          columns of each Z (default ‘z1, z2, ...’).
-
-     "RandomEffectGroups"
-          A cell array of names for the grouping terms (default ‘g1, g2’, etc.).
-
-     The returned LME is a ‘LinearMixedModel’ object describing the fitted
-     model: the estimated fixed effects and their statistics
-     (‘lme.Coefficients’), the covariance parameters (‘covarianceParameters’),
-     the random-effects BLUPs (‘randomEffects’), the log-likelihood, and methods
-     for prediction, residuals, and hypothesis tests.
-
-     Only the full (unstructured) random-effects covariance is currently
-     supported.
-
-     See also: LinearMixedModel, fitlm, parseWilkinsonFormula.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 54
-Fit a linear mixed-effects model from design matrices.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 16
-LinearMixedModel
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 822
- -- statistics: LinearMixedModel
-
-     Linear mixed-effects model fitted to data.
-
-     A ‘LinearMixedModel’ object represents a fitted linear mixed-effects model
-     ‘y = X*beta + Z*b + e’, with fixed effects BETA, random effects B
-     distributed as ‘N(0, Psi)’, and independent errors ‘N(0, sigma2)’.  Objects
-     are created with ‘fitlmematrix’ (from design matrices).
-
-     The estimated fixed effects and their statistics are available through the
-     ‘Coefficients’ table; the covariance parameters through
-     ‘covarianceParameters’; the random-effect BLUPs through ‘randomEffects’;
-     and predictions, residuals, and hypothesis tests through the ‘predict’,
-     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
-
-     See also: fitlmematrix, fitlm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 42
-Linear mixed-effects model fitted to data.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 6
-fitlme
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1309
- -- statistics: LME = fitlme (TBL, FORMULA)
- -- statistics: LME = fitlme (..., NAME, VALUE)
-
-     Fit a linear mixed-effects model specified by a formula.
-
-     ‘fitlme (TBL, FORMULA)’ fits the linear mixed-effects model described by
-     FORMULA to the variables in the table TBL, and returns a ‘LinearMixedModel’
-     object.
-
-     FORMULA is a character vector in Wilkinson notation extended with
-     random-effects terms, for example "y ~ x1 + x2 + (1 | g)".  The part to the
-     left of ‘~’ names the response; the fixed-effects part uses the usual
-     operators (‘+’, ‘*’, ‘:’, ‘^’, and ‘-1’ to drop the intercept); and each
-     random-effects term ‘(EXPR | GROUP)’ adds random intercepts and slopes EXPR
-     grouped by the factor GROUP (or an interaction of factors, e.g. ‘g1:g2’).
-     As with fixed effects, a random intercept is implicit unless suppressed
-     with ‘0’ or ‘-1’.
-
-     Rows of TBL with missing values in any model variable are removed before
-     fitting.
-
-     The following NAME/VALUE pairs are accepted:
-
-     "FitMethod"
-          The estimation criterion, "ML" (maximum likelihood, the default) or
-          "REML" (restricted maximum likelihood).
-
-     See also: LinearMixedModel, fitlmematrix, fitlm, parseWilkinsonFormula.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 56
-Fit a linear mixed-effects model specified by a formula.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 9
-mvregress
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1982
- -- statistics: BETA = mvregress (X, Y)
- -- statistics: BETA = mvregress (..., NAME, VALUE)
- -- statistics: [BETA, SIGMA, E, COVB, LOGL] = mvregress (...)
-
-     Multivariate (multiple-response) linear regression by maximum likelihood.
-
-     ‘mvregress (X, Y)’ fits the multivariate normal regression of the N-by-D
-     response matrix Y on the design X and returns the coefficient estimates
-     BETA.
-
-     X is either a numeric N-by-P matrix, in which case the same P predictors
-     apply to every response and BETA is returned as a P-by-D matrix; or a cell
-     array of N design matrices, each D-by-K, in which case BETA is a K-by-1
-     vector.
-
-     Missing responses (‘NaN’ entries of Y) are handled according to the
-     estimation algorithm.
-
-     The following NAME/VALUE pairs are accepted:
-
-     "algorithm"
-          "mvn" (multivariate normal; observations with any missing response are
-          discarded), "ecm" (expectation-conditional-maximization, using every
-          observed response), or "cwls" (covariance-weighted least squares, with
-          the weight given by "covar0").  The default is "mvn" when Y has no
-          missing values and "ecm" otherwise.
-
-     "covar0"
-          The D-by-D covariance weight for "cwls" (default the identity), or the
-          initial covariance for "ecm".
-
-     "maxiter"
-          Maximum number of iterations (default 100).
-
-     "tolbeta", "tolobj"
-          Convergence tolerances on the coefficients and the objective (defaults
-          ‘1e-8’ and ‘1e-8’).
-
-     The additional outputs are the estimated residual covariance SIGMA
-     (D-by-D), the residuals E (N-by-D), the covariance COVB of the coefficient
-     estimates, and the log-likelihood LOGL.  (With missing data and the "ecm"
-     algorithm, COVB is the standard observed-information covariance and can
-     differ from MATLAB's value at the ‘1e-3’ level; all other outputs agree.)
-
-     See also: mvregresslike, regress, fitlm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 73
-Multivariate (multiple-response) linear regression by maximum likelihood.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 13
-mvregresslike
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1461
- -- statistics: NLOGL = mvregresslike (X, Y, BETA, SIGMA, ALG)
- -- statistics: [NLOGL, COVB] = mvregresslike (...)
-
-     Negative log-likelihood for a multivariate regression model.
-
-     ‘mvregresslike (X, Y, BETA, SIGMA, ALG)’ returns the negative
-     log-likelihood NLOGL of the multivariate normal regression model with
-     responses Y (an N-by-D matrix, one row per observation), coefficients BETA,
-     and residual covariance SIGMA (D-by-D).
-
-     X specifies the design.  It is either a numeric N-by-P matrix, in which
-     case the same P predictors apply to every response and BETA is P-by-D; or a
-     cell array of N design matrices, each D-by-K, in which case BETA is K-by-1.
-
-     ALG selects how missing responses (‘NaN’ entries of Y) are handled: "ecm"
-     (the default) and "cwls" use every observed response through the marginal
-     likelihood of the observed components, while "mvn" discards any observation
-     that has a missing response.  With no missing data all three agree.
-
-     The optional second output COVB is the covariance matrix of the coefficient
-     estimates, computed as the inverse of the observed Fisher information at
-     BETA and SIGMA.  With missing data and the "ecm"/"cwls" algorithms this is
-     the standard observed-data covariance and can differ from MATLAB's value
-     (which uses a different information convention) at the ‘1e-3’ level; NLOGL
-     agrees exactly.
-
-     See also: mvregress.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 60
-Negative log-likelihood for a multivariate regression model.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 7
-fitglme
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 1403
- -- statistics: GLME = fitglme (TBL, FORMULA)
- -- statistics: GLME = fitglme (..., NAME, VALUE)
-
-     Fit a generalized linear mixed-effects model specified by a formula.
-
-     ‘fitglme (TBL, FORMULA)’ fits the generalized linear mixed-effects model
-     described by FORMULA to the table TBL and returns a
-     ‘GeneralizedLinearMixedModel’ object.
-
-     FORMULA uses the same syntax as ‘fitlme’: a response, a fixed-effects part,
-     and one or more random-effects terms ‘(EXPR | GROUP)’, for example "y ~ x +
-     (1 | g)".  The model is fitted by penalized quasi-likelihood.
-
-     The following NAME/VALUE pairs are accepted:
-
-     "Distribution"
-          The response distribution: "normal" (default), "binomial", or
-          "poisson".
-
-     "Link"
-          The link function: "identity", "logit", or "log".  The default is the
-          canonical link of the chosen distribution.
-
-     "FitMethod"
-          "MPL" (maximum pseudo-likelihood, the default), "REMPL" (restricted
-          MPL), "Laplace", or "ApproximateLaplace".  The first two differ in the
-          pseudo-likelihood used for the covariance parameters; the last two
-          report the Laplace-approximated marginal log-likelihood.
-
-     Only the canonical links and the full (unstructured) random-effects
-     covariance are currently supported.
-
-     See also: GeneralizedLinearMixedModel, fitlme, fitglm.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 68
-Fit a generalized linear mixed-effects model specified by a formula.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 27
-GeneralizedLinearMixedModel
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 850
- -- statistics: GeneralizedLinearMixedModel
-
-     Generalized linear mixed-effects model fitted to data.
-
-     A ‘GeneralizedLinearMixedModel’ object represents a fitted generalized
-     linear mixed-effects model: a generalized linear model whose linear
-     predictor ‘X*beta + Z*b’ includes normally distributed random effects ‘b ~
-     N(0, Psi)’.  Objects are created with ‘fitglme’.
-
-     The model is fitted by penalized quasi-likelihood.  The fixed-effects
-     estimates and their statistics are available through the ‘Coefficients’
-     table, the covariance parameters through ‘covarianceParameters’, and
-     predictions, residuals, and hypothesis tests through the ‘predict’,
-     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
-
-     See also: fitglme, fitlme, GeneralizedLinearModel.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 54
-Generalized linear mixed-effects model fitted to data.
 
 
 
