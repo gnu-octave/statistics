@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 193
+# columns: 195
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14299,6 +14299,97 @@ mvregresslike
 # elements: 1
 # length: 60
 Negative log-likelihood for a multivariate regression model.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+fitglme
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1403
+ -- statistics: GLME = fitglme (TBL, FORMULA)
+ -- statistics: GLME = fitglme (..., NAME, VALUE)
+
+     Fit a generalized linear mixed-effects model specified by a formula.
+
+     ‘fitglme (TBL, FORMULA)’ fits the generalized linear mixed-effects model
+     described by FORMULA to the table TBL and returns a
+     ‘GeneralizedLinearMixedModel’ object.
+
+     FORMULA uses the same syntax as ‘fitlme’: a response, a fixed-effects part,
+     and one or more random-effects terms ‘(EXPR | GROUP)’, for example "y ~ x +
+     (1 | g)".  The model is fitted by penalized quasi-likelihood.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "Distribution"
+          The response distribution: "normal" (default), "binomial", or
+          "poisson".
+
+     "Link"
+          The link function: "identity", "logit", or "log".  The default is the
+          canonical link of the chosen distribution.
+
+     "FitMethod"
+          "MPL" (maximum pseudo-likelihood, the default), "REMPL" (restricted
+          MPL), "Laplace", or "ApproximateLaplace".  The first two differ in the
+          pseudo-likelihood used for the covariance parameters; the last two
+          report the Laplace-approximated marginal log-likelihood.
+
+     Only the canonical links and the full (unstructured) random-effects
+     covariance are currently supported.
+
+     See also: GeneralizedLinearMixedModel, fitlme, fitglm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 68
+Fit a generalized linear mixed-effects model specified by a formula.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 27
+GeneralizedLinearMixedModel
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 850
+ -- statistics: GeneralizedLinearMixedModel
+
+     Generalized linear mixed-effects model fitted to data.
+
+     A ‘GeneralizedLinearMixedModel’ object represents a fitted generalized
+     linear mixed-effects model: a generalized linear model whose linear
+     predictor ‘X*beta + Z*b’ includes normally distributed random effects ‘b ~
+     N(0, Psi)’.  Objects are created with ‘fitglme’.
+
+     The model is fitted by penalized quasi-likelihood.  The fixed-effects
+     estimates and their statistics are available through the ‘Coefficients’
+     table, the covariance parameters through ‘covarianceParameters’, and
+     predictions, residuals, and hypothesis tests through the ‘predict’,
+     ‘residuals’, ‘anova’, ‘coefTest’, and ‘coefCI’ methods.
+
+     See also: fitglme, fitlme, GeneralizedLinearModel.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 54
+Generalized linear mixed-effects model fitted to data.
 
 
 

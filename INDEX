@@ -264,6 +264,7 @@ Model Fitting
  fitcnet
  fitcsvm
  fitglm
+ fitglme
  fitgmdist
  fitlm
  fitlme
@@ -271,6 +272,7 @@ Model Fitting
  fitnlm
  fitrgam
  stepwiseglm
+ GeneralizedLinearMixedModel
  GeneralizedLinearModel
  LinearMixedModel
  LinearModel
