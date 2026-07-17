@@ -109,6 +109,13 @@ function h = andrewsplot (varargin)
     endswitch
   endfor
 
+  ## Validate before plotting, so a bad option never leaves a stray figure
+  if (! isempty (alpha))
+    if (! (isscalar (alpha) && isreal (alpha) && alpha > 0 && alpha < 1))
+      error ("andrewsplot: Quantile ALPHA must be a scalar in (0,1).");
+    endif
+  endif
+
   ## Standardize the data
   switch (lower (standardize))
     case "off"
@@ -165,9 +172,6 @@ function h = andrewsplot (varargin)
     endfor
   else
     ## Median and alpha / 1-alpha quantile curves per group
-    if (! (isscalar (alpha) && isreal (alpha) && alpha > 0 && alpha < 1))
-      error ("andrewsplot: Quantile ALPHA must be a scalar in (0,1).");
-    endif
     for g = 1:k
       Fg = F(gidx == g, :);
       med = median (Fg, 1);
