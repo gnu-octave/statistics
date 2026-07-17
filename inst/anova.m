@@ -215,6 +215,9 @@ classdef anova
   properties (Access = private)
     Alpha       = 0.05;
     Contrasts   = {};
+    ## Accepted and validated for compatibility with the anova1 / anova2 /
+    ## anovan calling convention, but never forwarded to a backend: results are
+    ## presented through summary, disp, and plotDiagnostics instead.
     Display     = 'off';
     Weights     = [];
   endproperties
@@ -1149,10 +1152,13 @@ classdef anova
     endfunction
 
     function obj = fitAnova1_ (obj)
+      ## Always run the anova1 backend silently; anova presents results through
+      ## its own summary, disp, and plotDiagnostics methods, so the backend must
+      ## not print a table or open its boxplot figure during a fit.
       if (isvector (obj.Y))
-        [~, atab, stats] = anova1 (obj.Y, obj.GROUP, obj.Display);
+        [~, atab, stats] = anova1 (obj.Y, obj.GROUP, 'off');
       else
-        [~, atab, stats] = anova1 (obj.Y, [], obj.Display);
+        [~, atab, stats] = anova1 (obj.Y, [], 'off');
       endif
       obj.AnovaTable = atab;
       obj.Stats      = stats;
@@ -1167,7 +1173,8 @@ classdef anova
       if (ischar (obj.ModelType))
         modelarg = obj.ModelType;
       endif
-      [~, atab, stats] = anova2 (obj.Y, obj.reps_, obj.Display, modelarg);
+      ## Always run the anova2 backend silently; see fitAnova1_.
+      [~, atab, stats] = anova2 (obj.Y, obj.reps_, 'off', modelarg);
       obj.AnovaTable = atab;
       obj.Stats      = stats;
       obj.DFE        = stats.df;
@@ -1642,6 +1649,23 @@ endclassdef
 %! a = anova ([1;1;2;2], [1;2;3;4], 'SumOfSquaresType', 'one', ...
 %!            'displayopt', 'on');
 %! assert_equal (a.SumOfSquaresType, 'one');
+
+## Display 'on' never reaches a backend: no fit prints a table or opens a
+## figure.  The three constructions select the anova1, anova2, and anovan
+## backends respectively.
+%!test
+%! y = [1; 2; 3; 4];
+%! g = [1; 1; 2; 2];
+%! popcorn = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!            6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! figs = get (0, 'children');
+%! cmd = strcat ("a1 = anova (g, y, 'Display', 'on');", ...
+%!               "a2 = anova (popcorn, [], 'reps', 3, 'Display', 'on');", ...
+%!               "a3 = anova (g, y, 'SumOfSquaresType', 'one',", ...
+%!               " 'Display', 'on');");
+%! str = evalc (cmd);
+%! assert (isempty (str));
+%! assert (isempty (setdiff (get (0, 'children'), figs)));
 
 ## Backend selection: one-way default -> anova1
 %!test
