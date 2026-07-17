@@ -122,6 +122,8 @@ function lme = fitlmematrix (X, y, Z, G, varargin)
   fenames = {};
   renames = {};
   grnames = {};
+  formula_str = "";
+  respname = "";
   if (mod (numel (varargin), 2) != 0)
     error ("fitlmematrix: name/value arguments must come in pairs.");
   endif
@@ -143,6 +145,10 @@ function lme = fitlmematrix (X, y, Z, G, varargin)
         renames = value;
       case "randomeffectgroups"
         grnames = cellstr (value);
+      case "formula"
+        formula_str = char (value);
+      case "responsename"
+        respname = char (value);
       case "covariancepattern"
         pat = lower (char (value));
         if (! any (strcmp (pat, {"fullcholesky", "full"})))
@@ -182,6 +188,8 @@ function lme = fitlmematrix (X, y, Z, G, varargin)
   info.GroupNames = grnames;
   info.REPred = renames;
   info.method = method;
+  info.Formula = formula_str;
+  info.ResponseName = respname;
 
   lme = LinearMixedModel (info);
 

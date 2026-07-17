@@ -266,6 +266,7 @@ Model Fitting
  fitglm
  fitgmdist
  fitlm
+ fitlme
  fitlmematrix
  fitnlm
  fitrgam

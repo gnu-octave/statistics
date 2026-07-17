@@ -93,6 +93,12 @@ classdef LinearMixedModel
     ## Residual (error) degrees of freedom, NumObservations - NumCoefficients.
     DFE = [];
 
+    ## Model formula as a character vector (empty for matrix-input fits).
+    Formula = "";
+
+    ## Response variable name (empty for matrix-input fits).
+    ResponseName = "";
+
   endproperties
 
   properties (Access = private, Hidden)
@@ -115,6 +121,9 @@ classdef LinearMixedModel
 
     function disp (this)
       fprintf ("\n  Linear mixed-effects model fit by %s\n", this.FitMethod);
+      if (! isempty (this.Formula))
+        fprintf ("\n  Formula:\n      %s\n", this.Formula);
+      endif
       if (! isempty (this.Coefficients))
         fprintf ("\n  Fixed effects coefficients:\n\n");
         disp (this.Coefficients);
@@ -209,6 +218,11 @@ classdef LinearMixedModel
       this.fitted_ = info.fitted;
       this.fitted_marg_ = info.fitted_marg;
       this.resid_ = info.resid;
+
+      if (isfield (info, "Formula")), this.Formula = info.Formula; endif
+      if (isfield (info, "ResponseName"))
+        this.ResponseName = info.ResponseName;
+      endif
 
       this.FitMethod = info.method;
       this.NumObservations = n;

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 190
+# columns: 191
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14136,6 +14136,55 @@ LinearMixedModel
 # elements: 1
 # length: 42
 Linear mixed-effects model fitted to data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+fitlme
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1309
+ -- statistics: LME = fitlme (TBL, FORMULA)
+ -- statistics: LME = fitlme (..., NAME, VALUE)
+
+     Fit a linear mixed-effects model specified by a formula.
+
+     ‘fitlme (TBL, FORMULA)’ fits the linear mixed-effects model described by
+     FORMULA to the variables in the table TBL, and returns a ‘LinearMixedModel’
+     object.
+
+     FORMULA is a character vector in Wilkinson notation extended with
+     random-effects terms, for example "y ~ x1 + x2 + (1 | g)".  The part to the
+     left of ‘~’ names the response; the fixed-effects part uses the usual
+     operators (‘+’, ‘*’, ‘:’, ‘^’, and ‘-1’ to drop the intercept); and each
+     random-effects term ‘(EXPR | GROUP)’ adds random intercepts and slopes EXPR
+     grouped by the factor GROUP (or an interaction of factors, e.g. ‘g1:g2’).
+     As with fixed effects, a random intercept is implicit unless suppressed
+     with ‘0’ or ‘-1’.
+
+     Rows of TBL with missing values in any model variable are removed before
+     fitting.
+
+     The following NAME/VALUE pairs are accepted:
+
+     "FitMethod"
+          The estimation criterion, "ML" (maximum likelihood, the default) or
+          "REML" (restricted maximum likelihood).
+
+     See also: LinearMixedModel, fitlmematrix, fitlm, parseWilkinsonFormula.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 56
+Fit a linear mixed-effects model specified by a formula.
 
 
 

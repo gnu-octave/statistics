@@ -1359,6 +1359,19 @@ function S = parse_mixed_formula (formula_str)
   S.Random = R;
   S.HasRandom = ! isempty (specs);
 
+  ## Reconstructed fixed-only formula, so callers can build the fixed design
+  ## through the ordinary 'model_matrix' path.
+  if (isempty (strtrim (fixed_str)))
+    fixed_rhs = "1";
+  else
+    fixed_rhs = fixed_str;
+  endif
+  if (isempty (lhs_str))
+    S.FixedFormula = ["~ ", fixed_rhs];
+  else
+    S.FixedFormula = [lhs_str, " ~ ", fixed_rhs];
+  endif
+
 endfunction
 
 ## Split a formula RHS into its fixed-effects string and the list of
@@ -2064,6 +2077,12 @@ endfunction
 %! assert (! S.HasRandom);
 %! assert (isempty (S.Random));
 %! assert_equal (numel (S.FixedTerms), 2);
+
+%!test  # FixedFormula reconstructs the fixed-only formula string
+%! S = parseWilkinsonFormula ('y ~ x + x2 + (1 + x|g)', 'mixed');
+%! assert_equal (strtrim (S.FixedFormula), 'y ~ x + x2');
+%! S2 = parseWilkinsonFormula ('y ~ (1|g)', 'mixed');
+%! assert_equal (strtrim (S2.FixedFormula), 'y ~ 1');
 
 %!test  # one-sided (no response) formula
 %! S = parseWilkinsonFormula ('~ x + (1|g)', 'mixed');
