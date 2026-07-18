@@ -161,12 +161,10 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
 
   ## Calculate Sum of Squares Error (Within)
   if (reps > 1)
-    SSE = 0;
-    for i = 1:FFGn
-      for j = 1:SFGn
-        SSE += sum ((x(RIdx(i,:),j) - mean (x(RIdx(i,:),j))) .^ 2);
-      endfor
-    endfor
+    xcells = reshape (x, reps, FFGn, SFGn);
+    xdev = bsxfun (@minus, xcells, mean (xcells, 1));
+    cell_sse = squeeze (sum (xdev .^ 2, 1));
+    SSE = sum (cell_sse.'(:));
   else
     SSE = SST - SSC - SSR;
   endif
