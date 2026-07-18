@@ -1029,11 +1029,10 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           termcols(1+Nm+i) = prod (df(I-1) + 1);
           tmp = ones (n,1);
           for j = 1:numel (I);
-            tmp = num2cell (tmp, 1);
-            for k = 1:numel (tmp)
-              tmp(k) = bsxfun (@times, tmp{k}, X{I(j)});
-            endfor
-            tmp = cell2mat (tmp);
+            tmp = reshape (bsxfun (@times, ...
+                           reshape (tmp, n, 1, columns (tmp)), ...
+                           reshape (X{I(j)}, n, columns (X{I(j)}), 1)), ...
+                           n, []);
           endfor
           X{1+Nm+i} = tmp;
           coeffnames{1+Nm+i} = cell (df(Nm+i),1);
