@@ -173,15 +173,15 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## Get group size and mean for each group
   groups = size (group_names, 1);
-  xs = zeros (1, groups);
-  xm = xs;
-  xv = xs;
-  for j = 1:groups
-    group_size = find (group_id == j);
-    xs(j) = length (group_size);
-    xm(j) = mean (xr(group_size));
-    xv(j) = var (xr(group_size), 0);
-  endfor
+  xs = accumarray (group_id, 1, [groups, 1], @sum, 0);
+  xsum = accumarray (group_id, xr, [groups, 1], @sum, 0);
+  xsum2 = accumarray (group_id, xr .^ 2, [groups, 1], @sum, 0);
+  xm = xsum ./ xs;
+  xv = (xsum2 - (xsum .^ 2) ./ xs) ./ max (xs - 1, 1);
+  xv(xs == 0) = NaN;
+  xs = xs';
+  xm = xm';
+  xv = xv';
 
   ## Calculate statistics
   lx = length (xr);                       ## Number of samples in groups
