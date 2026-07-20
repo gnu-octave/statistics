@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 195
+# columns: 196
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -14390,6 +14390,45 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 10
+rocmetrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 900
+ -- statistics: rocmetrics
+
+     Receiver operating characteristic (ROC) metrics for classifier output.
+
+     The ‘rocmetrics’ class evaluates a classifier's performance by computing,
+     for each class, a one-versus-all ROC curve together with a set of
+     threshold-dependent performance metrics.  It stores the results in the
+     ‘Metrics’ table and the per-class area under the curve in ‘AUC’, and
+     provides the ‘addMetrics’, ‘average’, and ‘plot’ methods for follow-up
+     analysis.
+
+     For a problem with K classes and scores supplied as an N-by-K matrix, the
+     discriminant score used for class K is the one-versus-all margin
+     ‘Scores(:,k) - max (Scores(:,j))’ over ‘j != k’, matching MATLAB's
+     ‘rocmetrics’.  Every metric is evaluated at each distinct value of that
+     margin.
+
+     See also: perfcurve, confusionmat, confusionchart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Receiver operating characteristic (ROC) metrics for classifier output.
 
 
 

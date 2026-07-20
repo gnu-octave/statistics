@@ -37,6 +37,7 @@ Classification Classes
  CompactClassificationNeuralNetwork
  CompactClassificationSVM
  ConfusionMatrixChart
+ rocmetrics
 Clustering Classes
  CalinskiHarabaszEvaluation
  ClusterCriterion
