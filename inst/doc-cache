@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 198
+# columns: 199
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -13358,6 +13358,96 @@ sparsefilt
 # elements: 1
 # length: 40
 Sparse filtering for feature extraction.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+spectralcluster
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3838
+ -- statistics: IDX = spectralcluster (X, K)
+ -- statistics: IDX = spectralcluster (S, K, 'Distance', 'precomputed')
+ -- statistics: [IDX, V] = spectralcluster (...)
+ -- statistics: [IDX, V, D] = spectralcluster (...)
+ -- statistics: [...] = spectralcluster (..., NAME, VALUE)
+
+     Partition observations into K clusters using spectral clustering.
+
+     ‘IDX = spectralcluster (X, K)’ partitions the N*P numeric matrix X into K
+     clusters and returns the N*1 vector IDX of cluster indices.  Rows of X
+     correspond to observations and columns to features.  Spectral clustering
+     builds a similarity graph over the observations, embeds them with the
+     eigenvectors of the graph Laplacian, and clusters that embedding, which
+     lets it recover clusters that are not linearly separable in the original
+     space.
+
+     ‘[IDX, V, D] = spectralcluster (...)’ also returns the N*k matrix V whose
+     columns are the eigenvectors associated with the K smallest eigenvalues of
+     the Laplacian, and the k*1 vector D of those eigenvalues.  The signs of the
+     eigenvectors, and the basis within a repeated eigenvalue, are arbitrary.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME               VALUE
+                        
+     ---------------------------------------------------------------------------------
+     'Distance'         the distance metric used to build the similarity graph, one
+                        of 'euclidean' (default), 'seuclidean', 'mahalanobis',
+                        'cityblock', 'minkowski', 'chebychev', 'cosine',
+                        'correlation', 'hamming', 'jaccard', 'spearman', or a
+                        function handle accepted by ‘pdist2’, or the string
+                        'precomputed' to interpret the first input as an N*N
+                        similarity matrix.
+                        
+     'SimilarityGraph'  'knn' (default) to connect each observation to its nearest
+                        neighbors, or 'epsilon' to connect observations that are
+                        within a fixed radius.
+                        
+     'NumNeighbors'     the number of nearest neighbors for the 'knn' graph, a
+                        positive integer.  The default is ‘ceil (log (N))’.
+                        
+     'KNNGraphType'     'complete' (default) to connect i and j when either is a
+                        nearest neighbor of the other, or 'mutual' to connect them
+                        only when each is a nearest neighbor of the other.
+                        
+     'Radius'           the radius for the 'epsilon' graph, a nonnegative scalar.
+                        Required when 'SimilarityGraph' is 'epsilon'.
+                        
+     'KernelScale'      the positive scale factor SIGMA in the Gaussian similarity
+                        kernel ‘exp (-(dist / sigma)^2)’ applied to the graph
+                        edges.  The default is 1.
+                        
+     'LaplacianNormalization''randomwalk' (default), 'symmetric', or 'none', selecting
+                        how the graph Laplacian is normalized before the
+                        eigendecomposition.
+                        
+     'ClusterMethod'    'kmeans' (default) or 'kmedoids' to cluster the eigenvector
+                        embedding.
+                        
+     'P'                the Minkowski exponent (default 2), used only with the
+                        'minkowski' distance.
+                        
+     'Cov'              the covariance matrix used only with the 'mahalanobis'
+                        distance.
+                        
+     'Scale'            the scaling vector used only with the 'seuclidean'
+                        distance.
+
+     See also: kmeans, kmedoids, dbscan, linkage, pdist2.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 65
+Partition observations into K clusters using spectral clustering.
 
 
 

@@ -26,6 +26,7 @@ Clustering
  procrustes
  rangesearch
  slicesample
+ spectralcluster
  squareform
 Classification Classes
  ClassificationDiscriminant
