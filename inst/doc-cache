@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 202
+# columns: 204
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -77,6 +77,42 @@ GeneralizedLinearModel
 # elements: 1
 # length: 42
 Generalized linear regression model class.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 15
+IsolationForest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 670
+ -- statistics: MDL = IsolationForest (X)
+ -- statistics: MDL = IsolationForest (X, NAME, VALUE)
+
+     Isolation Forest model for anomaly detection.
+
+     An ‘IsolationForest’ object stores an ensemble of isolation trees fitted to
+     a set of observations and detects anomalies through the ‘isanomaly’ method.
+     Create a model with the ‘iforest’ function rather than by calling this
+     constructor directly.
+
+     Anomalies are easier to isolate, so they sit closer to the root of a random
+     isolation tree; the shorter its average path length across the ensemble,
+     the higher an observation's anomaly score.
+
+     See also: iforest, isanomaly.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 45
+Isolation Forest model for anomaly detection.
 
 
 
@@ -6786,6 +6822,74 @@ hotelling_t2test2
 # elements: 1
 # length: 71
 Compute Hotelling's T^2 ("T-squared") test for two independent samples.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 7
+iforest
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2538
+ -- statistics: MDL = iforest (X)
+ -- statistics: [MDL, TF] = iforest (X)
+ -- statistics: [MDL, TF, SCORES] = iforest (X)
+ -- statistics: [...] = iforest (..., NAME, VALUE)
+
+     Detect anomalies with an isolation forest.
+
+     ‘MDL = iforest (X)’ fits an isolation forest to the N-by-P matrix X, whose
+     rows are observations and columns are variables, and returns an
+     ‘IsolationForest’ object MDL.
+
+     ‘[MDL, TF, SCORES] = iforest (X)’ also returns the N-by-1 logical vector TF
+     flagging the anomalous observations and the N-by-1 vector SCORES of anomaly
+     scores in the range [0, 1].  A higher score indicates an observation that
+     is more easily isolated, and therefore more likely to be an anomaly.
+
+     The score of an observation is ‘2^(-E[h] / c)’, where E[h] is its average
+     path length over the isolation trees and c is the expected path length of
+     an unsuccessful search in a binary tree of NUMOBSERVATIONSPERLEARNER nodes.
+     Each tree is grown from a random subsample of the data by recursively
+     splitting on a random variable at a random value, so anomalies, being
+     easier to isolate, obtain shorter paths.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME                        VALUE
+                                 
+     ----------------------------------------------------------------------------------
+     'NumLearners'               the number of isolation trees, a positive integer
+                                 (default 100).
+                                 
+     'NumObservationsPerLearner' the subsample size used to grow each tree, an
+                                 integer in [3, N] (default ‘min (N, 256)’).
+                                 
+     'ContaminationFraction'     the assumed fraction of anomalies in X, a scalar in
+                                 [0, 1] (default 0).  It sets ‘MDL.ScoreThreshold’
+                                 to ‘quantile (SCORES, 1 - CONTAMINATIONFRACTION)’;
+                                 when it is 0 the threshold is the maximum score and
+                                 no training observation is flagged.
+
+     Because the trees are grown from random subsamples and random splits, the
+     scores depend on the state of the random number generator and are not
+     reproducible across runs unless the generator is seeded.
+
+     Use the ‘isanomaly’ method of MDL to detect anomalies in new data.
+
+     See also: IsolationForest, isanomaly, lof, robustcov.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 42
+Detect anomalies with an isolation forest.
 
 
 

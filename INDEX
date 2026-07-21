@@ -10,6 +10,7 @@ Clustering
  dbscan
  editDistance
  evalclusters
+ iforest
  inconsistent
  johnsrnd
  kmeans
@@ -50,6 +51,7 @@ Clustering Classes
  ExhaustiveSearcher
  GapEvaluation
  hnswSearcher
+ IsolationForest
  KDTreeSearcher
  LocalOutlierFactor
  SilhouetteEvaluation
