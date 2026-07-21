@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 200
+# columns: 202
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -254,6 +254,43 @@ LinearModel
 # elements: 1
 # length: 23
 Linear regression model
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 18
+LocalOutlierFactor
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 755
+ -- statistics: MDL = LocalOutlierFactor (X)
+ -- statistics: MDL = LocalOutlierFactor (X, NAME, VALUE)
+
+     Local Outlier Factor model for anomaly detection.
+
+     A ‘LocalOutlierFactor’ object stores a Local Outlier Factor (LOF) model
+     fitted to a set of observations, and detects anomalies among those or new
+     observations through the ‘isanomaly’ method.  Create a model with the ‘lof’
+     function rather than by calling this constructor directly.
+
+     The LOF of an observation compares its local density with the local density
+     of its neighbors; a value near 1 indicates an inlier, whereas a value well
+     above 1 indicates an outlier that lies in a sparser region than its
+     neighbors.
+
+     See also: lof, isanomaly.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Local Outlier Factor model for anomaly detection.
 
 
 
@@ -8316,6 +8353,76 @@ loadmodel
 # elements: 1
 # length: 54
 Load a Classification or Regression model from a file.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3
+lof
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2656
+ -- statistics: MDL = lof (X)
+ -- statistics: [MDL, TF] = lof (X)
+ -- statistics: [MDL, TF, SCORES] = lof (X)
+ -- statistics: [...] = lof (..., NAME, VALUE)
+
+     Detect anomalies with the Local Outlier Factor (LOF) method.
+
+     ‘MDL = lof (X)’ fits a Local Outlier Factor model to the N-by-P matrix X,
+     whose rows are observations and columns are variables, and returns a
+     ‘LocalOutlierFactor’ object MDL.
+
+     ‘[MDL, TF, SCORES] = lof (X)’ also returns the N-by-1 logical vector TF
+     flagging the anomalous observations and the N-by-1 vector SCORES of LOF
+     values.  A score near 1 indicates an inlier, whereas a score well above 1
+     indicates an outlier lying in a region sparser than its neighbors.
+
+     The Local Outlier Factor of an observation is the average ratio of the
+     local reachability density of its NUMNEIGHBORS nearest neighbors to its own
+     local reachability density, where the local reachability density is the
+     inverse mean reachability distance to those neighbors and the reachability
+     distance from p to o is ‘max (k-distance (o), d (p, o))’.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME                   VALUE
+                            
+     ----------------------------------------------------------------------------------
+     'NumNeighbors'         the number of nearest neighbors, a positive integer less
+                            than N. The default is ‘min (20, U - 1)’, where U is the
+                            number of unique observations.
+                            
+     'Distance'             the distance metric used to find neighbors, one of the
+                            metrics accepted by ‘pdist2’ ('euclidean' by default).
+                            
+     'ContaminationFraction'the assumed fraction of anomalies in X, a scalar in [0,
+                            1] (default 0).  It sets ‘MDL.ScoreThreshold’ to
+                            ‘quantile (SCORES, 1 - CONTAMINATIONFRACTION)’; when it
+                            is 0 the threshold is the maximum score and no training
+                            observation is flagged.
+                            
+     'Exponent'             the Minkowski distance exponent (default 2), used only
+                            with the 'minkowski' distance.
+                            
+     'Cov'                  the covariance matrix used only with the 'mahalanobis'
+                            distance.
+
+     Use the ‘isanomaly’ method of MDL to detect anomalies in new data.
+
+     See also: LocalOutlierFactor, isanomaly, dbscan, robustcov.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 60
+Detect anomalies with the Local Outlier Factor (LOF) method.
 
 
 

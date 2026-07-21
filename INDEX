@@ -16,6 +16,7 @@ Clustering
  kmedoids
  knnsearch
  linkage
+ lof
  mahal
  mdscale
  mhsample
@@ -50,6 +51,7 @@ Clustering Classes
  GapEvaluation
  hnswSearcher
  KDTreeSearcher
+ LocalOutlierFactor
  SilhouetteEvaluation
 Regression Classes
  RegressionGAM
