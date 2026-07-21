@@ -13,6 +13,7 @@ Clustering
  inconsistent
  johnsrnd
  kmeans
+ kmedoids
  knnsearch
  linkage
  mahal

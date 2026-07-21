@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 197
+# columns: 198
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -7359,6 +7359,97 @@ kmeans
 # elements: 1
 # length: 52
 Perform a K-means clustering of the N*D matrix DATA.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 8
+kmedoids
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3785
+ -- statistics: IDX = kmedoids (X, K)
+ -- statistics: [IDX, C] = kmedoids (X, K)
+ -- statistics: [IDX, C, SUMD] = kmedoids (X, K)
+ -- statistics: [IDX, C, SUMD, D] = kmedoids (X, K)
+ -- statistics: [IDX, C, SUMD, D, MIDX] = kmedoids (X, K)
+ -- statistics: [IDX, C, SUMD, D, MIDX, INFO] = kmedoids (X, K)
+ -- statistics: [...] = kmedoids (..., NAME, VALUE)
+
+     Partition observations into K clusters using the k-medoids algorithm.
+
+     ‘IDX = kmedoids (X, K)’ partitions the N*P numeric matrix X into K
+     clusters, each represented by one of the observations (its _medoid_), and
+     returns the N*1 vector IDX of cluster indices.  Rows of X correspond to
+     observations and columns correspond to features or variables.  Unlike
+     ‘kmeans’, whose centroids are the mean of each cluster, a medoid is an
+     actual data point, which makes k-medoids more robust to outliers and
+     applicable to any distance metric.
+
+     ‘[IDX, C, SUMD, D, MIDX, INFO] = kmedoids (...)’ returns additional
+     results:
+
+     C              a k*P matrix with the coordinates of the K medoids, one per
+                    row (‘C = X(MIDX,:)’).
+                    
+     SUMD           a k*1 vector with the within-cluster sum of the distances from
+                    each point to its cluster medoid, measured with the selected
+                    metric.
+                    
+     D              an N*k matrix with the distance from every observation to
+                    every medoid.
+                    
+     MIDX           a k*1 vector with the row indices into X of the K medoids.
+                    
+     INFO           a scalar structure with the fields 'algorithm', 'start',
+                    'distance', 'iterations', and 'bestReplicate' describing the
+                    chosen run.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Distance'     the distance metric, one of 'sqeuclidean' (default),
+                    'euclidean', 'seuclidean', 'cityblock', 'minkowski',
+                    'chebychev', 'cosine', 'correlation', 'hamming', 'jaccard',
+                    'spearman', 'mahalanobis', or a custom distance function
+                    handle accepted by ‘pdist2’.
+                    
+     'Algorithm'    the optimization algorithm, either 'pam' (default) for
+                    Partitioning Around Medoids, which searches over all
+                    medoid/non-medoid swaps, or 'small' for the faster Voronoi
+                    iteration that reassigns points and re-selects each cluster
+                    medoid until convergence.
+                    
+     'Start'        the method used to choose the initial medoids: 'plus'
+                    (default, k-means++), 'sample' (a random subset of the
+                    observations), 'cluster' (a preliminary pass on a subsample),
+                    or a k*P numeric matrix of starting medoid locations, each
+                    snapped to the nearest observation.  A k*P*R array supplies a
+                    separate start for each of R replicates.
+                    
+     'Replicates'   a positive integer number of times to repeat the clustering,
+                    each with a new set of initial medoids; the solution with the
+                    lowest total sum of distances is returned.  The default is 1,
+                    or the size of the third dimension of a numeric 'Start'.
+                    
+     'Options'      a structure, as created by ‘statset’, whose 'MaxIter' field
+                    caps the number of iterations (default 100).
+
+     See also: kmeans, linkage, pdist2, dbscan.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Partition observations into K clusters using the k-medoids algorithm.
 
 
 
