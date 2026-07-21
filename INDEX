@@ -21,6 +21,7 @@ Clustering
  mahal
  mdscale
  mhsample
+ ocsvm
  optimalleaforder
  pdist
  pdist2
@@ -55,6 +56,7 @@ Clustering Classes
  IsolationForest
  KDTreeSearcher
  LocalOutlierFactor
+ OneClassSVM
  SilhouetteEvaluation
 Regression Classes
  RegressionGAM

@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 204
+# columns: 206
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -385,6 +385,42 @@ NonLinearModel
 # elements: 1
 # length: 33
 Nonlinear regression model class.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 11
+OneClassSVM
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 732
+ -- statistics: MDL = OneClassSVM (X)
+ -- statistics: MDL = OneClassSVM (X, NAME, VALUE)
+
+     One-class support vector machine model for anomaly detection.
+
+     A ‘OneClassSVM’ object stores a one-class support vector machine fitted to
+     a set of observations in an expanded feature space, and detects anomalies
+     through the ‘isanomaly’ method.  Create a model with the ‘ocsvm’ function
+     rather than by calling this constructor directly.
+
+     The model maps the data to a randomized feature space that approximates a
+     Gaussian kernel and fits a linear boundary that encloses the bulk of the
+     observations; points outside the boundary receive higher anomaly scores.
+
+     See also: ocsvm, isanomaly.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 61
+One-class support vector machine model for anomaly detection.
 
 
 
@@ -10522,6 +10558,89 @@ normplot
 # elements: 1
 # length: 49
 Produce normal probability plot of the data in X.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 5
+ocsvm
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3457
+ -- statistics: MDL = ocsvm (X)
+ -- statistics: [MDL, TF] = ocsvm (X)
+ -- statistics: [MDL, TF, SCORES] = ocsvm (X)
+ -- statistics: [...] = ocsvm (..., NAME, VALUE)
+
+     Detect anomalies with a one-class support vector machine.
+
+     ‘MDL = ocsvm (X)’ fits a one-class support vector machine to the N-by-P
+     matrix X, whose rows are observations and columns are variables, and
+     returns a ‘OneClassSVM’ object MDL.
+
+     ‘[MDL, TF, SCORES] = ocsvm (X)’ also returns the N-by-1 logical vector TF
+     flagging the anomalous observations and the N-by-1 vector SCORES of anomaly
+     scores.  A higher score indicates an observation that lies further outside
+     the boundary enclosing the data, and is therefore more likely to be an
+     anomaly.
+
+     The observations are mapped to a randomized feature space that approximates
+     a Gaussian kernel of scale KERNELSCALE using NUMEXPANSIONDIMENSIONS
+     features, and a linear one-class boundary is fitted there with ridge
+     regularization of strength LAMBDA.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME                        VALUE
+                                 
+     ----------------------------------------------------------------------------------
+     'KernelScale'               the scale of the approximated Gaussian kernel, a
+                                 positive scalar or 'auto' (default).
+                                 
+     'Lambda'                    the ridge regularization strength, a nonnegative
+                                 scalar or 'auto' (default).
+                                 
+     'NumExpansionDimensions'    the number of expanded feature dimensions, a
+                                 positive integer or 'auto' (default).
+                                 
+     'StandardizeData'           a logical scalar (default ‘false’); when ‘true’
+                                 each predictor is centered and scaled and the means
+                                 and standard deviations are stored in ‘MDL.Mu’ and
+                                 ‘MDL.Sigma’.
+                                 
+     'ContaminationFraction'     the assumed fraction of anomalies in X, a scalar in
+                                 [0, 1] (default 0).  It sets ‘MDL.ScoreThreshold’
+                                 to ‘quantile (SCORES, 1 - CONTAMINATIONFRACTION)’;
+                                 when it is 0 the threshold is the maximum score and
+                                 no training observation is flagged.
+
+     The feature expansion uses random projections, so the scores depend on the
+     state of the random number generator and are not reproducible across runs
+     unless the generator is seeded.  The 'auto' selections and the fitted model
+     differ from MATLAB's implementation, which uses a different feature
+     expansion and solver.
+
+     For a deterministic, classic one-class support vector machine (a nu-SVM
+     with an exact kernel, computed through ‘libsvm’), use ‘fitcsvm’ with a
+     single class in the response or with the 'Nu' name-value argument; that
+     path returns a ‘ClassificationSVM’ object whose ‘predict’ method labels
+     observations, rather than the anomaly-scoring interface provided here.
+
+     Use the ‘isanomaly’ method of MDL to detect anomalies in new data.
+
+     See also: OneClassSVM, isanomaly, iforest, lof, fitcsvm.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 57
+Detect anomalies with a one-class support vector machine.
 
 
 
