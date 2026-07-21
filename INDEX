@@ -27,6 +27,7 @@ Clustering
  pearsrnd
  procrustes
  rangesearch
+ robustcov
  slicesample
  spectralcluster
  squareform
@@ -91,7 +92,6 @@ Descriptive Statistics
  nanvar
  partialcorr
  partialcorri
- robustcov
  trimmean
 Distribution Classes
  BetaDistribution
