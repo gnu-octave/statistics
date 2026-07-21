@@ -87,6 +87,7 @@ Descriptive Statistics
  nanvar
  partialcorr
  partialcorri
+ robustcov
  trimmean
 Distribution Classes
  BetaDistribution

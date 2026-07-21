@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 199
+# columns: 200
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -12438,6 +12438,82 @@ rmmissing
 # elements: 1
 # length: 32
 Remove missing data from arrays.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 9
+robustcov
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 2984
+ -- statistics: SIG = robustcov (X)
+ -- statistics: [SIG, MU] = robustcov (X)
+ -- statistics: [SIG, MU, MAH] = robustcov (X)
+ -- statistics: [SIG, MU, MAH, OUTLIERS] = robustcov (X)
+ -- statistics: [SIG, MU, MAH, OUTLIERS, S] = robustcov (X)
+ -- statistics: [...] = robustcov (..., NAME, VALUE)
+
+     Robust multivariate covariance and mean estimate.
+
+     ‘SIG = robustcov (X)’ returns a robust estimate SIG of the covariance
+     matrix of the N*P data matrix X, computed so that it is not distorted by
+     outlying observations.  Rows of X are observations and columns are
+     variables.  Rows containing ‘NaN’ values are removed.
+
+     ‘[SIG, MU, MAH, OUTLIERS, S] = robustcov (...)’ also returns the robust
+     mean MU (1*P), the robust Mahalanobis distances MAH (N*1) of each
+     observation from the estimated distribution, a logical vector OUTLIERS
+     (N*1) flagging observations whose distance exceeds ‘sqrt (chi2inv (0.975,
+     P))’, and a structure S holding the estimate metadata.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME               VALUE
+                        
+     ---------------------------------------------------------------------------------
+     'Method'           the estimator, either 'fmcd' (default, the Fast Minimum
+                        Covariance Determinant algorithm) or 'ogk' (the
+                        Orthogonalized Gnanadesikan-Kettenring estimator).
+                        'olivehawkins' is not implemented.
+                        
+     'OutlierFraction'  the maximum fraction of outliers, a scalar in [0, 0.5]
+                        (default 0.5), used to set the size of the elemental
+                        subsets in 'fmcd'.
+                        
+     'NumTrials'        the number of random elemental subsets drawn by 'fmcd', a
+                        positive integer (default 500).
+                        
+     'BiasCorrection'   a logical scalar (default ‘true’) that applies the
+                        small-sample bias correction to the 'fmcd' estimate.
+                        
+     'NumOGKIterations' the number of orthogonalization iterations for 'ogk', a
+                        positive integer (default 2).
+                        
+     'UnivariateEstimator'the robust univariate location/scale estimator used by
+                        'ogk', either 'tauscale' (default) or 'qn'.
+
+     *Note on reproducibility.*  'fmcd' draws random subsets, so its exact
+     estimate depends on the random number generator and is not identical to
+     MATLAB's on data where the optimal subset is ambiguous; on well-separated
+     data both converge to the same estimate.  For 'fmcd' with 'BiasCorrection'
+     enabled, the small-sample factor uses the published Pison-Van Aelst-Willems
+     asymptotic formula, which differs from MATLAB's tabulated simulation values
+     by up to about 1.6% for very small samples.
+
+     See also: mahal, cov, mad, dbscan.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 49
+Robust multivariate covariance and mean estimate.
 
 
 
