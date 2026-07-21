@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 196
+# columns: 197
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -2732,6 +2732,87 @@ datasample
 # elements: 1
 # length: 21
 Randomly sample data.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 6
+dbscan
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 3553
+ -- statistics: IDX = dbscan (X, EPSILON, MINPTS)
+ -- statistics: IDX = dbscan (D, EPSILON, MINPTS, 'Distance', 'precomputed')
+ -- statistics: IDX = dbscan (..., NAME, VALUE)
+ -- statistics: [IDX, COREPTS] = dbscan (...)
+
+     Density-Based Spatial Clustering of Applications with Noise (DBSCAN).
+
+     ‘IDX = dbscan (X, EPSILON, MINPTS)’ partitions the observations in the N*P
+     numeric matrix X into clusters using the DBSCAN algorithm with neighborhood
+     radius EPSILON and minimum number of neighbors MINPTS.  Rows of X
+     correspond to observations and columns correspond to features or variables.
+     EPSILON must be a nonnegative scalar and MINPTS a positive integer scalar.
+     IDX is an N*1 vector of cluster indices, numbered 1 to the number of
+     clusters found; observations flagged as noise are assigned the value -1.
+
+     A point is a _core point_ when at least MINPTS observations (*including the
+     point itself*) lie within distance EPSILON of it.  Clusters grow from core
+     points to every observation that is density-reachable from them; a non-core
+     observation that lies within EPSILON of a core point becomes a _border
+     point_ and joins that point's cluster, while an observation that is neither
+     core nor within reach of a core point is labelled noise.  A border point
+     that is reachable from more than one cluster is assigned to the first
+     cluster that reaches it, following the order of the observations in X.
+
+     ‘IDX = dbscan (D, EPSILON, MINPTS, 'Distance', 'precomputed')’ treats the
+     N*N matrix D as a precomputed matrix of pairwise distances between
+     observations, such as the output of ‘pdist2’; D(i,j) is the distance
+     between observations i and j.
+
+     ‘[IDX, COREPTS] = dbscan (...)’ also returns an N*1 logical vector COREPTS
+     that is true for each observation that is a core point.
+
+     Additional parameters can be specified by Name-Value pair arguments.
+
+     NAME           VALUE
+                    
+     --------------------------------------------------------------------------------
+     'Distance'     is the distance metric used to find neighbors, specified as
+                    one of the metrics accepted by ‘rangesearch’ ('euclidean' by
+                    default, and also 'seuclidean', 'cityblock', 'chebychev',
+                    'minkowski', 'mahalanobis', 'cosine', 'correlation',
+                    'spearman', 'hamming', 'jaccard', or a custom distance
+                    function handle), or the string 'precomputed' to interpret the
+                    first input as a matrix of pairwise distances.
+                    
+     'P'            is the Minkowski distance exponent, a positive scalar.  This
+                    argument is only valid when the selected distance metric is
+                    'minkowski'.  By default it is 2.
+                    
+     'Scale'        is the scale parameter for the standardized Euclidean
+                    distance, a nonnegative numeric vector of length equal to the
+                    number of columns in X.  This argument is only valid when the
+                    selected distance metric is 'seuclidean'.
+                    
+     'Cov'          is the covariance matrix for the mahalanobis distance, a
+                    positive definite matrix matching the number of columns in X.
+                    This argument is only valid when the selected distance metric
+                    is 'mahalanobis'.
+
+     See also: kmeans, rangesearch, pdist2, knnsearch.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 69
+Density-Based Spatial Clustering of Applications with Noise (DBSCAN).
 
 
 
@@ -12326,6 +12407,45 @@ Robust linear regression.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 10
+rocmetrics
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 900
+ -- statistics: rocmetrics
+
+     Receiver operating characteristic (ROC) metrics for classifier output.
+
+     The ‘rocmetrics’ class evaluates a classifier's performance by computing,
+     for each class, a one-versus-all ROC curve together with a set of
+     threshold-dependent performance metrics.  It stores the results in the
+     ‘Metrics’ table and the per-class area under the curve in ‘AUC’, and
+     provides the ‘addMetrics’, ‘average’, and ‘plot’ methods for follow-up
+     analysis.
+
+     For a problem with K classes and scores supplied as an N-by-K matrix, the
+     discriminant score used for class K is the one-versus-all margin
+     ‘Scores(:,k) - max (Scores(:,j))’ over ‘j != k’, matching MATLAB's
+     ‘rocmetrics’.  Every metric is evaluated at each distinct value of that
+     margin.
+
+     See also: perfcurve, confusionmat, confusionchart.
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 70
+Receiver operating characteristic (ROC) metrics for classifier output.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 13
 rotatefactors
 
@@ -14390,45 +14510,6 @@ ztest2
 # elements: 1
 # length: 23
 Two proportions Z-test.
-
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 10
-rocmetrics
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 900
- -- statistics: rocmetrics
-
-     Receiver operating characteristic (ROC) metrics for classifier output.
-
-     The ‘rocmetrics’ class evaluates a classifier's performance by computing,
-     for each class, a one-versus-all ROC curve together with a set of
-     threshold-dependent performance metrics.  It stores the results in the
-     ‘Metrics’ table and the per-class area under the curve in ‘AUC’, and
-     provides the ‘addMetrics’, ‘average’, and ‘plot’ methods for follow-up
-     analysis.
-
-     For a problem with K classes and scores supplied as an N-by-K matrix, the
-     discriminant score used for class K is the one-versus-all margin
-     ‘Scores(:,k) - max (Scores(:,j))’ over ‘j != k’, matching MATLAB's
-     ‘rocmetrics’.  Every metric is evaluated at each distinct value of that
-     margin.
-
-     See also: perfcurve, confusionmat, confusionchart.
-
-
-# name: <cell-element>
-# type: sq_string
-# elements: 1
-# length: 70
-Receiver operating characteristic (ROC) metrics for classifier output.
 
 
 
