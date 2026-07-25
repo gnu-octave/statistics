@@ -311,6 +311,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     ## of strings or numeric identifiers
     N = size (GROUP, 2); # number of anova "ways"
     n = numel (Y);       # total number of observations
+    categorical_levels = cell (1, N);
+    categorical_missing = false (n, 1);
     if (prod (size (Y)) != n)
       error ("anovan: for ""anovan (Y, GROUP)"", Y must be a vector.");
     endif
@@ -324,11 +326,27 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
     endif
     cont_vec = false (1, N);
     cont_vec(CONTINUOUS) = true;
-    if (iscell (GROUP))
+    if (isa (GROUP, "categorical"))
+      for j = 1:N
+        if (ismember (j, CONTINUOUS))
+          error ("anovan: continuous factors must be a numeric datatype.");
+        endif
+        categorical_levels{j} = categories (GROUP(:,j));
+        categorical_missing |= isundefined (GROUP(:,j));
+      endfor
+      GROUP = double (GROUP);
+    elseif (iscell (GROUP))
       if (size (GROUP, 1) == 1)
         tmp = cell (n, N);
         for j = 1:N
-          if (isnumeric (GROUP{j}))
+          if (isa (GROUP{j}, "categorical"))
+            if (ismember (j, CONTINUOUS))
+              error ("anovan: continuous factors must be a numeric datatype.");
+            endif
+            categorical_levels{j} = categories (GROUP{j});
+            categorical_missing |= isundefined (GROUP{j}(:));
+            tmp(:,j) = num2cell (double (GROUP{j}(:)));
+          elseif (isnumeric (GROUP{j}))
             if (ismember (j, CONTINUOUS))
               tmp(:,j) = num2cell (GROUP{j});
             else
@@ -468,7 +486,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
       if iscell (XC)
         XC = cell2mat (XC);
       endif
-      excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2);
+      excl = any ([isnan(Y), isinf(Y), any(isnan(XC),2), any(isinf(XC),2)], 2) ...
+             | categorical_missing;
       GROUP(excl,:) = [];
     endif
     Y(excl) = [];
@@ -917,14 +936,29 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         else
 
           ## CATEGORICAL PREDICTOR
-          levels{j} = unique (GROUP(:,j), 'stable');
-          if isnumeric (levels{j})
-            levels{j} = num2cell (levels{j});
+          if (isempty (categorical_levels{j}))
+            levels{j} = unique (GROUP(:,j), 'stable');
+            if (isnumeric (levels{j}))
+              levels{j} = num2cell (levels{j});
+            endif
+            level_values = levels{j};
+            nlevels(j) = numel (level_values);
+            for k = 1:nlevels(j)
+              gid(ismember (GROUP(:,j), level_values{k}),j) = k;
+            endfor
+          else
+            if (iscell (GROUP))
+              codes = cell2mat (GROUP(:,j));
+            else
+              codes = GROUP(:,j);
+            endif
+            level_values = num2cell (find (accumarray (codes, 1) > 0));
+            levels{j} = categorical_levels{j}(cell2mat (level_values));
+            nlevels(j) = numel (level_values);
+            for k = 1:nlevels(j)
+              gid(codes == level_values{k},j) = k;
+            endfor
           endif
-          nlevels(j) = numel (levels{j});
-          for k = 1:nlevels(j)
-            gid(ismember (GROUP(:,j),levels{j}{k}),j) = k;
-          endfor
           termcols(j+1) = nlevels(j);
           df(j) = nlevels(j) - 1;
 
@@ -964,7 +998,9 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
         else
 
           ## CATEGORICAL PREDICTOR
-          if (isempty (CONTRASTS{j}))
+          if (nlevels(j) == 1)
+            CONTRASTS{j} = zeros (1, 0);
+          elseif (isempty (CONTRASTS{j}))
             CONTRASTS{j} = contr_simple (nlevels(j));
           else
             switch (lower (CONTRASTS{j}))
@@ -1008,9 +1044,7 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
             endswitch
           endif
           C = CONTRASTS{j};
-          func = @(x) x(gid(:,j));
-          X(1+j) = cell2mat (cellfun (func, num2cell (C, 1), ...
-                                      'UniformOutput', false));
+          X{1+j} = C(gid(:,j), :);
           ## Create names of the coefficients relating to continuous main effects
           coeffnames{1+j} = cell (df(j),1);
           for v = 1:df(j)
@@ -1789,3 +1823,38 @@ endfunction
 %!                         'display', 'off');
 %! assert_equal (stats.X(:,5), stats.X(:,2) .* stats.X(:,4));
 %! assert_equal (stats.X(:,6), stats.X(:,3) .* stats.X(:,4));
+
+## Full six-factor interactions preserve every model term.
+%!test
+%! n = 128;
+%! group = cell (1, 6);
+%! for k = 1:6
+%!   group{k} = mod (floor ((0:n-1)' / 2^(k-1)), 2) + 1;
+%! endfor
+%! [p, ~, stats, terms] = anovan ((1:n)', group, 'model', 'full', ...
+%!                                'display', 'off');
+%! assert_equal (rows (terms), 63);
+%! assert_equal (columns (stats.X), 64);
+%! assert_equal (numel (p), 63);
+
+## A one-level factor has no estimable main effect.
+%!test
+%! group = ones (3, 1);
+%! [p, tbl, stats] = anovan ((1:3)', group, ...
+%!                          'sstype', 2, 'display', 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{2, 2}, 0);
+%! assert_equal (tbl{2, 3}, 0);
+%! assert_equal (tbl{2, 6}, NaN);
+%! assert_equal (size (stats.X), [3, 1]);
+
+## Categorical factors retain their declared order and omit missing observations.
+%!test
+%! group = categorical ([3; 3; NaN; 1; 1], [3, 2, 1]);
+%! [p, tbl, stats] = anovan ((1:5)', group, 'sstype', 2, 'display', 'off');
+%! [p_ref, tbl_ref] = anovan ([1; 2; 4; 5], [1; 1; 2; 2], ...
+%!                           'sstype', 2, 'display', 'off');
+%! assert_equal (p, p_ref, 1e-12);
+%! assert_equal (tbl, tbl_ref);
+%! assert_equal (stats.grpnames{1}, {'3'; '1'});
+%! assert_equal (stats.Y, [1; 2; 4; 5]);

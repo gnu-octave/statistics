@@ -155,14 +155,28 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   endif
 
   ## Convert group to indices and separate names first
-  [group_id, group_names] = grp2idx (group);
-  group_id = group_id(:);
+  if (isa (group, "categorical"))
+    group_id = double (group(:));
+    group_names = categories (group);
+  else
+    [group_id, group_names] = grp2idx (group);
+    group_id = group_id(:);
+  endif
   x = x(:);
 
   ## identify NaN values in x or missing/empty categories in the group and remove them.
   valid_data = ! isnan (x) & ! isnan (group_id);
   x = x(valid_data);
   group_id = group_id(valid_data);
+  groups = size (group_names, 1);
+  xs = accumarray (group_id, 1, [groups, 1], @sum, 0);
+  observed_groups = (xs > 0);
+  if (any (! observed_groups))
+    group_map = cumsum (observed_groups);
+    group_id = group_map(group_id);
+    group_names = group_names(observed_groups, :);
+    xs = xs(observed_groups);
+  endif
   named = 1;
 
   ## Center data to improve accuracy and keep uncentered data for plotting
@@ -173,7 +187,6 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
 
   ## Get group size and mean for each group
   groups = size (group_names, 1);
-  xs = accumarray (group_id, 1, [groups, 1], @sum, 0);
   xsum = accumarray (group_id, xr, [groups, 1], @sum, 0);
   xm = xsum ./ xs;
   xdev = xr - xm(group_id);
@@ -203,7 +216,10 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
       MSE = NaN;
   endif
   ## Calculate F statistic
-  if (SSE != 0)                     ## Regular Matrix case.
+  if (dfm <= 0 || dfe <= 0)         ## Insufficient degrees of freedom.
+    F = NaN;
+    p = NaN;
+  elseif (SSE != 0)                 ## Regular Matrix case.
     switch (lower (vartype))
       case 'equal'
         ## Assume equal variances (Fisher's One-way ANOVA)
@@ -405,6 +421,50 @@ endfunction
 %! g = [ones(10, 1); 2 * ones(10, 1)];
 %! [~, ~, stats] = anova1 (y, g, 'off', 'unequal');
 %! assert_equal (stats.vars, [55 / 6, 55 / 6], 1e-10);
+
+## Degenerate designs return an undefined test statistic.
+%!test
+%! [p, tbl] = anova1 ((1:5)', ones (5, 1), 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{2, 3}, 0);
+%! [p, tbl] = anova1 (7, 1, 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{3, 3}, 0);
+%! [p, tbl] = anova1 ([1; 2], [1; 2], 'off');
+%! assert_equal (p, NaN);
+%! assert_equal (tbl{3, 3}, 0);
+
+## Identical observations have no between-group variation.
+%!test
+%! [p, tbl] = anova1 (ones (6, 1), [1; 1; 1; 2; 2; 2], 'off');
+%! assert_equal (p, 1);
+%! assert_equal (tbl{2, 2}, 0);
+%! assert_equal (tbl{3, 2}, 0);
+
+## Unused categorical levels do not enter the fitted design.
+%!test
+%! y = (1:6)';
+%! g = categorical ([1; 1; 3; 3; 3; 1], [1, 2, 3]);
+%! [p, tbl, stats] = anova1 (y, g, 'off');
+%! [p_ref, tbl_ref] = anova1 (y, [1; 1; 2; 2; 2; 1], 'off');
+%! assert_equal (p, p_ref, 1e-12);
+%! assert_equal (tbl, tbl_ref);
+%! assert_equal (stats.n, [3, 3]);
+%! assert_equal (stats.gnames, {'1'; '3'});
+%! assert_equal (stats.means, [3, 4]);
+%! g = categorical ([3; 3; 1; 1], [3, 2, 1]);
+%! [~, ~, stats] = anova1 ((1:4)', g, 'off');
+%! assert_equal (stats.gnames, {'3'; '1'});
+%! assert_equal (stats.means, [1.5, 3.5]);
+
+## Many factor levels retain the expected degrees of freedom.
+%!test
+%! g = kron ((1:120)', ones (2, 1));
+%! [p, tbl, stats] = anova1 ((1:240)', g, 'off');
+%! assert (isfinite (p));
+%! assert_equal (tbl{2, 3}, 119);
+%! assert_equal (tbl{3, 3}, 120);
+%! assert_equal (stats.n, 2 * ones (1, 120));
 
 ## testing handling of missing values in both data and grouping variables
 ## using categorical array as a grouping variable

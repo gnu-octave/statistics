@@ -2125,6 +2125,62 @@ endclassdef
 %! anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 1.5)
 %!error <anova: CategoricalFactors must contain valid factor indices.> ...
 %! anova ([1;1;2;2], [1;2;3;4], 'CategoricalFactors', 2)
+
+## --- Week 9: edge cases ------------------------------------------------
+
+%!test
+%! a = anova (ones (5, 1), (1:5)');
+%! T = stats (a);
+%! assert_equal (T{2, 3}, 0);
+%! assert_equal (T{2, 6}, NaN);
+%! a = anova (ones (5, 1), (1:5)', 'SumOfSquaresType', 'two');
+%! T = stats (a);
+%! assert_equal (T{2, 3}, 0);
+%! assert_equal (T{2, 6}, NaN);
+
+%!test
+%! a = anova (1, 7);
+%! T = stats (a);
+%! assert_equal (a.NumObservations, 1);
+%! assert_equal (T{2, 6}, NaN);
+
+%!test
+%! a = anova ([1; 1; 2; 2], ones (4, 1));
+%! T = stats (a);
+%! assert_equal (T{2, 2}, 0);
+%! assert_equal (T{2, 6}, 1);
+
+%!test
+%! g = categorical ([3; 3; 1; 1], [3, 2, 1]);
+%! a = anova (g, (1:4)');
+%! T = stats (a);
+%! assert_equal (isfinite (T{2, 6}), true);
+%! assert_equal (a.Stats.n, [2, 2]);
+%! assert_equal (a.Stats.gnames, {'3'; '1'});
+%! assert_equal (a.Stats.means, [1.5, 3.5]);
+%! a = anova (g, (1:4)', 'SumOfSquaresType', 'two');
+%! T = stats (a);
+%! assert_equal (T{2, 6}, 8, 1e-12);
+%! assert_equal (a.Stats.grpnames{1}, {'3'; '1'});
+
+%!test
+%! g = kron ((1:120)', ones (2, 1));
+%! a = anova (g, (1:240)');
+%! T = stats (a);
+%! assert_equal (T{2, 3}, 119);
+%! assert_equal (T{3, 3}, 120);
+
+%!test
+%! n = 128;
+%! group = cell (1, 6);
+%! for k = 1:6
+%!   group{k} = mod (floor ((0:n-1)' / 2^(k-1)), 2) + 1;
+%! endfor
+%! a = anova (group, (1:n)', 'ModelSpecification', 'full');
+%! stats (a);
+%! assert_equal (rows (a.Stats.terms), 63);
+%! assert_equal (columns (a.DesignMatrix), 64);
+
 %!error <anova: RandomFactors must contain positive integer indices.> ...
 %! anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 0)
 %!error <anova: RandomFactors indices exceed the number of factors.> ...
