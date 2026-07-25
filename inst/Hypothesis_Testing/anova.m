@@ -1924,25 +1924,27 @@ classdef anova
 endclassdef
 
 %!demo
-%! ## One-way ANOVA with a formatted summary
+%! ## Fit an ANOVA object and inspect component and summary statistics
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, 'SumOfSquaresType', 'two');
-%! summary (a);
+%! aov = anova (g, y, 'FactorNames', {'Treatment'});
+%! component = stats (aov)
+%! summary_table = stats (aov, 'summary')
 
 %!demo
-%! ## Post-hoc multiple comparisons
+%! ## Estimate group means and perform post-hoc comparisons
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, 'SumOfSquaresType', 'two');
-%! C = multcompare (a, 'display', 'off')
+%! aov = anova (g, y, 'SumOfSquaresType', 'two');
+%! means = groupmeans (aov)
+%! comparisons = multcompare (aov, 'display', 'off')
 
 %!demo
-%! ## Diagnostic plots for an anovan-backed fit
-%! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
+%! ## Plot multiple-comparison intervals
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
-%! a = anova (g, y, 'SumOfSquaresType', 'two');
-%! plotDiagnostics (a);
+%! aov = anova (g, y, 'SumOfSquaresType', 'two');
+%! plotComparisons (aov);
 
 ## --- BISTs ---------------------------------------------------------------
 
