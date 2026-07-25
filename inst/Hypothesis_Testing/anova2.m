@@ -173,7 +173,7 @@ function [p, anovatab, stats] = anova2 (x, reps, displayopt, model)
   if (reps > 1)
     xcells = reshape (x, reps, FFGn, SFGn);
     xdev = bsxfun (@minus, xcells, mean (xcells, 1));
-    cell_sse = squeeze (sum (xdev .^ 2, 1));
+    cell_sse = squeeze (sumsq (xdev, 1));
     SSE = sum (cell_sse.'(:));
   else
     SSE = SST - SSC - SSR;
