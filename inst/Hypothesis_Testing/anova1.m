@@ -175,9 +175,10 @@ function [p, anovatab, stats] = anova1 (x, group, displayopt, vartype)
   groups = size (group_names, 1);
   xs = accumarray (group_id, 1, [groups, 1], @sum, 0);
   xsum = accumarray (group_id, xr, [groups, 1], @sum, 0);
-  xsum2 = accumarray (group_id, xr .^ 2, [groups, 1], @sum, 0);
   xm = xsum ./ xs;
-  xv = (xsum2 - (xsum .^ 2) ./ xs) ./ max (xs - 1, 1);
+  xdev = xr - xm(group_id);
+  xss = accumarray (group_id, xdev .^ 2, [groups, 1], @sum, 0);
+  xv = xss ./ max (xs - 1, 1);
   xv(xs == 0) = NaN;
   xs = xs';
   xm = xm';
@@ -397,6 +398,13 @@ endfunction
 %! assert_equal (tbl{3,3}, 2, 0);
 %! assert_equal (tbl{4,3}, 3, 0);
 %! assert_equal (stats.n, [2, 2], 0);
+
+## Grouped variance remains stable when group means have large offsets.
+%!test
+%! y = [1e12 + (1:10), -1e12 + (1:10)](:);
+%! g = [ones(10, 1); 2 * ones(10, 1)];
+%! [~, ~, stats] = anova1 (y, g, 'off', 'unequal');
+%! assert_equal (stats.vars, [55 / 6, 55 / 6], 1e-10);
 
 ## testing handling of missing values in both data and grouping variables
 ## using categorical array as a grouping variable
