@@ -429,21 +429,57 @@ classdef anova
     ## -*- texinfo -*-
     ## @deftypefn  {anova} {@var{s} =} stats (@var{obj})
     ## @deftypefnx {anova} {@var{s} =} stats (@var{obj}, @var{type})
+    ## @deftypefnx {anova} {@var{s} =} stats (@var{obj}, @qcode{"Component"}, @var{sstype})
+    ## @deftypefnx {anova} {[@var{s}, @var{ems}] =} stats (@dots{})
     ##
-    ## Return the fitted ANOVA table.
+    ## Return component or summary ANOVA statistics as a table.
     ##
-    ## The model is fitted first if needed.  The optional @var{type} argument
-    ## is accepted for MATLAB syntax compatibility; currently both
-    ## @qcode{'component'} and @qcode{'summary'} return the backend ANOVA
-    ## table.
+    ## With no @var{type}, or with @qcode{"component"}, return statistics for
+    ## each model term, error, and total.  With @qcode{"summary"}, group terms
+    ## into linear, nonlinear, and regression rows.  Replicated continuous
+    ## designs also report lack-of-fit and pure-error statistics.
+    ##
+    ## The @qcode{"Component"} form computes the component table using
+    ## @var{sstype}, which must be @qcode{"one"}, @qcode{"two"},
+    ## @qcode{"three"}, or @qcode{"hierarchical"}.  This request does not
+    ## change the object's read-only @code{SumOfSquaresType} property.
+    ## The second output @var{ems} contains expected mean-square information
+    ## for each model term and the error term.  Its variables are
+    ## @code{Type}, @code{ExpectedMeanSquares},
+    ## @code{MeanSquaresDenominator}, @code{DFDenominator}, and
+    ## @code{FDenominator}.
     ##
     ## @end deftypefn
-    function s = stats (obj, type)
-      if (nargin > 1 && ! obj.isName_ (type))
-        error ("anova.stats: type must be a character vector.");
+    function [s, ems] = stats (obj, varargin)
+      type = "component";
+      sstype = [];
+      if (numel (varargin) == 1)
+        type = varargin{1};
+      elseif (numel (varargin) == 2 && obj.isName_ (varargin{1}) ...
+              && strcmpi (varargin{1}, "component"))
+        sstype = obj.parseSSType_ (varargin{2});
+      elseif (! isempty (varargin))
+        error ("anova.stats: invalid input arguments.");
       endif
-      obj.ensureFit_ ();
-      s = obj.AnovaTable;
+      if (! obj.isName_ (type) ...
+          || ! any (strcmpi (type, {"component", "summary"})))
+        error ("anova.stats: type must be 'component' or 'summary'.");
+      endif
+      if (strcmpi (type, "summary"))
+        atab = obj.summaryStats_ ();
+      elseif (! isempty (sstype))
+        atab = obj.componentStats_ (sstype);
+      else
+        obj.ensureFit_ ();
+        atab = obj.AnovaTable;
+      endif
+      s = obj.statsTable_ (atab);
+      if (nargout > 1)
+        if (isempty (sstype))
+          sstype = obj.SSType;
+        endif
+        ems = obj.expectedMeanSquares_ (sstype);
+      endif
     endfunction
 
     ## -*- texinfo -*-
@@ -719,6 +755,28 @@ classdef anova
       endswitch
     endfunction
 
+    function value = parseSSType_ (obj, value)
+      if (isstring (value) && isscalar (value))
+        value = char (value);
+      endif
+      if (! ischar (value))
+        error ("anova.stats: component type must be a character vector.");
+      endif
+      switch (lower (value))
+        case "one"
+          value = 1;
+        case "two"
+          value = 2;
+        case "three"
+          value = 3;
+        case "hierarchical"
+          value = "h";
+        otherwise
+          error (strcat ("anova.stats: component type must be 'one',", ...
+                         " 'two', 'three', or 'hierarchical'."));
+      endswitch
+    endfunction
+
     function obj = setFactorNames_ (obj, value)
       if (isstring (value))
         value = cellstr (value(:))';
@@ -750,7 +808,7 @@ classdef anova
 
     function obj = setFormula_ (obj)
       if (isempty (obj.FactorNames))
-        obj.FactorNames = arrayfun (@(k) sprintf ("X%d", k), ...
+        obj.FactorNames = arrayfun (@(k) sprintf ("Factor%d", k), ...
                                     1:obj.nFactors_, ...
                                     'UniformOutput', false);
         obj.VarNames = obj.FactorNames;
@@ -845,7 +903,7 @@ classdef anova
       if (idx >= 1 && idx <= numel (obj.FactorNames))
         name = obj.FactorNames{idx};
       else
-        name = sprintf ("X%d", idx);
+        name = sprintf ("Factor%d", idx);
       endif
     endfunction
 
@@ -928,6 +986,214 @@ classdef anova
       tbl = table (mse, sqrt (max (mse, 0)), sse, ssr, sst, rsq, adj, ...
                    'VariableNames', {'MSE', 'RMSE', 'SSE', 'SSR', 'SST', ...
                                      'RSquared', 'AdjustedRSquared'});
+    endfunction
+
+    function out = statsTable_ (obj, atab)
+      if (isempty (atab))
+        out = table ([], [], [], [], [], "VariableNames", ...
+                     {"SumOfSquares", "DF", "MeanSquares", "F", "pValue"});
+        return;
+      endif
+      source_col = obj.findAtabColumn_ (atab, {"Source"});
+      columns = {{"SumOfSquares", "Sum Sq.", "Sum Sq", "SS"}, ...
+                 {"DF", "d.f.", "df"}, ...
+                 {"MeanSquares", "Mean Sq.", "Mean Sq", "MS"}, ...
+                 {"F"}, {"pValue", "Prob>F"}};
+      names = {"SumOfSquares", "DF", "MeanSquares", "F", "pValue"};
+      n = rows (atab) - 1;
+      values = cell (1, numel (columns));
+      for j = 1:numel (columns)
+        col = obj.findAtabColumn_ (atab, columns{j});
+        values{j} = NaN (n, 1);
+        for i = 1:n
+          value = atab{i + 1, col};
+          if (isnumeric (value) && isscalar (value) && ! isempty (value))
+            values{j}(i) = value;
+          endif
+        endfor
+      endfor
+      row_names = obj.publicSourceNames_ (atab(2:end, source_col));
+      out = table (values{:}, "VariableNames", names, "RowNames", row_names);
+    endfunction
+
+    function ems = expectedMeanSquares_ (obj, sstype)
+      obj.ensureFit_ ();
+      if (strcmp (obj.backend_, "linearmodel"))
+        error (strcat ("anova.stats: expected mean squares are unavailable", ...
+                       " for LinearModel input."));
+      endif
+
+      atab = obj.componentStats_ (sstype);
+      sources = obj.publicSourceNames_ (atab(2:end-1, 1));
+      nterms = numel (sources) - 1;
+      term_names = sources(1:nterms);
+      is_random = false (nterms, 1);
+      q_coeff = ones (nterms, 1);
+      variance_coeff = zeros (nterms, nterms);
+
+      if (strcmp (obj.backend_, "anovan") && isfield (obj.Stats, "terms"))
+        terms = obj.Stats.terms;
+        if (! isempty (obj.RandomFactors))
+          is_random = any (terms(:, obj.RandomFactors), 2);
+        endif
+        [q_coeff, variance_coeff] = obj.emsCoefficients_ (terms, sstype, ...
+                                                          is_random);
+      elseif (strcmp (obj.backend_, "anova1"))
+        [q_coeff(1), variance_coeff(1, 1)] = obj.oneWayEmsCoefficient_ ();
+        is_random(1) = any (obj.RandomFactors == 1);
+      endif
+
+      formulas = cell (nterms + 1, 1);
+      types = repmat ({"fixed"}, nterms + 1, 1);
+      for i = 1:nterms
+        pieces = {};
+        if (is_random(i))
+          types{i} = "random";
+        else
+          term = obj.emsTerm_ (q_coeff(i), "Q", term_names{i});
+          if (! isempty (term))
+            pieces{end + 1} = term;
+          endif
+        endif
+        for j = find (is_random(:))'
+          if (abs (variance_coeff(i, j)) > 1e-10)
+            pieces{end + 1} = obj.emsTerm_ (variance_coeff(i, j), ...
+                                            "V", term_names{j});
+          endif
+        endfor
+        pieces{end + 1} = "V(Error)";
+        formulas{i} = strjoin (pieces, "+");
+      endfor
+      types{end} = "random";
+      formulas{end} = "V(Error)";
+
+      denominator_ms = [repmat(obj.MSE, nterms, 1); NaN];
+      denominator_df = [repmat(obj.DFE, nterms, 1); NaN];
+      denominator_formula = [repmat({"MS(Error)"}, nterms, 1); {""}];
+      row_names = [term_names; {"Error"}];
+      ems = table (string (types), string (formulas), denominator_ms, ...
+                   denominator_df, string (denominator_formula), ...
+                   "VariableNames", {"Type", "ExpectedMeanSquares", ...
+                   "MeanSquaresDenominator", "DFDenominator", ...
+                   "FDenominator"}, "RowNames", row_names);
+    endfunction
+
+    function names = publicSourceNames_ (obj, names)
+      names = regexprep (names, "'$", "");
+      names = regexprep (names, "\\*", ":");
+      if (strcmp (obj.backend_, "anova1") && ! isempty (names))
+        idx = find (strcmpi (names, "Groups"), 1);
+        if (! isempty (idx))
+          names{idx} = obj.FactorNames{1};
+        endif
+      elseif (strcmp (obj.backend_, "anova2"))
+        idx = find (strcmpi (names, "Columns"), 1);
+        if (! isempty (idx))
+          names{idx} = obj.FactorNames{1};
+        endif
+        idx = find (strcmpi (names, "Rows"), 1);
+        if (! isempty (idx))
+          names{idx} = obj.FactorNames{2};
+        endif
+        idx = find (strcmpi (names, "Interaction"), 1);
+        if (! isempty (idx))
+          names{idx} = sprintf ("%s:%s", obj.FactorNames{:});
+        endif
+      endif
+    endfunction
+
+    function [q_coeff, variance_coeff] = emsCoefficients_ (obj, terms, ...
+                                                           sstype, is_random)
+      X = full (obj.Stats.X);
+      dfs = obj.Stats.df(:);
+      nterms = rows (terms);
+      blocks = cell (nterms, 1);
+      first = 2;
+      for i = 1:nterms
+        blocks{i} = first:first + dfs(i) - 1;
+        first += dfs(i);
+      endfor
+      bases = cell (nterms, 1);
+      for i = 1:nterms
+        factors = find (terms(i, :));
+        if (all (! ismember (factors, obj.Continuous)))
+          [~, ~, ids] = unique (obj.Stats.grps(:, factors), "rows");
+          bases{i} = sparse (1:numel (ids), ids, 1);
+        else
+          bases{i} = X(:, blocks{i});
+        endif
+      endfor
+
+      q_coeff = zeros (nterms, 1);
+      variance_coeff = zeros (nterms, nterms);
+      for i = 1:nterms
+        [included, excluded] = obj.emsModels_ (X, blocks, terms, i, sstype);
+        q_coeff(i) = obj.projectionDifference_ (included, excluded, ...
+                                                bases{i}) / dfs(i);
+        for j = find (is_random(:))'
+          variance_coeff(i, j) = obj.projectionDifference_ (...
+                                  included, excluded, bases{j}) / dfs(i);
+        endfor
+      endfor
+    endfunction
+
+    function [included, excluded] = emsModels_ (obj, X, blocks, terms, ...
+                                                term, sstype)
+      nterms = numel (blocks);
+      switch (sstype)
+        case 1
+          included_terms = 1:term;
+          excluded_terms = 1:term-1;
+        case {2, "h"}
+          factors = find (terms(term, :));
+          excluded_terms = find (any (! terms(:, factors), 2))';
+          included_terms = [term, excluded_terms];
+        otherwise
+          included_terms = 1:nterms;
+          excluded_terms = setdiff (included_terms, term, "stable");
+      endswitch
+      included = X(:, [1, blocks{included_terms}]);
+      excluded = X(:, [1, blocks{excluded_terms}]);
+    endfunction
+
+    function value = projectionDifference_ (obj, included, excluded, basis)
+      value = obj.projectionEnergy_ (included, basis) ...
+              - obj.projectionEnergy_ (excluded, basis);
+      value = max (value, 0);
+    endfunction
+
+    function value = projectionEnergy_ (obj, design, basis)
+      Q = orth (full (design));
+      value = sum (sumsq (Q' * basis));
+    endfunction
+
+    function [q_coeff, variance_coeff] = oneWayEmsCoefficient_ (obj)
+      if (isvector (obj.Y))
+        group = obj.GROUP(:);
+      else
+        [n, groups] = size (obj.Y);
+        group = reshape (repmat (1:groups, n, 1), [], 1);
+      endif
+      [~, ~, ids] = unique (group, "stable");
+      Z = sparse (1:numel (ids), ids, 1);
+      intercept = ones (rows (Z), 1);
+      df = columns (Z) - 1;
+      if (df == 0)
+        q_coeff = 0;
+      else
+        q_coeff = obj.projectionDifference_ (Z, intercept, Z) / df;
+      endif
+      variance_coeff = q_coeff;
+    endfunction
+
+    function value = emsTerm_ (obj, coefficient, symbol, name)
+      if (! isfinite (coefficient) || abs (coefficient) <= 1e-10)
+        value = "";
+      elseif (abs (coefficient - 1) <= 1e-10)
+        value = sprintf ("%s(%s)", symbol, name);
+      else
+        value = sprintf ("%.6g*%s(%s)", coefficient, symbol, name);
+      endif
     endfunction
 
     function obj = initLinearModel_ (obj, mdl, varargin)
@@ -1183,20 +1449,7 @@ classdef anova
     endfunction
 
     function obj = fitAnovan_ (obj)
-      ## Unroll a matrix Y with no GROUP into a vector + synthetic
-      ## column index — needed for the anova1-matrix-form fallback.
-      if (isempty (obj.GROUP) && ! isvector (obj.Y))
-        [n, m] = size (obj.Y);
-        y_vec  = obj.Y(:);
-        g_vec  = reshape (repmat ((1:m), n, 1), [], 1);
-        group_arg = {g_vec};
-      else
-        y_vec = obj.Y(:);
-        group_arg = obj.GROUP;
-        if (isempty (group_arg))
-          group_arg = {};
-        endif
-      endif
+      [y_vec, group_arg] = obj.anovanData_ ();
       [~, atab, stats] = anovan (y_vec, group_arg, ...
                                  obj.buildAnovanArgs_(){:});
       obj.AnovaTable = atab;
@@ -1240,6 +1493,116 @@ classdef anova
       endif
     endfunction
 
+    function atab = componentStats_ (obj, sstype)
+      if (strcmp (obj.backend_, "linearmodel"))
+        error ("anova.stats: component type is unavailable for LinearModel input.");
+      endif
+      if (strcmp (obj.backend_, "anova2"))
+        obj.ensureFit_ ();
+        atab = obj.AnovaTable;
+        return;
+      endif
+      [y_vec, group_arg] = obj.anovanData_ ();
+      args = obj.buildAnovanArgs_ (sstype);
+      [~, atab] = anovan (y_vec, group_arg, args{:});
+    endfunction
+
+    function atab = summaryStats_ (obj)
+      obj.ensureFit_ ();
+      component = obj.componentStats_ (1);
+      sources = component(2:end, 1);
+      error_idx = find (strcmpi (sources, "Error"), 1);
+      total_idx = find (strcmpi (sources, "Total"), 1);
+      term_idx = setdiff (1:numel (sources), [error_idx, total_idx], "stable");
+      term_ss = cell2mat (component(term_idx + 1, 2));
+      term_df = cell2mat (component(term_idx + 1, 3));
+
+      if (strcmp (obj.backend_, "anova2"))
+        nonlinear = strcmpi (sources(term_idx), "Interaction");
+      elseif (isfield (obj.Stats, "terms") ...
+              && rows (obj.Stats.terms) == numel (term_idx))
+        nonlinear = (sum (obj.Stats.terms, 2) > 1);
+      else
+        nonlinear = ! cellfun (@isempty, regexp (sources(term_idx), "[:*]"));
+      endif
+      linear = ! nonlinear;
+
+      labels = {};
+      sum_sq = [];
+      df = [];
+      if (any (linear))
+        labels{end + 1, 1} = "Linear";
+        sum_sq(end + 1, 1) = sum (term_ss(linear));
+        df(end + 1, 1) = sum (term_df(linear));
+      endif
+      if (any (nonlinear))
+        labels{end + 1, 1} = "NonLinear";
+        sum_sq(end + 1, 1) = sum (term_ss(nonlinear));
+        df(end + 1, 1) = sum (term_df(nonlinear));
+      endif
+      labels{end + 1, 1} = "Regression";
+      sum_sq(end + 1, 1) = sum (term_ss);
+      df(end + 1, 1) = sum (term_df);
+      tested_rows = numel (labels);
+
+      error_ss = component{error_idx + 1, 2};
+      error_df = component{error_idx + 1, 3};
+      labels{end + 1, 1} = "Error";
+      sum_sq(end + 1, 1) = error_ss;
+      df(end + 1, 1) = error_df;
+      error_row = numel (labels);
+
+      lack_row = [];
+      if (strcmp (obj.backend_, "anovan") && isempty (obj.Weights) ...
+          && isfield (obj.Stats, "grps") && isfield (obj.Stats, "Y"))
+        [~, ~, group_id] = unique (obj.Stats.grps, "rows");
+        group_mean = accumarray (group_id, obj.Stats.Y, [], @mean);
+        pure_ss = sum ((obj.Stats.Y - group_mean(group_id)) .^ 2);
+        pure_df = numel (obj.Stats.Y) - max (group_id);
+        lack_df = error_df - pure_df;
+        if (pure_df > 0 && lack_df > 0)
+          labels(end + 1:end + 2, 1) = {"LackOfFit"; "PureError"};
+          sum_sq(end + 1:end + 2, 1) = [max(error_ss - pure_ss, 0); pure_ss];
+          df(end + 1:end + 2, 1) = [lack_df; pure_df];
+          lack_row = numel (labels) - 1;
+        endif
+      endif
+
+      labels{end + 1, 1} = "Total";
+      sum_sq(end + 1, 1) = component{total_idx + 1, 2};
+      df(end + 1, 1) = component{total_idx + 1, 3};
+      mean_sq = sum_sq ./ df;
+      mse = mean_sq(error_row);
+      f_stat = mean_sq(1:tested_rows) ./ mse;
+      p_value = fcdf (f_stat, df(1:tested_rows), error_df, "upper");
+
+      atab = cell (numel (labels) + 1, 6);
+      atab(1, :) = {"Source", "Sum Sq.", "d.f.", "Mean Sq.", "F", "Prob>F"};
+      atab(2:end, 1) = labels;
+      atab(2:end, 2:4) = num2cell ([sum_sq, df, mean_sq]);
+      atab(2:tested_rows + 1, 5:6) = num2cell ([f_stat, p_value]);
+      if (! isempty (lack_row))
+        lack_f = mean_sq(lack_row) / mean_sq(lack_row + 1);
+        lack_p = fcdf (lack_f, df(lack_row), df(lack_row + 1), "upper");
+        atab(lack_row + 1, 5:6) = {lack_f, lack_p};
+      endif
+    endfunction
+
+    function [y_vec, group_arg] = anovanData_ (obj)
+      if (isempty (obj.GROUP) && ! isvector (obj.Y))
+        [n, m] = size (obj.Y);
+        y_vec = obj.Y(:);
+        group = reshape (repmat (1:m, n, 1), [], 1);
+        group_arg = {group};
+      else
+        y_vec = obj.Y(:);
+        group_arg = obj.GROUP;
+        if (isempty (group_arg))
+          group_arg = {};
+        endif
+      endif
+    endfunction
+
     function s = sstypeLabel_ (obj)
       switch (obj.SSType)
         case 1; s = 'I';
@@ -1276,11 +1639,12 @@ classdef anova
       endfor
     endfunction
 
-    function nv = buildAnovanArgs_ (obj)
-      ## Always run the anovan backend silently; anova presents results through
-      ## its own summary, disp, and plotDiagnostics methods, so the backend must
-      ## not print a table or open its diagnostic-plots figure during a fit.
-      nv = {'display', 'off', 'sstype', obj.SSType, 'alpha', obj.Alpha};
+    function nv = buildAnovanArgs_ (obj, sstype)
+      if (nargin < 2)
+        sstype = obj.SSType;
+      endif
+      ## Run the backend silently; this class owns display and plotting.
+      nv = {'display', 'off', 'sstype', sstype, 'alpha', obj.Alpha};
       if (ischar (obj.ModelType) || isnumeric (obj.ModelType))
         if (! (isnumeric (obj.ModelType) && isempty (obj.ModelType)))
           nv = [nv, {'model', obj.ModelType}];
@@ -1614,7 +1978,7 @@ endclassdef
 %! assert_equal (a.ModelSpecification, 'linear');
 %! assert_equal (a.SumOfSquaresType, 'three');
 %! assert_equal (a.ResponseName, 'Y');
-%! assert_equal (a.FactorNames, {'X1'});
+%! assert_equal (a.FactorNames, {'Factor1'});
 %! assert_equal (a.RandomFactors, []);
 %! assert_equal (a.CategoricalFactors, 'all');
 %! assert_equal (a.NumFactors, 1);
@@ -1804,9 +2168,9 @@ endclassdef
 %! a = anova (g, y, 'SumOfSquaresType', 'two');
 %! a.fit ();
 %! T = a.AnovaTable;
-%! assert_equal (T{2, 2}, 126, 1e-12);       # group SS
-%! assert_equal (T{3, 2}, 6, 1e-12);         # error SS
-%! assert_equal (T{4, 2}, 132, 1e-12);       # total SS
+%! assert_equal (T{2, 2}, 126, 1e-12);
+%! assert_equal (T{3, 2}, 6, 1e-12);
+%! assert_equal (T{4, 2}, 132, 1e-12);
 %! assert_equal (T{2, 3}, 2);
 %! assert_equal (T{3, 3}, 6);
 %! assert_equal (T{2, 4}, 63, 1e-12);
@@ -1829,7 +2193,7 @@ endclassdef
 %! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
 %! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
 %! es = getEffectSizes (anova (g, y, 'SumOfSquaresType', 'two'));
-%! assert_equal (es.Source, {'X1'});
+%! assert_equal (es.Source, {'Factor1'});
 %! assert_equal (es.EtaSquared, 126 / 132, 1e-12);
 %! assert_equal (es.PartialEtaSquared, 126 / (126 + 6), 1e-12);
 %! assert_equal (es.OmegaSquared, 124 / 133, 1e-12);
@@ -1936,7 +2300,7 @@ endclassdef
 %! T = stats (a);
 %! M = groupmeans (a);
 %! V = varianceComponent (a);
-%! assert_equal (T{2, 2}, 126, 1e-12);
+%! assert_equal (T.SumOfSquares(1), 126, 1e-12);
 %! assert_equal (M.Mean, [2; 5; 11], 1e-12);
 %! assert_equal (V.VarianceComponent, 1, 1e-12);
 
@@ -2130,45 +2494,47 @@ endclassdef
 
 %!test
 %! a = anova (ones (5, 1), (1:5)');
-%! T = stats (a);
-%! assert_equal (T{2, 3}, 0);
-%! assert_equal (T{2, 6}, NaN);
+%! [T, ems] = stats (a);
+%! assert_equal (T.DF(1), 0);
+%! assert_equal (T.pValue(1), NaN);
+%! assert_equal (cellstr (ems.ExpectedMeanSquares), ...
+%!               {'V(Error)'; 'V(Error)'});
 %! a = anova (ones (5, 1), (1:5)', 'SumOfSquaresType', 'two');
 %! T = stats (a);
-%! assert_equal (T{2, 3}, 0);
-%! assert_equal (T{2, 6}, NaN);
+%! assert_equal (T.DF(1), 0);
+%! assert_equal (T.pValue(1), NaN);
 
 %!test
 %! a = anova (1, 7);
 %! T = stats (a);
 %! assert_equal (a.NumObservations, 1);
-%! assert_equal (T{2, 6}, NaN);
+%! assert_equal (T.pValue(1), NaN);
 
 %!test
 %! a = anova ([1; 1; 2; 2], ones (4, 1));
 %! T = stats (a);
-%! assert_equal (T{2, 2}, 0);
-%! assert_equal (T{2, 6}, 1);
+%! assert_equal (T.SumOfSquares(1), 0);
+%! assert_equal (T.pValue(1), 1);
 
 %!test
 %! g = categorical ([3; 3; 1; 1], [3, 2, 1]);
 %! a = anova (g, (1:4)');
 %! T = stats (a);
-%! assert_equal (isfinite (T{2, 6}), true);
+%! assert_equal (isfinite (T.pValue(1)), true);
 %! assert_equal (a.Stats.n, [2, 2]);
 %! assert_equal (a.Stats.gnames, {'3'; '1'});
 %! assert_equal (a.Stats.means, [1.5, 3.5]);
 %! a = anova (g, (1:4)', 'SumOfSquaresType', 'two');
 %! T = stats (a);
-%! assert_equal (T{2, 6}, 8, 1e-12);
+%! assert_equal (T.F(1), 8, 1e-12);
 %! assert_equal (a.Stats.grpnames{1}, {'3'; '1'});
 
 %!test
 %! g = kron ((1:120)', ones (2, 1));
 %! a = anova (g, (1:240)');
 %! T = stats (a);
-%! assert_equal (T{2, 3}, 119);
-%! assert_equal (T{3, 3}, 120);
+%! assert_equal (T.DF(1), 119);
+%! assert_equal (T.DF(2), 120);
 
 %!test
 %! n = 128;
@@ -2180,6 +2546,192 @@ endclassdef
 %! stats (a);
 %! assert_equal (rows (a.Stats.terms), 63);
 %! assert_equal (columns (a.DesignMatrix), 64);
+
+## --- Week 10: configuration integration -------------------------------
+
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, 'FactorNames', {'Treatment'});
+%! [component, ems] = stats (a);
+%! assert_equal (istable (component), true);
+%! assert_equal (component.Properties.VariableNames, ...
+%!               {'SumOfSquares', 'DF', 'MeanSquares', 'F', 'pValue'});
+%! assert_equal (component.Properties.RowNames, ...
+%!               {'Treatment'; 'Error'; 'Total'});
+%! assert_equal (component.SumOfSquares, [126; 6; 132], 1e-12);
+%! assert_equal (istable (ems), true);
+%! assert_equal (ems.Properties.VariableNames, ...
+%!               {'Type', 'ExpectedMeanSquares', 'MeanSquaresDenominator', ...
+%!                'DFDenominator', 'FDenominator'});
+%! assert_equal (ems.Properties.RowNames, {'Treatment'; 'Error'});
+%! assert_equal (cellstr (ems.Type), {'fixed'; 'random'});
+%! assert_equal (cellstr (ems.ExpectedMeanSquares), ...
+%!               {'3*Q(Treatment)+V(Error)'; 'V(Error)'});
+%! assert_equal (ems.MeanSquaresDenominator, [1; NaN]);
+%! assert_equal (ems.DFDenominator, [6; NaN]);
+%! assert_equal (cellstr (ems.FDenominator), {'MS(Error)'; ''});
+
+%!test
+%! y = [1; 2; 3; 4; 5; 6; 10; 11; 12];
+%! g = [1; 1; 1; 2; 2; 2; 3; 3; 3];
+%! a = anova (g, y, 'FactorNames', {'Treatment'}, 'RandomFactors', 1);
+%! [~, ems] = stats (a);
+%! assert_equal (cellstr (ems.Type), {'random'; 'random'});
+%! assert_equal (cellstr (ems.ExpectedMeanSquares), ...
+%!               {'3*V(Treatment)+V(Error)'; 'V(Error)'});
+
+%!test
+%! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! a = anova (y, [], 'Reps', 3, 'ModelSpecification', 'interactions', ...
+%!            'FactorNames', {'Brand', 'PopperType'});
+%! component = stats (a);
+%! assert_equal (component.Properties.RowNames, ...
+%!               {'Brand'; 'PopperType'; 'Brand:PopperType'; 'Error'; 'Total'});
+
+%!function values = __anova_values__ (tbl)
+%!  if (istable (tbl))
+%!    values = [tbl.SumOfSquares, tbl.DF, tbl.MeanSquares, tbl.F, tbl.pValue];
+%!    return;
+%!  endif
+%!  if (columns (tbl) == 6)
+%!    columns_ = [2, 3, 4, 5, 6];
+%!  else
+%!    columns_ = [2, 3, 4, 6, 7];
+%!  endif
+%!  values = NaN (rows (tbl) - 1, numel (columns_));
+%!  for i = 2:rows (tbl)
+%!    for j = 1:numel (columns_)
+%!      value = tbl{i, columns_(j)};
+%!      if (isnumeric (value) && isscalar (value))
+%!        values(i - 1, j) = value;
+%!      endif
+%!    endfor
+%!  endfor
+%!endfunction
+
+%!test
+%! y = [24; 26; 25; 24; 15; 17; 20; 16; 25; 29; 27; 19; 18; 21; 20];
+%! gender = [1; 1; 1; 1; 1; 1; 1; 1; 2; 2; 2; 2; 2; 2; 2];
+%! degree = [1; 1; 1; 1; 0; 0; 0; 0; 1; 1; 1; 0; 0; 0; 0];
+%! a = anova ({gender, degree}, y, 'ModelSpecification', 'full');
+%! component = stats (a, 'component', 'one');
+%! [~, expected] = anovan (y, {gender, degree}, 'model', 'full', ...
+%!                         'sstype', 1, 'display', 'off');
+%! assert_equal (component.Properties.RowNames, ...
+%!               {'Factor1'; 'Factor2'; 'Factor1:Factor2'; 'Error'; 'Total'});
+%! assert_equal (__anova_values__ (component), ...
+%!               __anova_values__ (expected), 1e-10);
+%! assert_equal (a.SumOfSquaresType, 'three');
+%! assert_equal (istable (stats (a)), true);
+
+%!test
+%! y = [5.5, 4.5, 3.5; 5.5, 4.5, 4.0; 6.0, 4.0, 3.0; ...
+%!      6.5, 5.0, 4.0; 7.0, 5.5, 5.0; 7.0, 5.0, 4.5];
+%! a = anova (y, [], 'Reps', 3, 'ModelSpecification', 'interactions');
+%! component = stats (a, 'Component', 'one');
+%! assert_equal (__anova_values__ (component), ...
+%!               __anova_values__ (stats (a)), 1e-10);
+%! summary_table = stats (a, 'summary');
+%! assert_equal (summary_table.Properties.RowNames, ...
+%!               {'Linear'; 'NonLinear'; 'Regression'; 'Error'; 'Total'});
+%! assert_equal (summary_table.SumOfSquares(1:3), ...
+%!               [20.25; 1 / 12; 61 / 3], 1e-10);
+%! assert_equal (summary_table.DF(1:3), [3; 2; 5]);
+%! assert_equal (summary_table.F(1:3), [48.6; 0.3; 29.28], 1e-10);
+
+%!test
+%! x = kron ((0:3)', ones (2, 1));
+%! y = [0; 0.2; 1; 1.2; 4; 4.2; 9; 9.2];
+%! summary_table = stats (anova (x, y, 'CategoricalFactors', []), 'summary');
+%! assert_equal (summary_table.Properties.RowNames, ...
+%!               {'Linear'; 'Regression'; 'Error'; 'LackOfFit'; ...
+%!                'PureError'; 'Total'});
+%! assert_equal (summary_table.SumOfSquares(3:5), [8.08; 8; 0.08], 1e-12);
+%! assert_equal (summary_table.DF(3:5), [6; 2; 4]);
+%! assert_equal (summary_table.F(4), 200, 1e-10);
+%! assert_equal (summary_table.pValue(4), 9.802960494567e-05, 1e-12);
+%! g = [ones(10, 1); 2 * ones(10, 1)];
+%! y = [(0:9)'; (1000:1009)'];
+%! summary_table = stats (anova (g, y), 'summary');
+%! assert_equal (summary_table.pValue(1) > 0, true);
+
+%!test
+%! [demo_code, demo_idx] = test ('anovan', 'grabdemo');
+%! assert_equal (numel (demo_idx) - 1, 13);
+%! for k = 1:numel (demo_idx) - 1
+%!   code = demo_code(demo_idx(k):demo_idx(k + 1) - 1);
+%!   code = strrep (code, "'display', 'on'", "'display', 'off'");
+%!   code = strrep (code, "anovan (y, g, 'weights', v.^-1)", ...
+%!                         "anovan (y, g, 'weights', v.^-1, 'display', 'off')");
+%!   code = regexprep (code, '^ *(figure|plot|xlabel) [^\n]*$', '', 'lineanchors');
+%!   eval (code);
+%!   switch (k)
+%!     case 1
+%!       a = anova (gender, score, 'FactorNames', {'gender'});
+%!     case 2
+%!       a = anova ({treatment(:), subject(:)}, score(:), ...
+%!                  'ModelSpecification', 'full', 'RandomFactors', 2, ...
+%!                  'SumOfSquaresType', 'two', ...
+%!                  'FactorNames', {'treatment', 'subject'});
+%!     case 3
+%!       a = anova (alloy, strength, 'FactorNames', {'alloy'});
+%!     case 4
+%!       a = anova ({seconds(:), subject(:)}, words(:), ...
+%!                  'ModelSpecification', 'full', 'RandomFactors', 2, ...
+%!                  'SumOfSquaresType', 'two', ...
+%!                  'FactorNames', {'seconds', 'subject'});
+%!     case 5
+%!       a = anova ({brands(:), popper(:)}, popcorn(:), ...
+%!                  'ModelSpecification', 'full', ...
+%!                  'FactorNames', {'brands', 'popper'});
+%!     case 6
+%!       a = anova ({gender, degree}, salary, 'ModelSpecification', 'full', ...
+%!                  'FactorNames', {'gender', 'degree'});
+%!     case 7
+%!       a = anova ({sugar, milk}, babble, 'ModelSpecification', 'full', ...
+%!                  'FactorNames', {'sugar', 'milk'});
+%!     case 8
+%!       a = anova ({drug(:), feedback(:), diet(:)}, BP(:), ...
+%!                  'ModelSpecification', 'full', ...
+%!                  'FactorNames', {'drug', 'feedback', 'diet'});
+%!     case 9
+%!       a = anova ({strain, treatment, block}, measurement / 10, ...
+%!                  'ModelSpecification', 'full', 'RandomFactors', 3, ...
+%!                  'SumOfSquaresType', 'two', ...
+%!                  'FactorNames', {'strain', 'treatment', 'block'});
+%!     case 10
+%!       a = anova ({species, temp}, pulse, 'CategoricalFactors', 1, ...
+%!                  'SumOfSquaresType', 'hierarchical', ...
+%!                  'FactorNames', {'species', 'temp'});
+%!     case 11
+%!       model = [1 0 0; 0 1 0; 0 0 1; 1 1 0];
+%!       a = anova ({treatment, exercise, age}, score, ...
+%!                  'ModelSpecification', model, 'CategoricalFactors', [1, 2], ...
+%!                  'SumOfSquaresType', 'hierarchical', ...
+%!                  'FactorNames', {'treatment', 'exercise', 'age'});
+%!     case 12
+%!       a = anova (g, dv, 'FactorNames', {'score'});
+%!     case 13
+%!       a = anova (g, y, 'Weights', v .^ -1);
+%!   endswitch
+%!   actual = stats (a);
+%!   actual_sources = actual.Properties.RowNames;
+%!   expected_sources = regexprep (ATAB(2:end, 1), "'$", "");
+%!   expected_sources = regexprep (expected_sources, "\\*", ":");
+%!   expected_sources = regexprep (expected_sources, "X([0-9]+)", "Factor$1");
+%!   if (strcmp (a.Stats.source, 'anova1'))
+%!     actual_sources{1} = expected_sources{1};
+%!   endif
+%!   assert_equal (actual_sources, expected_sources);
+%!   assert_equal (__anova_values__ (actual), ...
+%!                 __anova_values__ (ATAB), 1e-8);
+%!   if (! any (k == [1, 3, 12]))
+%!     assert_equal (a.Residuals, STATS.resid, 1e-8);
+%!     assert_equal (size (a.DesignMatrix), size (STATS.X));
+%!   endif
+%! endfor
 
 %!error <anova: RandomFactors must contain positive integer indices.> ...
 %! anova ([1;1;2;2], [1;2;3;4], 'RandomFactors', 0)
@@ -2207,3 +2759,19 @@ endclassdef
 %! y = [10; 12; 11; 14; 16; 15; 9; 8; 10];
 %! g = [1;1;1;2;2;2;3;3;3];
 %! predict (anova (g, y, 'SumOfSquaresType', 'two'), ones (2, 2));
+
+%!error <component type must be a character vector>
+%! a = anova ([1; 1; 2; 2], (1:4)');
+%! stats (a, 'Component', 1);
+
+%!error <component type must be 'one'>
+%! a = anova ([1; 1; 2; 2], (1:4)');
+%! stats (a, 'Component', 'typei');
+
+%!error <type must be 'component' or 'summary'>
+%! a = anova ([1; 1; 2; 2], (1:4)');
+%! stats (a, 'details');
+
+%!error <invalid input arguments>
+%! a = anova ([1; 1; 2; 2], (1:4)');
+%! stats (a, 'summary', 'one');
