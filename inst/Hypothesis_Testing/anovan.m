@@ -1027,8 +1027,8 @@ function [P, T, STATS, TERMS] = anovan (Y, GROUP, varargin)
           I = 1 + find (row(i,:));
           df(Nm+i) = prod (df(I-1));
           termcols(1+Nm+i) = prod (df(I-1) + 1);
-          tmp = ones (n,1);
-          for j = 1:numel (I);
+          tmp = X{I(1)};
+          for j = 2:numel (I);
             tmp = reshape (bsxfun (@times, ...
                            reshape (tmp, n, 1, columns (tmp)), ...
                            reshape (X{I(j)}, n, columns (X{I(j)}), 1)), ...
@@ -1779,3 +1779,13 @@ endfunction
 %! assert_equal (STATS.coeffs(3,6), 0.000572, 1e-06);
 %! assert_equal (STATS.coeffs(4,6), 2.86e-05, 1e-07);
 %! assert_equal (STATS.coeffs(5,6), 4.44e-06, 1e-08);
+
+## Interaction columns preserve factor-column ordering.
+%!test
+%! y = (1:12)';
+%! g1 = repmat ([1; 2; 3], 4, 1);
+%! g2 = kron ([1; 2], ones (6, 1));
+%! [~, ~, stats] = anovan (y, {g1, g2}, 'model', 'full', ...
+%!                         'display', 'off');
+%! assert_equal (stats.X(:,5), stats.X(:,2) .* stats.X(:,4));
+%! assert_equal (stats.X(:,6), stats.X(:,3) .* stats.X(:,4));
