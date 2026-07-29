@@ -139,7 +139,7 @@ classdef StableDistribution
     ##
     ## Names of parameters
     ##
-    ## A @math{4x1} cell array of character vectors with each element containing
+    ## A @math{4*1} cell array of character vectors with each element containing
     ## the name of a distribution parameter.  This property is read-only.
     ##
     ## @end deftp
@@ -150,7 +150,7 @@ classdef StableDistribution
     ##
     ## Description of parameters
     ##
-    ## A @math{4x1} cell array of character vectors with each element containing
+    ## A @math{4*1} cell array of character vectors with each element containing
     ## a short description of a distribution parameter.  This property is
     ## read-only.
     ##
@@ -172,7 +172,7 @@ classdef StableDistribution
     ##
     ## Distribution parameter values
     ##
-    ## A @math{4x1} numeric vector containing the values of the distribution
+    ## A @math{4*1} numeric vector containing the values of the distribution
     ## parameters, matching the order in @qcode{ParameterNames}.  This property
     ## is read-only; use dot name assignment on the @qcode{alpha}, @qcode{beta},
     ## @qcode{gam}, and @qcode{delta} properties.
@@ -185,7 +185,7 @@ classdef StableDistribution
     ##
     ## Covariance matrix of the parameter estimates
     ##
-    ## A @math{4x4} numeric matrix containing the variance-covariance of the
+    ## A @math{4*4} numeric matrix containing the variance-covariance of the
     ## distribution parameters.  This property is read-only.
     ##
     ## @end deftp
@@ -196,7 +196,7 @@ classdef StableDistribution
     ##
     ## Confidence intervals for the parameter estimates
     ##
-    ## A @math{2x4} numeric matrix containing the lower and upper boundaries of
+    ## A @math{2*4} numeric matrix containing the lower and upper boundaries of
     ## the confidence interval for each parameter, when the distribution has been
     ## fitted to data.  This property is read-only.
     ##
@@ -208,7 +208,7 @@ classdef StableDistribution
     ##
     ## Flags for fixed parameters
     ##
-    ## A @math{4x1} logical vector specifying which parameters are held fixed
+    ## A @math{4*1} logical vector specifying which parameters are held fixed
     ## rather than estimated.  This property is read-only.
     ##
     ## @end deftp

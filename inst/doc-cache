@@ -9619,9 +9619,9 @@ mvksdensity
      Multivariate kernel smoothing density estimate.
 
      ‘F = mvksdensity (X, PTS)’ computes a probability density estimate of the
-     sample in the NxD matrix X, evaluated at the points in the MxD matrix PTS.
+     sample in the N*D matrix X, evaluated at the points in the M*D matrix PTS.
      Each row of X is a single D-dimensional observation, and each row of PTS is
-     a point at which to evaluate the estimate.  The result F is an Mx1 vector,
+     a point at which to evaluate the estimate.  The result F is an M*1 vector,
      with one density value per row of PTS.
 
      The density estimate uses a product kernel: the multivariate kernel is the
@@ -9634,7 +9634,7 @@ mvksdensity
                     
      ----------------------------------------------------------------------------------
      'Bandwidth'    The kernel bandwidth, either a positive scalar applied to every
-                    dimension or a 1xD vector of positive values, one per dimension.
+                    dimension or a 1*D vector of positive values, one per dimension.
                     The default is a diagonal normal-reference (Silverman) rule
                     computed from X.
                     

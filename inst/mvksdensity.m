@@ -21,10 +21,10 @@
 ## Multivariate kernel smoothing density estimate.
 ##
 ## @code{@var{f} = mvksdensity (@var{x}, @var{pts})} computes a probability
-## density estimate of the sample in the @math{NxD} matrix @var{x}, evaluated at
-## the points in the @math{MxD} matrix @var{pts}.  Each row of @var{x} is a
+## density estimate of the sample in the @math{N*D} matrix @var{x}, evaluated at
+## the points in the @math{M*D} matrix @var{pts}.  Each row of @var{x} is a
 ## single @math{D}-dimensional observation, and each row of @var{pts} is a point
-## at which to evaluate the estimate.  The result @var{f} is an @math{Mx1}
+## at which to evaluate the estimate.  The result @var{f} is an @math{M*1}
 ## vector, with one density value per row of @var{pts}.
 ##
 ## The density estimate uses a product kernel: the multivariate kernel is the
@@ -37,7 +37,7 @@
 ## @headitem @var{Name} @tab @var{Value}
 ##
 ## @item @qcode{'Bandwidth'} @tab The kernel bandwidth, either a positive scalar
-## applied to every dimension or a @math{1xD} vector of positive values, one per
+## applied to every dimension or a @math{1*D} vector of positive values, one per
 ## dimension.  The default is a diagonal normal-reference (Silverman) rule
 ## computed from @var{x}.
 ##
