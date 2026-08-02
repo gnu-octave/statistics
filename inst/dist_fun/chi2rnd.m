@@ -57,26 +57,27 @@ function r = chi2rnd (df, varargin)
   if (nargin == 1)
     sz = size (df);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("chi2rnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 2)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("chi2rnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("chi2rnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameter match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -120,6 +121,9 @@ endfunction
 %!assert_equal (size (chi2rnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (chi2rnd (1, [])), [0, 0])
 %!assert_equal (size (chi2rnd (1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (chi2rnd (1, -1)), [0, 0])
+%!assert_equal (size (chi2rnd (1, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (chi2rnd (1, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (chi2rnd (2)), "double")
@@ -129,21 +133,15 @@ endfunction
 ## Test input validation
 %!error<chi2rnd: function called with too few input arguments.> chi2rnd ()
 %!error<chi2rnd: DF must not be complex.> chi2rnd (i)
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! chi2rnd (1, -1)
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<chi2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! chi2rnd (1, 1.2)
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<chi2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! chi2rnd (1, ones (2))
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! chi2rnd (1, [2 -1 2])
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<chi2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! chi2rnd (1, [2 0 2.5])
-%!error<chi2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<chi2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! chi2rnd (ones (2), ones (2))
-%!error<chi2rnd: dimensions must be non-negative integers.> ...
-%! chi2rnd (1, 2, -1, 5)
-%!error<chi2rnd: dimensions must be non-negative integers.> ...
+%!error<chi2rnd: dimensions must be integers.> ...
 %! chi2rnd (1, 2, 1.5, 5)
 %!error<chi2rnd: DF must be scalar or of size SZ.> chi2rnd (ones (2,2), 3)
 %!error<chi2rnd: DF must be scalar or of size SZ.> chi2rnd (ones (2,2), [3, 2])

@@ -71,26 +71,27 @@ function r = invgrnd (mu, lambda, varargin)
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("invgrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("invgrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("invgrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -140,6 +141,9 @@ endfunction
 %!assert_equal (size (invgrnd (1, 1, 4, 1)), [4, 1])
 %!assert_equal (size (invgrnd (1, 1, [])), [0, 0])
 %!assert_equal (size (invgrnd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (invgrnd (1, 2, -1)), [0, 0])
+%!assert_equal (size (invgrnd (1, 2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (invgrnd (1, 2, 2, -1, 5)), [2, 0, 5])
 %!test
 %! r =  invgrnd (1, [1, 0, -1]);
 %! assert_equal (r([2:3]), [NaN, NaN])
@@ -162,19 +166,13 @@ endfunction
 %! invgrnd (ones (2), ones (3))
 %!error<invgrnd: MU and LAMBDA must not be complex.> invgrnd (i, 2, 3)
 %!error<invgrnd: MU and LAMBDA must not be complex.> invgrnd (1, i, 3)
-%!error<invgrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! invgrnd (1, 2, -1)
-%!error<invgrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<invgrnd: SZ must be a scalar or a row vector of integers.> ...
 %! invgrnd (1, 2, 1.2)
-%!error<invgrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<invgrnd: SZ must be a scalar or a row vector of integers.> ...
 %! invgrnd (1, 2, ones (2))
-%!error<invgrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! invgrnd (1, 2, [2 -1 2])
-%!error<invgrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<invgrnd: SZ must be a scalar or a row vector of integers.> ...
 %! invgrnd (1, 2, [2 0 2.5])
-%!error<invgrnd: dimensions must be non-negative integers.> ...
-%! invgrnd (1, 2, 2, -1, 5)
-%!error<invgrnd: dimensions must be non-negative integers.> ...
+%!error<invgrnd: dimensions must be integers.> ...
 %! invgrnd (1, 2, 2, 1.5, 5)
 %!error<invgrnd: MU and LAMBDA must be scalars or of size SZ.> ...
 %! invgrnd (2, ones (2), 3)

@@ -79,26 +79,27 @@ function r = trirnd (a, b, c, varargin)
   if (nargin == 3)
     sz = size (a);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("trirnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 4)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("trirnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("trirnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -158,6 +159,9 @@ endfunction
 %!assert_equal (size (trirnd (1, 1.5, 2, 4, 1)), [4, 1])
 %!assert_equal (size (trirnd (1, 1.5, 2, [])), [0, 0])
 %!assert_equal (size (trirnd (1, 1.5, 2, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (trirnd (1, 5, 3, -1)), [0, 0])
+%!assert_equal (size (trirnd (1, 5, 3, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (trirnd (1, 5, 3, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (trirnd (1, 1.5, 2)), "double")
@@ -181,19 +185,13 @@ endfunction
 %!error<trirnd: A, B, and C must not be complex.> trirnd (i, 5, 3)
 %!error<trirnd: A, B, and C must not be complex.> trirnd (1, 5+i, 3)
 %!error<trirnd: A, B, and C must not be complex.> trirnd (1, 5, i)
-%!error<trirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! trirnd (1, 5, 3, -1)
-%!error<trirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trirnd: SZ must be a scalar or a row vector of integers.> ...
 %! trirnd (1, 5, 3, 1.2)
-%!error<trirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trirnd: SZ must be a scalar or a row vector of integers.> ...
 %! trirnd (1, 5, 3, ones (2))
-%!error<trirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! trirnd (1, 5, 3, [2 -1 2])
-%!error<trirnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trirnd: SZ must be a scalar or a row vector of integers.> ...
 %! trirnd (1, 5, 3, [2 0 2.5])
-%!error<trirnd: dimensions must be non-negative integers.> ...
-%! trirnd (1, 5, 3, 2, -1, 5)
-%!error<trirnd: dimensions must be non-negative integers.> ...
+%!error<trirnd: dimensions must be integers.> ...
 %! trirnd (1, 5, 3, 2, 1.5, 5)
 %!error<trirnd: A, B, and C must be scalar or of size SZ.> ...
 %! trirnd (2, 5 * ones (2), 2, 3)

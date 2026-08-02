@@ -87,26 +87,27 @@ function rnd = nbinrnd (r, ps, varargin)
   if (nargin == 2)
     sz = size (r);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       rnd = [];
       return;
     else
       error (strcat ("nbinrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("nbinrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("nbinrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -157,6 +158,9 @@ endfunction
 %!assert_equal (size (nbinrnd (1, 0.5, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (nbinrnd (1, 0.5, [])), [0, 0])
 %!assert_equal (size (nbinrnd (1, 0.5, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (nbinrnd (1, 2, -1)), [0, 0])
+%!assert_equal (size (nbinrnd (1, 2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (nbinrnd (1, 2, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (nbinrnd (1, 0.5)), "double")
@@ -174,19 +178,13 @@ endfunction
 %! nbinrnd (ones (2), ones (3))
 %!error<nbinrnd: R and PS must not be complex.> nbinrnd (i, 2, 3)
 %!error<nbinrnd: R and PS must not be complex.> nbinrnd (1, i, 3)
-%!error<nbinrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! nbinrnd (1, 2, -1)
-%!error<nbinrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<nbinrnd: SZ must be a scalar or a row vector of integers.> ...
 %! nbinrnd (1, 2, 1.2)
-%!error<nbinrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<nbinrnd: SZ must be a scalar or a row vector of integers.> ...
 %! nbinrnd (1, 2, ones (2))
-%!error<nbinrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! nbinrnd (1, 2, [2 -1 2])
-%!error<nbinrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<nbinrnd: SZ must be a scalar or a row vector of integers.> ...
 %! nbinrnd (1, 2, [2 0 2.5])
-%!error<nbinrnd: dimensions must be non-negative integers.> ...
-%! nbinrnd (1, 2, 2, -1, 5)
-%!error<nbinrnd: dimensions must be non-negative integers.> ...
+%!error<nbinrnd: dimensions must be integers.> ...
 %! nbinrnd (1, 2, 2, 1.5, 5)
 %!error<nbinrnd: R and PS must be scalars or of size SZ.> ...
 %! nbinrnd (2, ones (2), 3)

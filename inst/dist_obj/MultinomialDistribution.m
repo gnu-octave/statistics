@@ -466,8 +466,8 @@ classdef MultinomialDistribution
       if (! isscalar (this))
         error ("random: requires a scalar probability distribution.");
       endif
-      sz = [varargin{:}];
-      ps = prod (sz);
+      u = unifrnd (0, 1, varargin{:});
+      sz = size (u);
       if (this.IsTruncated)
         lx = this.Truncation(1);
         ux = this.Truncation(2);
@@ -479,7 +479,7 @@ classdef MultinomialDistribution
       endif
       bins = min ([0, cp], 1);
       bins(end) = 1;
-      [~, r] = histc (rand (ps, 1), bins);
+      [~, r] = histc (u(:), bins);
       r = reshape (r, sz);
       if (this.IsTruncated)
         r = r + lx - 1;
@@ -624,6 +624,10 @@ endfunction
 %! [0, 0, 0.2857, 0.4286, 0.2857, 0, NaN, 0], 1e-4);
 %!assert_equal (pdf (t, [-5, 1, 2, 4, 6, NaN, 0]), ...
 %! [0, 0, 0.2857, 0.2857, 0, NaN, 0], 1e-4);
+%!assert_equal (size (random (pd)), [1, 1])
+%!assert_equal (size (random (pd, 3)), [3, 3])
+%!assert_equal (size (random (pd, -1)), [0, 0])
+%!assert_equal (size (random (pd, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (unique (random (pd, 1000, 5)), [1, 2, 3, 4, 5, 6]');
 %!assert_equal (unique (random (t, 1000, 5)), [2, 3, 4]');
 %!assert_equal (std (pd), 1.4177, 1e-4);

@@ -79,26 +79,27 @@ function r = loglrnd (mu, sigma, varargin)
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
-      error (strcat ("loglrnd: SZ must be mu scalar or mu row vector", ...
-                     " of non-negative integers."));
+      error (strcat ("loglrnd: SZ must be a scalar or a row vector", ...
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("loglrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("loglrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -138,6 +139,9 @@ endfunction
 %!assert_equal (size (loglrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (loglrnd (1, 1, [])), [0, 0])
 %!assert_equal (size (loglrnd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (loglrnd (1, 2, -1)), [0, 0])
+%!assert_equal (size (loglrnd (1, 2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (loglrnd (1, 2, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (loglrnd (1, 1)), "double")
@@ -155,19 +159,13 @@ endfunction
 %! loglrnd (ones (2), ones (3))
 %!error<loglrnd: MU and SIGMA must not be complex.> loglrnd (i, 2, 3)
 %!error<loglrnd: MU and SIGMA must not be complex.> loglrnd (1, i, 3)
-%!error<loglrnd: SZ must be mu scalar or mu row vector of non-negative integers.> ...
-%! loglrnd (1, 2, -1)
-%!error<loglrnd: SZ must be mu scalar or mu row vector of non-negative integers.> ...
+%!error<loglrnd: SZ must be a scalar or a row vector of integers.> ...
 %! loglrnd (1, 2, 1.2)
-%!error<loglrnd: SZ must be mu scalar or mu row vector of non-negative integers.> ...
+%!error<loglrnd: SZ must be a scalar or a row vector of integers.> ...
 %! loglrnd (1, 2, ones (2))
-%!error<loglrnd: SZ must be mu scalar or mu row vector of non-negative integers.> ...
-%! loglrnd (1, 2, [2 -1 2])
-%!error<loglrnd: SZ must be mu scalar or mu row vector of non-negative integers.> ...
+%!error<loglrnd: SZ must be a scalar or a row vector of integers.> ...
 %! loglrnd (1, 2, [2 0 2.5])
-%!error<loglrnd: dimensions must be non-negative integers.> ...
-%! loglrnd (1, 2, 2, -1, 5)
-%!error<loglrnd: dimensions must be non-negative integers.> ...
+%!error<loglrnd: dimensions must be integers.> ...
 %! loglrnd (1, 2, 2, 1.5, 5)
 %!error<loglrnd: MU and SIGMA must be scalars or of size SZ.> ...
 %! loglrnd (2, ones (2), 3)

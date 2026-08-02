@@ -66,9 +66,12 @@ function r = stblrnd (alpha, beta, gam, delta, varargin)
   else
     sz = [varargin{:}];
   endif
-  if (! all (sz >= 0 & sz == fix (sz)))
-    error ("stblrnd: dimensions must be non-negative integers.");
+  if (! all (sz == fix (sz)))
+    error ("stblrnd: dimensions must be integers.");
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Chambers-Mallows-Stuck: draw a uniform on (-pi/2, pi/2) and a unit
   ## exponential, form a standard S1 variate, then shift to S0 and scale.
@@ -131,6 +134,8 @@ endfunction
 %! assert (size (stblrnd (1.5, 0.5, 1, 0, 3, 4)), [3, 4]);
 %! assert (size (stblrnd (1.5, 0.5, 1, 0, [2, 5])), [2, 5]);
 %! assert (isscalar (stblrnd (1.5, 0.5, 1, 0)));
+%! assert (size (stblrnd (1.5, 0.5, 1, 0, -1)), [0, 0]);
+%! assert (size (stblrnd (1.5, 0.5, 1, 0, 2, -1, 5)), [2, 0, 5]);
 
 ## Test input validation
 %!error <Invalid call to stblrnd> stblrnd (1.5, 0.5, 1)
@@ -140,5 +145,5 @@ endfunction
 %! stblrnd (1.5, 2, 1, 0)
 %!error <stblrnd: GAM must be a positive scalar.> stblrnd (1.5, 0, 0, 0)
 %!error <stblrnd: DELTA must be a real scalar.> stblrnd (1.5, 0, 1, 1i)
-%!error <stblrnd: dimensions must be non-negative integers.> ...
+%!error <stblrnd: dimensions must be integers.> ...
 %! stblrnd (1.5, 0, 1, 0, 2.5)

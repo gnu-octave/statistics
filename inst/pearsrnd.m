@@ -235,9 +235,12 @@ function sz = size_from_args (args)
   else
     sz = [args{:}];
   endif
-  if (! all (sz >= 0 & sz == fix (sz)))
-    error ("pearsrnd: dimensions must be non-negative integers.");
+  if (! all (sz == fix (sz)))
+    error ("pearsrnd: dimensions must be integers.");
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 endfunction
 
 %!demo
@@ -312,6 +315,8 @@ endfunction
 %! assert (size (pearsrnd (0, 1, 0, 3, 3, 4)), [3, 4]);
 %! assert (size (pearsrnd (0, 1, 0, 3, [2, 5])), [2, 5]);
 %! assert (isscalar (pearsrnd (0, 1, 0, 3)));
+%! assert (size (pearsrnd (0, 1, 0, 3, -1)), [0, 0]);
+%! assert (size (pearsrnd (0, 1, 0, 3, 2, -1, 5)), [2, 0, 5]);
 
 ## Test input validation
 %!error <Invalid call to pearsrnd> pearsrnd (0, 1, 0)

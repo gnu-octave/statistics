@@ -58,26 +58,27 @@ function r = raylrnd (sigma, varargin)
   if (nargin == 1)
     sz = size (sigma);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("raylrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 2)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("raylrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("raylrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -115,6 +116,9 @@ endfunction
 %!assert_equal (size (raylrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (raylrnd (1, [])), [0, 0])
 %!assert_equal (size (raylrnd (1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (raylrnd (1, -1)), [0, 0])
+%!assert_equal (size (raylrnd (1, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (raylrnd (1, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (raylrnd (0, 1, 1), NaN)
 %!assert_equal (raylrnd ([0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
@@ -126,21 +130,15 @@ endfunction
 ## Test input validation
 %!error<raylrnd: function called with too few input arguments.> raylrnd ()
 %!error<raylrnd: SIGMA must not be complex.> raylrnd (i)
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! raylrnd (1, -1)
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<raylrnd: SZ must be a scalar or a row vector of integers.> ...
 %! raylrnd (1, 1.2)
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<raylrnd: SZ must be a scalar or a row vector of integers.> ...
 %! raylrnd (1, ones (2))
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! raylrnd (1, [2 -1 2])
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<raylrnd: SZ must be a scalar or a row vector of integers.> ...
 %! raylrnd (1, [2 0 2.5])
-%!error<raylrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<raylrnd: SZ must be a scalar or a row vector of integers.> ...
 %! raylrnd (ones (2), ones (2))
-%!error<raylrnd: dimensions must be non-negative integers.> ...
-%! raylrnd (1, 2, -1, 5)
-%!error<raylrnd: dimensions must be non-negative integers.> ...
+%!error<raylrnd: dimensions must be integers.> ...
 %! raylrnd (1, 2, 1.5, 5)
 %!error<raylrnd: SIGMA must be scalar or of size SZ.> raylrnd (ones (2,2), 3)
 %!error<raylrnd: SIGMA must be scalar or of size SZ.> raylrnd (ones (2,2), [3, 2])

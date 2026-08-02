@@ -67,26 +67,27 @@ function r = vmrnd (mu, k, varargin)
   if (nargin == 2)
     sz = size (mu);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("vmrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("vmrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("vmrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -163,6 +164,9 @@ endfunction
 %!assert_equal (size (vmrnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (vmrnd (1, 1, [])), [0, 0])
 %!assert_equal (size (vmrnd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (vmrnd (1, 2, -1)), [0, 0])
+%!assert_equal (size (vmrnd (1, 2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (vmrnd (1, 2, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (vmrnd (1, 1)), "double")
@@ -180,19 +184,13 @@ endfunction
 %! vmrnd (ones (2), ones (3))
 %!error<vmrnd: MU and K must not be complex.> vmrnd (i, 2, 3)
 %!error<vmrnd: MU and K must not be complex.> vmrnd (1, i, 3)
-%!error<vmrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! vmrnd (1, 2, -1)
-%!error<vmrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<vmrnd: SZ must be a scalar or a row vector of integers.> ...
 %! vmrnd (1, 2, 1.2)
-%!error<vmrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<vmrnd: SZ must be a scalar or a row vector of integers.> ...
 %! vmrnd (1, 2, ones (2))
-%!error<vmrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! vmrnd (1, 2, [2 -1 2])
-%!error<vmrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<vmrnd: SZ must be a scalar or a row vector of integers.> ...
 %! vmrnd (1, 2, [2 0 2.5])
-%!error<vmrnd: dimensions must be non-negative integers.> ...
-%! vmrnd (1, 2, 2, -1, 5)
-%!error<vmrnd: dimensions must be non-negative integers.> ...
+%!error<vmrnd: dimensions must be integers.> ...
 %! vmrnd (1, 2, 2, 1.5, 5)
 %!error<vmrnd: MU and K must be scalars or of size SZ.> ...
 %! vmrnd (2, ones (2), 3)

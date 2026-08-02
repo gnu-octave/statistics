@@ -78,26 +78,27 @@ function r = gprnd (k, sigma, theta, varargin)
   if (nargin == 3)
     sz = size (k);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("gprnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 4)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("gprnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("gprnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -173,6 +174,9 @@ endfunction
 %!assert_equal (size (gprnd (-1, 1, 0, 4, 1)), [4, 1])
 %!assert_equal (size (gprnd (-1, 1, 0, [])), [0, 0])
 %!assert_equal (size (gprnd (-1, 1, 0, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (gprnd (1, 2, 3, -1)), [0, 0])
+%!assert_equal (size (gprnd (1, 2, 3, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (gprnd (1, 2, 3, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (gprnd (0, 1, 0)), "double")
@@ -196,19 +200,13 @@ endfunction
 %!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (i, 2, 3)
 %!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (1, i, 3)
 %!error<gprnd: K, SIGMA, and THETA must not be complex.> gprnd (1, 2, i)
-%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! gprnd (1, 2, 3, -1)
-%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<gprnd: SZ must be a scalar or a row vector of integers.> ...
 %! gprnd (1, 2, 3, 1.2)
-%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<gprnd: SZ must be a scalar or a row vector of integers.> ...
 %! gprnd (1, 2, 3, ones (2))
-%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! gprnd (1, 2, 3, [2 -1 2])
-%!error<gprnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<gprnd: SZ must be a scalar or a row vector of integers.> ...
 %! gprnd (1, 2, 3, [2 0 2.5])
-%!error<gprnd: dimensions must be non-negative integers.> ...
-%! gprnd (1, 2, 3, 2, -1, 5)
-%!error<gprnd: dimensions must be non-negative integers.> ...
+%!error<gprnd: dimensions must be integers.> ...
 %! gprnd (1, 2, 3, 2, 1.5, 5)
 %!error<gprnd: K, SIGMA, and THETA must be scalars or of size SZ.> ...
 %! gprnd (2, ones (2), 2, 3)

@@ -69,8 +69,10 @@ function [r, type, coefs] = johnsrnd (quantiles, varargin)
   ## Fit the Johnson curve through the four quantiles
   [type, coefs] = johnson_fit (q);
 
-  ## Draw standard normal deviates and apply the fitted transform
-  z = randn (varargin{:});
+  ## Draw standard normal deviates and apply the fitted transform.  Negative
+  ## dimensions are treated as zero, as in core Octave and MATLAB.
+  szargs = cellfun (@(x) max (x, 0), varargin, 'UniformOutput', false);
+  z = randn (szargs{:});
   u = (z - coefs(1)) ./ coefs(2);
   xi = coefs(3);
   lambda = coefs(4);
@@ -192,6 +194,8 @@ endfunction
 %! r = johnsrnd ([-1, -0.25, 0.75, 3], 3, 4);
 %! assert (size (r), [3, 4]);
 %! assert (all (isfinite (r(:))));
+%! assert (size (johnsrnd ([-1, -0.25, 0.75, 3], -1)), [0, 0]);
+%! assert (size (johnsrnd ([-1, -0.25, 0.75, 3], 2, -1, 5)), [2, 0, 5]);
 %!test
 %! [r, ~, c] = johnsrnd ([0.1, 0.3, 0.8, 0.95], 1, 500);
 %! assert (all (r > c(3) & r < c(3) + c(4)));

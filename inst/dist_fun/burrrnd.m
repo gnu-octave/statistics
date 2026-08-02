@@ -68,26 +68,27 @@ function r = burrrnd (lambda, c, k, varargin)
   if (nargin == 3)
     sz = size (lambda);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("burrrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 4)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("burrrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("burrrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -123,6 +124,9 @@ endfunction
 %!assert_equal (size (burrrnd (1, 1, 1, 4, 1)), [4, 1])
 %!assert_equal (size (burrrnd (1, 1, 1, [])), [0, 0])
 %!assert_equal (size (burrrnd (1, 1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (burrrnd (1, 2, 3, -1)), [0, 0])
+%!assert_equal (size (burrrnd (1, 2, 3, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (burrrnd (1, 2, 3, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (burrrnd (1,1,1)), "double")
@@ -146,19 +150,13 @@ endfunction
 %!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (i, 2, 3)
 %!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (1, i, 3)
 %!error<burrrnd: LAMBDA, C, and K must not be complex.> burrrnd (1, 2, i)
-%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! burrrnd (1, 2, 3, -1)
-%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<burrrnd: SZ must be a scalar or a row vector of integers.> ...
 %! burrrnd (1, 2, 3, 1.2)
-%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<burrrnd: SZ must be a scalar or a row vector of integers.> ...
 %! burrrnd (1, 2, 3, ones (2))
-%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! burrrnd (1, 2, 3, [2 -1 2])
-%!error<burrrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<burrrnd: SZ must be a scalar or a row vector of integers.> ...
 %! burrrnd (1, 2, 3, [2 0 2.5])
-%!error<burrrnd: dimensions must be non-negative integers.> ...
-%! burrrnd (1, 2, 3, 2, -1, 5)
-%!error<burrrnd: dimensions must be non-negative integers.> ...
+%!error<burrrnd: dimensions must be integers.> ...
 %! burrrnd (1, 2, 3, 2, 1.5, 5)
 %!error<burrrnd: LAMBDA, C, and K must be scalars or of size SZ.> ...
 %! burrrnd (2, ones (2), 2, 3)

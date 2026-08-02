@@ -60,26 +60,27 @@ function r = geornd (ps, varargin)
   if (nargin == 1)
     sz = size (ps);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("geornd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 2)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("geornd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("geornd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameter match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -126,6 +127,9 @@ endfunction
 %!assert_equal (size (geornd (0.5, 4, 1)), [4, 1])
 %!assert_equal (size (geornd (0.5, [])), [0, 0])
 %!assert_equal (size (geornd (0.5, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (geornd (1, -1)), [0, 0])
+%!assert_equal (size (geornd (1, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (geornd (1, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (geornd (0.5)), "double")
@@ -137,21 +141,15 @@ endfunction
 ## Test input validation
 %!error<geornd: function called with too few input arguments.> geornd ()
 %!error<geornd: PS must not be complex.> geornd (i)
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! geornd (1, -1)
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<geornd: SZ must be a scalar or a row vector of integers.> ...
 %! geornd (1, 1.2)
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<geornd: SZ must be a scalar or a row vector of integers.> ...
 %! geornd (1, ones (2))
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! geornd (1, [2 -1 2])
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<geornd: SZ must be a scalar or a row vector of integers.> ...
 %! geornd (1, [2 0 2.5])
-%!error<geornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<geornd: SZ must be a scalar or a row vector of integers.> ...
 %! geornd (ones (2), ones (2))
-%!error<geornd: dimensions must be non-negative integers.> ...
-%! geornd (1, 2, -1, 5)
-%!error<geornd: dimensions must be non-negative integers.> ...
+%!error<geornd: dimensions must be integers.> ...
 %! geornd (1, 2, 1.5, 5)
 %!error<geornd: PS must be scalar or of size SZ.> geornd (ones (2,2), 3)
 %!error<geornd: PS must be scalar or of size SZ.> geornd (ones (2,2), [3, 2])

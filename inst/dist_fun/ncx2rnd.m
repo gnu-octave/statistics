@@ -65,26 +65,27 @@ function r = ncx2rnd (df, lambda, varargin)
   if (nargin == 2)
     sz = size (df);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("ncx2rnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("ncx2rnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("ncx2rnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -136,6 +137,9 @@ endfunction
 %!assert_equal (size (ncx2rnd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (ncx2rnd (1, 1, [])), [0, 0])
 %!assert_equal (size (ncx2rnd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (ncx2rnd (1, 2, -1)), [0, 0])
+%!assert_equal (size (ncx2rnd (1, 2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (ncx2rnd (1, 2, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (ncx2rnd (1, 1)), "double")
@@ -153,19 +157,13 @@ endfunction
 %! ncx2rnd (ones (2), ones (3))
 %!error<ncx2rnd: DF and LAMBDA must not be complex.> ncx2rnd (i, 2)
 %!error<ncx2rnd: DF and LAMBDA must not be complex.> ncx2rnd (1, i)
-%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! ncx2rnd (1, 2, -1)
-%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<ncx2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! ncx2rnd (1, 2, 1.2)
-%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<ncx2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! ncx2rnd (1, 2, ones (2))
-%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! ncx2rnd (1, 2, [2 -1 2])
-%!error<ncx2rnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<ncx2rnd: SZ must be a scalar or a row vector of integers.> ...
 %! ncx2rnd (1, 2, [2 0 2.5])
-%!error<ncx2rnd: dimensions must be non-negative integers.> ...
-%! ncx2rnd (1, 2, 2, -1, 5)
-%!error<ncx2rnd: dimensions must be non-negative integers.> ...
+%!error<ncx2rnd: dimensions must be integers.> ...
 %! ncx2rnd (1, 2, 2, 1.5, 5)
 %!error<ncx2rnd: DF and LAMBDA must be scalars or of size SZ.> ...
 %! ncx2rnd (2, ones (2), 3)

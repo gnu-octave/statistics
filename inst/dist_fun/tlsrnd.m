@@ -73,26 +73,27 @@ function r = tlsrnd (mu, sigma, nu, varargin)
   if (nargin == 3)
     sz = size (nu);
   elseif (nargin == 4)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("tlsrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 4)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("tlsrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("tlsrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -129,6 +130,9 @@ endfunction
 %!assert_equal (size (tlsrnd (1, 2, 3, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (tlsrnd (1, 2, 3, [])), [0, 0])
 %!assert_equal (size (tlsrnd (1, 2, 3, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (tlsrnd (1, 2, 3, -1)), [0, 0])
+%!assert_equal (size (tlsrnd (1, 2, 3, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (tlsrnd (1, 2, 3, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (tlsrnd (1, 2, 0, 1, 1), NaN)
 %!assert_equal (tlsrnd (1, 2, [0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
@@ -154,21 +158,15 @@ endfunction
 %!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (i, 2, 3)
 %!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (1, i, 3)
 %!error<tlsrnd: MU, SIGMA, and NU must not be complex.> tlsrnd (1, 2, i)
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! tlsrnd (1, 2, 3, -1)
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<tlsrnd: SZ must be a scalar or a row vector of integers.> ...
 %! tlsrnd (1, 2, 3, 1.2)
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<tlsrnd: SZ must be a scalar or a row vector of integers.> ...
 %! tlsrnd (1, 2, 3, ones (2))
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! tlsrnd (1, 2, 3, [2 -1 2])
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<tlsrnd: SZ must be a scalar or a row vector of integers.> ...
 %! tlsrnd (1, 2, 3, [2 0 2.5])
-%!error<tlsrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<tlsrnd: SZ must be a scalar or a row vector of integers.> ...
 %! tlsrnd (ones (2), 2, 3, ones (2))
-%!error<tlsrnd: dimensions must be non-negative integers.> ...
-%! tlsrnd (1, 2, 3, 2, -1, 5)
-%!error<tlsrnd: dimensions must be non-negative integers.> ...
+%!error<tlsrnd: dimensions must be integers.> ...
 %! tlsrnd (1, 2, 3, 2, 1.5, 5)
 %!error<tlsrnd: MU, SIGMA, and NU must be scalar or of size SZ.> ...
 %! tlsrnd (ones (2,2), 2, 3, 3)

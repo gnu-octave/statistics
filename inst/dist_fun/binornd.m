@@ -69,26 +69,27 @@ function r = binornd (n, ps, varargin)
   if (nargin == 2)
     sz = size (n);
   elseif (nargin == 3)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("binornd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 3)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("binornd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("binornd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -152,6 +153,9 @@ endfunction
 %!assert_equal (size (binornd (1, 1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (binornd (1, 1, [])), [0, 0])
 %!assert_equal (size (binornd (1, 1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (binornd (1, 1/2, -1)), [0, 0])
+%!assert_equal (size (binornd (1, 1/2, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (binornd (1, 1/2, 2, -1, 5)), [2, 0, 5])
 
 ## Test class of input preserved
 %!assert_equal (class (binornd (1, 1)), "double")
@@ -171,19 +175,13 @@ endfunction
 %! binornd (ones (2), ones (3))
 %!error<binornd: N and PS must not be complex.> binornd (i, 2)
 %!error<binornd: N and PS must not be complex.> binornd (1, i)
-%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! binornd (1, 1/2, -1)
-%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<binornd: SZ must be a scalar or a row vector of integers.> ...
 %! binornd (1, 1/2, 1.2)
-%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<binornd: SZ must be a scalar or a row vector of integers.> ...
 %! binornd (1, 1/2, ones (2))
-%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! binornd (1, 1/2, [2 -1 2])
-%!error<binornd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<binornd: SZ must be a scalar or a row vector of integers.> ...
 %! binornd (1, 1/2, [2 0 2.5])
-%!error<binornd: dimensions must be non-negative integers.> ...
-%! binornd (1, 1/2, 2, -1, 5)
-%!error<binornd: dimensions must be non-negative integers.> ...
+%!error<binornd: dimensions must be integers.> ...
 %! binornd (1, 1/2, 2, 1.5, 5)
 %!error<binornd: N and PS must be scalars or of size SZ.> ...
 %! binornd (2, 1/2 * ones (2), 3)

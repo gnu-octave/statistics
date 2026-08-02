@@ -442,8 +442,7 @@ classdef LoguniformDistribution
       if (! isscalar (this))
         error ("random: requires a scalar probability distribution.");
       endif
-      sz = [varargin{:}];
-      r = icdf (this, rand (sz));
+      r = icdf (this, unifrnd (0, 1, varargin{:}));
     endfunction
 
     ## -*- texinfo -*-
@@ -569,6 +568,10 @@ endfunction
 %!assert_equal (pdf (pd, [-1, 1, 2, 3, 4, NaN]), [0, 0.7213, 0.3607, 0.2404, 0.1803, NaN], 1e-4);
 %!assert_equal (pdf (t, [-1, 1, 2, 3, 4, NaN]), [0, 0, 0.7213, 0.4809, 0.3607, NaN], 1e-4);
 %!assert_equal (isequal (size (random (pd, 100, 50)), [100, 50]), true)
+%!assert_equal (size (random (pd)), [1, 1])
+%!assert_equal (size (random (pd, 3)), [3, 3])
+%!assert_equal (size (random (pd, -1)), [0, 0])
+%!assert_equal (size (random (pd, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (any (random (pd, 1000, 1) < 1), false);
 %!assert_equal (any (random (pd, 1000, 1) > 4), false);
 %!assert_equal (any (random (t, 1000, 1) < 2), false);

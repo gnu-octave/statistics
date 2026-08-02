@@ -60,26 +60,27 @@ function r = poissrnd (lambda, varargin)
   if (nargin == 1)
     sz = size (lambda);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("poissrnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 2)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("poissrnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("poissrnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -123,6 +124,9 @@ endfunction
 %!assert_equal (size (poissrnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (poissrnd (1, [])), [0, 0])
 %!assert_equal (size (poissrnd (1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (poissrnd (1, -1)), [0, 0])
+%!assert_equal (size (poissrnd (1, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (poissrnd (1, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (poissrnd (0, 1, 1), 0)
 %!assert_equal (poissrnd ([0, 0, 0], [1, 3]), [0 0 0])
 
@@ -134,21 +138,15 @@ endfunction
 ## Test input validation
 %!error<poissrnd: function called with too few input arguments.> poissrnd ()
 %!error<poissrnd: LAMBDA must not be complex.> poissrnd (i)
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! poissrnd (1, -1)
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<poissrnd: SZ must be a scalar or a row vector of integers.> ...
 %! poissrnd (1, 1.2)
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<poissrnd: SZ must be a scalar or a row vector of integers.> ...
 %! poissrnd (1, ones (2))
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! poissrnd (1, [2 -1 2])
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<poissrnd: SZ must be a scalar or a row vector of integers.> ...
 %! poissrnd (1, [2 0 2.5])
-%!error<poissrnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<poissrnd: SZ must be a scalar or a row vector of integers.> ...
 %! poissrnd (ones (2), ones (2))
-%!error<poissrnd: dimensions must be non-negative integers.> ...
-%! poissrnd (1, 2, -1, 5)
-%!error<poissrnd: dimensions must be non-negative integers.> ...
+%!error<poissrnd: dimensions must be integers.> ...
 %! poissrnd (1, 2, 1.5, 5)
 %!error<poissrnd: LAMBDA must be scalar or of size SZ.> poissrnd (ones (2,2), 3)
 %!error<poissrnd: LAMBDA must be scalar or of size SZ.> poissrnd (ones (2,2), [3, 2])

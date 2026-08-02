@@ -62,26 +62,27 @@ function r = trnd (df, varargin)
   if (nargin == 1)
     sz = size (df);
   elseif (nargin == 2)
-    if (isscalar (varargin{1}) && varargin{1} >= 0
-                               && varargin{1} == fix (varargin{1}))
+    if (isscalar (varargin{1}) && varargin{1} == fix (varargin{1}))
       sz = [varargin{1}, varargin{1}];
-    elseif (isrow (varargin{1}) && all (varargin{1} >= 0)
-                                && all (varargin{1} == fix (varargin{1})))
+    elseif (isrow (varargin{1}) && all (varargin{1} == fix (varargin{1})))
       sz = varargin{1};
     elseif (isempty (varargin{1}))
       r = [];
       return;
     else
       error (strcat ("trnd: SZ must be a scalar or a row vector", ...
-                     " of non-negative integers."));
+                     " of integers."));
     endif
   elseif (nargin > 2)
-    posint = cellfun (@(x) (! isscalar (x) || x < 0 || x != fix (x)), varargin);
-    if (any (posint))
-      error ("trnd: dimensions must be non-negative integers.");
+    notint = cellfun (@(x) (! isscalar (x) || x != fix (x)), varargin);
+    if (any (notint))
+      error ("trnd: dimensions must be integers.");
     endif
     sz = [varargin{:}];
   endif
+
+  ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+  sz = max (sz, 0);
 
   ## Check that parameters match requested dimensions in size
   ## Use 'size (ones (sz))' to ignore any trailing singleton dimensions in SZ
@@ -130,6 +131,9 @@ endfunction
 %!assert_equal (size (trnd (1, 1, 2, 0, 5)), [1, 2, 0, 5])
 %!assert_equal (size (trnd (1, [])), [0, 0])
 %!assert_equal (size (trnd (1, [2, 0, 2, 1])), [2, 0, 2])
+%!assert_equal (size (trnd (1, -1)), [0, 0])
+%!assert_equal (size (trnd (1, [2, -1, 2])), [2, 0, 2])
+%!assert_equal (size (trnd (1, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (trnd (0, 1, 1), NaN)
 %!assert_equal (trnd ([0, 0, 0], [1, 3]), [NaN, NaN, NaN])
 
@@ -141,21 +145,15 @@ endfunction
 ## Test input validation
 %!error<trnd: function called with too few input arguments.> trnd ()
 %!error<trnd: DF must not be complex.> trnd (i)
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! trnd (1, -1)
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trnd: SZ must be a scalar or a row vector of integers.> ...
 %! trnd (1, 1.2)
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trnd: SZ must be a scalar or a row vector of integers.> ...
 %! trnd (1, ones (2))
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
-%! trnd (1, [2 -1 2])
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trnd: SZ must be a scalar or a row vector of integers.> ...
 %! trnd (1, [2 0 2.5])
-%!error<trnd: SZ must be a scalar or a row vector of non-negative integers.> ...
+%!error<trnd: SZ must be a scalar or a row vector of integers.> ...
 %! trnd (ones (2), ones (2))
-%!error<trnd: dimensions must be non-negative integers.> ...
-%! trnd (1, 2, -1, 5)
-%!error<trnd: dimensions must be non-negative integers.> ...
+%!error<trnd: dimensions must be integers.> ...
 %! trnd (1, 2, 1.5, 5)
 %!error<trnd: DF must be scalar or of size SZ.> trnd (ones (2,2), 3)
 %!error<trnd: DF must be scalar or of size SZ.> trnd (ones (2,2), [3, 2])
