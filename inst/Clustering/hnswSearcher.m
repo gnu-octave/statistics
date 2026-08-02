@@ -658,10 +658,9 @@ function [indices, distances] = search_hnsw_layer (graph, Y, X, dist, param, ...
     cand_dists(idx) = cand_dists(cand_count);
     cand_count = cand_count - 1;
 
-    ## Early termination check (matching original logic exactly)
+    ## Early termination check
     if (best_count > 0 && cand_count > 0)
-      ## best_dists_arr is kept sorted, so end element is worst
-      if (best_dists_arr(best_count) < min (cand_dists(1:cand_count)))
+      if (max (best_dists_arr(1:best_count)) < min (cand_dists(1:cand_count)))
         break;
       endif
     endif
@@ -755,11 +754,19 @@ endfunction
 %! obj = hnswSearcher (X, 'Distance', 'chebychev');
 %! Y = X(30:35,:);
 %! [idx, D] = knnsearch (obj, Y, 'K', 4);
-%! assert_equal (idx, [[30 31 4 12]; [31 30 10 35]; [32 21 37 28]; [33 47 20 34]; ...
-%!               [34 16 33 15]; [35 10 26 2]])
+%! ## Under chebychev these queries have several equidistant neighbours, so
+%! ## which of them is listed first is not defined.  Assert the distances,
+%! ## which are, and that each returned index really sits at the distance
+%! ## reported for it.
 %! assert_equal (D, [[0 0.1000 0.1000 0.2000]; [0 0.1000 0.1000 0.1000]; [0 0.2000 ...
 %!              0.2000 0.2000]; [0 0.3000 0.3000 0.3000]; [0 0.2000 0.3000 ...
 %!              0.3000]; [0 0.1000 0.1000 0.1000]], 5e-15)
+%! for i = 1:rows (Y)
+%!   assert_equal (numel (unique (idx(i,:))), 4);
+%!   for j = 1:4
+%!     assert_equal (max (abs (X(idx(i,j),:) - Y(i,:))), D(i,j), 5e-15);
+%!   endfor
+%! endfor
 
 %!test
 %! load fisheriris
@@ -861,6 +868,36 @@ endfunction
 %! [idx, D] = knnsearch (obj, Y, 'K', 1);
 %! assert_equal (ismember (idx, [2]), true);
 %! assert_equal (abs (D - 0) < 1e-2, true);
+
+## Raising 'SearchSetSize' must not make the search worse.  The early
+## termination check read the last element of the best list on the assumption
+## that the list was sorted, but the list is only sorted when it is trimmed,
+## and it is only trimmed once it grows past 'SearchSetSize'.  For a large
+## enough 'SearchSetSize' the trim never ran, the check compared whatever
+## distance happened to have been appended last, and the walk stopped at the
+## entry point -- returning the same neighbour for every query.
+%!test
+%! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
+%! Y = randn (8, 2);
+%! hn = hnswSearcher (X);
+%! es = ExhaustiveSearcher (X);
+%! truth = knnsearch (es, Y, 'K', 3);
+%! for ess = [5, 16, 31, 32, 33, 60]
+%!   assert_equal (knnsearch (hn, Y, 'K', 3, 'SearchSetSize', ess), truth);
+%! endfor
+%!test
+%! ## the boundary that used to break was 2 * MaxNumLinksPerNode
+%! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
+%! Y = randn (8, 2);
+%! hn = hnswSearcher (X);
+%! assert_equal (knnsearch (hn, Y, 'K', 3, 'SearchSetSize', 31), ...
+%!               knnsearch (hn, Y, 'K', 3, 'SearchSetSize', 32));
+%!test
+%! ## distinct queries must not collapse onto one index
+%! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
+%! Y = randn (8, 2);
+%! idx = knnsearch (hnswSearcher (X), Y, 'K', 3, 'SearchSetSize', 60);
+%! assert_equal (numel (unique (idx(:,1))) > 1, true);
 
 ## Test Input Validation
 
