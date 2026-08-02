@@ -69,6 +69,13 @@ function [handle, param] = wblplot (data, censor = [], freq = [], ...
   if (any (data <= 0))
     error ("wblplot: data vector must be positive and non zero")
   endif
+  ## A non-finite observation is not merely useless here, it is unrecoverable:
+  ## Inf drives the view port to 10 ^ ceil (log10 (Inf)), and the grid loop
+  ## below then runs over log10 (xmin) : Inf, never returning, while NaN makes
+  ## the rank regression singular and plots a meaningless line.
+  if (! all (isfinite (data)))
+    error ("wblplot: data vector must contain finite values")
+  endif
 
   if (isempty (freq))
     freq = ones (mm, 1);
@@ -371,3 +378,19 @@ endfunction
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
+
+## Test input validation
+## Inf used to hang: the view port became 10 ^ ceil (log10 (Inf)) and the grid
+## loop ran over log10 (xmin) : Inf.  NaN returned, but only after polyfit went
+## singular on it.
+%!error<wblplot: data vector must contain finite values> ...
+%! wblplot ([1, Inf, 2, 3])
+%!error<wblplot: data vector must contain finite values> ...
+%! wblplot ([1, NaN, 2, 3])
+%!error<wblplot: data vector must be positive and non zero> ...
+%! wblplot ([1, 0, 2, 3])
+## -Inf is negative, so the positivity check catches it before the finite one.
+%!error<wblplot: data vector must be positive and non zero> ...
+%! wblplot ([1, 2, 3, -Inf])
+%!error<wblplot: can only handle a single data vector> ...
+%! wblplot (ones (3, 3))
