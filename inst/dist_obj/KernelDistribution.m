@@ -566,18 +566,32 @@ classdef KernelDistribution
     ## values are flattened to a vector for ksdensity and reshaped back, since
     ## ksdensity only accepts vector query points.
     function y = basepdf (this, x)
+      ## ksdensity reads an empty query as "no points given" and falls back to
+      ## its default grid, so short-circuit before it is called.
+      if (isempty (x))
+        y = zeros (size (x));
+        return;
+      endif
       y = reshape (ksdensity (this.InputData.data, x(:), ksargs (this){:}, ...
                               'Function', 'pdf'), size (x));
     endfunction
 
     ## Untruncated CDF, delegating to the shipped ksdensity engine.
     function p = basecdf (this, x)
+      if (isempty (x))
+        p = zeros (size (x));
+        return;
+      endif
       p = reshape (ksdensity (this.InputData.data, x(:), ksargs (this){:}, ...
                               'Function', 'cdf'), size (x));
     endfunction
 
     ## Untruncated inverse CDF, delegating to the shipped ksdensity engine.
     function x = baseicdf (this, p)
+      if (isempty (p))
+        x = zeros (size (p));
+        return;
+      endif
       x = reshape (ksdensity (this.InputData.data, p(:), ksargs (this){:}, ...
                               'Function', 'icdf'), size (p));
     endfunction
@@ -733,6 +747,11 @@ endfunction
 %!    [0.0272 0.1538 0.2850 0.4492 0.6128 0.7494 0.8506 0.9217], 2e-3);
 %!assert_equal (icdf (pd, [0.1 0.25 0.5 0.75 0.9]), ...
 %!    [-0.2909 0.3820 1.1504 2.0027 2.8265], 5e-3);
+%!assert_equal (size (pdf (pd, [])), [0, 0])
+%!assert_equal (size (cdf (pd, [])), [0, 0])
+%!assert_equal (size (icdf (pd, [])), [0, 0])
+%!assert_equal (size (random (pd, -1)), [0, 0])
+%!assert_equal (size (random (pd, 2, -1, 5)), [2, 0, 5])
 %!assert_equal (mean (pd), 1.2067, 1e-4);
 %!assert_equal (std (pd), 1.1918, 1e-3);
 %!assert_equal (var (pd), 1.4203, 1e-3);

@@ -285,7 +285,9 @@ classdef paretotails
     ##
     ## @end deftypefn
     function r = random (this, varargin)
-      r = this.icdf (rand (varargin{:}));
+      ## Negative dimensions are treated as zero, as in core Octave and MATLAB
+      szargs = cellfun (@(x) max (x, 0), varargin, 'UniformOutput', false);
+      r = this.icdf (rand (szargs{:}));
     endfunction
 
     ## -*- texinfo -*-
@@ -493,6 +495,8 @@ endclassdef
 %!test
 %! r = random (pt, 3, 4);
 %! assert_equal (size (r), [3, 4]);
+%! assert_equal (size (random (pt, -1)), [0, 0]);
+%! assert_equal (size (random (pt, 2, -1, 5)), [2, 0, 5]);
 
 ## Boundary probabilities outside [0,1] give NaN from icdf
 %!test
