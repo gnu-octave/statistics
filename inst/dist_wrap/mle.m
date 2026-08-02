@@ -409,6 +409,7 @@ function [phat, pci] = mle (x, varargin)
       else
         [phat, pci] = lognfit (x, alpha, censor, freq, options);
       endif
+      phat(2) = mle_sigma (phat(2), censor, freq);
 
     case {'naka', 'nakagami'}
       if (nargout < 2)
@@ -431,11 +432,11 @@ function [phat, pci] = mle (x, varargin)
     case {'norm', 'normal'}
       if (nargout < 2)
         [muhat, sigmahat] = normfit (x, alpha, censor, freq, options);
-        phat = [muhat, sigmahat];
+        phat = [muhat, mle_sigma(sigmahat, censor, freq)];
       else
         [muhat, sigmahat, muci, sigmaci] = normfit (x, alpha, censor, ...
                                                     freq, options);
-        phat = [muhat, sigmahat];
+        phat = [muhat, mle_sigma(sigmahat, censor, freq)];
         pci = [muci, sigmaci];
       endif
 
@@ -727,12 +728,66 @@ function th = to_con (u, lb, ub)
   endfor
 endfunction
 
+## Turn an unbiased standard deviation into the maximum likelihood estimate.
+## normfit and lognfit deliberately return the unbiased estimator when the data
+## are uncensored, and each documents the correction needed to recover the MLE;
+## mle promises the MLE, so it applies that correction here.  With censoring
+## both fits maximise the likelihood directly and no correction is wanted.
+function s = mle_sigma (s, censor, freq)
+  if (isempty (censor) || ! any (censor))
+    n = sum (freq);
+    s = s .* sqrt ((n - 1) ./ n);
+  endif
+endfunction
+
 %!demo
 %! ## Fit a custom (normal) distribution by maximum likelihood and return the
 %! ## asymptotic 95% confidence intervals of the estimates.
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! pdf = @(x, mu, sigma) normpdf (x, mu, sigma);
 %! [phat, pci] = mle (x, 'pdf', pdf, 'start', [mean(x), std(x)])
+
+## mle returns the maximum likelihood estimate, so the scale parameter is
+## std (x, 1) and not normfit's unbiased std (x, 0).  It used to return the
+## unbiased value, contradicting both its own name and its custom-pdf path.
+%!test
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5]';
+%! phat = mle (x, 'distribution', 'normal');
+%! assert_equal (phat(1), mean (x), 1e-12);
+%! assert_equal (phat(2), std (x, 1), 1e-12);
+%! assert_equal (isequal (abs (phat(2) - std (x, 0)) < 1e-12, true), false);
+%!test
+%! ## the named path and the equivalent custom pdf must agree
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5]';
+%! a = mle (x, 'distribution', 'normal');
+%! b = mle (x, 'pdf', @(v, m, s) normpdf (v, m, s), 'start', [3, 1]);
+%! assert_equal (a, b, 1e-4);
+%!test
+%! ## lognfit is a normal fit on the logs, so it carried the same bias
+%! x = [1.2, 2.4, 0.9, 3.2, 1.1, 2.8, 1.3, 4.7, 2.2, 0.6, 3.0, 1.5]';
+%! phat = mle (x, 'distribution', 'lognormal');
+%! assert_equal (phat(2), std (log (x), 1), 1e-12);
+%!test
+%! ## a frequency vector scales the effective sample size
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8]';
+%! f = [1, 2, 1, 3, 1, 2]';
+%! phat = mle (x, 'distribution', 'normal', 'frequency', f);
+%! xx = repelem (x, f);
+%! assert_equal (phat(2), std (xx, 1), 1e-10);
+%!test
+%! ## with censoring normfit already maximises the likelihood: no correction
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5]';
+%! c = [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]';
+%! ref = normfit (x, 0.05, c);
+%! [~, s] = normfit (x, 0.05, c);
+%! phat = mle (x, 'distribution', 'normal', 'censoring', c);
+%! assert_equal (phat(2), s, 1e-12);
+%!test
+%! ## the confidence interval is normfit's and must not shift
+%! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5]';
+%! [~, pci] = mle (x, 'distribution', 'normal');
+%! [~, ~, muci, sci] = normfit (x);
+%! assert_equal (pci, [muci, sci], 1e-12);
 
 ## Test custom-distribution fitting (values verified against MATLAB)
 %!test

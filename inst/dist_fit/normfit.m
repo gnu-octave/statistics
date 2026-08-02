@@ -68,9 +68,11 @@
 ## observations in @var{x}.  However, when there is no censored data (default),
 ## the returned estimate for standard deviation is not exactly the WMLE.  To
 ## compute the weighted MLE, multiply the value returned in @var{sigmahat} by
-## @code{(SUM (@var{freq}) - 1) / SUM (@var{freq})}.  This correction is needed
-## because @code{normfit} normally computes @var{sigmahat} using an unbiased
-## variance estimator when there is no censored data.  When there is censoring
+## @code{sqrt ((sum (@var{freq}) - 1) / sum (@var{freq}))}.  The square root is
+## needed because the factor corrects a variance, while @var{sigmahat} is a
+## standard deviation.  This correction is needed because @code{normfit}
+## normally computes @var{sigmahat} using an unbiased variance estimator when
+## there is no censored data.  When there is censoring
 ## in the data, the correction is not needed, since @code{normfit} does not use
 ## the unbiased variance estimator in that case.
 ##
