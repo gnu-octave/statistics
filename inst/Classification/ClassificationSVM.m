@@ -1600,11 +1600,13 @@ classdef ClassificationSVM
       SupportVectors      = this.SupportVectors;
 
       ## Save classdef name and all model properties as individual variables
+      STname          = this.STname;
+
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
             'ClassNames', 'ScoreTransform', 'Standardize', 'Sigma', 'Mu',  ...
             'ModelParameters', 'Model', 'Alpha', 'Beta', 'Bias', ...
-            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors');
+            'IsSupportVector', 'SupportVectorLabels', 'SupportVectors', 'STname');
     endfunction
 
   endmethods
@@ -1615,16 +1617,19 @@ classdef ClassificationSVM
       ## Create a ClassificationSVM object
       mdl = ClassificationSVM (1, 1);
 
-      ## Check that fieldnames in DATA match properties in ClassificationSVM
+      ## Copy the saved data into the object.  Iterate over what was
+      ## saved rather than over fieldnames (mdl): a private property such
+      ## as STname is written out by savemodel but is not reported by
+      ## fieldnames, so comparing the two sets could never match and every
+      ## load failed.  Assignment is legal here because this is a method of
+      ## the class itself.
       names = fieldnames (data);
-      props = fieldnames (mdl);
-      if (! isequal (sort (names), sort (props)))
-        error ("ClassificationSVM.load_model: invalid model in '%s'.", filename)
-      endif
-
-      ## Copy data into object
-      for i = 1:numel (props)
-        mdl.(props{i}) = data.(props{i});
+      for i = 1:numel (names)
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          error ("ClassificationSVM.load_model: invalid model in '%s'.", filename)
+        end_try_catch
       endfor
     endfunction
 

@@ -80,7 +80,7 @@ function obj = loadmodel (filename)
       obj = ClassificationSVM.load_model (filename, data);
 
     case 'CompactClassificationSVM'
-      obj = ClassificationSVM.load_model (filename, data);
+      obj = CompactClassificationSVM.load_model (filename, data);
 
     case 'RegressionGAM'
       obj = RegressionGAM.load_model (filename, data);
@@ -91,6 +91,93 @@ function obj = loadmodel (filename)
   endswitch
 
 endfunction
+
+## A saved model must load back as the same class with the same state.  Every
+## loader but the neural-network one compared the saved fieldnames against
+## fieldnames (mdl) for exact equality; a private property such as STname is
+## saved but never reported by fieldnames, so the comparison could not match
+## and the load always failed.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! mdls = {fitcknn(meas, species, 'ScoreTransform', 'logit'), ...
+%!         fitcdiscr(meas, species, 'ScoreTransform', 'logit'), ...
+%!         fitcsvm(meas(1:100,:), Yb(1:100), 'ScoreTransform', 'logit'), ...
+%!         fitcgam(meas(1:100,:), Yb(1:100))};
+%! for i = 1:numel (mdls)
+%!   m = mdls{i};
+%!   fn = tempname ();
+%!   unwind_protect
+%!     savemodel (m, fn);
+%!     m2 = loadmodel (fn);
+%!     assert_equal (class (m2), class (m));
+%!     for f = fieldnames (m)'
+%!       a = m.(f{1});
+%!       b = m2.(f{1});
+%!       if (is_function_handle (a))
+%!         assert_equal (func2str (b), func2str (a));
+%!       else
+%!         assert_equal (b, a);
+%!       endif
+%!     endfor
+%!   unwind_protect_cleanup
+%!     if (exist (fn, 'file'))
+%!       delete (fn);
+%!     endif
+%!   end_unwind_protect
+%! endfor
+
+## A compact model must come back compact.  CompactClassificationSVM was
+## dispatched to ClassificationSVM.load_model, which builds the wrong class.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! c = compact (fitcsvm (meas(1:100,:), Yb(1:100)));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (c, fn);
+%!   c2 = loadmodel (fn);
+%!   assert_equal (class (c2), 'CompactClassificationSVM');
+%!   assert_equal (predict (c2, meas(1:10,:)), predict (c, meas(1:10,:)));
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+## The score transform's name is private state and must survive.  It was not
+## saved at all by ClassificationSVM, so it silently reverted to 'none'.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! m = fitcsvm (meas(1:100,:), Yb(1:100), 'ScoreTransform', 'logit');
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (strfind (evalc ('disp (m2)'), "'logit'") > 0, true);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
+
+## ClassificationGAM did not save LearningRate or NumIterations at all.
+%!test
+%! load fisheriris
+%! Yb = strcmp (species, 'setosa');
+%! m = fitcgam (meas(1:100,:), Yb(1:100));
+%! fn = tempname ();
+%! unwind_protect
+%!   savemodel (m, fn);
+%!   m2 = loadmodel (fn);
+%!   assert_equal (m2.LearningRate, m.LearningRate);
+%!   assert_equal (m2.NumIterations, m.NumIterations);
+%! unwind_protect_cleanup
+%!   if (exist (fn, 'file'))
+%!     delete (fn);
+%!   endif
+%! end_unwind_protect
 
 ## Test input validation
 %!error<loadmodel: too few arguments.> loadmodel ()

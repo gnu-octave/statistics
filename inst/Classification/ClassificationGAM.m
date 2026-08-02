@@ -1209,11 +1209,15 @@ classdef ClassificationGAM
       STname          = this.STname;
 
       ## Save classdef name and all model properties as individual variables
+      LearningRate    = this.LearningRate;
+      NumIterations   = this.NumIterations;
+
       save ('-binary', fname, 'classdef_name', 'X', 'Y', 'NumObservations', ...
             'RowsUsed', 'NumPredictors', 'PredictorNames', 'ResponseName', ...
             'ClassNames', 'Prior', 'Cost', 'ScoreTransform', 'Formula', ...
             'Interactions', 'Knots', 'Order', 'DoF', 'BaseModel', ...
-            'ModelwInt', 'IntMatrix', 'STname');
+            'ModelwInt', 'IntMatrix', 'LearningRate', 'NumIterations', ...
+            'STname');
     endfunction
 
   endmethods
@@ -1224,16 +1228,19 @@ classdef ClassificationGAM
       ## Create a ClassificationGAM object
       mdl = ClassificationGAM (1, 1);
 
-      ## Check that fieldnames in DATA match properties in ClassificationGAM
+      ## Copy the saved data into the object.  Iterate over what was
+      ## saved rather than over fieldnames (mdl): a private property such
+      ## as STname is written out by savemodel but is not reported by
+      ## fieldnames, so comparing the two sets could never match and every
+      ## load failed.  Assignment is legal here because this is a method of
+      ## the class itself.
       names = fieldnames (data);
-      props = fieldnames (mdl);
-      if (! isequal (sort (names), sort (props)))
-        error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
-      endif
-
-      ## Copy data into object
-      for i = 1:numel (props)
-        mdl.(props{i}) = data.(props{i});
+      for i = 1:numel (names)
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          error ("ClassificationGAM.load_model: invalid model in '%s'.", filename)
+        end_try_catch
       endfor
     endfunction
 

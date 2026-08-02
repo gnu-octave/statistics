@@ -682,18 +682,20 @@ classdef CompactClassificationSVM
       ## Create a ClassificationSVM object
       mdl = CompactClassificationSVM ();
 
-      ## Check that fieldnames in DATA match properties in
-      ## CompactClassificationSVM
+      ## Copy the saved data into the object.  Iterate over what was
+      ## saved rather than over fieldnames (mdl): a private property such
+      ## as STname is written out by savemodel but is not reported by
+      ## fieldnames, so comparing the two sets could never match and every
+      ## load failed.  Assignment is legal here because this is a method of
+      ## the class itself.
       names = fieldnames (data);
-      props = fieldnames (mdl);
-      if (! isequal (sort (names), sort (props)))
-        msg = 'CompactClassificationSVM.load_model: invalid model in ''%s''.';
-        error (msg, filename);
-      endif
-
-      ## Copy data into object
-      for i = 1:numel (props)
-        mdl.(props{i}) = data.(props{i});
+      for i = 1:numel (names)
+        try
+          mdl.(names{i}) = data.(names{i});
+        catch
+          msg = 'CompactClassificationSVM.load_model: invalid model in ''%s''.';
+          error (msg, filename);
+        end_try_catch
       endfor
     endfunction
 
