@@ -80,6 +80,10 @@ function [h, p, ci, stats] = ttest2 (x, y, varargin)
       case 'alpha'
         i = i + 1;
         alpha = varargin{i};
+        if (! (isscalar (alpha) && isnumeric (alpha) && isreal (alpha)
+               && alpha > 0 && alpha < 1))
+          error ("ttest2: ALPHA must be a scalar between 0 and 1.");
+        endif
       case 'tail'
         i = i + 1;
         tail = varargin{i};
@@ -181,3 +185,79 @@ endfunction
 %! assert_equal (stats.sd, 1.4638501094228, 1e-13);
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 'invalid');
 %!error ttest2 ([8:0.1:12], [8:0.1:12], 'tail', 25);
+
+## Reference values from MATLAB R2024a (probe run 2026-08-02).  The single
+## existing block covered only the two-sample default, leaving both 'Vartype'
+## values, both one-sided tails, 'alpha' and 'dim' unchecked.  'Vartype'
+## matters most: 'unequal' is Welch's test, with its own denominator and a
+## non-integer degrees of freedom.
+%!shared x, y, xm
+%! x = [10.2 9.7 11.1 10.5 9.9 10.8 10.1 9.6 10.4 10.7];
+%! y = [11.4 10.9 12.6 11.1 13.2 10.4 12.8 11.7];
+%! xm = [10.2 11.4; 9.7 10.9; 11.1 12.6; 10.5 11.1; 9.9 13.2];
+%!test
+%! [h, p, ci, stats] = ttest2 (x, y, 'Vartype', 'equal');
+%! assert_equal (h, 1);
+%! assert_equal (p, 8.895270853487265e-04, 1e-15);
+%! assert_equal (ci, [-2.224122032184765, -0.700877967815235], 1e-13);
+%! assert_equal (stats.tstat, -4.070735048482627, 1e-13);
+%! assert_equal (stats.df, 16);
+%! assert_equal (stats.sd, 0.757411298436985, 1e-14);
+%!test
+%! ## Welch: a pooled denominator would give the 'equal' answer instead
+%! [h, p, ci, stats] = ttest2 (x, y, 'Vartype', 'unequal');
+%! assert_equal (h, 1);
+%! assert_equal (p, 0.003801117252046, 1e-14);
+%! assert_equal (ci, [-2.327640087870322, -0.597359912129679], 1e-13);
+%! assert_equal (stats.tstat, -3.784559445642580, 1e-13);
+%! assert_equal (stats.df, 9.661941319801253, 1e-13);
+%! assert_equal (stats.sd(:)', [0.489897948556636, 1.001338390070295], 1e-14);
+%!test
+%! ## the default is the equal-variance test
+%! [~, pd] = ttest2 (x, y);
+%! [~, pe] = ttest2 (x, y, 'Vartype', 'equal');
+%! [~, pu] = ttest2 (x, y, 'Vartype', 'unequal');
+%! assert_equal (pd, pe, 0);
+%! assert_equal (isequal (pd, pu), false);
+%!test
+%! [h, p, ci] = ttest2 (x, y, 'Tail', 'left');
+%! assert_equal (h, 1);
+%! assert_equal (p, 4.447635426743633e-04, 1e-15);
+%! assert_equal (ci, [-Inf, -0.835253361212791], 1e-13);
+%!test
+%! [h, p, ci] = ttest2 (x, y, 'Tail', 'right');
+%! assert_equal (h, 0);
+%! assert_equal (p, 0.999555236457326, 1e-14);
+%! assert_equal (ci, [-2.089746638787210, Inf], 1e-13);
+%!test
+%! ## a non-default alpha must widen the interval and leave the p-value alone
+%! [~, p1, ci1] = ttest2 (x, y);
+%! [~, p2, ci2] = ttest2 (x, y, 'Alpha', 0.01);
+%! assert_equal (ci2, [-2.511854249766015, -0.413145750233985], 1e-13);
+%! assert_equal (diff (ci2) > diff (ci1), true);
+%! assert_equal (p1, p2, 0);
+%!test
+%! [h, p] = ttest2 (xm, xm + 1, 'Dim', 1);
+%! assert_equal (h, [1, 0]);
+%! assert_equal (p, [0.020600636177229, 0.154833732538475], 1e-13);
+
+## ALPHA was not validated at all, so a negative one silently produced a
+## [NaN NaN] confidence interval and "do not reject", and a vector one
+## quietly vectorised into an undocumented signature.  MATLAB refuses each of
+## these with "ALPHA must be a scalar between 0 and 1."
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', -0.05);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', 0);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', 1);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', 1.5);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', [0.01, 0.05]);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', 'a');
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', NaN);
+%!error <ttest2: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest2 ([8:0.1:12], [9:0.1:13], 'Alpha', 2 + 1i);

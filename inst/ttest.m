@@ -93,6 +93,10 @@ function [h, p, ci, stats] = ttest (x, my, varargin)
       case 'alpha'
         i = i + 1;
         alpha = varargin{i};
+        if (! (isscalar (alpha) && isnumeric (alpha) && isreal (alpha)
+               && alpha > 0 && alpha < 1))
+          error ("ttest: ALPHA must be a scalar between 0 and 1.");
+        endif
       case 'tail'
         i = i + 1;
         tail = varargin{i};
@@ -182,3 +186,66 @@ endfunction
 %! assert_equal (ci, [9.68498 Inf], 1E-5)
 %!error ttest ([8:0.1:12], 10, 'tail', 'invalid');
 %!error ttest ([8:0.1:12], 10, 'tail', 25);
+
+## Reference values from MATLAB R2024a (probe run 2026-08-02).  Only the
+## two-tailed default and 'tail','right' at the default alpha were covered
+## before, so the left tail, a non-default alpha, the stats output and the
+## 'dim' option went unchecked.
+%!shared x, xm
+%! x = [10.2 9.7 11.1 10.5 9.9 10.8 10.1 9.6 10.4 10.7];
+%! xm = [10.2 11.4; 9.7 10.9; 11.1 12.6; 10.5 11.1; 9.9 13.2];
+%!test
+%! [h, p, ci] = ttest (x, 10, 'Tail', 'left');
+%! assert_equal (h, 0);
+%! assert_equal (p, 0.957607393606414, 1e-14);
+%! assert_equal (ci, [-Inf, 10.583984634395803], 1e-13);
+%!test
+%! [h, p, ci] = ttest (x, 10, 'Tail', 'right');
+%! assert_equal (h, 1);
+%! assert_equal (p, 0.042392606393586, 1e-14);
+%! assert_equal (ci, [10.016015365604199, Inf], 1e-13);
+%!test
+%! ## a non-default alpha must actually widen the interval
+%! [~, p1, ci1] = ttest (x, 10);
+%! [~, p2, ci2] = ttest (x, 10, 'Alpha', 0.01);
+%! assert_equal (ci1, [9.949548119279150, 10.650451880720851], 1e-13);
+%! assert_equal (ci2, [9.796537642780031, 10.803462357219971], 1e-13);
+%! assert_equal (diff (ci2) > diff (ci1), true);
+%! assert_equal (p1, p2, 0);
+%!test
+%! ## the fourth output was never exercised
+%! [~, ~, ~, stats] = ttest (x, 10);
+%! assert_equal (stats.tstat, 1.936491673103713, 1e-13);
+%! assert_equal (stats.df, 9);
+%! assert_equal (stats.sd, 0.489897948556636, 1e-14);
+%!test
+%! [h, p] = ttest (xm, 10, 'Dim', 1);
+%! assert_equal (h, [0, 1]);
+%! assert_equal (p, [0.318172286240873, 0.015001169519765], 1e-13);
+%!test
+%! [h, p] = ttest (xm, 10, 'Dim', 2);
+%! assert_equal (h(:)', [0, 0, 0, 0, 0]);
+%! assert_equal (p(:)', [0.409665529398267, 0.704832764699133, ...
+%!                       0.245198884026780, 0.228400502439816, ...
+%!                       0.519887895647178], 1e-13);
+
+## ALPHA was not validated at all, so a negative one silently produced a
+## [NaN NaN] confidence interval and "do not reject", and a vector one
+## quietly vectorised into an undocumented signature.  MATLAB refuses each of
+## these with "ALPHA must be a scalar between 0 and 1."
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', -0.05);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', 0);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', 1);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', 1.5);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', [0.01, 0.05]);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', 'a');
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', NaN);
+%!error <ttest: ALPHA must be a scalar between 0 and 1.> ...
+%! ttest ([8:0.1:12], 10, 'Alpha', 2 + 1i);
