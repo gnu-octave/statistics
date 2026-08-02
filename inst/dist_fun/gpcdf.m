@@ -49,6 +49,11 @@
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gpinv, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
@@ -76,6 +81,11 @@ function p = gpcdf (x, k, sigma, theta, uflag)
     if (err > 0)
       error ("gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, K, SIGMA, and THETA being double or single
+  if (! (isfloat (x) && isfloat (k) && isfloat (sigma) && isfloat (theta)))
+    error ("gpcdf: X, K, SIGMA, and THETA must be double or single.");
   endif
 
   ## Check for X, K, SIGMA, and THETA being reals
@@ -250,6 +260,9 @@ endfunction
 %! gpcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gpcdf: X, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpcdf (ones (2), ones (2), ones (2), ones (3))
+%!error<gpcdf: X, K, SIGMA, and THETA must be double or single.> gpcdf (int32 (2), 2, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and THETA must be double or single.> gpcdf (true, 2, 3, 4)
+%!error<gpcdf: X, K, SIGMA, and THETA must be double or single.> gpcdf ('a', 2, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (i, 2, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, i, 3, 4)
 %!error<gpcdf: X, K, SIGMA, and THETA must not be complex.> gpcdf (1, 2, i, 4)

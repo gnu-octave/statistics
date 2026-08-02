@@ -37,6 +37,15 @@
 ## Further information about the continuous uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Continuous_uniform_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
+## MATLAB also accepts integer input here, returning the result in the integer
+## class of the input; Octave rejects it, as it does for every other continuous
+## distribution.
+##
 ## @seealso{unifinv, unifpdf, unifrnd, unifit, unifstat}
 ## @end deftypefn
 
@@ -62,6 +71,11 @@ function p = unifcdf (x, a, b, uflag)
     if (retval > 0)
       error ("unifcdf: X, A, and B must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, A, and B being double or single
+  if (! (isfloat (x) && isfloat (a) && isfloat (b)))
+    error ("unifcdf: X, A, and B must be double or single.");
   endif
 
   ## Check for X, A, and B being reals
@@ -147,6 +161,9 @@ endfunction
 %! unifcdf (ones (2), ones (3), ones (2))
 %!error<unifcdf: X, A, and B must be of common size or scalars.> ...
 %! unifcdf (ones (2), ones (2), ones (3))
+%!error<unifcdf: X, A, and B must be double or single.> unifcdf (int32 (2), 2, 2)
+%!error<unifcdf: X, A, and B must be double or single.> unifcdf (true, 2, 2)
+%!error<unifcdf: X, A, and B must be double or single.> unifcdf ('a', 2, 2)
 %!error<unifcdf: X, A, and B must not be complex.> unifcdf (i, 2, 2)
 %!error<unifcdf: X, A, and B must not be complex.> unifcdf (2, i, 2)
 %!error<unifcdf: X, A, and B must not be complex.> unifcdf (2, 2, i)

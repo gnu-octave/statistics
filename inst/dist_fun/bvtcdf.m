@@ -30,6 +30,11 @@
 ## @var{Tol} is the tolerance for numerical integration and by default
 ## @code{@var{Tol} = 1e-8}.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{mvtcdf}
 ## @end deftypefn
 
@@ -39,6 +44,11 @@ function p = bvtcdf (x, rho, df, TolFun)
 
   if (nargin < 4)
     TolFun = 1e-8;
+  endif
+
+  ## Check for X, RHO, and DF being double or single
+  if (! (isfloat (x) && isfloat (rho) && isfloat (df)))
+    error ("bvtcdf: X, RHO, and DF must be double or single.");
   endif
 
   if (isa (x, 'single') || isa (rho, 'single') || isa (df, 'single'))
@@ -208,3 +218,7 @@ endfunction
 %! df = 4;
 %! assert_equal (bvtcdf (x, rho(2), df), mvtcdf (x, rho, df), 1e-14);
 
+## Test input validation
+%!error<bvtcdf: X, RHO, and DF must be double or single.> bvtcdf (int32 ([0, 0]), 0.5, 5)
+%!error<bvtcdf: X, RHO, and DF must be double or single.> bvtcdf ([true, true], 0.5, 5)
+%!error<bvtcdf: X, RHO, and DF must be double or single.> bvtcdf ('ab', 0.5, 5)

@@ -32,6 +32,11 @@
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{bisainv, bisapdf, bisarnd, bisafit, bisalike, bisastat}
 ## @end deftypefn
 
@@ -49,6 +54,11 @@ function x = bisainv (p, beta, gamma)
       error (strcat ("bisainv: P, BETA, and GAMMA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for P, BETA, and GAMMA being double or single
+  if (! (isfloat (p) && isfloat (beta) && isfloat (gamma)))
+    error ("bisainv: P, BETA, and GAMMA must be double or single.");
   endif
 
   ## Check for X, BETA, and GAMMA being reals
@@ -153,6 +163,9 @@ endfunction
 %! bisainv (ones (2), ones (3), ones (2))
 %!error<bisainv: P, BETA, and GAMMA must be of common size or scalars.> ...
 %! bisainv (ones (2), ones (2), ones (3))
+%!error<bisainv: P, BETA, and GAMMA must be double or single.> bisainv (int32 (2), 4, 3)
+%!error<bisainv: P, BETA, and GAMMA must be double or single.> bisainv (true, 4, 3)
+%!error<bisainv: P, BETA, and GAMMA must be double or single.> bisainv ('a', 4, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (i, 4, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, i, 3)
 %!error<bisainv: P, BETA, and GAMMA must not be complex.> bisainv (1, 4, i)

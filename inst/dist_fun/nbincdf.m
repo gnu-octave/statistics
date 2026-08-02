@@ -58,6 +58,13 @@
 ## Further information about the negative binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat}
 ## @end deftypefn
 
@@ -86,6 +93,23 @@ function p = nbincdf (x, r, ps, uflag)
     if (retval > 0)
       error ("nbincdf: X, R, and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, R, and PS being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (r) && isnumeric (ps)))
+    error ("nbincdf: X, R, and PS must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (r))
+    r = double (r);
+  endif
+  if (isinteger (ps))
+    ps = double (ps);
   endif
 
   ## Check for X, R, and PS being reals
@@ -208,6 +232,9 @@ endfunction
 %! nbincdf (ones (2), ones (3), ones (2))
 %!error<nbincdf: X, R, and PS must be of common size or scalars.> ...
 %! nbincdf (ones (2), ones (2), ones (3))
+%!error<nbincdf: X, R, and PS must be double, single, or integer.> nbincdf (true, 2, 2)
+%!error<nbincdf: X, R, and PS must be double, single, or integer.> nbincdf ('a', 2, 2)
+%!assert_equal (class (nbincdf (int32 (2), 2, 2)), 'double')
 %!error<nbincdf: X, R, and PS must not be complex.> nbincdf (i, 2, 2)
 %!error<nbincdf: X, R, and PS must not be complex.> nbincdf (2, i, 2)
 %!error<nbincdf: X, R, and PS must not be complex.> nbincdf (2, 2, i)

@@ -54,6 +54,11 @@
 ## Further information about the normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{norminv, normpdf, normrnd, normfit, normlike, normstat}
 ## @end deftypefn
 
@@ -115,6 +120,11 @@ function [varargout] = normcdf (x, varargin)
     if (err > 0)
       error ("normcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("normcdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -258,6 +268,9 @@ endfunction
 %! normcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<normcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! normcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
+%!error<normcdf: X, MU, and SIGMA must be double or single.> normcdf (int32 (2), 2, 2)
+%!error<normcdf: X, MU, and SIGMA must be double or single.> normcdf (true, 2, 2)
+%!error<normcdf: X, MU, and SIGMA must be double or single.> normcdf ('a', 2, 2)
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (i, 2, 2)
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (2, i, 2)
 %!error<normcdf: X, MU, and SIGMA must not be complex.> normcdf (2, 2, i)

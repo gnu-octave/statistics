@@ -59,6 +59,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gumbelinv, gumbelpdf, gumbelrnd, gumbelfit, gumbellike, gumbelstat,
 ## evcdf}
 ## @end deftypefn
@@ -121,6 +126,11 @@ function [varargout] = gumbelcdf (x, varargin)
     if (err > 0)
       error ("gumbelcdf: X, MU, and BETA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and BETA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (beta)))
+    error ("gumbelcdf: X, MU, and BETA must be double or single.");
   endif
 
   ## Check for X, MU, and BETA being reals
@@ -239,6 +249,9 @@ endfunction
 %! gumbelcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<gumbelcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! gumbelcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
+%!error<gumbelcdf: X, MU, and BETA must be double or single.> gumbelcdf (int32 (2), 2, 2)
+%!error<gumbelcdf: X, MU, and BETA must be double or single.> gumbelcdf (true, 2, 2)
+%!error<gumbelcdf: X, MU, and BETA must be double or single.> gumbelcdf ('a', 2, 2)
 %!error<gumbelcdf: X, MU, and BETA must not be complex.> gumbelcdf (i, 2, 2)
 %!error<gumbelcdf: X, MU, and BETA must not be complex.> gumbelcdf (2, i, 2)
 %!error<gumbelcdf: X, MU, and BETA must not be complex.> gumbelcdf (2, 2, i)

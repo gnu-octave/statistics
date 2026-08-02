@@ -39,6 +39,11 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{tricdf, tripdf, trirnd, tristat}
 ## @end deftypefn
 
@@ -55,6 +60,11 @@ function x = triinv (p, a, b, c)
     if (retval > 0)
       error ("triinv: P, A, B, and C must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, A, B, and C being double or single
+  if (! (isfloat (p) && isfloat (a) && isfloat (b) && isfloat (c)))
+    error ("triinv: P, A, B, and C must be double or single.");
   endif
 
   ## Check for P, A, B, and C being reals
@@ -142,6 +152,9 @@ endfunction
 %! triinv (ones (2), ones (2), ones (3), ones (2))
 %!error<triinv: P, A, B, and C must be of common size or scalars.> ...
 %! triinv (ones (2), ones (2), ones (2), ones (3))
+%!error<triinv: P, A, B, and C must be double or single.> triinv (int32 (2), 2, 3, 4)
+%!error<triinv: P, A, B, and C must be double or single.> triinv (true, 2, 3, 4)
+%!error<triinv: P, A, B, and C must be double or single.> triinv ('a', 2, 3, 4)
 %!error<triinv: P, A, B, and C must not be complex.> triinv (i, 2, 3, 4)
 %!error<triinv: P, A, B, and C must not be complex.> triinv (1, i, 3, 4)
 %!error<triinv: P, A, B, and C must not be complex.> triinv (1, 2, i, 4)

@@ -75,6 +75,11 @@
 ## @math{D < 4}.
 ## @end multitable
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{bvtcdf, mvtpdf, mvtrnd, mvtcdfqmc}
 ## @end deftypefn
 
@@ -82,6 +87,13 @@ function [p, err] = mvtcdf (varargin)
 
   ## Check for valid number on input and output arguments
   narginchk (3,5);
+
+  ## Check for X, RHO, and DF being double or single.  The trailing
+  ## 'options' struct, if present, is parsed separately below.
+  numargs = varargin(! cellfun (@isstruct, varargin));
+  if (! all (cellfun (@isfloat, numargs)))
+    error ("mvtcdf: X, RHO, and DF must be double or single.");
+  endif
 
   ## Check for 'options' structure and parse parameters or add defaults
   if (isstruct (varargin{end}))
@@ -434,6 +446,9 @@ endfunction
 %! df = 4;
 %! assert_equal (mvtcdf (x, rho, df), 0.6874, 1e-4);
 
+%!error<mvtcdf: X, RHO, and DF must be double or single.> mvtcdf (int32 ([0, 0]), eye (2), 5)
+%!error<mvtcdf: X, RHO, and DF must be double or single.> mvtcdf ([true, true], eye (2), 5)
+%!error<mvtcdf: X, RHO, and DF must be double or single.> mvtcdf ('ab', eye (2), 5)
 %!error mvtcdf (1)
 %!error mvtcdf (1, 2)
 %!error<mvtcdf: correlation matrix RHO does not match dimensions in data.> ...

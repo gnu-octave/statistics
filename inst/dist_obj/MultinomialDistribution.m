@@ -202,10 +202,20 @@ classdef MultinomialDistribution
     ## the CDF of the probability distribution object, @var{pd}, evaluated at
     ## the values in @var{x}.
     ##
+    ## @var{x} must be @qcode{double}, @qcode{single}, or an integer type;
+    ## logical and character arrays are rejected.  Integer input is promoted
+    ## to @qcode{double}, so the result is always a probability.
+    ##
     ## @end deftypefn
     function p = cdf (this, x, uflag)
       if (! isscalar (this))
         error ("cdf: requires a scalar probability distribution.");
+      endif
+      if (! isnumeric (x))
+        error ("cdf: X must be double, single, or integer.");
+      endif
+      if (isinteger (x))
+        x = double (x);
       endif
       ## Check for "upper" flag
       if (nargin > 2 && strcmpi (uflag, 'upper'))
@@ -258,10 +268,16 @@ classdef MultinomialDistribution
     ## inverse of the CDF) of the probability distribution object, @var{pd},
     ## evaluated at the values in @var{x}.
     ##
+    ## @var{p} must be @qcode{double} or @qcode{single}; integer, logical, and
+    ## character arrays are rejected.
+    ##
     ## @end deftypefn
     function x = icdf (this, p)
       if (! isscalar (this))
         error ("icdf: requires a scalar probability distribution.");
+      endif
+      if (! isfloat (p))
+        error ("icdf: P must be double or single.");
       endif
       probs = this.Probabilities;
       ## Do the computations
@@ -357,10 +373,20 @@ classdef MultinomialDistribution
     ## probability distribution object, @var{pd}, evaluated at the values in
     ## @var{x}.
     ##
+    ## @var{x} must be @qcode{double}, @qcode{single}, or an integer type;
+    ## logical and character arrays are rejected.  Integer input is promoted
+    ## to @qcode{double}, so the result is always a probability.
+    ##
     ## @end deftypefn
     function y = pdf (this, x)
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
+      endif
+      if (! isnumeric (x))
+        error ("pdf: X must be double, single, or integer.");
+      endif
+      if (isinteger (x))
+        x = double (x);
       endif
       probs = this.Probabilities;
       size_x = size (x);
@@ -625,6 +651,12 @@ endfunction
 %!assert_equal (pdf (t, [-5, 1, 2, 4, 6, NaN, 0]), ...
 %! [0, 0, 0.2857, 0.2857, 0, NaN, 0], 1e-4);
 %!assert_equal (size (random (pd)), [1, 1])
+%!assert_equal (class (pdf (pd, int32 (2))), 'double')
+%!assert_equal (class (cdf (pd, int32 (2))), 'double')
+%!assert_equal (pdf (pd, int32 (2)), pdf (pd, 2))
+%!error<pdf: X must be double, single, or integer.> pdf (pd, true)
+%!error<pdf: X must be double, single, or integer.> pdf (pd, 'a')
+%!error<icdf: P must be double or single.> icdf (pd, int32 (1))
 %!assert_equal (size (random (pd, 3)), [3, 3])
 %!assert_equal (size (random (pd, -1)), [0, 0])
 %!assert_equal (size (random (pd, 2, -1, 5)), [2, 0, 5])

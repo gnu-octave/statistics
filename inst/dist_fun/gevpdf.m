@@ -45,6 +45,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gevcdf, gevinv, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function y = gevpdf (x, k, sigma, mu)
   [retval, x, k, sigma, mu] = common_size (x, k, sigma, mu);
   if (retval > 0)
     error ("gevpdf: X, K, SIGMA, and MU must be of common size or scalars.");
+  endif
+
+  ## Check for X, K, SIGMA, and MU being double or single
+  if (! (isfloat (x) && isfloat (k) && isfloat (sigma) && isfloat (mu)))
+    error ("gevpdf: X, K, SIGMA, and MU must be double or single.");
   endif
 
   ## Check for X, K, SIGMA, and MU being reals
@@ -143,6 +153,9 @@ endfunction
 %! gevpdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gevpdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
 %! gevpdf (ones (2), ones (2), ones (2), ones (3))
+%!error<gevpdf: X, K, SIGMA, and MU must be double or single.> gevpdf (int32 (2), 2, 3, 4)
+%!error<gevpdf: X, K, SIGMA, and MU must be double or single.> gevpdf (true, 2, 3, 4)
+%!error<gevpdf: X, K, SIGMA, and MU must be double or single.> gevpdf ('a', 2, 3, 4)
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (i, 2, 3, 4)
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (1, i, 3, 4)
 %!error<gevpdf: X, K, SIGMA, and MU must not be complex.> gevpdf (1, 2, i, 4)

@@ -36,6 +36,11 @@
 ## Further information about the Cauchy distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{cauchyinv, cauchypdf, cauchyrnd}
 ## @end deftypefn
 
@@ -64,6 +69,11 @@ function p = cauchycdf (x, x0, gamma, uflag)
       error (strcat ("cauchycdf: X, X0, and GAMMA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for X, X0, and GAMMA being double or single
+  if (! (isfloat (x) && isfloat (x0) && isfloat (gamma)))
+    error ("cauchycdf: X, X0, and GAMMA must be double or single.");
   endif
 
   ## Check for X, X0, and GAMMA being reals
@@ -146,6 +156,9 @@ endfunction
 %! cauchycdf (ones (2), ones (3), ones (2))
 %!error<cauchycdf: X, X0, and GAMMA must be of common size or scalars.> ...
 %! cauchycdf (ones (2), ones (2), ones (3))
+%!error<cauchycdf: X, X0, and GAMMA must be double or single.> cauchycdf (int32 (2), 2, 2)
+%!error<cauchycdf: X, X0, and GAMMA must be double or single.> cauchycdf (true, 2, 2)
+%!error<cauchycdf: X, X0, and GAMMA must be double or single.> cauchycdf ('a', 2, 2)
 %!error<cauchycdf: X, X0, and GAMMA must not be complex.> cauchycdf (i, 2, 2)
 %!error<cauchycdf: X, X0, and GAMMA must not be complex.> cauchycdf (2, i, 2)
 %!error<cauchycdf: X, X0, and GAMMA must not be complex.> cauchycdf (2, 2, i)

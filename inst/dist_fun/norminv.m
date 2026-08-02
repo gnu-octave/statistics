@@ -39,6 +39,11 @@
 ## Further information about the normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{norminv, normpdf, normrnd, normfit, normlike, normstat, probit}
 ## @end deftypefn
 
@@ -63,6 +68,11 @@ function x = norminv (p, mu, sigma)
     if (retval > 0)
       error ("norminv: P, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, and SIGMA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (sigma)))
+    error ("norminv: P, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for P, MU, and SIGMA being reals
@@ -131,6 +141,9 @@ endfunction
 %! norminv (ones (2), ones (3), ones (2))
 %!error<norminv: P, MU, and SIGMA must be of common size or scalars.> ...
 %! norminv (ones (2), ones (2), ones (3))
+%!error<norminv: P, MU, and SIGMA must be double or single.> norminv (int32 (2), 2, 2)
+%!error<norminv: P, MU, and SIGMA must be double or single.> norminv (true, 2, 2)
+%!error<norminv: P, MU, and SIGMA must be double or single.> norminv ('a', 2, 2)
 %!error<norminv: P, MU, and SIGMA must not be complex.> norminv (i, 2, 2)
 %!error<norminv: P, MU, and SIGMA must not be complex.> norminv (2, i, 2)
 %!error<norminv: P, MU, and SIGMA must not be complex.> norminv (2, 2, i)

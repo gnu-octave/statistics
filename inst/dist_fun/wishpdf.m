@@ -31,6 +31,11 @@
 ## Output: @var{y} is the probability density of Wishart(@var{Sigma}, @var{df})
 ## at @var{W}.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{wishrnd, iwishpdf, iwishrnd}
 ## @end deftypefn
 
@@ -38,6 +43,11 @@ function y = wishpdf (W, Sigma, df, log_y=false)
 
   if (nargin < 3)
     print_usage ();
+  endif
+
+  ## Check for W, SIGMA, and DF being double or single
+  if (! (isfloat (W) && isfloat (Sigma) && isfloat (df)))
+    error ("wishpdf: W, SIGMA, and DF must be double or single.");
   endif
 
   p = size (Sigma, 1);
@@ -73,6 +83,9 @@ endfunction
 %!assert_equal (wishpdf ([6 2 5; 2 10 -5; 5 -5 25], [9 5 5; 5 10 -8; 5 -8 22], 5.1), 4.474865e-10, 1E-15);
 
 %% Test input validation
+%!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (int32 (eye (2)), eye (2), 3)
+%!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (true (2), eye (2), 3)
+%!error<wishpdf: W, SIGMA, and DF must be double or single.> wishpdf (['ab'; 'cd'], eye (2), 3)
 %!error wishpdf ()
 %!error wishpdf (1, 2)
 %!error wishpdf (1, 2, 0)

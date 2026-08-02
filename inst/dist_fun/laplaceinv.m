@@ -34,6 +34,11 @@
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{laplaceinv, laplacepdf, laplacernd}
 ## @end deftypefn
 
@@ -51,6 +56,11 @@ function x = laplaceinv (p, mu, beta)
       error (strcat ("laplaceinv: P, MU, and BETA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for P, MU, and BETA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (beta)))
+    error ("laplaceinv: P, MU, and BETA must be double or single.");
   endif
 
   ## Check for X, MU, and BETA being reals
@@ -113,6 +123,9 @@ endfunction
 %! laplaceinv (ones (2), 1, ones (3))
 %!error<laplaceinv: P, MU, and BETA must be of common size or scalars.> ...
 %! laplaceinv (ones (2), ones (3), 1)
+%!error<laplaceinv: P, MU, and BETA must be double or single.> laplaceinv (int32 (2), 2, 3)
+%!error<laplaceinv: P, MU, and BETA must be double or single.> laplaceinv (true, 2, 3)
+%!error<laplaceinv: P, MU, and BETA must be double or single.> laplaceinv ('a', 2, 3)
 %!error<laplaceinv: P, MU, and BETA must not be complex.> laplaceinv (i, 2, 3)
 %!error<laplaceinv: P, MU, and BETA must not be complex.> laplaceinv (1, i, 3)
 %!error<laplaceinv: P, MU, and BETA must not be complex.> laplaceinv (1, 2, i)

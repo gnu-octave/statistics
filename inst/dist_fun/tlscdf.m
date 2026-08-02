@@ -37,6 +37,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{tlsinv, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
@@ -61,6 +66,11 @@ function p = tlscdf (x, mu, sigma, nu, uflag)
     if (err > 0)
       error ("tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, SIGMA, and NU being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma) && isfloat (nu)))
+    error ("tlscdf: X, MU, SIGMA, and NU must be double or single.");
   endif
 
   ## Check for X, MU, SIGMA, and NU being reals
@@ -146,6 +156,9 @@ endfunction
 %! tlscdf (ones (3), 1, ones (2), 1, 'upper')
 %!error<tlscdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlscdf (ones (3), 1, 1, ones (2), 'upper')
+%!error<tlscdf: X, MU, SIGMA, and NU must be double or single.> tlscdf (int32 (2), 2, 1, 1)
+%!error<tlscdf: X, MU, SIGMA, and NU must be double or single.> tlscdf (true, 2, 1, 1)
+%!error<tlscdf: X, MU, SIGMA, and NU must be double or single.> tlscdf ('a', 2, 1, 1)
 %!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (i, 2, 1, 1)
 %!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (2, i, 1, 1)
 %!error<tlscdf: X, MU, SIGMA, and NU must not be complex.> tlscdf (2, 1, i, 1)

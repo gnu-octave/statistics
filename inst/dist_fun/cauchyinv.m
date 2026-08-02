@@ -31,6 +31,11 @@
 ## Further information about the Cauchy distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Cauchy_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{cauchycdf, cauchypdf, cauchyrnd}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function x = cauchyinv (p, x0, gamma)
       error (strcat ("cauchyinv: P, X0, and GAMMA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for P, X0, and GAMMA being double or single
+  if (! (isfloat (p) && isfloat (x0) && isfloat (gamma)))
+    error ("cauchyinv: P, X0, and GAMMA must be double or single.");
   endif
 
   ## Check for P, X0, and GAMMA being reals
@@ -129,6 +139,9 @@ endfunction
 %! cauchyinv (ones (2), ones (3), ones (2))
 %!error<cauchyinv: P, X0, and GAMMA must be of common size or scalars.> ...
 %! cauchyinv (ones (2), ones (2), ones (3))
+%!error<cauchyinv: P, X0, and GAMMA must be double or single.> cauchyinv (int32 (2), 4, 3)
+%!error<cauchyinv: P, X0, and GAMMA must be double or single.> cauchyinv (true, 4, 3)
+%!error<cauchyinv: P, X0, and GAMMA must be double or single.> cauchyinv ('a', 4, 3)
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (i, 4, 3)
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, i, 3)
 %!error<cauchyinv: P, X0, and GAMMA must not be complex.> cauchyinv (1, 4, i)

@@ -43,6 +43,11 @@
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gpcdf, gpinv, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function y = gppdf (x, k, sigma, theta)
     if (err > 0)
       error ("gppdf: X, K, SIGMA, and THETA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, K, SIGMA, and THETA being double or single
+  if (! (isfloat (x) && isfloat (k) && isfloat (sigma) && isfloat (theta)))
+    error ("gppdf: X, K, SIGMA, and THETA must be double or single.");
   endif
 
   ## Check for X, K, SIGMA, and THETA being reals
@@ -197,6 +207,9 @@ endfunction
 %!assert_equal (gppdf ([x, NaN], single (-1), 1, 0), single ([y3, NaN]))
 
 ## Test input validation
+%!error<gppdf: X, K, SIGMA, and THETA must be double or single.> gppdf (int32 (2), 1, 1, 0)
+%!error<gppdf: X, K, SIGMA, and THETA must be double or single.> gppdf (true, 1, 1, 0)
+%!error<gppdf: X, K, SIGMA, and THETA must be double or single.> gppdf ('a', 1, 1, 0)
 %!error<gpcdf: function called with too few input arguments.> gpcdf ()
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1)
 %!error<gpcdf: function called with too few input arguments.> gpcdf (1, 2)

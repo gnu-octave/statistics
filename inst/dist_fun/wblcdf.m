@@ -51,6 +51,11 @@
 ## Further information about the Weibull distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{wblinv, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
@@ -115,6 +120,11 @@ function [varargout] = wblcdf (x, varargin)
     if (err > 0)
       error ("wblcdf: X, LAMBDA, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, LAMBDA, and K being double or single
+  if (! (isfloat (x) && isfloat (lambda) && isfloat (k)))
+    error ("wblcdf: X, LAMBDA, and K must be double or single.");
   endif
 
   ## Check for X, LAMBDA, and K being reals
@@ -231,6 +241,9 @@ endfunction
 %! wblcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<wblcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! wblcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
+%!error<wblcdf: X, LAMBDA, and K must be double or single.> wblcdf (int32 (2), 2, 2)
+%!error<wblcdf: X, LAMBDA, and K must be double or single.> wblcdf (true, 2, 2)
+%!error<wblcdf: X, LAMBDA, and K must be double or single.> wblcdf ('a', 2, 2)
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (i, 2, 2)
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (2, i, 2)
 %!error<wblcdf: X, LAMBDA, and K must not be complex.> wblcdf (2, 2, i)

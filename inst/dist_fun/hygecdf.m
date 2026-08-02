@@ -43,6 +43,13 @@
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
@@ -53,17 +60,37 @@ function p = hygecdf (x, m, k, n, uflag)
     error ("hygecdf: function called with too few input arguments.");
   endif
 
-  ## Check for common size of X, T, k, and N
+  ## Check for common size of X, T, M, and N
   if (! isscalar (x) || ! isscalar (m) || ! isscalar (k) || ! isscalar (n))
     [retval, x, m, k, n] = common_size (x, m, k, n);
     if (retval > 0)
-      error ("hygecdf: X, T, k, and N must be of common size or scalars.");
+      error ("hygecdf: X, T, M, and N must be of common size or scalars.");
     endif
   endif
 
-  ## Check for X, T, k, and N being reals
+  ## Check for X, T, M, and N being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (m) && isnumeric (k) && isnumeric (n)))
+    error ("hygecdf: X, T, M, and N must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (m))
+    m = double (m);
+  endif
+  if (isinteger (k))
+    k = double (k);
+  endif
+  if (isinteger (n))
+    n = double (n);
+  endif
+
+  ## Check for X, T, M, and N being reals
   if (iscomplex (x) || iscomplex (m) || iscomplex (k) || iscomplex (n))
-    error ("hygecdf: X, T, k, and N must not be complex.");
+    error ("hygecdf: X, T, M, and N must not be complex.");
   endif
 
   ## Check for class type
@@ -198,13 +225,16 @@ endfunction
 %!error<hygecdf: function called with too few input arguments.> hygecdf (1,2,3)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,5)
 %!error<hygecdf: invalid argument for upper tail.> hygecdf (1,2,3,4,'uper')
-%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
 %! hygecdf (ones (2), ones (3), 1, 1)
-%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
 %! hygecdf (1, ones (2), ones (3), 1)
-%!error<hygecdf: X, T, k, and N must be of common size or scalars.> ...
+%!error<hygecdf: X, T, M, and N must be of common size or scalars.> ...
 %! hygecdf (1, 1, ones (2), ones (3))
-%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (i, 2, 2, 2)
-%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, i, 2, 2)
-%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, 2, i, 2)
-%!error<hygecdf: X, T, k, and N must not be complex.> hygecdf (2, 2, 2, i)
+%!error<hygecdf: X, T, M, and N must be double, single, or integer.> hygecdf (true, 2, 2, 2)
+%!error<hygecdf: X, T, M, and N must be double, single, or integer.> hygecdf ('a', 2, 2, 2)
+%!assert_equal (class (hygecdf (int32 (2), 2, 2, 2)), 'double')
+%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (i, 2, 2, 2)
+%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, i, 2, 2)
+%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, 2, i, 2)
+%!error<hygecdf: X, T, M, and N must not be complex.> hygecdf (2, 2, 2, i)

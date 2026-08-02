@@ -34,6 +34,11 @@
 ## (Cauchy); otherwise it is computed by numerical inversion of the
 ## characteristic function (the Gil-Pelaez formula).
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{stblpdf, stblinv, stblrnd, makedist}
 ## @end deftypefn
 
@@ -47,6 +52,12 @@ function p = stblcdf (x, alpha, beta, gam, delta)
   if (! isempty (msg))
     error ("stblcdf: %s", msg);
   endif
+  ## Check for X, ALPHA, BETA, GAM, and DELTA being double or single
+  if (! (isfloat (x) && isfloat (alpha) && isfloat (beta) && isfloat (gam)
+         && isfloat (delta)))
+    error ("stblcdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.");
+  endif
+
   if (! isreal (x))
     error ("stblcdf: X must be real.");
   endif
@@ -116,6 +127,9 @@ endfunction
 %!         quadgk (@(x) stblpdf (x, 1.3, -0.4, 1, 0), -1.2, 0.7), 1e-8);
 
 ## Test input validation
+%!error<stblcdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblcdf (int32 (2), 1.5, 0, 1, 0)
+%!error<stblcdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblcdf (true, 1.5, 0, 1, 0)
+%!error<stblcdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblcdf ('a', 1.5, 0, 1, 0)
 %!error <Invalid call to stblcdf> stblcdf (1, 1.5, 0.5, 1)
 %!error <stblcdf: ALPHA must be a scalar in the range \(0, 2\].> ...
 %! stblcdf (1, 2.5, 0, 1, 0)

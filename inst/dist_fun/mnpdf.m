@@ -75,6 +75,13 @@
 ## Distributions}. pages 134-136, Wiley, New York, third edition, 2000.
 ## @end enumerate
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{mnrnd}
 ## @end deftypefn
 
@@ -83,6 +90,20 @@ function y = mnpdf (x, pk)
   # Check arguments
   if (nargin != 2)
     print_usage ();
+  endif
+
+  ## Check for X and PK being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (pk)))
+    error ("mnpdf: X and PK must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (pk))
+    pk = double (pk);
   endif
 
   if (! ismatrix (x) || any (x(:) < 0 | round (x(:) != x(:))))
@@ -134,3 +155,8 @@ endfunction
 %! pk = [0.2, 0.5, 0.3; 0.1, 0.1, 0.8];
 %! y = mnpdf (x, pk);
 %! assert_equal (y, [0.11812; 0.13422], 0.001);
+
+## Test input validation
+%!error<mnpdf: X and PK must be double, single, or integer.> mnpdf ([true, true], [0.3, 0.7])
+%!error<mnpdf: X and PK must be double, single, or integer.> mnpdf ('ab', [0.3, 0.7])
+%!assert_equal (class (mnpdf (int32 ([1, 2]), [0.3, 0.7])), 'double')

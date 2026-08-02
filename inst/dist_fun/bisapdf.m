@@ -32,6 +32,11 @@
 ## Further information about the Birnbaum-Saunders distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{bisacdf, bisapdf, bisarnd, bisafit, bisalike, bisastat}
 ## @end deftypefn
 
@@ -49,6 +54,11 @@ function y = bisapdf (x, beta, gamma)
       error (strcat ("bisapdf: X, BETA, and GAMMA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for X, BETA, and GAMMA being double or single
+  if (! (isfloat (x) && isfloat (beta) && isfloat (gamma)))
+    error ("bisapdf: X, BETA, and GAMMA must be double or single.");
   endif
 
   ## Check for X, BETA and GAMMA being reals
@@ -147,6 +157,9 @@ endfunction
 %! bisapdf (ones (2), ones (3), ones (2))
 %!error<bisapdf: X, BETA, and GAMMA must be of common size or scalars.> ...
 %! bisapdf (ones (2), ones (2), ones (3))
+%!error<bisapdf: X, BETA, and GAMMA must be double or single.> bisapdf (int32 (2), 4, 3)
+%!error<bisapdf: X, BETA, and GAMMA must be double or single.> bisapdf (true, 4, 3)
+%!error<bisapdf: X, BETA, and GAMMA must be double or single.> bisapdf ('a', 4, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (i, 4, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, i, 3)
 %!error<bisapdf: X, BETA, and GAMMA must not be complex.> bisapdf (1, 4, i)

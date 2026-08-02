@@ -35,6 +35,11 @@
 ## covariance matrix, which must be positive definite.
 ## @end itemize
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{mvncdf}
 ## @end deftypefn
 
@@ -43,6 +48,11 @@
 
 function p = bvncdf (x, mu, sigma)
   ## Check input arguments and add defaults
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("bvncdf: X, MU, and SIGMA must be double or single.");
+  endif
+
   if (size (x, 2) != 2)
     error (strcat ("bvncdf: X must be an Nx2 matrix with each variable", ...
                    " as a column vector."));
@@ -224,6 +234,9 @@ endfunction
 %! assert_equal (bvncdf ([1, -Inf], mu, sigma), 0);
 %! assert_equal (bvncdf ([0.5, Inf], mu, sigma), normcdf (0.5), eps);
 %! assert_equal (bvncdf ([Inf, 0.5], mu, sigma), normcdf (0.5), eps);
+%!error<bvncdf: X, MU, and SIGMA must be double or single.> bvncdf (int32 ([0, 0]), [0, 0], eye (2))
+%!error<bvncdf: X, MU, and SIGMA must be double or single.> bvncdf ([true, true], [0, 0], eye (2))
+%!error<bvncdf: X, MU, and SIGMA must be double or single.> bvncdf ('ab', [0, 0], eye (2))
 %!error bvncdf (randn (25,3), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], [1, 1; 1, 1]);
 %!error bvncdf (randn (25,2), [], ones (3, 2));

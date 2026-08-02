@@ -35,6 +35,11 @@
 ## Further information about the normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{norminv, norminv, normrnd, normfit, normlike, normstat}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function y = normpdf (x, mu, sigma)
     if (retval > 0)
       error ("normpdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("normpdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -135,6 +145,9 @@ endfunction
 %! normpdf (ones (2), ones (3), ones (2))
 %!error<normpdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! normpdf (ones (2), ones (2), ones (3))
+%!error<normpdf: X, MU, and SIGMA must be double or single.> normpdf (int32 (2), 2, 2)
+%!error<normpdf: X, MU, and SIGMA must be double or single.> normpdf (true, 2, 2)
+%!error<normpdf: X, MU, and SIGMA must be double or single.> normpdf ('a', 2, 2)
 %!error<normpdf: X, MU, and SIGMA must not be complex.> normpdf (i, 2, 2)
 %!error<normpdf: X, MU, and SIGMA must not be complex.> normpdf (2, i, 2)
 %!error<normpdf: X, MU, and SIGMA must not be complex.> normpdf (2, 2, i)

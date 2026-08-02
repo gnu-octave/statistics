@@ -36,6 +36,11 @@
 ## Further information about the von Mises distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Von_Mises_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{vmcdf, vmpdf, vmrnd}
 ## @end deftypefn
 
@@ -50,6 +55,11 @@ function x = vminv (p, mu, k)
   [err, p, mu, k] = common_size (p, mu, k);
   if (err > 0)
     error ("vminv: P, MU, and K must be of common size or scalars.");
+  endif
+
+  ## Check for P, MU, and K being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (k)))
+    error ("vminv: P, MU, and K must be double or single.");
   endif
 
   ## Check for P, MU, and K being reals
@@ -158,6 +168,9 @@ endfunction
 %! vminv (ones (2), ones (3), ones (2))
 %!error<vminv: P, MU, and K must be of common size or scalars.> ...
 %! vminv (ones (2), ones (2), ones (3))
+%!error<vminv: P, MU, and K must be double or single.> vminv (int32 (2), 2, 2)
+%!error<vminv: P, MU, and K must be double or single.> vminv (true, 2, 2)
+%!error<vminv: P, MU, and K must be double or single.> vminv ('a', 2, 2)
 %!error<vminv: P, MU, and K must not be complex.> vminv (i, 2, 2)
 %!error<vminv: P, MU, and K must not be complex.> vminv (2, i, 2)
 %!error<vminv: P, MU, and K must not be complex.> vminv (2, 2, i)

@@ -32,6 +32,11 @@
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{binocdf, binopdf, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function x = binoinv (p, n, ps)
     if (retval > 0)
       error ("binoinv: P, N, and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, N, and PS being double or single
+  if (! (isfloat (p) && isfloat (n) && isfloat (ps)))
+    error ("binoinv: P, N, and PS must be double or single.");
   endif
 
   ## Check for P, N, and PS being reals
@@ -223,6 +233,9 @@ endfunction
 %! binoinv (ones (2), ones (3), ones (2))
 %!error<binoinv: P, N, and PS must be of common size or scalars.> ...
 %! binoinv (ones (2), ones (2), ones (3))
+%!error<binoinv: P, N, and PS must be double or single.> binoinv (int32 (2), 2, 2)
+%!error<binoinv: P, N, and PS must be double or single.> binoinv (true, 2, 2)
+%!error<binoinv: P, N, and PS must be double or single.> binoinv ('a', 2, 2)
 %!error<binoinv: P, N, and PS must not be complex.> binoinv (i, 2, 2)
 %!error<binoinv: P, N, and PS must not be complex.> binoinv (2, i, 2)
 %!error<binoinv: P, N, and PS must not be complex.> binoinv (2, 2, i)

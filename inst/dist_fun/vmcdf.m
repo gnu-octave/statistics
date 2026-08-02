@@ -40,6 +40,11 @@
 ## Further information about the von Mises distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Von_Mises_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{vminv, vmpdf, vmrnd}
 ## @end deftypefn
 
@@ -67,6 +72,11 @@ function p = vmcdf (x, mu, k, uflag)
     if (retval > 0)
       error ("vmcdf: X, MU, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and K being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (k)))
+    error ("vmcdf: X, MU, and K must be double or single.");
   endif
 
   ## Check for X, MU, and K being reals
@@ -142,6 +152,9 @@ endfunction
 %! vmcdf (ones (2), ones (3), ones (2))
 %!error<vmcdf: X, MU, and K must be of common size or scalars.> ...
 %! vmcdf (ones (2), ones (2), ones (3))
+%!error<vmcdf: X, MU, and K must be double or single.> vmcdf (int32 (2), 2, 2)
+%!error<vmcdf: X, MU, and K must be double or single.> vmcdf (true, 2, 2)
+%!error<vmcdf: X, MU, and K must be double or single.> vmcdf ('a', 2, 2)
 %!error<vmcdf: X, MU, and K must not be complex.> vmcdf (i, 2, 2)
 %!error<vmcdf: X, MU, and K must not be complex.> vmcdf (2, i, 2)
 %!error<vmcdf: X, MU, and K must not be complex.> vmcdf (2, 2, i)

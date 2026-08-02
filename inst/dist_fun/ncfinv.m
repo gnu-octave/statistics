@@ -31,6 +31,11 @@
 ## Further information about the noncentral @math{F}-distribution can be found
 ## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{ncfcdf, ncfpdf, ncfrnd, ncfstat, finv}
 ## @end deftypefn
 
@@ -45,6 +50,11 @@ function x = ncfinv (p, df1, df2, lambda)
   [err, p, df1, df2, lambda] = common_size (p, df1, df2, lambda);
   if (err > 0)
     error ("ncfinv: P, DF1, DF2, and LAMBDA must be of common size or scalars.");
+  endif
+
+  ## Check for P, DF1, DF2, and LAMBDA being double or single
+  if (! (isfloat (p) && isfloat (df1) && isfloat (df2) && isfloat (lambda)))
+    error ("ncfinv: P, DF1, DF2, and LAMBDA must be double or single.");
   endif
 
   ## Check for P, DF1, DF2, and LAMBDA being reals
@@ -214,6 +224,9 @@ endfunction
 %! ncfinv (ones (2), ones (2), ones (3), ones (2))
 %!error<ncfinv: P, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
 %! ncfinv (ones (2), ones (2), ones (2), ones (3))
+%!error<ncfinv: P, DF1, DF2, and LAMBDA must be double or single.> ncfinv (int32 (2), 2, 2, 2)
+%!error<ncfinv: P, DF1, DF2, and LAMBDA must be double or single.> ncfinv (true, 2, 2, 2)
+%!error<ncfinv: P, DF1, DF2, and LAMBDA must be double or single.> ncfinv ('a', 2, 2, 2)
 %!error<ncfinv: P, DF1, DF2, and LAMBDA must not be complex.> ncfinv (i, 2, 2, 2)
 %!error<ncfinv: P, DF1, DF2, and LAMBDA must not be complex.> ncfinv (2, i, 2, 2)
 %!error<ncfinv: P, DF1, DF2, and LAMBDA must not be complex.> ncfinv (2, 2, i, 2)

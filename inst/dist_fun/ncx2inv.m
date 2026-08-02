@@ -33,6 +33,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{ncx2cdf, ncx2pdf, ncx2rnd, ncx2stat, chi2inv}
 ## @end deftypefn
 
@@ -47,6 +52,11 @@ function x = ncx2inv (p, df, lambda)
   [err, p, df, lambda] = common_size (p, df, lambda);
   if (err > 0)
     error ("ncx2inv: P, DF, and LAMBDA must be of common size or scalars.");
+  endif
+
+  ## Check for P, DF, and LAMBDA being double or single
+  if (! (isfloat (p) && isfloat (df) && isfloat (lambda)))
+    error ("ncx2inv: P, DF, and LAMBDA must be double or single.");
   endif
 
   ## Check for P, DF, and LAMBDA being reals
@@ -206,6 +216,9 @@ endfunction
 %! ncx2inv (ones (2), ones (3), ones (2))
 %!error<ncx2inv: P, DF, and LAMBDA must be of common size or scalars.> ...
 %! ncx2inv (ones (2), ones (2), ones (3))
+%!error<ncx2inv: P, DF, and LAMBDA must be double or single.> ncx2inv (int32 (2), 2, 2)
+%!error<ncx2inv: P, DF, and LAMBDA must be double or single.> ncx2inv (true, 2, 2)
+%!error<ncx2inv: P, DF, and LAMBDA must be double or single.> ncx2inv ('a', 2, 2)
 %!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (i, 2, 2)
 %!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (2, i, 2)
 %!error<ncx2inv: P, DF, and LAMBDA must not be complex.> ncx2inv (2, 2, i)

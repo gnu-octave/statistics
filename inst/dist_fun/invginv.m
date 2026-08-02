@@ -32,6 +32,11 @@
 ## Further information about the inverse Gaussian distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{invgcdf, invgpdf, invgrnd, invgfit, invglike, invgstat}
 ## @end deftypefn
 
@@ -51,6 +56,11 @@ function x = invginv (p, mu, lambda)
     endif
   else
     vec = false;
+  endif
+
+  ## Check for P, MU, and LAMBDA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (lambda)))
+    error ("invginv: P, MU, and LAMBDA must be double or single.");
   endif
 
   ## Check for X, MU, and LAMBDA being reals
@@ -192,6 +202,9 @@ endfunction
 %! invginv (ones (2), 1, ones (3))
 %!error<invginv: P, MU, and LAMBDA must be of common size or scalars.> ...
 %! invginv (ones (2), ones (3), 1)
+%!error<invginv: P, MU, and LAMBDA must be double or single.> invginv (int32 (2), 2, 3)
+%!error<invginv: P, MU, and LAMBDA must be double or single.> invginv (true, 2, 3)
+%!error<invginv: P, MU, and LAMBDA must be double or single.> invginv ('a', 2, 3)
 %!error<invginv: P, MU, and LAMBDA must not be complex.> invginv (i, 2, 3)
 %!error<invginv: P, MU, and LAMBDA must not be complex.> invginv (1, i, 3)
 %!error<invginv: P, MU, and LAMBDA must not be complex.> invginv (1, 2, i)

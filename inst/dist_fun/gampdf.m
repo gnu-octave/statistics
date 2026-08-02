@@ -38,6 +38,11 @@
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gamcdf, gaminv, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
@@ -54,6 +59,11 @@ function y = gampdf (x, a, b)
     if (retval > 0)
       error ("gampdf: X, A, and B must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, A, and B being double or single
+  if (! (isfloat (x) && isfloat (a) && isfloat (b)))
+    error ("gampdf: X, A, and B must be double or single.");
   endif
 
   ## Check for X, A, and B being reals
@@ -146,6 +156,9 @@ endfunction
 %! gampdf (ones (2), ones (3), ones (2))
 %!error<gampdf: X, A, and B must be of common size or scalars.> ...
 %! gampdf (ones (2), ones (2), ones (3))
+%!error<gampdf: X, A, and B must be double or single.> gampdf (int32 (2), 2, 2)
+%!error<gampdf: X, A, and B must be double or single.> gampdf (true, 2, 2)
+%!error<gampdf: X, A, and B must be double or single.> gampdf ('a', 2, 2)
 %!error<gampdf: X, A, and B must not be complex.> gampdf (i, 2, 2)
 %!error<gampdf: X, A, and B must not be complex.> gampdf (2, i, 2)
 %!error<gampdf: X, A, and B must not be complex.> gampdf (2, 2, i)

@@ -44,6 +44,13 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{unidinv, unidpdf, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
@@ -69,6 +76,20 @@ function p = unidcdf (x, N, uflag)
     if (retval > 0)
       error ("unidcdf: X and N must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and N being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (N)))
+    error ("unidcdf: X and N must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (N))
+    N = double (N);
   endif
 
   ## Check for X and N being reals
@@ -148,5 +169,8 @@ endfunction
 %! unidcdf (ones (3), ones (2))
 %!error<unidcdf: X and N must be of common size or scalars.> ...
 %! unidcdf (ones (2), ones (3))
+%!error<unidcdf: X and N must be double, single, or integer.> unidcdf (true, 2)
+%!error<unidcdf: X and N must be double, single, or integer.> unidcdf ('a', 2)
+%!assert_equal (class (unidcdf (int32 (2), 2)), 'double')
 %!error<unidcdf: X and N must not be complex.> unidcdf (i, 2)
 %!error<unidcdf: X and N must not be complex.> unidcdf (2, i)

@@ -37,6 +37,13 @@
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{binoinv, binopdf, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
@@ -64,6 +71,23 @@ function p = binocdf (x, n, ps, uflag)
     if (retval > 0)
       error ("binocdf: X, N, and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, N, and PS being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (n) && isnumeric (ps)))
+    error ("binocdf: X, N, and PS must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (n))
+    n = double (n);
+  endif
+  if (isinteger (ps))
+    ps = double (ps);
   endif
 
   ## Check for X, N, and PS being reals
@@ -154,6 +178,9 @@ endfunction
 %! binocdf (ones (2), ones (3), ones (2))
 %!error<binocdf: X, N, and PS must be of common size or scalars.> ...
 %! binocdf (ones (2), ones (2), ones (3))
+%!error<binocdf: X, N, and PS must be double, single, or integer.> binocdf (true, 2, 2)
+%!error<binocdf: X, N, and PS must be double, single, or integer.> binocdf ('a', 2, 2)
+%!assert_equal (class (binocdf (int32 (2), 2, 2)), 'double')
 %!error<binocdf: X, N, and PS must not be complex.> binocdf (i, 2, 2)
 %!error<binocdf: X, N, and PS must not be complex.> binocdf (2, i, 2)
 %!error<binocdf: X, N, and PS must not be complex.> binocdf (2, 2, i)

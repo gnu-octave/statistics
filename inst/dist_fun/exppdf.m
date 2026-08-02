@@ -39,6 +39,11 @@
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{expcdf, expinv, exprnd, expfit, explike, expstat}
 ## @end deftypefn
 
@@ -60,6 +65,11 @@ function y = exppdf (x, mu)
     if (retval > 0)
       error ("exppdf: X and MU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and MU being double or single
+  if (! (isfloat (x) && isfloat (mu)))
+    error ("exppdf: X and MU must be double or single.");
   endif
 
   ## Check for X and MU being reals
@@ -119,5 +129,8 @@ endfunction
 %! exppdf (ones (3), ones (2))
 %!error<exppdf: X and MU must be of common size or scalars.> ...
 %! exppdf (ones (2), ones (3))
+%!error<exppdf: X and MU must be double or single.> exppdf (int32 (2), 2)
+%!error<exppdf: X and MU must be double or single.> exppdf (true, 2)
+%!error<exppdf: X and MU must be double or single.> exppdf ('a', 2)
 %!error<exppdf: X and MU must not be complex.> exppdf (i, 2)
 %!error<exppdf: X and MU must not be complex.> exppdf (2, i)

@@ -46,6 +46,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gevcdf, gevpdf, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
@@ -60,6 +65,11 @@ function x = gevinv (p, k, sigma, mu)
   [retval, p, k, sigma, mu] = common_size (p, k, sigma, mu);
   if (retval > 0)
     error ("gevinv: P, K, SIGMA, and MU must be of common size or scalars.");
+  endif
+
+  ## Check for P, K, SIGMA, and MU being double or single
+  if (! (isfloat (p) && isfloat (k) && isfloat (sigma) && isfloat (mu)))
+    error ("gevinv: P, K, SIGMA, and MU must be double or single.");
   endif
 
   ## Check for P, K, SIGMA, and MU being reals
@@ -145,6 +155,9 @@ endfunction
 %! gevinv (ones (2), ones (2), ones (3), ones (2))
 %!error<gevinv: P, K, SIGMA, and MU must be of common size or scalars.> ...
 %! gevinv (ones (2), ones (2), ones (2), ones (3))
+%!error<gevinv: P, K, SIGMA, and MU must be double or single.> gevinv (int32 (2), 2, 3, 4)
+%!error<gevinv: P, K, SIGMA, and MU must be double or single.> gevinv (true, 2, 3, 4)
+%!error<gevinv: P, K, SIGMA, and MU must be double or single.> gevinv ('a', 2, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (i, 2, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, i, 3, 4)
 %!error<gevinv: P, K, SIGMA, and MU must not be complex.> gevinv (1, 2, i, 4)

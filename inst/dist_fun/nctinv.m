@@ -31,6 +31,11 @@
 ## Further information about the noncentral @math{t}-distribution can be found
 ## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nctcdf, nctpdf, nctrnd, nctstat, tinv}
 ## @end deftypefn
 
@@ -45,6 +50,11 @@ function x = nctinv (p, df, mu)
   [err, p, df, mu] = common_size (p, df, mu);
   if (err > 0)
     error ("nctinv: P, DF, and MU must be of common size or scalars.");
+  endif
+
+  ## Check for P, DF, and MU being double or single
+  if (! (isfloat (p) && isfloat (df) && isfloat (mu)))
+    error ("nctinv: P, DF, and MU must be double or single.");
   endif
 
   ## Check for P, DF, and MU being reals
@@ -190,6 +200,9 @@ endfunction
 %! nctinv (ones (2), ones (3), ones (2))
 %!error<nctinv: P, DF, and MU must be of common size or scalars.> ...
 %! nctinv (ones (2), ones (2), ones (3))
+%!error<nctinv: P, DF, and MU must be double or single.> nctinv (int32 (2), 2, 2)
+%!error<nctinv: P, DF, and MU must be double or single.> nctinv (true, 2, 2)
+%!error<nctinv: P, DF, and MU must be double or single.> nctinv ('a', 2, 2)
 %!error<nctinv: P, DF, and MU must not be complex.> nctinv (i, 2, 2)
 %!error<nctinv: P, DF, and MU must not be complex.> nctinv (2, i, 2)
 %!error<nctinv: P, DF, and MU must not be complex.> nctinv (2, 2, i)

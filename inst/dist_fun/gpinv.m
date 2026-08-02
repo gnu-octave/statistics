@@ -43,6 +43,11 @@
 ## Further information about the generalized Pareto distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_Pareto_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gpcdf, gppdf, gprnd, gpfit, gplike, gpstat}
 ## @end deftypefn
 
@@ -57,6 +62,11 @@ function x = gpinv (p, k, sigma, theta)
   [retval, p, k, sigma, theta] = common_size (p, k, sigma, theta);
   if (retval > 0)
     error ("gpinv: P, K, SIGMA, and THETA must be of common size or scalars.");
+  endif
+
+  ## Check for P, K, SIGMA, and THETA being double or single
+  if (! (isfloat (p) && isfloat (k) && isfloat (sigma) && isfloat (theta)))
+    error ("gpinv: P, K, SIGMA, and THETA must be double or single.");
   endif
 
   ## Check for P, K, SIGMA, and THETA being reals
@@ -195,6 +205,9 @@ endfunction
 %! gpinv (ones (2), ones (2), ones (3), ones (2))
 %!error<gpinv: P, K, SIGMA, and THETA must be of common size or scalars.> ...
 %! gpinv (ones (2), ones (2), ones (2), ones (3))
+%!error<gpinv: P, K, SIGMA, and THETA must be double or single.> gpinv (int32 (2), 2, 3, 4)
+%!error<gpinv: P, K, SIGMA, and THETA must be double or single.> gpinv (true, 2, 3, 4)
+%!error<gpinv: P, K, SIGMA, and THETA must be double or single.> gpinv ('a', 2, 3, 4)
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (i, 2, 3, 4)
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (1, i, 3, 4)
 %!error<gpinv: P, K, SIGMA, and THETA must not be complex.> gpinv (1, 2, i, 4)

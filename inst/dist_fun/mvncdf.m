@@ -76,6 +76,11 @@
 ## related error after the integrand has converged successfully.
 ## @end multitable
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{bvncdf, mvnpdf, mvnrnd}
 ## @end deftypefn
 
@@ -83,6 +88,13 @@ function [p, err] = mvncdf (varargin)
 
   ## Check for valid number on input and output arguments
   narginchk (1,5);
+
+  ## Check for X, MU, and SIGMA being double or single.  The trailing
+  ## 'options' struct, if present, is parsed separately below.
+  numargs = varargin(! cellfun (@isstruct, varargin));
+  if (! all (cellfun (@isfloat, numargs)))
+    error ("mvncdf: X, MU, and SIGMA must be double or single.");
+  endif
 
   ## Check for 'options' structure and parse parameters or add defaults
   if (isstruct (varargin{end}))
@@ -490,6 +502,9 @@ endfunction
 %! a = [-inf 0];
 %! p = mvncdf (a, x, mu, sigma);
 %! assert_equal (p, 0.482672935215631, 1e-15);
+%!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf (int32 ([0, 0]))
+%!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ([true, true])
+%!error<mvncdf: X, MU, and SIGMA must be double or single.> mvncdf ('ab')
 %!error p = mvncdf (randn (25,26), [], eye (26));
 %!error p = mvncdf (randn (25,8), [], eye (9));
 %!error p = mvncdf (randn (25,4), randn (25,5), [], eye (4));

@@ -52,6 +52,11 @@
 ## Further information about the negative binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Negative_binomial_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat}
 ## @end deftypefn
 
@@ -68,6 +73,11 @@ function x = nbininv (p, r, ps)
     if (retval > 0)
       error ("nbininv: P, R, and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, R, and PS being double or single
+  if (! (isfloat (p) && isfloat (r) && isfloat (ps)))
+    error ("nbininv: P, R, and PS must be double or single.");
   endif
 
   ## Check for P, R, and PS being reals
@@ -211,6 +221,9 @@ endfunction
 %! nbininv (ones (2), ones (3), ones (2))
 %!error<nbininv: P, R, and PS must be of common size or scalars.> ...
 %! nbininv (ones (2), ones (2), ones (3))
+%!error<nbininv: P, R, and PS must be double or single.> nbininv (int32 (2), 2, 2)
+%!error<nbininv: P, R, and PS must be double or single.> nbininv (true, 2, 2)
+%!error<nbininv: P, R, and PS must be double or single.> nbininv ('a', 2, 2)
 %!error<nbininv: P, R, and PS must not be complex.> nbininv (i, 2, 2)
 %!error<nbininv: P, R, and PS must not be complex.> nbininv (2, i, 2)
 %!error<nbininv: P, R, and PS must not be complex.> nbininv (2, 2, i)

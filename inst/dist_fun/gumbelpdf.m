@@ -39,6 +39,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gumbelcdf, gumbelinv, gumbelrnd, gumbelfit, gumbellike, gumbelstat,
 ## evpdf}
 ## @end deftypefn
@@ -64,6 +69,11 @@ function y = gumbelpdf (x, mu, beta)
     if (err > 0)
       error ("gumbelpdf: X, MU, and BETA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and BETA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (beta)))
+    error ("gumbelpdf: X, MU, and BETA must be double or single.");
   endif
 
   ## Check for X, MU, and BETA being reals
@@ -112,6 +122,9 @@ endfunction
 %!error<gumbelpdf: too few input arguments.> gumbelpdf ()
 %!error<gumbelpdf: X, MU, and BETA must be of common size or scalars.> ...
 %! gumbelpdf (ones (3), ones (2), ones (2))
+%!error<gumbelpdf: X, MU, and BETA must be double or single.> gumbelpdf (int32 (2), 2, 2)
+%!error<gumbelpdf: X, MU, and BETA must be double or single.> gumbelpdf (true, 2, 2)
+%!error<gumbelpdf: X, MU, and BETA must be double or single.> gumbelpdf ('a', 2, 2)
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (i, 2, 2)
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (2, i, 2)
 %!error<gumbelpdf: X, MU, and BETA must not be complex.> gumbelpdf (2, 2, i)

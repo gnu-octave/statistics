@@ -50,6 +50,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gevinv, gevpdf, gevrnd, gevfit, gevlike, gevstat}
 ## @end deftypefn
 
@@ -77,6 +82,11 @@ function p = gevcdf (x, k, sigma, mu, uflag)
     if (err > 0)
       error ("gevcdf: X, K, SIGMA, and MU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, K, SIGMA, and MU being double or single
+  if (! (isfloat (x) && isfloat (k) && isfloat (sigma) && isfloat (mu)))
+    error ("gevcdf: X, K, SIGMA, and MU must be double or single.");
   endif
 
   ## Check for X, K, SIGMA, and MU being reals
@@ -193,6 +203,9 @@ endfunction
 %! gevcdf (ones (2), ones (2), ones (3), ones (2))
 %!error<gevcdf: X, K, SIGMA, and MU must be of common size or scalars.> ...
 %! gevcdf (ones (2), ones (2), ones (2), ones (3))
+%!error<gevcdf: X, K, SIGMA, and MU must be double or single.> gevcdf (int32 (2), 2, 3, 4)
+%!error<gevcdf: X, K, SIGMA, and MU must be double or single.> gevcdf (true, 2, 3, 4)
+%!error<gevcdf: X, K, SIGMA, and MU must be double or single.> gevcdf ('a', 2, 3, 4)
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (i, 2, 3, 4)
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, i, 3, 4)
 %!error<gevcdf: X, K, SIGMA, and MU must not be complex.> gevcdf (1, 2, i, 4)

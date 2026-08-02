@@ -56,6 +56,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{evinv, evpdf, evrnd, evfit, evlike, evstat, gumbelcdf}
 ## @end deftypefn
 
@@ -117,6 +122,11 @@ function [varargout] = evcdf (x, varargin)
     if (err > 0)
       error ("evcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("evcdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -235,6 +245,9 @@ endfunction
 %! evcdf (1, 2, 3, [1, 0; 0, 1], 1.22)
 %!error<evcdf: invalid value for alpha.> [p, plo, pup] = ...
 %! evcdf (1, 2, 3, [1, 0; 0, 1], 'alpha', 'upper')
+%!error<evcdf: X, MU, and SIGMA must be double or single.> evcdf (int32 (2), 2, 2)
+%!error<evcdf: X, MU, and SIGMA must be double or single.> evcdf (true, 2, 2)
+%!error<evcdf: X, MU, and SIGMA must be double or single.> evcdf ('a', 2, 2)
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (i, 2, 2)
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (2, i, 2)
 %!error<evcdf: X, MU, and SIGMA must not be complex.> evcdf (2, 2, i)

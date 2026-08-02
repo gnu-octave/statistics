@@ -67,6 +67,11 @@
 ## @url{http://users.isy.liu.se/en/rt/roth/student.pdf}
 ## @end enumerate
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{mvtcdf, mvtcdfqmc, mvtrnd}
 ## @end deftypefn
 
@@ -74,6 +79,11 @@ function y = mvtpdf (x, rho, df)
 
   if (nargin != 3)
     print_usage ();
+  endif
+
+  ## Check for X, RHO, and DF being double or single
+  if (! (isfloat (x) && isfloat (rho) && isfloat (df)))
+    error ("mvtpdf: X, RHO, and DF must be double or single.");
   endif
 
   # Dimensions
@@ -134,3 +144,8 @@ endfunction
 %!assert_equal (mvtpdf ([1 0.4 0; 1.2 0.5 0.5; 1.4 0.6 1], ...
 %! [1 0.5 0.3; 0.5 1 0.6; 0.3 0.6 1], [5 6 7]), ...
 %! [0.04713313 0.03722421 0.02069011]', 1E-7)
+
+## Test input validation
+%!error<mvtpdf: X, RHO, and DF must be double or single.> mvtpdf (int32 ([0, 0]), eye (2), 5)
+%!error<mvtpdf: X, RHO, and DF must be double or single.> mvtpdf ([true, true], eye (2), 5)
+%!error<mvtpdf: X, RHO, and DF must be double or single.> mvtpdf ('ab', eye (2), 5)

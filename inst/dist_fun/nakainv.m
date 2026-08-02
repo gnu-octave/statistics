@@ -34,6 +34,11 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat}
 ## @end deftypefn
 
@@ -50,6 +55,11 @@ function x = nakainv (p, mu, omega)
     if (retval > 0)
       error ("nakainv: P, MU, and OMEGA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, and OMEGA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (omega)))
+    error ("nakainv: P, MU, and OMEGA must be double or single.");
   endif
 
   ## Check for P, MU, and OMEGA being reals
@@ -137,6 +147,9 @@ endfunction
 %! nakainv (ones (2), ones (3), ones (2))
 %!error<nakainv: P, MU, and OMEGA must be of common size or scalars.> ...
 %! nakainv (ones (2), ones (2), ones (3))
+%!error<nakainv: P, MU, and OMEGA must be double or single.> nakainv (int32 (2), 4, 3)
+%!error<nakainv: P, MU, and OMEGA must be double or single.> nakainv (true, 4, 3)
+%!error<nakainv: P, MU, and OMEGA must be double or single.> nakainv ('a', 4, 3)
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (i, 4, 3)
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, i, 3)
 %!error<nakainv: P, MU, and OMEGA must not be complex.> nakainv (1, 4, i)

@@ -37,6 +37,13 @@
 ## Further information about the binomial distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Binomial_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{binocdf, binoinv, binornd, binofit, binolike, binostat, binotest}
 ## @end deftypefn
 
@@ -53,6 +60,23 @@ function y = binopdf (x, n, ps)
     if (retval > 0)
       error ("binopdf: X, N, and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, N, and PS being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (n) && isnumeric (ps)))
+    error ("binopdf: X, N, and PS must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (n))
+    n = double (n);
+  endif
+  if (isinteger (ps))
+    ps = double (ps);
   endif
 
   ## Check for X, N, and PS being reals
@@ -294,6 +318,9 @@ endfunction
 %! binopdf (ones (2), ones (3), ones (2))
 %!error<binopdf: X, N, and PS must be of common size or scalars.> ...
 %! binopdf (ones (2), ones (2), ones (3))
+%!error<binopdf: X, N, and PS must be double, single, or integer.> binopdf (true, 2, 2)
+%!error<binopdf: X, N, and PS must be double, single, or integer.> binopdf ('a', 2, 2)
+%!assert_equal (class (binopdf (int32 (2), 2, 2)), 'double')
 %!error<binopdf: X, N, and PS must not be complex.> binopdf (i, 2, 2)
 %!error<binopdf: X, N, and PS must not be complex.> binopdf (2, i, 2)
 %!error<binopdf: X, N, and PS must not be complex.> binopdf (2, 2, i)

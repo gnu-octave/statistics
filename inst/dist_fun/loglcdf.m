@@ -49,6 +49,11 @@
 ## @item @qcode{@var{sigma} = 1 / @var{a}}
 ## @end itemize
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{loglinv, loglpdf, loglrnd, loglfit, logllike, loglstat}
 ## @end deftypefn
 
@@ -76,6 +81,11 @@ function p = loglcdf (x, mu, sigma, uflag)
     if (retval > 0)
       error ("loglcdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("loglcdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -155,6 +165,9 @@ endfunction
 %! loglcdf (ones (2), ones (3), 1)
 %!error<loglcdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! loglcdf (ones (2), ones (3), 1, 'upper')
+%!error<loglcdf: X, MU, and SIGMA must be double or single.> loglcdf (int32 (2), 2, 3)
+%!error<loglcdf: X, MU, and SIGMA must be double or single.> loglcdf (true, 2, 3)
+%!error<loglcdf: X, MU, and SIGMA must be double or single.> loglcdf ('a', 2, 3)
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (i, 2, 3)
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (i, 2, 3, 'upper')
 %!error<loglcdf: X, MU, and SIGMA must not be complex.> loglcdf (1, i, 3)

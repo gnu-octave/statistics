@@ -50,6 +50,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gumbelcdf, gumbelpdf, gumbelrnd, gumbelfit, gumbellike, gumbelstat,
 ## evinv}
 ## @end deftypefn
@@ -94,6 +99,11 @@ function [x, xlo, xup] = gumbelinv (p, mu, beta, pcov, alpha)
     if (err > 0)
       error ("gumbelinv: P, MU, and BETA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, and BETA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (beta)))
+    error ("gumbelinv: P, MU, and BETA must be double or single.");
   endif
 
   ## Check for P, MU, and BETA being reals
@@ -192,6 +202,9 @@ endfunction
 %! gumbelinv (1, 2, 3, [1, 0; 0, 1], 0)
 %!error<gumbelinv: invalid value for alpha.> [p, plo, pup] = ...
 %! gumbelinv (1, 2, 3, [1, 0; 0, 1], 1.22)
+%!error<gumbelinv: P, MU, and BETA must be double or single.> gumbelinv (int32 (2), 2, 2)
+%!error<gumbelinv: P, MU, and BETA must be double or single.> gumbelinv (true, 2, 2)
+%!error<gumbelinv: P, MU, and BETA must be double or single.> gumbelinv ('a', 2, 2)
 %!error<gumbelinv: P, MU, and BETA must not be complex.> gumbelinv (i, 2, 2)
 %!error<gumbelinv: P, MU, and BETA must not be complex.> gumbelinv (2, i, 2)
 %!error<gumbelinv: P, MU, and BETA must not be complex.> gumbelinv (2, 2, i)

@@ -31,6 +31,11 @@
 ## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{fcdf, fpdf, frnd, fstat}
 ## @end deftypefn
 
@@ -47,6 +52,11 @@ function x = finv (p, df1, df2)
     if (retval > 0)
       error ("finv: P, DF1, and DF2 must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, DF1, and DF2 being double or single
+  if (! (isfloat (p) && isfloat (df1) && isfloat (df2)))
+    error ("finv: P, DF1, and DF2 must be double or single.");
   endif
 
   ## Check for P, DF1, and DF2 being reals
@@ -168,6 +178,9 @@ endfunction
 %! finv (ones (2), ones (3), ones (2))
 %!error<finv: P, DF1, and DF2 must be of common size or scalars.> ...
 %! finv (ones (2), ones (2), ones (3))
+%!error<finv: P, DF1, and DF2 must be double or single.> finv (int32 (2), 2, 2)
+%!error<finv: P, DF1, and DF2 must be double or single.> finv (true, 2, 2)
+%!error<finv: P, DF1, and DF2 must be double or single.> finv ('a', 2, 2)
 %!error<finv: P, DF1, and DF2 must not be complex.> finv (i, 2, 2)
 %!error<finv: P, DF1, and DF2 must not be complex.> finv (2, i, 2)
 %!error<finv: P, DF1, and DF2 must not be complex.> finv (2, 2, i)

@@ -39,6 +39,11 @@
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{hygeinv, hygepdf, hygernd, hygestat}
 ## @end deftypefn
 
@@ -55,6 +60,11 @@ function x = hygeinv (p, m, k, n)
     if (retval > 0)
       error ("hygeinv: P, T, M, and N must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, T, M, and N being double or single
+  if (! (isfloat (p) && isfloat (m) && isfloat (k) && isfloat (n)))
+    error ("hygeinv: P, T, M, and N must be double or single.");
   endif
 
   ## Check for P, T, M, and N being reals
@@ -156,6 +166,9 @@ endfunction
 %! hygeinv (1, ones (2), ones (3), 1)
 %!error<hygeinv: P, T, M, and N must be of common size or scalars.> ...
 %! hygeinv (1, 1, ones (2), ones (3))
+%!error<hygeinv: P, T, M, and N must be double or single.> hygeinv (int32 (2), 2, 2, 2)
+%!error<hygeinv: P, T, M, and N must be double or single.> hygeinv (true, 2, 2, 2)
+%!error<hygeinv: P, T, M, and N must be double or single.> hygeinv ('a', 2, 2, 2)
 %!error<hygeinv: P, T, M, and N must not be complex.> hygeinv (i, 2, 2, 2)
 %!error<hygeinv: P, T, M, and N must not be complex.> hygeinv (2, i, 2, 2)
 %!error<hygeinv: P, T, M, and N must not be complex.> hygeinv (2, 2, i, 2)

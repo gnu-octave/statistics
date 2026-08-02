@@ -50,6 +50,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{evcdf, evpdf, evrnd, evfit, evlike, evstat, gumbelinv}
 ## @end deftypefn
 
@@ -93,6 +98,11 @@ function [x, xlo, xup] = evinv (p, mu, sigma, pcov, alpha)
     if (err > 0)
       error ("evinv: P, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, and SIGMA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (sigma)))
+    error ("evinv: P, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for P, MU, and SIGMA being reals
@@ -186,6 +196,9 @@ endfunction
 %! evinv (1, 2, 3, [1, 0; 0, 1], 0)
 %!error<evinv: invalid value for alpha.> [p, plo, pup] = ...
 %! evinv (1, 2, 3, [1, 0; 0, 1], 1.22)
+%!error<evinv: P, MU, and SIGMA must be double or single.> evinv (int32 (2), 2, 2)
+%!error<evinv: P, MU, and SIGMA must be double or single.> evinv (true, 2, 2)
+%!error<evinv: P, MU, and SIGMA must be double or single.> evinv ('a', 2, 2)
 %!error<evinv: P, MU, and SIGMA must not be complex.> evinv (i, 2, 2)
 %!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, i, 2)
 %!error<evinv: P, MU, and SIGMA must not be complex.> evinv (2, 2, i)

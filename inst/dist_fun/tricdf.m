@@ -44,6 +44,15 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
+## MATLAB also accepts integer input here, returning the result in the integer
+## class of the input; Octave rejects it, as it does for every other continuous
+## distribution.
+##
 ## @seealso{triinv, tripdf, trirnd, tristat}
 ## @end deftypefn
 
@@ -71,6 +80,11 @@ function p = tricdf (x, a, b, c, uflag)
     if (retval > 0)
       error ("tricdf: X, A, B, and C must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, A, B, and C being double or single
+  if (! (isfloat (x) && isfloat (a) && isfloat (b) && isfloat (c)))
+    error ("tricdf: X, A, B, and C must be double or single.");
   endif
 
   ## Check for X, BETA, and GAMMA being reals
@@ -172,6 +186,9 @@ endfunction
 %! tricdf (ones (2), ones (2), ones (3), ones (2))
 %!error<tricdf: X, A, B, and C must be of common size or scalars.> ...
 %! tricdf (ones (2), ones (2), ones (2), ones (3))
+%!error<tricdf: X, A, B, and C must be double or single.> tricdf (int32 (2), 2, 3, 4)
+%!error<tricdf: X, A, B, and C must be double or single.> tricdf (true, 2, 3, 4)
+%!error<tricdf: X, A, B, and C must be double or single.> tricdf ('a', 2, 3, 4)
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (i, 2, 3, 4)
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, i, 3, 4)
 %!error<tricdf: X, A, B, and C must not be complex.> tricdf (1, 2, i, 4)

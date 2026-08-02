@@ -39,6 +39,11 @@
 ## Further information about the Gumbel distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gumbel_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{evcdf, evinv, evrnd, evfit, evlike, evstat, gumbelpdf}
 ## @end deftypefn
 
@@ -63,6 +68,11 @@ function y = evpdf (x, mu, sigma)
     if (err > 0)
       error ("evpdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("evpdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -111,6 +121,9 @@ endfunction
 %!error<evpdf: function called with too few input arguments.> evpdf ()
 %!error<evpdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! evpdf (ones (3), ones (2), ones (2))
+%!error<evpdf: X, MU, and SIGMA must be double or single.> evpdf (int32 (2), 2, 2)
+%!error<evpdf: X, MU, and SIGMA must be double or single.> evpdf (true, 2, 2)
+%!error<evpdf: X, MU, and SIGMA must be double or single.> evpdf ('a', 2, 2)
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (i, 2, 2)
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, i, 2)
 %!error<evpdf: X, MU, and SIGMA must not be complex.> evpdf (2, 2, i)

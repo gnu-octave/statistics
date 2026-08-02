@@ -34,6 +34,11 @@
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{laplacecdf, laplacepdf, laplacernd}
 ## @end deftypefn
 
@@ -51,6 +56,11 @@ function y = laplacepdf (x, mu, beta)
       error (strcat ("laplacepdf: X, MU, and BETA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for X, MU, and BETA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (beta)))
+    error ("laplacepdf: X, MU, and BETA must be double or single.");
   endif
 
   ## Check for X, MU, and BETA being reals
@@ -115,6 +125,9 @@ endfunction
 %! laplacepdf (ones (2), 1, ones (3))
 %!error<laplacepdf: X, MU, and BETA must be of common size or scalars.> ...
 %! laplacepdf (ones (2), ones (3), 1)
+%!error<laplacepdf: X, MU, and BETA must be double or single.> laplacepdf (int32 (2), 2, 3)
+%!error<laplacepdf: X, MU, and BETA must be double or single.> laplacepdf (true, 2, 3)
+%!error<laplacepdf: X, MU, and BETA must be double or single.> laplacepdf ('a', 2, 3)
 %!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (i, 2, 3)
 %!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (1, i, 3)
 %!error<laplacepdf: X, MU, and BETA must not be complex.> laplacepdf (1, 2, i)

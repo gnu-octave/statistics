@@ -32,6 +32,11 @@
 ## Further information about the Burr distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Burr_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{burrcdf, burrinv, burrrnd, burrfit, burrlike, burrstat}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function y = burrpdf (x, lambda, c, k)
     if (retval > 0)
       error ("burrpdf: X, LAMBDA, C, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, LAMBDA, C, and K being double or single
+  if (! (isfloat (x) && isfloat (lambda) && isfloat (c) && isfloat (k)))
+    error ("burrpdf: X, LAMBDA, C, and K must be double or single.");
   endif
 
   ## Check for X, LANBDA, C and K being reals
@@ -135,6 +145,9 @@ endfunction
 %! burrpdf (ones (2), ones (2), ones (3), ones (2))
 %!error<burrpdf: X, LAMBDA, C, and K must be of common size or scalars.> ...
 %! burrpdf (ones (2), ones (2), ones (2), ones (3))
+%!error<burrpdf: X, LAMBDA, C, and K must be double or single.> burrpdf (int32 (2), 2, 3, 4)
+%!error<burrpdf: X, LAMBDA, C, and K must be double or single.> burrpdf (true, 2, 3, 4)
+%!error<burrpdf: X, LAMBDA, C, and K must be double or single.> burrpdf ('a', 2, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (i, 2, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, i, 3, 4)
 %!error<burrpdf: X, LAMBDA, C, and K must not be complex.> burrpdf (1, 2, i, 4)

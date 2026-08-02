@@ -36,6 +36,11 @@
 ## Further information about the Student's T distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{tinv, tpdf, trnd, tstat}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function p = tcdf (x, df, uflag)
     if (err > 0)
       error ("tcdf: X and DF must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and DF being double or single
+  if (! (isfloat (x) && isfloat (df)))
+    error ("tcdf: X and DF must be double or single.");
   endif
 
   ## Check for X and DF being reals
@@ -214,6 +224,9 @@ endfunction
 %! tcdf (ones (3), ones (2))
 %!error<tcdf: X and DF must be of common size or scalars.> ...
 %! tcdf (ones (3), ones (2), 'upper')
+%!error<tcdf: X and DF must be double or single.> tcdf (int32 (2), 2)
+%!error<tcdf: X and DF must be double or single.> tcdf (true, 2)
+%!error<tcdf: X and DF must be double or single.> tcdf ('a', 2)
 %!error<tcdf: X and DF must not be complex.> tcdf (i, 2)
 %!error<tcdf: X and DF must not be complex.> tcdf (2, i)
 

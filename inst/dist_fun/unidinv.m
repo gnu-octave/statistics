@@ -39,6 +39,11 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{unidcdf, unidpdf, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
@@ -55,6 +60,11 @@ function x = unidinv (p, N)
     if (retval > 0)
       error ("unidinv: P and N must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P and N being double or single
+  if (! (isfloat (p) && isfloat (N)))
+    error ("unidinv: P and N must be double or single.");
   endif
 
   ## Check for P and N being reals
@@ -109,5 +119,8 @@ endfunction
 %! unidinv (ones (3), ones (2))
 %!error<unidinv: P and N must be of common size or scalars.> ...
 %! unidinv (ones (2), ones (3))
+%!error<unidinv: P and N must be double or single.> unidinv (int32 (2), 2)
+%!error<unidinv: P and N must be double or single.> unidinv (true, 2)
+%!error<unidinv: P and N must be double or single.> unidinv ('a', 2)
 %!error<unidinv: P and N must not be complex.> unidinv (i, 2)
 %!error<unidinv: P and N must not be complex.> unidinv (2, i)

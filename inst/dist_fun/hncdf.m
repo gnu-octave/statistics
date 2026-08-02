@@ -36,6 +36,11 @@
 ## Further information about the half-normal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Half-normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{hninv, hnpdf, hnrnd, hnfit, hnlike, hnstat}
 ## @end deftypefn
 
@@ -63,6 +68,11 @@ function p = hncdf (x, mu, sigma, uflag)
     if (err > 0)
       error ("hncdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("hncdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -159,6 +169,9 @@ endfunction
 %! hncdf (ones (2), ones (3), ones (2))
 %!error<hncdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! hncdf (ones (2), ones (2), ones (3))
+%!error<hncdf: X, MU, and SIGMA must be double or single.> hncdf (int32 (2), 2, 3)
+%!error<hncdf: X, MU, and SIGMA must be double or single.> hncdf (true, 2, 3)
+%!error<hncdf: X, MU, and SIGMA must be double or single.> hncdf ('a', 2, 3)
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (i, 2, 3)
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (1, i, 3)
 %!error<hncdf: X, MU, and SIGMA must not be complex.> hncdf (1, 2, i)

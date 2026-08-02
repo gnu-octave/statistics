@@ -31,6 +31,11 @@
 ##
 ## Default values are @var{alpha1} = 1, @var{alpha2} = 1.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{jsupdf}
 ## @end deftypefn
 
@@ -47,6 +52,11 @@ function p = jsucdf (x, alpha1, alpha2)
     alpha2 = 1;
   endif
 
+  ## Check for X, ALPHA1, and ALPHA2 being double or single
+  if (! (isfloat (x) && isfloat (alpha1) && isfloat (alpha2)))
+    error ("jsucdf: X, ALPHA1, and ALPHA2 must be double or single.");
+  endif
+
   if (! isscalar (x) || ! isscalar (alpha1) || ! isscalar (alpha2))
     [retval, x, alpha1, alpha2] = common_size (x, alpha1, alpha2);
     if (retval > 0)
@@ -60,6 +70,9 @@ function p = jsucdf (x, alpha1, alpha2)
 
 endfunction
 
+%!error<jsucdf: X, ALPHA1, and ALPHA2 must be double or single.> jsucdf (int32 (2), 1, 1)
+%!error<jsucdf: X, ALPHA1, and ALPHA2 must be double or single.> jsucdf (true, 1, 1)
+%!error<jsucdf: X, ALPHA1, and ALPHA2 must be double or single.> jsucdf ('a', 1, 1)
 %!error jsucdf ()
 %!error jsucdf (1, 2, 3, 4)
 %!error<jsucdf: X, ALPHA1, and ALPHA2 must be of common size or scalars.> ...

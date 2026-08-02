@@ -39,6 +39,13 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{geoinv, geopdf, geornd, geofit, geostat}
 ## @end deftypefn
 
@@ -55,6 +62,20 @@ function p = geocdf (x, ps, uflag)
     if (retval > 0)
       error ("geocdf: X and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and PS being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (ps)))
+    error ("geocdf: X and PS must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (ps))
+    ps = double (ps);
   endif
 
   ## Check for X and PS being reals
@@ -154,6 +175,9 @@ endfunction
 %! geocdf (ones (3), ones (2))
 %!error<geocdf: X and PS must be of common size or scalars.> ...
 %! geocdf (ones (2), ones (3))
+%!error<geocdf: X and PS must be double, single, or integer.> geocdf (true, 2)
+%!error<geocdf: X and PS must be double, single, or integer.> geocdf ('a', 2)
+%!assert_equal (class (geocdf (int32 (2), 2)), 'double')
 %!error<geocdf: X and PS must not be complex.> geocdf (i, 2)
 %!error<geocdf: X and PS must not be complex.> geocdf (2, i)
 %!error<geocdf: invalid argument for upper tail.> geocdf (2, 3, 'tail')

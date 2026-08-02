@@ -35,6 +35,11 @@
 ## Further information about the piecewise linear distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Piecewise_linear_function}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{plinv, plpdf, plrnd, plstat}
 ## @end deftypefn
 
@@ -67,6 +72,11 @@ function p = plcdf (data, x, Fx, uflag)
   ## Check for Fx being bounded in [0, 1]
   if (any (Fx < 0) || any (Fx > 1))
     error ("plcdf: FX must be bounded in the range [0, 1].");
+  endif
+
+  ## Check for DATA, X, and FX being double or single
+  if (! (isfloat (data) && isfloat (x) && isfloat (Fx)))
+    error ("plcdf: DATA, X, and FX must be double or single.");
   endif
 
   ## Check for DATA, X, and FX being reals
@@ -150,6 +160,12 @@ endfunction
 %! plcdf (1, [0, 1, 2], [0, 1, 1.5])
 %!error<plcdf: FX must be bounded in the range> ...
 %! plcdf (1, [0, 1, 2], [0, i, 1])
+%!error<plcdf: DATA, X, and FX must be double or single.> ...
+%! plcdf (int32 (2), [0, 1, 2], [0, 0.5, 1])
+%!error<plcdf: DATA, X, and FX must be double or single.> ...
+%! plcdf (true, [0, 1, 2], [0, 0.5, 1])
+%!error<plcdf: DATA, X, and FX must be double or single.> ...
+%! plcdf ('a', [0, 1, 2], [0, 0.5, 1])
 %!error<plcdf: DATA, X, and FX must not be complex.> ...
 %! plcdf (i, [0, 1, 2], [0, 0.5, 1])
 %!error<plcdf: DATA, X, and FX must not be complex.> ...

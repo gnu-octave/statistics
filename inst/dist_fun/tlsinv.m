@@ -32,6 +32,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{tlscdf, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function x = tlsinv (p, mu, sigma, nu)
     if (retval > 0)
       error ("tlsinv: P, MU, SIGMA, and NU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, SIGMA, and NU being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (sigma) && isfloat (nu)))
+    error ("tlsinv: P, MU, SIGMA, and NU must be double or single.");
   endif
 
   ## Check for P, MU, SIGMA, and NU being reals
@@ -118,6 +128,9 @@ endfunction
 %! tlsinv (ones (2), 1, ones (3), 1)
 %!error<tlsinv: P, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlsinv (ones (2), 1, 1, ones (3))
+%!error<tlsinv: P, MU, SIGMA, and NU must be double or single.> tlsinv (int32 (2), 2, 3, 4)
+%!error<tlsinv: P, MU, SIGMA, and NU must be double or single.> tlsinv (true, 2, 3, 4)
+%!error<tlsinv: P, MU, SIGMA, and NU must be double or single.> tlsinv ('a', 2, 3, 4)
 %!error<tlsinv: P, MU, SIGMA, and NU must not be complex.> tlsinv (i, 2, 3, 4)
 %!error<tlsinv: P, MU, SIGMA, and NU must not be complex.> tlsinv (2, i, 3, 4)
 %!error<tlsinv: P, MU, SIGMA, and NU must not be complex.> tlsinv (2, 2, i, 4)

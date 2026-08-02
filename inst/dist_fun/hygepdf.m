@@ -47,6 +47,13 @@
 ## Further information about the hypergeometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Hypergeometric_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{hygecdf, hygeinv, hygernd, hygestat}
 ## @end deftypefn
 
@@ -55,6 +62,26 @@ function y = hygepdf (x, m, k, n, vect_expand)
   ## Check for valid number of input arguments
   if (nargin < 4)
     error ("hygepdf: function called with too few input arguments.");
+  endif
+
+  ## Check for X, T, M, and N being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (m) && isnumeric (k) && isnumeric (n)))
+    error ("hygepdf: X, T, M, and N must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (m))
+    m = double (m);
+  endif
+  if (isinteger (k))
+    k = double (k);
+  endif
+  if (isinteger (n))
+    n = double (n);
   endif
 
   ## Check for X, T, M, and N being reals
@@ -199,6 +226,9 @@ endfunction
 %! hygepdf (1, ones (2), ones (3), ones (2))
 %!error<hygepdf: X, T, M, and N must be of common size or scalars.> ...
 %! hygepdf (1, ones (2), ones (2), ones (3))
+%!error<hygepdf: X, T, M, and N must be double, single, or integer.> hygepdf (true, 2, 2, 2)
+%!error<hygepdf: X, T, M, and N must be double, single, or integer.> hygepdf ('a', 2, 2, 2)
+%!assert_equal (class (hygepdf (int32 (2), 2, 2, 2)), 'double')
 %!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (i, 2, 2, 2)
 %!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (2, i, 2, 2)
 %!error<hygepdf: X, T, M, and N must not be complex.> hygepdf (2, 2, i, 2)

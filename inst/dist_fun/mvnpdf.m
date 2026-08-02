@@ -48,6 +48,11 @@
 ## If @var{x} is a 1-by-D vector, @code{mvnpdf} replicates it to match the
 ## leading dimension of @var{mu} or the trailing dimension of @var{sigma}.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{mvncdf, mvnrnd}
 ## @end deftypefn
 
@@ -57,8 +62,16 @@ function y = mvnpdf (x, mu, sigma)
   if (nargin < 1)
     error ("mvnpdf: too few input arguments.");
   endif
+  if (nargin < 2)
+    mu = [];
+  endif
   if (nargin < 3)
     sigma = [];
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("mvnpdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for valid size of data
@@ -211,6 +224,9 @@ endfunction
 %! surf (X1, X2, reshape (p, 25, 25));
 
 ## Input validation tests
+%!error<mvnpdf: X, MU, and SIGMA must be double or single.> mvnpdf (int32 ([0, 0]), [0, 0], eye (2))
+%!error<mvnpdf: X, MU, and SIGMA must be double or single.> mvnpdf ([true, true], [0, 0], eye (2))
+%!error<mvnpdf: X, MU, and SIGMA must be double or single.> mvnpdf ('ab', [0, 0], eye (2))
 %!error<mvnpdf: too few input arguments.> y = mvnpdf ();
 %!error<mvnpdf: too few dimensions in X.> y = mvnpdf ([]);
 %!error<mvnpdf: wrong dimensions in X.> y = mvnpdf (ones (3,3,3));

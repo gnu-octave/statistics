@@ -31,6 +31,11 @@
 ## Further information about the @math{F}-distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/F-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{fcdf, finv, frnd, fstat}
 ## @end deftypefn
 
@@ -47,6 +52,11 @@ function y = fpdf (x, df1, df2)
     if (retval > 0)
       error ("fpdf: X, DF1, and DF2 must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, DF1, and DF2 being double or single
+  if (! (isfloat (x) && isfloat (df1) && isfloat (df2)))
+    error ("fpdf: X, DF1, and DF2 must be double or single.");
   endif
 
   ## Check for X, DF1, and DF2 being reals
@@ -160,6 +170,9 @@ endfunction
 %! fpdf (ones (2), ones (3), ones (2))
 %!error<fpdf: X, DF1, and DF2 must be of common size or scalars.> ...
 %! fpdf (ones (2), ones (2), ones (3))
+%!error<fpdf: X, DF1, and DF2 must be double or single.> fpdf (int32 (2), 2, 2)
+%!error<fpdf: X, DF1, and DF2 must be double or single.> fpdf (true, 2, 2)
+%!error<fpdf: X, DF1, and DF2 must be double or single.> fpdf ('a', 2, 2)
 %!error<fpdf: X, DF1, and DF2 must not be complex.> fpdf (i, 2, 2)
 %!error<fpdf: X, DF1, and DF2 must not be complex.> fpdf (2, i, 2)
 %!error<fpdf: X, DF1, and DF2 must not be complex.> fpdf (2, 2, i)

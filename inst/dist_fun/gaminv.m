@@ -38,6 +38,11 @@
 ## Further information about the Gamma distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Gamma_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{gamcdf, gampdf, gamrnd, gamfit, gamlike, gamstat}
 ## @end deftypefn
 
@@ -54,6 +59,11 @@ function x = gaminv (p, a, b)
     if (retval > 0)
       error ("gaminv: P, Α, and Β must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, Α, and Β being double or single
+  if (! (isfloat (p) && isfloat (a) && isfloat (b)))
+    error ("gaminv: P, Α, and Β must be double or single.");
   endif
 
   ## Check for P, Α, and Β being reals
@@ -161,6 +171,9 @@ endfunction
 %! gaminv (ones (2), ones (3), ones (2))
 %!error<gaminv: P, Α, and Β must be of common size or scalars.> ...
 %! gaminv (ones (2), ones (2), ones (3))
+%!error<gaminv: P, Α, and Β must be double or single.> gaminv (int32 (2), 2, 2)
+%!error<gaminv: P, Α, and Β must be double or single.> gaminv (true, 2, 2)
+%!error<gaminv: P, Α, and Β must be double or single.> gaminv ('a', 2, 2)
 %!error<gaminv: P, Α, and Β must not be complex.> gaminv (i, 2, 2)
 %!error<gaminv: P, Α, and Β must not be complex.> gaminv (2, i, 2)
 %!error<gaminv: P, Α, and Β must not be complex.> gaminv (2, 2, i)

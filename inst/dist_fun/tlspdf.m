@@ -31,6 +31,11 @@
 ## found at
 ## @url{https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{tlscdf, tlsinv, tlsrnd, tlsfit, tlslike, tlsstat}
 ## @end deftypefn
 
@@ -47,6 +52,11 @@ function y = tlspdf (x, mu, sigma, nu)
     if (err > 0)
       error ("tlspdf: X, MU, SIGMA, and NU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, SIGMA, and NU being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma) && isfloat (nu)))
+    error ("tlspdf: X, MU, SIGMA, and NU must be double or single.");
   endif
 
   ## Check for X, MU, SIGMA, and NU being reals
@@ -124,6 +134,9 @@ endfunction
 %! tlspdf (ones (2), 1, ones (3), 1)
 %!error<tlspdf: X, MU, SIGMA, and NU must be of common size or scalars.> ...
 %! tlspdf (ones (2), 1, 1, ones (3))
+%!error<tlspdf: X, MU, SIGMA, and NU must be double or single.> tlspdf (int32 (2), 2, 1, 1)
+%!error<tlspdf: X, MU, SIGMA, and NU must be double or single.> tlspdf (true, 2, 1, 1)
+%!error<tlspdf: X, MU, SIGMA, and NU must be double or single.> tlspdf ('a', 2, 1, 1)
 %!error<tlspdf: X, MU, SIGMA, and NU must not be complex.> tlspdf (i, 2, 1, 1)
 %!error<tlspdf: X, MU, SIGMA, and NU must not be complex.> tlspdf (2, i, 1, 1)
 %!error<tlspdf: X, MU, SIGMA, and NU must not be complex.> tlspdf (2, 1, i, 1)

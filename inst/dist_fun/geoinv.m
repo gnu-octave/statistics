@@ -33,6 +33,11 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{geocdf, geopdf, geornd, geofit, geostat}
 ## @end deftypefn
 
@@ -49,6 +54,11 @@ function x = geoinv (p, ps)
     if (retval > 0)
       error ("geoinv: P and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P and PS being double or single
+  if (! (isfloat (p) && isfloat (ps)))
+    error ("geoinv: P and PS must be double or single.");
   endif
 
   ## Check for P and PS being reals
@@ -113,6 +123,12 @@ endfunction
 %! geoinv (ones (3), ones (2))
 %!error<geoinv: P and PS must be of common size or scalars.> ...
 %! geoinv (ones (2), ones (3))
+%!error<geoinv: P and PS must be double or single.> ...
+%! geoinv (int32 (2), 2)
+%!error<geoinv: P and PS must be double or single.> ...
+%! geoinv (true, 2)
+%!error<geoinv: P and PS must be double or single.> ...
+%! geoinv ('a', 2)
 %!error<geoinv: P and PS must not be complex.> ...
 %! geoinv (i, 2)
 %!error<geoinv: P and PS must not be complex.> ...

@@ -42,6 +42,11 @@
 ## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{logncdf, lognpdf, lognrnd, lognfit, lognlike, lognstat}
 ## @end deftypefn
 
@@ -58,6 +63,11 @@ function x = logninv (p, mu = 0, sigma = 1)
     if (retval > 0)
       error ("logninv: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (sigma)))
+    error ("logninv: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -120,6 +130,9 @@ endfunction
 %!assert_equal (logninv ([p, NaN], 1, single (1)), single ([NaN 0 e Inf NaN NaN]))
 
 ## Test input validation
+%!error<logninv: X, MU, and SIGMA must be double or single.> logninv (int32 (2), 0, 1)
+%!error<logninv: X, MU, and SIGMA must be double or single.> logninv (true, 0, 1)
+%!error<logninv: X, MU, and SIGMA must be double or single.> logninv ('a', 0, 1)
 %!error logninv ()
 %!error logninv (1,2,3,4)
 %!error logninv (ones (3), ones (2), ones (2))

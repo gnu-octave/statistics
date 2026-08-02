@@ -33,6 +33,11 @@
 ## for @code{1} with @var{beta} equal to @code{0} (Cauchy); otherwise it is
 ## found by numerical inversion of @code{stblcdf}.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{stblcdf, stblpdf, stblrnd, makedist}
 ## @end deftypefn
 
@@ -46,6 +51,12 @@ function x = stblinv (p, alpha, beta, gam, delta)
   if (! isempty (msg))
     error ("stblinv: %s", msg);
   endif
+  ## Check for P, ALPHA, BETA, GAM, and DELTA being double or single
+  if (! (isfloat (p) && isfloat (alpha) && isfloat (beta) && isfloat (gam)
+         && isfloat (delta)))
+    error ("stblinv: P, ALPHA, BETA, GAM, and DELTA must be double or single.");
+  endif
+
   if (! (isreal (p) && all (p(:) >= 0 & p(:) <= 1 | isnan (p(:)))))
     error ("stblinv: P must contain real values in the range [0, 1].");
   endif
@@ -119,6 +130,9 @@ endfunction
 %! assert (stblinv ([0, 1], 1.5, 0.5, 1, 0), [-Inf, Inf]);
 
 ## Test input validation
+%!error<stblinv: P, ALPHA, BETA, GAM, and DELTA must be double or single.> stblinv (int32 (2), 1.5, 0, 1, 0)
+%!error<stblinv: P, ALPHA, BETA, GAM, and DELTA must be double or single.> stblinv (true, 1.5, 0, 1, 0)
+%!error<stblinv: P, ALPHA, BETA, GAM, and DELTA must be double or single.> stblinv ('a', 1.5, 0, 1, 0)
 %!error <Invalid call to stblinv> stblinv (0.5, 1.5, 0.5, 1)
 %!error <stblinv: ALPHA must be a scalar in the range \(0, 2\].> ...
 %! stblinv (0.5, 2.5, 0, 1, 0)

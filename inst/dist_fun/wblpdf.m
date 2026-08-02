@@ -35,6 +35,11 @@
 ## Further information about the Weibull distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{wblcdf, wblinv, wblrnd, wblfit, wbllike, wblstat, wblplot}
 ## @end deftypefn
 
@@ -63,6 +68,11 @@ function y = wblpdf (x, varargin)
     if (retval > 0)
       error ("wblpdf: X, LAMBDA, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, LAMBDA, and K being double or single
+  if (! (isfloat (x) && isfloat (lambda) && isfloat (k)))
+    error ("wblpdf: X, LAMBDA, and K must be double or single.");
   endif
 
   ## Check for X, LAMBDA, and K being reals
@@ -128,6 +138,9 @@ endfunction
 %!assert_equal (wblpdf ([x, NaN], 1, single (1)), single ([y, NaN]))
 
 ## Test input validation
+%!error<wblpdf: X, LAMBDA, and K must be double or single.> wblpdf (int32 (2), 1, 1)
+%!error<wblpdf: X, LAMBDA, and K must be double or single.> wblpdf (true, 1, 1)
+%!error<wblpdf: X, LAMBDA, and K must be double or single.> wblpdf ('a', 1, 1)
 %!error wblpdf ()
 %!error wblpdf (1,2,3,4)
 %!error wblpdf (ones (3), ones (2), ones (2))

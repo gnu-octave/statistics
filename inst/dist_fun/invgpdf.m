@@ -32,6 +32,11 @@
 ## Further information about the inverse Gaussian distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{invgcdf, invginv, invgrnd, invgfit, invglike, invgstat}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function y = invgpdf (x, mu, lambda)
     if (retval > 0)
       error ("invgpdf: X, MU, and LAMBDA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and LAMBDA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (lambda)))
+    error ("invgpdf: X, MU, and LAMBDA must be double or single.");
   endif
 
   ## Check for X, MU, and LAMBDA being reals
@@ -123,6 +133,9 @@ endfunction
 %! invgpdf (ones (2), 1, ones (3))
 %!error<invgpdf: X, MU, and LAMBDA must be of common size or scalars.> ...
 %! invgpdf (ones (2), ones (3), 1)
+%!error<invgpdf: X, MU, and LAMBDA must be double or single.> invgpdf (int32 (2), 2, 3)
+%!error<invgpdf: X, MU, and LAMBDA must be double or single.> invgpdf (true, 2, 3)
+%!error<invgpdf: X, MU, and LAMBDA must be double or single.> invgpdf ('a', 2, 3)
 %!error<invgpdf: X, MU, and LAMBDA must not be complex.> invgpdf (i, 2, 3)
 %!error<invgpdf: X, MU, and LAMBDA must not be complex.> invgpdf (1, i, 3)
 %!error<invgpdf: X, MU, and LAMBDA must not be complex.> invgpdf (1, 2, i)

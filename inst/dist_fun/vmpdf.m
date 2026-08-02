@@ -30,6 +30,11 @@
 ## Further information about the von Mises distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Von_Mises_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{vmcdf, vminv, vmrnd}
 ## @end deftypefn
 
@@ -46,6 +51,11 @@ function y = vmpdf (x, mu, k)
     if (retval > 0)
       error ("vmpdf: X, MU, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and K being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (k)))
+    error ("vmpdf: X, MU, and K must be double or single.");
   endif
 
   ## Check for X, MU, and K being reals
@@ -110,6 +120,9 @@ endfunction
 %! vmpdf (ones (2), ones (3), ones (2))
 %!error<vmpdf: X, MU, and K must be of common size or scalars.> ...
 %! vmpdf (ones (2), ones (2), ones (3))
+%!error<vmpdf: X, MU, and K must be double or single.> vmpdf (int32 (2), 2, 2)
+%!error<vmpdf: X, MU, and K must be double or single.> vmpdf (true, 2, 2)
+%!error<vmpdf: X, MU, and K must be double or single.> vmpdf ('a', 2, 2)
 %!error<vmpdf: X, MU, and K must not be complex.> vmpdf (i, 2, 2)
 %!error<vmpdf: X, MU, and K must not be complex.> vmpdf (2, i, 2)
 %!error<vmpdf: X, MU, and K must not be complex.> vmpdf (2, 2, i)

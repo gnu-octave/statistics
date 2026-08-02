@@ -86,6 +86,11 @@
 ## New York, second edition, 2006.
 ## @end enumerate
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{copulapdf, copularnd}
 ## @end deftypefn
 
@@ -99,6 +104,11 @@ function p = copulacdf (family, x, theta, df)
   if (! ischar (family))
     error (strcat ("copulacdf: family must be one of 'Gaussian',", ...
                    " 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."));
+  endif
+
+  ## Check for X and THETA being double or single
+  if (! (isfloat (x) && isfloat (theta)))
+    error ("copulacdf: X and THETA must be double or single.");
   endif
 
   if (! isempty (x) && ! ismatrix (x))
@@ -296,3 +306,8 @@ endfunction
 %! p = copulacdf ('FGM', x, theta);
 %! expected_p = [0.0558; 0.0293];
 %! assert_equal (p, expected_p, 0.001);
+
+## Test input validation
+%!error<copulacdf: X and THETA must be double or single.> copulacdf ('Clayton', int32 ([0, 0]), 2)
+%!error<copulacdf: X and THETA must be double or single.> copulacdf ('Clayton', [true, true], 2)
+%!error<copulacdf: X and THETA must be double or single.> copulacdf ('Clayton', 'ab', 2)

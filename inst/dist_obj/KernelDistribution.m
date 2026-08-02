@@ -258,10 +258,16 @@ classdef KernelDistribution
     ## the CDF of the probability distribution object, @var{pd}, evaluated at
     ## the values in @var{x}.
     ##
+    ## @var{x} must be @qcode{double} or @qcode{single}; integer, logical, and
+    ## character arrays are rejected.
+    ##
     ## @end deftypefn
     function p = cdf (this, x, uflag)
       if (! isscalar (this))
         error ("cdf: requires a scalar probability distribution.");
+      endif
+      if (! isfloat (x))
+        error ("cdf: X must be double or single.");
       endif
       ## Check for "upper" flag
       if (nargin > 2 && strcmpi (uflag, 'upper'))
@@ -299,10 +305,16 @@ classdef KernelDistribution
     ## inverse of the CDF) of the probability distribution object, @var{pd},
     ## evaluated at the values in @var{p}.
     ##
+    ## @var{p} must be @qcode{double} or @qcode{single}; integer, logical, and
+    ## character arrays are rejected.
+    ##
     ## @end deftypefn
     function x = icdf (this, p)
       if (! isscalar (this))
         error ("icdf: requires a scalar probability distribution.");
+      endif
+      if (! isfloat (p))
+        error ("icdf: P must be double or single.");
       endif
       if (this.IsTruncated)
         Fab = basecdf (this, this.Truncation);
@@ -406,10 +418,16 @@ classdef KernelDistribution
     ## probability distribution object, @var{pd}, evaluated at the values in
     ## @var{x}.
     ##
+    ## @var{x} must be @qcode{double} or @qcode{single}; integer, logical, and
+    ## character arrays are rejected.
+    ##
     ## @end deftypefn
     function y = pdf (this, x)
       if (! isscalar (this))
         error ("pdf: requires a scalar probability distribution.");
+      endif
+      if (! isfloat (x))
+        error ("pdf: X must be double or single.");
       endif
       y = basepdf (this, x);
       if (this.IsTruncated)
@@ -748,6 +766,11 @@ endfunction
 %!assert_equal (icdf (pd, [0.1 0.25 0.5 0.75 0.9]), ...
 %!    [-0.2909 0.3820 1.1504 2.0027 2.8265], 5e-3);
 %!assert_equal (size (pdf (pd, [])), [0, 0])
+%!error<pdf: X must be double or single.> pdf (pd, int32 (1))
+%!error<pdf: X must be double or single.> pdf (pd, true)
+%!error<pdf: X must be double or single.> pdf (pd, 'a')
+%!error<cdf: X must be double or single.> cdf (pd, int32 (1))
+%!error<icdf: P must be double or single.> icdf (pd, int32 (1))
 %!assert_equal (size (cdf (pd, [])), [0, 0])
 %!assert_equal (size (icdf (pd, [])), [0, 0])
 %!assert_equal (size (random (pd, -1)), [0, 0])

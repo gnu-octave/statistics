@@ -39,6 +39,15 @@
 ## Further information about the triangular distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Triangular_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
+## MATLAB also accepts integer input here, returning the result in the integer
+## class of the input; Octave rejects it, as it does for every other continuous
+## distribution.
+##
 ## @seealso{tricdf, triinv, trirnd, tristat}
 ## @end deftypefn
 
@@ -55,6 +64,11 @@ function y = tripdf (x, a, b, c)
     if (retval > 0)
       error ("tripdf: X, A, B, and C must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, A, B, and C being double or single
+  if (! (isfloat (x) && isfloat (a) && isfloat (b) && isfloat (c)))
+    error ("tripdf: X, A, B, and C must be double or single.");
   endif
 
   ## Check for X, A, B, and C being reals
@@ -139,6 +153,9 @@ endfunction
 %! tripdf (ones (2), ones (2), ones (3), ones (2))
 %!error<tripdf: X, A, B, and C must be of common size or scalars.> ...
 %! tripdf (ones (2), ones (2), ones (2), ones (3))
+%!error<tripdf: X, A, B, and C must be double or single.> tripdf (int32 (2), 2, 3, 4)
+%!error<tripdf: X, A, B, and C must be double or single.> tripdf (true, 2, 3, 4)
+%!error<tripdf: X, A, B, and C must be double or single.> tripdf ('a', 2, 3, 4)
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (i, 2, 3, 4)
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (1, i, 3, 4)
 %!error<tripdf: X, A, B, and C must not be complex.> tripdf (1, 2, i, 4)

@@ -30,6 +30,11 @@
 ## Further information about the chi-squared distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Chi-squared_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{chi2cdf, chi2pdf, chi2rnd, chi2stat}
 ## @end deftypefn
 
@@ -46,6 +51,11 @@ function x = chi2inv (p, df)
     if (retval > 0)
       error ("chi2inv: P and DF must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P and DF being double or single
+  if (! (isfloat (p) && isfloat (df)))
+    error ("chi2inv: P and DF must be double or single.");
   endif
 
   ## Check for P and DF being reals
@@ -98,5 +108,8 @@ endfunction
 %! chi2inv (ones (3), ones (2))
 %!error<chi2inv: P and DF must be of common size or scalars.> ...
 %! chi2inv (ones (2), ones (3))
+%!error<chi2inv: P and DF must be double or single.> chi2inv (int32 (2), 2)
+%!error<chi2inv: P and DF must be double or single.> chi2inv (true, 2)
+%!error<chi2inv: P and DF must be double or single.> chi2inv ('a', 2)
 %!error<chi2inv: P and DF must not be complex.> chi2inv (i, 2)
 %!error<chi2inv: P and DF must not be complex.> chi2inv (2, i)

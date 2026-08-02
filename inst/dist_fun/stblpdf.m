@@ -33,6 +33,11 @@
 ## for @code{1} with @var{beta} equal to @code{0} (Cauchy); otherwise it is
 ## computed by numerical inversion of the characteristic function.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{stblcdf, stblinv, stblrnd, makedist}
 ## @end deftypefn
 
@@ -46,6 +51,12 @@ function y = stblpdf (x, alpha, beta, gam, delta)
   if (! isempty (msg))
     error ("stblpdf: %s", msg);
   endif
+  ## Check for X, ALPHA, BETA, GAM, and DELTA being double or single
+  if (! (isfloat (x) && isfloat (alpha) && isfloat (beta) && isfloat (gam)
+         && isfloat (delta)))
+    error ("stblpdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.");
+  endif
+
   if (! isreal (x))
     error ("stblpdf: X must be real.");
   endif
@@ -131,6 +142,9 @@ endfunction
 %! assert (y(x == 0), 0.241970724519143, 1e-9);
 
 ## Test input validation
+%!error<stblpdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblpdf (int32 (2), 1.5, 0, 1, 0)
+%!error<stblpdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblpdf (true, 1.5, 0, 1, 0)
+%!error<stblpdf: X, ALPHA, BETA, GAM, and DELTA must be double or single.> stblpdf ('a', 1.5, 0, 1, 0)
 %!error <Invalid call to stblpdf> stblpdf (1, 1.5, 0.5, 1)
 %!error <stblpdf: ALPHA must be a scalar in the range \(0, 2\].> ...
 %! stblpdf (1, 2.5, 0, 1, 0)

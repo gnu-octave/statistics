@@ -42,6 +42,11 @@
 ## Further information about the lognormal distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Log-normal_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{logncdf, logninv, lognrnd, lognfit, lognlike, lognstat}
 ## @end deftypefn
 
@@ -58,6 +63,16 @@ function y = lognpdf (x, mu = 0, sigma = 1)
     if (retval > 0)
       error ("lognpdf: X, MU, and SIGMA must be of common size or scalars");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("lognpdf: X, MU, and SIGMA must be double or single.");
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("lognpdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -117,6 +132,9 @@ endfunction
 %!assert_equal (lognpdf ([x, NaN], 0, single (1)), single ([y, NaN]), eps ('single'))
 
 ## Test input validation
+%!error<lognpdf: X, MU, and SIGMA must be double or single.> lognpdf (int32 (2), 0, 1)
+%!error<lognpdf: X, MU, and SIGMA must be double or single.> lognpdf (true, 0, 1)
+%!error<lognpdf: X, MU, and SIGMA must be double or single.> lognpdf ('a', 0, 1)
 %!error lognpdf ()
 %!error lognpdf (1,2,3,4)
 %!error lognpdf (ones (3), ones (2), ones (2))

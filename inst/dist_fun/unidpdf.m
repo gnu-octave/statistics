@@ -39,6 +39,13 @@
 ## Further information about the discrete uniform distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Discrete_uniform_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{unidcdf, unidinv, unidrnd, unidfit, unidstat}
 ## @end deftypefn
 
@@ -55,6 +62,20 @@ function y = unidpdf (x, N)
     if (retval > 0)
       error ("unidpdf: X and N must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and N being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (N)))
+    error ("unidpdf: X and N must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (N))
+    N = double (N);
   endif
 
   ## Check for X and N being reals
@@ -111,5 +132,8 @@ endfunction
 %! unidpdf (ones (3), ones (2))
 %!error<unidpdf: X and N must be of common size or scalars.> ...
 %! unidpdf (ones (2), ones (3))
+%!error<unidpdf: X and N must be double, single, or integer.> unidpdf (true, 2)
+%!error<unidpdf: X and N must be double, single, or integer.> unidpdf ('a', 2)
+%!assert_equal (class (unidpdf (int32 (2), 2)), 'double')
 %!error<unidpdf: X and N must not be complex.> unidpdf (i, 2)
 %!error<unidpdf: X and N must not be complex.> unidpdf (2, i)

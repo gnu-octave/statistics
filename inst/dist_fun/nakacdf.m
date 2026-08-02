@@ -39,6 +39,11 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nakainv, nakapdf, nakarnd, nakafit, nakalike, nakastat}
 ## @end deftypefn
 
@@ -66,6 +71,11 @@ function p = nakacdf (x, mu, omega, uflag)
     if (retval > 0)
       error ("nakacdf: X, MU, and OMEGA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and OMEGA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (omega)))
+    error ("nakacdf: X, MU, and OMEGA must be double or single.");
   endif
 
   ## Check for X, MU, and OMEGA being reals
@@ -152,6 +162,9 @@ endfunction
 %! nakacdf (ones (2), ones (3), ones (2))
 %!error<nakacdf: X, MU, and OMEGA must be of common size or scalars.> ...
 %! nakacdf (ones (2), ones (2), ones (3))
+%!error<nakacdf: X, MU, and OMEGA must be double or single.> nakacdf (int32 (2), 2, 2)
+%!error<nakacdf: X, MU, and OMEGA must be double or single.> nakacdf (true, 2, 2)
+%!error<nakacdf: X, MU, and OMEGA must be double or single.> nakacdf ('a', 2, 2)
 %!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (i, 2, 2)
 %!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (2, i, 2)
 %!error<nakacdf: X, MU, and OMEGA must not be complex.> nakacdf (2, 2, i)

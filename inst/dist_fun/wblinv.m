@@ -35,6 +35,11 @@
 ## Further information about the Weibull distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Weibull_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{wblcdf, wblpdf, wblrnd, wblstat, wblplot}
 ## @end deftypefn
 
@@ -63,6 +68,11 @@ function x = wblinv (p, varargin)
     if (retval > 0)
       error ("wblinv: P, LAMBDA, and K must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, LAMBDA, and K being double or single
+  if (! (isfloat (p) && isfloat (lambda) && isfloat (k)))
+    error ("wblinv: P, LAMBDA, and K must be double or single.");
   endif
 
   ## Check for P, LAMBDA, and K being reals
@@ -135,6 +145,9 @@ endfunction
 %! wblinv (ones (2), ones (3), ones (2))
 %!error<wblinv: P, LAMBDA, and K must be of common size or scalars.> ...
 %! wblinv (ones (2), ones (2), ones (3))
+%!error<wblinv: P, LAMBDA, and K must be double or single.> wblinv (int32 (2), 2, 2)
+%!error<wblinv: P, LAMBDA, and K must be double or single.> wblinv (true, 2, 2)
+%!error<wblinv: P, LAMBDA, and K must be double or single.> wblinv ('a', 2, 2)
 %!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (i, 2, 2)
 %!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (2, i, 2)
 %!error<wblinv: P, LAMBDA, and K must not be complex.> wblinv (2, 2, i)

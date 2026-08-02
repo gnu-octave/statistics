@@ -32,6 +32,11 @@
 ## Further information about the Poisson distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{poisscdf, poisspdf, poissrnd, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
@@ -48,6 +53,11 @@ function x = poissinv (p, lambda)
     if (retval > 0)
       error ("poissinv: P and LAMBDA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P and LAMBDA being double or single
+  if (! (isfloat (p) && isfloat (lambda)))
+    error ("poissinv: P and LAMBDA must be double or single.");
   endif
 
   ## Check for P and LAMBDA being reals
@@ -232,5 +242,8 @@ endfunction
 %! poissinv (ones (3), ones (2))
 %!error<poissinv: P and LAMBDA must be of common size or scalars.> ...
 %! poissinv (ones (2), ones (3))
+%!error<poissinv: P and LAMBDA must be double or single.> poissinv (int32 (2), 2)
+%!error<poissinv: P and LAMBDA must be double or single.> poissinv (true, 2)
+%!error<poissinv: P and LAMBDA must be double or single.> poissinv ('a', 2)
 %!error<poissinv: P and LAMBDA must not be complex.> poissinv (i, 2)
 %!error<poissinv: P and LAMBDA must not be complex.> poissinv (2, i)

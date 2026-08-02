@@ -30,6 +30,11 @@
 ## Further information about the piecewise linear distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Piecewise_linear_function}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{plcdf, plpdf, plrnd, plstat}
 ## @end deftypefn
 
@@ -53,6 +58,11 @@ function data = plinv (p, x, Fx)
   ## Check for Fx being bounded in [0, 1]
   if (any (Fx < 0) || any (Fx > 1))
     error ("plinv: FX must be bounded in the range [0, 1].");
+  endif
+
+  ## Check for P, X, and FX being double or single
+  if (! (isfloat (p) && isfloat (x) && isfloat (Fx)))
+    error ("plinv: P, X, and FX must be double or single.");
   endif
 
   ## Check for P, X, and FX being reals
@@ -137,6 +147,12 @@ endfunction
 %! plinv (1, [0, 1, 2], [0, 1, 1.5])
 %!error<plinv: FX must be bounded in the range> ...
 %! plinv (1, [0, 1, 2], [0, i, 1])
+%!error<plinv: P, X, and FX must be double or single.> ...
+%! plinv (int32 (2), [0, 1, 2], [0, 0.5, 1])
+%!error<plinv: P, X, and FX must be double or single.> ...
+%! plinv (true, [0, 1, 2], [0, 0.5, 1])
+%!error<plinv: P, X, and FX must be double or single.> ...
+%! plinv ('a', [0, 1, 2], [0, 0.5, 1])
 %!error<plinv: P, X, and FX must not be complex.> ...
 %! plinv (i, [0, 1, 2], [0, 0.5, 1])
 %!error<plinv: P, X, and FX must not be complex.> ...

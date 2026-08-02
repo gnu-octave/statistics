@@ -35,6 +35,13 @@
 ## Further information about the Poisson distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Poisson_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{poissinv, poisspdf, poissrnd, poissfit, poisslike, poisstat}
 ## @end deftypefn
 
@@ -60,6 +67,20 @@ function p = poisscdf (x, lambda, uflag)
     if (retval > 0)
       error ("poisscdf: X and LAMBDA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and LAMBDA being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (lambda)))
+    error ("poisscdf: X and LAMBDA must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (lambda))
+    lambda = double (lambda);
   endif
 
   ## Check for X and LAMBDA being reals
@@ -149,5 +170,8 @@ endfunction
 %! poisscdf (ones (3), ones (2))
 %!error<poisscdf: X and LAMBDA must be of common size or scalars.> ...
 %! poisscdf (ones (2), ones (3))
+%!error<poisscdf: X and LAMBDA must be double, single, or integer.> poisscdf (true, 2)
+%!error<poisscdf: X and LAMBDA must be double, single, or integer.> poisscdf ('a', 2)
+%!assert_equal (class (poisscdf (int32 (2), 2)), 'double')
 %!error<poisscdf: X and LAMBDA must not be complex.> poisscdf (i, 2)
 %!error<poisscdf: X and LAMBDA must not be complex.> poisscdf (2, i)

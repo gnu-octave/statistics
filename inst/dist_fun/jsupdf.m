@@ -31,6 +31,11 @@
 ##
 ## Default values are @var{alpha1} = 1, @var{alpha2} = 1.
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{jsucdf}
 ## @end deftypefn
 
@@ -45,6 +50,11 @@ function y = jsupdf (x, alpha1, alpha2)
     alpha2 = 1;
   elseif (nargin == 2)
     alpha2 = 1;
+  endif
+
+  ## Check for X, ALPHA1, and ALPHA2 being double or single
+  if (! (isfloat (x) && isfloat (alpha1) && isfloat (alpha2)))
+    error ("jsupdf: X, ALPHA1, and ALPHA2 must be double or single.");
   endif
 
   if (! isscalar (x) || ! isscalar (alpha1) || ! isscalar (alpha2))
@@ -62,6 +72,9 @@ function y = jsupdf (x, alpha1, alpha2)
 
 endfunction
 
+%!error<jsupdf: X, ALPHA1, and ALPHA2 must be double or single.> jsupdf (int32 (2), 1, 1)
+%!error<jsupdf: X, ALPHA1, and ALPHA2 must be double or single.> jsupdf (true, 1, 1)
+%!error<jsupdf: X, ALPHA1, and ALPHA2 must be double or single.> jsupdf ('a', 1, 1)
 %!error jsupdf ()
 %!error jsupdf (1, 2, 3, 4)
 %!error<jsupdf: X, ALPHA1, and ALPHA2 must be of common size or scalars.> ...

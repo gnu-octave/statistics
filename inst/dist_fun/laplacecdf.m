@@ -39,6 +39,11 @@
 ## Further information about the Laplace distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Laplace_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{laplaceinv, laplacepdf, laplacernd}
 ## @end deftypefn
 
@@ -67,6 +72,11 @@ function p = laplacecdf (x, mu, beta, uflag)
       error (strcat ("laplacecdf: X, MU, and BETA must be of", ...
                      " common size or scalars."));
     endif
+  endif
+
+  ## Check for X, MU, and BETA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (beta)))
+    error ("laplacecdf: X, MU, and BETA must be double or single.");
   endif
 
   ## Check for X, MU, and BETA being reals
@@ -144,6 +154,9 @@ endfunction
 %! laplacecdf (ones (2), ones (3), ones (2))
 %!error<laplacecdf: X, MU, and BETA must be of common size or scalars.> ...
 %! laplacecdf (ones (2), ones (2), ones (3))
+%!error<laplacecdf: X, MU, and BETA must be double or single.> laplacecdf (int32 (2), 2, 2)
+%!error<laplacecdf: X, MU, and BETA must be double or single.> laplacecdf (true, 2, 2)
+%!error<laplacecdf: X, MU, and BETA must be double or single.> laplacecdf ('a', 2, 2)
 %!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (i, 2, 2)
 %!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (2, i, 2)
 %!error<laplacecdf: X, MU, and BETA must not be complex.> laplacecdf (2, 2, i)

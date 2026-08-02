@@ -34,6 +34,11 @@
 ## Further information about the noncentral @math{t}-distribution can be found
 ## at @url{https://en.wikipedia.org/wiki/Noncentral_t-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nctinv, nctpdf, nctrnd, nctstat, tcdf}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function p = nctcdf (x, df, mu, uflag)
   [err, x, df, mu] = common_size (x, df, mu);
   if (err > 0)
     error ("nctcdf: X, DF, and MU must be of common size or scalars.");
+  endif
+
+  ## Check for X, DF, and MU being double or single
+  if (! (isfloat (x) && isfloat (df) && isfloat (mu)))
+    error ("nctcdf: X, DF, and MU must be double or single.");
   endif
 
   ## Check for X, DF, and MU being reals
@@ -338,6 +348,9 @@ endfunction
 %! nctcdf (ones (2), ones (3), ones (2))
 %!error<nctcdf: X, DF, and MU must be of common size or scalars.> ...
 %! nctcdf (ones (2), ones (2), ones (3))
+%!error<nctcdf: X, DF, and MU must be double or single.> nctcdf (int32 (2), 2, 2)
+%!error<nctcdf: X, DF, and MU must be double or single.> nctcdf (true, 2, 2)
+%!error<nctcdf: X, DF, and MU must be double or single.> nctcdf ('a', 2, 2)
 %!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (i, 2, 2)
 %!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (2, i, 2)
 %!error<nctcdf: X, DF, and MU must not be complex.> nctcdf (2, 2, i)

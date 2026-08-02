@@ -33,6 +33,13 @@
 ## Further information about the geometric distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Geometric_distribution}
 ##
+## Input arguments must be @qcode{double}, @qcode{single}, or an integer type;
+## logical and character arrays are rejected.  Integer input is promoted to
+## @qcode{double}, so the result is always a probability.  MATLAB is
+## inconsistent here: for several of the discrete distributions it returns the
+## result in the integer class of the input, truncating a probability to
+## @math{0} or @math{1}.
+##
 ## @seealso{geocdf, geoinv, geornd, geofit, geostat}
 ## @end deftypefn
 
@@ -49,6 +56,20 @@ function y = geopdf (x, ps)
     if (retval > 0)
       error ("geopdf: X and PS must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X and PS being double, single, or integer
+  if (! (isnumeric (x) && isnumeric (ps)))
+    error ("geopdf: X and PS must be double, single, or integer.");
+  endif
+
+  ## Integer input is promoted to double, so the result is a probability
+  ## rather than a value truncated to the input's integer type.
+  if (isinteger (x))
+    x = double (x);
+  endif
+  if (isinteger (ps))
+    ps = double (ps);
   endif
 
   ## Check for X and PS being reals
@@ -107,6 +128,9 @@ endfunction
 %!assert_equal (geopdf ([x, NaN], single (0.5)), single ([y, NaN]), 5*eps ('single'))
 
 ## Test input validation
+%!error<geopdf: X and PS must be double, single, or integer.> geopdf (true, 0.5)
+%!error<geopdf: X and PS must be double, single, or integer.> geopdf ('a', 0.5)
+%!assert_equal (class (geopdf (int32 (2), 0.5)), 'double')
 %!error geopdf ()
 %!error geopdf (1)
 %!error geopdf (1,2,3)

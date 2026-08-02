@@ -34,6 +34,11 @@
 ## Further information about the Rician distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Rice_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{riceinv, ricepdf, ricernd, ricefit, ricelike, ricestat}
 ## @end deftypefn
 
@@ -59,6 +64,11 @@ function p = ricecdf (x, s, sigma, uflag)
     if (retval > 0)
       error ("ricecdf: X, S, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, S, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (s) && isfloat (sigma)))
+    error ("ricecdf: X, S, and SIGMA must be double or single.");
   endif
 
   ## Check for X, S, and SIGMA being reals
@@ -215,6 +225,9 @@ endfunction
 %! ricecdf (ones (2), ones (3), ones (2))
 %!error<ricecdf: X, S, and SIGMA must be of common size or scalars.> ...
 %! ricecdf (ones (2), ones (2), ones (3))
+%!error<ricecdf: X, S, and SIGMA must be double or single.> ricecdf (int32 (2), 2, 3)
+%!error<ricecdf: X, S, and SIGMA must be double or single.> ricecdf (true, 2, 3)
+%!error<ricecdf: X, S, and SIGMA must be double or single.> ricecdf ('a', 2, 3)
 %!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (i, 2, 3)
 %!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (2, i, 3)
 %!error<ricecdf: X, S, and SIGMA must not be complex.> ricecdf (2, 2, i)

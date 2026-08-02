@@ -34,6 +34,11 @@
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{logicdf, logipdf, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
@@ -50,6 +55,11 @@ function x = logiinv (p, mu, sigma)
     if (retval > 0)
       error ("logiinv: P, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P, MU, and SIGMA being double or single
+  if (! (isfloat (p) && isfloat (mu) && isfloat (sigma)))
+    error ("logiinv: P, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -117,6 +127,9 @@ endfunction
 %! logiinv (ones (2), 1, ones (3))
 %!error<logiinv: P, MU, and SIGMA must be of common size or scalars.> ...
 %! logiinv (ones (2), ones (3), 1)
+%!error<logiinv: P, MU, and SIGMA must be double or single.> logiinv (int32 (2), 2, 3)
+%!error<logiinv: P, MU, and SIGMA must be double or single.> logiinv (true, 2, 3)
+%!error<logiinv: P, MU, and SIGMA must be double or single.> logiinv ('a', 2, 3)
 %!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (i, 2, 3)
 %!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (1, i, 3)
 %!error<logiinv: P, MU, and SIGMA must not be complex.> logiinv (1, 2, i)

@@ -29,6 +29,11 @@
 ## Further information about the noncentral @math{F}-distribution can be found
 ## at @url{https://en.wikipedia.org/wiki/Noncentral_F-distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{ncfcdf, ncfinv, ncfrnd, ncfstat, fpdf}
 ## @end deftypefn
 
@@ -43,6 +48,11 @@ function y = ncfpdf (x, df1, df2, lambda)
   [err, x, df1, df2, lambda] = common_size (x, df1, df2, lambda);
   if (err > 0)
     error ("ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.");
+  endif
+
+  ## Check for X, DF1, DF2, and LAMBDA being double or single
+  if (! (isfloat (x) && isfloat (df1) && isfloat (df2) && isfloat (lambda)))
+    error ("ncfpdf: X, DF1, DF2, and LAMBDA must be double or single.");
   endif
 
   ## Check for X, DF1, DF2, and LAMBDA being reals
@@ -405,6 +415,9 @@ endfunction
 %! ncfpdf (ones (2), ones (2), ones (3), ones (2))
 %!error<ncfpdf: X, DF1, DF2, and LAMBDA must be of common size or scalars.> ...
 %! ncfpdf (ones (2), ones (2), ones (2), ones (3))
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be double or single.> ncfpdf (int32 (2), 2, 2, 2)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be double or single.> ncfpdf (true, 2, 2, 2)
+%!error<ncfpdf: X, DF1, DF2, and LAMBDA must be double or single.> ncfpdf ('a', 2, 2, 2)
 %!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (i, 2, 2, 2)
 %!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (2, i, 2, 2)
 %!error<ncfpdf: X, DF1, DF2, and LAMBDA must not be complex.> ncfpdf (2, 2, i, 2)

@@ -34,6 +34,11 @@
 ## Further information about the Nakagami distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Nakagami_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat}
 ## @end deftypefn
 
@@ -50,6 +55,11 @@ function y = nakapdf (x, mu, omega)
     if (retval > 0)
       error ("nakapdf: X, MU, and OMEGA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and OMEGA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (omega)))
+    error ("nakapdf: X, MU, and OMEGA must be double or single.");
   endif
 
   ## Check for X, MU, and OMEGA being reals
@@ -129,6 +139,9 @@ endfunction
 %! nakapdf (ones (2), ones (3), ones (2))
 %!error<nakapdf: X, MU, and OMEGA must be of common size or scalars.> ...
 %! nakapdf (ones (2), ones (2), ones (3))
+%!error<nakapdf: X, MU, and OMEGA must be double or single.> nakapdf (int32 (2), 4, 3)
+%!error<nakapdf: X, MU, and OMEGA must be double or single.> nakapdf (true, 4, 3)
+%!error<nakapdf: X, MU, and OMEGA must be double or single.> nakapdf ('a', 4, 3)
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (i, 4, 3)
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (1, i, 3)
 %!error<nakapdf: X, MU, and OMEGA must not be complex.> nakapdf (1, 4, i)

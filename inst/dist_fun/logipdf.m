@@ -33,6 +33,11 @@
 ## Further information about the logistic distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Logistic_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{logicdf, logiinv, logirnd, logifit, logilike, logistat}
 ## @end deftypefn
 
@@ -49,6 +54,11 @@ function y = logipdf (x, mu, sigma)
     if (retval > 0)
       error ("logipdf: X, MU, and SIGMA must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for X, MU, and SIGMA being double or single
+  if (! (isfloat (x) && isfloat (mu) && isfloat (sigma)))
+    error ("logipdf: X, MU, and SIGMA must be double or single.");
   endif
 
   ## Check for X, MU, and SIGMA being reals
@@ -113,6 +123,9 @@ endfunction
 %! logipdf (ones (2), 1, ones (3))
 %!error<logipdf: X, MU, and SIGMA must be of common size or scalars.> ...
 %! logipdf (ones (2), ones (3), 1)
+%!error<logipdf: X, MU, and SIGMA must be double or single.> logipdf (int32 (2), 2, 3)
+%!error<logipdf: X, MU, and SIGMA must be double or single.> logipdf (true, 2, 3)
+%!error<logipdf: X, MU, and SIGMA must be double or single.> logipdf ('a', 2, 3)
 %!error<logipdf: X, MU, and SIGMA must not be complex.> logipdf (i, 2, 3)
 %!error<logipdf: X, MU, and SIGMA must not be complex.> logipdf (1, i, 3)
 %!error<logipdf: X, MU, and SIGMA must not be complex.> logipdf (1, 2, i)

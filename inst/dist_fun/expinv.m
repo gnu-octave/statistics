@@ -50,6 +50,11 @@
 ## Further information about the exponential distribution can be found at
 ## @url{https://en.wikipedia.org/wiki/Exponential_distribution}
 ##
+## Input arguments must be @qcode{double} or @qcode{single}; integer, logical,
+## and character arrays are rejected.  MATLAB accepts a character array and
+## evaluates it at the character codes, which Octave deliberately does not,
+## since a character array is an integer type and integers are refused too.
+##
 ## @seealso{expcdf, exppdf, exprnd, expfit, explike, expstat}
 ## @end deftypefn
 
@@ -98,6 +103,11 @@ function [varargout] = expinv (p, varargin)
     if (retval > 0)
       error ("expinv: P and MU must be of common size or scalars.");
     endif
+  endif
+
+  ## Check for P and MU being double or single
+  if (! (isfloat (p) && isfloat (mu)))
+    error ("expinv: P and MU must be double or single.");
   endif
 
   ## Check for P and MU being reals
@@ -199,6 +209,9 @@ endfunction
 %! expinv (1, 2, 3, 1.22)
 %!error<expinv: invalid value for alpha.> [x, xlo, xup] = ...
 %! expinv (1, 2, 3, [0.05, 0.1])
+%!error<expinv: P and MU must be double or single.> expinv (int32 (2), 2)
+%!error<expinv: P and MU must be double or single.> expinv (true, 2)
+%!error<expinv: P and MU must be double or single.> expinv ('a', 2)
 %!error<expinv: P and MU must not be complex.> expinv (i, 2)
 %!error<expinv: P and MU must not be complex.> expinv (2, i)
 %!error<expinv: variance, PCOV, cannot be negative.> ...
