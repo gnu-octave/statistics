@@ -205,8 +205,6 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
     case 'r'
       if (params(1) <= -1 || params(1) >= 1)
         error ("sampsizepwr: out of range regression coefficient.");
-      elseif (params(1) == 0)
-        error ("sampsizepwr: regression coefficient must not be 0.");
       endif
       PowerFunction = @PowerFunction_R;
   endswitch
@@ -371,8 +369,8 @@ function [out, N2] = sampsizepwr (TestType, params, p1, power, n, varargin)
           warning ("sampsizepwr: approximate N.");
         endif
       case 'r'
-        ## Calculate sample size using Student's t distribution
-        out(:) = r1testN (params(1), p1, power, alpha, tail);
+        ## Calculate sample size from Fisher's z transformation
+        out(:) = rtestN (params(1), p1, power, alpha, tail);
     endswitch
   endif
 endfunction
@@ -409,11 +407,12 @@ function N = rtestN (r0, r1, desiredpower, alpha, tail)
   ## Get quantiles of the standard normal deviates for alpha and power
   Za = norminv (alpha);
   Zb = norminv (1 - desiredpower);
-  ## Compute difference in regression coefficients
-  rdiff = abs (r0 - r1)
-  C = 0.5 * log ((1 + rdiff) / (1 - rdiff));
+  ## Fisher's z transformation of each correlation.  Transforming their
+  ## difference instead is only right when the null correlation is zero, which
+  ## happened to be the one value this test type refused to accept.
+  C = abs (atanh (r1) - atanh (r0));
   ## Compute sample size
-  N = ((Za + Zb) / C) .^ 2 + 3;
+  N = ceil (((Za + Zb) ./ C) .^ 2 + 3);
 endfunction
 
 ## Find alternative hypothesis parameter value P1 for Z test
@@ -781,8 +780,8 @@ endfunction
 ## Chi-square power calculation  #MK: THESE CONFUSED POWER WITH 1-POWER!
 function power = PowerFunction_V (v0, v1, alpha, tail, n)
   if (strcmp (tail, 'both'))
-   critU = v0 .* chi2inv (1 - alpha / 2, n - 1)
-   critL = v0 .* chi2inv (alpha / 2, n - 1)
+    critU = v0 .* chi2inv (1 - alpha / 2, n - 1);
+    critL = v0 .* chi2inv (alpha / 2, n - 1);
    power = chi2cdf (critL ./ v1, n - 1) + 1-chi2cdf (critU ./ v1, n - 1);
   elseif (strcmp (tail, 'right'))
     crit = v0 .* chi2inv (1 - alpha, n - 1);
@@ -814,24 +813,15 @@ function power = PowerFunction_R (r0, r1, alpha, tail, n)
   if (! strcmp (tail, 'both'))
     error ("sampsizepwr: only 2-tailed testing for regression coefficient.");
   endif
-  ## Set initial search boundaries for power
-  dp_lo = eps;
-  dp_hi = 1 - eps;
-  power = 0.5;
-  ## Compute initial sample size N0 according to P0, POWER and ALPHA
-  N0 = rtestN (r0, r1, power, alpha, tail);
-  ## Find POWER for N0 == N
-  while (N != N0)
-    if (N0 < N)
-      dp_hi = power;
-      power = (power + dp_lo) / 2;
-      N0 = rtestN (r0, r1, power, alpha, tail);
-    else
-      dp_lo = power;
-      power = (power + pd_hi) / 2;
-      N0 = rtestN (r0, r1, power, alpha, tail);
-    endif
-  endwhile
+  ## Under Fisher's z transformation the statistic is asymptotically normal
+  ## with unit variance and mean (atanh (r1) - atanh (r0)) * sqrt (n - 3), so
+  ## the power follows in closed form.  This was a bisection on the sample
+  ## size that searched for exact equality between two doubles, using a
+  ## variable 'N' that does not exist here -- the parameter is 'n' -- and a
+  ## misspelt 'pd_hi' for 'dp_hi' in the branch it never reached.
+  delta = (atanh (r1) - atanh (r0)) .* sqrt (n - 3);
+  zcrit = - norminv (alpha ./ 2);
+  power = normcdf (- zcrit + delta) + normcdf (- zcrit - delta);
 endfunction
 
 ## Local zero function for "t2" test
@@ -958,8 +948,6 @@ endfunction
 %! out = sampsizepwr ('r', -1, [], 0.8, 60);
 %!error<sampsizepwr: out of range regression coefficient.> ...
 %! out = sampsizepwr ('r', 1.2, [], 0.8, 60);
-%!error<sampsizepwr: regression coefficient must not be 0.> ...
-%! out = sampsizepwr ('r', 0, [], 0.8, 60);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
 %! out = sampsizepwr ('r', 0.2, [], 0.8, 60, 'alpha', -0.2);
 %!error<sampsizepwr: invalid value for 'alpha' parameter.> ...
@@ -1020,6 +1008,48 @@ endfunction
 %! Napprox = sampsizepwr ('p', 0.30, 0.36, 0.8);
 
 ## Results validation
+## The 'r' test type was unreachable: the sample size branch called a
+## misspelt 'r1testN', the power branch read an 'N' that does not exist there,
+## and a null correlation of zero, the standard null, was refused outright.
+%!test
+%! ## sample size, against the Fisher z formula worked out here
+%! n = sampsizepwr ('r', 0.1, 0.5);
+%! C = abs (atanh (0.5) - atanh (0.1));
+%! assert_equal (n, ceil (((norminv (0.025) + norminv (0.10)) / C) ^ 2 + 3));
+%!test
+%! ## power at a given sample size, likewise
+%! pwr = sampsizepwr ('r', 0.1, 0.5, [], 60);
+%! d = abs (atanh (0.5) - atanh (0.1)) * sqrt (60 - 3);
+%! zc = - norminv (0.025);
+%! assert_equal (pwr, normcdf (-zc + d) + normcdf (-zc - d), 1e-12);
+%!test
+%! ## a null correlation of zero is the usual null and must be accepted
+%! assert_equal (sampsizepwr ('r', 0, 0.4, 0.90), 62);
+%! assert_equal (sampsizepwr ('r', 0, 0.3, 0.80), 85);
+%!test
+%! ## asking for a power must yield a sample size that delivers it
+%! for pw = [0.7, 0.8, 0.9]
+%!   n = sampsizepwr ('r', 0, 0.4, pw);
+%!   assert_equal (sampsizepwr ('r', 0, 0.4, [], n) >= pw, true);
+%! endfor
+%!test
+%! ## power must rise with the sample size and with the effect size
+%! p20 = sampsizepwr ('r', 0, 0.4, [], 20);
+%! p40 = sampsizepwr ('r', 0, 0.4, [], 40);
+%! p80 = sampsizepwr ('r', 0, 0.4, [], 80);
+%! assert_equal (p20 < p40 && p40 < p80, true);
+%! assert_equal (sampsizepwr ('r', 0, 0.2, [], 40) < p40, true);
+%! assert_equal (sampsizepwr ('r', 0, 0.6, [], 40) > p40, true);
+%!test
+%! ## a correlation and its negative need the same sample size
+%! assert_equal (sampsizepwr ('r', 0, -0.4, 0.90), ...
+%!               sampsizepwr ('r', 0, 0.4, 0.90));
+%!test
+%! ## the alternative correlation can be recovered from N and the power,
+%! ## to the precision of the search findP1r runs
+%! r1 = sampsizepwr ('r', 0, [], 0.80, 60);
+%! assert_equal (sampsizepwr ('r', 0, r1, [], 60), 0.80, 5e-3);
+
 %!test
 %! mu1 = sampsizepwr ('t', [100, 10], [], 0.8, 60);
 %! assert_equal (mu1, 103.67704316, 1e-8);
