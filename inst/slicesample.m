@@ -115,7 +115,10 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
           endif
         case 'logpdf'
           if (isa (varargin{k+1}, 'function_handle'))
-            pdf = varargin{k+1};
+            ## This assigned to PDF, so the supplied log density was then
+            ## wrapped as log (pdf (x)) and taken the log of a second time.
+            ## The chain sampled from something else entirely, quietly.
+            logpdf = varargin{k+1};
           else
             error ("slicesample: logpdf must be a function handle.");
           endif
@@ -124,6 +127,10 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
             width = varargin{k+1}(:).';
           else
             error ("slicesample: width must be a scalar or 1 by dim vector.");
+          endif
+          if (! all (width > 0))
+            error (strcat ("slicesample: width must contain positive", ...
+                           " values that can be added to START."));
           endif
         case 'burnin'
           if (varargin{k+1}>=0)
@@ -138,7 +145,7 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
             error ("slicesample: thin must be greater than or equal to 1.");
           endif
         otherwise
-          warning ("slicesample: Ignoring unknown option %s", varargin{k});
+          error ("slicesample: invalid parameter name: %s.", varargin{k});
       endswitch
     else
       error ("slicesample: %s is not a valid property.", varargin{k});
@@ -151,13 +158,22 @@ function [smpl, neval] = slicesample (start, nsamples, varargin)
     error ("slicesample: pdf or logpdf must be input.");
   endif
   dim = sizestart(2);
+  ## Asking for no samples yields none; zeros () read a negative count as 1.
+  if (nsamples < 1)
+    nsamples = 0;
+  endif
   smpl = zeros (nsamples, dim);
 
-  if (all (sizestart == [1 dim]))
-    smpl(1, :) = start;
-  else
+  if (! all (sizestart == [1 dim]))
     error ("slicesample: start must be a 1 by dim vector.");
   endif
+  if (nsamples == 0)
+    ## Nothing to draw.  Assigning the start point below would grow SMPL back
+    ## to one row and hand back a sample that was never taken.
+    neval = 0;
+    return;
+  endif
+  smpl(1, :) = start;
 
   maxit = 100;
   neval = 0;
@@ -294,7 +310,44 @@ endfunction
 %! assert_equal (mean (smpl, 1), 1, .15);
 %! assert_equal (var (smpl, 1), 1, .25);
 
+## 'logpdf' assigned its handle to PDF, which was then wrapped as
+## log (pdf (x)).  A supplied log density was therefore logged a second time
+## and the chain sampled from something else entirely, without a word.
+%!test
+%! rand ('twister', 42);
+%! s1 = slicesample (0, 2000, 'logpdf', @(z) -z .^ 2 / 2, 'width', 5);
+%! assert_equal (mean (s1), 0, 0.15);
+%! assert_equal (std (s1), 1, 0.15);
+%!test
+%! ## the same target given as a density must agree to within sampling error
+%! rand ('twister', 42);
+%! sp = slicesample (0, 2000, 'pdf', @(z) exp (-z .^ 2 / 2), 'width', 5);
+%! rand ('twister', 42);
+%! sl = slicesample (0, 2000, 'logpdf', @(z) -z .^ 2 / 2, 'width', 5);
+%! assert_equal (mean (sp), mean (sl), 0.15);
+%! assert_equal (std (sp), std (sl), 0.15);
+%!test
+%! ## MATLAB accepts both, so this must produce a usable chain rather than
+%! ## the log of a log
+%! rand ('twister', 7);
+%! sb = slicesample (1, 500, 'pdf', @(z) exp (-z .^ 2 / 2), ...
+%!                   'logpdf', @(z) -z .^ 2 / 2, 'width', 5);
+%! assert_equal (size (sb), [500, 1]);
+%! assert_equal (mean (sb), 0, 0.25);
+
+## A sample count of zero or less draws nothing; zeros () read a negative
+## count as 1 and the start point was then handed back as a sample.
+%!test
+%! assert_equal (size (slicesample (1, 0, 'pdf', @(z) exp (-z .^ 2 / 2))), [0, 1]);
+%! assert_equal (size (slicesample (1, -5, 'pdf', @(z) exp (-z .^ 2 / 2))), [0, 1]);
+
 ## Test input validation
+%!error <slicesample: invalid parameter name: nosuch.> ...
+%! slicesample (1, 50, 'pdf', @(z) exp (-z .^ 2 / 2), 'nosuch', 1)
+%!error <slicesample: width must contain positive values> ...
+%! slicesample (1, 50, 'pdf', @(z) exp (-z .^ 2 / 2), 'width', -1)
+%!error <slicesample: width must contain positive values> ...
+%! slicesample (1, 50, 'pdf', @(z) exp (-z .^ 2 / 2), 'width', 0)
 %!error slicesample ();
 %!error slicesample (1);
 %!error slicesample (1, 1);
