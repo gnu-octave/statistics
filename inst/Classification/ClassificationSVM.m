@@ -1860,6 +1860,30 @@ endclassdef
 %! label = predict (obj, xc);
 %! assert_equal (label, [1; 2; 2]);
 
+## A single-observation query used to corrupt the heap and abort the
+## interpreter; each row on its own must agree with the batch answer.
+%!test
+%! obj = fitcsvm (x, y);
+%! xc = [min(x); mean(x); max(x)];
+%! batch = predict (obj, xc);
+%! for i = 1:rows (xc)
+%!   assert_equal (predict (obj, xc(i,:)), batch(i));
+%! endfor
+%!test
+%! obj = fitcsvm (x, y, 'KernelFunction', 'rbf', 'Tolerance', 1e-7);
+%! xc = [min(x); mean(x); max(x)];
+%! [bl, bs] = predict (obj, xc);
+%! [l1, s1] = predict (obj, xc(1,:));
+%! assert_equal (l1, bl(1));
+%! assert_equal (size (l1), [1, 1]);
+%! assert_equal (size (s1), [1, 2]);
+%! assert_equal (s1, bs(1,:), 2e-5);
+%!test
+%! obj = compact (fitcsvm (x, y));
+%! xc = [min(x); mean(x); max(x)];
+%! batch = predict (obj, xc);
+%! assert_equal (predict (obj, xc(1,:)), batch(1));
+
 ## Test input validation for predict method
 %!error<ClassificationSVM.predict: too few input arguments.> ...
 %! predict (ClassificationSVM (ones (40,2), ones (40,1)))
