@@ -116,7 +116,7 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
   ## Check the full model
   if (! (isvector (fm) && (length (fm) == v || length (fm) == v + 1)))
     error (strcat ("regression_ftest: full model, FM, must be a vector", ...
-                   " of length equal to 'rows (X)' or 'rows (X) + 1'."));
+                   " of length equal to 'columns (X)' or 'columns (X) + 1'."));
   endif
   ## Make it row vector and add a constant = 0 if necessary
   fm_len = length (fm);
@@ -137,7 +137,10 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
                        " numeric vector or a scalar."));
       endif
       rm_len = length (rm);
-      if (rm_len >= fm_len - 1)
+      ## A reduced model need only be shorter than the full one.  Requiring
+      ## rm_len < fm_len - 1 rejected the commonest test of all, dropping a
+      ## single predictor, which the message itself does not ask for.
+      if (rm_len >= fm_len)
         error (strcat ("regression_ftest: reduced model, RM, must have", ...
                        " smaller length than the full model, FM."));
       endif
@@ -168,6 +171,81 @@ function [h, pval, stats] = regression_ftest (y, x, fm, rm, varargin)
   h = double (pval < alpha);
 
 endfunction
+
+## The function shipped with error tests only, and nothing that called it
+## successfully.  Check the returned statistics against a recomputation from
+## the construction the documentation describes.
+%!test
+%! X = [1 1; 2 1; 3 2; 4 2; 5 3; 6 3; 7 4; 8 4; 9 5; 10 5; 11 6; 12 6];
+%! y = 2 + 3 * X(:,1) - 1.5 * X(:,2) + ...
+%!     [0.2 -0.3 0.1 0.4 -0.2 0.3 -0.1 0.2 -0.4 0.1 0.3 -0.2]';
+%! n = rows (X);
+%! Xa = [ones(n,1), X];
+%! fm = (Xa \ y)';
+%! [h, pval, stats] = regression_ftest (y, X, fm);
+%! ## with no reduced model the constant is kept and the slopes are zeroed
+%! rm = [fm(1), 0, 0];
+%! SSE_fm = sumsq (y - Xa * fm');
+%! SSE_rm = sumsq (y - Xa * rm');
+%! assert_equal (stats.df1, 2);
+%! assert_equal (stats.fstat, ...
+%!               ((SSE_rm - SSE_fm) / stats.df1) / (SSE_fm / stats.df2), 1e-9);
+%! assert_equal (pval, 1 - fcdf (stats.fstat, stats.df1, stats.df2), 1e-12);
+%! assert_equal (h, 1);
+
+## A reduced model may drop a single predictor.  The guard read
+## rm_len >= fm_len - 1, which rejected exactly that, though the message only
+## asks for a reduced model shorter than the full one.
+%!test
+%! X = [1 1 2; 2 1 1; 3 2 4; 4 2 3; 5 3 6; 6 3 5; ...
+%!      7 4 8; 8 4 7; 9 5 10; 10 5 9; 11 6 12; 12 6 11];
+%! y = 2 + 3 * X(:,1) - 1.5 * X(:,2) + 0.4 * X(:,3) + ...
+%!     [0.2 -0.3 0.1 0.4 -0.2 0.3 -0.1 0.2 -0.4 0.1 0.3 -0.2]';
+%! fm = ([ones(rows (X),1), X] \ y)';
+%! [~, ~, s3] = regression_ftest (y, X, fm, fm(1:3));
+%! assert_equal (s3.df1, 1);
+%! [~, ~, s2] = regression_ftest (y, X, fm, fm(1:2));
+%! assert_equal (s2.df1, 2);
+%! [~, ~, s1] = regression_ftest (y, X, fm, fm(1));
+%! assert_equal (s1.df1, 3);
+
+## A full model that adds nothing to the reduced one gives no evidence.
+%!test
+%! X = [1 1; 2 1; 3 2; 4 2; 5 3; 6 3; 7 4; 8 4; 9 5; 10 5; 11 6; 12 6];
+%! y = 2 + 3 * X(:,1) - 1.5 * X(:,2) + ...
+%!     [0.2 -0.3 0.1 0.4 -0.2 0.3 -0.1 0.2 -0.4 0.1 0.3 -0.2]';
+%! [h, pval, stats] = regression_ftest (y, X, [mean(y), 0, 0]);
+%! assert_equal (stats.fstat, 0, 1e-12);
+%! assert_equal (pval, 1, 1e-12);
+%! assert_equal (h, 0);
+
+## A full model given without a constant term is padded with b_0 = 0.
+%!test
+%! X = [1 1; 2 1; 3 2; 4 2; 5 3; 6 3; 7 4; 8 4; 9 5; 10 5; 11 6; 12 6];
+%! y = 2 + 3 * X(:,1) - 1.5 * X(:,2) + ...
+%!     [0.2 -0.3 0.1 0.4 -0.2 0.3 -0.1 0.2 -0.4 0.1 0.3 -0.2]';
+%! [~, ~, sa] = regression_ftest (y, X, [3, -1.5]);
+%! [~, ~, sb] = regression_ftest (y, X, [0, 3, -1.5]);
+%! assert_equal (sa.fstat, sb.fstat, 1e-12);
+%! assert_equal (sa.df1, sb.df1);
+
+## 'alpha' moves the decision but never the p-value.
+%!test
+%! X = [1 1; 2 1; 3 2; 4 2; 5 3; 6 3; 7 4; 8 4; 9 5; 10 5; 11 6; 12 6];
+%! y = X(:,1) + [0.9 -1.1 0.8 -0.7 1.2 -0.9 0.6 -1.3 1.1 -0.8 0.7 -1.0]';
+%! [~, p1] = regression_ftest (y, X, [mean(y), 0.02, 0], [], 'alpha', 0.01);
+%! [~, p2] = regression_ftest (y, X, [mean(y), 0.02, 0], [], 'alpha', 0.10);
+%! assert_equal (p1, p2, 0);
+
+## A row vector for Y must give the same answer as a column.
+%!test
+%! X = [1 1; 2 1; 3 2; 4 2; 5 3; 6 3; 7 4; 8 4; 9 5; 10 5; 11 6; 12 6];
+%! y = 2 + 3 * X(:,1) - 1.5 * X(:,2) + ...
+%!     [0.2 -0.3 0.1 0.4 -0.2 0.3 -0.1 0.2 -0.4 0.1 0.3 -0.2]';
+%! fm = ([ones(rows (X),1), X] \ y)';
+%! [~, pc] = regression_ftest (y, X, fm);
+%! [~, pr] = regression_ftest (y', X, fm);
+%! assert_equal (pr, pc, 0);
 
 ## Test input validation
 %!error<Invalid call to regression_ftest.  Correct usage> regression_ftest ();
@@ -203,7 +281,9 @@ endfunction
 %! regression_ftest ([1 2 3]', [2 3 4; 3 4 5]', [1 0.5], ones (2));
 %!error<regression_ftest: reduced model, RM, must be a numeric vector or> ...
 %! regression_ftest ([1 2 3]', [2 3 4; 3 4 5]', [1 0.5], 'alpha');
+## RM of length 2 against a full model of length 3 is a legal reduction now,
+## so the invalid case is one that is not shorter than the full model.
 %!error<regression_ftest: reduced model, RM, must have smaller length than> ...
-%! regression_ftest ([1 2 3]', [2 3 4; 3 4 5]', [1 0.5], [1 2]);
+%! regression_ftest ([1 2 3]', [2 3 4; 3 4 5]', [1 0.5], [1 2 3]);
 
 ## Test results
