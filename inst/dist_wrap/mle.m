@@ -500,9 +500,9 @@ function [phat, pci] = mle (x, varargin)
                        " the Continuous Uniform distribution."));
       endif
       if (nargout < 2)
-        phat = uniffit (x, alpha, freq);
+        phat = unifit (x, alpha, freq);
       else
-        [phat, pci] = uniffit (x, alpha, freq);
+        [phat, pci] = unifit (x, alpha, freq);
       endif
 
     case {'wbl', 'weibull'}
@@ -521,17 +521,17 @@ endfunction
 
 ## Helper function for expanding data according to frequency vector
 function [x, freq] = expandFreq (x, freq)
-  ## Remove NaNs and zeros
+  ## Drop observations whose frequency is NaN
   remove = isnan (freq);
   x(remove) = [];
   freq(remove) = [];
-  if (! all (freq == 1))
-    xf = [];
-    for i = 1:numel (freq)
-      xf = [xf, repmat(x(i), 1, freq(i))];
-    endfor
-  endif
-  x = xf;
+  ## Repeat each observation according to its frequency.  Building the
+  ## expanded vector only when some frequency differed from 1 left it
+  ## unassigned in exactly the default case, so every call without a frequency
+  ## vector died on an undefined variable.  repelem covers all of it, drops
+  ## zero-frequency observations, and keeps the orientation of X.
+  x = repelem (x, freq);
+  freq = ones (size (x));
 endfunction
 
 ## Maximum likelihood fit of a user-supplied custom distribution
@@ -746,6 +746,42 @@ endfunction
 %! x = [2.1, 3.4, 1.9, 5.2, 4.1, 2.8, 3.3, 4.7, 2.2, 3.9, 3.0, 4.5];
 %! pdf = @(x, mu, sigma) normpdf (x, mu, sigma);
 %! [phat, pci] = mle (x, 'pdf', pdf, 'start', [mean(x), std(x)])
+
+## Two distribution families were dead.  'bernoulli' expanded its data through
+## a helper that only assigned the expanded vector when some frequency
+## differed from 1, so the default case died on an undefined variable, and
+## 'unif' called a uniffit that does not exist -- the function is unifit.
+%!test
+%! x = [1 0 1 0 1 1 0 1];
+%! assert_equal (mle (x, 'distribution', 'bernoulli'), mean (x), 1e-12);
+%!test
+%! x = [1 0 1 0 1 1 0 1];
+%! [phat, pci] = mle (x, 'distribution', 'bernoulli');
+%! [bp, bci] = binofit (sum (x), numel (x), 0.05);
+%! assert_equal (phat, bp);
+%! assert_equal (pci, bci);
+%!test
+%! ## a frequency vector expands the sample, and a zero frequency drops it
+%! assert_equal (mle ([1, 0], 'distribution', 'bernoulli', ...
+%!                    'frequency', [3, 5]), 3/8, 1e-12);
+%! assert_equal (mle ([1, 0], 'distribution', 'bernoulli', ...
+%!                    'frequency', [2, 0]), 1, 1e-12);
+%!test
+%! ## a column vector must work as well as a row
+%! assert_equal (mle ([1;0;1;1], 'distribution', 'bernoulli'), 0.75, 1e-12);
+%!test
+%! ## the uniform MLE is the sample range
+%! u = [0.2, 0.5, 0.7, 0.9, 0.35];
+%! assert_equal (mle (u, 'distribution', 'unif'), [min(u), max(u)]);
+%! assert_equal (mle (u, 'distribution', 'uniform'), [min(u), max(u)]);
+%! assert_equal (mle (u, 'distribution', 'continuous uniform'), ...
+%!               [min(u), max(u)]);
+%!test
+%! u = [0.2, 0.5, 0.7, 0.9, 0.35];
+%! [phat, pci] = mle (u, 'distribution', 'uniform');
+%! [a, b] = unifit (u, 0.05);
+%! assert_equal (phat, a);
+%! assert_equal (pci, b);
 
 ## mle returns the maximum likelihood estimate, so the scale parameter is
 ## std (x, 1) and not normfit's unbiased std (x, 0).  It used to return the
