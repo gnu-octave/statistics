@@ -863,6 +863,12 @@ classdef cvpartition
     ## @qcode{'seed'} keyword is used as in @code{rand ("seed", @var{sval})} to
     ## specify that old generators should be used.
     ##
+    ## Seeding is confined to this call: the state of the random generator is
+    ## saved beforehand and restored before @code{repartition} returns, so
+    ## @var{sval} does not carry over into the random numbers the caller draws
+    ## afterwards.  @var{sval} is an Octave extension; MATLAB expects a
+    ## @code{RandStream} object in this position, which Octave does not have.
+    ##
     ## @code{@var{Cnew} = repartition (@var{C}, @qcode{'legacy'})} only applies
     ## to @qcode{cvpartition} objects @var{C} that use k-fold partitioning and
     ## it will repartition @var{C} in the same non-random manner that was
@@ -911,8 +917,15 @@ classdef cvpartition
           error (strcat ("cvpartition.repartition: SVAL must be", ...
                          " a real scalar or vector."));
         endif
+        ## SVAL seeds this repartitioning only.  The caller's generator is put
+        ## back before returning -- on the error path too, hence onCleanup --
+        ## so that seeding a partition cannot silently make the rest of the
+        ## session reproducible as well.  Octave has no RandStream to confine
+        ## the draw to, which is why the state has to be saved and restored.
+        saved_rand_state = rand ('state');
+        rand_state_guard = onCleanup (@() rand ('state', saved_rand_state));
         if (isscalar (sval))
-          rand ('sval', sval);
+          rand ('seed', sval);
         else
           rand ('state', sval);
         endif
@@ -2058,6 +2071,48 @@ endclassdef
 %! cvpartition ([1, 1, 1, 2, 2], 'some')
 %!error <cvpartition: invalid first input argument.> ...
 %! cvpartition ({1, 1; 2, 2}, 'kfold')
+
+## A scalar SVAL seeds the repartitioning.  The keyword was misspelt 'sval'
+## rather than 'seed', so every scalar-seeded call used to error out.
+%!test
+%! c = cvpartition (60, 'KFold', 5);
+%! assert_equal (test (repartition (c, 42), 1), test (repartition (c, 42), 1));
+%! assert_equal (isequal (test (repartition (c, 42), 1), ...
+%!                        test (repartition (c, 43), 1)), false);
+%!test
+%! c = cvpartition (60, 'KFold', 5);
+%! assert_equal (test (repartition (c, [1 2 3]), 1), ...
+%!               test (repartition (c, [1 2 3]), 1));
+
+## Seeding is scoped to the call: the caller's generator is restored, so the
+## seed does not carry into the random numbers drawn afterwards.
+%!test
+%! c = cvpartition (60, 'KFold', 5);
+%! rand ('twister', 5);
+%! expect = rand (1, 4);
+%! rand ('twister', 5);
+%! repartition (c, 42);
+%! assert_equal (rand (1, 4), expect);
+%! rand ('twister', 5);
+%! repartition (c, [1 2 3]);
+%! assert_equal (rand (1, 4), expect);
+
+## The seeded partition must not depend on the caller's state either.
+%!test
+%! c = cvpartition (60, 'KFold', 5);
+%! rand ('twister', 5);
+%! a = test (repartition (c, 42), 1);
+%! rand ('twister', 777);
+%! assert_equal (test (repartition (c, 42), 1), a);
+
+## Without SVAL the call still consumes randomness, as it must.
+%!test
+%! c = cvpartition (60, 'KFold', 5);
+%! rand ('twister', 5);
+%! untouched = rand (1, 4);
+%! rand ('twister', 5);
+%! repartition (c);
+%! assert_equal (isequal (rand (1, 4), untouched), false);
 
 %!error <cvpartition.repartition: cannot repartition a custom partition.> ...
 %! repartition (cvpartition ('CustomPartition', [1,1,2,2,3,3]))
