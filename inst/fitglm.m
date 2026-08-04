@@ -171,7 +171,7 @@ endfunction
 %!test
 %! ## Leverage sums to the number of coefficients.
 %! mdl = fitglm (X, yb, "Distribution", "binomial");
-%! assert_equal (sum (mdl.leverage_), mdl.NumCoefficients, 1e-9);
+%! assert_equal (sum (mdl.Diagnostics.Leverage), mdl.NumCoefficients, 1e-9);
 %!test  # plotting methods and random run without error
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
 %! hf = figure ("visible", "off");

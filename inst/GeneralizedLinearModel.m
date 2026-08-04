@@ -32,9 +32,22 @@
 ##
 ## The most useful properties are @code{Coefficients} (a table of estimates,
 ## standard errors, @math{t}-statistics and p-values), @code{Deviance},
-## @code{Dispersion}, @code{Residuals}, @code{Fitted}, @code{Distribution}, and
-## @code{Link}.  Fitted models support the @code{predict} and @code{feval}
-## methods for prediction.
+## @code{Dispersion}, @code{Residuals}, @code{Fitted}, @code{Diagnostics},
+## @code{Distribution}, and @code{Link}.  @code{ObservationInfo} records which
+## rows were weighted, excluded, or missing, and @code{Variables} holds the data
+## the model was built from.  Fitted models support the @code{predict} and
+## @code{feval} methods for prediction.
+##
+## @code{Fitted}, @code{Residuals}, @code{Diagnostics}, and
+## @code{ObservationInfo} have one row per @emph{input} observation, not per
+## fitted observation.  Rows that were excluded with the @qcode{'Exclude'} pair
+## still carry a fitted value and a residual, since the model can be evaluated
+## there; rows dropped because a variable was missing carry @code{NaN}.
+##
+## For a binomial response given together with a @qcode{'BinomialSize'} vector
+## @math{N}, the response is the @emph{proportion} of successes, as
+## @code{fitglm} documents.  @code{Fitted.Response} is then the fitted count
+## @math{N p} and @code{Residuals.Raw} is on that same count scale.
 ##
 ## @seealso{fitglm, LinearModel, glmfit, glmval}
 ## @end deftp
@@ -82,11 +95,17 @@ classdef GeneralizedLinearModel
     ## Structure describing the link function (Name, Link, Derivative, Inverse).
     Link = [];
 
-    ## Structure of fitted values (Response on the mean scale, LinearPredictor).
+    ## Table of fitted values (Response on the mean scale, LinearPredictor, and
+    ## Probability for the binomial family).  One row per input observation.
     Fitted = [];
 
-    ## Table of residuals (Raw, Pearson, Deviance, Anscombe).
+    ## Table of residuals (Raw, LinearPredictor, Pearson, Anscombe, Deviance).
+    ## One row per input observation.
     Residuals = [];
+
+    ## Table of per-observation diagnostics (Leverage, CooksDistance,
+    ## HatMatrix).  One row per input observation.
+    Diagnostics = [];
 
     ## Log-likelihood of the fitted model.
     LogLikelihood = [];
@@ -98,8 +117,21 @@ classdef GeneralizedLinearModel
     ## AdjGeneralized, LLR).
     Rsquared = [];
 
-    ## Offset vector added to the linear predictor (empty if none).
+    ## Error (residual) sum of squares on the response scale.
+    SSE = [];
+
+    ## Regression sum of squares on the response scale.
+    SSR = [];
+
+    ## Total sum of squares on the response scale.
+    SST = [];
+
+    ## Offset vector added to the linear predictor, one element per input
+    ## observation (all zero when no offset was given).
     Offset = [];
+
+    ## Penalty applied to the likelihood; always @qcode{"none"} here.
+    LikelihoodPenalty = [];
 
     ## Name of the response variable.
     ResponseName = 'y';
@@ -107,14 +139,27 @@ classdef GeneralizedLinearModel
     ## Cell array of predictor variable names.
     PredictorNames = {};
 
-    ## Cell array of all variable names (predictors then response).
+    ## Cell array of all variable names.
     VariableNames = {};
+
+    ## Number of variables (predictors and response).
+    NumVariables = [];
 
     ## Table of per-variable information (class, range, in-model, categorical).
     VariableInfo = [];
 
-    ## Character-vector representation of the model formula.
-    Formula = '';
+    ## Table of the data the model was built from.
+    Variables = [];
+
+    ## Table recording, per input observation, its weight and whether it was
+    ## excluded, missing, or used in the fit.
+    ObservationInfo = [];
+
+    ## Cell array of observation names; empty unless the data carried row names.
+    ObservationNames = {};
+
+    ## Structure describing the model formula.
+    Formula = [];
 
     ## Structure describing the stepwise term-selection history.  Empty unless
     ## the model was built by @code{stepwiseglm}.
@@ -135,8 +180,8 @@ classdef GeneralizedLinearModel
     nulldev_    = [];   # deviance of the intercept-only model
     llnull_     = [];   # log-likelihood of the intercept-only model
     design_     = [];   # fitted design matrix (for diagnostics/plots)
-    leverage_   = [];   # hat-matrix diagonal (IRLS-weighted)
-    cooksd_     = [];   # Cook's distance per observation
+    subset_     = [];   # logical mask of the rows used in the fit
+    formulastr_ = '';   # rendered formula, e.g. 'log(y) ~ 1 + x1 + x2'
     xmeans_     = [];   # mean of each raw predictor (for slice/effect plots)
   endproperties
 
@@ -154,8 +199,8 @@ classdef GeneralizedLinearModel
     ## Custom display of the model summary.
     function disp (this)
       fprintf ("\n  Generalized linear regression model:\n");
-      if (! isempty (this.Formula))
-        fprintf ("      %s\n", this.Formula);
+      if (! isempty (this.formulastr_))
+        fprintf ("      %s\n", this.formulastr_);
       endif
       if (! isempty (this.Distribution) && isstruct (this.Distribution))
         fprintf ("      Distribution = %s,  Link = %s\n", ...
@@ -314,6 +359,13 @@ classdef GeneralizedLinearModel
         endif
         if (! isempty (opts.PredictorVars))
           pred_names = opts.PredictorVars;
+        elseif (is_formula)
+          ## Only the variables the formula names take part in the model; any
+          ## other column of the table is carried but is not a predictor.
+          used       = formula_var_names (modelspec);
+          in_formula = ismember (col_names, used) ...
+                       & ! strcmp (col_names, resp_name);
+          pred_names = col_names(in_formula);
         else
           pred_names = col_names(! strcmp (col_names, resp_name));
         endif
@@ -349,12 +401,17 @@ classdef GeneralizedLinearModel
         endfor
       endif
 
-      ## Missing/excluded masks and the fitting subset.
+      ## Missing/excluded masks and the fitting subset.  Only the variables the
+      ## model actually uses can make a row missing; an unused table column with
+      ## a gap in it does not cost an observation.
       if (! istable (data))
         missing_mask = any (isnan (X_raw), 2) | isnan (y_full);
       else
-        missing_mask = any (ismissing (tbl), 2);
+        used_cols    = [pred_names(:)', {resp_name}];
+        used_cols    = used_cols(ismember (used_cols, col_names));
+        missing_mask = any (ismissing (tbl(:, used_cols)), 2);
       endif
+      missing_mask  = missing_mask(:);
       excluded_mask = false (n_total, 1);
       if (! isempty (opts.Exclude))
         ex = opts.Exclude(:);
@@ -364,33 +421,36 @@ classdef GeneralizedLinearModel
           excluded_mask(ex) = true;
         endif
       endif
-      subset_mask = ! missing_mask & ! excluded_mask;
+      avail_mask  = ! missing_mask;
+      subset_mask = avail_mask & ! excluded_mask;
       n_obs       = sum (subset_mask);
       if (n_obs < 1)
         error (strcat ("GeneralizedLinearModel: no observations remain after", ...
                        " removing missing/excluded rows."));
       endif
 
-      ## Weights, offset, and binomial trial counts, subset to the fitting rows.
-      if (isempty (opts.Weights))
-        w_sub = [];
-      else
-        w_full = double (opts.Weights(:));
-        w_sub  = w_full(subset_mask);
+      ## Weights, offset, and binomial trial counts.  Each is kept at full
+      ## length so that the per-observation tables can span the input rows.
+      has_weights = ! isempty (opts.Weights);
+      w_full      = ones (n_total, 1);
+      if (has_weights)
+        w_full = expand_to_rows (double (opts.Weights(:)), n_total);
       endif
-      off_sub = [];
-      if (! isempty (opts.Offset))
-        off_full = double (opts.Offset(:));
-        off_sub  = off_full(subset_mask);
+      w_sub = w_full(subset_mask);
+
+      has_offset = ! isempty (opts.Offset);
+      off_full   = zeros (n_total, 1);
+      if (has_offset)
+        off_full = expand_to_rows (double (opts.Offset(:)), n_total);
       endif
-      distr = opts.Distribution;
-      N_sub = [];
+      off_sub = off_full(subset_mask);
+
+      distr  = opts.Distribution;
+      N_full = [];
+      N_sub  = [];
       if (strcmp (distr, 'binomial') && ! isempty (opts.BinomialSize))
-        N = opts.BinomialSize(:);
-        if (isscalar (N))
-          N = N * ones (n_total, 1);
-        endif
-        N_sub = N(subset_mask);
+        N_full = expand_to_rows (double (opts.BinomialSize(:)), n_total);
+        N_sub  = N_full(subset_mask);
       endif
 
       y_sub = y_full(subset_mask);
@@ -401,33 +461,44 @@ classdef GeneralizedLinearModel
                                    pred_names, cat_logical, n_total);
 
       ## ------------------------------------------------------------------ ##
-      ## Design matrix (intercept included as a column when present).
+      ## Design matrix (intercept included as a column when present).  It is
+      ## built over every input row so that the fitted values, residuals, and
+      ## diagnostics can be reported for rows kept out of the fit; the fit
+      ## itself sees only the subset.
       ## ------------------------------------------------------------------ ##
       if (is_formula)
         if (! istable (data))
-          tbl_sub = array2table ([X_raw(subset_mask,:), y_sub], ...
+          tbl_all = array2table ([X_raw, y_full], ...
                                  'VariableNames', var_names_all);
         else
-          tbl_sub = tbl(subset_mask, :);
+          tbl_all = tbl;
         endif
-        [X_design, ~, coef_names] = parseWilkinsonFormula ( ...
-          modelspec, 'model_matrix', tbl_sub);
+        ## Hand the parser only the rows it would keep anyway, so that the
+        ## returned design lines up row for row with AVAIL_MASK.
+        tbl_avail = tbl_all(avail_mask, :);
+        [X_avail, ~, coef_names] = parseWilkinsonFormula ( ...
+          modelspec, 'model_matrix', tbl_avail);
         coef_names    = coef_names(:)';
         has_intercept = any (strcmp (coef_names, '(Intercept)'));
         enc_names     = coef_names(! strcmp (coef_names, '(Intercept)'));
+        X_design_all  = NaN (n_total, columns (X_avail));
+        X_design_all(avail_mask, :) = X_avail;
         [terms, cat_info] = terms_from_coefnames (coef_names, pred_names, ...
-                                                  cat_logical, data, tbl_sub);
+                                                  cat_logical, data, tbl_avail);
       else
-        X_num_sub = X_num_full(subset_mask, :);
-        [X_enc_sub, enc_names, cat_info] = encode_categorical ( ...
-          X_num_sub, cat_logical, pred_names, cat_levels);
+        [X_enc_all, enc_names, cat_info] = encode_categorical ( ...
+          X_num_full, cat_logical, pred_names, cat_levels);
         [terms, has_intercept, coef_names, emsg] = parse_modelspec ( ...
-          modelspec, enc_names, columns (X_enc_sub), opts.Intercept);
+          modelspec, enc_names, columns (X_enc_all), opts.Intercept);
         if (! isempty (emsg))
           error ("GeneralizedLinearModel: %s", emsg);
         endif
-        X_design = build_design (terms, X_enc_sub);
+        X_design_all = build_design (terms, X_enc_all);
+        ## A missing categorical code encodes as an all-zero dummy row rather
+        ## than NaN, so mark the missing rows explicitly.
+        X_design_all(missing_mask, :) = NaN;
       endif
+      X_design = X_design_all(subset_mask, :);
 
       ## ------------------------------------------------------------------ ##
       ## Fit the design via glmfit (the intercept is a design column already).
@@ -440,10 +511,10 @@ classdef GeneralizedLinearModel
       linkname = link_name (linkspec);
 
       gargs = {'link', linkspec, 'constant', 'off'};
-      if (! isempty (w_sub))
+      if (has_weights)
         gargs = [gargs, {'weights', w_sub}];
       endif
-      if (! isempty (off_sub))
+      if (has_offset)
         gargs = [gargs, {'offset', off_sub}];
       endif
       if (! isempty (opts.DispersionFlag))
@@ -463,36 +534,47 @@ classdef GeneralizedLinearModel
       [flink, dlink, ilink] = getlinkfunctions (linkspec);
       this.Link = struct ('Name', linkname, 'Link', flink, ...
                           'Derivative', dlink, 'Inverse', ilink);
-      this.Distribution = struct ('Name', distr, ...
-                                  'DevianceFunction', [], ...
-                                  'VarianceFunction', []);
+      [devfun, varfun] = glm_family_functions (distr);
+      this.Distribution = struct ('Name', distribution_name (distr), ...
+                                  'DevianceFunction', devfun, ...
+                                  'VarianceFunction', varfun);
 
       this.Coefficients = table (b(:), stats.se(:), stats.t(:), stats.p(:), ...
         'VariableNames', {'Estimate', 'SE', 'tStat', 'pValue'}, ...
         'RowNames', coef_names(:));
-      this.Residuals = table (stats.resid(:), stats.residp(:), ...
-        stats.residd(:), stats.resida(:), ...
-        'VariableNames', {'Raw', 'Pearson', 'Deviance', 'Anscombe'});
 
-      eta = X_design * b;
-      if (! isempty (off_sub))
-        eta = eta + off_sub;
-      endif
-      mu_prob = ilink (eta);   # probability (binomial) or mean (others)
-      if (strcmp (distr, 'binomial') && ! isempty (N_sub))
-        mu_resp = N_sub .* mu_prob;
+      ## Fitted values over every input row.  Rows kept out of the fit by
+      ## 'Exclude' still get a prediction; rows dropped as missing give NaN.
+      eta_all     = X_design_all * b + off_full;
+      mu_prob_all = ilink (eta_all);   # probability (binomial) or mean (others)
+      if (isempty (N_full))
+        N_all = ones (n_total, 1);
       else
-        mu_resp = mu_prob;
+        N_all = N_full;
       endif
-      this.Fitted = struct ('Response', mu_resp, 'LinearPredictor', eta);
+      if (strcmp (distr, 'binomial'))
+        mu_resp_all = N_all .* mu_prob_all;
+        this.Fitted = table (mu_resp_all, eta_all, mu_prob_all, ...
+          'VariableNames', {'Response', 'LinearPredictor', 'Probability'});
+      else
+        mu_resp_all = mu_prob_all;
+        this.Fitted = table (mu_resp_all, eta_all, ...
+          'VariableNames', {'Response', 'LinearPredictor'});
+      endif
+
+      [r_raw, r_pear, r_ansc, r_dev] = glm_residuals (distr, y_full, ...
+                                                      mu_prob_all, N_full);
+      r_lin = (y_full - mu_prob_all) .* dlink (mu_prob_all);
+      this.Residuals = table (r_raw, r_lin, r_pear, r_ansc, r_dev, ...
+        'VariableNames', {'Raw', 'LinearPredictor', 'Pearson', 'Anscombe', ...
+                          'Deviance'});
+
+      mu_prob = mu_prob_all(subset_mask);
+      mu_resp = mu_resp_all(subset_mask);
 
       ## Log-likelihood, information criteria, and R-squared measures.  These
       ## use the intercept-only ("null") model as the baseline.
-      if (isempty (w_sub))
-        w_ll = ones (n_obs, 1);
-      else
-        w_ll = w_sub;
-      endif
+      w_ll = w_sub;
       [bn, nulldev, sn] = glmfit (ones (n_obs, 1), yfit, distr, gargs{:});
       eta0 = bn * ones (n_obs, 1);
       if (! isempty (off_sub))
@@ -516,8 +598,10 @@ classdef GeneralizedLinearModel
         'AICc', aicc, 'BIC', -2 * LL + k * log (n_obs), ...
         'CAIC', -2 * LL + k * (log (n_obs) + 1));
 
+      ybar_w = sum (w_ll .* y_sub) / sum (w_ll);
       sse = sum (w_ll .* (y_sub - mu_resp) .^ 2);
-      sst = sum (w_ll .* (y_sub - sum (w_ll .* y_sub) / sum (w_ll)) .^ 2);
+      ssr = sum (w_ll .* (mu_resp - ybar_w) .^ 2);
+      sst = sum (w_ll .* (y_sub - ybar_w) .^ 2);
       r2_ord = 1 - sse / max (sst, eps);
       dfe = stats.dfe;
       if (dfe > 0)
@@ -533,33 +617,96 @@ classdef GeneralizedLinearModel
         'Deviance', r2_dev, 'AdjGeneralized', r2_gen / r2_gen_max, ...
         'LLR', r2_llr);
 
-      ## Model formula string.
-      if (is_formula)
-        this.Formula = modelspec;
-      else
-        this.Formula = formula_string (resp_name, coef_names, has_intercept);
-      endif
+      ## Model formula.  TERMS is expressed over the encoded design columns; the
+      ## formula is expressed over the model's variables, so a categorical's
+      ## indicator columns have to be folded back onto the variable they came
+      ## from before the term names can be built.
+      n_vars  = numel (var_names_all);
+      var_idx = zeros (1, p_raw);
+      for j = 1:p_raw
+        k = find (strcmp (var_names_all, pred_names{j}), 1);
+        if (! isempty (k))
+          var_idx(j) = k;
+        endif
+      endfor
+      enc2raw   = enc_names_to_raw (enc_names, pred_names, cat_info);
+      terms_var = var_level_terms (terms(:, 1:end-1), enc2raw, var_idx, n_vars);
+      term_names = term_names_from_terms (terms_var, var_names_all);
+      lin_pred   = linear_predictor_string (terms_var, var_names_all);
+      in_model   = false (1, n_vars);
+      in_model(var_idx(var_idx > 0)) = true;
 
-      ## VariableInfo (predictors and response).
-      vi_iscat = [cat_logical, false](:);
-      vi_class = repmat ({'double'}, numel (var_names_all), 1);
-      vi_class(vi_iscat) = {'categorical'};
-      vi_inmodel = [true(1, p_raw), false](:);
-      this.VariableInfo = table (vi_class, vi_iscat, vi_inmodel, ...
-        'VariableNames', {'Class', 'IsCategorical', 'InModel'}, ...
+      this.Formula = struct ( ...
+        'ResponseName',    resp_name, ...
+        'LinearPredictor', lin_pred, ...
+        'PredictorNames',  {pred_names(:)'}, ...
+        'VariableNames',   {var_names_all(:)'}, ...
+        'TermNames',       {term_names}, ...
+        'Terms',           terms_var, ...
+        'Link',            linkspec, ...
+        'ModelFun',        @(b, X) X * b, ...
+        'FunctionCalls',   {cell(1, 0)}, ...
+        'InModel',         in_model, ...
+        'HasIntercept',    has_intercept, ...
+        'NTerms',          rows (terms_var), ...
+        'NVars',           n_vars, ...
+        'NPredictors',     p_raw);
+      this.formulastr_ = sprintf ("%s ~ %s", ...
+        link_response_string (linkspec, resp_name), lin_pred);
+
+      ## Per-variable information, over the full data rather than the fitting
+      ## subset: a range is a property of the variable, not of the fit.
+      vi_class   = cell (n_vars, 1);
+      vi_range   = cell (n_vars, 1);
+      vi_inmodel = in_model(:);
+      vi_iscat   = false (n_vars, 1);
+      vi_iscat(var_idx(var_idx > 0)) = cat_logical(var_idx > 0);
+      for j = 1:n_vars
+        if (istable (data))
+          col = tbl.(var_names_all{j});
+        elseif (j <= p_raw)
+          col = X_raw(:, j);
+        else
+          col = y_full;
+        endif
+        [vi_class{j}, vi_range{j}] = variable_class_and_range (col);
+      endfor
+      this.VariableInfo = table (vi_class, vi_range, vi_inmodel, vi_iscat, ...
+        'VariableNames', {'Class', 'Range', 'InModel', 'IsCategorical'}, ...
         'RowNames', var_names_all(:));
 
-      ## Leverage (IRLS-weighted hat diagonal) and Cook's distance.
+      if (istable (data))
+        this.Variables = tbl;
+      else
+        this.Variables = array2table ([X_raw, y_full], ...
+                                      'VariableNames', var_names_all);
+      endif
+      this.ObservationInfo = table (w_full, excluded_mask, missing_mask, ...
+        subset_mask, ...
+        'VariableNames', {'Weights', 'Excluded', 'Missing', 'Subset'});
+
+      ## Leverage, hat matrix, and Cook's distance.  The hat matrix is the
+      ## asymmetric IRLS form H = X inv(X'WX) X' W, whose diagonal is the
+      ## leverage; rows outside the fit contribute nothing to it.
       dmu_deta = 1 ./ dlink (mu_prob);
       vwt      = glm_varfun (distr, mu_prob, N_sub);
       w_irls   = (dmu_deta .^ 2) ./ max (vwt, realmin) .* w_ll;
-      Xw       = X_design .* sqrt (w_irls);
-      [Qh, ~]  = qr (Xw, 0);
-      lev      = min (sum (Qh .^ 2, 2), 1 - eps);
-      pear     = stats.residp(:);
+      XtW      = (X_design .* w_irls)';
+      Hs       = X_design * ((XtW * X_design) \ XtW);
+      lev      = diag (Hs);
+      pear     = r_pear(subset_mask);
       phi_c    = ternary (logical (stats.estdisp), stats.s, 1);
-      cooksd   = (pear .^ 2 ./ (phi_c * numel (b))) ...
-                 .* (lev ./ max (1 - lev, eps) .^ 2) .* (1 - lev);
+      cooksd   = w_ll .* pear .^ 2 .* lev ...
+                 ./ (max (1 - lev, eps) .^ 2 * numel (b) * phi_c);
+
+      lev_all = zeros (n_total, 1);
+      lev_all(subset_mask) = lev;
+      cd_all = NaN (n_total, 1);
+      cd_all(subset_mask) = cooksd;
+      hat_all = zeros (n_total, n_total);
+      hat_all(subset_mask, subset_mask) = Hs;
+      this.Diagnostics = table (lev_all, cd_all, hat_all, ...
+        'VariableNames', {'Leverage', 'CooksDistance', 'HatMatrix'});
 
       this.b_          = b;
       this.stats_      = stats;
@@ -571,8 +718,7 @@ classdef GeneralizedLinearModel
       this.encnames_   = enc_names;
       this.prednames_  = pred_names;
       this.design_     = X_design;
-      this.leverage_   = lev;
-      this.cooksd_     = cooksd;
+      this.subset_     = subset_mask;
       this.xmeans_     = mean (X_num_full(subset_mask,:), 1);
 
       this.CoefficientNames         = coef_names;
@@ -581,14 +727,19 @@ classdef GeneralizedLinearModel
       this.NumEstimatedCoefficients = numel (b);
       this.NumPredictors            = p_raw;
       this.NumObservations          = n_obs;
+      this.NumVariables             = n_vars;
       this.Deviance                 = dev;
       this.DFE                      = stats.dfe;
       this.Dispersion               = stats.s;
       this.DispersionEstimated      = logical (stats.estdisp);
-      this.Offset                   = off_sub;
+      this.SSE                      = sse;
+      this.SSR                      = ssr;
+      this.SST                      = sst;
+      this.Offset                   = off_full;
+      this.LikelihoodPenalty        = string ("none");
       this.ResponseName             = resp_name;
-      this.PredictorNames           = pred_names;
-      this.VariableNames            = var_names_all;
+      this.PredictorNames           = pred_names(:);
+      this.VariableNames            = var_names_all(:);
 
     endfunction
 
@@ -767,7 +918,7 @@ classdef GeneralizedLinearModel
       pValue     = [NaN; pval];
       tbl = table (Deviance, DFE, chi2Stat, pValue, ...
         'VariableNames', {'Deviance', 'DFE', 'chi2Stat', 'pValue'}, ...
-        'RowNames', {'(Constant)', mdl.Formula});
+        'RowNames', {'(Constant)', mdl.formulastr_});
     endfunction
 
     ## -*- texinfo -*-
@@ -876,22 +1027,25 @@ classdef GeneralizedLinearModel
       if (nargin < 2)
         plottype = 'leverage';
       endif
-      n = numel (mdl.leverage_);
+      n = mdl.NumObservations;
+      idx = find (mdl.subset_);
       switch (lower (plottype))
         case 'leverage'
-          h = stem (1:n, mdl.leverage_, 'Marker', 'x');
+          lev = mdl.Diagnostics.Leverage(idx);
+          h = stem (idx, lev, 'Marker', 'x');
           ref = 2 * mdl.NumCoefficients / n;
           ylabel ("Leverage");
         case 'cookd'
-          h = stem (1:n, mdl.cooksd_, 'Marker', 'x');
-          ref = 3 * mean (mdl.cooksd_);
+          cd = mdl.Diagnostics.CooksDistance(idx);
+          h = stem (idx, cd, 'Marker', 'x');
+          ref = 3 * mean (cd);
           ylabel ("Cook's distance");
         otherwise
           error (strcat ("GeneralizedLinearModel.plotDiagnostics: bad plot", ...
                          " type '%s'."), plottype);
       endswitch
       hold on;
-      plot ([1, n], [ref, ref], 'r--');
+      plot ([idx(1), idx(end)], [ref, ref], 'r--');
       hold off;
       xlabel ("Row number");
       title (sprintf ("Diagnostics: %s", plottype));
@@ -969,8 +1123,9 @@ classdef GeneralizedLinearModel
       endif
       others = setdiff (1:columns (X), cidx);
       Xo = X(:,others);
-      wr = mdl.Fitted.Response;   # working response proxy: use raw residuals
-      ry = mdl.Residuals.Raw;
+      ## The design holds the fitted rows only, so take the residuals of the
+      ## same rows.
+      ry = mdl.Residuals.Raw(mdl.subset_);
       xj = X(:,cidx);
       bx = Xo \ xj;
       rx = xj - Xo * bx;
@@ -1106,17 +1261,285 @@ function [terms, cat_info] = terms_from_coefnames (coef_names, pred_names, ...
   endfor
 endfunction
 
-## Build a Wilkinson-style formula string from coefficient names.
-function s = formula_string (resp_name, coef_names, has_intercept)
-  terms = coef_names(! strcmp (coef_names, '(Intercept)'));
-  if (has_intercept)
-    rhs = strjoin ([{'1'}, terms], ' + ');
-  elseif (isempty (terms))
-    rhs = '1';
-  else
-    rhs = strjoin (terms, ' + ');
+## Broadcast a scalar to N rows; otherwise pass the vector through.
+function v = expand_to_rows (v, n)
+  if (isscalar (v))
+    v = v * ones (n, 1);
   endif
-  s = sprintf ('%s ~ %s', resp_name, rhs);
+endfunction
+
+## Base names of the variables a Wilkinson formula refers to (response
+## included), with any '^k' power suffix stripped.
+function vnames = formula_var_names (modelspec)
+  schema = parseWilkinsonFormula (modelspec, 'matrix');
+  vnames = regexprep (schema.VariableNames, '\^\d+$', '');
+  vnames = unique (vnames, 'stable');
+endfunction
+
+## Map each encoded design column onto the raw predictor it came from.  A
+## numeric predictor keeps its own name; a categorical's indicator columns are
+## named '<predictor>_<level>', so the longest predictor name that prefixes the
+## encoded name identifies the source variable.
+function m = enc_names_to_raw (enc_names, pred_names, cat_info)
+  m = zeros (1, numel (enc_names));
+  for k = 1:numel (enc_names)
+    nm  = enc_names{k};
+    idx = find (strcmp (pred_names, nm), 1);
+    if (isempty (idx))
+      idx = 0;
+      best_len = 0;
+      for j = 1:numel (pred_names)
+        pj = pred_names{j};
+        if (numel (nm) > numel (pj) + 1 ...
+            && strncmp (nm, [pj, '_'], numel (pj) + 1) ...
+            && numel (pj) > best_len)
+          idx = j;
+          best_len = numel (pj);
+        endif
+      endfor
+    endif
+    m(k) = idx;
+  endfor
+endfunction
+
+## Fold a terms matrix over encoded design columns onto one over the model's
+## variables, dropping the duplicate rows that a categorical's several
+## indicator columns collapse into.
+function T = var_level_terms (terms_enc, enc2raw, var_idx, n_vars)
+  n_terms = rows (terms_enc);
+  T = zeros (n_terms, n_vars);
+  for t = 1:n_terms
+    for j = 1:columns (terms_enc)
+      if (terms_enc(t, j) != 0 && enc2raw(j) > 0 && var_idx(enc2raw(j)) > 0)
+        c = var_idx(enc2raw(j));
+        T(t, c) = max (T(t, c), terms_enc(t, j));
+      endif
+    endfor
+  endfor
+  keep = true (n_terms, 1);
+  for t = 2:n_terms
+    if (any (all (T(1:t-1, :) == T(t, :), 2)))
+      keep(t) = false;
+    endif
+  endfor
+  T = T(keep, :);
+endfunction
+
+## Name each row of a variable-level terms matrix.
+function names = term_names_from_terms (T, var_names)
+  n_terms = rows (T);
+  names   = cell (n_terms, 1);
+  for t = 1:n_terms
+    idx = find (T(t, :) != 0);
+    if (isempty (idx))
+      names{t} = '(Intercept)';
+    else
+      parts = cell (1, numel (idx));
+      for k = 1:numel (idx)
+        parts{k} = factor_string (var_names{idx(k)}, T(t, idx(k)));
+      endfor
+      names{t} = strjoin (parts, ':');
+    endif
+  endfor
+endfunction
+
+## One factor of a term, carrying its power when that is not 1.
+function s = factor_string (name, power)
+  if (power == 1)
+    s = name;
+  else
+    s = sprintf ("%s^%d", name, power);
+  endif
+endfunction
+
+## Render the right-hand side of the model formula.  A term whose factors all
+## appear on their own, and in every combination below it, is written as a
+## product: 'x1 + x2 + x1:x2' becomes 'x1*x2', and the terms it subsumes are
+## then left out.
+function s = linear_predictor_string (T, var_names)
+
+  n_terms = rows (T);
+  factors = cell (n_terms, 1);
+  for t = 1:n_terms
+    factors{t} = find (T(t, :) != 0);
+  endfor
+
+  rendered = term_names_from_terms (T, var_names);
+  absorbed = false (n_terms, 1);
+  n_fac    = cellfun (@numel, factors);
+  [~, order] = sort (n_fac, 'descend');
+
+  for t = order(:)'
+    if (absorbed(t) || n_fac(t) < 2)
+      continue;
+    endif
+    if (any (T(t, factors{t}) != 1))
+      continue;   # a power term is never written as a product
+    endif
+    subs = proper_subsets (factors{t});
+    idx  = zeros (1, numel (subs));
+    for s_i = 1:numel (subs)
+      row = zeros (1, columns (T));
+      row(subs{s_i}) = 1;
+      hit = find (all (T == row, 2), 1);
+      if (isempty (hit))
+        idx = [];
+        break;
+      endif
+      idx(s_i) = hit;
+    endfor
+    if (isempty (idx))
+      continue;
+    endif
+    rendered{t} = strjoin (var_names(factors{t}), '*');
+    absorbed(idx) = true;
+  endfor
+
+  parts = {};
+  for t = 1:n_terms
+    if (absorbed(t))
+      continue;
+    elseif (isempty (factors{t}))
+      parts{end+1} = '1';
+    else
+      parts{end+1} = rendered{t};
+    endif
+  endfor
+  if (isempty (parts))
+    s = '1';
+  else
+    s = strjoin (parts, ' + ');
+  endif
+
+endfunction
+
+## Every non-empty proper subset of a factor index vector.
+function subs = proper_subsets (idx)
+  k = numel (idx);
+  subs = cell (1, 2 ^ k - 2);
+  n = 0;
+  for m = 1:(2 ^ k - 2)
+    pick = bitget (m, 1:k) != 0;
+    n = n + 1;
+    subs{n} = idx(pick);
+  endfor
+endfunction
+
+## Left-hand side of the formula: the response wrapped in its link.
+function s = link_response_string (linkspec, resp_name)
+  if (ischar (linkspec))
+    if (strcmp (linkspec, 'identity'))
+      s = resp_name;
+    else
+      s = sprintf ("%s(%s)", linkspec, resp_name);
+    endif
+  elseif (isnumeric (linkspec) && isscalar (linkspec))
+    if (linkspec == 1)
+      s = resp_name;
+    else
+      s = sprintf ("power(%s,%g)", resp_name, linkspec);
+    endif
+  else
+    s = sprintf ("link(%s)", resp_name);
+  endif
+endfunction
+
+## Display name of a response distribution.
+function name = distribution_name (distr)
+  switch (distr)
+    case 'normal';            name = 'Normal';
+    case 'binomial';          name = 'Binomial';
+    case 'poisson';           name = 'Poisson';
+    case 'gamma';             name = 'Gamma';
+    case 'inverse gaussian';  name = 'Inverse Gaussian';
+  endswitch
+endfunction
+
+## Deviance and variance functions of a response distribution, as the handles
+## reported by the Distribution property.
+function [devfun, varfun] = glm_family_functions (distr)
+  switch (distr)
+    case 'normal'
+      devfun = @(mu, y) (y - mu) .^ 2;
+      varfun = @(mu) ones (size (mu));
+    case 'binomial'
+      devfun = @(mu, y, N) 2 * N .* (y .* log ((y + (y == 0)) ./ mu) ...
+                           + (1 - y) .* log ((1 - y + (y == 1)) ./ (1 - mu)));
+      varfun = @(mu, N) mu .* (1 - mu) ./ N;
+    case 'poisson'
+      devfun = @(mu, y) 2 * (y .* (log ((y + (y == 0)) ./ mu)) - (y - mu));
+      varfun = @(mu) mu;
+    case 'gamma'
+      devfun = @(mu, y) 2 * (-log (y ./ mu) + (y - mu) ./ mu);
+      varfun = @(mu) mu .^ 2;
+    case 'inverse gaussian'
+      devfun = @(mu, y) (((y - mu) ./ mu) .^ 2) ./ y;
+      varfun = @(mu) mu .^ 3;
+  endswitch
+endfunction
+
+## Raw, Pearson, Anscombe, and deviance residuals of a GLM fit, evaluated for
+## every input row.  Y is the response (a proportion for the binomial family),
+## MU the fitted probability/mean, and N the binomial trial counts (empty
+## otherwise).  Matches the residuals @code{glmfit} returns for the fitted rows.
+function [raw, pear, ansc, devr] = glm_residuals (distr, y, mu, N)
+
+  [devfun, varfun] = glm_family_functions (distr);
+  if (strcmp (distr, 'binomial'))
+    if (isempty (N))
+      N = ones (size (y));
+    endif
+    raw  = (y - mu) .* N;
+    sd   = sqrt (varfun (mu, N));
+    devn = devfun (mu, y, N);
+  else
+    raw  = y - mu;
+    sd   = sqrt (varfun (mu));
+    devn = devfun (mu, y);
+  endif
+  pear = (y - mu) ./ (sd + (y == mu));
+  devr = sign (y - mu) .* sqrt (max (0, devn));
+
+  switch (distr)
+    case 'normal'
+      ansc = y - mu;
+    case 'binomial'
+      ab   = 2 / 3;
+      ansc = beta (ab, ab) * (betainc (y, ab, ab) - betainc (mu, ab, ab)) ...
+             ./ ((mu .* (1 - mu)) .^ (1 / 6) ./ sqrt (N));
+    case 'poisson'
+      ansc = 1.5 * ((y .^ (2 / 3) - mu .^ (2 / 3)) ./ mu .^ (1 / 6));
+    case 'gamma'
+      pwr  = 1 / 3;
+      ansc = 3 * (y .^ pwr - mu .^ pwr) ./ mu .^ pwr;
+    case 'inverse gaussian'
+      ansc = (log (y) - log (mu)) ./ mu;
+  endswitch
+
+endfunction
+
+## Class name and range of a data column, as reported by VariableInfo.  The
+## range of a numeric column is its finite extremes, and of a grouping column
+## its levels.
+function [cname, range] = variable_class_and_range (col)
+  cname = class (col);
+  if (isnumeric (col) || islogical (col))
+    fv = double (col(:));
+    fv = fv(isfinite (fv));
+    if (isempty (fv))
+      range = [NaN, NaN];
+    else
+      range = [min(fv), max(fv)];
+    endif
+  elseif (isa (col, 'categorical'))
+    lv = categories (col);
+    range = lv(:)';
+  elseif (iscell (col))
+    lv = unique (col);
+    range = lv(:)';
+  else
+    range = {};
+  endif
 endfunction
 
 ## Log-likelihood of a GLM fit.  Y is the response (proportion for binomial),
@@ -1167,17 +1590,15 @@ endfunction
 ## Variance function V(mu) of the response distribution (for the IRLS weights
 ## used in leverage/Cook's-distance diagnostics).
 function v = glm_varfun (distr, mu, N)
-  switch (distr)
-    case 'normal';            v = ones (size (mu));
-    case 'binomial'
-      if (isempty (N))
-        N = ones (size (mu));
-      endif
-      v = mu .* (1 - mu) ./ N;
-    case 'poisson';           v = mu;
-    case 'gamma';             v = mu .^ 2;
-    case 'inverse gaussian';  v = mu .^ 3;
-  endswitch
+  [~, varfun] = glm_family_functions (distr);
+  if (strcmp (distr, 'binomial'))
+    if (isempty (N))
+      N = ones (size (mu));
+    endif
+    v = varfun (mu, N);
+  else
+    v = varfun (mu);
+  endif
 endfunction
 
 ## Response distribution's canonical link specification.
@@ -1196,7 +1617,7 @@ function name = link_name (linkarg)
   if (ischar (linkarg))
     name = linkarg;
   elseif (isnumeric (linkarg) && isscalar (linkarg))
-    name = sprintf ('power(%g)', linkarg);
+    name = sprintf ('%g', linkarg);
   else
     name = 'custom';
   endif
@@ -1226,7 +1647,7 @@ endfunction
 %! y = [1; 0; 2; 3; 2; 4; 1; 3];
 %! mdl = GeneralizedLinearModel (X, y, "linear", "Distribution", "poisson");
 %! assert_equal (class (mdl), "GeneralizedLinearModel");
-%! assert_equal (mdl.Distribution.Name, "poisson");
+%! assert_equal (mdl.Distribution.Name, "Poisson");
 %! assert_equal (mdl.Link.Name, "log");
 %!error<DATA, RESP, and MODELSPEC are required> GeneralizedLinearModel (1)
 %!error<X must be a real matrix.> ...
@@ -1298,7 +1719,7 @@ endfunction
 %! mdl = fitglm (X, yp, "Distribution", "poisson");
 %! assert_equal (mdl.Dispersion, 1);
 %! assert_equal (mdl.DispersionEstimated, false);
-%! assert_equal (mdl.Distribution.Name, "poisson");
+%! assert_equal (mdl.Distribution.Name, "Poisson");
 %! assert_equal (mdl.Link.Name, "log");
 
 %!test  # the coefficient covariance is symmetric with SE^2 on its diagonal
@@ -1395,3 +1816,288 @@ endfunction
 %! unwind_protect_cleanup
 %!   close (hf);
 %! end_unwind_protect
+
+## The property surface below is checked against MATLAB R2024a on the same data.
+
+%!test  # each family reports its MATLAB display name and its own functions
+%! names = {'Normal', 'Binomial', 'Poisson', 'Gamma', 'Inverse Gaussian'};
+%! dists = {'normal', 'binomial', 'poisson', 'gamma', 'inverse gaussian'};
+%! resp  = {yn, yb, yp, abs(yn) + 1, abs(yn) + 1};
+%! for k = 1:numel (dists)
+%!   mdl = fitglm (X, resp{k}, "Distribution", dists{k});
+%!   assert_equal (mdl.Distribution.Name, names{k});
+%!   dev = mdl.Distribution.DevianceFunction;
+%!   var = mdl.Distribution.VarianceFunction;
+%!   assert_equal (is_function_handle (dev), true);
+%!   assert_equal (is_function_handle (var), true);
+%! endfor
+
+%!test  # the variance function is the family's variance, not its scale
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! v = mdl.Distribution.VarianceFunction;
+%! assert_equal (v ([1; 4; 9]), [1; 4; 9]);
+%! mdl = fitglm (X, abs (yn) + 1, "Distribution", "gamma");
+%! v = mdl.Distribution.VarianceFunction;
+%! assert_equal (v ([1; 2; 3]), [1; 4; 9]);
+
+%!test  # the deviance function reproduces the reported deviance
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! d = mdl.Distribution.DevianceFunction;
+%! assert_equal (sum (d (mdl.Fitted.Response, yp)), mdl.Deviance, 1e-10);
+
+%!test  # sums of squares match MATLAB and reproduce Rsquared.Ordinary
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.SSE, 5.878748587925331, 1e-12);
+%! assert_equal (mdl.SSR, 22.693546014008586, 1e-11);
+%! assert_equal (mdl.SST, 30, 1e-12);
+%! assert_equal (mdl.Rsquared.Ordinary, 1 - mdl.SSE / mdl.SST, 1e-14);
+
+%!test  # SSE + SSR closes to SST only for the identity link
+%! mdl = fitglm (X, yn);
+%! assert_equal (mdl.SSE, 1.007522513007451, 1e-12);
+%! assert_equal (mdl.SSR, 20.549977486992557, 1e-11);
+%! assert_equal (mdl.SST, 21.557500000000005, 1e-12);
+%! assert_equal (mdl.SSE + mdl.SSR, mdl.SST, 1e-12);
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.SSE + mdl.SSR < mdl.SST, true);
+
+%!test  # binomial and gamma sums of squares
+%! mdl = fitglm (X, yb, "Distribution", "binomial");
+%! assert_equal ([mdl.SSE, mdl.SSR, mdl.SST], ...
+%!   [1.529775270428043, 2.016466154627350, 3.75], 1e-11);
+%! mdl = fitglm (X, abs (yn) + 1, "Distribution", "gamma");
+%! assert_equal ([mdl.SSE, mdl.SSR, mdl.SST], ...
+%!   [3.537122914639216, 5.173700107311616, 9.45], 1e-9);
+
+%!test  # counts, penalty, and observation names
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.NumVariables, 4);
+%! assert_equal (char (mdl.LikelihoodPenalty), "none");
+%! assert_equal (mdl.ObservationNames, {});
+%! assert_equal (size (mdl.Steps), [0, 0]);
+
+%!test  # Variables holds the data the model was built from
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (class (mdl.Variables), "table");
+%! assert_equal (size (mdl.Variables), [16, 4]);
+%! assert_equal (mdl.Variables.Properties.VariableNames, ...
+%!               {'x1', 'x2', 'x3', 'y'});
+%! assert_equal (mdl.Variables{:, 'x2'}, X(:,2));
+%! assert_equal (mdl.Variables{:, 'y'}, yp);
+
+%!test  # ObservationInfo spans the input rows and records why each was used
+%! mdl = fitglm (X, yn);
+%! assert_equal (size (mdl.ObservationInfo), [16, 4]);
+%! assert_equal (mdl.ObservationInfo.Properties.VariableNames, ...
+%!               {'Weights', 'Excluded', 'Missing', 'Subset'});
+%! assert_equal (mdl.ObservationInfo.Weights, ones (16, 1));
+%! assert_equal (any (mdl.ObservationInfo.Excluded), false);
+%! assert_equal (all (mdl.ObservationInfo.Subset), true);
+
+%!test  # excluded rows keep their weight and drop out of the fit
+%! mdl = fitglm (X, yn, "Exclude", [2 5], "Weights", (1:16)' / 16);
+%! assert_equal (mdl.NumObservations, 14);
+%! assert_equal (mdl.DFE, 10);
+%! assert_equal (mdl.ObservationInfo.Weights, (1:16)' / 16);
+%! assert_equal (find (mdl.ObservationInfo.Excluded), [2; 5]);
+%! assert_equal (any (mdl.ObservationInfo.Missing), false);
+%! assert_equal (find (! mdl.ObservationInfo.Subset), [2; 5]);
+%! assert_equal (mdl.SSE, 0.376329223083291, 1e-11);
+%! assert_equal (mdl.SST, 12.408120155038763, 1e-10);
+%! assert_equal (mdl.Dispersion, 0.037632922308329, 1e-12);
+
+%!test  # an excluded row still gets a fitted value; a missing row does not
+%! mdl = fitglm (X, yn, "Exclude", [2 5], "Weights", (1:16)' / 16);
+%! assert_equal (size (mdl.Fitted), [16, 2]);
+%! assert_equal (mdl.Fitted.Response(1:3), ...
+%!   [1.452778236704902; -0.409857651323262; 1.021905387197724], 1e-11);
+%! assert_equal (mdl.Residuals.Raw(2), 0.109857651323262, 1e-11);
+%! Xm = X;  Xm(3,2) = NaN;
+%! mdl = fitglm (Xm, yn);
+%! assert_equal (mdl.NumObservations, 15);
+%! assert_equal (find (mdl.ObservationInfo.Missing), 3);
+%! assert_equal (isnan (mdl.Fitted.Response(3)), true);
+%! assert_equal (isnan (mdl.Residuals.Raw(3)), true);
+%! assert_equal (mdl.Fitted.Response(1), 1.675087141815260, 1e-11);
+%! assert_equal (mdl.SSE, 0.990693655817047, 1e-11);
+
+%!test  # the binomial family adds a Probability column to Fitted
+%! mdl = fitglm (X, yb, "Distribution", "binomial");
+%! assert_equal (mdl.Fitted.Properties.VariableNames, ...
+%!               {'Response', 'LinearPredictor', 'Probability'});
+%! assert_equal (mdl.Fitted.Probability(1), 0.998111791212415, 1e-9);
+%! assert_equal (mdl.Fitted.Response, mdl.Fitted.Probability, 1e-14);
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Fitted.Properties.VariableNames, ...
+%!               {'Response', 'LinearPredictor'});
+
+%!test  # with BinomialSize the response is a proportion and the fit a count
+%! N = 5 * ones (16, 1);
+%! y = [3 4 5 1 0 4 3 5 4 5 5 1 0 2 1 5]' ./ N;
+%! mdl = fitglm (X, y, "Distribution", "binomial", "BinomialSize", N);
+%! assert_equal (mdl.Fitted.Response, N .* mdl.Fitted.Probability, 1e-12);
+%! assert_equal (mdl.Residuals.Raw, (y - mdl.Fitted.Probability) .* N, 1e-12);
+
+%!test  # residuals gain the linear-predictor column, in MATLAB's order
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Residuals.Properties.VariableNames, ...
+%!   {'Raw', 'LinearPredictor', 'Pearson', 'Anscombe', 'Deviance'});
+%! assert_equal (mdl.Residuals.LinearPredictor(1), 0.066685156329760, 1e-12);
+%! ## For the log link the working residual is the raw one over the mean.
+%! assert_equal (mdl.Residuals.LinearPredictor, ...
+%!               mdl.Residuals.Raw ./ mdl.Fitted.Response, 1e-12);
+
+%!test  # the identity link leaves the linear-predictor residual raw
+%! mdl = fitglm (X, yn);
+%! assert_equal (mdl.Residuals.LinearPredictor, mdl.Residuals.Raw, 1e-14);
+%! mdl = fitglm (X, yb, "Distribution", "binomial");
+%! assert_equal (mdl.Residuals.LinearPredictor(1), 1.001891780864838, 1e-7);
+
+%!test  # leverage, Cook's distance, and the hat matrix
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Diagnostics.Properties.VariableNames, ...
+%!               {'Leverage', 'CooksDistance', 'HatMatrix'});
+%! assert_equal (mdl.Diagnostics.Leverage(1), 0.768034312650850, 1e-7);
+%! assert_equal (mdl.Diagnostics.CooksDistance(1), 0.074381550609974, 1e-7);
+%! assert_equal (size (mdl.Diagnostics.HatMatrix), [16, 16]);
+%! assert_equal (diag (mdl.Diagnostics.HatMatrix), mdl.Diagnostics.Leverage, ...
+%!               1e-14);
+%! assert_equal (sum (mdl.Diagnostics.Leverage), mdl.NumCoefficients, 1e-8);
+
+%!test  # the GLM hat matrix is the asymmetric IRLS form, so H(i,j) != H(j,i)
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! H = mdl.Diagnostics.HatMatrix;
+%! assert_equal (H(1,2), 0.198729950284820, 1e-7);
+%! assert_equal (H(2,1), 0.334913252272241, 1e-7);
+%! ## The identity link with unit weights makes it symmetric again.
+%! H = fitglm (X, yn).Diagnostics.HatMatrix;
+%! assert_equal (H, H', 1e-12);
+
+%!test  # normal-family diagnostics match MATLAB
+%! mdl = fitglm (X, yn);
+%! assert_equal (mdl.Diagnostics.Leverage(1:3), ...
+%!   [0.392783227704423; 0.308688028422869; 0.103894702431155], 1e-12);
+%! assert_equal (mdl.Diagnostics.CooksDistance(1), 0.562165139840681, 1e-11);
+
+%!test  # rows outside the fit have no leverage and no Cook's distance
+%! mdl = fitglm (X, yn, "Exclude", [2 5], "Weights", (1:16)' / 16);
+%! assert_equal (mdl.Diagnostics.Leverage([2, 5]), [0; 0]);
+%! assert_equal (isnan (mdl.Diagnostics.CooksDistance([2, 5])), [true; true]);
+%! assert_equal (mdl.Diagnostics.Leverage(1), 0.116937877466335, 1e-11);
+%! assert_equal (mdl.Diagnostics.CooksDistance(1), 0.026081406006346, 1e-10);
+%! assert_equal (mdl.Diagnostics.HatMatrix([2, 5], :), zeros (2, 16));
+
+%!test  # VariableInfo carries the class and range of every variable
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.VariableInfo.Properties.VariableNames, ...
+%!               {'Class', 'Range', 'InModel', 'IsCategorical'});
+%! assert_equal (size (mdl.VariableInfo), [4, 4]);
+%! assert_equal (mdl.VariableInfo.Range{1}, [-1.17, 2.09], 1e-14);
+%! assert_equal (mdl.VariableInfo.Range{2}, [-2.74, 1.33], 1e-14);
+%! assert_equal (mdl.VariableInfo.Range{4}, [0, 5]);
+%! assert_equal (mdl.VariableInfo.InModel, [true; true; true; false]);
+%! assert_equal (mdl.VariableInfo.IsCategorical, false (4, 1));
+%! assert_equal (mdl.VariableInfo.Class, repmat ({'double'}, 4, 1));
+
+%!test  # a range spans the whole variable, not just the fitted rows
+%! mdl = fitglm (X, yn, "Exclude", [1, 10]);
+%! assert_equal (mdl.VariableInfo.Range{1}, [-1.17, 2.09], 1e-14);
+%! assert_equal (mdl.VariableInfo.Range{4}, [-1.3, 2.9], 1e-14);
+
+%!test  # the offset spans the input rows and is zero when none was given
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! assert_equal (mdl.Offset, zeros (16, 1));
+%! mdl = fitglm (X, yp, "Distribution", "poisson", ...
+%!               "Offset", log (2 * ones (16, 1)));
+%! assert_equal (mdl.Offset, log (2) * ones (16, 1), 1e-14);
+
+%!test  # the formula is a structure describing the model over its variables
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! f = mdl.Formula;
+%! assert_equal (f.ResponseName, "y");
+%! assert_equal (f.LinearPredictor, "1 + x1 + x2 + x3");
+%! assert_equal (f.PredictorNames, {'x1', 'x2', 'x3'});
+%! assert_equal (f.VariableNames, {'x1', 'x2', 'x3', 'y'});
+%! assert_equal (f.TermNames, {'(Intercept)'; 'x1'; 'x2'; 'x3'});
+%! assert_equal (f.Terms, [0 0 0 0; 1 0 0 0; 0 1 0 0; 0 0 1 0]);
+%! assert_equal (f.Link, "log");
+%! assert_equal (f.InModel, [true, true, true, false]);
+%! assert_equal (f.HasIntercept, true);
+%! assert_equal ([f.NTerms, f.NVars, f.NPredictors], [4, 4, 3]);
+%! assert_equal (f.FunctionCalls, cell (1, 0));
+%! assert_equal (f.ModelFun ([1; 2], [1, 3]), 7);
+
+%!test  # a term whose parts are all present is written as a product
+%! f = fitglm (X, yn, "interactions").Formula;
+%! assert_equal (f.LinearPredictor, "1 + x1*x2 + x1*x3 + x2*x3");
+%! assert_equal (f.NTerms, 7);
+%! assert_equal (f.TermNames, ...
+%!   {'(Intercept)'; 'x1'; 'x2'; 'x3'; 'x1:x2'; 'x1:x3'; 'x2:x3'});
+%! f = fitglm (X(:,1:2), yn, "quadratic").Formula;
+%! assert_equal (f.LinearPredictor, "1 + x1*x2 + x1^2 + x2^2");
+%! assert_equal (f.TermNames, ...
+%!   {'(Intercept)'; 'x1'; 'x2'; 'x1:x2'; 'x1^2'; 'x2^2'});
+%! assert_equal (f.Terms, [0 0 0; 1 0 0; 0 1 0; 1 1 0; 2 0 0; 0 2 0]);
+
+%!test  # a model with every interaction collapses to one product
+%! f = fitglm (X, yn, "full").Formula;
+%! assert_equal (f.LinearPredictor, "1 + x1*x2*x3");
+
+%!test  # dropping the intercept drops the leading 1
+%! f = fitglm (X, yn, "Intercept", false).Formula;
+%! assert_equal (f.LinearPredictor, "x1 + x2 + x3");
+%! assert_equal (f.HasIntercept, false);
+%! assert_equal (f.Terms, [1 0 0 0; 0 1 0 0; 0 0 1 0]);
+
+%!test  # disp names the link alongside the response
+%! s = evalc ("disp (fitglm (X, yp, 'Distribution', 'poisson'))");
+%! assert_equal (isempty (strfind (s, "log(y) ~ 1 + x1 + x2 + x3")), false);
+%! s = evalc ("disp (fitglm (X, yb, 'Distribution', 'binomial'))");
+%! assert_equal (isempty (strfind (s, "logit(y) ~ 1 + x1 + x2 + x3")), false);
+%! s = evalc ("disp (fitglm (X, yn))");
+%! assert_equal (isempty (strfind (s, "y ~ 1 + x1 + x2 + x3")), false);
+
+%!test  # a numeric link is named by its exponent and shown as a power
+%! mdl = fitglm (X, abs (yn) + 1, "Distribution", "inverse gaussian");
+%! assert_equal (mdl.Link.Name, "-2");
+%! s = evalc ("disp (mdl)");
+%! assert_equal (isempty (strfind (s, "power(y,-2) ~ 1 + x1")), false);
+
+%!test  # a table model keeps every column but only models what it names
+%! tbl = array2table ([X, yn], "VariableNames", {'a', 'b', 'c', 'resp'});
+%! mdl = fitglm (tbl, "resp ~ 1 + a + b");
+%! assert_equal (mdl.NumPredictors, 2);
+%! assert_equal (mdl.NumVariables, 4);
+%! assert_equal (mdl.PredictorNames, {'a'; 'b'});
+%! assert_equal (mdl.VariableNames, {'a'; 'b'; 'c'; 'resp'});
+%! assert_equal (mdl.Formula.LinearPredictor, "1 + a + b");
+%! assert_equal (mdl.Formula.InModel, [true, true, false, false]);
+%! assert_equal (mdl.VariableInfo.InModel, [true; true; false; false]);
+%! assert_equal (size (mdl.Variables), [16, 4]);
+
+%!test  # a column the model does not use cannot cost an observation
+%! tbl = array2table ([X, yn], "VariableNames", {'a', 'b', 'c', 'resp'});
+%! tbl.c(4) = NaN;
+%! mdl = fitglm (tbl, "resp ~ 1 + a + b");
+%! assert_equal (mdl.NumObservations, 16);
+%! assert_equal (any (mdl.ObservationInfo.Missing), false);
+
+%!test  # a grouping column is reported by its own class and its levels
+%! g = {'lo'; 'hi'; 'lo'; 'hi'; 'lo'; 'hi'; 'lo'; 'hi'; ...
+%!      'lo'; 'hi'; 'lo'; 'hi'; 'lo'; 'hi'; 'lo'; 'hi'};
+%! tbl = table (X(:,1), g, yn, "VariableNames", {'u', 'grp', 'resp'});
+%! mdl = fitglm (tbl, "resp ~ 1 + u + grp");
+%! assert_equal (mdl.VariableInfo.Class, {'double'; 'cell'; 'double'});
+%! assert_equal (mdl.VariableInfo.IsCategorical, [false; true; false]);
+%! assert_equal (mdl.VariableInfo.Range{2}, {'hi', 'lo'});
+%! assert_equal (mdl.NumPredictors, 2);
+%! assert_equal (mdl.NumVariables, 3);
+%! ## The indicator columns fold back onto the variable they came from.
+%! assert_equal (mdl.Formula.NTerms, 3);
+%! assert_equal (sort (mdl.Formula.TermNames), {'(Intercept)'; 'grp'; 'u'});
+
+%!test  # devianceTest labels the alternative with the rendered formula
+%! mdl = fitglm (X, yp, "Distribution", "poisson");
+%! dt = devianceTest (mdl);
+%! assert_equal (dt.Properties.RowNames, ...
+%!               {'(Constant)'; 'log(y) ~ 1 + x1 + x2 + x3'});
