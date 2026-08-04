@@ -89,8 +89,12 @@ function m = trimmean (x, p, varargin)
     print_usage;
   endif
 
-  if (p < 0 || p >= 100)
-    error ("trimmean: invalid percent.");
+  ## A non-scalar percentage used to slip through, because each half of the
+  ## range test was then itself non-scalar and neither branch was taken: the
+  ## trimming ran on a colon built from a vector and returned an untrimmed
+  ## mean behind a warning.
+  if (! isscalar (p) || ! isreal (p) || p < 0 || p >= 100)
+    error ("trimmean: PERCENT must be a real scalar in the range [0, 100).");
   endif
 
   ## Parse extra arguments
@@ -365,8 +369,16 @@ endfunction
 ## Test input validation
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1)
 %!error<Invalid call to trimmean.  Correct usage is:> trimmean (1,2,3,4,5)
-%!error<trimmean: invalid percent.> trimmean ([1 2 3 4], -10)
-%!error<trimmean: invalid percent.> trimmean ([1 2 3 4], 100)
+%!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
+%! trimmean ([1 2 3 4], -10)
+%!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
+%! trimmean ([1 2 3 4], 100)
+%!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
+%! trimmean ([1 2 3 4], [10, 20])
+%!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
+%! trimmean ([1 2 3 4], [])
+%!error<trimmean: PERCENT must be a real scalar in the range \[0, 100\).> ...
+%! trimmean ([1 2 3 4], 10 + 2i)
 %!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, 'flag')
 %!error<trimmean: invalid FLAG argument.> trimmean ([1 2 3 4], 10, 'flag', 1)
 %!error<trimmean: DIM must be a positive integer scalar or vector.> ...

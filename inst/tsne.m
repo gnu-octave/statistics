@@ -151,6 +151,19 @@ function [Y, loss] = tsne (X, varargin)
   if (! (isscalar (LearnRate) && LearnRate > 0))
     error ("tsne: 'LearnRate' must be a positive scalar.");
   endif
+  ## An empty value falls back to the default below.  Anything else has to be a
+  ## dimension the embedding can actually have: a non-positive one used to
+  ## return an N-by-0 embedding rather than complain, and a fractional or
+  ## non-numeric one leaked an internal conversion error.
+  if (! isempty (ydims))
+    if (! (isnumeric (ydims) && isscalar (ydims) && isreal (ydims)
+           && isfinite (ydims) && ydims > 0 && fix (ydims) == ydims))
+      error ("tsne: 'NumDimensions' must be a positive integer.");
+    elseif (ydims > p)
+      error (strcat ("tsne: 'NumDimensions' must not be greater than the", ...
+                     " number of columns of X."));
+    endif
+  endif
 
   ## Initial embedding
   if (isempty (InitialY))
@@ -375,3 +388,30 @@ endfunction
 %!error<tsne: 'LearnRate' must be a positive scalar.> ...
 %! tsne (ones (5, 3), "Perplexity", 2, "LearnRate", -1)
 %!error<tsne: unknown parameter name 'bogus'.> tsne (ones (5, 3), "bogus", 1)
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", 0)
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", -1)
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", 2.5)
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", [2, 3])
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", "a")
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", true)
+%!error<tsne: 'NumDimensions' must be a positive integer.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", Inf)
+%!error<tsne: 'NumDimensions' must not be greater than the number of columns of X.> ...
+%! tsne (ones (5, 3), "Perplexity", 2, "NumDimensions", 4)
+
+## An empty NumDimensions falls back to the default, and an integer-typed one
+## is accepted, both as in MATLAB.
+%!test
+%! X = [1 2 3; 2 4 6; 3 5 9; 4 8 11; 5 9 14; 6 11 17];
+%! Y = tsne (X, "Perplexity", 2, "NumDimensions", []);
+%! assert_equal (columns (Y), 2);
+%! Y = tsne (X, "Perplexity", 2, "NumDimensions", int32 (2));
+%! assert_equal (columns (Y), 2);
+%! Y = tsne (X, "Perplexity", 2, "NumDimensions", 3);
+%! assert_equal (columns (Y), 3);
