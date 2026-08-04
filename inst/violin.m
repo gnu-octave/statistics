@@ -90,17 +90,17 @@ function h = violin (ax, varargin)
     print_usage ();
   endif
 
-  old_hold = ishold ();
   # First argument is not an axis
   if (! ishandle (ax) || ! isscalar (ax))
     x  = ax;
-    ax = gca ();
+    ax_given = false;
   else
     if (isempty (varargin))
       print_usage ();
     endif
     x = varargin{1};
     varargin(1) = [];
+    ax_given = true;
   endif
 
   ######################
@@ -163,6 +163,13 @@ function h = violin (ax, varargin)
     error ("violin: each variable in X needs at least two observations.");
   endif
   x = cellfun (@double, x, 'UniformOutput', false);
+
+  ## Only now claim an axis.  gca creates a figure when there is none, so
+  ## doing it before the checks above left a rejected call -- violin ([]),
+  ## violin (5), violin ('abc') -- with an empty figure open behind the error.
+  if (! ax_given)
+    ax = gca ();
+  endif
 
   try
     [nb, c, sf, r0, width] = to_cell (nb, c, sf, r0, width, Nc);
