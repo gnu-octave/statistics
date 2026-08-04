@@ -161,8 +161,9 @@ classdef ClusterCriterion < handle
       this.X = x;
       this.N = rows (this.X);
       this.P = columns (this.X);
-      ## look for missing values
-      this.Missing = any (isnan (x), 2)';
+      ## look for missing values, one flag per observation and shaped like
+      ## the observations themselves
+      this.Missing = any (isnan (x), 2);
       ## number of usable observations
       this.NumObservations = sum (this.Missing == false);
 
@@ -178,7 +179,9 @@ classdef ClusterCriterion < handle
       elseif (ismatrix (clust))
         if (isnumeric (clust)  && (length (size (clust)) == 2) && ...
             (rows (clust) == this.N))
-          this.ClusteringFunction = '';
+          ## Nothing clustered the data, the caller did, so there is no
+          ## clustering function to report
+          this.ClusteringFunction = [];
           this.ClusteringSolutions = clust(find (this.Missing == false), :);
         else
           error ("ClusterCriterion: invalid matrix of clustering solutions.");

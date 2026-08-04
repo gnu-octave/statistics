@@ -203,7 +203,12 @@ classdef GapEvaluation < ClusterCriterion
       if (ischar (distanceMetric))
         if (any (strcmpi (distanceMetric, {'sqeuclidean', 'euclidean', ...
                  'cityblock', 'cosine', 'correlation', 'hamming', 'jaccard'})))
-          this.Distance = lower (distanceMetric);
+          ## Report the metric under its canonical spelling, as MATLAB does.
+          ## The name has already been matched exactly above, so validatestring
+          ## only canonicalises it and never widens what is accepted.
+          this.Distance = validatestring (distanceMetric, ...
+                            {'sqEuclidean', 'Euclidean', 'cityblock', ...
+                             'cosine', 'correlation', 'Hamming', 'Jaccard'});
 
           ## kmeans can use only a subset
           if (strcmpi (clust, 'kmeans') && any (strcmpi (this.Distance, ...
@@ -249,19 +254,21 @@ classdef GapEvaluation < ClusterCriterion
         warning (strcat ("GapEvaluation: 'PCA' distribution not", ...
                          " implemented, defaulting to 'uniform'."));
       endif
-      this.ReferenceDistribution = lower (referenceDistribution);
+      this.ReferenceDistribution = validatestring (referenceDistribution, ...
+                                     {'PCA', 'uniform'});
 
       if (! ischar (searchMethod) || ! any (strcmpi (searchMethod, ...
           {'globalmaxse', 'firstmaxse'})))
         error (strcat ("evalclusters: the search method must be", ...
                        " either 'globalMaxSE' or 'firstMaxSE'."));
       endif
-      this.SearchMethod = lower (searchMethod);
+      this.SearchMethod = validatestring (searchMethod, ...
+                          {'GlobalMaxSE', 'FirstMaxSE'});
 
       ## a matrix to store the results from the Monte-Carlo runs
       this.mExpectedLogW = zeros (this.B, length (this.InspectedK));
 
-      this.CriterionName = 'gap';
+      this.CriterionName = 'Gap';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
@@ -457,9 +464,21 @@ classdef GapEvaluation < ClusterCriterion
       this.StdLogW = std (this.mExpectedLogW);
       this.CriterionValues = this.ExpectedLogW - this.LogW;
 
+      ## As in the other criteria, the solutions are echoed back only when
+      ## this object built them.
       this.OptimalIndex = this.gapSearch ();
-      this.OptimalK = this.InspectedK(this.OptimalIndex(1));
-      this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+      if (isempty (this.OptimalIndex) || all (isnan (this.CriterionValues)))
+        this.OptimalIndex = [];
+        this.OptimalK = NaN;
+        this.OptimalY = [];
+      else
+        this.OptimalK = this.InspectedK(this.OptimalIndex(1));
+        if (isempty (this.ClusteringFunction))
+          this.OptimalY = [];
+        else
+          this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+        endif
+      endif
     endfunction
 
     ## gapSearch

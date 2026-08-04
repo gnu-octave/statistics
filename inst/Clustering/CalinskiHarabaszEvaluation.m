@@ -223,9 +223,22 @@ classdef CalinskiHarabaszEvaluation < ClusterCriterion
         endif
       endfor
 
-      [~, this.OptimalIndex] = max (this.CriterionValues);
-      this.OptimalK = this.InspectedK(this.OptimalIndex(1));
-      this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+      ## A criterion that came out undefined everywhere leaves no optimum to
+      ## report, and the solutions are echoed back only when this object built
+      ## them: given a matrix of clusterings the caller already has them.
+      if (all (isnan (this.CriterionValues)))
+        this.OptimalIndex = [];
+        this.OptimalK = NaN;
+        this.OptimalY = [];
+      else
+        [~, this.OptimalIndex] = max (this.CriterionValues);
+        this.OptimalK = this.InspectedK(this.OptimalIndex(1));
+        if (isempty (this.ClusteringFunction))
+          this.OptimalY = [];
+        else
+          this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+        endif
+      endif
     endfunction
   endmethods
 

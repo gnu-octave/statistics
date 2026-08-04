@@ -424,3 +424,69 @@ endfunction
 %! evalclusters ([randn(20,2); 6 + randn(20,2)], ...
 %!               [[ones(20,1); 2*ones(20,1)], [2*ones(20,1); ones(20,1)]], ...
 %!               'CalinskiHarabasz')
+
+## Shape and naming of the returned object, verified against MATLAB R2024a.
+
+%!shared X, sols
+%! randn ("seed", 11);
+%! X = [randn(20, 2); 6 + randn(20, 2); [12, 0] + randn(20, 2)];
+%! sols = [[ones(30,1); 2*ones(30,1)], ...
+%!         [ones(20,1); 2*ones(20,1); 3*ones(20,1)], ...
+%!         [ones(15,1); 2*ones(15,1); 3*ones(15,1); 4*ones(15,1)]];
+
+%!test  # given the clusterings, the object does not echo them back
+%! e = evalclusters (X, sols, "CalinskiHarabasz");
+%! assert_equal (isempty (e.OptimalY), true);
+%! assert_equal (isempty (e.ClusteringFunction), true);
+%! assert_equal (class (e.ClusteringFunction), "double");
+
+%!test  # asked to cluster, it reports both the solution and the function
+%! e = evalclusters (X, "kmeans", "CalinskiHarabasz", "KList", 2:4);
+%! assert_equal (size (e.OptimalY), [60, 1]);
+%! assert_equal (e.ClusteringFunction, "kmeans");
+
+%!test  # Missing carries one flag per observation, shaped like the observations
+%! e = evalclusters (X, sols, "CalinskiHarabasz");
+%! assert_equal (size (e.Missing), [60, 1]);
+%! assert_equal (class (e.Missing), "logical");
+%! Xn = X;  Xn(5,1) = NaN;
+%! e = evalclusters (Xn, sols, "CalinskiHarabasz");
+%! assert_equal (find (e.Missing), 5);
+%! assert_equal (e.NumObservations, 59);
+
+%!test  # a criterion that is undefined everywhere leaves no optimal K
+%! e = evalclusters (X, ones (60, 1), "CalinskiHarabasz");
+%! assert_equal (isnan (e.CriterionValues), true);
+%! assert_equal (isnan (e.OptimalK), true);
+%! assert_equal (isempty (e.OptimalY), true);
+
+%!test  # criterion and option names are reported as MATLAB spells them
+%! assert_equal (evalclusters (X, sols, "CalinskiHarabasz").CriterionName, ...
+%!               "CalinskiHarabasz");
+%! assert_equal (evalclusters (X, sols, "DaviesBouldin").CriterionName, ...
+%!               "DaviesBouldin");
+%! assert_equal (evalclusters (X, sols, "silhouette").CriterionName, ...
+%!               "Silhouette");
+%! e = evalclusters (X, sols, "silhouette", "Distance", "sqeuclidean");
+%! assert_equal (e.Distance, "sqEuclidean");
+%! e = evalclusters (X, sols, "silhouette", "Distance", "cityblock");
+%! assert_equal (e.Distance, "cityblock");
+
+%!test  # ClusterSilhouettes holds one mean per cluster, not one per observation
+%! e = evalclusters (X, sols, "silhouette");
+%! assert_equal (numel (e.ClusterSilhouettes), 3);
+%! assert_equal (size (e.ClusterSilhouettes{1}), [2, 1]);
+%! assert_equal (size (e.ClusterSilhouettes{2}), [3, 1]);
+%! assert_equal (size (e.ClusterSilhouettes{3}), [4, 1]);
+
+%!test  # the silhouette criterion honours the metric it was given
+%! a = evalclusters (X, sols, "silhouette", "Distance", "sqeuclidean");
+%! b = evalclusters (X, sols, "silhouette", "Distance", "cityblock");
+%! c = evalclusters (X, sols, "silhouette", "Distance", "cosine");
+%! assert_equal (isequal (a.CriterionValues, b.CriterionValues), false);
+%! assert_equal (isequal (b.CriterionValues, c.CriterionValues), false);
+%! ## each cluster mean is the mean of that cluster's silhouette values
+%! si = silhouette (X, sols(:,2), "cityblock", "DoNotPlot");
+%! m = [mean(si(sols(:,2) == 1)); mean(si(sols(:,2) == 2)); ...
+%!      mean(si(sols(:,2) == 3))];
+%! assert_equal (b.ClusterSilhouettes{2}, m, 1e-12);

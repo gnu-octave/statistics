@@ -86,8 +86,9 @@ classdef SilhouetteEvaluation < ClusterCriterion
     ##
     ## Silhouette values
     ##
-    ## A cell array where each element contains the silhouette values for the
-    ## observations of a given clustering (corresponding to an inspected K).
+    ## A cell array where each element holds the mean silhouette value of
+    ## each cluster of a given clustering (corresponding to an inspected K),
+    ## so element @var{i} is a vector of @code{InspectedK(@var{i})} values.
     ## This property is read-only.
     ##
     ## @end deftp
@@ -154,7 +155,12 @@ classdef SilhouetteEvaluation < ClusterCriterion
         if (any (strcmpi (distanceMetric, {'sqeuclidean', ...
                   'euclidean', 'cityblock', 'cosine', 'correlation', ...
                   'hamming', 'jaccard'})))
-          this.Distance = lower (distanceMetric);
+          ## Report the metric under its canonical spelling, as MATLAB does.
+          ## The name has already been matched exactly above, so validatestring
+          ## only canonicalises it and never widens what is accepted.
+          this.Distance = validatestring (distanceMetric, ...
+                            {'sqEuclidean', 'Euclidean', 'cityblock', ...
+                             'cosine', 'correlation', 'Hamming', 'Jaccard'});
 
           ## kmeans can use only a subset
           if (strcmpi (clust, 'kmeans') && any (strcmpi (this.Distance, ...
@@ -199,7 +205,7 @@ classdef SilhouetteEvaluation < ClusterCriterion
         error ("SilhouetteEvaluation: invalid prior probabilities.");
       endif
 
-      this.CriterionName = 'silhouette';
+      this.CriterionName = 'Silhouette';
       this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
     endfunction
 
@@ -345,28 +351,50 @@ classdef SilhouetteEvaluation < ClusterCriterion
       for iter = 1 : length (this.InspectedK)
         ## do it only for the specified K values
         if (any (this.InspectedK(iter) == K))
-          ## Custom call to silhouette to avoid plotting any figures
-          this.ClusterSilhouettes{iter} = silhouette (UsableX, ...
-                                          this.ClusteringSolutions(:, iter), ...
-                                          'sqeuclidean', 'DoNotPlot');
+          ## Custom call to silhouette to avoid plotting any figures.  The
+          ## metric is the one this object was built with: hard-coding
+          ## 'sqeuclidean' here made every Distance give the same answer.
+          if (isempty (this.Distance))
+            metric = this.DistanceVector;
+          else
+            metric = this.Distance;
+          endif
+          si = silhouette (UsableX, this.ClusteringSolutions(:, iter), ...
+                           metric, 'DoNotPlot');
+          ## ClusterSilhouettes holds the mean silhouette of each cluster, one
+          ## value per cluster, not the value of every observation.
+          means = zeros (this.InspectedK(iter), 1);
+          for k = 1 : this.InspectedK(iter)
+            means(k) = mean (si(this.ClusteringSolutions(:, iter) == k));
+          endfor
+          this.ClusterSilhouettes{iter} = means;
           if (strcmpi (this.ClusterPriors, 'empirical'))
-            this.CriterionValues(iter) = mean (this.ClusterSilhouettes{iter});
+            ## Weighted by cluster size, which is what averaging over the
+            ## observations does
+            this.CriterionValues(iter) = mean (si);
           else
             ## equal
-            this.CriterionValues(iter) = 0;
-            si = this.ClusterSilhouettes{iter};
-            for k = 1 : this.InspectedK(iter)
-              this.CriterionValues(iter) += mean (si(find ...
-                                     (this.ClusteringSolutions(:, iter) == k)));
-            endfor
-            this.CriterionValues(iter) /= this.InspectedK(iter);
+            this.CriterionValues(iter) = mean (means);
           endif
         endif
       endfor
 
-      [~, this.OptimalIndex] = max (this.CriterionValues);
-      this.OptimalK = this.InspectedK(this.OptimalIndex(1));
-      this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+      ## A criterion that came out undefined everywhere leaves no optimum to
+      ## report, and the solutions are echoed back only when this object built
+      ## them: given a matrix of clusterings the caller already has them.
+      if (all (isnan (this.CriterionValues)))
+        this.OptimalIndex = [];
+        this.OptimalK = NaN;
+        this.OptimalY = [];
+      else
+        [~, this.OptimalIndex] = max (this.CriterionValues);
+        this.OptimalK = this.InspectedK(this.OptimalIndex(1));
+        if (isempty (this.ClusteringFunction))
+          this.OptimalY = [];
+        else
+          this.OptimalY = this.ClusteringSolutions(:, this.OptimalIndex(1));
+        endif
+      endif
     endfunction
   endmethods
 endclassdef
