@@ -107,7 +107,6 @@ function T = cluster (Z, opt, varargin)
   vT = zeros (1, n);
 
   ## main logic
-  ## a few checks and computations before launching the recursive function
   switch (lower (opt))
     case 'cutoff'
       switch (lower (criterion))
@@ -118,61 +117,110 @@ function T = cluster (Z, opt, varargin)
         otherwise
           error ("cluster: unknown criterion '%s'.", criterion);
       endswitch
-    case 'maxclust'
-      ## the MaxClust case can be regarded as a Cutoff case with distance
-      ## criterion, where the threshold is set to the height of the highest node
-      ## that allows us to have N different clusters
-      vThresholds = Z(:, 3);
+      ## A node is a cluster only when it and everything below it are under
+      ## the cutoff.  Testing the node alone leaves a low node holding a high
+      ## descendant undivided, and so returns too few clusters.
+      smax = subtree_maximum (Z, vThresholds, n);
+      for k = 1:numel (C)
+        T = [T; cut_by_cutoff(Z, n, smax, C(k))];
+      endfor
 
-      ## let's build a vector with the apt threshold values
-      for k = 1:length (N);
-        if (N(k) > n)
-          C(end+1) = 0;
-        elseif (N(k) < 2)
-          C(end+1) = Z(end, 3) + 1;
-        else
-          C(end+1) = Z((end + 2 - N(k)), 3);
-        endif
+    case 'maxclust'
+      ## Undoing the highest N-1 merges leaves exactly N groups.  Cutting at
+      ## the height of the Nth node from the top cannot: when merges tie there
+      ## is no height between them, and on a tree whose merges all sit at one
+      ## height -- every observation identical, say -- it separates nothing and
+      ## every observation comes back in a cluster of its own.
+      for k = 1:numel (N)
+        T = [T; cut_by_count(Z, n, N(k))];
       endfor
   endswitch
 
-  for c_index = 1:length (C)
-    cluster_cutoff_recursive (rows (Z), nClusters, c_index);
-    T = [T; vT];
-  endfor
-
   T = T';           # return value
 
-  ## recursive function
-  ## for each link check if the cutoff criteria (a threshold value) are met,
-  ## then call recursively this function for every node below that;
-  ## when we find a leaf, we add the index of its cluster to the return value
-  function cluster_cutoff_recursive (index, cluster_number, c_index)
+endfunction
 
-    vClusterNumber = [cluster_number, cluster_number];
-
-    ## check the threshold value
-    if (vThresholds(index) >= C(c_index))
-      ## create a new cluster
-      nClusters++;
-      vClusterNumber(2) = nClusters;
-    endif;
-
-    ## go on, down the tree
+## Largest criterion value anywhere in the subtree each internal node roots.
+## The rows of Z are in merge order, so a node's children are always earlier
+## rows and one forward pass suffices.
+function s = subtree_maximum (Z, v, n)
+  s = v(:);
+  for i = 1:rows (Z)
     for j = 1:2
-      if (Z(index,j) > n)
-        new_index = Z(index,j) - n;
-        cluster_cutoff_recursive (new_index, vClusterNumber(j), c_index);
-      else
-        ## if the next node is a leaf, add the index of its cluster to the
-        ## result at the correct position, i.e. the leaf number;
-        ## if leaf 14 belongs to cluster 3:
-        ## vT(14) = 3;
-        vT(Z(index,j)) = vClusterNumber(j);
+      child = Z(i, j);
+      if (child > n)
+        s(i) = max (s(i), s(child - n));
       endif
     endfor
-  endfunction
+  endfor
+endfunction
 
+## Put every leaf below an internal node into one cluster.
+function t = collect_leaves (Z, n, index, label, t)
+  for j = 1:2
+    child = Z(index, j);
+    if (child > n)
+      t = collect_leaves (Z, n, child - n, label, t);
+    else
+      t(child) = label;
+    endif
+  endfor
+endfunction
+
+## Descend from the root, taking a node as a cluster as soon as its whole
+## subtree is under the cutoff and splitting it otherwise.
+function t = cut_by_cutoff (Z, n, smax, c)
+  t = zeros (1, n);
+  k = 0;
+  pending = rows (Z);
+  while (! isempty (pending))
+    index = pending(end);
+    pending(end) = [];
+    if (smax(index) < c)
+      k++;
+      t = collect_leaves (Z, n, index, k, t);
+    else
+      for j = 1:2
+        child = Z(index, j);
+        if (child > n)
+          pending(end+1) = child - n;
+        else
+          k++;
+          t(child) = k;
+        endif
+      endfor
+    endif
+  endwhile
+endfunction
+
+## Perform the lowest n-N merges and let what remains be the clusters, so that
+## exactly N of them come back however the merge heights fall.
+function t = cut_by_count (Z, n, N)
+  if (N >= n)
+    t = 1:n;
+    return;
+  endif
+  keep = n - max (N, 1);
+  comp = 1:n;                       # component of each leaf
+  nodecomp = zeros (1, rows (Z));   # component of each internal node
+  for i = 1:keep
+    ca = node_component (Z(i, 1), n, comp, nodecomp);
+    cb = node_component (Z(i, 2), n, comp, nodecomp);
+    comp(comp == cb) = ca;
+    nodecomp(i) = ca;
+    nodecomp(nodecomp == cb) = ca;
+  endfor
+  [~, ~, t] = unique (comp);
+  t = t(:)';
+endfunction
+
+## Component holding a node, whether it is a leaf or an internal node.
+function c = node_component (node, n, comp, nodecomp)
+  if (node > n)
+    c = nodecomp(node - n);
+  else
+    c = comp(node);
+  endif
 endfunction
 
 
@@ -184,9 +232,69 @@ endfunction
 %!error <unknown property .*> cluster ([1 2 1], 'Cutoff', 1, 'Bogus', 1)
 
 ## Test output
-%!test
-% X = [(randn (10, 2) * 0.25) + 1; (randn (10, 2) * 0.25) - 1];
-% Z = linkage(X, "ward");
-% T = [ones (10, 1); 2 * ones (10, 1)];
-% assert_equal (cluster (Z, "MaxClust", 2), T);
+## The partitions below are MATLAB R2024a's on the same data.  Cluster numbers
+## are arbitrary, so the tests compare groupings rather than labels.
+
+%!shared X, Z
+%! X = [0, 0; 0.1, 0.1; 0.2, 0; 5, 5; 5.1, 5.2; 5.2, 5.0; 10, 0; ...
+%!      10.1, 0.2; 20, 20; 0.05, 0.3];
+%! Z = linkage (pdist (X), "single");
+
+%!test  # MaxClust returns exactly the number of clusters asked for
+%! for n = 1:5
+%!   assert_equal (numel (unique (cluster (Z, "MaxClust", n))), n);
+%! endfor
+
+%!test  # and the groupings are MATLAB's
+%! t = cluster (Z, "MaxClust", 3);
+%! assert_equal (numel (unique (t([1, 2, 3, 4, 5, 6, 10]))), 1);
+%! assert_equal (numel (unique (t([7, 8]))), 1);
+%! assert_equal (t(9) != t(1) && t(7) != t(1), true);
+
+%!test  # merges at equal heights still divide: a height threshold cannot
+%! ## split a tree whose every merge sits at the same height, which is what
+%! ## five identical observations produce.
+%! Zflat = linkage (pdist (ones (5, 2)), "single");
+%! assert_equal (all (Zflat(:,3) == 0), true);
+%! for n = 1:5
+%!   assert_equal (numel (unique (cluster (Zflat, "MaxClust", n))), n);
+%! endfor
+
+%!test  # a tie at the cut does not cost a cluster either
+%! Ztie = [1, 2, 1; 3, 4, 2; 6, 7, 2; 5, 8, 3];
+%! for n = 1:5
+%!   assert_equal (numel (unique (cluster (Ztie, "MaxClust", n))), n);
+%! endfor
+
+%!test  # a cluster is a node whose whole subtree is under the cutoff
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 0.5))), 6);
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 0.8))), 4);
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 1.2))), 1);
+
+%!test  # the depth the inconsistency is measured over reaches the result
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 0.9, "Depth", 2))), 4);
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 0.9, "Depth", 3))), 5);
+%! t = cluster (Z, "Cutoff", 0.9, "Depth", 3);
+%! assert_equal (numel (unique (t([1, 2, 3]))), 1);
+%! assert_equal (numel (unique (t([4, 5, 6]))), 1);
+%! assert_equal (t(10) != t(1), true);
+
+%!test  # the distance criterion is unchanged
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 1, ...
+%!                                       "Criterion", "distance"))), 4);
+%! assert_equal (numel (unique (cluster (Z, "Cutoff", 30, ...
+%!                                       "Criterion", "distance"))), 1);
+
+%!test  # a vector of cutoffs gives one column per cutoff
+%! T = cluster (Z, "MaxClust", [2, 3, 4]);
+%! assert_equal (size (T), [10, 3]);
+%! assert_equal (max (T), [2, 3, 4]);
+
+%!test  # well separated groups come out whole
+%! Xs = [randn(10, 2) * 0.05 + 1; randn(10, 2) * 0.05 - 1];
+%! t = cluster (linkage (pdist (Xs), "ward"), "MaxClust", 2);
+%! assert_equal (numel (unique (t)), 2);
+%! assert_equal (numel (unique (t(1:10))), 1);
+%! assert_equal (numel (unique (t(11:20))), 1);
+%! assert_equal (t(1) != t(11), true);
 

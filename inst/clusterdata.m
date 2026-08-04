@@ -116,3 +116,20 @@ endfunction
 %! clusterdata (1)
 %!error <unknown property .*> clusterdata ([1 1], 'Bogus', 1)
 %!error <specify .* 'MaxClust' or 'Cutoff' .*> clusterdata ([1 1], 'Depth', 1)
+
+## MaxClust must deliver the number of clusters it was asked for, whatever the
+## merge heights do.  Verified against MATLAB R2024a.
+%!test
+%! assert_equal (numel (unique (clusterdata (ones (5, 2), "MaxClust", 2))), 2);
+%! assert_equal (numel (unique (clusterdata (ones (5, 2), "MaxClust", 4))), 4);
+
+%!test  # the depth reaches the result, as it does in cluster
+%! X = [0, 0; 0.1, 0.1; 0.2, 0; 5, 5; 5.1, 5.2; 5.2, 5.0; 10, 0; ...
+%!      10.1, 0.2; 20, 20; 0.05, 0.3];
+%! t2 = clusterdata (X, "Cutoff", 0.9, "Depth", 2);
+%! t3 = clusterdata (X, "Cutoff", 0.9, "Depth", 3);
+%! assert_equal (numel (unique (t2)), 4);
+%! assert_equal (numel (unique (t3)), 5);
+%! t = clusterdata (X, "MaxClust", 3);
+%! assert_equal (numel (unique (t)), 3);
+%! assert_equal (numel (unique (t([7, 8]))), 1);
