@@ -292,8 +292,14 @@ endfunction
 %!test
 %! cases = [0 1 0 3; 0 1 0 4.5; 0 1 0 2.5; 0 1 0.5 3.5; 0 1 0.75 4; ...
 %!          2 3 1 5; 0 1 1 4.5; 0 1 2 9];
-%! rand ("state", 42); randn ("state", 42);
+%! ## Seed per case, not once for the run: a single seed at the top leaves each
+%! ## case starting wherever the ones before it left the stream, so the sample
+%! ## moments below are only as reproducible as the number of draws every
+%! ## earlier case happens to take.  randg needs seeding too: the Pearson
+%! ## types are drawn through betarnd, gamrnd and trnd, and seeding rand and
+%! ## randn alone leaves that stream running on from wherever it was.
 %! for i = 1:rows (cases)
+%!   rand ("state", 42); randn ("state", 42); randg ("state", 42);
 %!   m = cases(i,1); s = cases(i,2); sk = cases(i,3); ku = cases(i,4);
 %!   r = pearsrnd (m, s, sk, ku, 200000, 1);
 %!   mr = mean (r); sr = std (r);
