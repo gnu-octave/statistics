@@ -167,6 +167,12 @@
 ## @item 7 @tab Upper confidence limit for median
 ## @end multitable
 ##
+## The quartiles are those of @code{quantile} at its default method, which is
+## also what @code{prctile} returns, so the box edges of a data set always
+## agree with @code{prctile (@var{data}, [25, 75])}.  They set the
+## inter-quartile range, and so the whisker fences and which observations are
+## reported as outliers.
+##
 ## The returned structure @var{h} contains handles to the plot elements,
 ## allowing customization of the visualization using set/get functions.
 ##
@@ -602,16 +608,28 @@ function [s_o, hs_o] = boxplot (data, varargin)
     nd = length (col);
     box(indi) = nd;
     if (nd > 1)
-      ## Min, max and quartiles
-      s(1:5, indi) = statistics (col)(1:5);
+      ## Min, max and quartiles.  These come from quantile at its own default
+      ## method, which is the one prctile and MATLAB both use.  Taking them
+      ## from the core statistics function instead put the quartiles on a
+      ## different definition (it asks quantile for method 7), so a box drawn
+      ## here disagreed with prctile called on the same data, and the shifted
+      ## inter-quartile range moved the whisker fences with it.
+      s(1:5, indi) = quantile (col, [0, 0.25, 0.5, 0.75, 1])(:);
       ## Confidence interval for the median
       est = 1.57 * (s(4, indi) - s(2, indi)) / sqrt (nd);
       s(6, indi) = max ([s(3, indi) - est, s(2, indi)]);
       s(7, indi) = min ([s(3, indi) + est, s(4, indi)]);
       ## Whiskers out to the last point within the desired inter-quartile range
       IQR = maxwhisker * (s(4, indi) - s(2, indi));
-      whisker_y(:, indi) = [min(col(col >= s(2, indi) - IQR)); s(2, indi)];
-      whisker_y(:, nc+indi) = [max(col(col <= s(4, indi) + IQR)); s(4, indi)];
+      lo_adj = min (col(col >= s(2, indi) - IQR));
+      hi_adj = max (col(col <= s(4, indi) + IQR));
+      ## A whisker never reaches back across its own quartile.  When no
+      ## observation lies between a quartile and its fence, the whisker
+      ## collapses onto the quartile rather than being drawn into the box.
+      lo_adj = min (lo_adj, s(2, indi));
+      hi_adj = max (hi_adj, s(4, indi));
+      whisker_y(:, indi) = [lo_adj; s(2, indi)];
+      whisker_y(:, nc+indi) = [hi_adj; s(4, indi)];
       ## Outliers beyond 1 and 2 inter-quartile ranges
       outliers = col((col < s(2, indi) - IQR & col >= s(2, indi) - 2 * IQR) | ...
                      (col > s(4, indi) + IQR & col <= s(4, indi) + 2 * IQR));
@@ -1147,3 +1165,108 @@ endfunction
 %! boxplot ([true; false; true; true])
 %!error <numerical array or cell array containing data expected.> ...
 %! boxplot ('abcde')
+
+## Quartiles follow quantile's own default method, which is prctile's and
+## MATLAB's.  Values below are MATLAB R2024a's, read off the box, whisker and
+## outlier objects it draws.
+
+%!test
+%! ## The box edges are the 25th and 75th percentiles, for odd and even counts
+%! ## alike, and agree with prctile called on the same data.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = boxplot ((1:7)');
+%!   assert_equal (s(1:5)', [1, 2.25, 4, 5.75, 7]);
+%!   clf;
+%!   s = boxplot ((1:8)');
+%!   assert_equal (s(1:5)', [1, 2.5, 4.5, 6.5, 8]);
+%!   clf;
+%!   x = [2; 4; 4; 4; 5; 5; 7; 9];
+%!   s = boxplot (x);
+%!   assert_equal (s(1:5)', [2, 4, 4.5, 6, 9]);
+%!   assert_equal (s(2:4)', [prctile(x, 25), median(x), prctile(x, 75)]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## Small samples, where the two quantile definitions differ most.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = boxplot ([1; 2]);
+%!   assert_equal (s(1:5)', [1, 1, 1.5, 2, 2]);
+%!   clf;
+%!   s = boxplot ([1; 2; 3]);
+%!   assert_equal (s(1:5)', [1, 1.25, 2, 2.75, 3]);
+%!   clf;
+%!   s = boxplot ([1; 2; 3; 4]);
+%!   assert_equal (s(1:5)', [1, 1.5, 2.5, 3.5, 4]);
+%!   clf;
+%!   s = boxplot ([1; 2; 3; 4; 5]);
+%!   assert_equal (s(1:5)', [1, 1.75, 3, 4.25, 5]);
+%!   clf;
+%!   s = boxplot ([1; 2; 3; 4; 5; 6]);
+%!   assert_equal (s(1:5)', [1, 2, 3.5, 5, 6]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## Missing values are dropped before the quartiles are taken.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   s = boxplot ([1; 2; NaN; 4; 5; 6; 7]);
+%!   assert_equal (s(1:5)', [1, 2, 4.5, 6, 7]);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## The inter-quartile range sets the fences, so the quartile definition
+%! ## decides which points are outliers.  33 lies beyond the fence and 31.5
+%! ## does not; the old quartiles put the fence between them and called both
+%! ## outliers.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot ([(1:20)'; 31.5]);
+%!   assert_equal (s(1:5)', [1, 5.75, 11, 16.25, 31.5]);
+%!   assert_equal (isempty (hs.outliers), true);
+%!   assert_equal (isempty (hs.outliers2), true);
+%!   clf;
+%!   [s, hs] = boxplot ([(1:20)'; 33]);
+%!   assert_equal (s(1:5)', [1, 5.75, 11, 16.25, 33]);
+%!   assert_equal (isempty (hs.outliers) && isempty (hs.outliers2), false);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## When no observation lies between a quartile and its fence the whisker
+%! ## collapses onto the quartile instead of being drawn back into the box.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot ([1; 1; 2; 2; 3; 3; 4; 40; 50]);
+%!   assert_equal (s(1:5)', [1, 1.75, 3, 13, 50]);
+%!   yd = get (hs.whisker, 'YData');
+%!   assert_equal (max ([yd{3}, yd{4}]), 13);
+%!   clf;
+%!   [s, hs] = boxplot ([-50; -40; -4; -3; -3; -2; -2; -1; -1]);
+%!   assert_equal (s(1:5)', [-50, -13, -3, -1.75, -1]);
+%!   yd = get (hs.whisker, 'YData');
+%!   assert_equal (min ([yd{1}, yd{2}]), -13);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## A whisker that does reach real data is not clamped.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot ([-50; -40; -4; -3; -3; -2; -2; 40; 50]);
+%!   assert_equal (s(1:5)', [-50, -13, -3, 8.5, 50]);
+%!   yd = get (hs.whisker, 'YData');
+%!   assert_equal (min ([yd{1}, yd{2}]), -40);
+%!   assert_equal (max ([yd{3}, yd{4}]), 40);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
