@@ -198,6 +198,17 @@ function [s_o, hs_o] = boxplot (data, varargin)
     endif
   endif
 
+  ## Integer observations are perfectly good data, and MATLAB accepts them, but
+  ## the quartiles are taken through statistics, whose call to var insists on
+  ## floating point.  Convert rather than refuse.  Unlike MATLAB the quartiles
+  ## are then computed in double, so they are not rounded back to the integer
+  ## grid: the quartiles of int32 (1:7) are 2.25 and 5.75, not 3 and 6.
+  if (isinteger (data))
+    data = double (data);
+  elseif (iscell (data) && any (cellfun (@isinteger, data)))
+    data = cellfun (@double, data, 'UniformOutput', false);
+  endif
+
   ## Default values
   maxwhisker = 1.5;
   orientation = 1;
@@ -668,6 +679,10 @@ function [s_o, hs_o] = boxplot (data, varargin)
   median_x(:, chop) = [];
   median_y(:, chop) = [];
   box(chop) = [];
+  ## The cap widths below are built from BOX and WIDTHS together, so WIDTHS has
+  ## to lose the same entries.  Left at its full length it made every grouped
+  ## plot with a one-point group fail on a nonconformant subtraction.
+  widths(chop) = [];
 
   ## Add caps to the remaining whiskers
   cap_x = whisker_x;
@@ -732,30 +747,44 @@ function [s_o, hs_o] = boxplot (data, varargin)
       endif
   endif
 
-  ## Distribute handles for box outlines and box fill (if any)
-  nq = 1 : size (quartile_x, 2);
-  hs.box = h(nq);
+  ## Distribute the handles that plot returned.  They come back in the order
+  ## the segments were passed and a segment with no columns contributes none,
+  ## so walk them with a running offset.  Chaining each block off the last index
+  ## of the one before it broke as soon as a block was empty: a single-point,
+  ## an all-NaN, or an empty data set leaves no box at all, and the chain then
+  ## indexed the previous block at zero.
+  n_box  = columns (quartile_x);
+  n_whis = 2 * columns (whisker_x);   # the caps repeat the whisker columns
+  n_med  = columns (median_x);
+  ## The outliers of every group are plotted as one series, so they account for
+  ## a single handle when there are any.  Counting their columns would say one
+  ## for the 0x1 empty they collapse to when there are none.
+  n_out  = double (! isempty (outliers_y));
+  n_out2 = double (! isempty (outliers2_y));
+  used   = 0;
+
+  ## Box outlines and box fill (if any).  The fill follows the boxes that were
+  ## actually drawn, which is not the number of groups once any were chopped.
+  hs.box = h(used + [1 : n_box]);
+  used += n_box;
   if (box_style)
-    nf = 1 : length (groups);
-    hs.box_fill = f(nf);
+    hs.box_fill = f(1 : n_box);
   else
     hs.box_fill = [];
   endif
 
-  ## Distribute handles for whiskers (including caps) and median lines
-  nw = nq(end) + [1 : 2 * (size (whisker_x, 2))];
-  hs.whisker = h(nw);
-  nm = nw(end)+ [1 : (size (median_x, 2))];
-  hs.median = h(nm);
-  ## Distribute handles for outliers (if any) and their respective tags
-  ## (if applicable)
-  no = nm;
-  if (! isempty (outliers_y))
-    no = nm(end) + [1 : size(outliers_y, 2)];
-    hs.outliers = h(no);
+  ## Whiskers (including caps) and median lines
+  hs.whisker = h(used + [1 : n_whis]);
+  used += n_whis;
+  hs.median = h(used + [1 : n_med]);
+  used += n_med;
+
+  ## Outliers (if any) and their respective tags (if applicable)
+  if (n_out > 0)
+    hs.outliers = h(used + [1 : n_out]);
+    used += n_out;
     if (outlier_tags == 1)
-      nt = 1 : length (outliers_tags_y);
-      hs.out_tags = t1(nt);
+      hs.out_tags = t1(1 : length (outliers_tags_y));
     else
       hs.out_tags = [];
     endif
@@ -763,14 +792,13 @@ function [s_o, hs_o] = boxplot (data, varargin)
     hs.outliers = [];
     hs.out_tags = [];
   endif
-  ## Distribute handles for extreme outliers (if any) and their respective tags
-  ## (if applicable)
-  if (! isempty (outliers2_y))
-    no2 = no(end) + [1 : size(outliers2_y, 2)];
-    hs.outliers2 = h(no2);
+
+  ## Extreme outliers (if any) and their respective tags (if applicable)
+  if (n_out2 > 0)
+    hs.outliers2 = h(used + [1 : n_out2]);
+    used += n_out2;
     if (outlier_tags == 1)
-      nt2 = 1 : length (outliers2_tags_y);
-      hs.out_tags2 = t2(nt2);
+      hs.out_tags2 = t2(1 : length (outliers2_tags_y));
     else
       hs.out_tags2 = [];
     endif
@@ -992,3 +1020,130 @@ endfunction
 %! unwind_protect_cleanup
 %!     close (hf);
 %! end_unwind_protect
+
+## Inputs that used to die inside boxplot rather than be plotted or refused.
+
+%!test
+%! ## A single observation is plotted, not an internal subscript error.  Every
+%! ## statistic collapses to the value, as it does in MATLAB.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot (5);
+%!   assert_equal (s, 5 * ones (7, 1));
+%!   assert_equal (isempty (hs.box), true);
+%!   assert_equal (numel (hs.outliers), 1);
+%!   assert_equal (get (hs.outliers, 'YData'), 5);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## An empty input draws nothing and returns no statistics, as in MATLAB,
+%! ## rather than indexing an empty handle list at zero.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot ([]);
+%!   assert_equal (size (s, 2), 0);
+%!   assert_equal (isempty (hs.box), true);
+%!   assert_equal (isempty (hs.whisker), true);
+%!   assert_equal (isempty (hs.median), true);
+%!   assert_equal (isempty (hs.outliers), true);
+%!   clf;
+%!   [s, hs] = boxplot ({});
+%!   assert_equal (size (s, 2), 0);
+%!   assert_equal (isempty (hs.box), true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## A variable that is entirely missing leaves no box, which used to take the
+%! ## handle bookkeeping with it.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   [s, hs] = boxplot ([NaN; NaN; NaN]);
+%!   assert_equal (all (isnan (s)), true);
+%!   assert_equal (isempty (hs.box), true);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## Integer observations are accepted and agree with the same numbers in
+%! ## double; the internal call to var used to refuse them outright.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   sd = boxplot ([1; 2; 3; 4; 5; 6; 7]);
+%!   clf;
+%!   si = boxplot (int32 ([1; 2; 3; 4; 5; 6; 7]));
+%!   clf;
+%!   su = boxplot (uint8 ([1; 2; 3; 4; 5; 6; 7]));
+%!   assert_equal (si, sd);
+%!   assert_equal (su, sd);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## The same holds for an integer variable inside a cell.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   sd = boxplot ({[1; 2; 3; 4; 5], [2; 3; 4; 5; 6]});
+%!   clf;
+%!   si = boxplot ({int32([1; 2; 3; 4; 5]), int32([2; 3; 4; 5; 6])});
+%!   assert_equal (si, sd);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## A group holding a single observation leaves fewer boxes than groups.  The
+%! ## cap widths were built from the full-length widths vector against the
+%! ## chopped box vector, so the subtraction did not conform.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 42];
+%!   grp  = [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 2];
+%!   [s, hs] = boxplot (data, grp);
+%!   assert_equal (size (s, 2), 2);
+%!   assert_equal (s(:, 2), 42 * ones (7, 1));
+%!   assert_equal (numel (hs.box), 1);
+%!   assert_equal (numel (hs.median), 1);
+%!   assert_equal (numel (hs.whisker), 4);
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## The box fill follows the boxes actually drawn, not the number of groups.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 42];
+%!   grp  = [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 2];
+%!   [s, hs] = boxplot (data, grp, 'BoxStyle', 'filled');
+%!   assert_equal (numel (hs.box_fill), numel (hs.box));
+%!   assert_equal (get (hs.box_fill(1), 'Type'), 'patch');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test
+%! ## Both kinds of outlier keep their own handles, and the ones after them
+%! ## stay in step.
+%! hf = figure ('visible', 'off');
+%! unwind_protect
+%!   data = [1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 42];
+%!   grp  = [1; 1; 1; 1; 1; 1; 1; 1; 1; 1; 2];
+%!   [s, hs] = boxplot ([data; 60], [grp; 1]);
+%!   assert_equal (numel (hs.outliers), 1);
+%!   assert_equal (numel (hs.outliers2), 1);
+%!   assert_equal (get (hs.median, 'Type'), 'line');
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+## Logical and character data stay refused, as they are in MATLAB.
+%!error <numerical array or cell array containing data expected.> ...
+%! boxplot ([true; false; true; true])
+%!error <numerical array or cell array containing data expected.> ...
+%! boxplot ('abcde')
