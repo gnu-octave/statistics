@@ -28,14 +28,20 @@
 ## @item
 ## @var{family} is the copula family name. Currently, @var{family} can be
 ## @code{'Gaussian'} for the Gaussian family, @code{'t'} for the Student's t
-## family, or @code{'Clayton'} for the Clayton family.
+## family, @code{'Clayton'} for the Clayton family, @code{'Frank'} for the
+## Frank family, or @code{'Gumbel'} for the Gumbel-Hougaard family.  The Frank
+## and Gumbel-Hougaard families are generated as bivariate only; only the
+## Clayton family extends to more than two dimensions.
 ##
 ## @item
 ## @var{theta} is the parameter of the copula. For the Gaussian and Student's t
 ## copula, @var{theta} must be a correlation matrix. For bivariate copulas
-## @var{theta} can also be a correlation coefficient. For the Clayton family,
-## @var{theta} must be a vector with the same number of elements as samples to
-## be generated or be scalar.
+## @var{theta} can also be a correlation coefficient. For the Clayton, Frank
+## and Gumbel-Hougaard families, @var{theta} must be a vector with the same
+## number of elements as samples to be generated or be scalar.  Values outside
+## a family's range give @code{NaN} rows: at or above @code{1} for the
+## Gumbel-Hougaard family, at or above @code{-1} for the bivariate Clayton
+## family, and any finite value for the Frank family.
 ##
 ## @item
 ## @var{df} is the degrees of freedom for the Student's t family. @var{df} must
@@ -98,7 +104,8 @@ function r = copularnd (family, theta, df, n)
   endif
 
   if (! ischar (family))
-    error ("copularnd: family must be one of 'Gaussian', 't', and 'Clayton'.");
+    error (strcat ("copularnd: family must be one of 'Gaussian',", ...
+                   " 't', 'Clayton', 'Frank', and 'Gumbel'."));
   endif
 
   lower_family = lower (family);
@@ -159,7 +166,7 @@ function r = copularnd (family, theta, df, n)
         endif
       endif
 
-    case {'clayton'}
+    case {'clayton', 'frank', 'gumbel'}
       ## Archimedian one parameter family
       if (nargin < 4)
         ## Default is bivariate
@@ -169,6 +176,11 @@ function r = copularnd (family, theta, df, n)
         if (! isscalar (d) || (d < 2) || round (d) != d)
           error ("copularnd: D must be an integer greater than 1.");
         endif
+      endif
+      ## Only the Clayton frailty is available for more than two dimensions.
+      if (d != 2 && ! strcmp (lower_family, 'clayton'))
+        error (strcat ("copularnd: the '%s' copula is implemented as", ...
+                       " bivariate only."), family);
       endif
       if (nargin < 3)
         ## Default is one sample
@@ -240,6 +252,44 @@ function r = copularnd (family, theta, df, n)
           k = find (! (theta >= 0) | ! (theta < inf));
         endif
 
+      case {'frank'}
+        ## The Frank family, by inverting the conditional distribution.  It has
+        ## a closed form here, which the Gumbel family below does not.
+        u = rand (n, 2);
+        e = exp (-theta);
+        eu = exp (-theta .* u(:, 1));
+        w = 1 + u(:, 2) .* (1 - e) ./ (u(:, 2) .* (eu - 1) - eu);
+        u2 = -log (w) ./ theta;
+        r = [u(:, 1), u2];
+        ## Product copula at rows where theta == 0
+        k = find (theta == 0);
+        if (any (k))
+          r(k, :) = u(k, :);
+        endif
+        ## Check bounds
+        k = find (! (theta > -inf) | ! (theta < inf));
+
+      case {'gumbel'}
+        ## The Gumbel-Hougaard family, by the algorithm of Marshall and Olkin.
+        ## Its frailty is positive stable with index 1 / THETA, drawn by
+        ## Kanter's method; the conditional distribution cannot be inverted in
+        ## closed form as Clayton's and Frank's can.
+        a = 1 ./ theta;
+        U = pi * rand (n, 1);
+        W = -log (rand (n, 1));
+        aU = sin ((1 - a) .* U) .* (sin (a .* U) .^ (a ./ (1 - a))) ...
+             ./ (sin (U) .^ (1 ./ (1 - a)));
+        V = (aU ./ W) .^ ((1 - a) ./ a);
+        E = -log (rand (n, 2));
+        r = exp (- (E ./ V) .^ a);
+        ## The independence copula at theta == 1, where the frailty degenerates
+        k = find (theta == 1);
+        if (any (k))
+          r(k, :) = exp (-E(k, :));
+        endif
+        ## Check bounds
+        k = find (! (theta >= 1) | ! (theta < inf));
+
     endswitch
 
     ## Out of bounds parameters
@@ -281,3 +331,48 @@ endfunction
 %! r = copularnd ('Clayton', theta, n, d);
 %! assert_equal (size (r), [n, d]);
 %! assert_equal (all ((all ((r >= 0) & (r <= 1)))(:)), true);
+
+## The Frank and Gumbel-Hougaard families.  A generator cannot be checked
+## against MATLAB value for value, so the sample's rank correlation is checked
+## against the rank correlation the family is defined to have.
+%!test
+%! rand ("seed", 7);
+%! for theta = [-5, -2, 2, 5, 10]
+%!   r = copularnd ("Frank", theta, 4000);
+%!   assert_equal (size (r), [4000, 2]);
+%!   assert_equal (all (r(:) >= 0 & r(:) <= 1), true);
+%!   rho = corr (tiedrank (r(:,1)), tiedrank (r(:,2)));
+%!   assert_equal (rho, copulastat ("Frank", theta, "type", "Spearman"), 0.05);
+%! endfor
+
+%!test
+%! rand ("seed", 11);
+%! for theta = [1.5, 2, 3, 5]
+%!   r = copularnd ("Gumbel", theta, 4000);
+%!   assert_equal (size (r), [4000, 2]);
+%!   assert_equal (all (r(:) >= 0 & r(:) <= 1), true);
+%!   rho = corr (tiedrank (r(:,1)), tiedrank (r(:,2)));
+%!   assert_equal (rho, copulastat ("Gumbel", theta, "type", "Spearman"), 0.05);
+%! endfor
+
+%!test  # each family degenerates to independence at its own boundary
+%! rand ("seed", 13);
+%! r = copularnd ("Frank", 0, 3000);
+%! assert_equal (corr (tiedrank (r(:,1)), tiedrank (r(:,2))), 0, 0.06);
+%! r = copularnd ("Gumbel", 1, 3000);
+%! assert_equal (corr (tiedrank (r(:,1)), tiedrank (r(:,2))), 0, 0.06);
+
+%!test  # a parameter outside the family's range gives NaN rows
+%! assert_equal (copularnd ("Gumbel", 0.5, 2), NaN (2, 2));
+%! assert_equal (copularnd ("Frank", Inf, 2), NaN (2, 2));
+
+%!test  # the default is a single bivariate draw
+%! rand ("seed", 3);
+%! assert_equal (size (copularnd ("Frank", 3)), [1, 2]);
+%! assert_equal (size (copularnd ("Gumbel", 2)), [1, 2]);
+%! assert_equal (size (copularnd ("Gumbel", 2, 5)), [5, 2]);
+
+%!error<copularnd: the 'Frank' copula is implemented as bivariate only.> ...
+%! copularnd ("Frank", 3, 5, 3)
+%!error<copularnd: the 'Gumbel' copula is implemented as bivariate only.> ...
+%! copularnd ("Gumbel", 2, 5, 3)
