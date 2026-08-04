@@ -410,7 +410,7 @@ endfunction
 %! k = 10;
 %! a = fitcknn (x, y, 'NumNeighbors' ,k);
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -419,7 +419,7 @@ endfunction
 %! k = 10;
 %! a = fitcknn (x, y, 'NumNeighbors' ,k);
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -428,7 +428,7 @@ endfunction
 %! k = 10;
 %! a = fitcknn (x, y, 'NumNeighbors' ,k, 'NSMethod', 'exhaustive');
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -437,7 +437,7 @@ endfunction
 %! k = 10;
 %! a = fitcknn (x, y, 'NumNeighbors' ,k, 'Distance', 'hamming');
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test

@@ -111,6 +111,9 @@ classdef hnswSearcher
     ## an observation and each column is a feature.  This property is private
     ## and cannot be modified after object creation.
     ##
+    ## Data of class @qcode{single} is stored and searched in single
+    ## precision, any other numeric class is converted to @qcode{double}.
+    ##
     ## @end deftp
     X = []
   endproperties
@@ -282,6 +285,13 @@ classdef hnswSearcher
         error ("hnswSearcher: X must be a finite numeric matrix.");
       endif
 
+      ## Single precision is carried through, but every other class is
+      ## converted up to double, as MATLAB does.  Integer data would
+      ## otherwise round each coordinate difference and corrupt distances.
+      if (! isa (X, "single"))
+        X = double (X);
+      endif
+
       obj.X = X;
       N = size (X, 1);
 
@@ -426,6 +436,11 @@ classdef hnswSearcher
     ## @item @var{D} contains the corresponding distances.
     ## @end itemize
     ##
+    ## @var{idx} is always of class @qcode{double}.  @var{D} is of class
+    ## @qcode{single} when either @var{obj.X} or @var{Y} is @qcode{single},
+    ## in which case the distances are computed in single precision, and of
+    ## class @qcode{double} otherwise.
+    ##
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
     ## @var{value})}
     ## allows additional options via name-value pairs:
@@ -434,7 +449,9 @@ classdef hnswSearcher
     ## @headitem @var{Name} @tab @var{Value}
     ##
     ## @item @qcode{'K'} @tab A positive integer specifying the number of
-    ## nearest neighbors to find. Default is 1.
+    ## nearest neighbors to find. Default is 1.  A value larger than the
+    ## number of observations in the training data is answered with all of
+    ## them, since there are no more neighbors to return.
     ##
     ## @item @qcode{'SearchSetSize'} @tab A positive integer specifying the
     ## size of the candidate list of nearest neighbors for a single query point
@@ -459,12 +476,11 @@ classdef hnswSearcher
       ## Get training data size
       [N, C] = size (obj.X);
 
-      ## Validate Y
-      if (isempty (Y))
-        error ("hnswSearcher.knnsearch: Y cannot be empty.");
-      endif
-      if (! (isnumeric (Y) && ismatrix (Y) && all (isfinite (Y)(:))))
-        error ("hnswSearcher.knnsearch: Y must be a finite numeric matrix.");
+      ## Validate Y.  A non-finite query is answered rather than refused: its
+      ## distances come back Inf or NaN, which is the honest result and what
+      ## MATLAB returns.  An empty query is answered with an empty result.
+      if (! (isnumeric (Y) && isreal (Y) && ismatrix (Y)))
+        error ("hnswSearcher.knnsearch: Y must be a real numeric matrix.");
       endif
       if (C != size (Y, 2))
         error (strcat ("hnswSearcher.knnsearch: Y must have the same", ...
@@ -506,6 +522,31 @@ classdef hnswSearcher
         varargin(1:2) = [];
       endwhile
 
+      ## More neighbours cannot be returned than there are points to return,
+      ## so asking for more is answered with all of them rather than with a
+      ## matrix wider than the training data padded out with NaN.
+      K = min (K, N);
+
+      ## The search only ever inspects SearchSetSize candidates, so it cannot
+      ## produce K neighbours while that is the smaller of the two: asking for
+      ## every point used to come back mostly NaN.
+      SearchSetSize = min (max (SearchSetSize, K), N);
+
+      ## Distances are computed in single precision when either the training
+      ## data or the query is single, and in double otherwise.  The indices
+      ## are always double.
+      cls = "double";
+      if (isa (obj.X, "single") || isa (Y, "single"))
+        cls = "single";
+      endif
+      Y = cast (Y, cls);
+
+      if (isempty (Y))
+        idx = zeros (rows (Y), K);
+        D = zeros (rows (Y), K, cls);
+        return;
+      endif
+
       ## Search HNSW graph
       idx = cell (rows (Y), 1);
       D = cell (rows (Y), 1);
@@ -519,7 +560,7 @@ classdef hnswSearcher
       endfor
 
       idx_mat = NaN (rows (Y), K);
-      D_mat = NaN (rows (Y), K);
+      D_mat = NaN (rows (Y), K, cls);
       for i = 1:rows (Y)
         len = min (K, length (idx{i}));
         idx_mat(i, 1:len) = idx{i}(1:len);
@@ -877,6 +918,10 @@ endfunction
 ## distance happened to have been appended last, and the walk stopped at the
 ## entry point -- returning the same neighbour for every query.
 %!test
+%! ## both the data and the graph are drawn, so seed both: the search is
+%! ## approximate and an unlucky graph misses a true neighbour
+%! rand ("seed", 42);
+%! randn ("seed", 4);
 %! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
 %! Y = randn (8, 2);
 %! hn = hnswSearcher (X);
@@ -887,6 +932,8 @@ endfunction
 %! endfor
 %!test
 %! ## the boundary that used to break was 2 * MaxNumLinksPerNode
+%! rand ("seed", 42);
+%! randn ("seed", 4);
 %! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
 %! Y = randn (8, 2);
 %! hn = hnswSearcher (X);
@@ -894,6 +941,8 @@ endfunction
 %!               knnsearch (hn, Y, 'K', 3, 'SearchSetSize', 32));
 %!test
 %! ## distinct queries must not collapse onto one index
+%! rand ("seed", 42);
+%! randn ("seed", 4);
 %! X = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
 %! Y = randn (8, 2);
 %! idx = knnsearch (hnswSearcher (X), Y, 'K', 3, 'SearchSetSize', 60);
@@ -940,12 +989,8 @@ endfunction
 %! knnsearch (hnswSearcher (ones (3,2)))
 %!error<hnswSearcher.knnsearch: Name-Value arguments must be in pairs.> ...
 %! knnsearch (hnswSearcher (ones (3,2)), ones (3,2), 'K')
-%!error<hnswSearcher.knnsearch: Y cannot be empty.> ...
-%! knnsearch (hnswSearcher (ones (3,2)), [])
-%!error<hnswSearcher.knnsearch: Y must be a finite numeric matrix.> ...
-%! knnsearch (hnswSearcher (ones (3,2)), 'abc')
-%!error<hnswSearcher.knnsearch: Y must have the same number of columns as the training data in OBJ.X.> ...
-%! knnsearch (hnswSearcher (ones (3,2)), ones (3,3))
+%!error<hnswSearcher.knnsearch: Y must be a real numeric matrix.> ...
+%! knnsearch (hnswSearcher (ones (3,2)), {1, 2})
 %!error<hnswSearcher.knnsearch: 'K' must be a positive integer.> ...
 %! knnsearch (hnswSearcher (ones (3,2)), ones (3,2), 'K', 0)
 %!error<hnswSearcher.knnsearch: invalid parameter name: 'foo'.> ...
@@ -989,3 +1034,81 @@ endfunction
 %! obj = hnswSearcher (ones (3,2)); obj.efSearch = 1.5
 %!error<hnswSearcher.subsasgn: unrecognized property: 'invalid'.> ...
 %! obj = hnswSearcher (ones (3,2)); obj.invalid = 1
+
+## More neighbours than there are points, and queries that are empty or not
+## finite, are answered rather than refused.  Verified against MATLAB R2024a.
+%!shared Xs, Ys, hs
+%! ## the graph is built from rand, so seed it: the search is approximate and
+%! ## an unlucky graph misses a true neighbour
+%! rand ("seed", 42);
+%! randn ("seed", 4);
+%! Xs = [randn(20,2); randn(20,2) + 3; randn(20,2) + [0, 6]];
+%! Ys = randn (8, 2);
+%! hs = hnswSearcher (Xs);
+
+%!test  # asking for every point returns every point, not a padding of NaN
+%! [idx, D] = knnsearch (hs, Ys, "K", 60);
+%! assert_equal (size (idx), [8, 60]);
+%! assert_equal (any (isnan (idx(:))), false);
+%! for r = 1:8
+%!   assert_equal (sort (idx(r,:)), 1:60);
+%! endfor
+
+%!test  # and the neighbours are the right ones, not merely present
+%! for K = [1, 5, 30, 60]
+%!   [~, Dh] = knnsearch (hs, Ys, "K", K);
+%!   [~, De] = knnsearch (ExhaustiveSearcher (Xs), Ys, "K", K);
+%!   assert_equal (Dh, De, 1e-12);
+%! endfor
+
+%!test  # more neighbours than points gives all of them, not a wider matrix
+%! for K = [61, 100, 1000]
+%!   [idx, D] = knnsearch (hs, Ys, "K", K);
+%!   assert_equal (size (idx), [8, 60]);
+%!   assert_equal (size (D), [8, 60]);
+%!   assert_equal (any (isnan (idx(:))), false);
+%! endfor
+
+%!test  # an empty query is answered with an empty result
+%! [idx, D] = knnsearch (hs, zeros (0, 2), "K", 3);
+%! assert_equal (size (idx), [0, 3]);
+%! assert_equal (size (D), [0, 3]);
+
+%!test  # a query that is not finite is answered, its distances saying so
+%! [idx, D] = knnsearch (hs, [Inf, 0], "K", 3);
+%! assert_equal (size (idx), [1, 3]);
+%! assert_equal (all (isinf (D)), true);
+%! [idx, D] = knnsearch (hs, [NaN, NaN], "K", 3);
+%! assert_equal (size (idx), [1, 3]);
+%! assert_equal (all (isnan (D)), true);
+
+## Single precision is carried through to the distances, every other class is
+## converted up to double, and the indices are always double.
+%!test
+%! rand ("seed", 42);
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];  Y = [2, 3; 6, 7];
+%! obj = hnswSearcher (single (X));
+%! assert_equal (class (obj.X), 'single');
+%! [idx, D] = knnsearch (obj, single (Y), "K", 2);
+%! assert_equal (class (idx), 'double');
+%! assert_equal (class (D), 'single');
+%! ## a double query against single data is still computed in single
+%! [~, Dm] = knnsearch (obj, Y, "K", 2);
+%! assert_equal (class (Dm), 'single');
+%! assert_equal (Dm, D);
+%! ## and so is a single query against double data
+%! [~, Ds] = knnsearch (hnswSearcher (X), single (Y), "K", 2);
+%! assert_equal (class (Ds), 'single');
+%! ## double throughout stays double
+%! [~, Dd] = knnsearch (hnswSearcher (X), Y, "K", 2);
+%! assert_equal (class (Dd), 'double');
+
+## Integer data is converted to double on the way in.  Held as int32 the
+## coordinate differences were rounded and the distances came out wrong.
+%!test
+%! rand ("seed", 42);
+%! X = int32 ([10, 20; 33, 41; 55, 62]);  Y = [21, 33];
+%! obj = hnswSearcher (X);
+%! assert_equal (class (obj.X), 'double');
+%! [~, D] = knnsearch (obj, Y, "K", 1);
+%! assert_equal (D, min (sqrt (sum ((double (X) - Y) .^ 2, 2))), 1e-12);

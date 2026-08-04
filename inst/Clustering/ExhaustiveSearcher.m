@@ -46,6 +46,9 @@ classdef ExhaustiveSearcher
     ## is an observation and each column is a feature. This property is private
     ## and cannot be modified after object creation.
     ##
+    ## Data of class @qcode{single} is stored and searched in single
+    ## precision, any other numeric class is converted to @qcode{double}.
+    ##
     ## @end deftp
     X = []
   endproperties
@@ -296,6 +299,13 @@ classdef ExhaustiveSearcher
         error ("ExhaustiveSearcher: X must be a finite numeric matrix.");
       endif
 
+      ## Single precision is carried through, but every other class is
+      ## converted up to double, as MATLAB does.  Integer data would
+      ## otherwise round each coordinate difference and corrupt distances.
+      if (! isa (X, "single"))
+        X = double (X);
+      endif
+
       obj.X = X;
 
       ## Default values for optional parameters
@@ -407,6 +417,11 @@ classdef ExhaustiveSearcher
     ## @math{P} must match the number of columns in @var{obj.X}.
     ## @end itemize
     ##
+    ## @var{idx} is always of class @qcode{double}.  @var{D} is of class
+    ## @qcode{single} when either @var{obj.X} or @var{Y} is @qcode{single},
+    ## in which case the distances are computed in single precision, and of
+    ## class @qcode{double} otherwise.
+    ##
     ## @code{[@var{idx}, @var{D}] = knnsearch (@var{obj}, @var{Y}, @var{name},
     ## @var{value})}
     ## allows additional options via name-value pairs:
@@ -415,7 +430,9 @@ classdef ExhaustiveSearcher
     ## @headitem @var{Name} @tab @var{Value}
     ##
     ## @item @qcode{'K'} @tab A positive integer specifying the number of
-    ## nearest neighbors to find. Default is 1.
+    ## nearest neighbors to find. Default is 1.  A value larger than the
+    ## number of observations in the training data is answered with all of
+    ## them, since there are no more neighbors to return.
     ##
     ## @item @qcode{'IncludeTies'} @tab Logical flag indicating whether to
     ## include all neighbors tied with the @math{K}th smallest distance. Default
@@ -475,9 +492,24 @@ classdef ExhaustiveSearcher
 
       ## Determine block size based on memory target (128 MB)
       N = rows (obj.X);
+
+      ## There are only N points to return, so a larger K is answered with all
+      ## of them.  Indexing the sorted list past its end raised an internal
+      ## out-of-bound error instead.
+      K = min (K, N);
       M = rows (Y);
       targetBytes = 128 * 1024^2;
       BlockSize = max (1, floor (targetBytes / (N * 8)));
+
+      ## Distances are computed in single precision when either the training
+      ## data or the query is single, and in double otherwise.  The indices
+      ## are always double.
+      cls = "double";
+      if (isa (obj.X, "single") || isa (Y, "single"))
+        cls = "single";
+      endif
+      X = cast (obj.X, cls);
+      Y = cast (Y, cls);
 
       ## Initialize outputs
       if (IncludeTies)
@@ -485,10 +517,10 @@ classdef ExhaustiveSearcher
         D = cell (M, 1);
       elseif (K == 1)
         idx = zeros (M, 1);
-        D = zeros (M, 1);
+        D = zeros (M, 1, cls);
       else
         idx = zeros (M, K);
-        D = zeros (M, K);
+        D = zeros (M, K, cls);
       endif
 
       ## Process Y in blocks
@@ -499,9 +531,9 @@ classdef ExhaustiveSearcher
 
         ## Compute distance matrix for this block
         if (ischar (obj.Distance))
-          D_blk = pdist2 (Y_blk, obj.X, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (Y_blk, X, obj.Distance, obj.DistParameter);
         else
-          D_blk = pdist2 (obj.X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (X, Y_blk, obj.Distance, obj.DistParameter);
           D_blk = reshape (D_blk', blk_rows, N);
         endif
 
@@ -546,6 +578,11 @@ classdef ExhaustiveSearcher
     ## @math{P} must match the number of columns in @var{obj.X}.
     ## @item @var{r} is a nonnegative scalar specifying the search radius.
     ## @end itemize
+    ##
+    ## @var{idx} is always of class @qcode{double}.  @var{D} is of class
+    ## @qcode{single} when either @var{obj.X} or @var{Y} is @qcode{single},
+    ## in which case the distances are computed in single precision, and of
+    ## class @qcode{double} otherwise.
     ##
     ## @code{[@var{idx}, @var{D}] = rangesearch (@dots{}, @var{name},
     ## @var{value})} allows additional options via name-value pairs:
@@ -610,6 +647,16 @@ classdef ExhaustiveSearcher
       targetBytes = 128 * 1024^2;
       BlockSize = max (1, floor (targetBytes / (N * 8)));
 
+      ## Distances are computed in single precision when either the training
+      ## data or the query is single, and in double otherwise.  The indices
+      ## are always double.
+      cls = "double";
+      if (isa (obj.X, "single") || isa (Y, "single"))
+        cls = "single";
+      endif
+      X = cast (obj.X, cls);
+      Y = cast (Y, cls);
+
       ## Initialize outputs
       idx = cell (M, 1);
       D = cell (M, 1);
@@ -622,9 +669,9 @@ classdef ExhaustiveSearcher
 
         ## Compute distance matrix for this block
         if (ischar (obj.Distance))
-          D_blk = pdist2 (Y_blk, obj.X, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (Y_blk, X, obj.Distance, obj.DistParameter);
         else
-          D_blk = pdist2 (obj.X, Y_blk, obj.Distance, obj.DistParameter);
+          D_blk = pdist2 (X, Y_blk, obj.Distance, obj.DistParameter);
           D_blk = reshape (D_blk', blk_rows, N);
         endif
 
@@ -1110,3 +1157,53 @@ endclassdef
 %! obj = ExhaustiveSearcher (ones (3,2), 'Distance', 'euclidean'); obj.DistParameter = 1
 %!error<ExhaustiveSearcher.subsasgn: unrecognized property: 'invalid'> ...
 %! obj = ExhaustiveSearcher (ones (3,2)); obj.invalid = 1
+
+## More neighbours than there are points is answered with all of them, where
+## indexing the sorted list past its end used to raise an out-of-bound error.
+%!test
+%! randn ("seed", 4);
+%! X = randn (20, 2);  Y = randn (5, 2);
+%! ex = ExhaustiveSearcher (X);
+%! for K = [20, 21, 100]
+%!   [idx, D] = knnsearch (ex, Y, "K", K);
+%!   assert_equal (size (idx), [5, 20]);
+%!   assert_equal (size (D), [5, 20]);
+%!   assert_equal (any (isnan (idx(:))), false);
+%!   assert_equal (all (diff (D, 1, 2)(:) >= -1e-12), true);
+%! endfor
+
+## Single precision is carried through to the distances, every other class is
+## converted up to double, and the indices are always double.
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];  Y = [2, 3; 6, 7];
+%! obj = ExhaustiveSearcher (single (X));
+%! assert_equal (class (obj.X), 'single');
+%! [idx, D] = knnsearch (obj, single (Y), "K", 2);
+%! assert_equal (class (idx), 'double');
+%! assert_equal (class (D), 'single');
+%! ## a double query against single data is still computed in single
+%! [~, Dm] = knnsearch (obj, Y, "K", 2);
+%! assert_equal (class (Dm), 'single');
+%! assert_equal (Dm, D);
+%! ## and so is a single query against double data
+%! [~, Ds] = knnsearch (ExhaustiveSearcher (X), single (Y), "K", 2);
+%! assert_equal (class (Ds), 'single');
+%! ## double throughout stays double
+%! [~, Dd] = knnsearch (ExhaustiveSearcher (X), Y, "K", 2);
+%! assert_equal (class (Dd), 'double');
+
+## Integer data is converted to double on the way in.  Held as int32 the
+## coordinate differences were rounded and the distances came out wrong.
+%!test
+%! X = int32 ([10, 20; 33, 41; 55, 62]);  Y = [21, 33];
+%! obj = ExhaustiveSearcher (X);
+%! assert_equal (class (obj.X), 'double');
+%! [~, D] = knnsearch (obj, Y, "K", 1);
+%! assert_equal (D, min (sqrt (sum ((double (X) - Y) .^ 2, 2))), 1e-12);
+
+## rangesearch follows the same rule: single distances, double indices.
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];  Y = [2, 3];
+%! [idx, D] = rangesearch (ExhaustiveSearcher (single (X)), single (Y), 4);
+%! assert_equal (class (idx{1}), 'double');
+%! assert_equal (class (D{1}), 'single');

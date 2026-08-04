@@ -1003,7 +1003,10 @@ classdef ClassificationKNN
       if (isempty (NumNeighbors))
         this.NumNeighbors = 1;
       else
-        this.NumNeighbors = NumNeighbors;
+        ## There are only as many neighbors available as there are training
+        ## samples, so a larger request is capped at that.  Asking for more
+        ## raised an internal nonconformant operator error at prediction.
+        this.NumNeighbors = min (NumNeighbors, rows (X));
       endif
 
       ## Get distance metric
@@ -2299,7 +2302,7 @@ endfunction
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'kdtree', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -2308,7 +2311,7 @@ endfunction
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k);
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -2317,7 +2320,7 @@ endfunction
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'NSMethod', 'exhaustive');
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'euclidean'})
 %! assert_equal ({a.BucketSize}, {50})
 %!test
@@ -2326,7 +2329,7 @@ endfunction
 %! k = 10;
 %! a = ClassificationKNN (x, y, 'NumNeighbors' ,k, 'Distance', 'hamming');
 %! assert_equal (class (a), "ClassificationKNN");
-%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 10})
+%! assert_equal ({a.X, a.Y, a.NumNeighbors}, {x, y, 4})
 %! assert_equal ({a.NSMethod, a.Distance}, {'exhaustive', 'hamming'})
 %! assert_equal ({a.BucketSize}, {50})
 
@@ -3177,3 +3180,15 @@ endfunction
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'leaveout', 1)
 %!error<ClassificationKNN.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'cvpartition', 1)
+
+## There are only as many neighbors as training samples, so a larger
+## NumNeighbors is capped at that.  It used to be stored as requested and then
+## fail at prediction with a nonconformant operator error.
+%!test
+%! x = [1, 2; 3, 4; 5, 6; 7, 8; 2, 3];
+%! y = [1; 2; 1; 2; 1];
+%! for k = [5, 6, 20]
+%!   a = fitcknn (x, y, 'NumNeighbors', k);
+%!   assert_equal (a.NumNeighbors, 5);
+%!   assert_equal (predict (a, [2, 2; 6, 6]), [1; 1]);
+%! endfor

@@ -257,6 +257,16 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     endif
   endif
 
+  ## Distances are computed in single precision when either the training data
+  ## or the query is single, and in double otherwise.  The indices are always
+  ## double.
+  cls = "double";
+  if (isa (X, "single") || isa (Y, "single"))
+    cls = "single";
+  endif
+  X = cast (X, cls);
+  Y = cast (Y, cls);
+
   ## Check for NSMethod
   if (strcmpi (NSMethod, 'kdtree'))
     ## Build kdtree and search the query point
@@ -265,7 +275,7 @@ function [idx, dist] = knnsearch (X, Y, varargin)
     ## Check for ties and sortindices
     if (! InclTies)
       ## Only return k neighbors
-      dist = zeros (rows (Y), K);
+      dist = zeros (rows (Y), K, cls);
       idx = zeros (rows (Y), K);
       for i = 1:rows (Y)
         [temp_idx, temp_D] = __search_kdtree__ (kdtree, Y(i,:), K, X, ...
@@ -682,3 +692,18 @@ endfunction
 %! knnsearch (ones (4, 5), ones (1, 5), 'NSmethod', 'kdtree', 'distance', 'hamming')
 %!error<knnsearch: 'kdtree' cannot be used with the given distance metric.> ...
 %! knnsearch (ones (4, 5), ones (1, 5), 'NSmethod', 'kdtree', 'distance', 'jaccard')
+
+## Single precision is carried through to the distances, and the indices are
+## always double, on both search methods.
+%!test
+%! X = [1, 2; 3, 4; 5, 6; 7, 8];  Y = [2, 3; 6, 7];
+%! for m = {"kdtree", "exhaustive"}
+%!   [idx, D] = knnsearch (single (X), single (Y), "K", 2, "NSMethod", m{1});
+%!   assert_equal (class (idx), 'double');
+%!   assert_equal (class (D), 'single');
+%!   [~, Dm] = knnsearch (single (X), Y, "K", 2, "NSMethod", m{1});
+%!   assert_equal (class (Dm), 'single');
+%!   assert_equal (Dm, D);
+%!   [~, Dd] = knnsearch (X, Y, "K", 2, "NSMethod", m{1});
+%!   assert_equal (class (Dd), 'double');
+%! endfor
