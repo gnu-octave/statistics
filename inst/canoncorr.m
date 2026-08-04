@@ -37,13 +37,35 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   k = size (X, 1); # should also be size (Y, 1)
   m = size (X, 2);
   n = size (Y, 2);
-  d = min ([k m n]);
 
   X = center (X);
   Y = center (Y);
 
-  [Qx Rx] = qr (X, 0);
-  [Qy Ry] = qr (Y, 0);
+  ## Factor with column pivoting and work in the numerical rank.  Without this
+  ## a rank-deficient input is solved against a singular triangular factor:
+  ## the coefficients run away to 1e15 and the canonical correlations come back
+  ## wrong rather than merely imprecise.
+  [Qx, Rx, px] = qr (X, 0);
+  rankX = rank_of (Rx, k, m);
+  if (rankX == 0)
+    error ("canoncorr: X must contain at least one non-constant column.");
+  elseif (rankX < m)
+    warning ("canoncorr:NotFullRank", "canoncorr: X is not full rank.");
+    Qx = Qx(:, 1:rankX);
+    Rx = Rx(1:rankX, 1:rankX);
+  endif
+
+  [Qy, Ry, py] = qr (Y, 0);
+  rankY = rank_of (Ry, k, n);
+  if (rankY == 0)
+    error ("canoncorr: Y must contain at least one non-constant column.");
+  elseif (rankY < n)
+    warning ("canoncorr:NotFullRank", "canoncorr: Y is not full rank.");
+    Qy = Qy(:, 1:rankY);
+    Ry = Ry(1:rankY, 1:rankY);
+  endif
+
+  d = min (rankX, rankY);
 
   [U S V] = svd (Qx' * Qy, 'econ');
 
@@ -56,8 +78,13 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   A .*= f;
   B .*= f;
 
+  ## Put the coefficients back to their full height in the original column
+  ## order, the dropped columns contributing nothing.
+  A(px, :) = [A; zeros(m - rankX, d)];
+  B(py, :) = [B; zeros(n - rankY, d)];
+
   if (nargout > 2)
-    r = max (0, min (diag (S), 1))';
+    r = max (0, min (diag (S)(1:d), 1))';
   endif
   if (nargout > 3)
     U = X * A;
@@ -67,12 +94,15 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
   endif
 
   if (nargout > 5)
+    ## The degrees of freedom count the dimensions actually fitted, which is
+    ## the rank rather than the number of columns supplied.
     Wilks = fliplr (cumprod (fliplr ((1 - r .^ 2))));
-    chisq = - (k - 1 - (m + n + 1)/2) * log (Wilks);
-    df1 = (m - (1:d) + 1) .* (n - (1:d) + 1);
+    chisq = - (k - 1 - (rankX + rankY + 1)/2) * log (Wilks);
+    df1 = (rankX - (1:d) + 1) .* (rankY - (1:d) + 1);
     pChisq = 1 - chi2cdf (chisq, df1);
-    s = sqrt ((df1.^2 - 4) ./ ((m - (1:d) + 1).^2 + (n - (1:d) + 1).^2 - 5));
-    df2 = (k - 1 - (m + n + 1)/2) * s - df1/2 + 1;
+    s = sqrt ((df1.^2 - 4) ./ ((rankX - (1:d) + 1).^2 + ...
+                               (rankY - (1:d) + 1).^2 - 5));
+    df2 = (k - 1 - (rankX + rankY + 1)/2) * s - df1/2 + 1;
     ls = Wilks .^ (1 ./ s);
     F = (1 ./ ls  -  1) .* (df2 ./ df1);
     pF = 1 - fcdf (F, df1, df2);
@@ -83,6 +113,15 @@ function [A,B,r,U,V,stats] = canoncorr (X,Y)
     stats.pF = pF;
     stats.chisq = chisq;
     stats.pChisq = pChisq;
+  endif
+endfunction
+
+## Numerical rank of a triangular QR factor, on the scale of its leading entry.
+function rk = rank_of (R, nrows, ncols)
+  if (isempty (R))
+    rk = 0;
+  else
+    rk = sum (abs (diag (R)) > eps (abs (R(1))) * max (nrows, ncols));
   endif
 endfunction
 
@@ -100,4 +139,47 @@ endfunction
 %!assert_equal (cov (U), eye (size (U, 2)), 10 * eps);
 %!assert_equal (cov (V), eye (size (V, 2)), 10 * eps);
 %! rand ('state', 1); [A, B, r] = canoncorr (rand (5, 10), rand (5, 20));
-%!assert_equal (r, ones (1, 5), 10*eps);
+%! ## Four, not five: centring a five-row matrix leaves rank at most four, so
+%! ## there is no fifth canonical correlation to report.  The count used to
+%! ## come from the number of rows rather than the rank.
+%!assert_equal (r, ones (1, 4), 10*eps);
+
+## Rank-deficient input is reduced to its rank rather than solved against a
+## singular factor.  Verified against MATLAB R2024a.
+%!test
+%! Xr = [X(:,1), X(:,1), X(:,2)];
+%! warning ("off", "canoncorr:NotFullRank", "local");
+%! [Ar, Br, rr] = canoncorr (Xr, Y);
+%! ## the duplicated column contributes nothing
+%! assert_equal (Ar(2,:), zeros (1, columns (Ar)));
+%! ## and the coefficients stay finite, where they used to reach 1e15
+%! assert_equal (all (isfinite (Ar(:))), true);
+%! assert_equal (max (abs (Ar(:))) < 1e3, true);
+%! ## dropping the duplicate leaves the same fit as never having had it
+%! [A2, B2, r2] = canoncorr (X(:,1:2), Y);
+%! assert_equal (rr, r2, 1e-12);
+%! assert_equal (Ar([1, 3], :), A2, 1e-10);
+
+%!test  # a constant column carries no information and is dropped
+%! Xc = [X(:,1:2), ones(rows (X), 1)];
+%! warning ("off", "canoncorr:NotFullRank", "local");
+%! [Ac, Bc, rc] = canoncorr (Xc, Y);
+%! assert_equal (Ac(3,:), zeros (1, columns (Ac)));
+%! [A2, B2, r2] = canoncorr (X(:,1:2), Y);
+%! assert_equal (rc, r2, 1e-12);
+
+%!test  # the deficiency is reported
+%! Xr = [X(:,1), X(:,1), X(:,2)];
+%! fail ("canoncorr (Xr, Y)", "warning", "X is not full rank");
+
+%!test  # the returned coefficients satisfy the definition whatever the rank
+%! Xr = [X(:,1), X(:,1), X(:,2)];
+%! warning ("off", "canoncorr:NotFullRank", "local");
+%! [Ar, Br, rr, Ur, Vr] = canoncorr (Xr, Y);
+%! kk = rows (Xr);
+%! assert_equal ((Ur' * Ur) / (kk - 1), eye (numel (rr)), 1e-10);
+%! assert_equal ((Vr' * Vr) / (kk - 1), eye (numel (rr)), 1e-10);
+%! assert_equal ((Ur' * Vr) / (kk - 1), diag (rr), 1e-10);
+
+%!error <X must contain at least one non-constant column.> ...
+%! canoncorr (ones (10, 2), [tan(1:10); tanh((1:10)/10)]')
