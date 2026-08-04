@@ -29,9 +29,11 @@
 ## @var{family} is the copula family name. Currently, @var{family} can be
 ## @code{'Gaussian'} for the Gaussian family, @code{'t'} for the Student's t
 ## family, @code{'Clayton'} for the Clayton family, @code{'Frank'} for the
-## Frank family, or @code{'Gumbel'} for the Gumbel-Hougaard family.  The Frank
-## and Gumbel-Hougaard families are generated as bivariate only; only the
-## Clayton family extends to more than two dimensions.
+## Frank family, @code{'Gumbel'} for the Gumbel-Hougaard family, @code{'AMH'}
+## for the Ali-Mikhail-Haq family, or @code{'FGM'} for the
+## Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
+## MATLAB does not provide.  Every family but Clayton is generated as
+## bivariate only.
 ##
 ## @item
 ## @var{theta} is the parameter of the copula. For the Gaussian and Student's t
@@ -41,7 +43,9 @@
 ## number of elements as samples to be generated or be scalar.  Values outside
 ## a family's range give @code{NaN} rows: at or above @code{1} for the
 ## Gumbel-Hougaard family, at or above @code{-1} for the bivariate Clayton
-## family, and any finite value for the Frank family.
+## family, and any finite value for the Frank family.  The Ali-Mikhail-Haq
+## family takes @var{theta} in @code{[-1, 1)} and the
+## Farlie-Gumbel-Morgenstern family in @code{[-1, 1]}.
 ##
 ## @item
 ## @var{df} is the degrees of freedom for the Student's t family. @var{df} must
@@ -105,7 +109,7 @@ function r = copularnd (family, theta, df, n)
 
   if (! ischar (family))
     error (strcat ("copularnd: family must be one of 'Gaussian',", ...
-                   " 't', 'Clayton', 'Frank', and 'Gumbel'."));
+                   " 't', 'Clayton', 'Frank', 'Gumbel', 'AMH', and 'FGM'."));
   endif
 
   lower_family = lower (family);
@@ -166,7 +170,7 @@ function r = copularnd (family, theta, df, n)
         endif
       endif
 
-    case {'clayton', 'frank', 'gumbel'}
+    case {'clayton', 'frank', 'gumbel', 'amh', 'fgm'}
       ## Archimedian one parameter family
       if (nargin < 4)
         ## Default is bivariate
@@ -177,7 +181,7 @@ function r = copularnd (family, theta, df, n)
           error ("copularnd: D must be an integer greater than 1.");
         endif
       endif
-      ## Only the Clayton frailty is available for more than two dimensions.
+      ## Only the Clayton family is available for more than two dimensions.
       if (d != 2 && ! strcmp (lower_family, 'clayton'))
         error (strcat ("copularnd: the '%s' copula is implemented as", ...
                        " bivariate only."), family);
@@ -290,6 +294,37 @@ function r = copularnd (family, theta, df, n)
         ## Check bounds
         k = find (! (theta >= 1) | ! (theta < inf));
 
+      case {'amh'}
+        ## The Ali-Mikhail-Haq family.  Its conditional distribution is a
+        ## quadratic in 1 - V, so it inverts in closed form.
+        u = rand (n, 2);
+        w = u(:, 2);
+        b = 1 - u(:, 1);
+        qa = theta - theta .^ 2 .* b .^ 2 .* w;
+        qb = 2 .* theta .* b .* w - (1 + theta);
+        qc = 1 - w;
+        z = w;
+        lin = abs (qa) <= eps;
+        z(! lin) = (-qb(! lin) - sqrt (qb(! lin) .^ 2 ...
+                    - 4 .* qa(! lin) .* qc(! lin))) ./ (2 .* qa(! lin));
+        z(lin) = -qc(lin) ./ qb(lin);
+        r = [u(:, 1), 1 - z];
+        ## Check bounds
+        k = find (! (theta >= -1) | ! (theta < 1));
+
+      case {'fgm'}
+        ## The Farlie-Gumbel-Morgenstern family, likewise a quadratic.
+        u = rand (n, 2);
+        w = u(:, 2);
+        A = theta .* (1 - 2 .* u(:, 1));
+        v = w;
+        nz = A != 0;
+        v(nz) = ((1 + A(nz)) - sqrt ((1 + A(nz)) .^ 2 ...
+                 - 4 .* A(nz) .* w(nz))) ./ (2 .* A(nz));
+        r = [u(:, 1), v];
+        ## Check bounds
+        k = find (! (theta >= -1) | ! (theta <= 1));
+
     endswitch
 
     ## Out of bounds parameters
@@ -376,3 +411,43 @@ endfunction
 %! copularnd ("Frank", 3, 5, 3)
 %!error<copularnd: the 'Gumbel' copula is implemented as bivariate only.> ...
 %! copularnd ("Gumbel", 2, 5, 3)
+
+## The Ali-Mikhail-Haq and Farlie-Gumbel-Morgenstern families, Octave
+## extensions.  As with the other generators the sample's rank correlation is
+## checked against the one the family is defined to have.
+%!test
+%! rand ("seed", 21);
+%! for theta = [-0.9, -0.5, 0.5, 0.9]
+%!   r = copularnd ("AMH", theta, 4000);
+%!   assert_equal (size (r), [4000, 2]);
+%!   assert_equal (all (r(:) >= 0 & r(:) <= 1), true);
+%!   rho = corr (tiedrank (r(:,1)), tiedrank (r(:,2)));
+%!   assert_equal (rho, copulastat ("AMH", theta, "type", "Spearman"), 0.05);
+%! endfor
+
+%!test
+%! rand ("seed", 23);
+%! for theta = [-1, -0.5, 0.5, 1]
+%!   r = copularnd ("FGM", theta, 4000);
+%!   assert_equal (size (r), [4000, 2]);
+%!   assert_equal (all (r(:) >= 0 & r(:) <= 1), true);
+%!   rho = corr (tiedrank (r(:,1)), tiedrank (r(:,2)));
+%!   assert_equal (rho, copulastat ("FGM", theta, "type", "Spearman"), 0.05);
+%! endfor
+
+%!test  # both are the independence copula at a zero parameter
+%! rand ("seed", 29);
+%! r = copularnd ("AMH", 0, 4000);
+%! assert_equal (corr (tiedrank (r(:,1)), tiedrank (r(:,2))), 0, 0.05);
+%! r = copularnd ("FGM", 0, 4000);
+%! assert_equal (corr (tiedrank (r(:,1)), tiedrank (r(:,2))), 0, 0.05);
+
+%!test  # a parameter outside the family's range gives NaN rows
+%! assert_equal (copularnd ("AMH", 1, 2), NaN (2, 2));
+%! assert_equal (copularnd ("AMH", -1.5, 2), NaN (2, 2));
+%! assert_equal (copularnd ("FGM", 1.5, 2), NaN (2, 2));
+
+%!error<copularnd: the 'AMH' copula is implemented as bivariate only.> ...
+%! copularnd ("AMH", 0.5, 5, 3)
+%!error<copularnd: the 'FGM' copula is implemented as bivariate only.> ...
+%! copularnd ("FGM", 0.5, 5, 3)

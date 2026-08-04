@@ -28,8 +28,14 @@
 ##
 ## @var{family} is the copula family name.  It can be @qcode{"Gaussian"} for the
 ## Gaussian family, @qcode{"t"} for the Student's t family, @qcode{"Clayton"}
-## for the Clayton family, @qcode{"Gumbel"} for the Gumbel-Hougaard family, or
-## @qcode{"Frank"} for the Frank family.
+## for the Clayton family, @qcode{"Gumbel"} for the Gumbel-Hougaard family,
+## @qcode{"Frank"} for the Frank family, @qcode{"AMH"} for the Ali-Mikhail-Haq
+## family, or @qcode{"FGM"} for the Farlie-Gumbel-Morgenstern family.  The last
+## two are Octave extensions that MATLAB does not provide, and are treated as
+## bivariate.  Neither reaches the whole range of either rank correlation: the
+## Ali-Mikhail-Haq family covers a Kendall's tau in
+## @code{[(5-8*log (2))/3, 1/3]} and the Farlie-Gumbel-Morgenstern family one
+## in @code{[-2/9, 2/9]}.
 ##
 ## For the Gaussian and Student's t families, @var{r} is a scalar rank
 ## correlation or a matrix of pairwise rank correlations, and @var{param} is the
@@ -65,7 +71,7 @@ function param = copulaparam (family, r, varargin)
 
   if (! ischar (family))
     error (strcat ("copulaparam: FAMILY must be one of 'Gaussian',", ...
-                   " 't', 'Clayton', 'Gumbel', and 'Frank'."));
+                   " 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."));
   endif
 
   if (! isnumeric (r) || ! isreal (r))
@@ -129,6 +135,41 @@ function param = copulaparam (family, r, varargin)
         case 'frank'
           param = invert_stat (lower_family, r, type);
       endswitch
+
+    case {'amh', 'fgm'}
+      ## Octave extensions that MATLAB does not have, both bivariate here.
+      if (! isscalar (r))
+        error ("copulaparam: R must be a scalar for the %s family.", family);
+      endif
+      if (strcmp (lower_family, 'fgm'))
+        ## Both measures are linear in the parameter, so the inverse is too.
+        if (strcmp (type, 'kendall'))
+          lim = 2 / 9;
+          param = 9 .* r ./ 2;
+        else
+          lim = 1 / 3;
+          param = 3 .* r;
+        endif
+        if (abs (r) > lim)
+          error (strcat ("copulaparam: R must be in the range -%g to %g", ...
+                         " for the FGM family."), lim, lim);
+        endif
+      else
+        ## The Ali-Mikhail-Haq family reaches only part of the range, and
+        ## neither measure inverts in closed form.
+        lo = copulastat ('AMH', -1, 'type', type);
+        hi = copulastat ('AMH', 1 - eps, 'type', type);
+        if (r < lo || r > hi)
+          error (strcat ("copulaparam: R must be in the range %g to %g", ...
+                         " for the AMH family."), lo, hi);
+        endif
+        if (r == 0)
+          param = 0;
+        else
+          param = fzero (@(a) copulastat ('AMH', a, 'type', type) - r, ...
+                         [-1, 1 - eps]);
+        endif
+      endif
 
     otherwise
       error ("copulaparam: unknown copula family '%s'.", family);
@@ -220,7 +261,7 @@ endfunction
 %! assert_equal (copulaparam ("Gaussian", tau), sin (pi .* tau ./ 2), 1e-14);
 
 ## Test input validation
-%!error <copulaparam: FAMILY must be one of 'Gaussian', 't', 'Clayton', 'Gumbel', and 'Frank'.> ...
+%!error <copulaparam: FAMILY must be one of 'Gaussian', 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'.> ...
 %! copulaparam (5, 0.3)
 %!error <copulaparam: R must be real.> copulaparam ("Gaussian", 2i)
 %!error <copulaparam: TYPE must be either 'Kendall' or 'Spearman'.> ...
@@ -236,3 +277,26 @@ endfunction
 %!error <copulaparam: R must be non-negative for the Gumbel family.> ...
 %! copulaparam ("Gumbel", -0.3)
 %!error <copulaparam: unknown copula family 'Foo'.> copulaparam ("Foo", 0.3)
+
+## The Ali-Mikhail-Haq and Farlie-Gumbel-Morgenstern families, Octave
+## extensions.  Inverting copulastat must return the parameter it was given.
+%!test
+%! for ty = {'Kendall', 'Spearman'}
+%!   for a = [-0.9, -0.5, -0.1, 0, 0.3, 0.7, 0.95]
+%!     r = copulastat ('AMH', a, 'type', ty{1});
+%!     assert_equal (copulaparam ('AMH', r, 'type', ty{1}), a, 1e-9);
+%!   endfor
+%!   for a = [-1, -0.4, 0, 0.6, 1]
+%!     r = copulastat ('FGM', a, 'type', ty{1});
+%!     assert_equal (copulaparam ('FGM', r, 'type', ty{1}), a, 1e-12);
+%!   endfor
+%! endfor
+
+%!test  # the FGM inverse is linear
+%! assert_equal (copulaparam ('FGM', 0.1), 0.45, 1e-14);
+%! assert_equal (copulaparam ('FGM', 0.1, 'type', 'Spearman'), 0.3, 1e-14);
+
+%!error<copulaparam: R must be in the range -0.222222 to 0.222222 for the FGM family.> ...
+%! copulaparam ('FGM', 0.5)
+%!error<copulaparam: R must be in the range -0.181726 to 0.333333 for the AMH family.> ...
+%! copulaparam ('AMH', 0.5)

@@ -27,8 +27,14 @@
 ##
 ## @var{family} is the copula family name.  It can be @qcode{"Gaussian"} for the
 ## Gaussian family, @qcode{"t"} for the Student's t family, @qcode{"Clayton"}
-## for the Clayton family, @qcode{"Gumbel"} for the Gumbel-Hougaard family, or
-## @qcode{"Frank"} for the Frank family.
+## for the Clayton family, @qcode{"Gumbel"} for the Gumbel-Hougaard family,
+## @qcode{"Frank"} for the Frank family, @qcode{"AMH"} for the Ali-Mikhail-Haq
+## family, or @qcode{"FGM"} for the Farlie-Gumbel-Morgenstern family.  The last
+## two are Octave extensions that MATLAB does not provide, and are treated as
+## bivariate.  Neither reaches the whole range of either rank correlation: the
+## Ali-Mikhail-Haq family covers a Kendall's tau in
+## @code{[(5-8*log (2))/3, 1/3]} and the Farlie-Gumbel-Morgenstern family one
+## in @code{[-2/9, 2/9]}.
 ##
 ## For the Gaussian and Student's t families, @var{param} is a linear
 ## correlation coefficient @var{rho} in the range @math{[-1,1]}, or a
@@ -67,7 +73,7 @@ function r = copulastat (family, param, varargin)
 
   if (! ischar (family))
     error (strcat ("copulastat: FAMILY must be one of 'Gaussian',", ...
-                   " 't', 'Clayton', 'Gumbel', and 'Frank'."));
+                   " 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'."));
   endif
 
   if (! isnumeric (param) || ! isreal (param))
@@ -126,11 +132,73 @@ function r = copulastat (family, param, varargin)
         r = archimedean_spearman (lower_family, param);
       endif
 
+    case {'amh', 'fgm'}
+      ## Octave extensions that MATLAB does not have.  Both are bivariate here:
+      ## the rank correlations are properties of a pair of variables, and the
+      ## multivariate Farlie-Gumbel-Morgenstern family carries one parameter
+      ## per subset rather than one overall.
+      if (! isscalar (param))
+        error ("copulastat: PARAM must be a scalar for the %s family.", family);
+      endif
+      if (strcmp (lower_family, 'amh'))
+        if (param < -1 || param >= 1)
+          error (strcat ("copulastat: PARAM must be greater than or equal", ...
+                         " to -1 and less than 1 for the AMH family."));
+        endif
+        if (strcmp (type, 'kendall'))
+          r = amh_kendall (param);
+        else
+          r = amh_spearman (param);
+        endif
+      else
+        if (param < -1 || param > 1)
+          error (strcat ("copulastat: PARAM must be in the range -1 to 1", ...
+                         " for the FGM family."));
+        endif
+        ## Both measures are linear in the parameter for this family
+        if (strcmp (type, 'kendall'))
+          r = 2 .* param ./ 9;
+        else
+          r = param ./ 3;
+        endif
+      endif
+
     otherwise
       error ("copulastat: unknown copula family '%s'.", family);
 
   endswitch
 
+endfunction
+
+## Kendall's tau of the Ali-Mikhail-Haq copula.  The limit at PARAM == 0 is
+## 2/9 * PARAM, which is zero; the closed form is 0/0 there.
+function t = amh_kendall (a)
+  if (a == 0)
+    t = 0;
+  else
+    t = 1 - 2 .* ((1 - a) .^ 2 .* log (1 - a) + a) ./ (3 .* a .^ 2);
+  endif
+endfunction
+
+## Spearman's rho of the Ali-Mikhail-Haq copula, which needs the dilogarithm.
+function r = amh_spearman (a)
+  if (a == 0)
+    r = 0;
+  else
+    r = (12 .* (1 + a) .* dilog (a) - 24 .* (1 - a) .* log (1 - a)) ...
+        ./ a .^ 2 - 3 .* (a + 12) ./ a;
+  endif
+endfunction
+
+## The dilogarithm, -int_0^z log (1-t)/t dt.  Substituting t = z s moves the
+## removable singularity off the end of the interval, which the direct form
+## integrates badly for negative z.
+function d = dilog (z)
+  if (z == 0)
+    d = 0;
+  else
+    d = -integral (@(s) log (1 - z .* s) ./ s, 0, 1);
+  endif
 endfunction
 
 ## Kendall's tau for the Archimedean families (closed form)
@@ -234,7 +302,7 @@ endfunction
 %! assert_equal (copulastat ("Gumbel", 1, "type", "Spearman"), 0, 1e-14);
 
 ## Test input validation
-%!error <copulastat: FAMILY must be one of 'Gaussian', 't', 'Clayton', 'Gumbel', and 'Frank'.> ...
+%!error <copulastat: FAMILY must be one of 'Gaussian', 't', 'Clayton', 'Gumbel', 'Frank', 'AMH', and 'FGM'.> ...
 %! copulastat (5, 0.5)
 %!error <copulastat: PARAM must be real.> copulastat ("Gaussian", 2i)
 %!error <copulastat: TYPE must be either 'Kendall' or 'Spearman'.> ...
@@ -248,3 +316,41 @@ endfunction
 %!error <copulastat: PARAM must be greater than or equal to 1 for the Gumbel family.> ...
 %! copulastat ("Gumbel", 0.5)
 %!error <copulastat: unknown copula family 'Foo'.> copulastat ("Foo", 0.5)
+
+## The Ali-Mikhail-Haq and Farlie-Gumbel-Morgenstern families, Octave
+## extensions.  Both rank correlations are checked against the integrals that
+## define them, evaluated on copulacdf and copulapdf.
+%!test
+%! for a = [-0.9, -0.5, 0.5, 0.9]
+%!   f = @(u, v) arrayfun (@(p, q) copulacdf ('AMH', [p, q], a), u, v);
+%!   rho = 12 * integral2 (f, 0, 1, 0, 1, 'AbsTol', 1e-11) - 3;
+%!   assert_equal (copulastat ('AMH', a, 'type', 'Spearman'), rho, 1e-8);
+%! endfor
+
+%!test
+%! for a = [-0.9, -0.5, 0.5, 0.9]
+%!   f = @(u, v) arrayfun (@(p, q) copulacdf ('AMH', [p, q], a) ...
+%!                                 * copulapdf ('AMH', [p, q], a), u, v);
+%!   tau = 4 * integral2 (f, 0, 1, 0, 1, 'AbsTol', 1e-11) - 1;
+%!   assert_equal (copulastat ('AMH', a), tau, 1e-8);
+%! endfor
+
+%!test  # both measures are linear in the FGM parameter
+%! for a = [-1, -0.5, 0, 0.5, 1]
+%!   assert_equal (copulastat ('FGM', a), 2 * a / 9, 1e-14);
+%!   assert_equal (copulastat ('FGM', a, 'type', 'Spearman'), a / 3, 1e-14);
+%! endfor
+
+%!test  # the independence copula at a zero parameter
+%! assert_equal (copulastat ('AMH', 0), 0);
+%! assert_equal (copulastat ('AMH', 0, 'type', 'Spearman'), 0);
+%! assert_equal (copulastat ('FGM', 0), 0);
+
+%!test  # the extremes of the Ali-Mikhail-Haq range are the known ones
+%! assert_equal (copulastat ('AMH', -1), (5 - 8 * log (2)) / 3, 1e-12);
+%! assert_equal (copulastat ('AMH', 1 - eps), 1 / 3, 1e-9);
+
+%!error<copulastat: PARAM must be greater than or equal to -1 and less than 1 for the AMH family.> ...
+%! copulastat ('AMH', 1)
+%!error<copulastat: PARAM must be in the range -1 to 1 for the FGM family.> ...
+%! copulastat ('FGM', 1.5)

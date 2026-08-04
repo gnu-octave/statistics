@@ -29,7 +29,9 @@
 ## be @code{'Gaussian'} for the Gaussian family, @code{'t'} for the
 ## Student's t family, @code{'Clayton'} for the Clayton family,
 ## @code{'Gumbel'} for the Gumbel-Hougaard family, @code{'Frank'} for the
-## Frank family, or @code{'AMH'} for the Ali-Mikhail-Haq family.
+## Frank family, @code{'AMH'} for the Ali-Mikhail-Haq family, or
+## @code{'FGM'} for the Farlie-Gumbel-Morgenstern family.  The last two are
+## Octave extensions that MATLAB does not provide.
 ##
 ## @item
 ## @var{x} is the support where each row corresponds to an observation.
@@ -44,7 +46,12 @@
 ## than or equal to @code{-1} and lower than @code{1} for the
 ## Ali-Mikhail-Haq family. Moreover, @var{theta} must be non-negative
 ## for dimensions greater than @code{2}. @var{theta} must be a column
-## vector with the same number of rows as @var{x} or be scalar.
+## vector with the same number of rows as @var{x} or be scalar.  The
+## Farlie-Gumbel-Morgenstern family instead takes one parameter for every
+## subset of the variables of order two or more, so @var{theta} is a row
+## vector of length @code{2^d-d-1} or a matrix with one such row per
+## observation; parameter sets violating the family's linear constraints
+## give @code{NaN}.
 ##
 ## @item
 ## @var{df} is the degrees of freedom of the Student's t family, and is
@@ -115,6 +122,19 @@ function y = copulapdf (family, x, theta, df)
 
   lower_family = lower (family);
 
+  ## The Farlie-Gumbel-Morgenstern family carries one parameter per subset of
+  ## the variables of order two or more, as it does in copulacdf.
+  if (strcmp (lower_family, 'fgm'))
+    if (! ismatrix (theta) || size (theta, 2) != (2 .^ d - d - 1) || ...
+        (size (theta, 1) != 1 && size (theta, 1) != n))
+      error (strcat ("copulapdf: THETA must be a row vector of length", ...
+                     " 2^d-d-1 or a matrix of size N x (2^d-d-1)."));
+    endif
+    if (n > 1 && size (theta, 1) == 1)
+      theta = repmat (theta, n, 1);
+    endif
+  endif
+
   ## The two elliptical families take a correlation matrix rather than a
   ## one-parameter THETA, and are validated the way copulacdf validates them.
   is_elliptical = any (strcmp (lower_family, {'gaussian', 't'}));
@@ -134,7 +154,8 @@ function y = copulapdf (family, x, theta, df)
       endif
       df = df(:);
     endif
-  elseif (! isvector (theta) || (! isscalar (theta) && size (theta, 1) != n))
+  elseif (! strcmp (lower_family, 'fgm') && (! isvector (theta) ...
+          || (! isscalar (theta) && size (theta, 1) != n)))
     error (strcat ("copulapdf: THETA must be a column vector with the", ...
                    " same number of rows as X or be scalar."));
   endif
@@ -143,7 +164,8 @@ function y = copulapdf (family, x, theta, df)
     ## Input is empty
     y = zeros (0, 1);
   else
-    if (n > 1 && isscalar (theta) && ! is_elliptical)
+    if (n > 1 && isscalar (theta) && ! is_elliptical ...
+        && ! strcmp (lower_family, 'fgm'))
       theta = repmat (theta, n, 1);
     endif
 
@@ -223,6 +245,30 @@ function y = copulapdf (family, x, theta, df)
       y = (theta .* (1 - sum (x, 2) - prod (x, 2) - z) - 1) ./ (z .^ 3);
       ## Check theta
       k = find (! (theta >= -1) | ! (theta < 1));
+    elseif (strcmp (lowerarg, 'fgm'))
+      ## The Farlie-Gumbel-Morgenstern family.  Differentiating the
+      ## distribution once in every variable turns each u_i (1 - u_i) factor
+      ## into (1 - 2 u_i) and leaves the leading product at one.
+      bcomb = logical (floor (mod (((0:(2 .^ d - 1))' * 2 .^ ...
+                       ((1 - d):0)), 2)));
+      ecomb = ones (size (bcomb));
+      ecomb(bcomb) = -1;
+      ## Summation over all combinations of order >= 2
+      bcomb = bcomb(sum (bcomb, 2) >= 2, end:-1:1);
+      ## Linear constraints matrix
+      ac = zeros (size (ecomb, 1), size (bcomb, 1));
+      ## Matrix to compute y
+      ap = zeros (n, size (bcomb, 1));
+      for i = 1:size (bcomb, 1)
+        ac(:, i) = -prod (ecomb(:, bcomb(i, :)), 2);
+        ap(:, i) = prod (1 - 2 * x(:, bcomb(i, :)), 2);
+      endfor
+      y = 1 + sum (ap .* theta, 2);
+      ## Check linear constraints
+      k = false (n, 1);
+      for i = 1:n
+        k(i) = any (ac * theta(i, :)' > 1);
+      endfor
     else
       error ("copulapdf: unknown copula family '%s'.", family);
     endif
@@ -308,3 +354,43 @@ endfunction
 %!error<copulapdf: DF is required for the 't' copula family.> ...
 %! copulapdf ('t', [0.2, 0.4], 0.5)
 %!error<Invalid call to copulapdf> copulapdf ('Gaussian', [0.2, 0.4], 0.5, 5)
+
+## The Farlie-Gumbel-Morgenstern family, an Octave extension.  Its density is
+## checked against a finite difference of copulacdf, which is independent of it.
+%!test
+%! x = [0.35, 0.62];
+%! h = 1e-5;
+%! for theta = [-1, -0.4, 0.7, 1]
+%!   fd = (copulacdf ('FGM', [x(1)+h, x(2)+h], theta) ...
+%!       - copulacdf ('FGM', [x(1)+h, x(2)-h], theta) ...
+%!       - copulacdf ('FGM', [x(1)-h, x(2)+h], theta) ...
+%!       + copulacdf ('FGM', [x(1)-h, x(2)-h], theta)) / (4 * h * h);
+%!   assert_equal (copulapdf ('FGM', x, theta), fd, 1e-6);
+%! endfor
+
+%!test  # the bivariate density in closed form
+%! x = [0.35, 0.62; 0.2, 0.3];
+%! theta = 0.7;
+%! assert_equal (copulapdf ('FGM', x, theta), ...
+%!               1 + theta * (1 - 2 * x(:,1)) .* (1 - 2 * x(:,2)), 1e-14);
+
+%!test  # a zero parameter gives the independence copula
+%! x = [0.35, 0.62; 0.2, 0.3; 0.9, 0.1];
+%! assert_equal (copulapdf ('FGM', x, 0), ones (3, 1), 1e-14);
+
+%!test  # one parameter per subset of order two or more beyond two variables
+%! x = [0.3, 0.5, 0.7];
+%! theta = [0.1, 0.1, 0.1, 0.1];
+%! assert_equal (copulapdf ('FGM', x, theta), 0.984, 1e-12);
+
+%!test  # a parameter set outside the family's linear constraints gives NaN
+%! assert_equal (copulapdf ('FGM', [0.3, 0.5], 2), NaN);
+
+%!test  # the density integrates to one over the unit square
+%! g = ((1:60)' - 0.5) / 60;
+%! [A, B] = meshgrid (g, g);
+%! x = [A(:), B(:)];
+%! assert_equal (sum (copulapdf ('FGM', x, 0.7)) / 3600, 1, 1e-10);
+
+%!error<copulapdf: THETA must be a row vector of length 2\^d-d-1> ...
+%! copulapdf ('FGM', [0.3, 0.5, 0.7], [0.1, 0.1])
