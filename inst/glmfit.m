@@ -577,7 +577,10 @@ endfunction
 %! ## standard error, NaN test statistics, and the rest as the reduced fit
 %! x = [1.2; 2.3; 3.4; 4.5; 5.6; 6.7; 7.8; 8.9; 9.0; 10.1];
 %! y = [0.5; 0.6; 0.7; 0.8; 0.9; 1.0; 1.1; 1.2; 1.3; 1.4];
+%! status = warning;
+%! warning ('off');
 %! [b, dev, stats] = glmfit ([x, x], y, 'normal');
+%! warning (status);
 %! [br, devr, statsr] = glmfit (x, y, 'normal');
 %! assert_equal (b, [br; 0], -1e-12);
 %! assert_equal (dev, devr, -1e-12);
