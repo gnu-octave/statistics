@@ -976,6 +976,13 @@ endfunction
 %!                    'Verbose', 0);
 %! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'a', 'b'});
 
+%!test
+%! ## Collinear predictors are fitted, not refused; the redundant column is
+%! ## dropped rather than entering the model.
+%! mdl = stepwiseglm ([X(:,1), X(:,1)], yn, 'constant', 'Verbose', 0);
+%! assert_equal (class (mdl), 'GeneralizedLinearModel');
+%! assert_equal (mdl.CoefficientNames, {'(Intercept)', 'x1'});
+
 ## Test input validation
 %!error<Invalid call> stepwiseglm ()
 %!error<stepwiseglm: X must be a real matrix.> stepwiseglm ("a", [1;2])

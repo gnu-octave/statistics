@@ -467,7 +467,7 @@ function [b, dev, stats] = glmfit (X, y, distribution, varargin)
       stats.se(P) = se;
       C = C ./ (se * se');
       stats.coeffcorr(P,P) = C;
-      stats.t(P) = b ./ se;
+      stats.t(P) = b(P) ./ se;
       if (estDisp)
         stats.p = 2 * tcdf (-abs (stats.t), stats.dfe);
       else
@@ -571,6 +571,19 @@ endfunction
 %! dev_matlab = 0.0051;
 %! assert_equal (Bnew, b_matlab, 0.001);
 %! assert_equal (dev, dev_matlab, 0.001);
+
+%!test
+%! ## a rank deficient design drops the redundant column: zero coefficient and
+%! ## standard error, NaN test statistics, and the rest as the reduced fit
+%! x = [1.2; 2.3; 3.4; 4.5; 5.6; 6.7; 7.8; 8.9; 9.0; 10.1];
+%! y = [0.5; 0.6; 0.7; 0.8; 0.9; 1.0; 1.1; 1.2; 1.3; 1.4];
+%! [b, dev, stats] = glmfit ([x, x], y, 'normal');
+%! [br, devr, statsr] = glmfit (x, y, 'normal');
+%! assert_equal (b, [br; 0], -1e-12);
+%! assert_equal (dev, devr, -1e-12);
+%! assert_equal (stats.se, [statsr.se; 0], -1e-12);
+%! assert_equal (stats.t, [statsr.t; NaN], -1e-12);
+%! assert_equal (stats.p, [statsr.p; NaN], -1e-12);
 
 ## Test input validation
 %!error <glmfit: too few input arguments.> glmfit ()
