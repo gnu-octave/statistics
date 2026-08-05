@@ -790,6 +790,8 @@ endfunction
 ## Test Cases
 
 %!test
+%! ## the graph is drawn from rand, so seed it: the search is approximate
+%! rand ("seed", 42);
 %! load fisheriris
 %! X = meas;
 %! obj = hnswSearcher (X, 'Distance', 'chebychev');
@@ -810,6 +812,8 @@ endfunction
 %! endfor
 
 %!test
+%! ## the graph is drawn from rand, so seed it: the search is approximate
+%! rand ("seed", 42);
 %! load fisheriris
 %! X = meas;
 %! C = cov (X);
