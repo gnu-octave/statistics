@@ -1443,7 +1443,7 @@ classdef anova
     endfunction
 
     function atab = linearModelAtab_ (obj, mdl)
-      has_intercept = isfield (mdl.Formula, 'HasIntercept') ...
+      has_intercept = isa (mdl.Formula, 'LinearFormula') ...
                       && mdl.Formula.HasIntercept;
       intercept_df = 0;
       if (has_intercept)
@@ -1481,7 +1481,7 @@ classdef anova
       mdl = obj.sourceModel_;
       eta = mdl.SSR / max (mdl.SST, eps);
       partial_eta = mdl.SSR / max (mdl.SSR + mdl.SSE, eps);
-      has_intercept = isfield (mdl.Formula, 'HasIntercept') ...
+      has_intercept = isa (mdl.Formula, 'LinearFormula') ...
                       && mdl.Formula.HasIntercept;
       intercept_df = 0;
       if (has_intercept)

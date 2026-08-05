@@ -60,6 +60,19 @@ classdef LinearModel
   ## @code{Variables}.
   ## @end multitable
   ##
+  ## A categorical predictor expands to indicator columns, one per level bar
+  ## the reference level, which the intercept carries.  When the model has no
+  ## intercept, the @emph{first} categorical predictor is given an indicator
+  ## for every one of its levels instead, so that its coefficients are the
+  ## group means; any further categorical predictor stays reference coded,
+  ## which keeps the design full rank.  This differs from MATLAB, which omits
+  ## the reference level whether or not an intercept is present and so cannot
+  ## fit the reference group at all -- for a three-level grouping variable
+  ## @code{g}, MATLAB fits @code{y ~ g - 1} with two coefficients, predicts
+  ## exactly 0 for every observation in the omitted group, and reports a
+  ## negative @math{R^2}.  This implementation returns three coefficients, one
+  ## per group.
+  ##
   ## A @code{LinearModel} object supports categorical predictors, which are
   ## automatically encoded internally as indicator (dummy) variables,
   ## observation weights for a weighted least squares fit, excluding specific
@@ -480,10 +493,11 @@ classdef LinearModel
     ##
     ## Model formula information
     ##
-    ## A structure representing the model formula with fields including
-    ## @code{ResponseName}, @code{LinearPredictor}, @code{PredictorNames},
-    ## @code{TermNames}, @code{HasIntercept}, @code{Terms} (the terms
-    ## matrix), and @code{InModel}.  This property is read-only.
+    ## A @code{LinearFormula} object representing the model formula, with
+    ## properties including @code{ResponseName}, @code{LinearPredictor},
+    ## @code{PredictorNames}, @code{TermNames}, @code{HasIntercept},
+    ## @code{Terms} (the terms matrix), and @code{InModel}.  Converting it with
+    ## @code{char} renders the whole formula.  This property is read-only.
     ##
     ## @end deftp
     Formula = [];
@@ -688,10 +702,8 @@ classdef LinearModel
       else
         fprintf ("\n  Linear regression model (robust fit):\n");
       endif
-      if (! isempty (this.Formula) && isstruct (this.Formula) ...
-          && isfield (this.Formula, 'LinearPredictor'))
-        fprintf ("      %s ~ %s\n", this.ResponseName, ...
-                 this.Formula.LinearPredictor);
+      if (! isempty (this.Formula) && isa (this.Formula, 'LinearFormula'))
+        fprintf ("      %s\n", char (this.Formula));
       endif
 
       if (! isempty (this.Coefficients))
@@ -993,7 +1005,10 @@ classdef LinearModel
       if (istable (data))
         for j = 1:p_raw
           col = tbl.(pred_names_raw{j});
-          if (iscell (col) || isa (col, 'categorical'))
+          ## A logical or string column groups its observations just as a cell
+          ## or categorical one does, and is coded the same way.
+          if (iscell (col) || isa (col, 'categorical') ...
+              || islogical (col) || isa (col, 'string'))
             cat_logical(j) = true;
           endif
         endfor
@@ -1042,7 +1057,7 @@ classdef LinearModel
         endif
 
         [X_design_sub, ~, coef_names_raw] = parseWilkinsonFormula ( ...
-          modelspec, 'model_matrix', tbl_sub);
+          modelspec, 'model_matrix', tbl_sub, pred_names_raw(cat_logical));
 
         coef_names    = coef_names_raw(:)';
         y_sub         = y_full(subset_mask);
@@ -1050,49 +1065,8 @@ classdef LinearModel
         has_intercept = any (strcmp (coef_names, '(Intercept)'));
         enc_names     = coef_names(! strcmp (coef_names, '(Intercept)'));
 
-        cat_info.names  = {};
-        cat_info.levels = {};
-        if (istable (data))
-          for j = 1:p_raw
-            if (cat_logical(j))
-              col = tbl_sub.(pred_names_raw{j});
-              if (iscell (col))
-                levels_j = unique (col);
-              elseif (isa (col, 'categorical'))
-                levels_j = categories (col);
-              else
-                levels_j = {};
-              endif
-              cat_info.names{end+1}  = pred_names_raw{j};
-              cat_info.levels{end+1} = levels_j;
-            endif
-          endfor
-        endif
-
-        atomic_names = {};
-        for t = 1:n_coef
-          if (strcmp (coef_names{t}, '(Intercept)'))
-            continue;
-          endif
-          factors_t = strsplit (coef_names{t}, ':');
-          for f = 1:numel (factors_t)
-            if (! any (strcmp (atomic_names, factors_t{f})))
-              atomic_names{end+1} = factors_t{f};
-            endif
-          endfor
-        endfor
-
-        terms = zeros (n_coef, numel (atomic_names) + 1);
-        for t = 1:n_coef
-          if (strcmp (coef_names{t}, '(Intercept)'))
-            continue;
-          endif
-          factors_t = strsplit (coef_names{t}, ':');
-          for f = 1:numel (factors_t)
-            col_t = find (strcmp (atomic_names, factors_t{f}));
-            terms(t, col_t) = 1;
-          endfor
-        endfor
+        [terms, cat_info, term_cols] = terms_from_coefnames (coef_names, ...
+                              pred_names_raw, cat_logical, data, tbl_sub);
 
       else
 
@@ -1104,7 +1078,10 @@ classdef LinearModel
           if (istable (data))
             col = tbl.(pred_names_raw{j});
             if (iscell (col))
-              [cat_str_levels{j}, ~, ic] = unique (col);
+              ## Appearance order, so that the omitted reference level is the
+              ## one the data shows first; see parseWilkinsonFormula for the
+              ## formula path.
+              [cat_str_levels{j}, ~, ic] = unique (col, 'stable');
               X_num_full(:, j) = ic;
             elseif (isa (col, 'categorical'))
               cat_str_levels{j} = categories (col);
@@ -1117,7 +1094,7 @@ classdef LinearModel
           else
             if (cat_logical(j))
               uvals = sort (unique (X_raw(isfinite (X_raw(:,j)), j)));
-              cat_str_levels{j} = cellstr (num2str (uvals(:)));
+              cat_str_levels{j} = strtrim (cellstr (num2str (uvals(:))));
               [~, ic] = ismember (X_raw(:,j), uvals);
               X_num_full(:, j) = ic;
             else
@@ -1130,8 +1107,11 @@ classdef LinearModel
         X_num_sub = X_num_full(subset_mask, :);
         y_sub     = y_full(subset_mask);
 
+        ## Whether a categorical is given all its indicator columns depends
+        ## on the intercept, which has to be settled before encoding.
         [X_enc_sub, enc_names, cat_info] = encode_categorical ( ...
-          X_num_sub, cat_logical, pred_names_raw, cat_str_levels);
+          X_num_sub, cat_logical, pred_names_raw, cat_str_levels, ...
+          modelspec_has_intercept (modelspec, opts.Intercept));
         p_enc  = size (X_enc_sub, 2);
 
         [terms, has_intercept, coef_names, emsg] = parse_modelspec ( ...
@@ -1142,6 +1122,7 @@ classdef LinearModel
         n_coef = rows (terms);
 
         X_design_sub = build_design (terms, X_enc_sub);
+        term_cols    = [enc_names, {''}];
 
       endif
 
@@ -1237,54 +1218,37 @@ classdef LinearModel
         'VariableNames', {'Leverage', 'CooksDistance', 'Dffits', 'S2_i', ...
                           'CovRatio', 'Dfbetas', 'HatMatrix'});
 
-      dummy_names = {};
-      dummy_bases = {};
-      for ci = 1:numel (cat_info.names)
-        base_nm  = cat_info.names{ci};
-        levels_c = cat_info.levels{ci};
-        for L = 2:numel (levels_c)
-          dummy_names{end+1} = [base_nm, '_', char(levels_c{L})];
-          dummy_bases{end+1} = base_nm;
-        endfor
-      endfor
-
-      if (has_intercept)
-        non_int = coef_names(! strcmp (coef_names, '(Intercept)'));
-      else
-        non_int = coef_names;
-      endif
-
-      disp_terms = {};
-      for t = 1:numel (non_int)
-        factors_t = strsplit (non_int{t}, ':');
-        for f = 1:numel (factors_t)
-          idx = find (strcmp (dummy_names, factors_t{f}), 1);
-          if (! isempty (idx))
-            factors_t{f} = dummy_bases{idx};
-          endif
-        endfor
-        nm = strjoin (factors_t, ':');
-        if (! any (strcmp (disp_terms, nm)))
-          disp_terms{end+1} = nm;
+      ## Model formula.  TERMS is expressed over the encoded design columns; the
+      ## formula is expressed over the model's variables, so a categorical's
+      ## indicator columns have to be folded back onto the variable they came
+      ## from before the term names can be built.
+      var_idx = zeros (1, p_raw);
+      for j = 1:p_raw
+        k = find (strcmp (var_names_all, pred_names_raw{j}), 1);
+        if (! isempty (k))
+          var_idx(j) = k;
         endif
       endfor
+      ## Indexed by the columns of TERMS, which are not the coefficient
+      ## names: a factor appearing only inside an interaction or a power has a
+      ## column without ever being a coefficient.
+      [enc2raw, col_pow] = encodednames_to_row (term_cols(1:end-1), ...
+                                             pred_names_raw, cat_info);
+      terms_var = variable_level_terms (terms(:, 1:end-1), enc2raw, var_idx, ...
+                                   n_vars, col_pow);
 
-      if (has_intercept)
-        lp_str = ifelse (isempty (disp_terms), '1', ['1 + ', strjoin(disp_terms, ' + ')]);
-      else
-        lp_str = strjoin (disp_terms, ' + ');
+      ## A response passed apart from the table is still a variable of the
+      ## model, and the formula is written over every one of them, so it takes
+      ## a column of the terms matrix like any other.
+      form_vars  = var_names_all(:)';
+      form_terms = terms_var;
+      if (! any (strcmp (form_vars, resp_name)))
+        form_vars{end+1}     = resp_name;
+        form_terms(:, end+1) = 0;
       endif
 
-      FormulaS.ResponseName    = resp_name;
-      FormulaS.LinearPredictor = lp_str;
-      FormulaS.PredictorNames  = pred_names_raw;
-      FormulaS.TermNames       = coef_names;
-      FormulaS.HasIntercept    = has_intercept;
-      FormulaS.Terms           = terms;
-      FormulaS.InModel         = true (1, n_coef);
-      FormulaS.NTerms          = n_coef;
-      FormulaS.NPredictors     = p_raw;
-      FormulaS.NVars           = n_vars;
+      FormulaObj = LinearFormula (form_terms, form_vars, ...
+                                  'ResponseName', resp_name);
 
       ObsInfo = table (w_full, excluded_mask, missing_mask, subset_mask, ...
         'VariableNames', {'Weights', 'Excluded', 'Missing', 'Subset'});
@@ -1318,15 +1282,7 @@ classdef LinearModel
           vi_range{j} = ifelse (isempty (fv), [NaN, NaN], [min(fv), max(fv)]);
         else
           col_d = tbl.(vname);
-          vi_class{j} = class (col_d);
-          if (isnumeric (col_d))
-            fv = col_d(isfinite (col_d));
-            vi_range{j} = ifelse (isempty (fv), [NaN, NaN], [min(fv), max(fv)]);
-          elseif (iscell (col_d))
-            vi_range{j} = unique (col_d);
-          else
-            vi_range{j} = {};
-          endif
+          [vi_class{j}, vi_range{j}] = variable_class_and_range (col_d);
           if (! is_resp_var && ! isempty (j_pred))
             vi_iscat(j) = cat_logical(j_pred);
           endif
@@ -1364,7 +1320,7 @@ classdef LinearModel
       this.SST                      = SST;
       this.Robust                   = RobustS;
       this.Steps                    = [];
-      this.Formula                  = FormulaS;
+      this.Formula                  = FormulaObj;
       this.NumObservations          = n_obs;
       this.NumPredictors            = p_raw;
       this.NumVariables             = n_vars;
@@ -7129,3 +7085,122 @@ endfunction
 %!error <Bad coefficient name> plotAdded (mdl, 'NotACoef')
 %!error <unrecognized property> plotAdded (mdl, 2, 'BadOpt', 5)
 %!error <Bad coefficient number> mdl0 = fitlm (ones (n, 1), y, 'Intercept', false); plotAdded (mdl0)
+
+## A factor reaching the model only through an interaction or a power has a
+## column of the terms matrix without ever being a coefficient, so anything
+## indexed by those columns must be built from their own names.
+%!shared tf, tv, tr, ttbl
+%! tf = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! tv = [2;1;4;3;6;5;8;7;10;9;12;11];
+%! tr = [3.1;4.2;5.3;6.4;7.5;8.6;9.7;10.8;11.9;13.0;14.1;15.2];
+%! ttbl = table (tf, tv, tr, 'VariableNames', {'u', 'v', 'resp'});
+
+%!test  # a power keeps its exponent in the variable's own column
+%! m = fitlm (ttbl, 'resp ~ 1 + u*v + u^2 + v^2');
+%! assert_equal (char (m.Formula), 'resp ~ 1 + u*v + u^2 + v^2');
+%! assert_equal (m.Formula.Terms, ...
+%!               [0 0 0; 1 0 0; 0 1 0; 1 1 0; 2 0 0; 0 2 0]);
+%! assert_equal (m.Formula.TermNames, ...
+%!               {'(Intercept)'; 'u'; 'v'; 'u:v'; 'u^2'; 'v^2'});
+
+%!test  # an interaction survives when one factor is not a main effect
+%! m = fitlm (ttbl, 'resp ~ 1 + u + u:v');
+%! assert_equal (char (m.Formula), 'resp ~ 1 + u + u:v');
+%! assert_equal (m.Formula.Terms, [0 0 0; 1 0 0; 1 1 0]);
+%! assert_equal (m.Formula.TermNames, {'(Intercept)'; 'u'; 'u:v'});
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'u:v'});
+
+%!test  # a power alone still names the variable it belongs to
+%! m = fitlm (ttbl, 'resp ~ 1 + v^2 + u^2');
+%! assert_equal (char (m.Formula), 'resp ~ 1 + u + v + u^2 + v^2');
+%! assert_equal (m.Formula.NTerms, 5);
+%! assert_equal (m.Formula.PredictorNames, {'u', 'v'});
+
+## Dropping the intercept gives the first categorical predictor every one of
+## its levels -- the cell-means parameterisation -- on both the formula and the
+## keyword path.  MATLAB drops the reference level either way and so cannot fit
+## the reference group; see the note in the class documentation.
+%!shared cf, ch, cg, ct1, ct2
+%! cf = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! ch = {'b';'c';'a';'b';'c';'a';'b';'c';'a';'b';'c';'a'};
+%! cg = {'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi'};
+%! ct1 = table (cf, ch, [3.1;4.2;5.3;6.4;7.5;8.6;9.7;10.8;11.9;13;14.1;15.2], ...
+%!              'VariableNames', {'u', 'h2', 'resp'});
+%! ct2 = table (ch, cg, [3.1;4.2;5.3;6.4;7.5;8.6;9.7;10.8;11.9;13;14.1;15.2], ...
+%!              'VariableNames', {'h2', 'g', 'resp'});
+
+%!test  # every level is coded, and the estimates are the group means
+%! m = fitlm (ct1, 'resp ~ h2 - 1');
+%! assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a'});
+%! assert (m.Coefficients.Estimate', [8.05, 9.15, 10.25], 1e-12);
+%! assert (m.Rsquared.Ordinary > 0);
+
+%!test  # the keyword path codes it the same way
+%! m = fitlm (ct1, 'linear', 'Intercept', false);
+%! assert_equal (m.CoefficientNames, {'u', 'h2_b', 'h2_c', 'h2_a'});
+%! assert_equal (m.NumCoefficients, m.NumEstimatedCoefficients);
+
+%!test  # a second categorical stays reference coded, keeping the design full rank
+%! for spec = {'resp ~ h2 + g - 1', 'linear'}
+%!   if (strcmp (spec{1}, 'linear'))
+%!     m = fitlm (ct2, spec{1}, 'Intercept', false);
+%!   else
+%!     m = fitlm (ct2, spec{1});
+%!   endif
+%!   assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a', 'g_hi'});
+%!   assert_equal (m.NumCoefficients, m.NumEstimatedCoefficients);
+%! endfor
+
+%!test  # an intercept still takes the reference level with it
+%! m = fitlm (ct1, 'resp ~ 1 + h2');
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'h2_c', 'h2_a'});
+%! m = fitlm (ct1, 'linear');
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'h2_c', 'h2_a'});
+
+## A predictor that groups its observations is coded the same way whatever its
+## column type, and VariableInfo reports it as categorical with its levels in
+## the order the design codes them.
+%!shared vu, vg, vb, vk, vr
+%! vu = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! vg = {'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi';'lo';'hi'};
+%! vb = logical ([0;1;0;1;0;1;0;1;0;1;0;1]);
+%! vk = [5;3;5;3;5;3;5;3;5;3;5;3];
+%! vr = [3.1;4.2;5.3;6.4;7.5;8.6;9.7;10.8;11.9;13;14.1;15.2];
+
+%!test  # a logical column is coded by value, with false as the reference
+%! t = table (vu, vb, vr, 'VariableNames', {'u', 'b', 'resp'});
+%! m = fitlm (t, 'resp ~ 1 + u + b');
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'b_1'});
+%! assert_equal (m.VariableInfo.IsCategorical, [false; true; false]);
+%! assert_equal (m.VariableInfo.Class, {'double'; 'logical'; 'double'});
+%! assert_equal (m.VariableInfo.Range{2}, [false, true]);
+%! ## and the keyword path codes it identically
+%! assert_equal (fitlm (t, 'linear').CoefficientNames, ...
+%!               {'(Intercept)', 'u', 'b_1'});
+
+%!test  # 'CategoricalVars' is honoured on the formula path too
+%! t = table (vu, vk, vr, 'VariableNames', {'u', 'k', 'resp'});
+%! m = fitlm (t, 'resp ~ 1 + u + k', 'CategoricalVars', {'k'});
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'k_5'});
+%! assert_equal (m.VariableInfo.IsCategorical, [false; true; false]);
+%! assert_equal (m.VariableInfo.Range{2}, [3, 5]);
+%! ## without the declaration it stays numeric
+%! m = fitlm (t, 'resp ~ 1 + u + k');
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'k'});
+
+%!test  # a string column groups like a cellstr one
+%! t = table (vu, string (vg), vr, 'VariableNames', {'u', 'g', 'resp'});
+%! m = fitlm (t, 'resp ~ 1 + u + g');
+%! assert_equal (m.CoefficientNames, {'(Intercept)', 'u', 'g_hi'});
+%! assert_equal (m.VariableInfo.IsCategorical, [false; true; false]);
+%! assert_equal (class (m.VariableInfo.Range{2}), 'string');
+
+%!test  # Range keeps each variable's own type and the design's level order
+%! t = table (vu, vg, vr, 'VariableNames', {'u', 'g', 'resp'});
+%! m = fitlm (t, 'resp ~ 1 + u + g');
+%! assert_equal (m.VariableInfo.Range{2}, {'lo', 'hi'});
+%! assert_equal (m.VariableInfo.Range{1}, [1, 12]);
+%! t = table (vu, categorical (vg), vr, 'VariableNames', {'u', 'g', 'resp'});
+%! m = fitlm (t, 'resp ~ 1 + u + g');
+%! assert_equal (class (m.VariableInfo.Range{2}), 'categorical');
+%! assert_equal (cellstr (m.VariableInfo.Range{2}), {'hi', 'lo'});

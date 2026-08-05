@@ -49,6 +49,18 @@
 ## @code{fitglm} documents.  @code{Fitted.Response} is then the fitted count
 ## @math{N p} and @code{Residuals.Raw} is on that same count scale.
 ##
+## A categorical predictor expands to indicator columns, one per level bar the
+## reference level, which the intercept carries.  When the model has no
+## intercept, the @emph{first} categorical predictor is given an indicator for
+## every one of its levels instead, so that its coefficients are the group
+## means; any further categorical predictor stays reference coded, which keeps
+## the design full rank.  This differs from MATLAB, which omits the reference
+## level whether or not an intercept is present and so cannot fit the reference
+## group at all -- for a three-level grouping variable @code{g}, MATLAB fits
+## @code{y ~ g - 1} with two coefficients, predicts exactly 0 for every
+## observation in the omitted group, and reports a negative @math{R^2}.  This
+## implementation returns three coefficients, one per group.
+##
 ## @seealso{fitglm, LinearModel, glmfit, glmval}
 ## @end deftp
 
@@ -158,7 +170,7 @@ classdef GeneralizedLinearModel
     ## Cell array of observation names; empty unless the data carried row names.
     ObservationNames = {};
 
-    ## Structure describing the model formula.
+    ## LinearFormula object describing the model formula.
     Formula = [];
 
     ## Structure describing the stepwise term-selection history.  Empty unless
@@ -395,7 +407,10 @@ classdef GeneralizedLinearModel
       if (istable (data))
         for j = 1:p_raw
           col = tbl.(pred_names{j});
-          if (iscell (col) || isa (col, 'categorical'))
+          ## A logical or string column groups its observations just as a cell
+          ## or categorical one does, and is coded the same way.
+          if (iscell (col) || isa (col, 'categorical') ...
+              || islogical (col) || isa (col, 'string'))
             cat_logical(j) = true;
           endif
         endfor
@@ -477,23 +492,27 @@ classdef GeneralizedLinearModel
         ## returned design lines up row for row with AVAIL_MASK.
         tbl_avail = tbl_all(avail_mask, :);
         [X_avail, ~, coef_names] = parseWilkinsonFormula ( ...
-          modelspec, 'model_matrix', tbl_avail);
+          modelspec, 'model_matrix', tbl_avail, pred_names(cat_logical));
         coef_names    = coef_names(:)';
         has_intercept = any (strcmp (coef_names, '(Intercept)'));
         enc_names     = coef_names(! strcmp (coef_names, '(Intercept)'));
         X_design_all  = NaN (n_total, columns (X_avail));
         X_design_all(avail_mask, :) = X_avail;
-        [terms, cat_info] = terms_from_coefnames (coef_names, pred_names, ...
-                                                  cat_logical, data, tbl_avail);
+        [terms, cat_info, term_cols] = terms_from_coefnames (coef_names, ...
+                              pred_names, cat_logical, data, tbl_avail);
       else
+        ## Whether a categorical is given all its indicator columns depends
+        ## on the intercept, which has to be settled before encoding.
         [X_enc_all, enc_names, cat_info] = encode_categorical ( ...
-          X_num_full, cat_logical, pred_names, cat_levels);
+          X_num_full, cat_logical, pred_names, cat_levels, ...
+          modelspec_has_intercept (modelspec, opts.Intercept));
         [terms, has_intercept, coef_names, emsg] = parse_modelspec ( ...
           modelspec, enc_names, columns (X_enc_all), opts.Intercept);
         if (! isempty (emsg))
           error ("GeneralizedLinearModel: %s", emsg);
         endif
         X_design_all = build_design (terms, X_enc_all);
+        term_cols    = [enc_names, {''}];
         ## A missing categorical code encodes as an all-zero dummy row rather
         ## than NaN, so mark the missing rows explicitly.
         X_design_all(missing_mask, :) = NaN;
@@ -629,30 +648,19 @@ classdef GeneralizedLinearModel
           var_idx(j) = k;
         endif
       endfor
-      enc2raw   = enc_names_to_raw (enc_names, pred_names, cat_info);
-      terms_var = var_level_terms (terms(:, 1:end-1), enc2raw, var_idx, n_vars);
-      term_names = term_names_from_terms (terms_var, var_names_all);
-      lin_pred   = linear_predictor_string (terms_var, var_names_all);
-      in_model   = false (1, n_vars);
-      in_model(var_idx(var_idx > 0)) = true;
+      ## Indexed by the columns of TERMS, which are not the coefficient
+      ## names: a factor appearing only inside an interaction or a power has a
+      ## column without ever being a coefficient.
+      [enc2raw, col_pow] = encodednames_to_row (term_cols(1:end-1), pred_names, ...
+                                             cat_info);
+      terms_var = variable_level_terms (terms(:, 1:end-1), enc2raw, var_idx, ...
+                                   n_vars, col_pow);
 
-      this.Formula = struct ( ...
-        'ResponseName',    resp_name, ...
-        'LinearPredictor', lin_pred, ...
-        'PredictorNames',  {pred_names(:)'}, ...
-        'VariableNames',   {var_names_all(:)'}, ...
-        'TermNames',       {term_names}, ...
-        'Terms',           terms_var, ...
-        'Link',            linkspec, ...
-        'ModelFun',        @(b, X) X * b, ...
-        'FunctionCalls',   {cell(1, 0)}, ...
-        'InModel',         in_model, ...
-        'HasIntercept',    has_intercept, ...
-        'NTerms',          rows (terms_var), ...
-        'NVars',           n_vars, ...
-        'NPredictors',     p_raw);
-      this.formulastr_ = sprintf ("%s ~ %s", ...
-        link_response_string (linkspec, resp_name), lin_pred);
+      this.Formula = LinearFormula (terms_var, var_names_all(:)', ...
+                                    'ResponseName', resp_name, ...
+                                    'Link', linkspec);
+      this.formulastr_ = char (this.Formula);
+      in_model         = this.Formula.InModel;
 
       ## Per-variable information, over the full data rather than the fitting
       ## subset: a range is a property of the variable, not of the fit.
@@ -1191,7 +1199,9 @@ function [X_num, cat_levels] = raw_to_codes (data, X_raw, tbl, pred_names, ...
     if (istable (data))
       col = tbl.(pred_names{j});
       if (iscell (col))
-        [cat_levels{j}, ~, ic] = unique (col);
+        ## Appearance order, so that the omitted reference level is the one the
+        ## data shows first; see parseWilkinsonFormula for the formula path.
+        [cat_levels{j}, ~, ic] = unique (col, 'stable');
         X_num(:, j) = ic;
       elseif (isa (col, 'categorical'))
         cat_levels{j} = categories (col);
@@ -1204,7 +1214,7 @@ function [X_num, cat_levels] = raw_to_codes (data, X_raw, tbl, pred_names, ...
     else
       if (cat_logical(j))
         uvals = sort (unique (X_raw(isfinite (X_raw(:,j)), j)));
-        cat_levels{j} = cellstr (num2str (uvals(:)));
+        cat_levels{j} = strtrim (cellstr (num2str (uvals(:))));
         [~, ic] = ismember (X_raw(:,j), uvals);
         X_num(:, j) = ic;
       else
@@ -1212,52 +1222,6 @@ function [X_num, cat_levels] = raw_to_codes (data, X_raw, tbl, pred_names, ...
         cat_levels{j} = {};
       endif
     endif
-  endfor
-endfunction
-
-## Reconstruct a terms matrix and categorical info from formula coefficient
-## names (PATH A), mirroring the encoding used for the design.
-function [terms, cat_info] = terms_from_coefnames (coef_names, pred_names, ...
-                                                   cat_logical, data, tbl_sub)
-  cat_info.names  = {};
-  cat_info.levels = {};
-  if (istable (data))
-    for j = 1:numel (pred_names)
-      if (cat_logical(j))
-        col = tbl_sub.(pred_names{j});
-        if (iscell (col))
-          levels_j = unique (col);
-        elseif (isa (col, 'categorical'))
-          levels_j = categories (col);
-        else
-          levels_j = {};
-        endif
-        cat_info.names{end+1}  = pred_names{j};
-        cat_info.levels{end+1} = levels_j;
-      endif
-    endfor
-  endif
-
-  nc = numel (coef_names);
-  atomic = {};
-  for t = 1:nc
-    if (strcmp (coef_names{t}, '(Intercept)'))
-      continue;
-    endif
-    for f = strsplit (coef_names{t}, ':')
-      if (! any (strcmp (atomic, f{1})))
-        atomic{end+1} = f{1};
-      endif
-    endfor
-  endfor
-  terms = zeros (nc, numel (atomic) + 1);
-  for t = 1:nc
-    if (strcmp (coef_names{t}, '(Intercept)'))
-      continue;
-    endif
-    for f = strsplit (coef_names{t}, ':')
-      terms(t, strcmp (atomic, f{1})) = 1;
-    endfor
   endfor
 endfunction
 
@@ -1274,174 +1238,6 @@ function vnames = formula_var_names (modelspec)
   schema = parseWilkinsonFormula (modelspec, 'matrix');
   vnames = regexprep (schema.VariableNames, '\^\d+$', '');
   vnames = unique (vnames, 'stable');
-endfunction
-
-## Map each encoded design column onto the raw predictor it came from.  A
-## numeric predictor keeps its own name; a categorical's indicator columns are
-## named '<predictor>_<level>', so the longest predictor name that prefixes the
-## encoded name identifies the source variable.
-function m = enc_names_to_raw (enc_names, pred_names, cat_info)
-  m = zeros (1, numel (enc_names));
-  for k = 1:numel (enc_names)
-    nm  = enc_names{k};
-    idx = find (strcmp (pred_names, nm), 1);
-    if (isempty (idx))
-      idx = 0;
-      best_len = 0;
-      for j = 1:numel (pred_names)
-        pj = pred_names{j};
-        if (numel (nm) > numel (pj) + 1 ...
-            && strncmp (nm, [pj, '_'], numel (pj) + 1) ...
-            && numel (pj) > best_len)
-          idx = j;
-          best_len = numel (pj);
-        endif
-      endfor
-    endif
-    m(k) = idx;
-  endfor
-endfunction
-
-## Fold a terms matrix over encoded design columns onto one over the model's
-## variables, dropping the duplicate rows that a categorical's several
-## indicator columns collapse into.
-function T = var_level_terms (terms_enc, enc2raw, var_idx, n_vars)
-  n_terms = rows (terms_enc);
-  T = zeros (n_terms, n_vars);
-  for t = 1:n_terms
-    for j = 1:columns (terms_enc)
-      if (terms_enc(t, j) != 0 && enc2raw(j) > 0 && var_idx(enc2raw(j)) > 0)
-        c = var_idx(enc2raw(j));
-        T(t, c) = max (T(t, c), terms_enc(t, j));
-      endif
-    endfor
-  endfor
-  keep = true (n_terms, 1);
-  for t = 2:n_terms
-    if (any (all (T(1:t-1, :) == T(t, :), 2)))
-      keep(t) = false;
-    endif
-  endfor
-  T = T(keep, :);
-endfunction
-
-## Name each row of a variable-level terms matrix.
-function names = term_names_from_terms (T, var_names)
-  n_terms = rows (T);
-  names   = cell (n_terms, 1);
-  for t = 1:n_terms
-    idx = find (T(t, :) != 0);
-    if (isempty (idx))
-      names{t} = '(Intercept)';
-    else
-      parts = cell (1, numel (idx));
-      for k = 1:numel (idx)
-        parts{k} = factor_string (var_names{idx(k)}, T(t, idx(k)));
-      endfor
-      names{t} = strjoin (parts, ':');
-    endif
-  endfor
-endfunction
-
-## One factor of a term, carrying its power when that is not 1.
-function s = factor_string (name, power)
-  if (power == 1)
-    s = name;
-  else
-    s = sprintf ("%s^%d", name, power);
-  endif
-endfunction
-
-## Render the right-hand side of the model formula.  A term whose factors all
-## appear on their own, and in every combination below it, is written as a
-## product: 'x1 + x2 + x1:x2' becomes 'x1*x2', and the terms it subsumes are
-## then left out.
-function s = linear_predictor_string (T, var_names)
-
-  n_terms = rows (T);
-  factors = cell (n_terms, 1);
-  for t = 1:n_terms
-    factors{t} = find (T(t, :) != 0);
-  endfor
-
-  rendered = term_names_from_terms (T, var_names);
-  absorbed = false (n_terms, 1);
-  n_fac    = cellfun (@numel, factors);
-  [~, order] = sort (n_fac, 'descend');
-
-  for t = order(:)'
-    if (absorbed(t) || n_fac(t) < 2)
-      continue;
-    endif
-    if (any (T(t, factors{t}) != 1))
-      continue;   # a power term is never written as a product
-    endif
-    subs = proper_subsets (factors{t});
-    idx  = zeros (1, numel (subs));
-    for s_i = 1:numel (subs)
-      row = zeros (1, columns (T));
-      row(subs{s_i}) = 1;
-      hit = find (all (T == row, 2), 1);
-      if (isempty (hit))
-        idx = [];
-        break;
-      endif
-      idx(s_i) = hit;
-    endfor
-    if (isempty (idx))
-      continue;
-    endif
-    rendered{t} = strjoin (var_names(factors{t}), '*');
-    absorbed(idx) = true;
-  endfor
-
-  parts = {};
-  for t = 1:n_terms
-    if (absorbed(t))
-      continue;
-    elseif (isempty (factors{t}))
-      parts{end+1} = '1';
-    else
-      parts{end+1} = rendered{t};
-    endif
-  endfor
-  if (isempty (parts))
-    s = '1';
-  else
-    s = strjoin (parts, ' + ');
-  endif
-
-endfunction
-
-## Every non-empty proper subset of a factor index vector.
-function subs = proper_subsets (idx)
-  k = numel (idx);
-  subs = cell (1, 2 ^ k - 2);
-  n = 0;
-  for m = 1:(2 ^ k - 2)
-    pick = bitget (m, 1:k) != 0;
-    n = n + 1;
-    subs{n} = idx(pick);
-  endfor
-endfunction
-
-## Left-hand side of the formula: the response wrapped in its link.
-function s = link_response_string (linkspec, resp_name)
-  if (ischar (linkspec))
-    if (strcmp (linkspec, 'identity'))
-      s = resp_name;
-    else
-      s = sprintf ("%s(%s)", linkspec, resp_name);
-    endif
-  elseif (isnumeric (linkspec) && isscalar (linkspec))
-    if (linkspec == 1)
-      s = resp_name;
-    else
-      s = sprintf ("power(%s,%g)", resp_name, linkspec);
-    endif
-  else
-    s = sprintf ("link(%s)", resp_name);
-  endif
 endfunction
 
 ## Display name of a response distribution.
@@ -1516,30 +1312,6 @@ function [raw, pear, ansc, devr] = glm_residuals (distr, y, mu, N)
       ansc = (log (y) - log (mu)) ./ mu;
   endswitch
 
-endfunction
-
-## Class name and range of a data column, as reported by VariableInfo.  The
-## range of a numeric column is its finite extremes, and of a grouping column
-## its levels.
-function [cname, range] = variable_class_and_range (col)
-  cname = class (col);
-  if (isnumeric (col) || islogical (col))
-    fv = double (col(:));
-    fv = fv(isfinite (fv));
-    if (isempty (fv))
-      range = [NaN, NaN];
-    else
-      range = [min(fv), max(fv)];
-    endif
-  elseif (isa (col, 'categorical'))
-    lv = categories (col);
-    range = lv(:)';
-  elseif (iscell (col))
-    lv = unique (col);
-    range = lv(:)';
-  else
-    range = {};
-  endif
 endfunction
 
 ## Log-likelihood of a GLM fit.  Y is the response (proportion for binomial),
@@ -2039,9 +1811,9 @@ endfunction
 %!   {'(Intercept)'; 'x1'; 'x2'; 'x1:x2'; 'x1^2'; 'x2^2'});
 %! assert_equal (f.Terms, [0 0 0; 1 0 0; 0 1 0; 1 1 0; 2 0 0; 0 2 0]);
 
-%!test  # a model with every interaction collapses to one product
+%!test  # only pairs collapse into a product, never a three-way interaction
 %! f = fitglm (X, yn, "full").Formula;
-%! assert_equal (f.LinearPredictor, "1 + x1*x2*x3");
+%! assert_equal (f.LinearPredictor, "1 + x1*x2 + x1*x3 + x2*x3 + x1:x2:x3");
 
 %!test  # dropping the intercept drops the leading 1
 %! f = fitglm (X, yn, "Intercept", false).Formula;
@@ -2089,7 +1861,8 @@ endfunction
 %! mdl = fitglm (tbl, "resp ~ 1 + u + grp");
 %! assert_equal (mdl.VariableInfo.Class, {'double'; 'cell'; 'double'});
 %! assert_equal (mdl.VariableInfo.IsCategorical, [false; true; false]);
-%! assert_equal (mdl.VariableInfo.Range{2}, {'hi', 'lo'});
+%! ## The levels are listed as the design codes them: first seen first.
+%! assert_equal (mdl.VariableInfo.Range{2}, {'lo', 'hi'});
 %! assert_equal (mdl.NumPredictors, 2);
 %! assert_equal (mdl.NumVariables, 3);
 %! ## The indicator columns fold back onto the variable they came from.
@@ -2101,3 +1874,32 @@ endfunction
 %! dt = devianceTest (mdl);
 %! assert_equal (dt.Properties.RowNames, ...
 %!               {'(Constant)'; 'log(y) ~ 1 + x1 + x2 + x3'});
+
+%!test  # a power keeps its exponent in the variable's own column
+%! u = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! v = [2;1;4;3;6;5;8;7;10;9;12;11];
+%! cnt = [2;5;3;7;4;6;8;3;5;9;4;6];
+%! tbl = table (u, v, cnt);
+%! f = fitglm (tbl, 'cnt ~ 1 + u*v + u^2', 'Distribution', 'poisson').Formula;
+%! assert_equal (char (f), 'log(cnt) ~ 1 + u*v + u^2');
+%! assert_equal (f.Terms, [0 0 0; 1 0 0; 0 1 0; 1 1 0; 2 0 0]);
+%! assert_equal (f.TermNames, {'(Intercept)'; 'u'; 'v'; 'u:v'; 'u^2'});
+
+%!test  # an interaction survives when one factor is not a main effect
+%! u = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! v = [2;1;4;3;6;5;8;7;10;9;12;11];
+%! cnt = [2;5;3;7;4;6;8;3;5;9;4;6];
+%! tbl = table (u, v, cnt);
+%! f = fitglm (tbl, 'cnt ~ 1 + u + u:v', 'Distribution', 'poisson').Formula;
+%! assert_equal (char (f), 'log(cnt) ~ 1 + u + u:v');
+%! assert_equal (f.Terms, [0 0 0; 1 0 0; 1 1 0]);
+
+%!test  # dropping the intercept codes the first categorical in full, both paths
+%! u = [1;2;3;4;5;6;7;8;9;10;11;12];
+%! h2 = {'b';'c';'a';'b';'c';'a';'b';'c';'a';'b';'c';'a'};
+%! cnt = [2;5;3;7;4;6;8;3;5;9;4;6];
+%! tbl = table (u, h2, cnt);
+%! m = fitglm (tbl, 'cnt ~ h2 - 1', 'Distribution', 'poisson');
+%! assert_equal (m.CoefficientNames, {'h2_b', 'h2_c', 'h2_a'});
+%! m = fitglm (tbl, 'linear', 'Distribution', 'poisson', 'Intercept', false);
+%! assert_equal (m.CoefficientNames, {'u', 'h2_b', 'h2_c', 'h2_a'});

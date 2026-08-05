@@ -232,6 +232,18 @@
 ## model is a robust fit rather than an ordinary least squares fit, and its
 ## @code{Robust} property is populated accordingly.
 ##
+## A categorical predictor expands to indicator columns, one per level bar the
+## reference level, which the intercept carries.  When the model has no
+## intercept, the @emph{first} categorical predictor is given an indicator for
+## every one of its levels instead, so that its coefficients are the group
+## means; any further categorical predictor stays reference coded, which keeps
+## the design full rank.  This differs from MATLAB, which omits the reference
+## level whether or not an intercept is present and so cannot fit the reference
+## group at all -- for a three-level grouping variable @code{g}, MATLAB fits
+## @code{y ~ g - 1} with two coefficients, predicts exactly 0 for every
+## observation in the omitted group, and reports a negative @math{R^2}.  This
+## implementation returns three coefficients, one per group.
+##
 ## @seealso{LinearModel}
 ## @end deftypefn
 

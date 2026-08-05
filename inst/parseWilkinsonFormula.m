@@ -166,13 +166,24 @@
 ## Wilkinson, G. N. and Rogers, C. E. (1973). Symbolic Description of Factorial
 ## Models for Analysis of Variance. Applied Statistics, 22, 392-399.
 ##
+##
+## In @qcode{"model_matrix"} mode a categorical variable expands to indicator
+## columns, one per level bar the reference level, which the intercept carries.
+## The levels of a character or string column are taken in the order the data
+## presents them, so the reference level is the one seen first; a
+## @code{categorical} column uses its own category order.  When the formula has
+## no intercept, the first categorical variable is given an indicator for every
+## one of its levels and any further categorical variable stays reference
+## coded.  MATLAB omits the reference level whether or not an intercept is
+## present, and so cannot fit the reference group.
+##
 ## @end deftypefn
 
 function varargout = parseWilkinsonFormula (varargin)
 
   if (nargin < 1)
     error ("parseWilkinsonFormula: Input formula string is required.");
-  elseif (nargin > 3)
+  elseif (nargin > 4)
     error ("parseWilkinsonFormula: Too many input arguments.");
   endif
 
@@ -284,7 +295,18 @@ function varargout = parseWilkinsonFormula (varargin)
       endif
 
       ## build the required matrix.
-      [X, y, names] = run_model_matrix_builder (schema, data_table);
+      ## Variables the caller declares categorical, over and above those whose
+      ## own type says so.
+      catvars = {};
+      if (nargin > 3)
+        catvars = varargin{4};
+        if (! iscellstr (catvars))
+          error (strcat ("parseWilkinsonFormula: CATVARS must be a cell", ...
+                         " array of character vectors."));
+        endif
+      endif
+
+      [X, y, names] = run_model_matrix_builder (schema, data_table, catvars);
       varargout{1} = X;
       if (nargout > 1), varargout{2} = y; endif
       if (nargout > 2), varargout{3} = names; endif
@@ -902,10 +924,27 @@ function schema = run_schema_builder (expanded)
 endfunction
 
 ## model matrix builder.
-function [X, y, col_names] = run_model_matrix_builder (schema, data)
+function [X, y, col_names] = run_model_matrix_builder (schema, data, catvars)
+
+  if (nargin < 3)
+    catvars = {};
+  endif
 
   req_vars = schema.VariableNames;
   table_vars = data.Properties.VariableNames;
+
+  ## A model's terms are ordered by the variable order of the data, not by the
+  ## order the formula happens to name them: over a table whose columns are
+  ## (u, g), both 'resp ~ 1 + u + g' and 'resp ~ 1 + g + u' give the same model,
+  ## while the same formula over a (g, u) table puts g first.  The schema is
+  ## built without the data in hand, so it arrives in the parser's own order;
+  ## sort it into the table's here, then order the terms over it.
+  [req_vars, schema.Terms, perm] = order_by_table (req_vars, schema.Terms, ...
+                                                   table_vars);
+  if (! isempty (schema.ResponseIdx))
+    schema.ResponseIdx = find (perm == schema.ResponseIdx, 1);
+  endif
+  schema.Terms = order_terms (schema.Terms, req_vars, table_vars);
 
   ## Data validation & masking
   if (isempty (req_vars))
@@ -973,7 +1012,24 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     if (iscell (raw)), raw = raw(valid_mask);
     else, raw = raw(valid_mask, :); endif
 
-    if (isnumeric (raw))
+    ## A logical column, or a numeric one the caller declared categorical, is
+    ## coded by its distinct values in ascending order, so the omitted
+    ## reference level is the smallest.  Left to itself a logical column would
+    ## fall through to the character branch below, where 'cellstr' turns false
+    ## and true into the characters of code 0 and 1.
+    is_declared = any (strcmp (catvars, base_name));
+    if (islogical (raw) || (is_declared && isnumeric (raw)))
+      if (exp_val != 1)
+        error (strcat ("parseWilkinsonFormula: Power operator '^' is", ...
+                       " only valid on numeric variables."));
+      endif
+      vals = double (raw(:));
+      vals = sort (unique (vals(! isnan (vals))));
+      var_info.(vname).type   = 'categorical';
+      var_info.(vname).levels = arrayfun (@(x) strtrim (num2str (x)), ...
+                                          vals, 'UniformOutput', false);
+      [~, var_info.(vname).indices] = ismember (double (raw), vals);
+    elseif (isnumeric (raw))
       var_info.(vname).type = 'numeric';
       var_info.(vname).data = raw .^ exp_val;
     elseif (exp_val != 1)
@@ -987,7 +1043,11 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
       if (! iscellstr (raw) && ! isstring (raw))
         raw = cellstr (raw);
       endif
-      [u, ~, idx] = unique (raw);
+      ## The levels of a character or string grouping column are taken in the
+      ## order the data presents them, not in sorted order, so the omitted
+      ## reference level is the one seen first.  A 'categorical' column carries
+      ## its own category order and is handled above.
+      [u, ~, idx] = unique (raw, 'stable');
       var_info.(vname).type = 'categorical';
       var_info.(vname).levels = u;
       var_info.(vname).indices = idx;
@@ -1001,6 +1061,20 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
   ## Check for intercept term.
   intercept_row_idx = find (sum (schema.Terms, 2) == 0);
   has_intercept = ! isempty (intercept_row_idx);
+
+  ## Without an intercept the first categorical variable takes its place and is
+  ## given all of its levels; any further categorical stays reference coded, or
+  ## the design would be rank deficient with each full set of indicators
+  ## summing to the intercept column.
+  full_coded_var = '';
+  if (! has_intercept)
+    for v = 1:numel (req_vars)
+      if (strcmp (var_info.(req_vars{v}).type, 'categorical'))
+        full_coded_var = req_vars{v};
+        break;
+      endif
+    endfor
+  endif
 
   n_terms = size (schema.Terms, 1);
 
@@ -1035,8 +1109,15 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
         ## Categorical
         n_lev = length (info.levels);
 
-        ## Drop first level if intercept exists to avoid rank deficiency
-        if (has_intercept)
+        ## Drop the reference level only when something can carry it: an
+        ## intercept, or the first categorical standing in for one.  This is
+        ## the cell-means parameterisation that dropping the intercept asks
+        ## for.  MATLAB drops the reference level either way and so cannot fit
+        ## the reference group at all: 'resp ~ h2 - 1' over a three-level h2
+        ## gives it two coefficients, fitted values of exactly 0 for that group
+        ## and a negative R^2 (measured against R2024a, 2026-08-05).  R and
+        ## patsy both code every level here.  Do not "fix" this to match.
+        if (has_intercept || ! strcmp (vname, full_coded_var))
           start_lev = 2;
           n_cols = n_lev - 1;
         else
@@ -1125,6 +1206,77 @@ function [X, y, col_names] = run_model_matrix_builder (schema, data)
     endif
   endif
 
+endfunction
+
+## Sort a schema's variables into the order the data table lists them and
+## permute the columns of its terms matrix to match.  A power such as 'u^2'
+## sorts with its base variable, immediately after it.  Names the table does not
+## carry keep their relative order at the end, so that an unresolvable variable
+## still reaches the error raised for it further down.
+function [vars, terms, perm] = order_by_table (vars, terms, table_vars)
+
+  n   = numel (vars);
+  key = zeros (n, 2);
+  for i = 1:n
+    base = regexprep (vars{i}, '\^.*$', '');
+    j    = find (strcmp (table_vars, base), 1);
+    if (isempty (j))
+      j = numel (table_vars) + i;
+    endif
+    key(i,:) = [j, var_power(vars{i})];
+  endfor
+
+  [~, perm] = sortrows (key);
+  vars      = vars(perm);
+  terms     = terms(:, perm);
+
+endfunction
+
+## Order the rows of a terms matrix the way a model's terms are ordered: by the
+## total degree of the term, then -- within one degree -- interactions before
+## powers, and last by the variables the term involves.  With the columns
+## already in the data's variable order this yields '1 + u + v + u:v + u^2'.
+function terms = order_terms (terms, vars, table_vars)
+
+  n_terms = rows (terms);
+  n_vars  = columns (terms);
+  if (n_terms < 2)
+    return;
+  endif
+
+  base_idx = zeros (1, n_vars);
+  degree   = ones (1, n_vars);
+  for j = 1:n_vars
+    base = regexprep (vars{j}, '\^.*$', '');
+    k    = find (strcmp (table_vars, base), 1);
+    if (isempty (k))
+      k = numel (table_vars) + j;
+    endif
+    base_idx(j) = k;
+    degree(j)   = var_power (vars{j});
+  endfor
+
+  ## The intercept row is all zeros, so it keys as degree 0 and sorts first.
+  key = zeros (n_terms, n_vars + 2);
+  for t = 1:n_terms
+    bases     = unique (base_idx(terms(t, :) != 0));
+    key(t, 1) = terms(t, :) * degree(:);
+    key(t, 2) = -numel (bases);
+    key(t, 3:2+numel (bases)) = bases;
+  endfor
+
+  [~, ord] = sortrows (key);
+  terms    = terms(ord, :);
+
+endfunction
+
+## The exponent carried by a variable name, 1 when it carries none.
+function p = var_power (name)
+  p   = 1;
+  tok = regexp (name, '\^(\d+)$', 'tokens');
+  if (! isempty (tok))
+    p = str2double (tok{1}{1});
+  endif
 endfunction
 
 function max_terms = get_maximal_terms (term_list)
@@ -1743,12 +1895,23 @@ endfunction
 %! assert_equal (rank (M), 4);
 %!test
 %! ## Test : Numeric * Categorical Naming
+%! ## The terms follow the data's variable order, and the omitted reference
+%! ## level of a character grouping column is the one the data shows first.
 %! y = [1;2];
 %! N = [10; 20];
 %! C = {'lo'; 'hi'};
 %! d = table (y, N, C);
 %! [M, ~, names] = parseWilkinsonFormula ('~ N * C', 'model_matrix', d);
-%! assert_equal (any (strcmp (names, 'C_lo:N')), true);
+%! assert_equal (names(:)', {'(Intercept)', 'N', 'C_hi', 'N:C_hi'});
+
+%!test
+%! ## Test : the variable order of the data drives the term order
+%! y = [1;2];
+%! N = [10; 20];
+%! C = {'lo'; 'hi'};
+%! d = table (y, C, N);
+%! [M, ~, names] = parseWilkinsonFormula ('~ N * C', 'model_matrix', d);
+%! assert_equal (names(:)', {'(Intercept)', 'C_hi', 'N', 'C_hi:N'});
 %!test
 %! ## Test : Intercept Only Model
 %! y = [1; 2; 3];

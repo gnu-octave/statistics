@@ -17,7 +17,7 @@
 ## this program; if not, see <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{X_enc}, @var{enc_names}, @var{cat_info}] =} encode_categorical (@var{X_num}, @var{cat_cols}, @var{pred_names}, @var{cat_levels})
+## @deftypefn {Private Function} {[@var{X_enc}, @var{enc_names}, @var{cat_info}] =} encode_categorical (@var{X_num}, @var{cat_cols}, @var{pred_names}, @var{cat_levels}, @var{has_intercept})
 ##
 ## Encode categorical predictors as reference-coded indicator (dummy) variables.
 ##
@@ -27,9 +27,19 @@
 ## names, and @var{cat_levels} is a cell array whose @math{j}-th entry lists the
 ## level labels of predictor @math{j} (empty to infer them from the data).
 ##
+## @var{has_intercept} states whether the model carries an intercept and
+## defaults to true.
+##
 ## Numeric predictors are copied through unchanged.  Each categorical predictor
 ## with @math{k} levels expands to @math{k - 1} indicator columns (the first
 ## level is the omitted reference), named @qcode{@var{name}_@var{level}}.
+##
+## Without an intercept the @emph{first} categorical predictor takes its place
+## and is given all @math{k} indicator columns, which is the cell-means
+## parameterisation that dropping the intercept asks for.  Any further
+## categorical predictor stays reference coded: giving two of them a full set of
+## indicators would make the design rank deficient, since each set sums to the
+## intercept column.
 ##
 ## @var{X_enc} is the encoded design matrix, @var{enc_names} the cell array of
 ## its column names, and @var{cat_info} a structure with fields @qcode{names}
@@ -42,7 +52,15 @@
 ## @end deftypefn
 
 function [X_enc, enc_names, cat_info] = encode_categorical ( ...
-    X_num, cat_cols, pred_names, cat_levels)
+    X_num, cat_cols, pred_names, cat_levels, has_intercept)
+
+  if (nargin < 5)
+    has_intercept = true;
+  endif
+
+  ## Set once the intercept's place has been taken, whether by an actual
+  ## intercept or by the first categorical predictor standing in for it.
+  reference_coded = has_intercept;
 
   X_enc     = zeros (rows (X_num), 0);
   enc_names = {};
@@ -57,10 +75,16 @@ function [X_enc, enc_names, cat_info] = encode_categorical ( ...
       levels_j = cat_levels{j};
       if (isempty (levels_j))
         uvals    = sort (unique (X_num(isfinite (X_num(:,j)), j)));
-        levels_j = cellstr (num2str (uvals(:)));
+        levels_j = strtrim (cellstr (num2str (uvals(:))));
       endif
       n_lev = numel (levels_j);
-      for L = 2:n_lev
+      if (reference_coded)
+        first_lev = 2;
+      else
+        first_lev       = 1;
+        reference_coded = true;
+      endif
+      for L = first_lev:n_lev
         dummy     = double (X_num(:, j) == L);
         X_enc     = [X_enc, dummy];
         enc_names = [enc_names, [pred_names{j}, '_', char(levels_j{L})]];
