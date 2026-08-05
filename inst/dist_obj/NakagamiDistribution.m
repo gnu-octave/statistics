@@ -563,6 +563,8 @@ classdef NakagamiDistribution
     ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{'Display'}, @var{display})
     ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
     ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{'Display'}, @var{display})
+    ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd})
+    ## @deftypefnx {NakagamiDistribution} {[@var{nlogL}, @var{param}, @var{other}] =} proflik (@dots{})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
@@ -570,9 +572,10 @@ classdef NakagamiDistribution
     ## returns a vector @var{nlogL} of negative loglikelihood values and a
     ## vector @var{param} of corresponding parameter values for the parameter in
     ## the position indicated by @var{pnum}.  By default, @code{proflik} uses
-    ## the lower and upper bounds of the 95% confidence interval and computes
-    ## 100 equispaced values for the selected parameter.  @var{pd} must be
-    ## fitted to data.
+    ## the lower and upper bounds of the 98% confidence interval and computes
+    ## 101 equispaced values for the selected parameter when it is the only one
+    ## being estimated, and 21 values otherwise.  @var{pd} must be fitted to
+    ## data.
     ##
     ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
     ## @qcode{'Display'}, @qcode{'on'})} also plots the profile likelihood
@@ -584,6 +587,14 @@ classdef NakagamiDistribution
     ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
     ## @var{setparam}, @qcode{'Display'}, @qcode{'on'})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
+    ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd})} selects the
+    ## first parameter that is not fixed.
+    ##
+    ## @code{[@var{nlogL}, @var{param}, @var{other}] = proflik (@dots{})} also
+    ## returns a matrix @var{other} holding, in each row, the values of the
+    ## remaining parameters that maximize the likelihood at the corresponding
+    ## value of @var{param}.  A fixed parameter keeps its own value.
     ##
     ## For the Nakagami distribution, @qcode{@var{pnum} = 1} selects
     ## the parameter @qcode{mu} and @qcode{@var{pnum} = 2} selects the
@@ -602,6 +613,9 @@ classdef NakagamiDistribution
       endif
       if (isempty (this.InputData))
         error ("proflik: no fitted data available.");
+      endif
+      if (nargin < 2)
+        pnum = [];
       endif
       [varargout{1:nargout}] = __proflik__ (this, pnum, varargin{:});
     endfunction
@@ -828,6 +842,19 @@ endfunction
 %!assert_equal (std (t), 0.2083, 1e-4);
 %!assert_equal (var (pd), 0.2146, 1e-4);
 %!assert_equal (var (t), 0.0434, 1e-4);
+
+%!test
+%! ## The profile over the first free parameter: 21 grid values, one row of
+%! ## OTHER per value, and the likelihood peaking at the fitted estimate.
+%! x = [1.2; 0.4; 3.1; 0.7; 2.5; 1.8; 0.3; 4.2; 1.1; 0.9; ...
+%!      2.2; 0.6; 1.5; 3.7; 0.8; 2.9; 1.3; 0.5; 2.0; 1.6];
+%! pd = fitdist (x, 'Nakagami');
+%! [nlogL, param, other] = proflik (pd, 1);
+%! assert_equal (size (param), [1, 21]);
+%! assert_equal (size (other), [21, 1]);
+%! assert_equal (proflik (pd), nlogL);
+%! [~, imax] = max (nlogL);
+%! assert_equal (abs (param(imax) - pd.ParameterValues(1)) <= param(2) - param(1), true);
 
 ## Test input validation
 ## 'NakagamiDistribution' constructor

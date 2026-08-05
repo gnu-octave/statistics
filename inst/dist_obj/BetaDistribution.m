@@ -564,6 +564,8 @@ classdef BetaDistribution
     ## @deftypefnx {BetaDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{'Display'}, @var{display})
     ## @deftypefnx {BetaDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
     ## @deftypefnx {BetaDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{'Display'}, @var{display})
+    ## @deftypefnx {BetaDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd})
+    ## @deftypefnx {BetaDistribution} {[@var{nlogL}, @var{param}, @var{other}] =} proflik (@dots{})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
@@ -571,9 +573,10 @@ classdef BetaDistribution
     ## returns a vector @var{nlogL} of negative loglikelihood values and a
     ## vector @var{param} of corresponding parameter values for the parameter in
     ## the position indicated by @var{pnum}.  By default, @code{proflik} uses
-    ## the lower and upper bounds of the 95% confidence interval and computes
-    ## 100 equispaced values for the selected parameter.  @var{pd} must be
-    ## fitted to data.
+    ## the lower and upper bounds of the 98% confidence interval and computes
+    ## 101 equispaced values for the selected parameter when it is the only one
+    ## being estimated, and 21 values otherwise.  @var{pd} must be fitted to
+    ## data.
     ##
     ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
     ## @qcode{'Display'}, @qcode{'on'})} also plots the profile likelihood
@@ -585,6 +588,14 @@ classdef BetaDistribution
     ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
     ## @var{setparam}, @qcode{'Display'}, @qcode{'on'})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
+    ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd})} selects the
+    ## first parameter that is not fixed.
+    ##
+    ## @code{[@var{nlogL}, @var{param}, @var{other}] = proflik (@dots{})} also
+    ## returns a matrix @var{other} holding, in each row, the values of the
+    ## remaining parameters that maximize the likelihood at the corresponding
+    ## value of @var{param}.  A fixed parameter keeps its own value.
     ##
     ## For the beta distribution, @qcode{@var{pnum} = 1} selects the parameter
     ## @qcode{a} and @qcode{@var{pnum} = 2} selects the parameter @qcode{b}.
@@ -602,6 +613,9 @@ classdef BetaDistribution
       endif
       if (isempty (this.InputData))
         error ("proflik: no fitted data available.");
+      endif
+      if (nargin < 2)
+        pnum = [];
       endif
       [varargout{1:nargout}] = __proflik__ (this, pnum, varargin{:});
     endfunction
@@ -819,6 +833,19 @@ endfunction
 %!assert_equal (std (t), 0.1732, 1e-4);
 %!assert_equal (var (pd), 0.0833, 1e-4);
 %!assert_equal (var (t), 0.0300, 1e-4);
+
+%!test
+%! ## The profile over the first free parameter: 21 grid values, one row of
+%! ## OTHER per value, and the likelihood peaking at the fitted estimate.
+%! x = [0.2; 0.5; 0.7; 0.3; 0.8; 0.4; 0.6; 0.55; 0.25; 0.75; ...
+%!      0.35; 0.65; 0.45; 0.15; 0.85; 0.5; 0.6; 0.3; 0.7; 0.4];
+%! pd = fitdist (x, 'Beta');
+%! [nlogL, param, other] = proflik (pd, 1);
+%! assert_equal (size (param), [1, 21]);
+%! assert_equal (size (other), [21, 1]);
+%! assert_equal (proflik (pd), nlogL);
+%! [~, imax] = max (nlogL);
+%! assert_equal (abs (param(imax) - pd.ParameterValues(1)) <= param(2) - param(1), true);
 
 ## Test input validation
 ## 'BetaDistribution' constructor

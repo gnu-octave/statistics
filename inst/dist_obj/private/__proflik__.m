@@ -17,17 +17,22 @@
 ## <http://www.gnu.org/licenses/>.
 
 ## -*- texinfo -*-
-## @deftypefn {Private Function} {[@var{nlogl}, @var{param}] =} __proflik__ (@var{pd}, @var{pnum}, @var{varargin})
+## @deftypefn {Private Function} {[@var{nlogl}, @var{param}, @var{other}] =} __proflik__ (@var{pd}, @var{pnum}, @var{varargin})
 ##
 ## Compute the negative log likelihood for a range of the selected parameter of
 ## a probability distribution object.
 ##
 ## @end deftypefn
 
-function [nlogl, param] = __proflik__ (pd, pnum, varargin)
+function [nlogl, param, other] = __proflik__ (pd, pnum, varargin)
+
+  ## Default to the first non-fixed parameter
+  npvec = find (pd.ParameterIsFixed == false);
+  if (nargin < 2 || isempty (pnum))
+    pnum = npvec(1);
+  endif
 
   ## Check for non-fixed pnum
-  npvec = find (pd.ParameterIsFixed == false);
   if (! (isnumeric (pnum) && isscalar (pnum) && ismember (pnum, npvec)))
     error (strcat ("proflik: PNUM must be a scalar number", ...
                    " indexing a non-fixed parameter."));
@@ -70,32 +75,45 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
     endif
   endwhile
 
-  ## Create parameter vector
-  pname = pd.ParameterNames{pnum};
-  if (isempty (param))
-    ## Default range: 21 equally spaced values over the 98% confidence
-    ## interval, restricted to the non-fixed range (matching MATLAB)
-    ci = paramci (pd, "Alpha", 0.02);
-    lower = max (ci(1, pnum), pd.ParameterRange(1, pnum));
-    upper = min (ci(2, pnum), pd.ParameterRange(2, pnum));
-    param = linspace (lower, upper, 21);
-  else
-    ## Restrict user defined parameter range within non-fixed range
-    param(param < pd.ParameterRange(1,pnum)) = [];
-    param(param > pd.ParameterRange(2,pnum)) = [];
-  endif
-
   ## Optimal parameter values and the free parameters to profile out (the
   ## non-fixed parameters other than the selected one)
   optpar = pd.ParameterValues;
   fname = sprintf ("%slike", pd.DistributionCode);
   freeidx = npvec(npvec != pnum);
 
+  ## Create parameter vector
+  pname = pd.ParameterNames{pnum};
+  if (isempty (param))
+    ## Default range: equally spaced values over the 98% confidence interval,
+    ## restricted to the non-fixed range.  MATLAB takes 101 values when the
+    ## selected parameter is the only one estimated and 21 when the others must
+    ## be profiled out at each of them.
+    ci = paramci (pd, "Alpha", 0.02);
+    lower = max (ci(1, pnum), pd.ParameterRange(1, pnum));
+    upper = min (ci(2, pnum), pd.ParameterRange(2, pnum));
+    if (isempty (freeidx))
+      param = linspace (lower, upper, 101);
+    else
+      param = linspace (lower, upper, 21);
+    endif
+  else
+    ## Restrict user defined parameter range within non-fixed range
+    param(param < pd.ParameterRange(1,pnum)) = [];
+    param(param > pd.ParameterRange(2,pnum)) = [];
+  endif
+
   ## Compute the profile log likelihood: at each value of the selected
   ## parameter, maximize the log likelihood over the remaining free parameters
   params = pd.ParameterValues;
   opts = optimset ("Display", "off", "TolX", 1e-6, "TolFun", 1e-6);
   nlogl = zeros (1, numel (param));
+
+  ## Each row of OTHER holds every parameter but the selected one, at the
+  ## values maximizing the likelihood; a fixed parameter keeps its own value
+  otheridx = [1:numel(params)];
+  otheridx(pnum) = [];
+  other = zeros (numel (param), numel (otheridx));
+
   for i = 1:numel (param)
     p0 = params;
     p0(pnum) = param(i);
@@ -103,9 +121,11 @@ function [nlogl, param] = __proflik__ (pd, pnum, varargin)
       nlogl(i) = - like_value (fname, p0, pd);
     else
       objfun = @(pf) like_free (pf, p0, freeidx, fname, pd);
-      [~, fval] = fminsearch (objfun, params(freeidx), opts);
+      [pfhat, fval] = fminsearch (objfun, params(freeidx), opts);
       nlogl(i) = - fval;
+      p0(freeidx) = pfhat;
     endif
+    other(i,:) = p0(otheridx);
   endfor
   optnll = - like_value (fname, optpar, pd);
 
@@ -133,8 +153,16 @@ function nll = like_value (fname, params, pd)
   endif
 endfunction
 
-## Negative log likelihood as a function of the free parameters only
+## Negative log likelihood as a function of the free parameters only.  The
+## search is unconstrained, so parameters outside their own range are rejected
+## here: the family likelihood may well return a finite value there, and for
+## some families it grows without bound as they run away.
 function nll = like_free (pf, p0, freeidx, fname, pd)
+  if (any (pf(:)' < pd.ParameterRange(1,freeidx)) ||
+      any (pf(:)' > pd.ParameterRange(2,freeidx)))
+    nll = Inf;
+    return;
+  endif
   p = p0;
   p(freeidx) = pf;
   nll = like_value (fname, p, pd);

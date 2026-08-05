@@ -578,15 +578,18 @@ classdef StableDistribution
     ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @qcode{'Display'}, @var{display})
     ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam})
     ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd}, @var{pnum}, @var{setparam}, @qcode{'Display'}, @var{display})
+    ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}] =} proflik (@var{pd})
+    ## @deftypefnx {StableDistribution} {[@var{nlogL}, @var{param}, @var{other}] =} proflik (@dots{})
     ##
     ## Profile likelihood function for a probability distribution object.
     ##
-    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum})} returns
-    ## a vector @var{nlogL} of negative loglikelihood values and a vector
-    ## @var{param} of corresponding parameter values for the parameter in the
-    ## position indicated by @var{pnum}.  By default, @code{proflik} uses the
-    ## lower and upper bounds of the 95% confidence interval and computes 100
-    ## equispaced values for the selected parameter.  @var{pd} must be fitted to
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum})}
+    ## returns a vector @var{nlogL} of negative loglikelihood values and a
+    ## vector @var{param} of corresponding parameter values for the parameter in
+    ## the position indicated by @var{pnum}.  By default, @code{proflik} uses
+    ## the lower and upper bounds of the 98% confidence interval and computes
+    ## 101 equispaced values for the selected parameter when it is the only one
+    ## being estimated, and 21 values otherwise.  @var{pd} must be fitted to
     ## data.
     ##
     ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd}, @var{pnum},
@@ -600,6 +603,14 @@ classdef StableDistribution
     ## @var{setparam}, @qcode{'Display'}, @qcode{'on'})} also plots the profile
     ## likelihood against the user-defined range of the selected parameter.
     ##
+    ## @code{[@var{nlogL}, @var{param}] = proflik (@var{pd})} selects the
+    ## first parameter that is not fixed.
+    ##
+    ## @code{[@var{nlogL}, @var{param}, @var{other}] = proflik (@dots{})} also
+    ## returns a matrix @var{other} holding, in each row, the values of the
+    ## remaining parameters that maximize the likelihood at the corresponding
+    ## value of @var{param}.  A fixed parameter keeps its own value.
+    ##
     ## For the stable distribution, @qcode{@var{pnum} = 1} selects the tail index
     ## @qcode{alpha}, @qcode{@var{pnum} = 2} selects the skewness @qcode{beta},
     ## @qcode{@var{pnum} = 3} selects the scale @qcode{gam}, and
@@ -612,6 +623,9 @@ classdef StableDistribution
       endif
       if (isempty (this.InputData))
         error ("proflik: no fitted data available.");
+      endif
+      if (nargin < 2)
+        pnum = [];
       endif
       [varargout{1:nargout}] = __proflik__ (this, pnum, varargin{:});
     endfunction
