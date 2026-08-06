@@ -840,9 +840,13 @@ endfunction
 
 %!test
 %! ## The profile over the first free parameter: 21 grid values, one row of
-%! ## OTHER per value, and the likelihood peaking at the fitted estimate.
-%! x = [1.2; 0.4; 3.1; 0.7; 2.5; 1.8; 0.3; 4.2; 1.1; 0.9; ...
-%!      2.2; 0.6; 1.5; 3.7; 0.8; 2.9; 1.3; 0.5; 2.0; 1.6];
+%! ## OTHER per value, and the likelihood peaking at the fitted estimate.  The
+%! ## sample is Rician: fitting arbitrary positive data drives s to its own
+%! ## boundary, and the confidence interval it profiles over degenerates.
+%! x = [0.584700; 0.962174; 1.201400; 1.388590; 1.548120; 1.690860; ...
+%!      1.822800; 1.947740; 2.068370; 2.186810; 2.304930; 2.424520; ...
+%!      2.547550; 2.676370; 2.814120; 2.965420; 3.137930; 3.346330; ...
+%!      3.626640; 4.133390];
 %! pd = fitdist (x, 'Rician');
 %! [nlogL, param, other] = proflik (pd, 1);
 %! assert_equal (size (param), [1, 21]);
