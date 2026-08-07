@@ -1351,9 +1351,9 @@ classdef cvpartition
             for j = i
               if (this.IsStratified || this.IsGrouped)
                 cid = false (this.NumObservations, 1);
-                cid(! this.missidx) = this.indices == i;
+                cid(! this.missidx) = this.indices == j;
               else
-                cid = this.indices == i;
+                cid = this.indices == j;
               endif
               idx = [idx, cid];
             endfor
@@ -1478,9 +1478,9 @@ classdef cvpartition
             for j = i
               if (this.IsStratified || this.IsGrouped)
                 cid = false (this.NumObservations, 1);
-                cid(! this.missidx) = this.indices != i;
+                cid(! this.missidx) = this.indices != j;
               else
-                cid = this.indices != i;
+                cid = this.indices != j;
               endif
               idx = [idx, cid];
             endfor
@@ -1965,6 +1965,27 @@ endclassdef
 %! assert_equal (sum (test (cv, 'all'), 2), [1; 1; 1; 1; 0]);
 
 ## Test input validation
+%!test
+%! ## A vector of set indices returns one column per set, not every set.
+%! ## The k-fold loop used the whole index vector instead of the loop
+%! ## variable, so the comparison broadcast and each pass added a column
+%! ## per requested set.
+%! c = cvpartition (60, 'KFold', 4);
+%! t = test (c, [1, 2]);
+%! assert_equal (size (t), [60, 2]);
+%! assert_equal (t(:,1), test (c, 1));
+%! assert_equal (t(:,2), test (c, 2));
+%! assert_equal (any (t(:,1) & t(:,2)), false);
+%! assert_equal (size (test (c, [1, 3, 4])), [60, 3]);
+
+%!test
+%! ## training indexes the same way, and stays the complement of test
+%! c = cvpartition (60, 'KFold', 4);
+%! r = training (c, [1, 2]);
+%! assert_equal (size (r), [60, 2]);
+%! assert_equal (r(:,1), training (c, 1));
+%! assert_equal (r, ! test (c, [1, 2]));
+
 %!error <cvpartition: too few input arguments.> cvpartition (2)
 %!error <cvpartition: too many input arguments.> cvpartition (1, 2, 3, 4, 5, 6)
 %!error <cvpartition: TESTSETS must be numeric of logical.> ...
