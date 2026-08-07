@@ -862,7 +862,27 @@ endfunction
 %! assert (isfinite (mean (pt)));
 %! assert (all (random (pt, 100, 1) >= -1 & random (pt, 100, 1) <= 3));
 
+%!test
+%! ## The profile over alpha: 21 grid values, one row of OTHER per value, and
+%! ## the likelihood peaking at the fitted estimate.  The sample is stable.
+%! x = [-4.481370; -2.439510; -1.787770; -1.391000; -1.095410; -0.852136; ...
+%!      -0.639452; -0.445603; -0.263227; -0.087082; 0.087082; 0.263227; ...
+%!      0.445603; 0.639452; 0.852136; 1.095410; 1.391000; 1.787770; ...
+%!      2.439510; 4.481370];
+%! pd = fitdist (x, 'Stable');
+%! [nlogL, param, other] = proflik (pd, 1);
+%! assert_equal (size (param), [1, 21]);
+%! assert_equal (size (other), [21, 3]);
+%! assert_equal (proflik (pd), nlogL);
+%! [~, imax] = max (nlogL);
+%! assert_equal (abs (param(imax) - pd.ParameterValues(1)) <= param(2) - param(1), true);
+
 ## Test input validation
+%!error <proflik: no confidence interval is defined for 'alpha', so the default range cannot be built; supply SETPARAM instead.> ...
+%! proflik (fitdist ([0.3; -1.2; 0.8; 1.5; -0.4; 0.2; -0.9; 1.1; 0.6; -0.3; ...
+%!                    1.8; -1.5; 0.4; 0.9; -0.7; 1.2; -0.2; 0.5; -1.1; 0.7], ...
+%!                   'Stable'), 1)
+
 %!error <StableDistribution: ALPHA must be a real scalar in \(0, 2\].> ...
 %! StableDistribution (2.5, 0, 1, 0)
 %!error <StableDistribution: BETA must be a real scalar in \[-1, 1\].> ...

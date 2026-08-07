@@ -89,6 +89,11 @@ function [nlogl, param, other] = __proflik__ (pd, pnum, varargin)
     ## selected parameter is the only one estimated and 21 when the others must
     ## be profiled out at each of them.
     ci = paramci (pd, "Alpha", 0.02);
+    if (any (isnan (ci(:, pnum))))
+      error (strcat ("proflik: no confidence interval is defined for '%s',", ...
+                     " so the default range cannot be built; supply", ...
+                     " SETPARAM instead."), pd.ParameterNames{pnum});
+    endif
     lower = max (ci(1, pnum), pd.ParameterRange(1, pnum));
     upper = min (ci(2, pnum), pd.ParameterRange(2, pnum));
     if (isempty (freeidx))
