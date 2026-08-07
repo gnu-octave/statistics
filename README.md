@@ -31,7 +31,7 @@ As of 18.05.2026, landmarked by [release 1.8.3](https://github.com/gnu-octave/st
 All functions, class definitions, and their respective methods are documented with [texinfo](https://www.gnu.org/software/texinfo/) format, which can be accessed from the Octave command with the `help` function.  Use dot notation to access the help of methods of classdefs objects. For example:
 ```
 help ClassificationKNN.predict
-help BetaDistribution.cdf
+help prob.BetaDistribution.cdf
 ```
 You can also find the entire documentation of the **statistics** package along with its function index at [https://gnu-octave.github.io/statistics/](https://gnu-octave.github.io/statistics/). Alternatively, you can build the online documentation locally using the [`pkg-octave-doc`](https://github.com/gnu-octave/pkg-octave-doc) package. Assuming both packages are installed and loaded, browse to any directory of your choice with *write* permission and run:
 ```
