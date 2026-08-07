@@ -8,7 +8,9 @@
 # `doc-cache` per directory that holds functions.  Directories are discovered
 # automatically (src, inst, and every inst/ subdirectory except private,
 # datasets, demos, and tests), so new function directories are picked up without
-# editing this script.
+# editing this script.  A package (+pkg) subdirectory gets no cache of its own;
+# its classes are added to the parent directory's cache under their qualified
+# names, which is the only place a cache entry for them can be read from.
 #
 # Usage:
 #   ./regen-doc-cache.sh                 # FULL: rebuild every directory (~minutes)
@@ -62,45 +64,105 @@ DC_ARG="${1:-}" "$OCTAVE" --no-gui -q --eval "
     mode = 'dir';  d = fullfile ('inst', arg);
   endif
 
-  if (strcmp (mode, 'all'))
-    ## Discover the function directories that ship a doc-cache.
-    skip = {'.', '..', 'private', 'datasets', 'demos', 'tests'};
-    cand = {'src', 'inst'};
-    s = dir ('inst');
-    for k = 1:numel (s)
-      if (s(k).isdir && ! any (strcmp (s(k).name, skip)))
-        cand{end+1} = fullfile ('inst', s(k).name);
-        ## A namespace directory holds functions of its own and is one level
-        ## deeper, so it is never reached by this single pass.  The classes in
-        ## inst/dist_obj/+prob are the case in point.
-        s2 = dir (fullfile ('inst', s(k).name));
-        for j = 1:numel (s2)
-          if (s2(j).isdir && strncmp (s2(j).name, '+', 1))
-            cand{end+1} = fullfile ('inst', s(k).name, s2(j).name);
-          endif
-        endfor
-      endif
-    endfor
-    ## Keep only directories that actually contain functions.
+  if (strcmp (mode, 'all') || strcmp (mode, 'dir'))
+    if (strcmp (mode, 'all'))
+      ## Discover the function directories that ship a doc-cache.
+      skip = {'.', '..', 'private', 'datasets', 'demos', 'tests'};
+      cand = {'src', 'inst'};
+      s = dir ('inst');
+      for k = 1:numel (s)
+        if (s(k).isdir && ! any (strcmp (s(k).name, skip)))
+          cand{end+1} = fullfile ('inst', s(k).name);
+        endif
+      endfor
+    else
+      cand = {d};
+    endif
+
     for k = 1:numel (cand)
       d = cand{k};
       if (! isfolder (d))
         continue;
       endif
-      if (isempty (glob (fullfile (d, '*.m'))) && isempty (glob (fullfile (d, '*.oct'))))
+      ## Collect the package (+pkg) subdirectories.  They get no cache of their
+      ## own: a package directory never goes on the load path, so nothing would
+      ## ever read one, and doc_cache_create resolves each file by its bare
+      ## name, which does not resolve inside a namespace.  Their entries belong
+      ## in this directory's cache, under the qualified name.
+      ns = {};
+      s2 = dir (d);
+      for j = 1:numel (s2)
+        if (s2(j).isdir && strncmp (s2(j).name, '+', 1))
+          ns{end+1} = s2(j).name;
+        endif
+      endfor
+      ## Keep only directories that actually contain functions.
+      if (isempty (glob (fullfile (d, '*.m')))
+          && isempty (glob (fullfile (d, '*.oct'))) && isempty (ns))
         continue;
       endif
+
+      cachefile = fullfile (d, 'doc-cache');
       t = tic;
-      doc_cache_create (fullfile (d, 'doc-cache'), d);
-      printf ('  regenerated %-26s (%.1fs)\n', fullfile (d, 'doc-cache'), toc (t));
+      doc_cache_create (cachefile, d);
+
+      ## Qualified names resolve only while the parent directory is on the
+      ## path, and doc_cache_create takes it off again: it tests membership by
+      ## exact string, so the relative path passed here never matches the
+      ## absolute entry genpath installed, and its cleanup rmpath removes that
+      ## entry rather than the one it added.  Put the directory back.
+      if (! isempty (ns))
+        addpath (d);
+      endif
+
+      nadd = 0;
+      for j = 1:numel (ns)
+        pkgname = ns{j}(2:end);
+        fl = glob (fullfile (d, ns{j}, '*.m'));
+        tmp = load (cachefile);
+        cache = tmp.cache;
+        for q = 1:numel (fl)
+          [~, base] = fileparts (fl{q});
+          if (strncmp (base, '__', 2))
+            continue;
+          endif
+          f = [pkgname '.' base];
+          [text, format] = get_help_text (f);
+          status = 1;
+          switch (lower (format))
+            case 'plain text'
+              status = 0;
+            case 'texinfo'
+              [text, status] = __makeinfo__ (text, 'plain text');
+          endswitch
+          if (status != 0 || isempty (text))
+            warning ('regen-doc-cache: unusable help text in %s', fl{q});
+            continue;
+          endif
+          entry = {f; text; get_first_help_sentence(f)};
+          idx = find (strcmp (cache(1,:), f));
+          if (isempty (idx))
+            cache(:, end+1) = entry;
+          else
+            cache(:, idx) = entry;
+          endif
+          nadd++;
+        endfor
+        save_header_format_string (['# doc-cache created by Octave ' OCTAVE_VERSION]);
+        save ('-text', cachefile, 'cache');
+      endfor
+
+      if (nadd > 0)
+        printf ('  regenerated %-26s (%.1fs, +%d namespaced)\n', cachefile, ...
+                toc (t), nadd);
+      else
+        printf ('  regenerated %-26s (%.1fs)\n', cachefile, toc (t));
+      endif
       fflush (stdout);
     endfor
-    printf ('doc-cache regeneration complete.\n');
-
-  elseif (strcmp (mode, 'dir'))
-    t = tic;
-    doc_cache_create (fullfile (d, 'doc-cache'), d);
-    printf ('  regenerated %-26s (%.1fs)\n', fullfile (d, 'doc-cache'), toc (t));
+    if (strcmp (mode, 'all'))
+      printf ('doc-cache regeneration complete.\n');
+    endif
 
   else   ## single function/class name
     f = arg;

@@ -13,7 +13,7 @@ cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4264
+# length: 5133
  -- statistics: P = cdf (NAME, X, A)
  -- statistics: P = cdf (NAME, X, A, B)
  -- statistics: P = cdf (NAME, X, A, B, C)
@@ -88,6 +88,20 @@ cdf
      'Von Mises'                      'vm'             2
      'Weibull'                        'wbl'            2
 
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
+
      See also: icdf, pdf, cdf, betacdf, binocdf, bisacdf, burrcdf, cauchycdf,
      chi2cdf, evcdf, expcdf, fcdf, gamcdf, geocdf, gevcdf, gpcdf, gumbelcdf,
      hncdf, hygecdf, invgcdf, laplacecdf, logicdf, loglcdf, logncdf, nakacdf,
@@ -113,7 +127,7 @@ fitdist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3006
+# length: 3875
  -- statistics: PD = fitdist (X, DISTNAME)
  -- statistics: PD = fitdist (X, DISTNAME, NAME, VALUE)
  -- statistics: [PDCA, GN, GL] = fitdist (X, DISTNAME, 'By', GROUPVAR)
@@ -173,6 +187,20 @@ fitdist
      Note: calling ‘fitdist’ without any input arguments will return a cell
      array of character vectors listing all supported distributions.
 
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
+
      See also: makedist.
 
 
@@ -194,7 +222,7 @@ icdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3912
+# length: 4781
  -- statistics: X = icdf (NAME, P, A)
  -- statistics: X = icdf (NAME, P, A, B)
  -- statistics: X = icdf (NAME, P, A, B, C)
@@ -262,6 +290,20 @@ icdf
      'Von Mises'                      'vm'             2
      'Weibull'                        'wbl'            2
 
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
+
      See also: icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
      chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, gumbelinv,
      hninv, hygeinv, invginv, laplaceinv, logiinv, loglinv, logninv, nakainv,
@@ -287,7 +329,7 @@ makedist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 693
+# length: 1562
  -- statistics: PD = makedist (DISTNAME)
  -- statistics: PD = makedist (DISTNAME, NAME, VALUE)
  -- statistics: LIST = makedist
@@ -303,6 +345,20 @@ makedist
 
      ‘LIST = makedist’ returns a cell array, LIST, containing a list of the
      probability distributions that makedist can create.
+
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
 
      See also: fitdist.
 
@@ -325,7 +381,7 @@ mle
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4836
+# length: 5705
  -- statistics: PHAT = mle (X)
  -- statistics: PHAT = mle (X, NAME, VALUE)
  -- statistics: [PHAT, PCI] = mle (...)
@@ -414,6 +470,20 @@ mle
      confidence intervals computed from the observed Fisher information at PHAT
      (see ‘mlecov’).  Bounded parameters are estimated on an internally
      reparameterized unconstrained scale.
+
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
 
      See also: mlecov, fitdist, makedist.
 
@@ -536,7 +606,7 @@ pdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3890
+# length: 4759
  -- statistics: Y = pdf (NAME, X, A)
  -- statistics: Y = pdf (NAME, X, A, B)
  -- statistics: Y = pdf (NAME, X, A, B, C)
@@ -604,6 +674,20 @@ pdf
      'Von Mises'                      'vm'             2
      'Weibull'                        'wbl'            2
 
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
+
      See also: cdf, icdf, random, betapdf, binopdf, bisapdf, burrpdf, cauchypdf,
      chi2pdf, evpdf, exppdf, fpdf, gampdf, geopdf, gevpdf, gppdf, gumbelpdf,
      hnpdf, hygepdf, invgpdf, laplacepdf, logipdf, loglpdf, lognpdf, nakapdf,
@@ -629,7 +713,7 @@ random
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 4046
+# length: 4915
  -- statistics: R = random (NAME, A)
  -- statistics: R = random (NAME, A, B)
  -- statistics: R = random (NAME, A, B, C)
@@ -696,6 +780,20 @@ random
      'Uniform'                        'unif'           2
      'Von Mises'                      'vm'             2
      'Weibull'                        'wbl'            2
+
+     Distribution names are matched ignoring case, spaces and hyphens, so that
+     'Extreme Value', 'ExtremeValue' and 'extreme-value' all select the same
+     distribution, and the same set of names is accepted by ‘cdf’, ‘pdf’,
+     ‘icdf’, ‘random’, ‘makedist’, ‘fitdist’ and ‘mle’.
+
+     This accepts more names than MATLAB. MATLAB takes the spaced and the
+     squashed spelling but refuses the hyphenated one, so 'Birnbaum-Saunders'
+     and 'Log-Logistic' are errors there; Octave has always accepted them and
+     continues to.  MATLAB also accepts 'tLocationScale' in ‘makedist’ while
+     refusing it in ‘cdf’ for the same distribution; Octave accepts it, and
+     'location-scale T', everywhere.  Code written against MATLAB's names
+     therefore runs unchanged, but code relying on these names will not port
+     back.
 
      See also: cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchyrnd,
      chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,

@@ -2209,7 +2209,7 @@ normfit
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 3613
+# length: 3747
  -- statistics: MUHAT = normfit (X)
  -- statistics: [MUHAT, SIGMAHAT] = normfit (X)
  -- statistics: [MUHAT, SIGMAHAT, MUCI] = normfit (X)
@@ -2255,11 +2255,13 @@ normfit
           of observations in X.  However, when there is no censored data
           (default), the returned estimate for standard deviation is not exactly
           the WMLE. To compute the weighted MLE, multiply the value returned in
-          SIGMAHAT by ‘(SUM (FREQ) - 1) / SUM (FREQ)’.  This correction is
-          needed because ‘normfit’ normally computes SIGMAHAT using an unbiased
-          variance estimator when there is no censored data.  When there is
-          censoring in the data, the correction is not needed, since ‘normfit’
-          does not use the unbiased variance estimator in that case.
+          SIGMAHAT by ‘sqrt ((sum (FREQ) - 1) / sum (FREQ))’.  The square root
+          is needed because the factor corrects a variance, while SIGMAHAT is a
+          standard deviation.  This correction is needed because ‘normfit’
+          normally computes SIGMAHAT using an unbiased variance estimator when
+          there is no censored data.  When there is censoring in the data, the
+          correction is not needed, since ‘normfit’ does not use the unbiased
+          variance estimator in that case.
 
         • OPTIONS is a structure with the control parameters for ‘fminsearch’
           which is used internally to compute MLEs for censored data.  By

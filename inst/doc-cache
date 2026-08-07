@@ -2,7 +2,7 @@
 # name: cache
 # type: cell
 # rows: 3
-# columns: 206
+# columns: 207
 # name: <cell-element>
 # type: sq_string
 # elements: 1
@@ -50,7 +50,7 @@ GeneralizedLinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 998
+# length: 2635
  -- statistics: GeneralizedLinearModel
 
      Generalized linear regression model class.
@@ -66,8 +66,33 @@ GeneralizedLinearModel
 
      The most useful properties are ‘Coefficients’ (a table of estimates,
      standard errors, t-statistics and p-values), ‘Deviance’, ‘Dispersion’,
-     ‘Residuals’, ‘Fitted’, ‘Distribution’, and ‘Link’.  Fitted models support
-     the ‘predict’ and ‘feval’ methods for prediction.
+     ‘Residuals’, ‘Fitted’, ‘Diagnostics’, ‘Distribution’, and ‘Link’.
+     ‘ObservationInfo’ records which rows were weighted, excluded, or missing,
+     and ‘Variables’ holds the data the model was built from.  Fitted models
+     support the ‘predict’ and ‘feval’ methods for prediction.
+
+     ‘Fitted’, ‘Residuals’, ‘Diagnostics’, and ‘ObservationInfo’ have one row
+     per _input_ observation, not per fitted observation.  Rows that were
+     excluded with the 'Exclude' pair still carry a fitted value and a residual,
+     since the model can be evaluated there; rows dropped because a variable was
+     missing carry ‘NaN’.
+
+     For a binomial response given together with a 'BinomialSize' vector N, the
+     response is the _proportion_ of successes, as ‘fitglm’ documents.
+     ‘Fitted.Response’ is then the fitted count N p and ‘Residuals.Raw’ is on
+     that same count scale.
+
+     A categorical predictor expands to indicator columns, one per level bar the
+     reference level, which the intercept carries.  When the model has no
+     intercept, the _first_ categorical predictor is given an indicator for
+     every one of its levels instead, so that its coefficients are the group
+     means; any further categorical predictor stays reference coded, which keeps
+     the design full rank.  This differs from MATLAB, which omits the reference
+     level whether or not an intercept is present and so cannot fit the
+     reference group at all - for a three-level grouping variable ‘g’, MATLAB
+     fits ‘y ~ g - 1’ with two coefficients, predicts exactly 0 for every
+     observation in the omitted group, and reports a negative R^2.  This
+     implementation returns three coefficients, one per group.
 
      See also: fitglm, LinearModel, glmfit, glmval.
 
@@ -119,6 +144,48 @@ Isolation Forest model for anomaly detection.
 # name: <cell-element>
 # type: sq_string
 # elements: 1
+# length: 13
+LinearFormula
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 1214
+ -- statistics: LinearFormula
+
+     Model formula of a linear or generalized linear regression.
+
+     A LinearFormula object describes the terms of a fitted model: which
+     variables the model draws on, how they combine into terms, and how the
+     whole thing reads back as a formula.  It is the class of the ‘Formula’
+     property of a ‘LinearModel’ and of a ‘GeneralizedLinearModel’, and is
+     normally obtained from a fitted model rather than built directly.
+
+     The object is defined by its terms matrix and the names of the variables
+     that matrix is written over; every other property is derived from those
+     two.  Each row of ‘Terms’ is one term of the model and each column is one
+     variable, the entry giving the power that variable carries in that term.
+     An all-zero row is the intercept.  The response variable occupies a column
+     of its own, which is always zero.
+
+     Converting the object with ‘char’ renders the whole formula, response
+     included, as "y ~ 1 + x1 + x2"; the ‘LinearPredictor’ property holds the
+     right-hand side on its own.  For a generalized linear model the response
+     carries its link function, as in "logit(y) ~ 1 + x1".
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
+# length: 59
+Model formula of a linear or generalized linear regression.
+
+
+
+# name: <cell-element>
+# type: sq_string
+# elements: 1
 # length: 16
 LinearMixedModel
 
@@ -163,7 +230,7 @@ LinearModel
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7368
+# length: 8206
  -- statistics: LinearModel
 
      Linear regression model
@@ -203,6 +270,18 @@ LinearModel
                         used, excluded, missing, or weighted), ‘ObservationNames’,
                         ‘PredictorNames’, ‘ResponseName’, ‘VariableInfo’,
                         ‘VariableNames’, and ‘Variables’.
+
+     A categorical predictor expands to indicator columns, one per level bar the
+     reference level, which the intercept carries.  When the model has no
+     intercept, the _first_ categorical predictor is given an indicator for
+     every one of its levels instead, so that its coefficients are the group
+     means; any further categorical predictor stays reference coded, which keeps
+     the design full rank.  This differs from MATLAB, which omits the reference
+     level whether or not an intercept is present and so cannot fit the
+     reference group at all - for a three-level grouping variable ‘g’, MATLAB
+     fits ‘y ~ g - 1’ with two coefficients, predicts exactly 0 for every
+     observation in the omitted group, and reports a negative R^2.  This
+     implementation returns three coefficients, one per group.
 
      A ‘LinearModel’ object supports categorical predictors, which are
      automatically encoded internally as indicator (dummy) variables,
@@ -1572,7 +1651,7 @@ boxplot
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 8734
+# length: 9054
  -- statistics: S = boxplot (DATA)
  -- statistics: S = boxplot (DATA, GROUP)
  -- statistics: S = boxplot (DATA, NOTCHED, SYMBOL, ORIENTATION, WHISKER, ...)
@@ -1716,6 +1795,11 @@ boxplot
      5        Maximum
      6        Lower confidence limit for median
      7        Upper confidence limit for median
+
+     The quartiles are those of ‘quantile’ at its default method, which is also
+     what ‘prctile’ returns, so the box edges of a data set always agree with
+     ‘prctile (DATA, [25, 75])’.  They set the inter-quartile range, and so the
+     whisker fences and which observations are reported as outliers.
 
      The returned structure H contains handles to the plot elements, allowing
      customization of the visualization using set/get functions.
@@ -3437,46 +3521,143 @@ factoran
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1446
- -- statistics: LOADINGS = factoran (X, NFAC)
- -- statistics: [LOADINGS, SPECVAR] = factoran (X, NFAC)
- -- statistics: [LOADINGS, SPECVAR, FSCORES] = factoran (X, NFAC)
+# length: 6129
+ -- statistics: LAMBDA = factoran (X, M)
+ -- statistics: [LAMBDA, PSI] = factoran (X, M)
+ -- statistics: [LAMBDA, PSI, T] = factoran (X, M)
+ -- statistics: [LAMBDA, PSI, T, STATS] = factoran (X, M)
+ -- statistics: [LAMBDA, PSI, T, STATS, F] = factoran (X, M)
+ -- statistics: [...] = factoran (..., NAME, VALUE)
 
-     Perform principal axis factor analysis on data matrix.
+     Common factor analysis.
 
-     ‘LOADINGS = factoran (X, NFAC)’ performs principal axis factoring to
-     extract NFAC factors from the N * P data matrix X, where rows correspond to
-     observations and columns to variables.  The output LOADINGS is a P * NFAC
-     matrix whose columns contain the loadings on each factor, in decreasing
-     order of importance.
+     ‘LAMBDA = factoran (X, M)’ fits the common factor model with M common
+     factors to the N-by-P data matrix X, whose rows are observations and
+     columns are variables, and returns the P-by-M matrix LAMBDA of factor
+     loadings.  The model is
 
-     ‘[LOADINGS, SPECVAR] = factoran (...)’ also returns a P * 1 vector SPECVAR
-     containing the specific variances (unique variances) for each variable.
+          X = MU + LAMBDA * F + E
 
-     ‘[LOADINGS, SPECVAR, FSCORES] = factoran (...)’ also returns the N * NFAC
-     matrix FSCORES of estimated factor scores, computed using the regression
-     method.
+     where F are the common factors and E the variable-specific errors,
+     uncorrelated with each other and with F.  The analysis is carried out on
+     the correlation matrix, so the loadings are in standardized units and a
+     variable's communality ‘sum (LAMBDA(i,:) .^ 2)’ and its specific variance
+     ‘PSI(i)’ sum to one.
 
-     The analysis is performed on the correlation matrix of the standardized X.
-     Initial communalities are set to 1.  Iterations continue until the maximum
-     change in communality is less than 1e-4 or 50 iterations are reached.  The
-     sign of each loading vector is chosen so that the element with largest
-     absolute value is positive.
+     ‘[LAMBDA, PSI] = factoran (...)’ also returns the P-by-1 vector PSI of
+     specific variances.
+
+     ‘[LAMBDA, PSI, T] = factoran (...)’ also returns the M-by-M rotation matrix
+     T that was applied to the loadings.  It is the identity when 'Rotate' is
+     'none'.
+
+     ‘[LAMBDA, PSI, T, STATS] = factoran (...)’ also returns a structure STATS
+     with the fields
+
+     Field        Description
+     ------------------------------------------------------------------------------
+     loglike      the maximized log-likelihood, up to a constant.
+     dfe          the error degrees of freedom, ‘((P - M)^2 - P - M) / 2’.
+     chisq        the likelihood ratio statistic testing M common factors
+                  against an unrestricted covariance.
+     p            the significance of CHISQ.
+
+     The last two are present only when they can be computed: they are omitted
+     when the degrees of freedom are not positive, when a specific variance has
+     reached its lower bound (a Heywood case, where the likelihood is on the
+     boundary), and for the 'paf' extraction, which does not maximize a
+     likelihood.  Test for them with ‘isfield’ before using them.
+
+     ‘[LAMBDA, PSI, T, STATS, F] = factoran (...)’ also returns the N-by-M
+     matrix F of predicted factor scores.  Scores are not available from a
+     covariance matrix, only from data.
+
+     Name-Value pairs
+     ----------------
+
+     Name           Value
+     ------------------------------------------------------------------------------
+     'Extraction'   How the loadings are estimated, either 'ml' (default) for
+                    maximum likelihood or 'paf' for principal axis factoring.
+                    *An Octave extension*; MATLAB fits by maximum likelihood
+                    only.  See the note below.
+                    
+     'Xtype'        Whether X holds 'data' (default) or a 'covariance' (or
+                    correlation) matrix.
+                    
+     'Nobs'         The number of observations behind a covariance matrix.
+                    Required for STATS when 'Xtype' is 'covariance'.
+                    
+     'Delta'        The lower bound on the specific variances, a scalar in ‘[0,
+                    1)’ (default ‘0.005’).  Bounding them away from zero keeps
+                    the likelihood finite; a solution that reaches the bound is
+                    a Heywood case and is reported by a warning.
+                    
+     'Rotate'       The rotation applied to the loadings, passed to
+                    ‘rotatefactors’: 'varimax' (default), 'none', 'quartimax',
+                    'equamax', 'parsimax', 'orthomax', or 'promax'.
+                    
+     'Normalize'    Whether the rotation normalizes the rows of the loadings
+                    (Kaiser normalization), 'on' (default) or 'off'.
+                    
+     'Power'        The exponent of the 'promax' target, a scalar not less than
+                    1 (default 4).
+                    
+     'Scores'       How F is predicted, either 'wls' (default, also named
+                    'Bartlett') or 'regression' (also named 'Thomson').
+                    
+     'Maxit'        The iteration limit of the extraction (default ‘500’).
+                    
+     'Tolerance'    The convergence tolerance of the extraction (default
+                    ‘1e-8’).
+
+     Choosing the extraction
+     -----------------------
+
+     The two extractions fit the same model but estimate it differently, and
+     they answer to different circumstances.
+
+     'ml' maximizes the likelihood of a multivariate normal, and is what
+     MATLAB's ‘factoran’ does.  Use it when you want the likelihood ratio test
+     in STATS to decide how many factors the data support, and when the data are
+     plausibly normal.  It can fail to converge, or push a specific variance to
+     zero, when the model asks for more factors than the data hold.
+
+     'paf' iterates communalities on the reduced correlation matrix.  It makes
+     no distributional assumption and is stable where maximum likelihood
+     struggles, which is why it remains available here, but it provides no
+     likelihood and therefore no test: STATS carries only dfe.
+
+     The two agree closely when the model fits the data well and diverge when it
+     does not, so a large difference between them is itself informative.
+
+     Number of factors
+     -----------------
+
+     M must leave the model identified, that is ‘(P - M)^2 >= P + M’.  With six
+     variables at most three factors can be fitted, and only the smaller counts
+     leave degrees of freedom to test.
 
      References
      ----------
 
-       1. Harman, H. H., Modern Factor Analysis, 3rd Edition, University of
+       1. Lawley, D. N., and Maxwell, A. E., ‘Factor Analysis as a Statistical
+          Method’, 2nd Edition, Butterworths, 1971.
+
+       2. Joreskog, K. G., "Some contributions to maximum likelihood factor
+          analysis", ‘Psychometrika’ 32(4), 443-482, 1967.
+
+       3. Harman, H. H., ‘Modern Factor Analysis’, 3rd Edition, University of
           Chicago Press, 1976.
 
-     See also: barttest, pca, pcacov, pcares.
+     See also: rotatefactors, pca, pcacov, princomp, barttest.
 
 
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 54
-Perform principal axis factor analysis on data matrix.
+# length: 23
+Common factor analysis.
 
 
 
@@ -4562,7 +4743,7 @@ fitglm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2688
+# length: 3526
  -- statistics: MDL = fitglm (X, Y)
  -- statistics: MDL = fitglm (X, Y, MODELSPEC)
  -- statistics: MDL = fitglm (TBL)
@@ -4609,6 +4790,18 @@ fitglm
                       by the response) for numeric X.
      'PredictorVars', for table input, the predictor and response variable
      'ResponseVar'    names.
+
+     A categorical predictor expands to indicator columns, one per level bar the
+     reference level, which the intercept carries.  When the model has no
+     intercept, the _first_ categorical predictor is given an indicator for
+     every one of its levels instead, so that its coefficients are the group
+     means; any further categorical predictor stays reference coded, which keeps
+     the design full rank.  This differs from MATLAB, which omits the reference
+     level whether or not an intercept is present and so cannot fit the
+     reference group at all - for a three-level grouping variable ‘g’, MATLAB
+     fits ‘y ~ g - 1’ with two coefficients, predicts exactly 0 for every
+     observation in the omitted group, and reports a negative R^2.  This
+     implementation returns three coefficients, one per group.
 
      See also: GeneralizedLinearModel, fitlm, glmfit, glmval, lassoglm.
 
@@ -4759,7 +4952,7 @@ fitlm
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 11914
+# length: 12752
  -- statistics: MDL = fitlm (X, Y)
  -- statistics: MDL = fitlm (TBL)
  -- statistics: MDL = fitlm (TBL, RESPONSEVARNAME)
@@ -4963,6 +5156,18 @@ fitlm
      other than 'off', the returned model is a robust fit rather than an
      ordinary least squares fit, and its ‘Robust’ property is populated
      accordingly.
+
+     A categorical predictor expands to indicator columns, one per level bar the
+     reference level, which the intercept carries.  When the model has no
+     intercept, the _first_ categorical predictor is given an indicator for
+     every one of its levels instead, so that its coefficients are the group
+     means; any further categorical predictor stays reference coded, which keeps
+     the design full rank.  This differs from MATLAB, which omits the reference
+     level whether or not an intercept is present and so cannot fit the
+     reference group at all - for a three-level grouping variable ‘g’, MATLAB
+     fits ‘y ~ g - 1’ with two coefficients, predicts exactly 0 for every
+     observation in the omitted group, and reports a negative R^2.  This
+     implementation returns three coefficients, one per group.
 
      See also: LinearModel.
 
@@ -10767,7 +10972,7 @@ parseWilkinsonFormula
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 7363
+# length: 8036
  -- statistics: TERMS = parseWilkinsonFormula (FORMULA)
  -- statistics: RESULT = parseWilkinsonFormula (FORMULA, MODE)
  -- statistics: [X, Y, NAMES] = parseWilkinsonFormula (FORMULA, "model_matrix",
@@ -10904,6 +11109,16 @@ parseWilkinsonFormula
      Wilkinson, G. N. and Rogers, C. E. (1973).  Symbolic Description of
      Factorial Models for Analysis of Variance.  Applied Statistics, 22,
      392-399.
+
+     In "model_matrix" mode a categorical variable expands to indicator columns,
+     one per level bar the reference level, which the intercept carries.  The
+     levels of a character or string column are taken in the order the data
+     presents them, so the reference level is the one seen first; a
+     ‘categorical’ column uses its own category order.  When the formula has no
+     intercept, the first categorical variable is given an indicator for every
+     one of its levels and any further categorical variable stays reference
+     coded.  MATLAB omits the reference level whether or not an intercept is
+     present, and so cannot fit the reference group.
 
 
 # name: <cell-element>
@@ -13249,7 +13464,7 @@ scatterhist
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1811
+# length: 3098
  -- statistics: scatterhist (X, Y)
  -- statistics: scatterhist (X, Y, NAME, VALUE, ...)
  -- statistics: H = scatterhist (...)
@@ -13295,6 +13510,34 @@ scatterhist
      axes of the Y (vertical) histogram.
 
      See also: gscatter, scatter, hist, ksdensity.
+
+     'Parent' draws into a supplied figure or uipanel instead of the current
+     figure.  The container is used as it stands and is never cleared, so a
+     scatterhist can be placed alongside other axes.
+
+     'Location' names the corner the scatter occupies, 'SouthWest' by default,
+     or 'SouthEast', 'NorthEast' or 'NorthWest'; the marginals take the two
+     opposite sides.
+
+     'Direction' points the marginal bars toward the scatter plot, 'in' by
+     default, or away from it with 'out', whichever side 'Location' has placed
+     them on.
+
+     'PlotGroup' draws one marginal per group with 'on', or a single pooled
+     marginal with 'off'.  It defaults to 'on' when 'Group' is given and to
+     'off' otherwise.
+
+     'Style' outlines the marginals as 'bar' or 'stairs', defaulting to stairs
+     when the data are grouped and bars when they are not.
+
+     'Color' sets the group colours, either as a character vector of colour
+     names or as an N-by-3 matrix of RGB values, cycled over the groups.
+
+     'LineStyle' and 'LineWidth' style the marginal outlines, not the scatter
+     markers, and are cycled over the groups.
+
+     'Bandwidth' sets the kernel bandwidth used when 'Kernel' is on: a scalar
+     for all marginals, a pair for X and Y, or one row per group.
 
 
 # name: <cell-element>
@@ -14210,10 +14453,15 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1045
+# length: 1343
  -- statistics: [R, TIEADJ] = tiedrank (X)
  -- statistics: [R, TIEADJ] = tiedrank (X, TIEFLAG)
  -- statistics: [R, TIEADJ] = tiedrank (X, TIEFLAG, BIDIR)
+
+     X may be a vector or an array.  An array is ranked along its first
+     dimension, so a matrix is ranked column by column, and TIEADJ then carries
+     one entry per column: its first dimension has length 1 by default, or 3
+     when TIEFLAG is set, and its higher dimensions are those of X.
 
      Compute rank adjusted for ties.
 
@@ -14236,8 +14484,8 @@ tiedrank
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 31
-Compute rank adjusted for ties.
+# length: 30
+X may be a vector or an array.
 
 
 

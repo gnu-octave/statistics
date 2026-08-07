@@ -13,7 +13,7 @@ betacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 766
+# length: 1066
  -- statistics: P = betacdf (X, A, B)
  -- statistics: P = betacdf (X, A, B, 'upper')
 
@@ -29,6 +29,11 @@ betacdf
 
      Further information about the Beta distribution can be found at
      <https://en.wikipedia.org/wiki/Beta_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: betainv, betapdf, betarnd, betafit, betalike, betastat.
 
@@ -51,7 +56,7 @@ betainv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 562
+# length: 862
  -- statistics: X = betainv (P, A, B)
 
      Inverse of the Beta distribution (iCDF).
@@ -63,6 +68,11 @@ betainv
 
      Further information about the Beta distribution can be found at
      <https://en.wikipedia.org/wiki/Beta_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: betacdf, betapdf, betarnd, betafit, betalike, betastat.
 
@@ -85,7 +95,7 @@ betapdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 563
+# length: 863
  -- statistics: Y = betapdf (X, A, B)
 
      Beta probability density function (PDF).
@@ -97,6 +107,11 @@ betapdf
 
      Further information about the Beta distribution can be found at
      <https://en.wikipedia.org/wiki/Beta_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: betacdf, betainv, betarnd, betafit, betalike, betastat.
 
@@ -162,7 +177,7 @@ binocdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 877
+# length: 1248
  -- statistics: P = binocdf (X, N, PS)
  -- statistics: P = binocdf (X, N, PS, 'upper')
 
@@ -179,6 +194,12 @@ binocdf
 
      Further information about the binomial distribution can be found at
      <https://en.wikipedia.org/wiki/Binomial_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: binoinv, binopdf, binornd, binofit, binolike, binostat, binotest.
 
@@ -201,7 +222,7 @@ binoinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 680
+# length: 980
  -- statistics: X = binoinv (P, N, PS)
 
      Inverse of the Binomial cumulative distribution function (iCDF).
@@ -214,6 +235,11 @@ binoinv
 
      Further information about the binomial distribution can be found at
      <https://en.wikipedia.org/wiki/Binomial_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: binocdf, binopdf, binornd, binofit, binolike, binostat, binotest.
 
@@ -236,7 +262,7 @@ binopdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 889
+# length: 1260
  -- statistics: Y = binopdf (X, N, PS)
 
      Binomial probability density function (PDF).
@@ -253,6 +279,12 @@ binopdf
 
      Further information about the binomial distribution can be found at
      <https://en.wikipedia.org/wiki/Binomial_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: binocdf, binoinv, binornd, binofit, binolike, binostat, binotest.
 
@@ -319,7 +351,7 @@ bisacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 911
+# length: 1211
  -- statistics: P = bisacdf (X, BETA, GAMMA)
  -- statistics: P = bisacdf (X, BETA, GAMMA, 'upper')
 
@@ -337,6 +369,11 @@ bisacdf
 
      Further information about the Birnbaum-Saunders distribution can be found
      at <https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: bisainv, bisapdf, bisarnd, bisafit, bisalike, bisastat.
 
@@ -359,7 +396,7 @@ bisainv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 682
+# length: 982
  -- statistics: X = bisainv (P, BETA, GAMMA)
 
      Inverse of the Birnbaum-Saunders cumulative distribution function (iCDF).
@@ -372,6 +409,11 @@ bisainv
 
      Further information about the Birnbaum-Saunders distribution can be found
      at <https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: bisainv, bisapdf, bisarnd, bisafit, bisalike, bisastat.
 
@@ -394,7 +436,7 @@ bisapdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 663
+# length: 963
  -- statistics: Y = bisapdf (X, BETA, GAMMA)
 
      Birnbaum-Saunders probability density function (PDF).
@@ -407,6 +449,11 @@ bisapdf
 
      Further information about the Birnbaum-Saunders distribution can be found
      at <https://en.wikipedia.org/wiki/Birnbaum%E2%80%93Saunders_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: bisacdf, bisapdf, bisarnd, bisafit, bisalike, bisastat.
 
@@ -473,7 +520,7 @@ burrcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 902
+# length: 1202
  -- statistics: P = burrcdf (X, LAMBDA, C, K)
  -- statistics: P = burrcdf (X, LAMBDA, C, K, 'upper')
 
@@ -491,6 +538,11 @@ burrcdf
 
      Further information about the Burr distribution can be found at
      <https://en.wikipedia.org/wiki/Burr_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: burrinv, burrpdf, burrrnd, burrfit, burrlike, burrstat.
 
@@ -513,7 +565,7 @@ burrinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 674
+# length: 974
  -- statistics: X = burrinv (P, LAMBDA, C, K)
 
      Inverse of the Burr type XII cumulative distribution function (iCDF).
@@ -526,6 +578,11 @@ burrinv
 
      Further information about the Burr distribution can be found at
      <https://en.wikipedia.org/wiki/Burr_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: burrcdf, burrpdf, burrrnd, burrfit, burrlike, burrstat.
 
@@ -548,7 +605,7 @@ burrpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 655
+# length: 955
  -- statistics: Y = burrpdf (X, LAMBDA, C, K)
 
      Burr type XII probability density function (PDF).
@@ -561,6 +618,11 @@ burrpdf
 
      Further information about the Burr distribution can be found at
      <https://en.wikipedia.org/wiki/Burr_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: burrcdf, burrinv, burrrnd, burrfit, burrlike, burrstat.
 
@@ -627,7 +689,7 @@ bvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 721
+# length: 1021
  -- statistics: P = bvncdf (X, MU, SIGMA)
  -- statistics: P = bvncdf (X, [], SIGMA)
 
@@ -643,6 +705,11 @@ bvncdf
           assumed.
         • SIGMA can be a scalar (common variance) or a 2*2 covariance matrix,
           which must be positive definite.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: mvncdf.
 
@@ -665,7 +732,7 @@ bvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 588
+# length: 888
  -- statistics: P = bvtcdf (X, RHO, DF)
  -- statistics: P = bvtcdf (X, RHO, DF, TOL)
 
@@ -678,6 +745,11 @@ bvtcdf
      with X.
 
      TOL is the tolerance for numerical integration and by default ‘TOL = 1e-8’.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: mvtcdf.
 
@@ -700,7 +772,7 @@ cauchycdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 818
+# length: 1118
  -- statistics: P = cauchycdf (X, X0, GAMMA)
  -- statistics: P = cauchycdf (X, X0, GAMMA, 'upper')
 
@@ -717,6 +789,11 @@ cauchycdf
 
      Further information about the Cauchy distribution can be found at
      <https://en.wikipedia.org/wiki/Cauchy_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: cauchyinv, cauchypdf, cauchyrnd.
 
@@ -739,7 +816,7 @@ cauchyinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 601
+# length: 901
  -- statistics: X = cauchyinv (P, X0, GAMMA)
 
      Inverse of the Cauchy cumulative distribution function (iCDF).
@@ -751,6 +828,11 @@ cauchyinv
 
      Further information about the Cauchy distribution can be found at
      <https://en.wikipedia.org/wiki/Cauchy_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: cauchycdf, cauchypdf, cauchyrnd.
 
@@ -773,7 +855,7 @@ cauchypdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 583
+# length: 883
  -- statistics: Y = cauchypdf (X, X0, GAMMA)
 
      Cauchy probability density function (PDF).
@@ -785,6 +867,11 @@ cauchypdf
 
      Further information about the Cauchy distribution can be found at
      <https://en.wikipedia.org/wiki/Cauchy_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: cauchycdf, cauchypdf, cauchyrnd.
 
@@ -850,7 +937,7 @@ chi2cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 917
+# length: 1217
  -- statistics: P = chi2cdf (X, DF)
  -- statistics: P = chi2cdf (X, DF, 'upper')
 
@@ -869,6 +956,11 @@ chi2cdf
 
      Further information about the chi-squared distribution can be found at
      <https://en.wikipedia.org/wiki/Chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: chi2inv, chi2pdf, chi2rnd, chi2stat.
 
@@ -891,7 +983,7 @@ chi2inv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 583
+# length: 883
  -- statistics: X = chi2inv (P, DF)
 
      Inverse of the chi-squared cumulative distribution function (iCDF).
@@ -903,6 +995,11 @@ chi2inv
 
      Further information about the chi-squared distribution can be found at
      <https://en.wikipedia.org/wiki/Chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: chi2cdf, chi2pdf, chi2rnd, chi2stat.
 
@@ -925,7 +1022,7 @@ chi2pdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 564
+# length: 864
  -- statistics: Y = chi2pdf (X, DF)
 
      Chi-squared probability density function (PDF).
@@ -937,6 +1034,11 @@ chi2pdf
 
      Further information about the chi-squared distribution can be found at
      <https://en.wikipedia.org/wiki/Chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: chi2cdf, chi2pdf, chi2rnd, chi2stat.
 
@@ -1001,7 +1103,7 @@ copulacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2243
+# length: 2543
  -- statistics: P = copulacdf (FAMILY, X, THETA)
  -- statistics: P = copulacdf ('t', X, THETA, DF)
 
@@ -1056,6 +1158,11 @@ copulacdf
 
        1. Roger B. Nelsen.  ‘An Introduction to Copulas’.  Springer, New York,
           second edition, 2006.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: copulapdf, copularnd.
 
@@ -1140,7 +1247,7 @@ copulaparam
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1843
+# length: 2265
  -- statistics: PARAM = copulaparam (FAMILY, R)
  -- statistics: PARAM = copulaparam (..., "type", TYPE)
 
@@ -1152,7 +1259,13 @@ copulaparam
 
      FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
      family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
+     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
+     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
+     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
+     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
+     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
+     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
+     family one in ‘[-2/9, 2/9]’.
 
      For the Gaussian and Student's t families, R is a scalar rank correlation
      or a matrix of pairwise rank correlations, and PARAM is the corresponding
@@ -1195,8 +1308,9 @@ copulapdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1559
+# length: 2823
  -- statistics: Y = copulapdf (FAMILY, X, THETA)
+ -- statistics: Y = copulapdf ('t', X, THETA, DF)
 
      Copula family probability density functions (PDF).
 
@@ -1204,19 +1318,32 @@ copulapdf
      ---------
 
         • FAMILY is the copula family name.  Currently, FAMILY can be
-          ‘'Clayton'’ for the Clayton family, ‘'Gumbel'’ for the Gumbel-Hougaard
-          family, ‘'Frank'’ for the Frank family, or ‘'AMH'’ for the
-          Ali-Mikhail-Haq family.
+          ‘'Gaussian'’ for the Gaussian family, ‘'t'’ for the Student's t
+          family, ‘'Clayton'’ for the Clayton family, ‘'Gumbel'’ for the
+          Gumbel-Hougaard family, ‘'Frank'’ for the Frank family, ‘'AMH'’ for
+          the Ali-Mikhail-Haq family, or ‘'FGM'’ for the
+          Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions
+          that MATLAB does not provide.
 
         • X is the support where each row corresponds to an observation.
 
-        • THETA is the parameter of the copula.  The elements of THETA must be
-          greater than or equal to ‘-1’ for the Clayton family, greater than or
-          equal to ‘1’ for the Gumbel-Hougaard family, arbitrary for the Frank
-          family, and greater than or equal to ‘-1’ and lower than ‘1’ for the
-          Ali-Mikhail-Haq family.  Moreover, THETA must be non-negative for
-          dimensions greater than ‘2’.  THETA must be a column vector with the
-          same number of rows as X or be scalar.
+        • THETA is the parameter of the copula.  For the Gaussian and Student's
+          t families it is the linear correlation matrix, and a scalar is
+          expanded to a bivariate one.  For the remaining families the elements
+          of THETA must be greater than or equal to ‘-1’ for the Clayton family,
+          greater than or equal to ‘1’ for the Gumbel-Hougaard family, arbitrary
+          for the Frank family, and greater than or equal to ‘-1’ and lower than
+          ‘1’ for the Ali-Mikhail-Haq family.  Moreover, THETA must be
+          non-negative for dimensions greater than ‘2’.  THETA must be a column
+          vector with the same number of rows as X or be scalar.  The
+          Farlie-Gumbel-Morgenstern family instead takes one parameter for every
+          subset of the variables of order two or more, so THETA is a row vector
+          of length ‘2^d-d-1’ or a matrix with one such row per observation;
+          parameter sets violating the family's linear constraints give ‘NaN’.
+
+        • DF is the degrees of freedom of the Student's t family, and is
+          required by it.  It must be a vector with the same number of rows as X
+          or be scalar.
 
      Return values
      -------------
@@ -1239,6 +1366,11 @@ copulapdf
        1. Roger B. Nelsen.  ‘An Introduction to Copulas’.  Springer, New York,
           second edition, 2006.
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: copulacdf, copularnd.
 
 
@@ -1260,7 +1392,7 @@ copularnd
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1920
+# length: 2664
  -- Function File: R = copularnd (FAMILY, THETA, N)
  -- Function File: R = copularnd (FAMILY, THETA, N, D)
  -- Function File: R = copularnd ('t', THETA, DF, N)
@@ -1272,13 +1404,22 @@ copularnd
 
         • FAMILY is the copula family name.  Currently, FAMILY can be
           ‘'Gaussian'’ for the Gaussian family, ‘'t'’ for the Student's t
-          family, or ‘'Clayton'’ for the Clayton family.
+          family, ‘'Clayton'’ for the Clayton family, ‘'Frank'’ for the Frank
+          family, ‘'Gumbel'’ for the Gumbel-Hougaard family, ‘'AMH'’ for the
+          Ali-Mikhail-Haq family, or ‘'FGM'’ for the Farlie-Gumbel-Morgenstern
+          family.  The last two are Octave extensions that MATLAB does not
+          provide.  Every family but Clayton is generated as bivariate only.
 
         • THETA is the parameter of the copula.  For the Gaussian and Student's
           t copula, THETA must be a correlation matrix.  For bivariate copulas
-          THETA can also be a correlation coefficient.  For the Clayton family,
-          THETA must be a vector with the same number of elements as samples to
-          be generated or be scalar.
+          THETA can also be a correlation coefficient.  For the Clayton, Frank
+          and Gumbel-Hougaard families, THETA must be a vector with the same
+          number of elements as samples to be generated or be scalar.  Values
+          outside a family's range give ‘NaN’ rows: at or above ‘1’ for the
+          Gumbel-Hougaard family, at or above ‘-1’ for the bivariate Clayton
+          family, and any finite value for the Frank family.  The
+          Ali-Mikhail-Haq family takes THETA in ‘[-1, 1)’ and the
+          Farlie-Gumbel-Morgenstern family in ‘[-1, 1]’.
 
         • DF is the degrees of freedom for the Student's t family.  DF must be a
           vector with the same number of elements as samples to be generated or
@@ -1336,7 +1477,7 @@ copulastat
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1940
+# length: 2362
  -- statistics: R = copulastat (FAMILY, PARAM)
  -- statistics: R = copulastat (..., "type", TYPE)
 
@@ -1348,7 +1489,13 @@ copulastat
 
      FAMILY is the copula family name.  It can be "Gaussian" for the Gaussian
      family, "t" for the Student's t family, "Clayton" for the Clayton family,
-     "Gumbel" for the Gumbel-Hougaard family, or "Frank" for the Frank family.
+     "Gumbel" for the Gumbel-Hougaard family, "Frank" for the Frank family,
+     "AMH" for the Ali-Mikhail-Haq family, or "FGM" for the
+     Farlie-Gumbel-Morgenstern family.  The last two are Octave extensions that
+     MATLAB does not provide, and are treated as bivariate.  Neither reaches the
+     whole range of either rank correlation: the Ali-Mikhail-Haq family covers a
+     Kendall's tau in ‘[(5-8*log (2))/3, 1/3]’ and the Farlie-Gumbel-Morgenstern
+     family one in ‘[-2/9, 2/9]’.
 
      For the Gaussian and Student's t families, PARAM is a linear correlation
      coefficient RHO in the range [-1,1], or a p-by-p correlation matrix, in
@@ -1394,7 +1541,7 @@ evcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2031
+# length: 2331
  -- statistics: P = evcdf (X)
  -- statistics: P = evcdf (X, MU)
  -- statistics: P = evcdf (X, MU, SIGMA)
@@ -1434,6 +1581,11 @@ evcdf
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: evinv, evpdf, evrnd, evfit, evlike, evstat, gumbelcdf.
 
 
@@ -1455,7 +1607,7 @@ evinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1759
+# length: 2059
  -- statistics: X = evinv (P)
  -- statistics: X = evinv (P, MU)
  -- statistics: X = evinv (P, MU, SIGMA)
@@ -1489,6 +1641,11 @@ evinv
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: evcdf, evpdf, evrnd, evfit, evlike, evstat, gumbelinv.
 
 
@@ -1510,7 +1667,7 @@ evpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1094
+# length: 1394
  -- statistics: Y = evpdf (X)
  -- statistics: Y = evpdf (X, MU)
  -- statistics: Y = evpdf (X, MU, SIGMA)
@@ -1533,6 +1690,11 @@ evpdf
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: evcdf, evinv, evrnd, evfit, evlike, evstat, gumbelpdf.
 
@@ -1605,7 +1767,7 @@ expcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1806
+# length: 2106
  -- statistics: P = expcdf (X)
  -- statistics: P = expcdf (X, MU)
  -- statistics: P = expcdf (..., 'upper')
@@ -1641,6 +1803,11 @@ expcdf
      Further information about the exponential distribution can be found at
      <https://en.wikipedia.org/wiki/Exponential_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: expinv, exppdf, exprnd, expfit, explike, expstat.
 
 
@@ -1662,7 +1829,7 @@ expinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1557
+# length: 1857
  -- statistics: X = expinv (P)
  -- statistics: X = expinv (P, MU)
  -- statistics: [X, XLO, XUP] = expinv (P, MU, PCOV)
@@ -1693,6 +1860,11 @@ expinv
      Further information about the exponential distribution can be found at
      <https://en.wikipedia.org/wiki/Exponential_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: expcdf, exppdf, exprnd, expfit, explike, expstat.
 
 
@@ -1714,7 +1886,7 @@ exppdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 935
+# length: 1235
  -- statistics: Y = exppdf (X)
  -- statistics: Y = exppdf (X, MU)
 
@@ -1734,6 +1906,11 @@ exppdf
 
      Further information about the exponential distribution can be found at
      <https://en.wikipedia.org/wiki/Exponential_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: expcdf, expinv, exprnd, expfit, explike, expstat.
 
@@ -1803,7 +1980,7 @@ fcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 751
+# length: 1051
  -- statistics: P = fcdf (X, DF1, DF2)
  -- statistics: P = fcdf (X, DF1, DF2, 'upper')
 
@@ -1819,6 +1996,11 @@ fcdf
 
      Further information about the F-distribution can be found at
      <https://en.wikipedia.org/wiki/F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: finv, fpdf, frnd, fstat.
 
@@ -1841,7 +2023,7 @@ finv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 550
+# length: 850
  -- statistics: X = finv (P, DF1, DF2)
 
      Inverse of the F-cumulative distribution function (iCDF).
@@ -1853,6 +2035,11 @@ finv
 
      Further information about the F-distribution can be found at
      <https://en.wikipedia.org/wiki/F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: fcdf, fpdf, frnd, fstat.
 
@@ -1875,7 +2062,7 @@ fpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 531
+# length: 831
  -- statistics: Y = fpdf (X, DF1, DF2)
 
      F-probability density function (PDF).
@@ -1887,6 +2074,11 @@ fpdf
 
      Further information about the F-distribution can be found at
      <https://en.wikipedia.org/wiki/F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: fcdf, finv, frnd, fstat.
 
@@ -1952,7 +2144,7 @@ gamcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1991
+# length: 2291
  -- statistics: P = gamcdf (X, A)
  -- statistics: P = gamcdf (X, A, B)
  -- statistics: P = gamcdf (..., 'upper')
@@ -1989,6 +2181,11 @@ gamcdf
      Further information about the Gamma distribution can be found at
      <https://en.wikipedia.org/wiki/Gamma_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gaminv, gampdf, gamrnd, gamfit, gamlike, gamstat.
 
 
@@ -2010,7 +2207,7 @@ gaminv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1020
+# length: 1320
  -- statistics: X = gaminv (P, A, B)
 
      Inverse of the Gamma cumulative distribution function (iCDF).
@@ -2029,6 +2226,11 @@ gaminv
 
      Further information about the Gamma distribution can be found at
      <https://en.wikipedia.org/wiki/Gamma_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gamcdf, gampdf, gamrnd, gamfit, gamlike, gamstat.
 
@@ -2051,7 +2253,7 @@ gampdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1000
+# length: 1300
  -- statistics: Y = gampdf (X, A, B)
 
      Gamma probability density function (PDF).
@@ -2070,6 +2272,11 @@ gampdf
 
      Further information about the Gamma distribution can be found at
      <https://en.wikipedia.org/wiki/Gamma_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gamcdf, gaminv, gamrnd, gamfit, gamlike, gamstat.
 
@@ -2142,7 +2349,7 @@ geocdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 913
+# length: 1284
  -- statistics: P = geocdf (X, PS)
  -- statistics: P = geocdf (X, PS, 'upper')
 
@@ -2161,6 +2368,12 @@ geocdf
 
      Further information about the geometric distribution can be found at
      <https://en.wikipedia.org/wiki/Geometric_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: geoinv, geopdf, geornd, geofit, geostat.
 
@@ -2183,7 +2396,7 @@ geoinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 731
+# length: 1031
  -- statistics: X = geoinv (P, PS)
 
      Inverse of the geometric cumulative distribution function (iCDF).
@@ -2198,6 +2411,11 @@ geoinv
 
      Further information about the geometric distribution can be found at
      <https://en.wikipedia.org/wiki/Geometric_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: geocdf, geopdf, geornd, geofit, geostat.
 
@@ -2220,7 +2438,7 @@ geopdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 712
+# length: 1083
  -- statistics: Y = geopdf (X, PS)
 
      Geometric probability density function (PDF).
@@ -2235,6 +2453,12 @@ geopdf
 
      Further information about the geometric distribution can be found at
      <https://en.wikipedia.org/wiki/Geometric_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: geocdf, geoinv, geornd, geofit, geostat.
 
@@ -2302,7 +2526,7 @@ gevcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1664
+# length: 1964
  -- statistics: P = gevcdf (X, K, SIGMA, MU)
  -- statistics: P = gevcdf (X, K, SIGMA, MU, 'upper')
 
@@ -2334,6 +2558,11 @@ gevcdf
      found at
      <https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gevinv, gevpdf, gevrnd, gevfit, gevlike, gevstat.
 
 
@@ -2355,7 +2584,7 @@ gevinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1448
+# length: 1748
  -- statistics: X = gevinv (P, K, SIGMA, MU)
 
      Inverse of the generalized extreme value (GEV) cumulative distribution
@@ -2383,6 +2612,11 @@ gevinv
      found at
      <https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gevcdf, gevpdf, gevrnd, gevfit, gevlike, gevstat.
 
 
@@ -2404,7 +2638,7 @@ gevpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1424
+# length: 1724
  -- statistics: Y = gevpdf (X, K, SIGMA, MU)
 
      Generalized extreme value (GEV) probability density function (PDF).
@@ -2430,6 +2664,11 @@ gevpdf
      Further information about the generalized extreme value distribution can be
      found at
      <https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gevcdf, gevinv, gevrnd, gevfit, gevlike, gevstat.
 
@@ -2509,7 +2748,7 @@ gpcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1410
+# length: 1710
  -- statistics: P = gpcdf (X, K, SIGMA, THETA)
  -- statistics: P = gpcdf (X, K, SIGMA, THETA, 'upper')
 
@@ -2535,6 +2774,11 @@ gpcdf
      Further information about the generalized Pareto distribution can be found
      at <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gpinv, gppdf, gprnd, gpfit, gplike, gpstat.
 
 
@@ -2556,7 +2800,7 @@ gpinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1166
+# length: 1466
  -- statistics: X = gpinv (P, K, SIGMA, THETA)
 
      Inverse of the generalized Pareto cumulative distribution function (iCDF).
@@ -2576,6 +2820,11 @@ gpinv
 
      Further information about the generalized Pareto distribution can be found
      at <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gpcdf, gppdf, gprnd, gpfit, gplike, gpstat.
 
@@ -2598,7 +2847,7 @@ gppdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1147
+# length: 1447
  -- statistics: Y = gppdf (X, K, SIGMA, THETA)
 
      Generalized Pareto probability density function (PDF).
@@ -2618,6 +2867,11 @@ gppdf
 
      Further information about the generalized Pareto distribution can be found
      at <https://en.wikipedia.org/wiki/Generalized_Pareto_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gpcdf, gpinv, gprnd, gpfit, gplike, gpstat.
 
@@ -2691,7 +2945,7 @@ gumbelcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2184
+# length: 2484
  -- statistics: P = gumbelcdf (X)
  -- statistics: P = gumbelcdf (X, MU)
  -- statistics: P = gumbelcdf (X, MU, BETA)
@@ -2733,6 +2987,11 @@ gumbelcdf
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gumbelinv, gumbelpdf, gumbelrnd, gumbelfit, gumbellike,
      gumbelstat, evcdf.
 
@@ -2755,7 +3014,7 @@ gumbelinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1796
+# length: 2096
  -- statistics: X = gumbelinv (P)
  -- statistics: X = gumbelinv (P, MU)
  -- statistics: X = gumbelinv (P, MU, BETA)
@@ -2789,6 +3048,11 @@ gumbelinv
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: gumbelcdf, gumbelpdf, gumbelrnd, gumbelfit, gumbellike,
      gumbelstat, evinv.
 
@@ -2811,7 +3075,7 @@ gumbelpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1122
+# length: 1422
  -- statistics: Y = gumbelpdf (X)
  -- statistics: Y = gumbelpdf (X, MU)
  -- statistics: Y = gumbelpdf (X, MU, BETA)
@@ -2834,6 +3098,11 @@ gumbelpdf
 
      Further information about the Gumbel distribution can be found at
      <https://en.wikipedia.org/wiki/Gumbel_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: gumbelcdf, gumbelinv, gumbelrnd, gumbelfit, gumbellike,
      gumbelstat, evpdf.
@@ -2908,7 +3177,7 @@ hncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 905
+# length: 1205
  -- statistics: P = hncdf (X, MU, SIGMA)
  -- statistics: P = hncdf (X, MU, SIGMA, 'upper')
 
@@ -2928,6 +3197,11 @@ hncdf
 
      Further information about the half-normal distribution can be found at
      <https://en.wikipedia.org/wiki/Half-normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: hninv, hnpdf, hnrnd, hnfit, hnlike, hnstat.
 
@@ -2950,7 +3224,7 @@ hninv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 629
+# length: 929
  -- statistics: X = hninv (P, MU, SIGMA)
 
      Inverse of the half-normal cumulative distribution function (iCDF).
@@ -2962,6 +3236,11 @@ hninv
 
      Further information about the half-normal distribution can be found at
      <https://en.wikipedia.org/wiki/Half-normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: hncdf, hnpdf, hnrnd, hnfit, hnlike, hnstat.
 
@@ -2984,7 +3263,7 @@ hnpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 665
+# length: 965
  -- statistics: Y = hnpdf (X, MU, SIGMA)
 
      Half-normal probability density function (PDF).
@@ -2998,6 +3277,11 @@ hnpdf
 
      Further information about the half-normal distribution can be found at
      <https://en.wikipedia.org/wiki/Half-normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: hncdf, hninv, hnrnd, hnfit, hnlike, hnstat.
 
@@ -3063,7 +3347,7 @@ hygecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1133
+# length: 1504
  -- statistics: P = hygecdf (X, M, K, N)
  -- statistics: P = hygecdf (X, M, K, N, 'upper')
 
@@ -3086,6 +3370,12 @@ hygecdf
      Further information about the hypergeometric distribution can be found at
      <https://en.wikipedia.org/wiki/Hypergeometric_distribution>
 
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
+
      See also: hygeinv, hygepdf, hygernd, hygestat.
 
 
@@ -3107,7 +3397,7 @@ hygeinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 903
+# length: 1203
  -- statistics: X = hygeinv (P, M, K, N)
 
      Inverse of the hypergeometric cumulative distribution function (iCDF).
@@ -3124,6 +3414,11 @@ hygeinv
 
      Further information about the hypergeometric distribution can be found at
      <https://en.wikipedia.org/wiki/Hypergeometric_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: hygeinv, hygepdf, hygernd, hygestat.
 
@@ -3146,7 +3441,7 @@ hygepdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1301
+# length: 1672
  -- statistics: Y = hygepdf (X, M, K, N)
  -- statistics: Y = hygepdf (..., 'vectorexpand')
 
@@ -3170,6 +3465,12 @@ hygepdf
 
      Further information about the hypergeometric distribution can be found at
      <https://en.wikipedia.org/wiki/Hypergeometric_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: hygecdf, hygeinv, hygernd, hygestat.
 
@@ -3238,7 +3539,7 @@ invgcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 966
+# length: 1266
  -- statistics: P = invgcdf (X, MU, LAMBDA)
  -- statistics: P = invgcdf (X, MU, LAMBDA, 'upper')
 
@@ -3258,6 +3559,11 @@ invgcdf
 
      Further information about the inverse Gaussian distribution can be found at
      <https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: invginv, invgpdf, invgrnd, invgfit, invglike, invgstat.
 
@@ -3280,7 +3586,7 @@ invginv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 737
+# length: 1037
  -- statistics: X = invginv (P, MU, LAMBDA)
 
      Inverse of the inverse Gaussian cumulative distribution function (iCDF).
@@ -3294,6 +3600,11 @@ invginv
 
      Further information about the inverse Gaussian distribution can be found at
      <https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: invgcdf, invgpdf, invgrnd, invgfit, invglike, invgstat.
 
@@ -3316,7 +3627,7 @@ invgpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 722
+# length: 1022
  -- statistics: Y = invgpdf (X, MU, LAMBDA)
 
      Inverse Gaussian probability density function (PDF).
@@ -3331,6 +3642,11 @@ invgpdf
 
      Further information about the inverse Gaussian distribution can be found at
      <https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: invgcdf, invginv, invgrnd, invgfit, invglike, invgstat.
 
@@ -3399,7 +3715,7 @@ iwishpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 675
+# length: 975
  -- statistics: Y = iwishpdf (W, TAU, DF, LOG_Y=false)
 
      Compute the probability density function of the inverse Wishart
@@ -3413,6 +3729,11 @@ iwishpdf
      of the density is very small.
 
      Output: Y is the probability density of Wishart(SIGMA, DF) at W.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: iwishrnd, wishpdf, wishrnd.
 
@@ -3483,7 +3804,7 @@ jsucdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 580
+# length: 880
  -- statistics: P = jsucdf (X)
  -- statistics: P = jsucdf (X, ALPHA1)
  -- statistics: P = jsucdf (X, ALPHA1, ALPHA2)
@@ -3497,6 +3818,11 @@ jsucdf
      as the other
 
      Default values are ALPHA1 = 1, ALPHA2 = 1.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: jsupdf.
 
@@ -3519,7 +3845,7 @@ jsupdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 571
+# length: 871
  -- statistics: Y = jsupdf (X)
  -- statistics: Y = jsupdf (X, ALPHA1)
  -- statistics: Y = jsupdf (X, ALPHA1, ALPHA2)
@@ -3533,6 +3859,11 @@ jsupdf
      the other
 
      Default values are ALPHA1 = 1, ALPHA2 = 1.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: jsucdf.
 
@@ -3555,7 +3886,7 @@ laplacecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 936
+# length: 1236
  -- statistics: P = laplacecdf (X, MU, BETA)
  -- statistics: P = laplacecdf (X, MU, BETA, 'upper')
 
@@ -3576,6 +3907,11 @@ laplacecdf
 
      Further information about the Laplace distribution can be found at
      <https://en.wikipedia.org/wiki/Laplace_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: laplaceinv, laplacepdf, laplacernd.
 
@@ -3598,7 +3934,7 @@ laplaceinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 719
+# length: 1019
  -- statistics: X = laplaceinv (P, MU, BETA)
 
      Inverse of the Laplace cumulative distribution function (iCDF).
@@ -3614,6 +3950,11 @@ laplaceinv
 
      Further information about the Laplace distribution can be found at
      <https://en.wikipedia.org/wiki/Laplace_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: laplaceinv, laplacepdf, laplacernd.
 
@@ -3636,7 +3977,7 @@ laplacepdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 701
+# length: 1001
  -- statistics: Y = laplacepdf (X, MU, BETA)
 
      Laplace probability density function (PDF).
@@ -3652,6 +3993,11 @@ laplacepdf
 
      Further information about the Laplace distribution can be found at
      <https://en.wikipedia.org/wiki/Laplace_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: laplacecdf, laplacepdf, laplacernd.
 
@@ -3720,7 +4066,7 @@ logicdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 935
+# length: 1235
  -- statistics: P = logicdf (X, MU, SIGMA)
  -- statistics: P = logicdf (X, MU, SIGMA, 'upper')
 
@@ -3740,6 +4086,11 @@ logicdf
 
      Further information about the logistic distribution can be found at
      <https://en.wikipedia.org/wiki/Logistic_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: logiinv, logipdf, logirnd, logifit, logilike, logistat.
 
@@ -3762,7 +4113,7 @@ logiinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 720
+# length: 1020
  -- statistics: X = logiinv (P, MU, SIGMA)
 
      Inverse of the logistic cumulative distribution function (iCDF).
@@ -3777,6 +4128,11 @@ logiinv
 
      Further information about the logistic distribution can be found at
      <https://en.wikipedia.org/wiki/Logistic_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: logicdf, logipdf, logirnd, logifit, logilike, logistat.
 
@@ -3799,7 +4155,7 @@ logipdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 702
+# length: 1002
  -- statistics: Y = logipdf (X, MU, SIGMA)
 
      Logistic probability density function (PDF).
@@ -3814,6 +4170,11 @@ logipdf
 
      Further information about the logistic distribution can be found at
      <https://en.wikipedia.org/wiki/Logistic_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: logicdf, logiinv, logirnd, logifit, logilike, logistat.
 
@@ -3882,7 +4243,7 @@ loglcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1366
+# length: 1666
  -- statistics: P = loglcdf (X, MU, SIGMA)
  -- statistics: P = loglcdf (X, MU, SIGMA, 'upper')
 
@@ -3911,6 +4272,11 @@ loglcdf
         • MU = log (A)
         • SIGMA = 1 / A
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: loglinv, loglpdf, loglrnd, loglfit, logllike, loglstat.
 
 
@@ -3932,7 +4298,7 @@ loglinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1147
+# length: 1447
  -- statistics: X = loglinv (P, MU, SIGMA)
 
      Inverse of the log-logistic cumulative distribution function (iCDF).
@@ -3956,6 +4322,11 @@ loglinv
         • MU = log (A)
         • SIGMA = 1 / A
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: loglcdf, loglpdf, loglrnd, loglfit, logllike, loglstat.
 
 
@@ -3977,7 +4348,7 @@ loglpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1127
+# length: 1427
  -- statistics: Y = loglpdf (X, MU, SIGMA)
 
      Loglogistic probability density function (PDF).
@@ -4000,6 +4371,11 @@ loglpdf
 
         • MU = log (A)
         • SIGMA = 1 / A
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: loglcdf, loglinv, loglrnd, loglfit, logllike, loglstat.
 
@@ -4075,7 +4451,7 @@ logncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1961
+# length: 2261
  -- statistics: P = logncdf (X)
  -- statistics: P = logncdf (X, MU)
  -- statistics: P = logncdf (X, MU, SIGMA)
@@ -4112,6 +4488,11 @@ logncdf
      Further information about the lognormal distribution can be found at
      <https://en.wikipedia.org/wiki/Log-normal_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: logninv, lognpdf, lognrnd, lognfit, lognlike, lognstat.
 
 
@@ -4133,7 +4514,7 @@ logninv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1057
+# length: 1357
  -- statistics: X = logninv (P)
  -- statistics: X = logninv (P, MU)
  -- statistics: X = logninv (P, MU, SIGMA)
@@ -4154,6 +4535,11 @@ logninv
 
      Further information about the lognormal distribution can be found at
      <https://en.wikipedia.org/wiki/Log-normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: logncdf, lognpdf, lognrnd, lognfit, lognlike, lognstat.
 
@@ -4176,7 +4562,7 @@ lognpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1038
+# length: 1338
  -- statistics: Y = lognpdf (X)
  -- statistics: Y = lognpdf (X, MU)
  -- statistics: Y = lognpdf (X, MU, SIGMA)
@@ -4197,6 +4583,11 @@ lognpdf
 
      Further information about the lognormal distribution can be found at
      <https://en.wikipedia.org/wiki/Log-normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: logncdf, logninv, lognrnd, lognfit, lognlike, lognstat.
 
@@ -4267,7 +4658,7 @@ mnpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1690
+# length: 2061
  -- statistics: Y = mnpdf (X, PK)
 
      Multinomial probability density function (PDF).
@@ -4314,6 +4705,12 @@ mnpdf
 
        2. Merran Evans, Nicholas Hastings and Brian Peacock.  ‘Statistical
           Distributions’.  pages 134-136, Wiley, New York, third edition, 2000.
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: mnrnd.
 
@@ -4416,7 +4813,7 @@ mvncdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2960
+# length: 3260
  -- statistics: P = mvncdf (X)
  -- statistics: P = mvncdf (X, MU, SIGMA)
  -- statistics: P = mvncdf (X_LO, X_UP, MU, SIGMA)
@@ -4473,6 +4870,11 @@ mvncdf
                       and related error after the integrand has converged
                       successfully.
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: bvncdf, mvnpdf, mvnrnd.
 
 
@@ -4494,7 +4896,7 @@ mvnpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1741
+# length: 2041
  -- statistics: Y = mvnpdf (X, MU, SIGMA)
 
      Multivariate normal probability density function (PDF).
@@ -4525,6 +4927,11 @@ mvnpdf
 
      If X is a 1-by-D vector, ‘mvnpdf’ replicates it to match the leading
      dimension of MU or the trailing dimension of SIGMA.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: mvncdf, mvnrnd.
 
@@ -4601,7 +5008,7 @@ mvtcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2684
+# length: 2984
  -- statistics: P = mvtcdf (X, RHO, DF)
  -- statistics: P = mvncdf (X_LO, X_UP, RHO, DF)
  -- statistics: P = mvncdf (..., OPTIONS)
@@ -4653,6 +5060,11 @@ mvtcdf
                       repetition, and 'final', which shows the final probability
                       and related error after the integrand has converged
                       successfully.  Ignored when D < 4.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: bvtcdf, mvtpdf, mvtrnd, mvtcdfqmc.
 
@@ -4722,7 +5134,7 @@ mvtpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1031
+# length: 1331
  -- statistics: Y = mvtpdf (X, RHO, DF)
 
      Multivariate Student's t probability density function (PDF).
@@ -4759,6 +5171,11 @@ mvtpdf
        1. Michael Roth, On the Multivariate t Distribution, Technical report
           from Automatic Control at Linkoepings universitet,
           <http://users.isy.liu.se/en/rt/roth/student.pdf>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: mvtcdf, mvtcdfqmc, mvtrnd.
 
@@ -4858,7 +5275,7 @@ nakacdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 953
+# length: 1253
  -- statistics: P = nakacdf (X, MU, OMEGA)
  -- statistics: P = nakacdf (X, MU, OMEGA, 'upper')
 
@@ -4878,6 +5295,11 @@ nakacdf
 
      Further information about the Nakagami distribution can be found at
      <https://en.wikipedia.org/wiki/Nakagami_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nakainv, nakapdf, nakarnd, nakafit, nakalike, nakastat.
 
@@ -4900,7 +5322,7 @@ nakainv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 739
+# length: 1039
  -- statistics: X = nakacdf (X, MU, OMEGA)
 
      Inverse of the Nakagami cumulative distribution function (iCDF).
@@ -4915,6 +5337,11 @@ nakainv
 
      Further information about the Nakagami distribution can be found at
      <https://en.wikipedia.org/wiki/Nakagami_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat.
 
@@ -4937,7 +5364,7 @@ nakapdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 721
+# length: 1021
  -- statistics: Y = nakapdf (X, MU, OMEGA)
 
      Nakagami probability density function (PDF).
@@ -4952,6 +5379,11 @@ nakapdf
 
      Further information about the Nakagami distribution can be found at
      <https://en.wikipedia.org/wiki/Nakagami_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nakacdf, nakapdf, nakarnd, nakafit, nakalike, nakastat.
 
@@ -5020,7 +5452,7 @@ nbincdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 2267
+# length: 2638
  -- statistics: P = nbincdf (X, R, PS)
  -- statistics: P = nbincdf (X, R, PS, 'upper')
 
@@ -5060,6 +5492,12 @@ nbincdf
      Further information about the negative binomial distribution can be found
      at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
 
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
+
      See also: nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat.
 
 
@@ -5081,7 +5519,7 @@ nbininv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1980
+# length: 2280
  -- statistics: X = nbininv (P, R, PS)
 
      Inverse of the negative binomial cumulative distribution function (iCDF).
@@ -5114,6 +5552,11 @@ nbininv
      Further information about the negative binomial distribution can be found
      at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: nbininv, nbinpdf, nbinrnd, nbinfit, nbinlike, nbinstat.
 
 
@@ -5135,7 +5578,7 @@ nbinpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1973
+# length: 2344
  -- statistics: Y = nbinpdf (X, R, PS)
 
      Negative binomial probability density function (PDF).
@@ -5167,6 +5610,12 @@ nbinpdf
 
      Further information about the negative binomial distribution can be found
      at <https://en.wikipedia.org/wiki/Negative_binomial_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: nbininv, nbininv, nbinrnd, nbinfit, nbinlike, nbinstat.
 
@@ -5252,7 +5701,7 @@ ncfcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 904
+# length: 1204
  -- statistics: P = ncfcdf (X, DF1, DF2, LAMBDA)
  -- statistics: P = ncfcdf (X, DF1, DF2, LAMBDA, 'upper')
 
@@ -5270,6 +5719,11 @@ ncfcdf
 
      Further information about the noncentral F-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncfinv, ncfpdf, ncfrnd, ncfstat, fcdf.
 
@@ -5292,7 +5746,7 @@ ncfinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 735
+# length: 1035
  -- statistics: X = ncfinv (P, DF1, DF2, LAMBDA)
 
      Inverse of the noncentral F-cumulative distribution function (iCDF).
@@ -5307,6 +5761,11 @@ ncfinv
 
      Further information about the noncentral F-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncfcdf, ncfpdf, ncfrnd, ncfstat, finv.
 
@@ -5329,7 +5788,7 @@ ncfpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 647
+# length: 947
  -- statistics: Y = ncfpdf (X, DF1, DF2, LAMBDA)
 
      Noncentral F-probability density function (PDF).
@@ -5342,6 +5801,11 @@ ncfpdf
 
      Further information about the noncentral F-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_F-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncfcdf, ncfinv, ncfrnd, ncfstat, fpdf.
 
@@ -5411,7 +5875,7 @@ nctcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 840
+# length: 1140
  -- statistics: P = nctcdf (X, DF, MU)
  -- statistics: P = nctcdf (X, DF, MU, 'upper')
 
@@ -5429,6 +5893,11 @@ nctcdf
 
      Further information about the noncentral t-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nctinv, nctpdf, nctrnd, nctstat, tcdf.
 
@@ -5451,7 +5920,7 @@ nctinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 699
+# length: 999
  -- statistics: X = ncx2inv (P, DF, MU)
 
      Inverse of the non-central t-cumulative distribution function (iCDF).
@@ -5465,6 +5934,11 @@ nctinv
 
      Further information about the noncentral t-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nctcdf, nctpdf, nctrnd, nctstat, tinv.
 
@@ -5487,7 +5961,7 @@ nctpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 609
+# length: 909
  -- statistics: Y = nctpdf (X, DF, MU)
 
      Noncentral t-probability density function (PDF).
@@ -5499,6 +5973,11 @@ nctpdf
 
      Further information about the noncentral t-distribution can be found at
      <https://en.wikipedia.org/wiki/Noncentral_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: nctcdf, nctinv, nctrnd, nctstat, tpdf.
 
@@ -5567,7 +6046,7 @@ ncx2cdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 929
+# length: 1229
  -- statistics: P = ncx2cdf (X, DF, LAMBDA)
  -- statistics: P = ncx2cdf (X, DF, LAMBDA, 'upper')
 
@@ -5586,6 +6065,11 @@ ncx2cdf
      Further information about the noncentral chi-squared distribution can be
      found at
      <https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncx2inv, ncx2pdf, ncx2rnd, ncx2stat, chi2cdf.
 
@@ -5608,7 +6092,7 @@ ncx2inv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 765
+# length: 1065
  -- statistics: X = ncx2inv (P, DF, LAMBDA)
 
      Inverse of the noncentral chi-squared cumulative distribution function
@@ -5625,6 +6109,11 @@ ncx2inv
      Further information about the noncentral chi-squared distribution can be
      found at
      <https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncx2cdf, ncx2pdf, ncx2rnd, ncx2stat, chi2inv.
 
@@ -5647,7 +6136,7 @@ ncx2pdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 684
+# length: 984
  -- statistics: Y = ncx2pdf (X, DF, LAMBDA)
 
      Noncentral chi-squared probability distribution function (PDF).
@@ -5661,6 +6150,11 @@ ncx2pdf
      Further information about the noncentral chi-squared distribution can be
      found at
      <https://en.wikipedia.org/wiki/Noncentral_chi-squared_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ncx2cdf, ncx2inv, ncx2rnd, ncx2stat, chi2pdf.
 
@@ -5727,7 +6221,7 @@ normcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1765
+# length: 2065
  -- statistics: P = normcdf (X)
  -- statistics: P = normcdf (X, MU)
  -- statistics: P = normcdf (X, MU, SIGMA)
@@ -5761,6 +6255,11 @@ normcdf
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: norminv, normpdf, normrnd, normfit, normlike, normstat.
 
 
@@ -5782,7 +6281,7 @@ norminv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 960
+# length: 1260
  -- statistics: X = norminv (P)
  -- statistics: X = norminv (P, MU)
  -- statistics: X = norminv (P, MU, SIGMA)
@@ -5802,6 +6301,11 @@ norminv
 
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: norminv, normpdf, normrnd, normfit, normlike, normstat, probit.
 
@@ -5824,7 +6328,7 @@ normpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 704
+# length: 1004
  -- statistics: Y = normpdf (X)
  -- statistics: Y = normpdf (X, MU)
  -- statistics: Y = normpdf (X, MU, SIGMA)
@@ -5840,6 +6344,11 @@ normpdf
 
      Further information about the normal distribution can be found at
      <https://en.wikipedia.org/wiki/Normal_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: norminv, norminv, normrnd, normfit, normlike, normstat.
 
@@ -5906,7 +6415,7 @@ plcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 895
+# length: 1195
  -- statistics: P = plcdf (DATA, X, FX)
  -- statistics: P = plcdf (DATA, X, FX, 'upper')
 
@@ -5924,6 +6433,11 @@ plcdf
 
      Further information about the piecewise linear distribution can be found at
      <https://en.wikipedia.org/wiki/Piecewise_linear_function>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: plinv, plpdf, plrnd, plstat.
 
@@ -5946,7 +6460,7 @@ plinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 662
+# length: 962
  -- statistics: DATA = plinv (P, X, FX)
 
      Inverse of the piecewise linear distribution (iCDF).
@@ -5959,6 +6473,11 @@ plinv
 
      Further information about the piecewise linear distribution can be found at
      <https://en.wikipedia.org/wiki/Piecewise_linear_function>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: plcdf, plpdf, plrnd, plstat.
 
@@ -5981,7 +6500,7 @@ plpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 661
+# length: 1144
  -- statistics: Y = plpdf (DATA, X, FX)
 
      Piecewise linear probability density function (PDF).
@@ -5994,6 +6513,15 @@ plpdf
 
      Further information about the piecewise linear distribution can be found at
      <https://en.wikipedia.org/wiki/Piecewise_linear_function>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
+     MATLAB also accepts integer input here, returning the result in the integer
+     class of the input; Octave rejects it, as it does for every other
+     continuous distribution.
 
      See also: plcdf, plinv, plrnd, plstat.
 
@@ -6060,7 +6588,7 @@ poisscdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 797
+# length: 1168
  -- statistics: P = poisscdf (X, LAMBDA)
  -- statistics: P = poisscdf (X, LAMBDA, 'upper')
 
@@ -6076,6 +6604,12 @@ poisscdf
 
      Further information about the Poisson distribution can be found at
      <https://en.wikipedia.org/wiki/Poisson_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: poissinv, poisspdf, poissrnd, poissfit, poisslike, poisstat.
 
@@ -6098,7 +6632,7 @@ poissinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 600
+# length: 900
  -- statistics: X = poissinv (P, LAMBDA)
 
      Inverse of the Poisson cumulative distribution function (iCDF).
@@ -6110,6 +6644,11 @@ poissinv
 
      Further information about the Poisson distribution can be found at
      <https://en.wikipedia.org/wiki/Poisson_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: poisscdf, poisspdf, poissrnd, poissfit, poisslike, poisstat.
 
@@ -6132,7 +6671,7 @@ poisspdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 581
+# length: 952
  -- statistics: Y = poisspdf (X, LAMBDA)
 
      Poisson probability density function (PDF).
@@ -6144,6 +6683,12 @@ poisspdf
 
      Further information about the Poisson distribution can be found at
      <https://en.wikipedia.org/wiki/Poisson_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: poisscdf, poissinv, poissrnd, poissfit, poisslike, poisstat.
 
@@ -6210,7 +6755,7 @@ raylcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 789
+# length: 1089
  -- statistics: P = raylcdf (X, SIGMA)
  -- statistics: P = raylcdf (X, SIGMA, 'upper')
 
@@ -6226,6 +6771,11 @@ raylcdf
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: raylinv, raylpdf, raylrnd, raylfit, rayllike, raylstat.
 
@@ -6248,7 +6798,7 @@ raylinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 596
+# length: 896
  -- statistics: X = raylinv (P, SIGMA)
 
      Inverse of the Rayleigh cumulative distribution function (iCDF).
@@ -6260,6 +6810,11 @@ raylinv
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: raylcdf, raylpdf, raylrnd, raylfit, rayllike, raylstat.
 
@@ -6282,7 +6837,7 @@ raylpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 577
+# length: 877
  -- statistics: Y = raylpdf (X, SIGMA)
 
      Rayleigh probability density function (PDF).
@@ -6294,6 +6849,11 @@ raylpdf
 
      Further information about the Rayleigh distribution can be found at
      <https://en.wikipedia.org/wiki/Rayleigh_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: raylcdf, raylinv, raylrnd, raylfit, rayllike, raylstat.
 
@@ -6360,7 +6920,7 @@ ricecdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 844
+# length: 1144
  -- statistics: P = ricecdf (X, S, SIGMA)
  -- statistics: P = ricecdf (X, S, SIGMA, 'upper')
 
@@ -6377,6 +6937,11 @@ ricecdf
 
      Further information about the Rician distribution can be found at
      <https://en.wikipedia.org/wiki/Rice_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: riceinv, ricepdf, ricernd, ricefit, ricelike, ricestat.
 
@@ -6399,7 +6964,7 @@ riceinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 620
+# length: 920
  -- statistics: X = riceinv (P, S, SIGMA)
 
      Inverse of the Rician distribution (iCDF).
@@ -6412,6 +6977,11 @@ riceinv
 
      Further information about the Rician distribution can be found at
      <https://en.wikipedia.org/wiki/Rice_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ricecdf, ricepdf, ricernd, ricefit, ricelike, ricestat.
 
@@ -6434,7 +7004,7 @@ ricepdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 621
+# length: 921
  -- statistics: Y = ricepdf (X, S, SIGMA)
 
      Rician probability density function (PDF).
@@ -6447,6 +7017,11 @@ ricepdf
 
      Further information about the Rician distribution can be found at
      <https://en.wikipedia.org/wiki/Rice_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: ricecdf, riceinv, ricernd, ricefit, ricelike, ricestat.
 
@@ -6512,7 +7087,7 @@ stblcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 880
+# length: 1180
  -- statistics: P = stblcdf (X, ALPHA, BETA, GAM, DELTA)
 
      Stable cumulative distribution function (CDF).
@@ -6530,6 +7105,11 @@ stblcdf
      (normal) and for ‘1’ with BETA equal to ‘0’ (Cauchy); otherwise it is
      computed by numerical inversion of the characteristic function (the
      Gil-Pelaez formula).
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: stblpdf, stblinv, stblrnd, makedist.
 
@@ -6625,7 +7205,7 @@ stblinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 825
+# length: 1125
  -- statistics: X = stblinv (P, ALPHA, BETA, GAM, DELTA)
 
      Inverse of the stable cumulative distribution function (iCDF).
@@ -6641,6 +7221,11 @@ stblinv
      The quantile has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
      with BETA equal to ‘0’ (Cauchy); otherwise it is found by numerical
      inversion of ‘stblcdf’.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: stblcdf, stblpdf, stblrnd, makedist.
 
@@ -6711,7 +7296,7 @@ stblpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 827
+# length: 1127
  -- statistics: Y = stblpdf (X, ALPHA, BETA, GAM, DELTA)
 
      Stable probability density function (PDF).
@@ -6728,6 +7313,11 @@ stblpdf
      The density has a closed form for ALPHA equal to ‘2’ (normal) and for ‘1’
      with BETA equal to ‘0’ (Cauchy); otherwise it is computed by numerical
      inversion of the characteristic function.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: stblcdf, stblinv, stblrnd, makedist.
 
@@ -6793,7 +7383,7 @@ tcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 759
+# length: 1059
  -- statistics: P = tcdf (X, DF)
  -- statistics: P = tcdf (X, DF, 'upper')
 
@@ -6809,6 +7399,11 @@ tcdf
 
      Further information about the Student's T distribution can be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tinv, tpdf, trnd, tstat.
 
@@ -6831,7 +7426,7 @@ tinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 769
+# length: 1069
  -- statistics: X = tinv (P, DF)
 
      Inverse of the Student's T cumulative distribution function (iCDF).
@@ -6847,6 +7442,11 @@ tinv
 
      Further information about the Student's T distribution can be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tcdf, tpdf, trnd, tstat.
 
@@ -6869,7 +7469,7 @@ tlscdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 998
+# length: 1298
  -- statistics: P = tlscdf (X, MU, SIGMA, NU)
  -- statistics: P = tlscdf (X, MU, SIGMA, NU, 'upper')
 
@@ -6888,6 +7488,11 @@ tlscdf
      Further information about the location-scale Student's T distribution can
      be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tlsinv, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat.
 
@@ -6910,7 +7515,7 @@ tlsinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 760
+# length: 1060
  -- statistics: X = tlsinv (P, MU, SIGMA, NU)
 
      Inverse of the location-scale Student's T cumulative distribution function
@@ -6925,6 +7530,11 @@ tlsinv
      Further information about the location-scale Student's T distribution can
      be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tlscdf, tlspdf, tlsrnd, tlsfit, tlslike, tlsstat.
 
@@ -6948,7 +7558,7 @@ tlspdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 736
+# length: 1036
  -- statistics: P = tlspdf (X, MU, SIGMA, NU)
 
      Location-scale Student's T probability density function (PDF).
@@ -6962,6 +7572,11 @@ tlspdf
      Further information about the location-scale Student's T distribution can
      be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution#Location-scale_t_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tlscdf, tlsinv, tlsrnd, tlsfit, tlslike, tlsstat.
 
@@ -7033,7 +7648,7 @@ tpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 550
+# length: 850
  -- statistics: P = tpdf (X, DF)
 
      Student's T probability density function (PDF).
@@ -7045,6 +7660,11 @@ tpdf
 
      Further information about the Student's T distribution can be found at
      <https://en.wikipedia.org/wiki/Student%27s_t-distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tcdf, tpdf, trnd, tstat.
 
@@ -7067,7 +7687,7 @@ tricdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1369
+# length: 1852
  -- statistics: P = tricdf (X, A, B, C)
  -- statistics: P = tricdf (X, A, B, C, 'upper')
 
@@ -7094,6 +7714,15 @@ tricdf
      Further information about the triangular distribution can be found at
      <https://en.wikipedia.org/wiki/Triangular_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
+     MATLAB also accepts integer input here, returning the result in the integer
+     class of the input; Octave rejects it, as it does for every other
+     continuous distribution.
+
      See also: triinv, tripdf, trirnd, tristat.
 
 
@@ -7115,7 +7744,7 @@ triinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1160
+# length: 1460
  -- statistics: X = triinv (P, A, B, C)
 
      Inverse of the triangular cumulative distribution function (iCDF).
@@ -7136,6 +7765,11 @@ triinv
 
      Further information about the triangular distribution can be found at
      <https://en.wikipedia.org/wiki/Triangular_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: tricdf, tripdf, trirnd, tristat.
 
@@ -7158,7 +7792,7 @@ tripdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1141
+# length: 1624
  -- statistics: Y = tripdf (X, A, B, C)
 
      Triangular probability density function (PDF).
@@ -7179,6 +7813,15 @@ tripdf
 
      Further information about the triangular distribution can be found at
      <https://en.wikipedia.org/wiki/Triangular_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
+     MATLAB also accepts integer input here, returning the result in the integer
+     class of the input; Octave rejects it, as it does for every other
+     continuous distribution.
 
      See also: tricdf, triinv, trirnd, tristat.
 
@@ -7300,7 +7943,7 @@ unidcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1219
+# length: 1590
  -- statistics: P = unidcdf (X, N)
  -- statistics: P = unidcdf (X, N, 'upper')
 
@@ -7326,6 +7969,12 @@ unidcdf
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
 
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
+
      See also: unidinv, unidpdf, unidrnd, unidfit, unidstat.
 
 
@@ -7347,7 +7996,7 @@ unidinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1008
+# length: 1308
  -- statistics: X = unidinv (P, N)
 
      Inverse of the discrete uniform cumulative distribution function (iCDF).
@@ -7367,6 +8016,11 @@ unidinv
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: unidcdf, unidpdf, unidrnd, unidfit, unidstat.
 
@@ -7389,7 +8043,7 @@ unidpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 989
+# length: 1360
  -- statistics: Y = unidpdf (X, N)
 
      Discrete uniform probability density function (PDF).
@@ -7409,6 +8063,12 @@ unidpdf
 
      Further information about the discrete uniform distribution can be found at
      <https://en.wikipedia.org/wiki/Discrete_uniform_distribution>
+
+     Input arguments must be double, single, or an integer type; logical and
+     character arrays are rejected.  Integer input is promoted to double, so the
+     result is always a probability.  MATLAB is inconsistent here: for several
+     of the discrete distributions it returns the result in the integer class of
+     the input, truncating a probability to 0 or 1.
 
      See also: unidcdf, unidinv, unidrnd, unidfit, unidstat.
 
@@ -7482,7 +8142,7 @@ unifcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 904
+# length: 1387
  -- statistics: P = unifcdf (X, A, B)
  -- statistics: P = unifcdf (X, A, B, 'upper')
 
@@ -7500,6 +8160,15 @@ unifcdf
 
      Further information about the continuous uniform distribution can be found
      at <https://en.wikipedia.org/wiki/Continuous_uniform_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
+     MATLAB also accepts integer input here, returning the result in the integer
+     class of the input; Octave rejects it, as it does for every other
+     continuous distribution.
 
      See also: unifinv, unifpdf, unifrnd, unifit, unifstat.
 
@@ -7522,7 +8191,7 @@ unifinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 690
+# length: 990
  -- statistics: X = unifinv (P, A, B)
 
      Inverse of the continuous uniform cumulative distribution function (iCDF).
@@ -7535,6 +8204,11 @@ unifinv
 
      Further information about the continuous uniform distribution can be found
      at <https://en.wikipedia.org/wiki/Continuous_uniform_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: unifcdf, unifpdf, unifrnd, unifit, unifstat.
 
@@ -7557,7 +8231,7 @@ unifpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 671
+# length: 1154
  -- statistics: Y = unifpdf (X, A, B)
 
      Continuous uniform probability density function (PDF).
@@ -7570,6 +8244,15 @@ unifpdf
 
      Further information about the continuous uniform distribution can be found
      at <https://en.wikipedia.org/wiki/Continuous_uniform_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
+     MATLAB also accepts integer input here, returning the result in the integer
+     class of the input; Octave rejects it, as it does for every other
+     continuous distribution.
 
      See also: unifcdf, unifinv, unifrnd, unifit, unifstat.
 
@@ -7636,7 +8319,7 @@ vmcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1190
+# length: 1490
  -- statistics: P = vmcdf (X, MU, K)
  -- statistics: P = vmcdf (X, MU, K, 'upper')
 
@@ -7660,6 +8343,11 @@ vmcdf
      Further information about the von Mises distribution can be found at
      <https://en.wikipedia.org/wiki/Von_Mises_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: vminv, vmpdf, vmrnd.
 
 
@@ -7681,7 +8369,7 @@ vminv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 985
+# length: 1285
  -- statistics: X = vminv (P, MU, K)
 
      Inverse of the von Mises cumulative distribution function (iCDF).
@@ -7700,6 +8388,11 @@ vminv
 
      Further information about the von Mises distribution can be found at
      <https://en.wikipedia.org/wiki/Von_Mises_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: vmcdf, vmpdf, vmrnd.
 
@@ -7722,7 +8415,7 @@ vmpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 606
+# length: 906
  -- statistics: Y = vmpdf (X, MU, K)
 
      Von Mises probability density function (PDF).
@@ -7735,6 +8428,11 @@ vmpdf
 
      Further information about the von Mises distribution can be found at
      <https://en.wikipedia.org/wiki/Von_Mises_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: vmcdf, vminv, vmrnd.
 
@@ -7802,7 +8500,7 @@ wblcdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 1547
+# length: 1847
  -- statistics: P = wblcdf (X)
  -- statistics: P = wblcdf (X, LAMBDA)
  -- statistics: P = wblcdf (X, LAMBDA, K)
@@ -7834,6 +8532,11 @@ wblcdf
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
 
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
+
      See also: wblinv, wblpdf, wblrnd, wblstat, wblplot.
 
 
@@ -7855,7 +8558,7 @@ wblinv
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 722
+# length: 1022
  -- statistics: X = wblinv (P)
  -- statistics: X = wblinv (P, LAMBDA)
  -- statistics: X = wblinv (P, LAMBDA, K)
@@ -7871,6 +8574,11 @@ wblinv
 
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: wblcdf, wblpdf, wblrnd, wblstat, wblplot.
 
@@ -7893,7 +8601,7 @@ wblpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 719
+# length: 1019
  -- statistics: Y = wblinv (X)
  -- statistics: Y = wblinv (X, LAMBDA)
  -- statistics: Y = wblinv (X, LAMBDA, K)
@@ -7909,6 +8617,11 @@ wblpdf
 
      Further information about the Weibull distribution can be found at
      <https://en.wikipedia.org/wiki/Weibull_distribution>
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: wblcdf, wblinv, wblrnd, wblfit, wbllike, wblstat, wblplot.
 
@@ -8008,7 +8721,7 @@ wishpdf
 # name: <cell-element>
 # type: sq_string
 # elements: 1
-# length: 642
+# length: 942
  -- statistics: Y = wishpdf (W, SIGMA, DF, LOG_Y=false)
 
      Compute the probability density function of the Wishart distribution
@@ -8021,6 +8734,11 @@ wishpdf
      avoid underflow when the numerical value of the density is very small
 
      Output: Y is the probability density of Wishart(SIGMA, DF) at W.
+
+     Input arguments must be double or single; integer, logical, and character
+     arrays are rejected.  MATLAB accepts a character array and evaluates it at
+     the character codes, which Octave deliberately does not, since a character
+     array is an integer type and integers are refused too.
 
      See also: wishrnd, iwishpdf, iwishrnd.
 
