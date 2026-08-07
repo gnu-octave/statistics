@@ -304,6 +304,17 @@ classdef cvpartition
     ## held out of a partition that holds everything
     ## @end multitable
     ##
+    ## Given a stratification variable, @qcode{'GroupingVariables'} may
+    ## follow @qcode{'Stratify'}, as in @code{cvpartition (@var{y},
+    ## @qcode{'KFold'}, @var{k}, @qcode{'Stratify'}, true,
+    ## @qcode{'GroupingVariables'}, @var{grpvars})}.  Each group is then
+    ## kept whole while the classes of @var{y} are spread as evenly over
+    ## the folds as the groups allow, which is scikit-learn's
+    ## @code{StratifiedGroupKFold}.  The two demands conflict, since a
+    ## group carries whatever class mix it has, so the balance is
+    ## approximate: groups are placed largest first, each into the fold
+    ## whose class counts it disturbs least.
+    ##
     ## In every case an observation never appears in both the training and the
     ## test set as one of its group fellows, which is what makes grouping worth
     ## asking for when observations within a group are not independent.
@@ -396,7 +407,7 @@ classdef cvpartition
       if (nargin < 2)
         error ("cvpartition: too few input arguments.");
       endif
-      if (nargin > 5)
+      if (nargin > 7)
         error ("cvpartition: too many input arguments.");
       endif
 
@@ -739,6 +750,26 @@ classdef cvpartition
           this.IsStratified = varargin{4};
         endif
 
+        ## 'GroupingVariables' may follow 'Stratify', giving a partition that
+        ## keeps each group whole and the classes balanced across folds
+        grpvars = [];
+        if (nargin > 5)
+          if (! (ischar (varargin{5})
+                 && strcmpi (varargin{5}, 'groupingvariables')))
+            error (strcat ("cvpartition: invalid optional paired", ...
+                           " argument for 'GroupingVariables'."));
+          endif
+          if (nargin < 7)
+            error (strcat ("cvpartition: missing value for optional", ...
+                           " paired argument 'GroupingVariables'."));
+          endif
+          grpvars = varargin{6};
+          if (isempty (grpvars))
+            error (strcat ("cvpartition: invalid value for optional", ...
+                           " paired argument 'GroupingVariables'."));
+          endif
+        endif
+
         ## Handle stratification
         if (this.IsStratified)
           [classID, idx, classes] = unique (X);
@@ -830,7 +861,31 @@ classdef cvpartition
             endif
           endif
           this.NumTestSets = k;
-          if (this.IsStratified)
+          if (this.IsStratified && ! isempty (grpvars))
+            ## Both: whole groups, classes balanced across folds
+            [gidx, NumGroups, GroupSize] = __resolve_groups__ (grpvars);
+            if (numel (gidx) != X)
+              error (strcat ("cvpartition: grouping variable does", ...
+                             " not match the number of observations."));
+            endif
+            if (k > NumGroups)
+              warning (strcat ("cvpartition: number of folds K is greater", ...
+                               " than the groups in 'GroupingVariables'.", ...
+                               " K is set to the number of groups."));
+              k = NumGroups;
+              this.NumTestSets = k;
+            endif
+            this.grpvars = grpvars;
+            inds = __stratified_group_folds__ (this.classes, gidx, k);
+            this.indices = inds;
+            for i = 1:k
+              this.TestSize(i) = sum (inds == i);
+            endfor
+            this.TrainSize = X * ones (1, k) - this.TestSize;
+            this.cvptype = ...
+                     'Stratified group K-fold cross validation partition';
+            this.IsGrouped = true;
+          elseif (this.IsStratified)
             inds = nan (X, 1);
             pooled_idx = false (X, 1);
             do_warn = true;
@@ -895,6 +950,27 @@ classdef cvpartition
               pooled_inds(1) = [];
             endwhile
             this.cvptype = 'Stratified K-fold cross validation partition';
+          elseif (! isempty (grpvars))
+            ## Groups without stratification: whole groups, and the
+            ## stratification variable is not used, as 'Stratify' asked
+            [gidx, NumGroups] = __resolve_groups__ (grpvars);
+            if (numel (gidx) != X)
+              error (strcat ("cvpartition: grouping variable does", ...
+                             " not match the number of observations."));
+            endif
+            if (k > NumGroups)
+              warning (strcat ("cvpartition: number of folds K is greater", ...
+                               " than the groups in 'GroupingVariables'.", ...
+                               " K is set to the number of groups."));
+              k = NumGroups;
+              this.NumTestSets = k;
+            endif
+            this.grpvars = grpvars;
+            gfold = randsample (NumGroups, NumGroups);
+            gfold = mod (gfold - 1, k) + 1;
+            inds = gfold(gidx);
+            this.cvptype = 'Group K-fold cross validation partition';
+            this.IsGrouped = true;
           else
             inds = floor ((0:(X - 1))' * (k / X)) + 1;
             inds = randsample (inds, X);
@@ -2119,12 +2195,48 @@ endclassdef
 %! c = cvpartition (12, 'HoldOut', 0.25);
 %! assert_equal (c.IsGrouped, false);
 
+%!test
+%! ## 'Stratify' and 'GroupingVariables' together keep each group whole
+%! ## while spreading the classes across the folds, as scikit-learn's
+%! ## StratifiedGroupKFold does.  Six single-class groups, two classes.
+%! g = [1 1 2 2 3 3 4 4 5 5 6 6]';
+%! y = [1 1 1 1 1 1 2 2 2 2 2 2]';
+%! c = cvpartition (y, 'KFold', 3, 'Stratify', true, ...
+%!                  'GroupingVariables', g);
+%! assert_equal (c.IsStratified, true);
+%! assert_equal (c.IsGrouped, true);
+%! assert_equal (c.NumTestSets, 3);
+%! assert_equal (c.TestSize, [4, 4, 4]);
+%! for s = 1:3
+%!   te = test (c, s);
+%!   ## no group is split between training and test
+%!   assert_equal (any (ismember (unique (g(te)), ...
+%!                                unique (g(training (c, s))))), false);
+%!   ## and the fold still sees both classes
+%!   assert_equal (numel (unique (y(te))), 2);
+%! endfor
+
+%!test
+%! ## 'GroupingVariables' with 'Stratify', false groups without stratifying:
+%! ## the stratification variable is simply not used, as asked.
+%! g = [1 1 2 2 3 3 4 4]';
+%! y = [1 1 1 1 2 2 2 2]';
+%! c = cvpartition (y, 'KFold', 2, 'Stratify', false, 'GroupingVariables', g);
+%! assert_equal (c.IsGrouped, true);
+%! assert_equal (c.IsStratified, false);
+%! for s = 1:c.NumTestSets
+%!   te = test (c, s);
+%!   assert_equal (any (ismember (unique (g(te)), ...
+%!                                unique (g(training (c, s))))), false);
+%! endfor
+
 %!error <cvpartition: 'GroupingVariables' does not apply to 'resubstitution'> ...
 %! cvpartition (12, 'Resubstitution', 'GroupingVariables', ...
 %!              [1 1 2 2 3 3 1 1 2 2 3 3])
 
 %!error <cvpartition: too few input arguments.> cvpartition (2)
-%!error <cvpartition: too many input arguments.> cvpartition (1, 2, 3, 4, 5, 6)
+%!error <cvpartition: too many input arguments.> ...
+%! cvpartition (1, 2, 3, 4, 5, 6, 7, 8)
 %!error <cvpartition: TESTSETS must be numeric of logical.> ...
 %! cvpartition ('CustomPartition', 'a')
 %!error <cvpartition: TESTSETS must be a numeric vector.> ...
