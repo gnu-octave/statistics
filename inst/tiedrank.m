@@ -20,6 +20,10 @@
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x}, @var{tieflag})
 ## @deftypefnx {statistics} {[@var{r}, @var{tieadj}] =} tiedrank (@var{x}, @var{tieflag}, @var{bidir})
 ##
+## @var{x} may be a vector or a matrix.  A matrix is ranked column by column,
+## and @var{tieadj} then carries one entry per column: a row vector by
+## default, or three rows per column when @var{tieflag} is set.
+##
 ## Compute rank adjusted for ties.
 ##
 ## @code{[@var{r}, @var{tieadj}] = tiedrank (@var{x})} computes the ranks of the
@@ -45,8 +49,8 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   if (nargin < 1 || nargin > 3)
     print_usage ();
   endif
-  if (! isvector (x))
-    error ("tiedrank: X must be a vector.");
+  if (ndims (x) > 2)
+    error ("tiedrank: X must be a vector or a matrix.");
   endif
   if (nargin < 2)
     tieflag = false;
@@ -58,6 +62,26 @@ function [r, tieadj] = tiedrank (x, tieflag, bidir)
   elseif (! isscalar (bidir) || ! (isnumeric (bidir) || isbool (bidir)))
     error ("tiedrank: BIDIR must be a numeric or boolean scalar.");
   endif
+
+  ## A matrix is ranked column by column, as MATLAB does; a vector keeps its
+  ## own orientation
+  if (! isvector (x))
+    r = zeros (size (x), class (x));
+    tieadj = [];
+    for j = 1:columns (x)
+      [rj, tj] = rank_vector (x(:,j), tieflag, bidir);
+      r(:,j) = rj;
+      tieadj = [tieadj, tj];
+    endfor
+    return;
+  endif
+
+  [r, tieadj] = rank_vector (x, tieflag, bidir);
+
+endfunction
+
+## Rank one vector, leaving NaNs at the end
+function [r, tieadj] = rank_vector (x, tieflag, bidir)
 
   ## Sort X and leave NaNs at the end of vector
   [sx, idx] = sort (x(:));
@@ -143,7 +167,33 @@ endfunction
 %! assert_equal (tieadj, [1; 0; 18]);
 
 ## Test input validation
-%!error <tiedrank: X must be a vector.> tiedrank (ones (2))
+%!test
+%! ## A matrix is ranked column by column, as MATLAB does, and TIEADJ carries
+%! ## one entry per column.
+%! x = [3, 1; 1, 4; 4, 1; 1, 5; 5, 9];
+%! [r, tieadj] = tiedrank (x);
+%! assert_equal (r, [3, 1.5; 1.5, 3; 4, 1.5; 1.5, 4; 5, 5]);
+%! assert_equal (tieadj, [3, 3]);
+%! [r1, t1] = tiedrank (x(:,1));
+%! [r2, t2] = tiedrank (x(:,2));
+%! assert_equal (r, [r1, r2]);
+%! assert_equal (tieadj, [t1, t2]);
+
+%!test
+%! ## With the tie flag TIEADJ gains its three rows per column
+%! x = [3, 1; 1, 4; 4, 1; 1, 5; 5, 9];
+%! [r, tieadj] = tiedrank (x, 1);
+%! assert_equal (size (tieadj), [3, 2]);
+%! [~, t1] = tiedrank (x(:,1), 1);
+%! assert_equal (tieadj(:,1), t1);
+
+%!test
+%! ## An empty matrix is ranked, not refused
+%! [r, tieadj] = tiedrank (zeros (0, 2));
+%! assert_equal (size (r), [0, 2]);
+%! assert_equal (size (tieadj), [1, 2]);
+
+%!error <tiedrank: X must be a vector or a matrix.> tiedrank (ones (2, 2, 2))
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
 %! tiedrank ([1, 2, 3, 4, 5], [1, 1])
 %!error <tiedrank: TIEFLAG must be a numeric or boolean scalar.> ...
