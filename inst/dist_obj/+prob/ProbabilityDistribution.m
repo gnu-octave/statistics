@@ -39,7 +39,7 @@ classdef (Abstract) ProbabilityDistribution
 
   methods (Access = protected)
 
-    function ci = __disp__ (pd, distname)
+    function __disp__ (pd, distname)
 
       if (isscalar (pd))
 
