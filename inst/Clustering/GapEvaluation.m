@@ -269,7 +269,7 @@ classdef GapEvaluation < ClusterCriterion
       this.mExpectedLogW = zeros (this.B, length (this.InspectedK));
 
       this.CriterionName = 'Gap';
-      this.evaluate(this.InspectedK); # evaluate the list of cluster numbers
+      this = this.evaluate (this.InspectedK);
     endfunction
 
     ## -*- texinfo -*-
@@ -283,7 +283,7 @@ classdef GapEvaluation < ClusterCriterion
     ##
     ## @end deftypefn
     function this = addK (this, K)
-      addK@ClusterCriterion (this, K);
+      this = addK@ClusterCriterion (this, K);
 
       ## if we have new data, we need a new evaluation
       if (this.OptimalK == 0)
@@ -300,7 +300,7 @@ classdef GapEvaluation < ClusterCriterion
         endfor
         this.mExpectedLogW = mExpectedLogW_tmp;
 
-        this.evaluate(K); # evaluate just the new cluster numbers
+        this = this.evaluate (K);
       endif
     endfunction
 
@@ -336,10 +336,6 @@ classdef GapEvaluation < ClusterCriterion
     ## Currently not implemented; calling this method will issue a warning.
     ##
     ## @end deftypefn
-    function this = compact (this)
-      warning ("GapEvaluation.compact: this method is not yet implemented.");
-    endfunction
-
   endmethods
 
   methods(Access = protected)
