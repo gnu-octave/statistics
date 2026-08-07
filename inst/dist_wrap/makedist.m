@@ -33,6 +33,22 @@
 ## @code{@var{list} = makedist}  returns a cell array, @var{list}, containing a
 ## list of the probability distributions that makedist can create.
 ##
+## Distribution names are matched ignoring case, spaces and hyphens, so that
+## @qcode{'Extreme Value'}, @qcode{'ExtremeValue'} and @qcode{'extreme-value'}
+## all select the same distribution, and the same set of names is accepted by
+## @code{cdf}, @code{pdf}, @code{icdf}, @code{random}, @code{makedist},
+## @code{fitdist} and @code{mle}.
+##
+## This accepts more names than MATLAB.  MATLAB takes the spaced and the
+## squashed spelling but refuses the hyphenated one, so
+## @qcode{'Birnbaum-Saunders'} and @qcode{'Log-Logistic'} are errors there;
+## Octave has always accepted them and continues to.  MATLAB also accepts
+## @qcode{'tLocationScale'} in @code{makedist} while refusing it in
+## @code{cdf} for the same distribution; Octave accepts it, and
+## @qcode{'location-scale T'}, everywhere.  Code written against MATLAB's
+## names therefore runs unchanged, but code relying on these names will not
+## port back.
+##
 ## @seealso{fitdist}
 ## @end deftypefn
 
@@ -47,7 +63,8 @@ function pd = makedist (varargin)
          'PiecewiseLinear'; 'Poisson'; 'Rayleigh'; 'Rician'; ...
          'Stable'; 'tLocationScale'; 'Triangular'; 'Uniform'; 'Weibull'};
 
-  ABBR = {'bisa', 'ev', 'gev', 'gp', 'hn', 'invg', 'nbin', 'tls'};
+  ABBR = {'bisa', 'ev', 'gev', 'gp', 'hn', 'invg', 'nbin', 'tls', ...
+          'location-scale T'};
 
   ## Check for input arguments
   if (nargin == 0)
@@ -61,7 +78,12 @@ function pd = makedist (varargin)
   ## Check distribution name
   if (! (ischar (distname) && size (distname, 1) == 1))
     error ("makedist: DISTNAME must be a character vector.");
-  elseif (! (any (strcmpi (distname, PDO)) || any (strcmpi (distname, ABBR))))
+  elseif (! (any (strcmp (__distname_key__ (distname), ...
+                          cellfun (@__distname_key__, PDO, ...
+                                   "UniformOutput", false))) ||
+             any (strcmp (__distname_key__ (distname), ...
+                          cellfun (@__distname_key__, ABBR, ...
+                                   "UniformOutput", false)))))
     error ("makedist: unrecognized distribution name.");
   endif
 
@@ -71,7 +93,7 @@ function pd = makedist (varargin)
   endif
 
   ## Switch to selected distribution
-  switch (tolower (distname))
+  switch (__distname_key__ (distname))
 
     case 'beta'
       ## Add default parameters
@@ -481,7 +503,7 @@ function pd = makedist (varargin)
       endwhile
       pd = StableDistribution (alpha, beta, gam, delta);
 
-    case {'tlocationscale', 'tls'}
+    case {'tlocationscale', 'tls', 'locationscalet'}
       mu = 0;
       sigma = 1;
       df = 5;

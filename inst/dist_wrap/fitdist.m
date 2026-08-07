@@ -78,6 +78,22 @@
 ## Note: calling @code{fitdist} without any input arguments will return a cell
 ## array of character vectors listing all supported distributions.
 ##
+## Distribution names are matched ignoring case, spaces and hyphens, so that
+## @qcode{'Extreme Value'}, @qcode{'ExtremeValue'} and @qcode{'extreme-value'}
+## all select the same distribution, and the same set of names is accepted by
+## @code{cdf}, @code{pdf}, @code{icdf}, @code{random}, @code{makedist},
+## @code{fitdist} and @code{mle}.
+##
+## This accepts more names than MATLAB.  MATLAB takes the spaced and the
+## squashed spelling but refuses the hyphenated one, so
+## @qcode{'Birnbaum-Saunders'} and @qcode{'Log-Logistic'} are errors there;
+## Octave has always accepted them and continues to.  MATLAB also accepts
+## @qcode{'tLocationScale'} in @code{makedist} while refusing it in
+## @code{cdf} for the same distribution; Octave accepts it, and
+## @qcode{'location-scale T'}, everywhere.  Code written against MATLAB's
+## names therefore runs unchanged, but code relying on these names will not
+## port back.
+##
 ## @seealso{makedist}
 ## @end deftypefn
 
@@ -226,7 +242,7 @@ function [varargout] = fitdist (varargin)
   msg = 'fitdist: no data in group ''%s'' to fit a ''%s'' distribution.';
 
   ## Switch to selected distribution
-  switch (tolower (distname))
+  switch (__distname_key__ (distname))
 
     case 'beta'
       if (isempty (groupvar))

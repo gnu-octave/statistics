@@ -113,6 +113,22 @@
 ## parameters are estimated on an internally reparameterized unconstrained
 ## scale.
 ##
+## Distribution names are matched ignoring case, spaces and hyphens, so that
+## @qcode{'Extreme Value'}, @qcode{'ExtremeValue'} and @qcode{'extreme-value'}
+## all select the same distribution, and the same set of names is accepted by
+## @code{cdf}, @code{pdf}, @code{icdf}, @code{random}, @code{makedist},
+## @code{fitdist} and @code{mle}.
+##
+## This accepts more names than MATLAB.  MATLAB takes the spaced and the
+## squashed spelling but refuses the hyphenated one, so
+## @qcode{'Birnbaum-Saunders'} and @qcode{'Log-Logistic'} are errors there;
+## Octave has always accepted them and continues to.  MATLAB also accepts
+## @qcode{'tLocationScale'} in @code{makedist} while refusing it in
+## @code{cdf} for the same distribution; Octave accepts it, and
+## @qcode{'location-scale T'}, everywhere.  Code written against MATLAB's
+## names therefore runs unchanged, but code relying on these names will not
+## port back.
+##
 ## @seealso{mlecov, fitdist, makedist}
 ## @end deftypefn
 
@@ -246,7 +262,7 @@ function [phat, pci] = mle (x, varargin)
   endif
 
   ## Switch to known distributions
-  switch (tolower (distname))
+  switch (__distname_key__ (distname))
 
     case 'bernoulli'
       if (! isempty (censor))
@@ -305,7 +321,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = burrfit (x, alpha, censor, freq, options);
       endif
 
-    case {'ev', 'extreme value'}
+    case {'ev', 'extremevalue'}
       if (nargout < 2)
         phat = evfit (x, alpha, censor, freq, options);
       else
@@ -337,7 +353,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = geofit (x, alpha, freq);
       endif
 
-    case {'gev', 'generalized extreme value'}
+    case {'gev', 'generalizedextremevalue'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for the", ...
                        " Generalized Extreme Value distribution."));
@@ -348,7 +364,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = gevfit (x, alpha, freq, options);
       endif
 
-    case {'gp', 'generalized pareto'}
+    case {'gp', 'generalizedpareto'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Generalized Pareto distribution."));
@@ -370,7 +386,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = gumbelfit (x, alpha, censor, freq, options);
       endif
 
-    case {'hn', 'half normal', 'halfnormal'}
+    case {'hn', 'halfnormal'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Half Normal distribution."));
@@ -385,7 +401,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = hnfit (x, mu, alpha, freq);
       endif
 
-    case {'invg', 'inversegaussian', 'inverse gaussian'}
+    case {'invg', 'inversegaussian'}
       if (nargout < 2)
         phat = invgfit (x, alpha, censor, freq, options);
       else
@@ -421,7 +437,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = nakafit (x, alpha, censor, freq, options);
       endif
 
-    case {'nbin', 'negativebinomial', 'negative binomial'}
+    case {'nbin', 'negativebinomial'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Negative Binomial distribution."));
@@ -479,14 +495,14 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = stblfit (x, alpha, freq, options);
       endif
 
-    case {'tls', 'tlocationscale'}
+    case {'tls', 'tlocationscale', 'locationscalet'}
       if (nargout < 2)
         phat = tlsfit (x, alpha, censor, freq, options);
       else
         [phat, pci] = tlsfit (x, alpha, censor, freq, options);
       endif
 
-    case {'unid', 'uniform discrete', 'discrete uniform', 'discrete'}
+    case {'unid', 'uniformdiscrete', 'discreteuniform', 'discrete'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Discrete Uniform distribution."));
@@ -497,7 +513,7 @@ function [phat, pci] = mle (x, varargin)
         [phat, pci] = unidfit (x, alpha, freq);
       endif
 
-    case {'unif', 'uniform', 'continuous uniform'}
+    case {'unif', 'uniform', 'continuousuniform'}
       if (! isempty (censor))
         error (strcat ("mle: censoring is not supported for", ...
                        " the Continuous Uniform distribution."));

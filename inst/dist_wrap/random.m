@@ -85,6 +85,22 @@
 ## @item @qcode{'Weibull'} @tab @qcode{'wbl'} @tab 2
 ## @end multitable
 ##
+## Distribution names are matched ignoring case, spaces and hyphens, so that
+## @qcode{'Extreme Value'}, @qcode{'ExtremeValue'} and @qcode{'extreme-value'}
+## all select the same distribution, and the same set of names is accepted by
+## @code{cdf}, @code{pdf}, @code{icdf}, @code{random}, @code{makedist},
+## @code{fitdist} and @code{mle}.
+##
+## This accepts more names than MATLAB.  MATLAB takes the spaced and the
+## squashed spelling but refuses the hyphenated one, so
+## @qcode{'Birnbaum-Saunders'} and @qcode{'Log-Logistic'} are errors there;
+## Octave has always accepted them and continues to.  MATLAB also accepts
+## @qcode{'tLocationScale'} in @code{makedist} while refusing it in
+## @code{cdf} for the same distribution; Octave accepts it, and
+## @qcode{'location-scale T'}, everywhere.  Code written against MATLAB's
+## names therefore runs unchanged, but code relying on these names will not
+## port back.
+##
 ## @seealso{cdf, icdf, pdf, betarnd, binornd, bisarnd, burrrnd, cauchyrnd,
 ## chi2rnd, evrnd, exprnd, frnd, gamrnd, geornd, gevrnd, gprnd, gumbelrnd,
 ## hnrnd, hygernd, invgrnd, laplacernd, logirnd, loglrnd, lognrnd, nakarnd,
@@ -127,7 +143,7 @@ function r = random (name, varargin)
     {'rayl'     , 'Rayleigh'},                  @raylrnd,      1, ...
     {'rice'     , 'Rician'},                    @ricernd,      2, ...
     {'t'        , 'Student T'},                 @trnd,         1, ...
-    {'tls'      , 'location-scale T'},          @tlsrnd,       3, ...
+    {'tls', 'location-scale T', 'tLocationScale'}, @tlsrnd,       3, ...
     {'tri'      , 'Triangular'},                @trirnd,       3, ...
     {'unid'     , 'Discrete Uniform'},          @unidrnd,      1, ...
     {'unif'     , 'Uniform'},                   @unifrnd,      2, ...
@@ -147,7 +163,10 @@ function r = random (name, varargin)
   rnd_args = allDF(3:3:end);
 
   ## Search for RND function
-  idx = cellfun (@(x)any (strcmpi (name, x)), rndnames);
+  ## Match on the folded key so that every spelling of a name resolves
+  key = __distname_key__ (name);
+  idx = cellfun (@(x) any (strcmp (key, cellfun (@__distname_key__, x, ...
+                                   'UniformOutput', false))), rndnames);
 
   if (any (idx))
 

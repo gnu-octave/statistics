@@ -86,6 +86,22 @@
 ## @item @qcode{'Weibull'} @tab @qcode{'wbl'} @tab 2
 ## @end multitable
 ##
+## Distribution names are matched ignoring case, spaces and hyphens, so that
+## @qcode{'Extreme Value'}, @qcode{'ExtremeValue'} and @qcode{'extreme-value'}
+## all select the same distribution, and the same set of names is accepted by
+## @code{cdf}, @code{pdf}, @code{icdf}, @code{random}, @code{makedist},
+## @code{fitdist} and @code{mle}.
+##
+## This accepts more names than MATLAB.  MATLAB takes the spaced and the
+## squashed spelling but refuses the hyphenated one, so
+## @qcode{'Birnbaum-Saunders'} and @qcode{'Log-Logistic'} are errors there;
+## Octave has always accepted them and continues to.  MATLAB also accepts
+## @qcode{'tLocationScale'} in @code{makedist} while refusing it in
+## @code{cdf} for the same distribution; Octave accepts it, and
+## @qcode{'location-scale T'}, everywhere.  Code written against MATLAB's
+## names therefore runs unchanged, but code relying on these names will not
+## port back.
+##
 ## @seealso{icdf, pdf, random, betainv, binoinv, bisainv, burrinv, cauchyinv,
 ## chi2inv, evinv, expinv, finv, gaminv, geoinv, gevinv, gpinv, gumbelinv,
 ## hninv, hygeinv, invginv, laplaceinv, logiinv, loglinv, logninv, nakainv,
@@ -128,7 +144,7 @@ function x = icdf (name, p, varargin)
     {'rayl'     , 'Rayleigh'},                  @raylinv,      1, ...
     {'rice'     , 'Rician'},                    @riceinv,      2, ...
     {'t'        , 'Student T'},                 @tinv,         1, ...
-    {'tls'      , 'location-scale T'},          @tlsinv,       3, ...
+    {'tls', 'location-scale T', 'tLocationScale'}, @tlsinv,       3, ...
     {'tri'      , 'Triangular'},                @triinv,       3, ...
     {'unid'     , 'Discrete Uniform'},          @unidinv,      1, ...
     {'unif'     , 'Uniform'},                   @unifinv,      2, ...
@@ -155,7 +171,10 @@ function x = icdf (name, p, varargin)
   icdf_args = allDF(3:3:end);
 
   ## Search for iCDF function
-  idx = cellfun (@(x)any (strcmpi (name, x)), icdfnames);
+  ## Match on the folded key so that every spelling of a name resolves
+  key = __distname_key__ (name);
+  idx = cellfun (@(x) any (strcmp (key, cellfun (@__distname_key__, x, ...
+                                   'UniformOutput', false))), icdfnames);
 
   if (any (idx))
 
@@ -262,6 +281,18 @@ endfunction
 %!assert_equal (icdf ('wbl', p, 5, 2), wblinv (p, 5, 2))
 
 ## Test input validation
+%!test
+%! ## Every spelling of a name reaches the same distribution: case, spaces,
+%! ## hyphens and underscores are all ignored.
+%! for n = {'Extreme Value', 'ExtremeValue', 'extreme-value', 'EXTREME VALUE'}
+%!   assert_equal (icdf (n{1}, 0.5, 2, 3), icdf ('ev', 0.5, 2, 3));
+%! endfor
+
+%!test
+%! ## The name that makedist uses is accepted here too, and the reverse
+%! assert_equal (icdf ('tLocationScale', 0.5, 2, 3, 4), ...
+%!               icdf ('tls', 0.5, 2, 3, 4));
+
 %!error<icdf: distribution NAME must be a char string.> icdf (1)
 %!error<icdf: distribution NAME must be a char string.> icdf ({'beta'})
 %!error<icdf: P must be numeric.> icdf ('beta', {[1 2 3 4 5]})
