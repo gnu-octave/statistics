@@ -291,7 +291,7 @@ function [phat, pci] = mle (x, varargin)
         pci = pci(:);
       endif
 
-    case {'bisa', 'BirnbaumSaunders'}
+    case {'bisa', 'birnbaumsaunders'}
       if (nargout < 2)
         phat = bisafit (x, alpha, censor, freq, options);
       else
@@ -887,6 +887,17 @@ endfunction
 %!             'cdf', @(x, mu, s) normcdf (x, mu, s), ...
 %!             'start', [mean(x), std(x)], 'truncationbounds', [1, 6]);
 %! assert (phat, [3.41148048015442, 1.12176348358835], 1e-4);
+
+%!test
+%! ## The BirnbaumSaunders distribution is reachable by its full name, not only
+%! ## by 'bisa'; the name is matched after tolower, so a mixed-case label was
+%! ## never matched by anything.
+%! x = [1.2; 0.4; 3.1; 0.7; 2.5; 1.8; 0.3; 4.2; 1.1; 0.9; ...
+%!      2.2; 0.6; 1.5; 3.7; 0.8; 2.9; 1.3; 0.5; 2.0; 1.6];
+%! assert_equal (mle (x, 'distribution', 'BirnbaumSaunders'), ...
+%!               mle (x, 'distribution', 'bisa'));
+%! assert_equal (mle (x, 'distribution', 'birnbaumsaunders'), ...
+%!               mle (x, 'distribution', 'bisa'));
 
 ## Test input validation
 %!error <mle: X must be a numeric vector of real values.> mle (ones (2))
