@@ -64,8 +64,13 @@
 ##
 ## @seealso{gscatter, scatter, hist, ksdensity}
 ##
+## @qcode{'Location'} names the corner the scatter occupies,
+## @qcode{'SouthWest'} by default, or @qcode{'SouthEast'}, @qcode{'NorthEast'}
+## or @qcode{'NorthWest'}; the marginals take the two opposite sides.
+##
 ## @qcode{'Direction'} points the marginal bars toward the scatter plot,
-## @qcode{'in'} by default, or away from it with @qcode{'out'}.
+## @qcode{'in'} by default, or away from it with @qcode{'out'}, whichever side
+## @qcode{'Location'} has placed them on.
 ##
 ## @qcode{'PlotGroup'} draws one marginal per group with @qcode{'on'}, or a
 ## single pooled marginal with @qcode{'off'}.  It defaults to @qcode{'on'} when
@@ -151,6 +156,17 @@ function h = scatterhist (varargin)
   if (! (isnumeric (markersize) && all (markersize(:) > 0)))
     error ("scatterhist: MARKERSIZE must be positive numeric values.");
   endif
+  if (! (ischar (direction) && any (strcmpi (direction, {"in", "out"}))))
+    error ("scatterhist: DIRECTION must be 'in' or 'out'.");
+  endif
+  if (! isempty (style)
+      && ! (ischar (style) && any (strcmpi (style, {"bar", "stairs"}))))
+    error ("scatterhist: STYLE must be 'bar' or 'stairs'.");
+  endif
+  if (! isempty (plotgroup)
+      && ! (ischar (plotgroup) && any (strcmpi (plotgroup, {"on", "off"}))))
+    error ("scatterhist: PLOTGROUP must be 'on' or 'off'.");
+  endif
 
   ## Marginal line style.  'Bandwidth' is a scalar, a pair for x and y, or one
   ## row per group; 'LineStyle' and 'LineWidth' cycle over the groups and apply
@@ -215,12 +231,27 @@ function h = scatterhist (varargin)
     nby = nbins(2);
   endif
 
-  ## Axes layout: scatter lower-left, x-hist on top, y-hist on the right
+  ## Axes layout.  'Location' names the corner the scatter sits in, so the
+  ## marginals take the two opposite sides: with the default "southwest" the
+  ## scatter is lower left, the x marginal above it and the y marginal to its
+  ## right.
+  west = any (strcmpi (location, {"southwest", "northwest"}));
+  south = any (strcmpi (location, {"southwest", "southeast"}));
   cf = gcf ();
   clf (cf);
-  pos_s = [0.10, 0.10, 0.60, 0.60];
-  pos_x = [0.10, 0.72, 0.60, 0.20];
-  pos_y = [0.72, 0.10, 0.20, 0.60];
+  if (west)
+    xs = 0.10;  ys_marg = 0.72;
+  else
+    xs = 0.30;  ys_marg = 0.08;
+  endif
+  if (south)
+    ys = 0.10;  xs_marg = 0.72;
+  else
+    ys = 0.30;  xs_marg = 0.08;
+  endif
+  pos_s = [xs, ys, 0.60, 0.60];
+  pos_x = [xs, xs_marg, 0.60, 0.20];
+  pos_y = [ys_marg, ys, 0.20, 0.60];
   ax_s = axes ("parent", cf, "position", pos_s, "box", "on", "nextplot", "add");
   ax_x = axes ("parent", cf, "position", pos_x, "nextplot", "add");
   ax_y = axes ("parent", cf, "position", pos_y, "nextplot", "add");
@@ -242,19 +273,13 @@ function h = scatterhist (varargin)
   ## 'PlotGroup' says whether the groups are drawn apart or pooled.
   if (isempty (style))
     multi = (k > 1);
-  elseif (strcmpi (style, "stairs"))
-    multi = true;
-  elseif (strcmpi (style, "bar"))
-    multi = false;
   else
-    error ("scatterhist: STYLE must be 'bar' or 'stairs'.");
+    multi = strcmpi (style, "stairs");
   endif
   if (isempty (plotgroup))
     bygroup = ! isempty (group);
-  elseif (any (strcmpi (plotgroup, {"on", "off"})))
-    bygroup = strcmpi (plotgroup, "on");
   else
-    error ("scatterhist: PLOTGROUP must be 'on' or 'off'.");
+    bygroup = strcmpi (plotgroup, "on");
   endif
   if (bygroup)
     for g = 1:k
@@ -273,14 +298,13 @@ function h = scatterhist (varargin)
   endif
 
   ## 'Direction' points the marginal bars toward the scatter ("in", as MATLAB
-  ## defaults) or away from it ("out")
-  if (! any (strcmpi (direction, {"in", "out"})))
-    error ("scatterhist: DIRECTION must be 'in' or 'out'.");
-  endif
-  if (strcmpi (direction, "in"))
-    set (ax_x, "ydir", "reverse");
-    set (ax_y, "xdir", "reverse");
-  endif
+  ## defaults) or away from it ("out").  Which way that is depends on where
+  ## 'Location' put the marginals: bars grow along the positive axis, so the x
+  ## marginal must be reversed only when it sits above the scatter, and the y
+  ## marginal only when it sits to the scatter's right.
+  toward = strcmpi (direction, "in");
+  set (ax_x, "ydir", ternary (xor (toward, ! south), "reverse", "normal"));
+  set (ax_y, "xdir", ternary (xor (toward, ! west), "reverse", "normal"));
 
   ## Share the data axes with the scatter and tidy the marginal axes
   set (ax_x, "xlim", get (ax_s, "xlim"), "xtick", [], "ytick", []);
@@ -299,6 +323,15 @@ function h = scatterhist (varargin)
     h = [ax_s, ax_x, ax_y];
   endif
 
+endfunction
+
+## Choose between two values without an if block.
+function v = ternary (cond, a, b)
+  if (cond)
+    v = a;
+  else
+    v = b;
+  endif
 endfunction
 
 ## Pick the bandwidth, line style and line width for group G and variable V
@@ -442,6 +475,47 @@ endfunction
 %! scatterhist ([1 2 3]', [1 2 3]', "LineStyle", 5)
 %!error <scatterhist: BANDWIDTH must be positive numeric values.> ...
 %! scatterhist ([1 2 3]', [1 2 3]', "Bandwidth", 0)
+
+%!test  # Location moves the scatter to the named corner and the marginals with it
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   h = scatterhist (x, y, "Location", "SouthWest");
+%!   ps = get (h(1), "position");  px = get (h(2), "position");
+%!   assert (ps(1:2), [0.10, 0.10], 1e-12);
+%!   assert (px(2) > ps(2), true);          # x marginal above the scatter
+%!   h = scatterhist (x, y, "Location", "NorthEast");
+%!   ps = get (h(1), "position");  px = get (h(2), "position");
+%!   assert (ps(1:2), [0.30, 0.30], 1e-12);
+%!   assert (px(2) < ps(2), true);          # and below it here
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
+
+%!test  # Direction is relative to where Location put each marginal
+%! hf = figure ("visible", "off");
+%! unwind_protect
+%!   x = [1 2 3 4 5 6 7 8]';  y = [2 1 4 3 6 5 8 7]';
+%!   ## "in" points the bars at the scatter from whichever side they sit on
+%!   h = scatterhist (x, y, "Location", "SouthWest");
+%!   assert (get (h(2), "ydir"), "reverse");
+%!   assert (get (h(3), "xdir"), "reverse");
+%!   h = scatterhist (x, y, "Location", "NorthEast");
+%!   assert (get (h(2), "ydir"), "normal");
+%!   assert (get (h(3), "xdir"), "normal");
+%!   h = scatterhist (x, y, "Location", "SouthEast");
+%!   assert (get (h(2), "ydir"), "reverse");
+%!   assert (get (h(3), "xdir"), "normal");
+%!   h = scatterhist (x, y, "Location", "NorthWest");
+%!   assert (get (h(2), "ydir"), "normal");
+%!   assert (get (h(3), "xdir"), "reverse");
+%!   ## and "out" inverts each of them
+%!   h = scatterhist (x, y, "Location", "NorthEast", "Direction", "out");
+%!   assert (get (h(2), "ydir"), "reverse");
+%!   assert (get (h(3), "xdir"), "reverse");
+%! unwind_protect_cleanup
+%!   close (hf);
+%! end_unwind_protect
 
 %!test  # Direction points the marginals toward the scatter by default
 %! hf = figure ("visible", "off");
