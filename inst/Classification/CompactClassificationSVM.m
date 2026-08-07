@@ -645,6 +645,12 @@ classdef CompactClassificationSVM
     ## @end deftypefn
 
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("CompactClassificationSVM.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("CompactClassificationSVM.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'CompactClassificationSVM';
 
@@ -837,3 +843,9 @@ endclassdef
 %! loss (CMdl, [1, 2], 1, 'Weights', [1, 2])
 %!error<CompactClassificationSVM.loss: invalid parameter name in optional pair arguments.> ...
 %! loss (CMdl, [1, 2], 1, 'some', 'some')
+%!error <CompactClassificationSVM.savemodel: too few input arguments.> ...
+%! savemodel (CompactClassificationSVM ())
+%!error <CompactClassificationSVM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationSVM (), 1)
+%!error <CompactClassificationSVM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationSVM (), ['ab'; 'cd'])

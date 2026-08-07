@@ -592,6 +592,12 @@ classdef RegressionGAM
     ## @end deftypefn
 
     function savemodel (obj, fname)
+      if (nargin < 2)
+        error ("RegressionGAM.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("RegressionGAM.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'RegressionGAM';
 
@@ -985,3 +991,9 @@ endfunction
 %! predict (RegressionGAM (ones (10,2), ones (10,1)), ones (10,2), 'alpha', -1)
 %!error<RegressionGAM.predict: alpha must be a scalar value between 0 and 1.> ...
 %! predict (RegressionGAM (ones (10,2), ones (10,1)), ones (10,2), 'alpha', 'a')
+%!error <RegressionGAM.savemodel: too few input arguments.> ...
+%! savemodel (RegressionGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 2; 3; 4]))
+%!error <RegressionGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (RegressionGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 2; 3; 4]), 1)
+%!error <RegressionGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (RegressionGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 2; 3; 4]), ['ab'; 'cd'])

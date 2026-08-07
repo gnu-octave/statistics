@@ -533,6 +533,12 @@ classdef CompactClassificationNeuralNetwork
     ## @end deftypefn
 
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("CompactClassificationNeuralNetwork.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("CompactClassificationNeuralNetwork.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'CompactClassificationNeuralNetwork';
 
@@ -626,3 +632,9 @@ endclassdef
 ## Test input validation for assigning a new ScoreTransform
 %!error<CompactClassificationNeuralNetwork: unrecognized 'ScoreTransform' function.> ...
 %! CMdl.ScoreTransform = 'a';
+%!error <CompactClassificationNeuralNetwork.savemodel: too few input arguments.> ...
+%! savemodel (CompactClassificationNeuralNetwork ())
+%!error <CompactClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationNeuralNetwork (), 1)
+%!error <CompactClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationNeuralNetwork (), ['ab'; 'cd'])

@@ -1081,6 +1081,12 @@ classdef ClassificationNeuralNetwork
     ## @seealso{loadmodel, fitcnet, ClassificationNeuralNetwork}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("ClassificationNeuralNetwork.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("ClassificationNeuralNetwork.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'ClassificationNeuralNetwork';
 
@@ -1316,3 +1322,9 @@ endfunction
 %! crossval (Mdl, 'CVPartition', 'a')
 %!error<ClassificationNeuralNetwork.crossval: invalid parameter name in optional paired arguments> ...
 %! crossval (Mdl, 'some', 'some')
+%!error <ClassificationNeuralNetwork.savemodel: too few input arguments.> ...
+%! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error <ClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error <ClassificationNeuralNetwork.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationNeuralNetwork ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])

@@ -1183,6 +1183,12 @@ classdef ClassificationGAM
     ## @seealso{loadmodel, fitcgam, ClassificationGAM}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("ClassificationGAM.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("ClassificationGAM.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'ClassificationGAM';
 
@@ -1657,3 +1663,9 @@ endfunction
 %! crossval (obj, 'leaveout', 1)
 %!error<ClassificationGAM.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (obj, 'cvpartition', 1)
+%!error <ClassificationGAM.savemodel: too few input arguments.> ...
+%! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error <ClassificationGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error <ClassificationGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationGAM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])

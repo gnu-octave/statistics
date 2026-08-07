@@ -896,6 +896,12 @@ classdef CompactClassificationDiscriminant
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("CompactClassificationDiscriminant.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("CompactClassificationDiscriminant.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'CompactClassificationDiscriminant';
 
@@ -1176,3 +1182,9 @@ endclassdef
 %! margin (MODEL, ones (4,2))
 %!error<CompactClassificationDiscriminant.margin: Y must have the same number of rows as X.> ...
 %! margin (MODEL, ones (4,2), ones (3,1))
+%!error <CompactClassificationDiscriminant.savemodel: too few input arguments.> ...
+%! savemodel (CompactClassificationDiscriminant ())
+%!error <CompactClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationDiscriminant (), 1)
+%!error <CompactClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationDiscriminant (), ['ab'; 'cd'])

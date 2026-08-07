@@ -2064,6 +2064,12 @@ classdef ClassificationKNN
     ## @end deftypefn
 
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("ClassificationKNN.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("ClassificationKNN.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'ClassificationKNN';
 
@@ -3180,6 +3186,12 @@ endfunction
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'leaveout', 1)
 %!error<ClassificationKNN.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (ClassificationKNN (ones (4,2), ones (4,1)), 'cvpartition', 1)
+%!error <ClassificationKNN.savemodel: too few input arguments.> ...
+%! savemodel (ClassificationKNN ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error <ClassificationKNN.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationKNN ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error <ClassificationKNN.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationKNN ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
 
 ## There are only as many neighbors as training samples, so a larger
 ## NumNeighbors is capped at that.  It used to be stored as requested and then

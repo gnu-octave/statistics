@@ -1574,6 +1574,12 @@ classdef ClassificationSVM
     ## @seealso{loadmodel, fitcsvm, ClassificationSVM}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("ClassificationSVM.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("ClassificationSVM.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'ClassificationSVM';
 
@@ -2077,3 +2083,9 @@ endclassdef
 %! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'CVPartition', 'a')
 %!error<ClassificationSVM.crossval: invalid parameter name in optional paired arguments> ...
 %! crossval (ClassificationSVM (ones (40,2),randi ([1, 2], 40, 1)), 'some', 'some')
+%!error <ClassificationSVM.savemodel: too few input arguments.> ...
+%! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error <ClassificationSVM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error <ClassificationSVM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationSVM ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])

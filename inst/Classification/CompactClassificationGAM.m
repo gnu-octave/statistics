@@ -585,6 +585,12 @@ classdef CompactClassificationGAM
     ## @seealso{loadmodel, fitcgam, ClassificationGAM, CompactClassificationGAM}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("CompactClassificationGAM.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("CompactClassificationGAM.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'CompactClassificationGAM';
 
@@ -785,3 +791,9 @@ endfunction
 %! predict (CMdl, [])
 %!error<CompactClassificationGAM.predict: XC must have the same number of features as the trained model.> ...
 %! predict (CMdl, 1)
+%!error <CompactClassificationGAM.savemodel: too few input arguments.> ...
+%! savemodel (CompactClassificationGAM ())
+%!error <CompactClassificationGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationGAM (), 1)
+%!error <CompactClassificationGAM.savemodel: FNAME must be a character vector.> ...
+%! savemodel (CompactClassificationGAM (), ['ab'; 'cd'])

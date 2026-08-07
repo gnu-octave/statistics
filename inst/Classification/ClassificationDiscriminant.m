@@ -1459,6 +1459,12 @@ classdef ClassificationDiscriminant
     ## @seealso{loadmodel, fitcdiscr, ClassificationDiscriminant}
     ## @end deftypefn
     function savemodel (this, fname)
+      if (nargin < 2)
+        error ("ClassificationDiscriminant.savemodel: too few input arguments.");
+      endif
+      if (! (ischar (fname) && isrow (fname) && ! isempty (fname)))
+        error ("ClassificationDiscriminant.savemodel: FNAME must be a character vector.");
+      endif
       ## Generate variable for class name
       classdef_name = 'ClassificationDiscriminant';
 
@@ -1958,3 +1964,9 @@ endclassdef
 %! crossval (obj, 'leaveout', 1)
 %!error<ClassificationDiscriminant.crossval: 'CVPartition' must be a 'cvpartition' object.> ...
 %! crossval (obj, 'cvpartition', 1)
+%!error <ClassificationDiscriminant.savemodel: too few input arguments.> ...
+%! savemodel (ClassificationDiscriminant ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]))
+%!error <ClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationDiscriminant ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), 1)
+%!error <ClassificationDiscriminant.savemodel: FNAME must be a character vector.> ...
+%! savemodel (ClassificationDiscriminant ([1, 2; 2, 3; 3, 4; 4, 5], [1; 1; 2; 2]), ['ab'; 'cd'])
