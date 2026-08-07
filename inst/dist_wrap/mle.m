@@ -286,6 +286,9 @@ function [phat, pci] = mle (x, varargin)
         phat = binofit (sum (x .* freq), sum (freq) .* ntrials);
       else
         [phat, pci] = binofit (sum (x .* freq), sum (freq) .* ntrials, alpha);
+        ## binofit reports the interval as a row; mle reports one column per
+        ## parameter, as it does for every other distribution
+        pci = pci(:);
       endif
 
     case {'bisa', 'BirnbaumSaunders'}

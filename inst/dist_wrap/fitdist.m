@@ -800,14 +800,14 @@ endfunction
 %! pd = fitdist (x, 'binomial');
 %! [phat, pci] = binofit (sum (x), numel (x));
 %! assert_equal ([pd.N, pd.p], [N, phat]);
-%! assert_equal (paramci (pd), pci);
+%! assert_equal (paramci (pd), [N, pci(1); N, pci(2)]);
 %!test
 %! N = 3;
 %! x = binornd (N, 0.4, 100, 1);
 %! pd = fitdist (x, 'binomial', 'ntrials', N);
 %! [phat, pci] = binofit (sum (x), numel (x) * N);
 %! assert_equal ([pd.N, pd.p], [N, phat]);
-%! assert_equal (paramci (pd), pci);
+%! assert_equal (paramci (pd), [N, pci(1); N, pci(2)]);
 %!test
 %! N = 1;
 %! x1 = binornd (N, 0.5, 100, 1);
@@ -815,10 +815,10 @@ endfunction
 %! pd = fitdist ([x1; x2], 'binomial', 'By', [ones(100, 1); 2*ones(100, 1)]);
 %! [phat, pci] = binofit (sum (x1), numel (x1));
 %! assert_equal ([pd{1}.N, pd{1}.p], [N, phat]);
-%! assert_equal (paramci (pd{1}), pci);
+%! assert_equal (paramci (pd{1}), [N, pci(1); N, pci(2)]);
 %! [phat, pci] = binofit (sum (x2), numel (x2));
 %! assert_equal ([pd{2}.N, pd{2}.p], [N, phat]);
-%! assert_equal (paramci (pd{2}), pci);
+%! assert_equal (paramci (pd{2}), [N, pci(1); N, pci(2)]);
 %!warning <fitdist: no data in group '2' to fit a 'binomial' distribution.> ...
 %! fitdist ([binornd(1, 0.5, 100, 1); nan(100, 1)], 'binomial', ...
 %!          'By', [ones(100, 1); 2*ones(100, 1)]);
@@ -830,10 +830,10 @@ endfunction
 %!               'By', [ones(100, 1); 2*ones(100, 1)]);
 %! [phat, pci] = binofit (sum (x1), numel (x1) * N);
 %! assert_equal ([pd{1}.N, pd{1}.p], [N, phat]);
-%! assert_equal (paramci (pd{1}), pci);
+%! assert_equal (paramci (pd{1}), [N, pci(1); N, pci(2)]);
 %! [phat, pci] = binofit (sum (x2), numel (x2) * N);
 %! assert_equal ([pd{2}.N, pd{2}.p], [N, phat]);
-%! assert_equal (paramci (pd{2}), pci);
+%! assert_equal (paramci (pd{2}), [N, pci(1); N, pci(2)]);
 %!warning <fitdist: no data in group '2' to fit a 'binomial' distribution.> ...
 %! fitdist ([binornd(5, 0.5, 100, 1); nan(100, 1)], 'binomial', 'ntrials', 5, ...
 %!          'By', [ones(100, 1); 2*ones(100, 1)]);

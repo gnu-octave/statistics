@@ -852,6 +852,27 @@ endfunction
 %!assert_equal (var (t), 0.5600, 1e-4);
 %!assert_equal (var (t_inf), 0.7175, 1e-4);
 
+%!test
+%! ## paramci reports one column per parameter, N held at its own value, as
+%! ## MATLAB does; it used to return a single 1x2 row, which stopped proflik.
+%! x = [3; 1; 4; 1; 5; 2; 6; 5; 3; 5; 2; 4; 1; 3; 2; 4; 6; 2; 3; 1];
+%! pd = fitdist (x, 'Binomial', 'NTrials', 8);
+%! assert_equal (paramci (pd), [8, 0.317538; 8, 0.473975], 1e-6);
+%! assert_equal (paramci (pd, 'Parameter', 'p'), [0.317538; 0.473975], 1e-6);
+%! assert_equal (paramci (pd, 'Parameter', 'N'), [8; 8]);
+
+%!test
+%! ## The profile over p, the only estimated parameter, takes 101 grid values.
+%! ## OTHER reports the fixed N at its own value; MATLAB documents that and
+%! ## then returns 0 there, so this follows its documentation, not its code.
+%! x = [3; 1; 4; 1; 5; 2; 6; 5; 3; 5; 2; 4; 1; 3; 2; 4; 6; 2; 3; 1];
+%! pd = fitdist (x, 'Binomial', 'NTrials', 8);
+%! [nlogL, param, other] = proflik (pd, 2);
+%! assert_equal (size (param), [1, 101]);
+%! assert_equal (size (other), [101, 1]);
+%! assert_equal (unique (other), 8);
+%! assert_equal (proflik (pd), nlogL);
+
 ## Test input validation
 ## 'BinomialDistribution' constructor
 %!error <BinomialDistribution: N must be a positive integer scalar.> ...
@@ -912,8 +933,6 @@ endfunction
 %!          'parameter', {'N', 'p', 'param'})
 %!error <paramci: unknown distribution parameter.> ...
 %! paramci (BinomialDistribution.fit (x, 6), 'parameter', 'param')
-%!error <paramci: unknown distribution parameter.> ...
-%! paramci (BinomialDistribution.fit (x, 6), 'parameter', 'N')
 %!error <paramci: unknown distribution parameter.> ...
 %! paramci (BinomialDistribution.fit (x, 6), 'alpha', 0.01, ...
 %!          'parameter', 'param')

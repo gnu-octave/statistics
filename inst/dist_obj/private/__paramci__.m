@@ -28,7 +28,7 @@ function ci = __paramci__ (pd, varargin)
 
   ## Get Distribution specific info
   distname = pd.DistributionCode;
-  parnames = pd.ParameterNames(! pd.ParameterIsFixed);
+  parnames = pd.ParameterNames;
 
   ## Add defaults and parse optional arguments
   alpha = 0.05;
@@ -102,6 +102,15 @@ function ci = __paramci__ (pd, varargin)
                    'alpha', alpha, 'censoring', pd.InputData.cens, ...
                    'frequency', pd.InputData.freq);
 
+  endif
+
+  ## MLE reports intervals only for the estimated parameters of some
+  ## distributions.  Report one column per parameter, as MATLAB does, holding a
+  ## fixed parameter at its own value.
+  if (columns (ci) != numel (pd.ParameterValues))
+    fullci = [pd.ParameterValues; pd.ParameterValues];
+    fullci(:, ! pd.ParameterIsFixed) = ci;
+    ci = fullci;
   endif
 
   ## Return ci only for requested parameters
