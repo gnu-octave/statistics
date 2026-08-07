@@ -23,12 +23,15 @@
 ##
 ## @end deftypefn
 
+## Dispatch on the class, not on DistributionName: that property carries the
+## distribution's display name, not its class, so comparing it against a
+## class name would silently never match.
 function ci = __disp__ (pd, distname)
 
   if (isscalar (pd))
 
     ## Handle special case of PiecewiseLinearDistribution
-    if (strcmpi (pd.DistributionName, 'PiecewiseLinearDistribution'))
+    if (isa (pd, 'PiecewiseLinearDistribution'))
       ## Print distribution header
       fprintf ("  %s\n\n", pd.DistributionName);
       ## Print parameter values
@@ -43,7 +46,7 @@ function ci = __disp__ (pd, distname)
       endif
 
     ## Handle special case of MultinomialDistribution
-    elseif (strcmpi (pd.DistributionName, 'MultinomialDistribution'))
+    elseif (isa (pd, 'MultinomialDistribution'))
       ## Print distribution header
       fprintf ("  %s\n\n", pd.DistributionName);
       ## Print parameter values
@@ -56,7 +59,7 @@ function ci = __disp__ (pd, distname)
       endif
 
     ## Handle special case of KernelDistribution
-    elseif (strcmpi (pd.DistributionName, 'KernelDistribution'))
+    elseif (isa (pd, 'KernelDistribution'))
       ## Print distribution header
       fprintf ("  %s\n\n", pd.DistributionName);
       ## Print kernel, bandwidth, and support

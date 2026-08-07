@@ -107,7 +107,7 @@ classdef tLocationScaleDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'tLocationScaleDistribution';
+    DistributionName = 't Location-Scale';
 
     ## -*- texinfo -*-
     ## @deftp {tLocationScaleDistribution} {property} NumParameters

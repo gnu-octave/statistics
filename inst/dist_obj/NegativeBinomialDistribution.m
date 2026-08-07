@@ -96,7 +96,7 @@ classdef NegativeBinomialDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'NegativeBinomialDistribution';
+    DistributionName = 'Negative Binomial';
 
     ## -*- texinfo -*-
     ## @deftp {NegativeBinomialDistribution} {property} NumParameters

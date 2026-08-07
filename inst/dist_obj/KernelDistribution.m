@@ -74,7 +74,7 @@ classdef KernelDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'KernelDistribution';
+    DistributionName = 'Kernel';
 
     ## -*- texinfo -*-
     ## @deftp {KernelDistribution} {property} NumParameters
@@ -752,7 +752,7 @@ endfunction
 %! pd = fitdist (x, 'Kernel');
 %! pdbox = fitdist (x, 'Kernel', 'Kernel', 'box', 'Width', 0.5);
 %! t = truncate (pd, 0, 3);
-%!assert_equal (pd.DistributionName, 'KernelDistribution');
+%!assert_equal (pd.DistributionName, 'Kernel');
 %!assert_equal (pd.Kernel, 'normal');
 %!assert_equal (pd.NumParameters, 0);
 %!assert_equal (pd.ParameterNames, {});

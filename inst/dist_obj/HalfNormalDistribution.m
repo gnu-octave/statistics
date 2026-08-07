@@ -90,7 +90,7 @@ classdef HalfNormalDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'HalfNormalDistribution';
+    DistributionName = 'Half Normal';
 
     ## -*- texinfo -*-
     ## @deftp {HalfNormalDistribution} {property} NumParameters

@@ -79,7 +79,7 @@ classdef RayleighDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'RayleighDistribution';
+    DistributionName = 'Rayleigh';
 
     ## -*- texinfo -*-
     ## @deftp {RayleighDistribution} {property} NumParameters

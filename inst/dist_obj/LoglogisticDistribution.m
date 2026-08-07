@@ -91,7 +91,7 @@ classdef LoglogisticDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'LoglogisticDistribution';
+    DistributionName = 'Log-Logistic';
 
     ## -*- texinfo -*-
     ## @deftp {LoglogisticDistribution} {property} NumParameters

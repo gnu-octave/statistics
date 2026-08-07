@@ -92,7 +92,7 @@ classdef ExtremeValueDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'ExtremeValueDistribution';
+    DistributionName = 'Extreme Value';
 
     ## -*- texinfo -*-
     ## @deftp {ExtremeValueDistribution} {property} NumParameters

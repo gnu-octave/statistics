@@ -78,7 +78,7 @@ classdef ExponentialDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'ExponentialDistribution';
+    DistributionName = 'Exponential';
 
     ## -*- texinfo -*-
     ## @deftp {ExponentialDistribution} {property} NumParameters

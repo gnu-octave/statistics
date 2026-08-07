@@ -121,7 +121,7 @@ classdef StableDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = "StableDistribution";
+    DistributionName = 'Stable';
 
     ## -*- texinfo -*-
     ## @deftp {StableDistribution} {property} NumParameters
@@ -818,7 +818,7 @@ endfunction
 %! assert (pd.beta, 0.5);
 %! assert (pd.gam, 1);
 %! assert (pd.delta, 0);
-%! assert (pd.DistributionName, "StableDistribution");
+%! assert (pd.DistributionName, "Stable");
 %! assert (pd.NumParameters, 4);
 %!test
 %! x = -5:5;

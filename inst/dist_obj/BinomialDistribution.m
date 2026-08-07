@@ -90,7 +90,7 @@ classdef BinomialDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'BinomialDistribution';
+    DistributionName = 'Binomial';
 
     ## -*- texinfo -*-
     ## @deftp {BinomialDistribution} {property} NumParameters

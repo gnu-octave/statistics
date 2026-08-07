@@ -84,7 +84,7 @@ classdef LoguniformDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'LoguniformDistribution';
+    DistributionName = 'Loguniform';
 
     ## -*- texinfo -*-
     ## @deftp {LoguniformDistribution} {property} NumParameters
@@ -655,7 +655,7 @@ endfunction
 %! plot (LoguniformDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
 %! plot (LoguniformDistribution, 'invalidNAME', 'pdf')
-%!error <plot: 'probability' PlotType is not supported for 'LoguniformDistribution'.> ...
+%!error <plot: 'probability' PlotType is not supported for 'Loguniform'.> ...
 %! plot (LoguniformDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method

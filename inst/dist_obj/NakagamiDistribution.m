@@ -91,7 +91,7 @@ classdef NakagamiDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'NakagamiDistribution';
+    DistributionName = 'Nakagami';
 
     ## -*- texinfo -*-
     ## @deftp {NakagamiDistribution} {property} NumParameters

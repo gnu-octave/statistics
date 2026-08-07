@@ -107,7 +107,7 @@ classdef GeneralizedExtremeValueDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'GeneralizedExtremeValueDistribution';
+    DistributionName = 'Generalized Extreme Value';
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedExtremeValueDistribution} {property} NumParameters

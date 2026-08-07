@@ -88,7 +88,7 @@ classdef UniformDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'UniformDistribution';
+    DistributionName = 'Uniform';
 
     ## -*- texinfo -*-
     ## @deftp {UniformDistribution} {property} NumParameters
@@ -651,7 +651,7 @@ endfunction
 %! plot (UniformDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
 %! plot (UniformDistribution, 'invalidNAME', 'pdf')
-%!error <plot: 'probability' PlotType is not supported for 'UniformDistribution'.> ...
+%!error <plot: 'probability' PlotType is not supported for 'Uniform'.> ...
 %! plot (UniformDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method

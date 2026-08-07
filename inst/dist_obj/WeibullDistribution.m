@@ -92,7 +92,7 @@ classdef WeibullDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'WeibullDistribution';
+    DistributionName = 'Weibull';
 
     ## -*- texinfo -*-
     ## @deftp {WeibullDistribution} {property} NumParameters

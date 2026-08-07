@@ -92,7 +92,7 @@ classdef NormalDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'NormalDistribution';
+    DistributionName = 'Normal';
 
     ## -*- texinfo -*-
     ## @deftp {NormalDistribution} {property} NumParameters

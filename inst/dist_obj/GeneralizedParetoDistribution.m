@@ -107,7 +107,7 @@ classdef GeneralizedParetoDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'GeneralizedParetoDistribution';
+    DistributionName = 'Generalized Pareto';
 
     ## -*- texinfo -*-
     ## @deftp {GeneralizedParetoDistribution} {property} NumParameters

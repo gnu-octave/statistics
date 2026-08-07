@@ -92,7 +92,7 @@ classdef BetaDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'BetaDistribution';
+    DistributionName = 'Beta';
 
     ## -*- texinfo -*-
     ## @deftp {BetaDistribution} {property} NumParameters

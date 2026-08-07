@@ -102,7 +102,7 @@ classdef TriangularDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'TriangularDistribution';
+    DistributionName = 'Triangular';
 
     ## -*- texinfo -*-
     ## @deftp {TriangularDistribution} {property} NumParameters
@@ -700,7 +700,7 @@ endfunction
 %! plot (TriangularDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
 %! plot (TriangularDistribution, 'invalidNAME', 'pdf')
-%!error <'probability' PlotType is not supported for 'TriangularDistribution'.> ...
+%!error <'probability' PlotType is not supported for 'Triangular'.> ...
 %! plot (TriangularDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method

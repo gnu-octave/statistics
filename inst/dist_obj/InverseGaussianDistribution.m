@@ -93,7 +93,7 @@ classdef InverseGaussianDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'InverseGaussianDistribution';
+    DistributionName = 'Inverse Gaussian';
 
     ## -*- texinfo -*-
     ## @deftp {InverseGaussianDistribution} {property} NumParameters

@@ -91,7 +91,7 @@ classdef GammaDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'GammaDistribution';
+    DistributionName = 'Gamma';
 
     ## -*- texinfo -*-
     ## @deftp {GammaDistribution} {property} NumParameters

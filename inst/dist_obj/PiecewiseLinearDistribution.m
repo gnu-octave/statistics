@@ -85,7 +85,7 @@ classdef PiecewiseLinearDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'PiecewiseLinearDistribution';
+    DistributionName = 'Piecewise Linear';
 
     ## -*- texinfo -*-
     ## @deftp {PiecewiseLinearDistribution} {property} NumParameters
@@ -668,7 +668,7 @@ endfunction
 %! plot (PiecewiseLinearDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
 %! plot (PiecewiseLinearDistribution, 'invalidNAME', 'pdf')
-%!error <plot: 'probability' PlotType is not supported for 'PiecewiseLinearDistribution'.> ...
+%!error <plot: 'probability' PlotType is not supported for 'Piecewise Linear'.> ...
 %! plot (PiecewiseLinearDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method

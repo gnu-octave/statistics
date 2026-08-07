@@ -73,7 +73,7 @@ classdef MultinomialDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'MultinomialDistribution';
+    DistributionName = 'Multinomial';
 
     ## -*- texinfo -*-
     ## @deftp {MultinomialDistribution} {property} NumParameters
@@ -713,7 +713,7 @@ endfunction
 %! plot (MultinomialDistribution, 'Parent', 'hax')
 %!error <plot: invalid NAME for optional argument.> ...
 %! plot (MultinomialDistribution, 'invalidNAME', 'pdf')
-%!error <plot: 'probability' PlotType is not supported for 'MultinomialDistribution'.> ...
+%!error <plot: 'probability' PlotType is not supported for 'Multinomial'.> ...
 %! plot (MultinomialDistribution, 'PlotType', 'probability')
 
 ## 'truncate' method

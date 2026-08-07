@@ -95,7 +95,7 @@ classdef BirnbaumSaundersDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'BirnbaumSaundersDistribution';
+    DistributionName = 'Birnbaum-Saunders';
 
     ## -*- texinfo -*-
     ## @deftp {BirnbaumSaundersDistribution} {property} NumParameters

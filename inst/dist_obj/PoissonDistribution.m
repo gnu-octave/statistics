@@ -78,7 +78,7 @@ classdef PoissonDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'PoissonDistribution';
+    DistributionName = 'Poisson';
 
     ## -*- texinfo -*-
     ## @deftp {PoissonDistribution} {property} NumParameters

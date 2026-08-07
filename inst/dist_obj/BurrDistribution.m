@@ -104,7 +104,7 @@ classdef BurrDistribution
     ## object. This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'BurrDistribution';
+    DistributionName = 'Burr';
 
     ## -*- texinfo -*-
     ## @deftp {BurrDistribution} {property} NumParameters

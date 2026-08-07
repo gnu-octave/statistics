@@ -92,7 +92,7 @@ classdef LognormalDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'LognormalDistribution';
+    DistributionName = 'Lognormal';
 
     ## -*- texinfo -*-
     ## @deftp {LognormalDistribution} {property} NumParameters

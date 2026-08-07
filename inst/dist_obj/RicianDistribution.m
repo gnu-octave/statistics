@@ -90,7 +90,7 @@ classdef RicianDistribution
     ## object.  This property is read-only.
     ##
     ## @end deftp
-    DistributionName = 'RicianDistribution';
+    DistributionName = 'Rician';
 
     ## -*- texinfo -*-
     ## @deftp {RicianDistribution} {property} NumParameters
